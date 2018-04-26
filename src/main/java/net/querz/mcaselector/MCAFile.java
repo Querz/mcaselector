@@ -1,5 +1,7 @@
 package net.querz.mcaselector;
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.*;
 
 public class MCAFile {
@@ -36,6 +38,41 @@ public class MCAFile {
 
 	public File getFile() {
 		return file;
+	}
+
+	public BufferedImage createImage(ChunkDataProcessor chunkDataProcessor, ColorMapping colorMapping) {
+		try (
+			RandomAccessFile raf = new RandomAccessFile(file, "r")
+		) {
+			BufferedImage finalImage = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
+			Graphics2D g2d = finalImage.createGraphics();
+
+			for (int cx = 0; cx < 32; cx++) {
+				for (int cz = 0; cz < 32; cz++) {
+					int index = cz  * 32 + cx;
+					MCAChunkData data = getChunkData(index);
+					data.readHeader(raf);
+					try {
+						data.loadData(raf);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+
+					BufferedImage image = data.createImage(chunkDataProcessor, colorMapping);
+
+					int imageX = cx * 16;
+					int imageZ = cz * 16;
+
+					g2d.drawImage(image, imageX, imageZ, null);
+				}
+			}
+			g2d.dispose();
+
+			return finalImage;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override

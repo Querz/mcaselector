@@ -3,7 +3,13 @@ package net.querz.mcaselector;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.NBTInputStream;
 import net.querz.nbt.Tag;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
@@ -43,6 +49,9 @@ public class MCAChunkData {
 			case ZLIB:
 				nbtIn = new NBTInputStream(new BufferedInputStream(new InflaterInputStream(in)));
 				break;
+			case NONE:
+				data = null;
+				return;
 			}
 			tag = nbtIn.readTag();
 		} finally {
@@ -56,6 +65,10 @@ public class MCAChunkData {
 		} else {
 			throw new Exception("Invalid chunk data: tag is not of type CompoundTag");
 		}
+	}
+
+	public BufferedImage createImage(ChunkDataProcessor chunkDataProcessor, ColorMapping colorMapping) {
+		return chunkDataProcessor.drawImage(data, colorMapping);
 	}
 
 	public long getOffset() {

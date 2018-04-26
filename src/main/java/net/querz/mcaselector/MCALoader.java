@@ -12,7 +12,6 @@ public class MCALoader {
 	* 0-4095: locations (1024 int)
 	* 4096-8191: timestamps (1024 int)
 	*
-	*
 	* */
 
 	public MCAFile read(File file) {

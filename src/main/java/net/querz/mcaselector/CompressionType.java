@@ -1,6 +1,7 @@
 package net.querz.mcaselector;
 
 public enum CompressionType {
+	NONE(0),
 	GZIP(1),
 	ZLIB(2);
 
