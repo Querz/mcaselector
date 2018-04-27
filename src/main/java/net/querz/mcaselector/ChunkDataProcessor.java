@@ -4,5 +4,5 @@ import net.querz.nbt.CompoundTag;
 import java.awt.image.BufferedImage;
 
 public interface ChunkDataProcessor {
-	BufferedImage drawImage(CompoundTag data, ColorMapping colorMapping);
+	void drawImage2(CompoundTag root, ColorMapping colorMapping, int x, int z, BufferedImage image);
 }

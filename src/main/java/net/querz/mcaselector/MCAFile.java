@@ -45,7 +45,6 @@ public class MCAFile {
 			RandomAccessFile raf = new RandomAccessFile(file, "r")
 		) {
 			BufferedImage finalImage = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
-			Graphics2D g2d = finalImage.createGraphics();
 
 			for (int cx = 0; cx < 32; cx++) {
 				for (int cz = 0; cz < 32; cz++) {
@@ -58,15 +57,12 @@ public class MCAFile {
 						ex.printStackTrace();
 					}
 
-					BufferedImage image = data.createImage(chunkDataProcessor, colorMapping);
-
 					int imageX = cx * 16;
 					int imageZ = cz * 16;
 
-					g2d.drawImage(image, imageX, imageZ, null);
+					data.drawImage(chunkDataProcessor, colorMapping, imageX, imageZ, finalImage);
 				}
 			}
-			g2d.dispose();
 
 			return finalImage;
 		} catch (Exception ex) {

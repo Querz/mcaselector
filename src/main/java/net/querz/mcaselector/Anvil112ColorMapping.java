@@ -9,6 +9,10 @@ public class Anvil112ColorMapping implements ColorMapping {
 		return Mapping.getByIDAndData(blockID).getRGB();
 	}
 
+	public int getRGB(String blockID) {
+		throw new RuntimeException("Anvil < 1.12 doesn't support string block ids.");
+	}
+
 	private enum Mapping {
 		DEFAULT(0, 0, 0x000000),
 		STONE(1, 0, 0x999999),

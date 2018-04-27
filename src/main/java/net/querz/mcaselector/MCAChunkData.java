@@ -67,8 +67,8 @@ public class MCAChunkData {
 		}
 	}
 
-	public BufferedImage createImage(ChunkDataProcessor chunkDataProcessor, ColorMapping colorMapping) {
-		return chunkDataProcessor.drawImage(data, colorMapping);
+	public void drawImage(ChunkDataProcessor chunkDataProcessor, ColorMapping colorMapping, int x, int z, BufferedImage image) {
+		chunkDataProcessor.drawImage2(data, colorMapping, x, z, image);
 	}
 
 	public long getOffset() {

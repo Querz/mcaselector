@@ -2,3 +2,4 @@
 out
 .gradle
 *.iml
+*.mca
