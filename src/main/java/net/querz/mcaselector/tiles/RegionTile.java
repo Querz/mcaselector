@@ -2,6 +2,7 @@ package net.querz.mcaselector.tiles;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.*;
 
 import javax.imageio.ImageIO;
@@ -24,9 +25,15 @@ public class RegionTile extends Tile {
 		System.out.println("loading region from cache: " + res);
 		InputStream resourceStream = RegionTile.class.getClassLoader().getResourceAsStream(res);
 		if (resourceStream == null) {
-			System.out.println("resource " + res + " not cached, generating image...");
-			MCALoader loader = new MCALoader();
+			System.out.println("region " + res + " not cached, generating image...");
 			File file = new File("src/main/resources/r." + p.getX() + "." + p.getY() + ".mca");
+			if (!file.exists()) {
+				System.out.println("region file " + res + " does not exist, skipping.");
+				image = new WritableImage(512, 512);
+				return;
+			}
+
+			MCALoader loader = new MCALoader();
 			MCAFile mcaFile = loader.read(file);
 
 			BufferedImage bufferedImage = mcaFile.createImage(new Anvil112ChunkDataProcessor(), new Anvil112ColorMapping());
