@@ -34,6 +34,7 @@ public class Anvil112ColorMapping implements ColorMapping {
 		WATER(8, 0, 0x0066ff),
 		STATIONARY_WATER(9, 0, 0x0066ff),
 		SAND(12, 0, 0xffcc00),
+		SANDSTONE(24, 0, 0xffcc00),
 		TALL_GRASS(31, 1, 0x00e600),
 		WHITE_WOOL(35, 0, 0xffffff),
 		ORANGE_WOOL(35, 1, 0xff6600),

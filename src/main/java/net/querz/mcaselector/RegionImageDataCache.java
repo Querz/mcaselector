@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RegionImageDataCache {
-	private Map<Point, CachedRegionImageData> cache = new HashMap<>();
+	private Map<Point2f, CachedRegionImageData> cache = new HashMap<>();
 
-	public RegionImageDataCache(Point viewport) {
+	public RegionImageDataCache(Point2f viewport) {
 
 	}
 

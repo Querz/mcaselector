@@ -10,7 +10,9 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
 	@Override
 	public void drawImage2(CompoundTag root, ColorMapping colorMapping, int x, int z, BufferedImage image) {
-		ListTag sections = (ListTag) ((CompoundTag) root.get("Level")).get("Sections");
+		ListTag sections = (ListTag) ((CompoundTag) root
+				.get("Level"))
+				.get("Sections");
 		sections.getValue().sort(this::filterSections);
 		//loop over x / z
 		for (int cx = 0; cx < 16; cx++) {
