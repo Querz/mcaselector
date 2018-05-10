@@ -22,6 +22,7 @@ public class Tile {
 	protected Image image;
 	private boolean loading = false;
 	private boolean loaded = false;
+	private boolean marked = false;
 
 	static {
 		WritableImage wImage = new WritableImage(SIZE, SIZE);
@@ -60,9 +61,23 @@ public class Tile {
 		loaded = false;
 	}
 
+	public void mark(boolean marked) {
+		System.out.println("marking " + location + "  ");
+		this.marked = marked;
+	}
+
+	public boolean isMarked() {
+		return marked;
+	}
+
 	public synchronized void draw(GraphicsContext ctx, float scale, Point2f offset) {
 		if (isLoaded() && image != null) {
 			ctx.drawImage(getImage(), offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
+			if (marked) {
+				System.out.println("drawing marked tile: " + location + "  ");
+				ctx.setFill(new Color(1, 0, 0, 0.5));
+				ctx.fillRect(offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
+			}
 		} else {
 			ctx.drawImage(empty, offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 		}

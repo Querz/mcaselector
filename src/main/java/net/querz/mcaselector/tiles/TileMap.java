@@ -3,6 +3,8 @@ package net.querz.mcaselector.tiles;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ButtonType;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
@@ -31,6 +33,7 @@ public class TileMap extends Group {
 	private Point2f offset = new Point2f();
 
 	private Point2f previousMouseLocation = null;
+	private Point2f firstMouseLocation = null;
 
 	private Map<Point2i, Tile> tiles = new HashMap<>();
 
@@ -69,6 +72,38 @@ public class TileMap extends Group {
 
 	private void onMousePressed(MouseEvent event) {
 		System.out.println(event.getX() + " " + event.getY());
+
+		firstMouseLocation = new Point2f((float) event.getX(), (float) event.getY());
+
+		switch (event.getButton()) {
+		case PRIMARY:
+			mark(event.getX(), event.getY(), true);
+			break;
+		case SECONDARY:
+			mark(event.getX(), event.getY(), false);
+			break;
+		}
+		draw(context);
+		System.out.println("first mouse location");
+	}
+
+	private Point2i getMouseRegionBlock(int x, int z) {
+		int blockX = (int) (offset.getX() + x * scale);
+		int blockZ = (int) (offset.getY() + z * scale);
+		Point2i block = new Point2i(blockX, blockZ);
+		return Helper.regionToBlock(Helper.blockToRegion(block));
+	}
+
+	private Tile getMouseTile(int x, int z) {
+		return tiles.get(getMouseRegionBlock(x, z));
+	}
+
+	private void sortPoints(Point2i a, Point2i b) {
+		Point2i aa = a.clone();
+		a.setX(a.getX() < b.getX() ? a.getX() : b.getX());
+		a.setY(a.getY() < b.getY() ? a.getY() : b.getY());
+		b.setX(aa.getX() < b.getX() ? b.getX() : aa.getX());
+		b.setY(aa.getY() < b.getY() ? b.getY() : aa.getY());
 	}
 
 	private void onMouseReleased(MouseEvent event) {
@@ -76,18 +111,38 @@ public class TileMap extends Group {
 	}
 
 	private void onMouseDragged(MouseEvent event) {
-		Point2f mouseLocation = new Point2f((float) event.getX(), (float) event.getY());
-		if (previousMouseLocation != null) {
-			Point2f diff = mouseLocation.sub(previousMouseLocation);
-			diff = diff.mul(-1);
-			offset = offset.add(diff.mul(scale));
-
-//			System.out.println("offset" + offset);
-
-			draw(context);
-
+		switch (event.getButton()) {
+		case MIDDLE:
+			Point2f mouseLocation = new Point2f((float) event.getX(), (float) event.getY());
+			if (previousMouseLocation != null) {
+				Point2f diff = mouseLocation.sub(previousMouseLocation);
+				diff = diff.mul(-1);
+				offset = offset.add(diff.mul(scale));
+			}
+			previousMouseLocation = mouseLocation;
+			break;
+		case PRIMARY:
+			mark(event.getX(), event.getY(), true);
+			break;
+		case SECONDARY:
+			mark(event.getX(), event.getY(), false);
+			break;
 		}
-		previousMouseLocation = mouseLocation;
+		draw(context);
+	}
+
+	private void mark(double mouseX, double mouseY, boolean marked) {
+		Point2i regionBlock = getMouseRegionBlock((int) mouseX, (int) mouseY);
+		Point2i firstRegionBlock = getMouseRegionBlock((int) firstMouseLocation.getX(), (int) firstMouseLocation.getY());
+		sortPoints(firstRegionBlock, regionBlock);
+		for (int x = firstRegionBlock.getX(); x <= regionBlock.getX(); x += Tile.SIZE) {
+			for (int z = firstRegionBlock.getY(); z <= regionBlock.getY(); z += Tile.SIZE) {
+				Tile tile = tiles.get(new Point2i(x, z));
+				if (tile != null) {
+					tile.mark(marked);
+				}
+			}
+		}
 	}
 
 	/*
