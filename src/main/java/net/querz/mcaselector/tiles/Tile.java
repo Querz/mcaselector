@@ -17,6 +17,7 @@ import java.io.InputStream;
 public class Tile {
 	public static final int SIZE = 512;
 	private static final Image empty;
+	private static final Color emptyColor = new Color(0.2, 0.2, 0.2, 1);
 	private Point2i location;
 	protected Image image;
 	private boolean loading = false;
@@ -27,7 +28,7 @@ public class Tile {
 		PixelWriter pWriter = wImage.getPixelWriter();
 		for (int x = 0; x < SIZE; x++) {
 			for (int y = 0; y < SIZE; y++) {
-				pWriter.setColor(x, y, Color.BLACK);
+				pWriter.setColor(x, y, emptyColor);
 			}
 		}
 		empty = wImage;
@@ -60,8 +61,6 @@ public class Tile {
 	}
 
 	public synchronized void draw(GraphicsContext ctx, float scale, Point2f offset) {
-//		System.out.print("drawing " + location + " ");
-
 		if (isLoaded() && image != null) {
 			ctx.drawImage(getImage(), offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 		} else {
@@ -87,7 +86,7 @@ public class Tile {
 			File file = new File("src/main/resources/r." + p.getX() + "." + p.getY() + ".mca");
 			if (!file.exists()) {
 				System.out.println("region file " + res + " does not exist, skipping.");
-				image = new WritableImage(SIZE, SIZE);
+				image = null;
 			} else {
 				Helper.runAsync(() -> {
 					MCALoader loader = new MCALoader();
