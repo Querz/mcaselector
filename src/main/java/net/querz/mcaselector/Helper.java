@@ -32,4 +32,8 @@ public class Helper {
 	public static Point2i regionToBlock(Point2i i) {
 		return i.shiftLeft(9);
 	}
+
+	public static void runAsync(Runnable r) {
+		new Thread(r).start();
+	}
 }

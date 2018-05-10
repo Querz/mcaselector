@@ -34,8 +34,9 @@ public class TileMap extends Group {
 
 	private Map<Point2i, Tile> tiles = new HashMap<>();
 
-	public TileMap() {
-		height = width = 300;
+	public TileMap(int width, int height) {
+		this.width = width;
+		this.height = height;
 		canvas = new Canvas(width, height);
 
 		context = canvas.getGraphicsContext2D();
@@ -47,21 +48,27 @@ public class TileMap extends Group {
 		this.setOnMouseDragged(this::onMouseDragged);
 		this.setOnScroll(this::onScroll);
 
-		tiles.put(new Point2i(0, 0), new RegionTile(new Point2i(0, 0)));
-
 		draw(context);
 
 	}
 
+	public void setSize(double width, double height) {
+		canvas.setWidth(width);
+		canvas.setHeight(height);
+		this.width = (int) width;
+		this.height = (int) height;
+		draw(context);
+	}
+
 	private void onScroll(ScrollEvent event) {
-		scale -= event.getDeltaY() / 50;
+		scale -= event.getDeltaY() / 100;
 		scale = scale < MAX_SCALE ? (scale > MIN_SCALE ? scale : MIN_SCALE) : MAX_SCALE;
 		System.out.println(event.getDeltaY());
 		draw(context);
 	}
 
 	private void onMousePressed(MouseEvent event) {
-		System.out.println(event.getX());
+		System.out.println(event.getX() + " " + event.getY());
 	}
 
 	private void onMouseReleased(MouseEvent event) {
@@ -91,60 +98,27 @@ public class TileMap extends Group {
 	*  SW  S  SE
 	* */
 
-
-	//TODO: invert canvas y axis
 	private void draw(GraphicsContext ctx) {
 		//regionLocation is the south-west-most visible region in the window
 		Point2i regionLocation = Helper.regionToBlock(Helper.blockToRegion(new Point2i((int) offset.getX(), (int) offset.getY())));
+
 		//get all tiles that are visible inside the window
-		List<Point2i> visibleRegions = new ArrayList<>();
-
-		System.out.println("scale " + scale);
-
-		for (int x = regionLocation.getX(); x < offset.getX() + (width * scale); x += 512) {
-			for (int z = regionLocation.getY(); z < offset.getY() + (height * scale); z += 512) {
-				System.out.print("adding " + x + " " + z + " ");
-				visibleRegions.add(new Point2i(x, z));
-			}
-		}
-
-		for (Point2i region : visibleRegions) {
-			if (!tiles.containsKey(region)) {
-				tiles.put(region, new RegionTile(region));
-			}
-			Tile tile = tiles.get(region);
-
-			Point2i regionOffset = region.sub((int) offset.getX(), (int) offset.getY());
-
-			//TODO: load async
-
-			if (!tile.isLoaded()) {
-//				Thread loader = new Thread(() -> {
-					tile.loadImage();
-//					System.out.println("loaded");
-//
-//					tile.draw(context, scale, new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale));
-//				});
-//				loader.start();
-			}
-			tile.draw(context, scale, new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale));
-		}
-		System.out.println();
-	}
-
-	private void drawMap(GraphicsContext gc) {
-		Point2f off = new Point2f((int) ((offset.getX() % 32) * scale), (int) ((offset.getY() % 32) * scale));
-		for (int x = 0; x < Math.ceil(24.0 / scale); x++) {
-			for (int z = 0; z < Math.ceil(24.0 / scale); z++) {
-
-				// draw a chessboard for testing
-				if (x % 2 == 0 && z % 2 == 0 || x % 2 == 1 && z % 2 == 1) {
-					gc.setFill(Color.RED);
-					gc.fillRect(off.getX() + (x * scale - 2) * 16, off.getY() + (z * scale - 2) * 16, 16 * scale, 16 * scale);
-				} else {
-					gc.setFill(Color.BLACK);
-					gc.fillRect(off.getX() + (x * scale - 2) * 16, off.getY() + (z * scale - 2) * 16, 16 * scale, 16 * scale);
+		for (int x = regionLocation.getX(); x < offset.getX() + (width * scale); x += Tile.SIZE) {
+			for (int z = regionLocation.getY(); z < offset.getY() + (height * scale); z += Tile.SIZE) {
+				Point2i region = new Point2i(x, z);
+				if (!tiles.containsKey(region)) {
+					tiles.put(region, new Tile(region));
 				}
+				Tile tile = tiles.get(region);
+
+				Point2i regionOffset = region.sub((int) offset.getX(), (int) offset.getY());
+
+				//TODO: load async
+
+				if (!tile.isLoaded()) {
+					tile.loadImage();
+				}
+				tile.draw(context, scale, new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale));
 			}
 		}
 	}

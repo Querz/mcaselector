@@ -1,6 +1,7 @@
 package net.querz.mcaselector;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -10,21 +11,18 @@ import net.querz.mcaselector.tiles.TileMap;
 
 public class Window extends Application {
 
-	private GridPane gridPane;
-	private int viewportX, viewwportZ;
-	private int gridWidth = 128, gridHeight = 128; // dimensions in chunks (4x4 region files)
+	private int width = 800, height = 600;
 
 	@Override
 	public void start(Stage primaryStage) {
-		gridPane = new GridPane();
+		TileMap tileMap = new TileMap(width, height);
 
-//		for (int x = 0; x < gridWidth; x++) {
-//			for (int y = 0; y < gridHeight; y++) {
-//
-//			}
-//		}
+		Scene scene = new Scene(tileMap, width, height);
 
-		Scene scene = new Scene(new TileMap(), 300, 300);
+		ChangeListener<Number> sizeListener = (o, r, n) -> tileMap.setSize(primaryStage.getWidth(), primaryStage.getHeight());
+
+		primaryStage.widthProperty().addListener(sizeListener);
+		primaryStage.heightProperty().addListener(sizeListener);
 
 		primaryStage.setScene(scene);
 		primaryStage.show();
