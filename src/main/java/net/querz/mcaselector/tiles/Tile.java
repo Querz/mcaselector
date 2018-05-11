@@ -2,10 +2,13 @@ package net.querz.mcaselector.tiles;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.FillRule;
+import javafx.scene.text.Font;
 import net.querz.mcaselector.anvil112.Anvil112ChunkDataProcessor;
 import net.querz.mcaselector.anvil112.Anvil112ColorMapping;
 import net.querz.mcaselector.io.MCAFile;
@@ -24,7 +27,7 @@ import java.util.Set;
 
 public class Tile {
 	public static final int SIZE = 512;
-	public static final int CHUNK_SIZE = 512 / 32;
+	public static final int CHUNK_SIZE = 16;
 
 	public static final Color REGION_MARKED_COLOR = new Color(1, 0, 0, 0.5);
 	public static final Color CHUNK_MARKED_COLOR = new Color(0, 0, 1, 0.5);
@@ -80,6 +83,9 @@ public class Tile {
 
 	public void mark(boolean marked) {
 		this.marked = marked;
+		if (marked) {
+			markedChunks.clear();
+		}
 	}
 
 	public boolean isMarked() {
@@ -88,10 +94,30 @@ public class Tile {
 
 	public void mark(Point2i chunkBlock) {
 		markedChunks.add(chunkBlock);
+		if (markedChunks.size() == 1024) {
+			markedChunks.clear();
+			mark(true);
+		}
 	}
 
 	public void unmark(Point2i chunkBlock) {
+		if (isMarked()) {
+			for (int x = 0; x < 32; x++) {
+				for (int z = 0; z < 32; z++) {
+					markedChunks.add(new Point2i(location.getX() + x * CHUNK_SIZE, location.getY() + z * CHUNK_SIZE));
+				}
+			}
+			mark(false);
+		}
 		markedChunks.remove(chunkBlock);
+	}
+
+	public boolean isMarked(Point2i chunkBlock) {
+		return isMarked() || markedChunks.contains(chunkBlock);
+	}
+
+	public Set<Point2i> getMarkedChunks() {
+		return markedChunks;
 	}
 
 	public synchronized void draw(GraphicsContext ctx, float scale, Point2f offset) {
@@ -103,9 +129,14 @@ public class Tile {
 			} else if (markedChunks.size() > 0) {
 				ctx.setFill(CHUNK_MARKED_COLOR);
 				for (Point2i p : markedChunks) {
-					//offset is the offset in blocks the region is drawn based on 0|0 of the canvas
-					int regionChunkOffsetX = (int) ((p.getX() - location.getX() + offset.getX()) / scale);
-					int regionChunkOffsetY = (int) ((p.getY() - location.getY() + offset.getY()) / scale);
+					//location is the real location of the region in the world
+					//p is the real location of the chunk in the world
+					//offset is the offset in pixel the region is drawn based on 0|0 of the canvas
+					//need the location of the chunk inside the region in pixel
+					//p.x - location.x --> location in blocks
+					//(p.x - location.x) / scale --> location in pixel
+					int regionChunkOffsetX = (int) ((p.getX() - location.getX()) / scale + offset.getX());
+					int regionChunkOffsetY = (int) ((p.getY() - location.getY()) / scale + offset.getY());
 					ctx.fillRect(regionChunkOffsetX, regionChunkOffsetY, CHUNK_SIZE / scale, CHUNK_SIZE / scale);
 				}
 			}

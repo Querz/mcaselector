@@ -9,11 +9,14 @@ import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 
-public class TileMap extends Group {
+public class TileMap extends Canvas {
 	private float scale = 1;	//higher --> +
 								//lower -->  -
 
@@ -21,9 +24,6 @@ public class TileMap extends Group {
 	public static final float MIN_SCALE = 0.2f;
 	public static final float CHUNK_GRID_SCALE = 1.5f; //show chunk grid if scale is larger than this
 
-	private int width, height;
-
-	private Canvas canvas;
 	private GraphicsContext context;
 
 	private Point2f offset = new Point2f();
@@ -33,49 +33,78 @@ public class TileMap extends Group {
 
 	private Map<Point2i, Tile> tiles = new HashMap<>();
 
+	private int selectedChunks = 0;
+	private Point2i hoveredBlock = null;
+
+	private Consumer<TileMap> updateListener;
+	private Consumer<TileMap> hoverListener;
+
 	public TileMap(int width, int height) {
-		this.width = width;
-		this.height = height;
-		canvas = new Canvas(width, height);
+		super(width, height);
 
-		context = canvas.getGraphicsContext2D();
-
-		this.getChildren().add(canvas);
+		context = getGraphicsContext2D();
 
 		this.setOnMousePressed(this::onMousePressed);
 		this.setOnMouseReleased(this::onMouseReleased);
 		this.setOnMouseDragged(this::onMouseDragged);
 		this.setOnScroll(this::onScroll);
+		this.setOnMouseMoved(this::onMouseMoved);
+		this.setOnMouseExited(this::onMouseExited);
 
-		draw(context);
+		update();
 	}
 
-	public void setSize(double width, double height) {
-		canvas.setWidth(width);
-		canvas.setHeight(height);
-		this.width = (int) width;
-		this.height = (int) height;
-		draw(context);
+	public void setOnUpdate(Consumer<TileMap> listener) {
+		updateListener = listener;
+	}
+
+	public void setOnHover(Consumer<TileMap> listener) {
+		hoverListener = listener;
+	}
+
+	@Override
+	public void resize(double width, double height) {
+		setWidth(width);
+		setHeight(height);
+		System.out.println(width + " " + height);
+		update();
+	}
+
+	public int getSelectedChunks() {
+		return selectedChunks;
+	}
+
+	public Point2i getHoveredBlock() {
+		return hoveredBlock;
+	}
+
+	private void onMouseMoved(MouseEvent event) {
+		hoveredBlock = getMouseBlock(event.getX(), event.getY());
+		hoverListener.accept(this);
+	}
+
+	private void onMouseExited(MouseEvent event) {
+		hoveredBlock = null;
 	}
 
 	private void onScroll(ScrollEvent event) {
 		scale -= event.getDeltaY() / 100;
 		scale = scale < MAX_SCALE ? (scale > MIN_SCALE ? scale : MIN_SCALE) : MAX_SCALE;
-		draw(context);
+		update();
 	}
 
 	private void onMousePressed(MouseEvent event) {
 		firstMouseLocation = new Point2f(event.getX(), event.getY());
 
 		switch (event.getButton()) {
-//		case PRIMARY:
-//			mark(event.getX(), event.getY(), true);
-//			break;
+		case PRIMARY:
+			mark(event.getX(), event.getY(), true);
+			break;
 		case SECONDARY:
 			mark(event.getX(), event.getY(), false);
 			break;
 		}
-		draw(context);
+		update();
 	}
 
 	private Point2i getMouseBlock(double x, double z) {
@@ -110,7 +139,6 @@ public class TileMap extends Group {
 
 	private void onMouseDragged(MouseEvent event) {
 		switch (event.getButton()) {
-		case PRIMARY:
 		case MIDDLE:
 			Point2f mouseLocation = new Point2f(event.getX(), event.getY());
 			if (previousMouseLocation != null) {
@@ -120,14 +148,14 @@ public class TileMap extends Group {
 			}
 			previousMouseLocation = mouseLocation;
 			break;
-//		case PRIMARY:
-//			mark(event.getX(), event.getY(), true);
-//			break;
+		case PRIMARY:
+			mark(event.getX(), event.getY(), true);
+			break;
 		case SECONDARY:
 			mark(event.getX(), event.getY(), false);
 			break;
 		}
-		draw(context);
+		update();
 	}
 
 	private void mark(double mouseX, double mouseY, boolean marked) {
@@ -139,6 +167,11 @@ public class TileMap extends Group {
 				for (int z = firstRegionBlock.getY(); z <= regionBlock.getY(); z += Tile.SIZE) {
 					Tile tile = tiles.get(new Point2i(x, z));
 					if (tile != null) {
+						if (tile.isMarked() && !marked) {
+							selectedChunks -= 1024;
+						} else if (!tile.isMarked() && marked) {
+							selectedChunks += 1024 - tile.getMarkedChunks().size();
+						}
 						tile.mark(marked);
 					}
 				}
@@ -147,15 +180,17 @@ public class TileMap extends Group {
 			Point2i chunkBlock = getMouseChunkBlock(mouseX, mouseY);
 			Point2i firstChunkBlock = getMouseChunkBlock(firstMouseLocation.getX(), firstMouseLocation.getY());
 			sortPoints(firstChunkBlock, chunkBlock);
-			for (int x = firstChunkBlock.getX(); x <= chunkBlock.getX(); x += 16) {
-				for (int z = firstChunkBlock.getY(); z <= chunkBlock.getY(); z += 16) {
+			for (int x = firstChunkBlock.getX(); x <= chunkBlock.getX(); x += Tile.CHUNK_SIZE) {
+				for (int z = firstChunkBlock.getY(); z <= chunkBlock.getY(); z += Tile.CHUNK_SIZE) {
 					Point2i chunk = new Point2i(x, z);
 					Tile tile = tiles.get(Helper.regionToBlock(Helper.blockToRegion(chunk)));
 					if (tile != null) {
-						if (marked) {
-							tile.mark(chunk);
-						} else {
+						if (tile.isMarked(chunk) && !marked) {
+							selectedChunks--;
 							tile.unmark(chunk);
+						} else if (!tile.isMarked(chunk) && marked) {
+							selectedChunks++;
+							tile.mark(chunk);
 						}
 					}
 				}
@@ -163,21 +198,24 @@ public class TileMap extends Group {
 		}
 	}
 
-	/*
-	*  NW  N  NE
-	*    \ | /
-	*  W --+-- E
-	*    / | \
-	*  SW  S  SE
-	* */
+	private void update() {
+		callUpdateListener();
+		draw(context);
+	}
+
+	private void callUpdateListener() {
+		if (updateListener != null) {
+			updateListener.accept(this);
+		}
+	}
 
 	private void draw(GraphicsContext ctx) {
 		//regionLocation is the south-west-most visible region in the window
 		Point2i regionLocation = Helper.regionToBlock(Helper.blockToRegion(new Point2i((int) offset.getX(), (int) offset.getY())));
 
 		//get all tiles that are visible inside the window
-		for (int x = regionLocation.getX(); x < offset.getX() + (width * scale); x += Tile.SIZE) {
-			for (int z = regionLocation.getY(); z < offset.getY() + (height * scale); z += Tile.SIZE) {
+		for (int x = regionLocation.getX(); x < offset.getX() + (getWidth() * scale); x += Tile.SIZE) {
+			for (int z = regionLocation.getY(); z < offset.getY() + (getHeight() * scale); z += Tile.SIZE) {
 				Point2i region = new Point2i(x, z);
 				if (!tiles.containsKey(region)) {
 					tiles.put(region, new Tile(region));
@@ -186,13 +224,36 @@ public class TileMap extends Group {
 
 				Point2i regionOffset = region.sub((int) offset.getX(), (int) offset.getY());
 
-				//TODO: load async
-
 				if (!tile.isLoaded()) {
 					tile.loadImage();
 				}
 				tile.draw(context, scale, new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale));
 			}
 		}
+	}
+
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
+
+	@Override
+	public double minHeight(double width) {
+		return 0;
+	}
+
+	@Override
+	public double minWidth(double height) {
+		return 0;
+	}
+
+	@Override
+	public double maxHeight(double width) {
+		return Integer.MAX_VALUE;
+	}
+
+	@Override
+	public double maxWidth(double height) {
+		return Integer.MAX_VALUE;
 	}
 }

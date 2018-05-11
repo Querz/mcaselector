@@ -2,10 +2,12 @@ package net.querz.mcaselector;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.querz.mcaselector.tiles.TileMap;
 
@@ -15,15 +17,27 @@ public class Window extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
+
+		BorderPane pane = new BorderPane();
+
+		//menu bar
+		pane.setTop(new OptionBar());
+
+		//tilemap
+		HBox tileMapBox = new HBox();
 		TileMap tileMap = new TileMap(width, height);
-
-		Scene scene = new Scene(tileMap, width, height);
-
-		ChangeListener<Number> sizeListener = (o, r, n) -> tileMap.setSize(primaryStage.getWidth(), primaryStage.getHeight());
-
+		ChangeListener<Number> sizeListener = (o, r, n) -> tileMap.resize(primaryStage.getScene().getWidth(), primaryStage.getScene().getHeight());
 		primaryStage.widthProperty().addListener(sizeListener);
 		primaryStage.heightProperty().addListener(sizeListener);
+		tileMapBox.setAlignment(Pos.TOP_LEFT);
+		tileMapBox.getChildren().add(tileMap);
 
+		pane.setCenter(tileMapBox);
+
+		//status bar
+		pane.setBottom(new StatusBar(tileMap));
+
+		Scene scene = new Scene(pane, width, height);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
