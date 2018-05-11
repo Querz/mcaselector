@@ -24,6 +24,7 @@ public class TileMap extends Group {
 
 	public static final float MAX_SCALE = 5;
 	public static final float MIN_SCALE = 0.2f;
+	public static final float CHUNK_GRID_SCALE = 1.5f; //show chunk grid if scale is larger than this
 
 	private int width, height;
 
@@ -72,9 +73,9 @@ public class TileMap extends Group {
 		firstMouseLocation = new Point2f(event.getX(), event.getY());
 
 		switch (event.getButton()) {
-		case PRIMARY:
-			mark(event.getX(), event.getY(), true);
-			break;
+//		case PRIMARY:
+//			mark(event.getX(), event.getY(), true);
+//			break;
 		case SECONDARY:
 			mark(event.getX(), event.getY(), false);
 			break;
@@ -114,6 +115,7 @@ public class TileMap extends Group {
 
 	private void onMouseDragged(MouseEvent event) {
 		switch (event.getButton()) {
+		case PRIMARY:
 		case MIDDLE:
 			Point2f mouseLocation = new Point2f(event.getX(), event.getY());
 			if (previousMouseLocation != null) {
@@ -123,9 +125,9 @@ public class TileMap extends Group {
 			}
 			previousMouseLocation = mouseLocation;
 			break;
-		case PRIMARY:
-			mark(event.getX(), event.getY(), true);
-			break;
+//		case PRIMARY:
+//			mark(event.getX(), event.getY(), true);
+//			break;
 		case SECONDARY:
 			mark(event.getX(), event.getY(), false);
 			break;
@@ -134,7 +136,7 @@ public class TileMap extends Group {
 	}
 
 	private void mark(double mouseX, double mouseY, boolean marked) {
-		if (scale > 2) {
+		if (scale > CHUNK_GRID_SCALE) {
 			Point2i regionBlock = getMouseRegionBlock(mouseX, mouseY);
 			Point2i firstRegionBlock = getMouseRegionBlock(firstMouseLocation.getX(), firstMouseLocation.getY());
 			sortPoints(firstRegionBlock, regionBlock);

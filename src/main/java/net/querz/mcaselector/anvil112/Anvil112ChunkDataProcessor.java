@@ -1,5 +1,7 @@
-package net.querz.mcaselector;
+package net.querz.mcaselector.anvil112;
 
+import net.querz.mcaselector.ChunkDataProcessor;
+import net.querz.mcaselector.ColorMapping;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.Tag;

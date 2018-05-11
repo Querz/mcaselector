@@ -7,6 +7,8 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import net.querz.mcaselector.*;
+import net.querz.mcaselector.anvil112.Anvil112ChunkDataProcessor;
+import net.querz.mcaselector.anvil112.Anvil112ColorMapping;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -19,6 +21,13 @@ import java.util.Set;
 public class Tile {
 	public static final int SIZE = 512;
 	public static final int CHUNK_SIZE = 512 / 32;
+
+	public static final Color REGION_MARKED_COLOR = new Color(1, 0, 0, 0.5);
+	public static final Color CHUNK_MARKED_COLOR = new Color(0, 0, 1, 0.5);
+	public static final Color REGION_GRID_COLOR = Color.BLACK;
+	public static final Color CHUNK_GRID_COLOR = Color.DARKGRAY;
+	public static final double GRID_LINE_WIDTH = 0.5;
+
 	private static final Image empty;
 	private static final Color emptyColor = new Color(0.2, 0.2, 0.2, 1);
 	private Point2i location;
@@ -85,10 +94,10 @@ public class Tile {
 		if (isLoaded() && image != null) {
 			ctx.drawImage(getImage(), offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 			if (marked) {
-				ctx.setFill(new Color(1, 0, 0, 0.5));
+				ctx.setFill(REGION_MARKED_COLOR);
 				ctx.fillRect(offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 			} else if (markedChunks.size() > 0) {
-				ctx.setFill(new Color(0, 0, 1, 0.5));
+				ctx.setFill(CHUNK_MARKED_COLOR);
 				for (Point2i p : markedChunks) {
 					//offset is the offset in blocks the region is drawn based on 0|0 of the canvas
 					int regionChunkOffsetX = (int) ((p.getX() - location.getX() + offset.getX()) / scale);
@@ -99,6 +108,28 @@ public class Tile {
 		} else {
 			ctx.drawImage(empty, offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 		}
+
+		ctx.setLineWidth(GRID_LINE_WIDTH);
+		//draw region grid
+		ctx.setStroke(REGION_GRID_COLOR);
+		ctx.strokeLine(offset.getX(), offset.getY(), offset.getX(), offset.getY() + SIZE / scale);
+		ctx.strokeLine(offset.getX(), offset.getY(), offset.getX() + SIZE / scale, offset.getY());
+		if (scale <= TileMap.CHUNK_GRID_SCALE) {
+			//draw chunk grid
+			ctx.setStroke(CHUNK_GRID_COLOR);
+			for (int x = 1; x < SIZE / CHUNK_SIZE; x++) {
+				ctx.strokeLine(offset.getX() + (x * CHUNK_SIZE / scale), offset.getY(), offset.getX() + (x * CHUNK_SIZE / scale), offset.getY() + SIZE / scale);
+			}
+			for (int z = 1; z < SIZE / CHUNK_SIZE; z++) {
+				ctx.strokeLine(offset.getX(), offset.getY() + (z * CHUNK_SIZE / scale), offset.getX() + SIZE / scale, offset.getY() + (z * CHUNK_SIZE / scale));
+			}
+		}
+	}
+
+	private void drawGridElement(GraphicsContext ctx, float x, float z, float size) {
+		ctx.setStroke(Color.BLACK);
+		ctx.strokeLine(x, z, x, z + size);
+		ctx.strokeLine(x, z, x + size, z);
 	}
 
 	public void loadImage() {
