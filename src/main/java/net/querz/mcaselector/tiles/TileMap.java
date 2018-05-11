@@ -52,7 +52,6 @@ public class TileMap extends Group {
 		this.setOnScroll(this::onScroll);
 
 		draw(context);
-
 	}
 
 	public void setSize(double width, double height) {
@@ -66,14 +65,11 @@ public class TileMap extends Group {
 	private void onScroll(ScrollEvent event) {
 		scale -= event.getDeltaY() / 100;
 		scale = scale < MAX_SCALE ? (scale > MIN_SCALE ? scale : MIN_SCALE) : MAX_SCALE;
-		System.out.println(event.getDeltaY());
 		draw(context);
 	}
 
 	private void onMousePressed(MouseEvent event) {
-		System.out.println(event.getX() + " " + event.getY());
-
-		firstMouseLocation = new Point2f((float) event.getX(), (float) event.getY());
+		firstMouseLocation = new Point2f(event.getX(), event.getY());
 
 		switch (event.getButton()) {
 		case PRIMARY:
@@ -84,14 +80,20 @@ public class TileMap extends Group {
 			break;
 		}
 		draw(context);
-		System.out.println("first mouse location");
 	}
 
-	private Point2i getMouseRegionBlock(int x, int z) {
+	private Point2i getMouseBlock(double x, double z) {
 		int blockX = (int) (offset.getX() + x * scale);
 		int blockZ = (int) (offset.getY() + z * scale);
-		Point2i block = new Point2i(blockX, blockZ);
-		return Helper.regionToBlock(Helper.blockToRegion(block));
+		return new Point2i(blockX, blockZ);
+	}
+
+	private Point2i getMouseRegionBlock(double x, double z) {
+		return Helper.regionToBlock(Helper.blockToRegion(getMouseBlock(x, z)));
+	}
+
+	private Point2i getMouseChunkBlock(double x, double z) {
+		return Helper.chunkToBlock(Helper.blockToChunk(getMouseBlock(x, z)));
 	}
 
 	private Tile getMouseTile(int x, int z) {
@@ -113,7 +115,7 @@ public class TileMap extends Group {
 	private void onMouseDragged(MouseEvent event) {
 		switch (event.getButton()) {
 		case MIDDLE:
-			Point2f mouseLocation = new Point2f((float) event.getX(), (float) event.getY());
+			Point2f mouseLocation = new Point2f(event.getX(), event.getY());
 			if (previousMouseLocation != null) {
 				Point2f diff = mouseLocation.sub(previousMouseLocation);
 				diff = diff.mul(-1);
@@ -132,14 +134,33 @@ public class TileMap extends Group {
 	}
 
 	private void mark(double mouseX, double mouseY, boolean marked) {
-		Point2i regionBlock = getMouseRegionBlock((int) mouseX, (int) mouseY);
-		Point2i firstRegionBlock = getMouseRegionBlock((int) firstMouseLocation.getX(), (int) firstMouseLocation.getY());
-		sortPoints(firstRegionBlock, regionBlock);
-		for (int x = firstRegionBlock.getX(); x <= regionBlock.getX(); x += Tile.SIZE) {
-			for (int z = firstRegionBlock.getY(); z <= regionBlock.getY(); z += Tile.SIZE) {
-				Tile tile = tiles.get(new Point2i(x, z));
-				if (tile != null) {
-					tile.mark(marked);
+		if (scale > 2) {
+			Point2i regionBlock = getMouseRegionBlock(mouseX, mouseY);
+			Point2i firstRegionBlock = getMouseRegionBlock(firstMouseLocation.getX(), firstMouseLocation.getY());
+			sortPoints(firstRegionBlock, regionBlock);
+			for (int x = firstRegionBlock.getX(); x <= regionBlock.getX(); x += Tile.SIZE) {
+				for (int z = firstRegionBlock.getY(); z <= regionBlock.getY(); z += Tile.SIZE) {
+					Tile tile = tiles.get(new Point2i(x, z));
+					if (tile != null) {
+						tile.mark(marked);
+					}
+				}
+			}
+		} else {
+			Point2i chunkBlock = getMouseChunkBlock(mouseX, mouseY);
+			Point2i firstChunkBlock = getMouseChunkBlock(firstMouseLocation.getX(), firstMouseLocation.getY());
+			sortPoints(firstChunkBlock, chunkBlock);
+			for (int x = firstChunkBlock.getX(); x <= chunkBlock.getX(); x += 16) {
+				for (int z = firstChunkBlock.getY(); z <= chunkBlock.getY(); z += 16) {
+					Point2i chunk = new Point2i(x, z);
+					Tile tile = tiles.get(Helper.regionToBlock(Helper.blockToRegion(chunk)));
+					if (tile != null) {
+						if (marked) {
+							tile.mark(chunk);
+						} else {
+							tile.unmark(chunk);
+						}
+					}
 				}
 			}
 		}

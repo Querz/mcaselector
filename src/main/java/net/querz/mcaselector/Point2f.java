@@ -9,6 +9,10 @@ public class Point2f implements Cloneable {
 		this.x = this.y = 0;
 	}
 
+	public Point2f(double x, double y) {
+		this((float) x, (float) y);
+	}
+
 	public Point2f(float x, float y) {
 		this.x = x;
 		this.y = y;

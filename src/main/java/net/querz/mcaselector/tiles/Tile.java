@@ -13,9 +13,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Tile {
 	public static final int SIZE = 512;
+	public static final int CHUNK_SIZE = 512 / 32;
 	private static final Image empty;
 	private static final Color emptyColor = new Color(0.2, 0.2, 0.2, 1);
 	private Point2i location;
@@ -23,6 +26,7 @@ public class Tile {
 	private boolean loading = false;
 	private boolean loaded = false;
 	private boolean marked = false;
+	private Set<Point2i> markedChunks = new HashSet<>();
 
 	static {
 		WritableImage wImage = new WritableImage(SIZE, SIZE);
@@ -62,7 +66,6 @@ public class Tile {
 	}
 
 	public void mark(boolean marked) {
-		System.out.println("marking " + location + "  ");
 		this.marked = marked;
 	}
 
@@ -70,13 +73,28 @@ public class Tile {
 		return marked;
 	}
 
+	public void mark(Point2i chunkBlock) {
+		markedChunks.add(chunkBlock);
+	}
+
+	public void unmark(Point2i chunkBlock) {
+		markedChunks.remove(chunkBlock);
+	}
+
 	public synchronized void draw(GraphicsContext ctx, float scale, Point2f offset) {
 		if (isLoaded() && image != null) {
 			ctx.drawImage(getImage(), offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 			if (marked) {
-				System.out.println("drawing marked tile: " + location + "  ");
 				ctx.setFill(new Color(1, 0, 0, 0.5));
 				ctx.fillRect(offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
+			} else if (markedChunks.size() > 0) {
+				ctx.setFill(new Color(0, 0, 1, 0.5));
+				for (Point2i p : markedChunks) {
+					//offset is the offset in blocks the region is drawn based on 0|0 of the canvas
+					int regionChunkOffsetX = (int) ((p.getX() - location.getX() + offset.getX()) / scale);
+					int regionChunkOffsetY = (int) ((p.getY() - location.getY() + offset.getY()) / scale);
+					ctx.fillRect(regionChunkOffsetX, regionChunkOffsetY, CHUNK_SIZE / scale, CHUNK_SIZE / scale);
+				}
 			}
 		} else {
 			ctx.drawImage(empty, offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
