@@ -1,9 +1,10 @@
 package net.querz.mcaselector;
 
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
@@ -15,12 +16,20 @@ public class StatusBar extends BorderPane {
 	private Label hoveredChunk = new Label("chunk: 0, 0");
 	private Label hoveredRegion = new Label("region: 0, 0");
 
+	private static final Color textColor = Color.WHITE;
+
 	public StatusBar(TileMap tileMap) {
+		setBackground(new Background(new BackgroundFill(new Color(0.15, 0.15, 0.15, 1), CornerRadii.EMPTY, Insets.EMPTY)));
+
 		tileMap.setOnUpdate(this::update);
 		tileMap.setOnHover(this::update);
 		for (int i = 0; i < 4; i++) {
 			grid.getColumnConstraints().add(new ColumnConstraints(120, 120, 120));
 		}
+		hoveredBlock.setTextFill(textColor);
+		hoveredChunk.setTextFill(textColor);
+		hoveredRegion.setTextFill(textColor);
+		selectedChunks.setTextFill(textColor);
 		grid.add(hoveredBlock, 0, 0, 1, 1);
 		grid.add(hoveredChunk, 1, 0, 1, 1);
 		grid.add(hoveredRegion, 2, 0, 1 ,1);
