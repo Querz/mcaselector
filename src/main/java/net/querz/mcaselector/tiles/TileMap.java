@@ -3,18 +3,13 @@ package net.querz.mcaselector.tiles;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.ButtonType;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.paint.Color;
-import net.querz.mcaselector.Helper;
-import net.querz.mcaselector.Point2f;
-import net.querz.mcaselector.Point2i;
+import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.util.Point2f;
+import net.querz.mcaselector.util.Point2i;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 

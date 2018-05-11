@@ -1,6 +1,8 @@
-package net.querz.mcaselector;
+package net.querz.mcaselector.io;
 
-import java.awt.Graphics2D;
+import net.querz.mcaselector.ChunkDataProcessor;
+import net.querz.mcaselector.ColorMapping;
+
 import java.awt.image.BufferedImage;
 import java.io.*;
 

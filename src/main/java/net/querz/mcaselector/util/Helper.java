@@ -1,4 +1,4 @@
-package net.querz.mcaselector;
+package net.querz.mcaselector.util;
 
 public class Helper {
 	public static int blockToChunk(int i) {

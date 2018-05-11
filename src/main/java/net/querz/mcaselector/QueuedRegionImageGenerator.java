@@ -1,5 +1,7 @@
 package net.querz.mcaselector;
 
+import net.querz.mcaselector.util.Point2i;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;

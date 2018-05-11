@@ -1,4 +1,4 @@
-package net.querz.mcaselector;
+package net.querz.mcaselector.io;
 
 public enum CompressionType {
 	NONE(0), // indicates that there is no data present

@@ -1,15 +1,13 @@
-package net.querz.mcaselector;
+package net.querz.mcaselector.io;
 
+import net.querz.mcaselector.ChunkDataProcessor;
+import net.querz.mcaselector.ColorMapping;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.NBTInputStream;
 import net.querz.nbt.Tag;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;

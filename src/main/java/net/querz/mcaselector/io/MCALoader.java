@@ -1,4 +1,4 @@
-package net.querz.mcaselector;
+package net.querz.mcaselector.io;
 
 import java.io.DataInputStream;
 import java.io.File;

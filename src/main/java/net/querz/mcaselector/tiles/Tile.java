@@ -6,9 +6,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
-import net.querz.mcaselector.*;
 import net.querz.mcaselector.anvil112.Anvil112ChunkDataProcessor;
 import net.querz.mcaselector.anvil112.Anvil112ColorMapping;
+import net.querz.mcaselector.io.MCAFile;
+import net.querz.mcaselector.io.MCALoader;
+import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.util.Point2f;
+import net.querz.mcaselector.util.Point2i;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -31,7 +35,7 @@ public class Tile {
 	private static final Image empty;
 	private static final Color emptyColor = new Color(0.2, 0.2, 0.2, 1);
 	private Point2i location;
-	protected Image image;
+	private Image image;
 	private boolean loading = false;
 	private boolean loaded = false;
 	private boolean marked = false;
@@ -124,12 +128,6 @@ public class Tile {
 				ctx.strokeLine(offset.getX(), offset.getY() + (z * CHUNK_SIZE / scale), offset.getX() + SIZE / scale, offset.getY() + (z * CHUNK_SIZE / scale));
 			}
 		}
-	}
-
-	private void drawGridElement(GraphicsContext ctx, float x, float z, float size) {
-		ctx.setStroke(Color.BLACK);
-		ctx.strokeLine(x, z, x, z + size);
-		ctx.strokeLine(x, z, x + size, z);
 	}
 
 	public void loadImage() {
