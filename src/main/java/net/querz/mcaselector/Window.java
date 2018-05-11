@@ -18,14 +18,15 @@ public class Window extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 
+		TileMap tileMap = new TileMap(width, height);
+
 		BorderPane pane = new BorderPane();
 
 		//menu bar
-		pane.setTop(new OptionBar());
+		pane.setTop(new OptionBar(tileMap));
 
 		//tilemap
 		HBox tileMapBox = new HBox();
-		TileMap tileMap = new TileMap(width, height);
 		ChangeListener<Number> sizeListener = (o, r, n) -> tileMap.resize(primaryStage.getScene().getWidth(), primaryStage.getScene().getHeight());
 		primaryStage.widthProperty().addListener(sizeListener);
 		primaryStage.heightProperty().addListener(sizeListener);

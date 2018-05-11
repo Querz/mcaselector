@@ -36,6 +36,9 @@ public class TileMap extends Canvas {
 	private int selectedChunks = 0;
 	private Point2i hoveredBlock = null;
 
+	private boolean showChunkGrid = true;
+	private boolean showRegionGrid = true;
+
 	private Consumer<TileMap> updateListener;
 	private Consumer<TileMap> hoverListener;
 
@@ -66,7 +69,21 @@ public class TileMap extends Canvas {
 	public void resize(double width, double height) {
 		setWidth(width);
 		setHeight(height);
-		System.out.println(width + " " + height);
+		update();
+	}
+
+	public void setShowRegionGrid(boolean showRegionGrid) {
+		this.showRegionGrid = showRegionGrid;
+		update();
+	}
+
+	public void setShowChunkGrid(boolean showChunkGrid) {
+		this.showChunkGrid = showChunkGrid;
+		update();
+	}
+
+	public void goTo(int x, int z) {
+		offset = new Point2f(x + getWidth() / 2, z + getHeight() / 2);
 		update();
 	}
 
@@ -131,6 +148,14 @@ public class TileMap extends Canvas {
 		a.setY(a.getY() < b.getY() ? a.getY() : b.getY());
 		b.setX(aa.getX() < b.getX() ? b.getX() : aa.getX());
 		b.setY(aa.getY() < b.getY() ? b.getY() : aa.getY());
+	}
+
+	public void clearSelection() {
+		for (Map.Entry<Point2i, Tile> entry : tiles.entrySet()) {
+			entry.getValue().clearMarks();
+		}
+		selectedChunks = 0;
+		update();
 	}
 
 	private void onMouseReleased(MouseEvent event) {
@@ -198,7 +223,7 @@ public class TileMap extends Canvas {
 		}
 	}
 
-	private void update() {
+	public void update() {
 		callUpdateListener();
 		draw(context);
 	}
@@ -227,7 +252,7 @@ public class TileMap extends Canvas {
 				if (!tile.isLoaded()) {
 					tile.loadImage();
 				}
-				tile.draw(context, scale, new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale));
+				tile.draw(context, scale, new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale), showRegionGrid, showChunkGrid);
 			}
 		}
 	}

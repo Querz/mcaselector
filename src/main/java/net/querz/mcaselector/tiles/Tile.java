@@ -112,6 +112,11 @@ public class Tile {
 		markedChunks.remove(chunkBlock);
 	}
 
+	public void clearMarks() {
+		mark(false);
+		markedChunks.clear();
+	}
+
 	public boolean isMarked(Point2i chunkBlock) {
 		return isMarked() || markedChunks.contains(chunkBlock);
 	}
@@ -120,7 +125,7 @@ public class Tile {
 		return markedChunks;
 	}
 
-	public synchronized void draw(GraphicsContext ctx, float scale, Point2f offset) {
+	public synchronized void draw(GraphicsContext ctx, float scale, Point2f offset, boolean regionGrid, boolean chunkGrid) {
 		if (isLoaded() && image != null) {
 			ctx.drawImage(getImage(), offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 			if (marked) {
@@ -144,18 +149,23 @@ public class Tile {
 			ctx.drawImage(empty, offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 		}
 
-		ctx.setLineWidth(GRID_LINE_WIDTH);
-		//draw region grid
-		ctx.setStroke(REGION_GRID_COLOR);
-		ctx.strokeLine(offset.getX(), offset.getY(), offset.getX(), offset.getY() + SIZE / scale);
-		ctx.strokeLine(offset.getX(), offset.getY(), offset.getX() + SIZE / scale, offset.getY());
-		if (scale <= TileMap.CHUNK_GRID_SCALE) {
+		if (regionGrid) {
+			ctx.setLineWidth(GRID_LINE_WIDTH);
+			//draw region grid
+			ctx.setStroke(REGION_GRID_COLOR);
+			ctx.strokeLine(offset.getX(), offset.getY(), offset.getX(), offset.getY() + SIZE / scale);
+			ctx.strokeLine(offset.getX(), offset.getY(), offset.getX() + SIZE / scale, offset.getY());
+
+		}
+
+		if (chunkGrid && scale <= TileMap.CHUNK_GRID_SCALE) {
+			ctx.setLineWidth(GRID_LINE_WIDTH);
 			//draw chunk grid
 			ctx.setStroke(CHUNK_GRID_COLOR);
-			for (int x = 1; x < SIZE / CHUNK_SIZE; x++) {
+			for (int x = regionGrid ? 1 : 0; x < SIZE / CHUNK_SIZE; x++) {
 				ctx.strokeLine(offset.getX() + (x * CHUNK_SIZE / scale), offset.getY(), offset.getX() + (x * CHUNK_SIZE / scale), offset.getY() + SIZE / scale);
 			}
-			for (int z = 1; z < SIZE / CHUNK_SIZE; z++) {
+			for (int z = regionGrid ? 1 : 0; z < SIZE / CHUNK_SIZE; z++) {
 				ctx.strokeLine(offset.getX(), offset.getY() + (z * CHUNK_SIZE / scale), offset.getX() + SIZE / scale, offset.getY() + (z * CHUNK_SIZE / scale));
 			}
 		}
