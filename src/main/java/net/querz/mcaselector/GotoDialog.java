@@ -1,17 +1,15 @@
 package net.querz.mcaselector;
 
-import javafx.beans.value.ObservableValue;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import net.querz.mcaselector.util.Point2i;
 
 public class GotoDialog extends Dialog<Point2i> {
 
 	private Point2i value;
+	private TextField xValue, zValue;
 
 	public GotoDialog() {
 		setTitle("Goto location");
@@ -22,36 +20,26 @@ public class GotoDialog extends Dialog<Point2i> {
 
 		HBox box = new HBox();
 
-		TextField xValue = new TextField();
+		xValue = new TextField();
 		xValue.setPromptText("X");
-		xValue.textProperty().addListener((a, b, c) -> onXInput(c));
-		TextField zValue = new TextField();
+		xValue.textProperty().addListener((a, b, c) -> onInput(c, zValue.getText()));
+		zValue = new TextField();
 		zValue.setPromptText("Z");
-		zValue.textProperty().addListener((a, b, c) -> onZInput(c));
+		zValue.textProperty().addListener((a, b, c) -> onInput(xValue.getText(), c));
 
 		box.getChildren().addAll(xValue, zValue);
-
 		getDialogPane().setContent(box);
 
 		xValue.requestFocus();
 	}
 
-	//TODO: allow negative numbers
-	private void onXInput(String newValue) {
+	private void onInput(String xValue, String zValue) {
 		try {
-			value.setX(Integer.parseInt(newValue));
+			value = new Point2i(Integer.parseInt(xValue), Integer.parseInt(zValue));
 			getDialogPane().lookupButton(ButtonType.OK).setDisable(false);
 		} catch (NumberFormatException ex) {
 			getDialogPane().lookupButton(ButtonType.OK).setDisable(true);
-		}
-	}
-
-	private void onZInput(String newValue) {
-		try {
-			value.setY(Integer.parseInt(newValue));
-			getDialogPane().lookupButton(ButtonType.OK).setDisable(false);
-		} catch (NumberFormatException ex) {
-			getDialogPane().lookupButton(ButtonType.OK).setDisable(true);
+			value = null;
 		}
 	}
 }

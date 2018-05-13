@@ -2,9 +2,11 @@ package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.ChunkDataProcessor;
 import net.querz.mcaselector.ColorMapping;
+import net.querz.nbt.CompoundTag;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.List;
 
 public class MCAFile {
 	private File file;
@@ -19,19 +21,57 @@ public class MCAFile {
 		timestamps = new int[1024];
 	}
 
-	public void read(DataInputStream dis) throws IOException {
+	public void read(RandomAccessFile raf) throws IOException {
+		raf.seek(0);
 		for (int i = 0; i < offsets.length; i++) {
-			int offset = dis.readByte() & 0xFF;
+			int offset = raf.readByte() & 0xFF;
 			offset <<= 8;
-			offset |= dis.readByte() & 0xFF;
+			offset |= raf.readByte() & 0xFF;
 			offset <<= 8;
-			offset |= dis.readByte() & 0xFF;
+			offset |= raf.readByte() & 0xFF;
 			offsets[i] = offset;
-			sectors[i] = dis.readByte();
+			sectors[i] = raf.readByte();
 		}
 		for (int i = 0; i < timestamps.length; i++) {
-			timestamps[i] = dis.readInt();
+			timestamps[i] = raf.readInt();
 		}
+	}
+
+	//length of chunks is always 1024, if one chunk is deleted, it is null
+	//each MCAChunkData needs rawChunkData
+	public void write(MCAChunkData[] chunks, RandomAccessFile raf) throws Exception {
+		if (chunks.length != 1024) {
+			throw new IllegalArgumentException("chunks array must have a length of 1024");
+		}
+		int offset = 2;
+//		(RandomAccessFile raf = new RandomAccessFile(file, "w"))
+		for (int i = 0; i < chunks.length; i++) {
+			System.out.println("offset in sectors: " + offset);
+			MCAChunkData chunk = chunks[i];
+			if (chunk == null) {
+				continue;
+			}
+
+			chunk.saveData(raf, offset * 4096);
+			//padding for each chunk is written automatically by skipping bytes
+			raf.seek(i * 4);
+			//write offset
+			raf.write(offset >> 16);
+			raf.write((offset >> 8) & 0x0F);
+			raf.write(offset & 0x00F);
+			//write sector count
+			raf.write(chunk.getSectors());
+
+			raf.seek(4096 + i * 4);
+			//write timestamp
+			raf.writeInt(chunk.getTimestamp());
+
+			//recalculate offset
+			offset += chunk.getLengthInSectors();
+		}
+
+		//padding
+		raf.write(new byte[4096 - (5 + chunks[1023].getLength()) % 4096]);
 	}
 
 	public MCAChunkData getChunkData(int index) {
@@ -42,10 +82,8 @@ public class MCAFile {
 		return file;
 	}
 
-	public BufferedImage createImage(ChunkDataProcessor chunkDataProcessor, ColorMapping colorMapping) {
-		try (
-			RandomAccessFile raf = new RandomAccessFile(file, "r")
-		) {
+	public BufferedImage createImage(ChunkDataProcessor chunkDataProcessor, ColorMapping colorMapping, RandomAccessFile raf) {
+		try {
 			BufferedImage finalImage = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
 
 			for (int cx = 0; cx < 32; cx++) {

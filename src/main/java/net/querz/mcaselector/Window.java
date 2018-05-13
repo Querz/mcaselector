@@ -18,18 +18,24 @@ public class Window extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 
+		primaryStage.setTitle("MCA Selector");
+
 		TileMap tileMap = new TileMap(width, height);
 
 		BorderPane pane = new BorderPane();
 
 		//menu bar
-		pane.setTop(new OptionBar(tileMap));
+		pane.setTop(new OptionBar(tileMap, primaryStage));
 
 		//tilemap
 		HBox tileMapBox = new HBox();
-		ChangeListener<Number> sizeListener = (o, r, n) -> tileMap.resize(primaryStage.getScene().getWidth(), primaryStage.getScene().getHeight());
+		ChangeListener<Number> sizeListener = (o, r, n) -> {
+			tileMap.resize(primaryStage.getWidth(), primaryStage.getHeight());
+			System.out.println("resize to " + primaryStage.getWidth() + " " + primaryStage.getHeight());
+		};
 		primaryStage.widthProperty().addListener(sizeListener);
 		primaryStage.heightProperty().addListener(sizeListener);
+
 		tileMapBox.setAlignment(Pos.TOP_LEFT);
 		tileMapBox.getChildren().add(tileMap);
 
@@ -39,6 +45,7 @@ public class Window extends Application {
 		pane.setBottom(new StatusBar(tileMap));
 
 		Scene scene = new Scene(pane, width, height);
+
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}

@@ -52,4 +52,16 @@ public class Helper {
 	public static void runAsync(Runnable r) {
 		new Thread(r).start();
 	}
+
+	public static String getAppdataDir() {
+		String os = System.getProperty("os.name").toLowerCase();
+		String appdataDir;
+		if (os.contains("win")) {
+			appdataDir = System.getenv("AppData");
+		} else {
+			appdataDir = System.getProperty("user.home");
+			appdataDir += "/Library/Application Support";
+		}
+		return appdataDir;
+	}
 }

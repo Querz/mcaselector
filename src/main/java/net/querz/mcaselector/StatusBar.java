@@ -4,12 +4,12 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 
 public class StatusBar extends BorderPane {
+
 	private GridPane grid = new GridPane();
 	private Label selectedChunks = new Label("selected: 0");
 	private Label hoveredBlock = new Label("block: 0, 0");
@@ -17,9 +17,10 @@ public class StatusBar extends BorderPane {
 	private Label hoveredRegion = new Label("region: 0, 0");
 
 	private static final Color textColor = Color.WHITE;
+	private static final Color backgroundColor = new Color(0.15, 0.15, 0.15, 1);
 
 	public StatusBar(TileMap tileMap) {
-		setBackground(new Background(new BackgroundFill(new Color(0.15, 0.15, 0.15, 1), CornerRadii.EMPTY, Insets.EMPTY)));
+		setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
 
 		tileMap.setOnUpdate(this::update);
 		tileMap.setOnHover(this::update);

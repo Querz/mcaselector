@@ -4,3 +4,4 @@ out
 *.iml
 *.mca
 1.12.2.jar
+cache/

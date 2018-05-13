@@ -1,6 +1,5 @@
 package net.querz.mcaselector.tiles;
 
-import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
@@ -9,12 +8,8 @@ import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
-
 
 public class TileMap extends Canvas {
 	private float scale = 1;	//higher --> +
@@ -158,6 +153,10 @@ public class TileMap extends Canvas {
 		update();
 	}
 
+	public void clear() {
+		tiles.clear();
+	}
+
 	private void onMouseReleased(MouseEvent event) {
 		previousMouseLocation = null;
 	}
@@ -191,7 +190,7 @@ public class TileMap extends Canvas {
 			for (int x = firstRegionBlock.getX(); x <= regionBlock.getX(); x += Tile.SIZE) {
 				for (int z = firstRegionBlock.getY(); z <= regionBlock.getY(); z += Tile.SIZE) {
 					Tile tile = tiles.get(new Point2i(x, z));
-					if (tile != null) {
+					if (tile != null && !tile.isEmpty()) {
 						if (tile.isMarked() && !marked) {
 							selectedChunks -= 1024;
 						} else if (!tile.isMarked() && marked) {
@@ -210,10 +209,10 @@ public class TileMap extends Canvas {
 					Point2i chunk = new Point2i(x, z);
 					Tile tile = tiles.get(Helper.regionToBlock(Helper.blockToRegion(chunk)));
 					if (tile != null) {
-						if (tile.isMarked(chunk) && !marked) {
+						if (tile.isMarked(chunk) && !marked && !tile.isEmpty()) {
 							selectedChunks--;
 							tile.unmark(chunk);
-						} else if (!tile.isMarked(chunk) && marked) {
+						} else if (!tile.isMarked(chunk) && marked && !tile.isEmpty()) {
 							selectedChunks++;
 							tile.mark(chunk);
 						}
@@ -223,7 +222,7 @@ public class TileMap extends Canvas {
 		}
 	}
 
-	public void update() {
+	public synchronized void update() {
 		callUpdateListener();
 		draw(context);
 	}
@@ -250,11 +249,36 @@ public class TileMap extends Canvas {
 				Point2i regionOffset = region.sub((int) offset.getX(), (int) offset.getY());
 
 				if (!tile.isLoaded()) {
-					tile.loadImage();
+					tile.loadImage(this);
 				}
 				tile.draw(context, scale, new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale), showRegionGrid, showChunkGrid);
 			}
 		}
+	}
+
+	//will return a map of all chunks marked for deletion, mapped to regions.
+	//if an entire region is marked for deletion, the value in the map will be null.
+	//keys are region coordinates
+	//values are chunk coordinates
+	public Map<Point2i, Set<Point2i>> getMarkedChunks() {
+		Map<Point2i, Set<Point2i>> chunks = new HashMap<>();
+
+		for (Map.Entry<Point2i, Tile> entry : tiles.entrySet()) {
+			if (entry.getValue().isMarked()) {
+				chunks.put(Helper.blockToRegion(entry.getKey()), null);
+				continue;
+			}
+			Set<Point2i> markedChunks = entry.getValue().getMarkedChunks();
+			if (markedChunks.size() == 0) {
+				continue;
+			}
+
+			Set<Point2i> markedChunksList = new HashSet<>(markedChunks.size());
+			markedChunks.forEach(c -> markedChunksList.add(Helper.blockToChunk(c)));
+
+			chunks.put(Helper.blockToRegion(entry.getKey()), markedChunksList);
+		}
+		return chunks;
 	}
 
 	@Override

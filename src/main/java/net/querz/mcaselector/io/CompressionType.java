@@ -19,4 +19,8 @@ public enum CompressionType {
 		}
 		throw new IllegalArgumentException("Invalid compression type " + t);
 	}
+
+	public byte getByte() {
+		return type;
+	}
 }
