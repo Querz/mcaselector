@@ -76,7 +76,7 @@ public class MCAChunkData {
 				nbtos.writeTag(data);
 				rawData = baos.toByteArray();
 				length = rawData.length;
-				sectors = (byte) (length / 4096 + (length % 4069 == 0 ? 0 : 1));
+				sectors = (byte) getLengthInSectors();
 			} finally {
 				if (nbtos != null) {
 					nbtos.close();

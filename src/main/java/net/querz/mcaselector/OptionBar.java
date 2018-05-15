@@ -36,15 +36,14 @@ public class OptionBar extends MenuBar {
 	private CheckMenuItem chunkGrid = new CheckMenuItem("Chunk Grid");
 	private CheckMenuItem regionGrid = new CheckMenuItem("Region Grid");
 	private MenuItem goTo = new MenuItem("Goto");
+	private MenuItem clearCache = new MenuItem("Clear cache");
 	private MenuItem clear = new MenuItem("Clear");
 	private MenuItem delete = new MenuItem("Delete");
-
-	private static final SeparatorMenuItem separator = new SeparatorMenuItem();
 
 	public OptionBar(TileMap tileMap, Stage primaryStage) {
 		getMenus().addAll(file, view, selection);
 		file.getItems().addAll(open, quit);
-		view.getItems().addAll(chunkGrid, regionGrid, separator, goTo);
+		view.getItems().addAll(chunkGrid, regionGrid, separator(), goTo, separator(), clearCache);
 		selection.getItems().addAll(clear, delete);
 
 		open.setOnAction(e -> {
@@ -73,6 +72,20 @@ public class OptionBar extends MenuBar {
 		goTo.setOnAction(e -> {
 			Optional<Point2i> result = new GotoDialog().showAndWait();
 			result.ifPresent(r -> tileMap.goTo(r.getX(), r.getY()));
+		});
+
+		clearCache.setOnAction(e -> {
+			File[] files = Config.getCacheDir().listFiles((f, n) -> n.matches("^r\\.-?\\d+\\.-?\\d+\\.png"));
+			if (files != null) {
+				for (File file : files) {
+					if (!file.isDirectory()) {
+						System.out.println("deleting " + file);
+						file.delete();
+					}
+				}
+			}
+			tileMap.clear();
+			tileMap.update();
 		});
 
 		clear.setOnAction(e -> tileMap.clearSelection());
@@ -156,5 +169,9 @@ public class OptionBar extends MenuBar {
 				region.getX() * 32 + index % 32,
 				region.getY() * 32 + index / 32
 		);
+	}
+
+	private SeparatorMenuItem separator() {
+		return new SeparatorMenuItem();
 	}
 }

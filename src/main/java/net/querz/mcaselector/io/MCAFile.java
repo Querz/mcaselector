@@ -54,20 +54,28 @@ public class MCAFile {
 
 			chunk.saveData(raf, offset * 4096);
 			//padding for each chunk is written automatically by skipping bytes
+			System.out.println("go to indices index " + i * 4);
 			raf.seek(i * 4);
 			//write offset
-			raf.write(offset >> 16);
-			raf.write((offset >> 8) & 0x0F);
-			raf.write(offset & 0x00F);
+			System.out.println("writing offset " + offset + " as offset << 8");
+			raf.writeInt(offset << 8);
+
+			System.out.println("going back by 1 byte");
+			raf.seek(raf.getFilePointer() - 1);
 			//write sector count
+			System.out.println("writing sectors " + chunk.getSectors());
 			raf.write(chunk.getSectors());
 
+			System.out.println("go to locations index " + (4096 + i * 4));
 			raf.seek(4096 + i * 4);
 			//write timestamp
+			System.out.println("writing timestamp " + chunk.getTimestamp());
 			raf.writeInt(chunk.getTimestamp());
 
 			//recalculate offset
-			offset += chunk.getLengthInSectors();
+			offset += chunk.getSectors();
+
+			System.out.println("new offset " + offset);
 		}
 
 		//padding

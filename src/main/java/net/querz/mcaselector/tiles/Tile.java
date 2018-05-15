@@ -228,6 +228,11 @@ public class Tile {
 
 		} else {
 			image = new Image(resourceStream);
+			try {
+				resourceStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 		loading = false;
