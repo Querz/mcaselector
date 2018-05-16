@@ -14,6 +14,7 @@ import java.util.concurrent.*;
 * remove all queued jobs that would result in an image that is not displayed anymore.
 * */
 public class QueuedRegionImageGenerator {
+
 	public static final int PROCESSOR_COUNT = Runtime.getRuntime().availableProcessors();
 
 	private TileMap tileMap;
@@ -32,7 +33,7 @@ public class QueuedRegionImageGenerator {
 	//lets already started processes finish
 	//Points are region coordinates
 	public void addJob(Tile tile) {
-		tile.loading = true;
+		tile.setLoading(true);
 		Job job = new Job(tile);
 		executor.execute(job);
 		inQueue.add(job);
@@ -48,7 +49,7 @@ public class QueuedRegionImageGenerator {
 			} else if (!job.tile.isVisible(tileMap)) {
 				boolean removed = executor.getQueue().remove(job);
 				if (removed) {
-					job.tile.loading = false;
+					job.tile.setLoading(false);
 				}
 				inQueue.remove(i);
 				i--;
@@ -73,5 +74,4 @@ public class QueuedRegionImageGenerator {
 			}
 		}
 	}
-
 }

@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Tile {
+
 	public static final int SIZE = 512;
 	public static final int CHUNK_SIZE = 16;
 
@@ -40,9 +41,9 @@ public class Tile {
 
 	private Point2i location;
 	private Image image;
-	boolean loading = false;
-	boolean loaded = false;
-	boolean marked = false;
+	private boolean loading = false;
+	private boolean loaded = false;
+	private boolean marked = false;
 	private Set<Point2i> markedChunks = new HashSet<>();
 
 	static {
@@ -93,6 +94,10 @@ public class Tile {
 		return loaded;
 	}
 
+	void setLoading(boolean loading) {
+		this.loading = loading;
+	}
+
 	public boolean isLoading() {
 		return loading;
 	}
@@ -112,10 +117,6 @@ public class Tile {
 		}
 	}
 
-	public boolean isMarked() {
-		return marked;
-	}
-
 	public void mark(Point2i chunkBlock) {
 		markedChunks.add(chunkBlock);
 		if (markedChunks.size() == 1024) {
@@ -124,7 +125,15 @@ public class Tile {
 		}
 	}
 
-	public void unmark(Point2i chunkBlock) {
+	public boolean isMarked() {
+		return marked;
+	}
+
+	public boolean isMarked(Point2i chunkBlock) {
+		return isMarked() || markedChunks.contains(chunkBlock);
+	}
+
+	public void unMark(Point2i chunkBlock) {
 		if (isMarked()) {
 			for (int x = 0; x < 32; x++) {
 				for (int z = 0; z < 32; z++) {
@@ -139,10 +148,6 @@ public class Tile {
 	public void clearMarks() {
 		mark(false);
 		markedChunks.clear();
-	}
-
-	public boolean isMarked(Point2i chunkBlock) {
-		return isMarked() || markedChunks.contains(chunkBlock);
 	}
 
 	public Set<Point2i> getMarkedChunks() {
@@ -224,12 +229,9 @@ public class Tile {
 		loading = true;
 		Point2i p = Helper.blockToRegion(getLocation());
 		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/r.%d.%d.png", p.getX(), p.getY());
-
-
-//		InputStream resourceStream = Tile.class.getClassLoader().getResourceAsStream(res);
-
 		System.out.println("Generating image for region " + p.getX() + " " + p.getY());
 		File file = new File(Config.getWorldDir().getAbsolutePath() + "/r." + p.getX() + "." + p.getY() + ".mca");
+
 		if (!file.exists()) {
 			System.out.println("region file " + res + " does not exist, skipping.");
 			image = null;
@@ -256,12 +258,11 @@ public class Tile {
 
 				File cacheFile = new File(res);
 				if (!cacheFile.getParentFile().exists()) {
-					cacheFile.getParentFile().mkdirs();
+					if (!cacheFile.getParentFile().mkdirs()) {
+						System.out.println("failed to create cache directory");
+					}
 				}
-
 				ImageIO.write(bufferedImage, "png", new File(res));
-
-
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}

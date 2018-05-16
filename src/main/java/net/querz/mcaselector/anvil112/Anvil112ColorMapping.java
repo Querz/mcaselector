@@ -1,21 +1,18 @@
 package net.querz.mcaselector.anvil112;
 
 import net.querz.mcaselector.ColorMapping;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class Anvil112ColorMapping implements ColorMapping {
-	@Override
-	public int getRGB(int blockID) {
-		return Mapping.getByIDAndData(blockID).getRGB();
-	}
 
-	public int getRGB(String blockID) {
-		throw new RuntimeException("Anvil < 1.12 doesn't support string block ids.");
+	@Override
+	public int getRGB(Object blockID) {
+		return Mapping.getByIDAndData((int) blockID).getRGB();
 	}
 
 	private enum Mapping {
+
 		DEFAULT(0, 0, 0x000000),
 		STONE(1, 0, 0x999999),
 		GRASS(2, 0, 0x33cc33),
@@ -118,7 +115,5 @@ public class Anvil112ColorMapping implements ColorMapping {
 			}
 			return m;
 		}
-
-
 	}
 }

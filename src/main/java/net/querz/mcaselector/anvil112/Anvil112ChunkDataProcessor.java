@@ -5,13 +5,12 @@ import net.querz.mcaselector.ColorMapping;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.Tag;
-
 import java.awt.image.BufferedImage;
 
 public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
 	@Override
-	public void drawImage2(CompoundTag root, ColorMapping colorMapping, int x, int z, BufferedImage image) {
+	public void drawImage(CompoundTag root, ColorMapping colorMapping, int x, int z, BufferedImage image) {
 		ListTag sections = (ListTag) ((CompoundTag) root
 				.get("Level"))
 				.get("Sections");
@@ -53,5 +52,4 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 		}
 		throw new IllegalArgumentException("Can't compare non-CompoundTags");
 	}
-
 }

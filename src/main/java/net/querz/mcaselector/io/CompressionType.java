@@ -1,6 +1,7 @@
 package net.querz.mcaselector.io;
 
 public enum CompressionType {
+
 	NONE(0), // indicates that there is no data present
 	GZIP(1),
 	ZLIB(2);

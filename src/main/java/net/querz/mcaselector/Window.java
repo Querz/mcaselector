@@ -3,18 +3,16 @@ package net.querz.mcaselector;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.querz.mcaselector.tiles.TileMap;
 
 public class Window extends Application {
 
-//	private int width = 800, height = 600;
-	private int width = 300, height = 300;
+	private int width = 800, height = 600;
+//	private int width = 300, height = 300;
 
 	@Override
 	public void start(Stage primaryStage) {

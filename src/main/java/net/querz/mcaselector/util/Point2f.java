@@ -3,6 +3,7 @@ package net.querz.mcaselector.util;
 import java.util.Objects;
 
 public class Point2f implements Cloneable {
+
 	private float x, y;
 
 	public Point2f() {

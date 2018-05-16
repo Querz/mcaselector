@@ -2,13 +2,13 @@ package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.ChunkDataProcessor;
 import net.querz.mcaselector.ColorMapping;
-import net.querz.nbt.CompoundTag;
-
+import net.querz.mcaselector.util.Point2i;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.List;
+import java.util.Set;
 
 public class MCAFile {
+
 	private File file;
 	private int[] offsets;
 	private byte[] sectors;
@@ -37,62 +37,21 @@ public class MCAFile {
 		}
 	}
 
-	/*
-	* TODO:
-	* try to only overwrite indices, sector counts and timestamps of deleted chunks with 0
-	* without actually deleting the data.
-	* look into whether mc will delete the data by itself at one point.
-	* */
-	//length of chunks is always 1024, if one chunk is deleted, it is null
-	//each MCAChunkData needs rawChunkData
-	public void write(MCAChunkData[] chunks, RandomAccessFile raf) throws Exception {
-		if (chunks.length != 1024) {
-			throw new IllegalArgumentException("chunks array must have a length of 1024");
+	//chunks contains chunk coordinates to be deleted in this file.
+	public void deleteChunkIndices(Set<Point2i> chunks, RandomAccessFile raf) throws Exception {
+		for (Point2i chunk : chunks) {
+			int index = getChunkIndex(chunk);
+			System.out.println("deleting index " + index + " of " + chunk);
+			raf.seek(index * 4);
+			raf.writeInt(0);
+			//set timestamp to 0
+			raf.seek(4096 + index * 4);
+			raf.writeInt(0);
 		}
-		int offset = 2;
-//		(RandomAccessFile raf = new RandomAccessFile(file, "w"))
-		for (int i = 0; i < chunks.length; i++) {
-			System.out.println("offset in sectors: " + offset);
-			MCAChunkData chunk = chunks[i];
-			if (chunk == null) {
-				//set offset and sector count to 0
-				raf.seek(i * 4);
-				raf.writeInt(0);
-				//set timestamp to 0
-				raf.seek(4096 + i * 4);
-				raf.writeInt(0);
+	}
 
-				continue;
-			}
-
-//			chunk.saveData(raf, offset * 4096);
-//			//padding for each chunk is written automatically by skipping bytes
-//			System.out.println("go to indices index " + i * 4);
-//			raf.seek(i * 4);
-//			//write offset
-//			System.out.println("writing offset " + offset + " as offset << 8");
-//			raf.writeInt(offset << 8);
-//
-//			System.out.println("going back by 1 byte");
-//			raf.seek(raf.getFilePointer() - 1);
-//			//write sector count
-//			System.out.println("writing sectors " + chunk.getSectors());
-//			raf.write(chunk.getSectors());
-//
-//			System.out.println("go to locations index " + (4096 + i * 4));
-//			raf.seek(4096 + i * 4);
-//			//write timestamp
-//			System.out.println("writing timestamp " + chunk.getTimestamp());
-//			raf.writeInt(chunk.getTimestamp());
-//
-//			//recalculate offset
-//			offset += chunk.getSectors();
-//
-//			System.out.println("new offset " + offset);
-		}
-
-		//padding
-		raf.write(new byte[4096 - (5 + chunks[1023].getLength()) % 4096]);
+	private int getChunkIndex(Point2i chunkCoordinate) {
+		return (chunkCoordinate.getX() & 31) + (chunkCoordinate.getY() & 31) * 32;
 	}
 
 	public MCAChunkData getChunkData(int index) {
@@ -124,7 +83,6 @@ public class MCAFile {
 					data.drawImage(chunkDataProcessor, colorMapping, imageX, imageZ, finalImage);
 				}
 			}
-
 			return finalImage;
 		} catch (Exception ex) {
 			ex.printStackTrace();

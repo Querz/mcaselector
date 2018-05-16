@@ -3,6 +3,7 @@ package net.querz.mcaselector.util;
 import java.util.Objects;
 
 public class Point2i implements Cloneable {
+
 	private int x, z;
 
 	public Point2i() {
