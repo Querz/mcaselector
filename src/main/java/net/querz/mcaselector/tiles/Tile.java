@@ -1,5 +1,6 @@
 package net.querz.mcaselector.tiles;
 
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
@@ -36,11 +37,12 @@ public class Tile {
 
 	private static final Image empty;
 	private static final Color emptyColor = new Color(0.2, 0.2, 0.2, 1);
+
 	private Point2i location;
 	private Image image;
-	private boolean loading = false;
-	private boolean loaded = false;
-	private boolean marked = false;
+	boolean loading = false;
+	boolean loaded = false;
+	boolean marked = false;
 	private Set<Point2i> markedChunks = new HashSet<>();
 
 	static {
@@ -56,6 +58,23 @@ public class Tile {
 
 	public Tile(Point2i location) {
 		this.location = Helper.regionToBlock(Helper.blockToRegion(location));
+	}
+
+	public boolean isVisible(TileMap tileMap) {
+		return isVisible(tileMap, 0);
+	}
+
+	//returns whether this tile is visible on screen, adding a custom radius
+	//as a threshold
+	//threshold is measured in tiles
+	public boolean isVisible(TileMap tileMap, int threshold) {
+		Point2i o = tileMap.getOffset().toPoint2i();
+		Point2i min = Helper.regionToBlock(Helper.blockToRegion(o.sub(threshold * SIZE)));
+		Point2i max = Helper.regionToBlock(Helper.blockToRegion(new Point2i(
+				(int) (o.getX() + tileMap.getWidth() * tileMap.getScale()),
+				(int) (o.getY() + tileMap.getHeight() * tileMap.getScale())).add(threshold * SIZE)));
+		return location.getX() >= min.getX() && location.getY() >= min.getY()
+				&& location.getX() <= max.getX() && location.getY() <= max.getY();
 	}
 
 	public Image getImage() {
@@ -79,8 +98,10 @@ public class Tile {
 	}
 
 	public void unload() {
-		image.cancel();
-		image = null;
+		if (image != null) {
+			image.cancel();
+			image = null;
+		}
 		loaded = false;
 	}
 
@@ -128,7 +149,7 @@ public class Tile {
 		return markedChunks;
 	}
 
-	public synchronized void draw(GraphicsContext ctx, float scale, Point2f offset, boolean regionGrid, boolean chunkGrid) {
+	public void draw(GraphicsContext ctx, float scale, Point2f offset, boolean regionGrid, boolean chunkGrid) {
 		if (isLoaded() && image != null) {
 			ctx.drawImage(getImage(), offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 			if (marked) {
@@ -174,7 +195,7 @@ public class Tile {
 		}
 	}
 
-	public void loadImage(TileMap tileMap) {
+	public void loadFromCache() {
 		if (loaded) {
 			System.out.println("region already loaded");
 			return;
@@ -185,57 +206,67 @@ public class Tile {
 
 		System.out.println("loading region from cache: " + res);
 
-		InputStream resourceStream = null;
-		try {
-			resourceStream = new FileInputStream(res);
-		} catch (FileNotFoundException e) {
-			//ignore, we print a warning later
+		try (InputStream inputStream = new FileInputStream(res)) {
+			image = new Image(inputStream);
+			loaded = true;
+		} catch (IOException ex) {
+			System.out.println("region not cached");
+			//do nothing
 		}
+		loading = false;
+	}
+
+	public void loadImage(TileMap tileMap) {
+		if (loaded) {
+			System.out.println("region already loaded");
+			return;
+		}
+		loading = true;
+		Point2i p = Helper.blockToRegion(getLocation());
+		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/r.%d.%d.png", p.getX(), p.getY());
+
 
 //		InputStream resourceStream = Tile.class.getClassLoader().getResourceAsStream(res);
 
-		if (resourceStream == null) {
-			System.out.println("region " + res + " not cached, generating image...");
-			File file = new File(Config.getWorldDir().getAbsolutePath() + "/r." + p.getX() + "." + p.getY() + ".mca");
-			if (!file.exists()) {
-				System.out.println("region file " + res + " does not exist, skipping.");
-				image = null;
-			} else {
-				Helper.runAsync(() -> {
-
-					try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
-
-						MCAFile mcaFile = MCALoader.read(file, raf);
-
-						BufferedImage bufferedImage = mcaFile.createImage(new Anvil112ChunkDataProcessor(), new Anvil112ColorMapping(), raf);
-
-						image = SwingFXUtils.toFXImage(bufferedImage, null);
-
-						File cacheFile = new File(res);
-						if (!cacheFile.getParentFile().exists()) {
-							cacheFile.getParentFile().mkdirs();
-						}
-
-						tileMap.update();
-
-						ImageIO.write(bufferedImage, "png", new File(res));
-
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				});
-			}
-
+		System.out.println("Generating image for region " + p.getX() + " " + p.getY());
+		File file = new File(Config.getWorldDir().getAbsolutePath() + "/r." + p.getX() + "." + p.getY() + ".mca");
+		if (!file.exists()) {
+			System.out.println("region file " + res + " does not exist, skipping.");
+			image = null;
 		} else {
-			image = new Image(resourceStream);
-			try {
-				resourceStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+			try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+
+				MCAFile mcaFile = MCALoader.read(file, raf);
+				if (mcaFile == null) {
+					System.out.println("error reading mca file " + file);
+					//mark as loaded, we won't try to load this again
+					loaded = true;
+					loading = false;
+					return;
+				}
+
+				BufferedImage bufferedImage = mcaFile.createImage(new Anvil112ChunkDataProcessor(), new Anvil112ColorMapping(), raf);
+
+				image = SwingFXUtils.toFXImage(bufferedImage, null);
+
+				System.out.println("done generating, updating now");
+				loading = false;
+				loaded = true;
+				Platform.runLater(tileMap::update);
+
+				File cacheFile = new File(res);
+				if (!cacheFile.getParentFile().exists()) {
+					cacheFile.getParentFile().mkdirs();
+				}
+
+				ImageIO.write(bufferedImage, "png", new File(res));
+
+
+			} catch (IOException ex) {
+				ex.printStackTrace();
 			}
 		}
-
-		loading = false;
 		loaded = true;
+		loading = false;
 	}
 }

@@ -82,6 +82,10 @@ public class Point2f implements Cloneable {
 		return div(i, i);
 	}
 
+	public Point2i toPoint2i() {
+		return new Point2i((int) x, (int) y);
+	}
+
 	@Override
 	public boolean equals(Object other) {
 		return other instanceof Point2f

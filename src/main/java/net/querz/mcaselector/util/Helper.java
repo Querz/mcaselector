@@ -1,5 +1,7 @@
 package net.querz.mcaselector.util;
 
+import java.io.File;
+
 public class Helper {
 	public static int blockToChunk(int i) {
 		return i >> 4;
@@ -59,9 +61,22 @@ public class Helper {
 		if (os.contains("win")) {
 			appdataDir = System.getenv("AppData");
 		} else {
-			appdataDir = System.getProperty("user.home");
+			appdataDir = getHomeDir();
 			appdataDir += "/Library/Application Support";
 		}
 		return appdataDir;
+	}
+
+	public static String getHomeDir() {
+		return System.getProperty("user.home");
+	}
+
+	public static String getMCSavesDir() {
+		String appdata = getAppdataDir();
+		File saves;
+		if (appdata == null || !(saves = new File(appdata, ".minecraft/saves")).exists()) {
+			return getHomeDir();
+		}
+		return saves.getAbsolutePath();
 	}
 }

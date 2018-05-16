@@ -13,7 +13,8 @@ import net.querz.mcaselector.tiles.TileMap;
 
 public class Window extends Application {
 
-	private int width = 800, height = 600;
+//	private int width = 800, height = 600;
+	private int width = 300, height = 300;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -46,6 +47,7 @@ public class Window extends Application {
 
 		Scene scene = new Scene(pane, width, height);
 
+		primaryStage.setOnCloseRequest(e -> System.exit(0));
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}

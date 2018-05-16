@@ -9,6 +9,7 @@ import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 public class TileMap extends Canvas {
@@ -18,6 +19,7 @@ public class TileMap extends Canvas {
 	public static final float MAX_SCALE = 5;
 	public static final float MIN_SCALE = 0.2f;
 	public static final float CHUNK_GRID_SCALE = 1.5f; //show chunk grid if scale is larger than this
+	public static final int TILE_VISIBILITY_THRESHOLD = 2;
 
 	private GraphicsContext context;
 
@@ -27,6 +29,7 @@ public class TileMap extends Canvas {
 	private Point2f firstMouseLocation = null;
 
 	private Map<Point2i, Tile> tiles = new HashMap<>();
+	private Set<Tile> visibleTiles = ConcurrentHashMap.newKeySet();
 
 	private int selectedChunks = 0;
 	private Point2i hoveredBlock = null;
@@ -36,6 +39,8 @@ public class TileMap extends Canvas {
 
 	private Consumer<TileMap> updateListener;
 	private Consumer<TileMap> hoverListener;
+
+	private QueuedRegionImageGenerator qrig;
 
 	public TileMap(int width, int height) {
 		super(width, height);
@@ -49,7 +54,17 @@ public class TileMap extends Canvas {
 		this.setOnMouseMoved(this::onMouseMoved);
 		this.setOnMouseExited(this::onMouseExited);
 
+		qrig = new QueuedRegionImageGenerator(1, this);
+
 		update();
+	}
+
+	public Point2f getOffset() {
+		return offset;
+	}
+
+	public float getScale() {
+		return scale;
 	}
 
 	public void setOnUpdate(Consumer<TileMap> listener) {
@@ -109,9 +124,9 @@ public class TileMap extends Canvas {
 		firstMouseLocation = new Point2f(event.getX(), event.getY());
 
 		switch (event.getButton()) {
-		case PRIMARY:
-			mark(event.getX(), event.getY(), true);
-			break;
+//		case PRIMARY:
+//			mark(event.getX(), event.getY(), true);
+//			break;
 		case SECONDARY:
 			mark(event.getX(), event.getY(), false);
 			break;
@@ -163,7 +178,7 @@ public class TileMap extends Canvas {
 
 	private void onMouseDragged(MouseEvent event) {
 		switch (event.getButton()) {
-		case MIDDLE:
+		case PRIMARY:
 			Point2f mouseLocation = new Point2f(event.getX(), event.getY());
 			if (previousMouseLocation != null) {
 				Point2f diff = mouseLocation.sub(previousMouseLocation);
@@ -172,9 +187,9 @@ public class TileMap extends Canvas {
 			}
 			previousMouseLocation = mouseLocation;
 			break;
-		case PRIMARY:
-			mark(event.getX(), event.getY(), true);
-			break;
+//		case PRIMARY:
+//			mark(event.getX(), event.getY(), true);
+//			break;
 		case SECONDARY:
 			mark(event.getX(), event.getY(), false);
 			break;
@@ -222,8 +237,19 @@ public class TileMap extends Canvas {
 		}
 	}
 
-	public synchronized void update() {
+	public void update() {
 		callUpdateListener();
+		qrig.validateJobs();
+		for (Iterator<Tile> it = visibleTiles.iterator(); it.hasNext();) {
+			Tile tile = it.next();
+			if (!tile.isVisible(this, TILE_VISIBILITY_THRESHOLD)) {
+				visibleTiles.remove(tile);
+				tile.unload();
+				if (!tile.isMarked() && tile.getMarkedChunks().size() == 0) {
+					tiles.remove(tile.getLocation());
+				}
+			}
+		}
 		draw(context);
 	}
 
@@ -235,23 +261,27 @@ public class TileMap extends Canvas {
 
 	private void draw(GraphicsContext ctx) {
 		//regionLocation is the south-west-most visible region in the window
-		Point2i regionLocation = Helper.regionToBlock(Helper.blockToRegion(new Point2i((int) offset.getX(), (int) offset.getY())));
+		Point2i regionLocation = Helper.regionToBlock(Helper.blockToRegion(offset.toPoint2i()));
 
 		//get all tiles that are visible inside the window
-		for (int x = regionLocation.getX(); x < offset.getX() + (getWidth() * scale); x += Tile.SIZE) {
-			for (int z = regionLocation.getY(); z < offset.getY() + (getHeight() * scale); z += Tile.SIZE) {
+		for (int x = regionLocation.getX(); x < offset.getX() + getWidth() * scale; x += Tile.SIZE) {
+			for (int z = regionLocation.getY(); z < offset.getY() + getHeight() * scale; z += Tile.SIZE) {
 				Point2i region = new Point2i(x, z);
 				if (!tiles.containsKey(region)) {
 					tiles.put(region, new Tile(region));
 				}
 				Tile tile = tiles.get(region);
+				visibleTiles.add(tile);
 
 				Point2i regionOffset = region.sub((int) offset.getX(), (int) offset.getY());
 
-				if (!tile.isLoaded()) {
-					tile.loadImage(this);
+				if (!tile.isLoaded() && !tile.isLoading()) {
+					tile.loadFromCache();
+					if (!tile.isLoaded()) {
+						qrig.addJob(tile);
+					}
 				}
-				tile.draw(context, scale, new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale), showRegionGrid, showChunkGrid);
+				tile.draw(ctx, scale, new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale), showRegionGrid, showChunkGrid);
 			}
 		}
 	}

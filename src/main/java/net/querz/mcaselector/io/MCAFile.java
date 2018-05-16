@@ -37,6 +37,12 @@ public class MCAFile {
 		}
 	}
 
+	/*
+	* TODO:
+	* try to only overwrite indices, sector counts and timestamps of deleted chunks with 0
+	* without actually deleting the data.
+	* look into whether mc will delete the data by itself at one point.
+	* */
 	//length of chunks is always 1024, if one chunk is deleted, it is null
 	//each MCAChunkData needs rawChunkData
 	public void write(MCAChunkData[] chunks, RandomAccessFile raf) throws Exception {
@@ -49,33 +55,40 @@ public class MCAFile {
 			System.out.println("offset in sectors: " + offset);
 			MCAChunkData chunk = chunks[i];
 			if (chunk == null) {
+				//set offset and sector count to 0
+				raf.seek(i * 4);
+				raf.writeInt(0);
+				//set timestamp to 0
+				raf.seek(4096 + i * 4);
+				raf.writeInt(0);
+
 				continue;
 			}
 
-			chunk.saveData(raf, offset * 4096);
-			//padding for each chunk is written automatically by skipping bytes
-			System.out.println("go to indices index " + i * 4);
-			raf.seek(i * 4);
-			//write offset
-			System.out.println("writing offset " + offset + " as offset << 8");
-			raf.writeInt(offset << 8);
-
-			System.out.println("going back by 1 byte");
-			raf.seek(raf.getFilePointer() - 1);
-			//write sector count
-			System.out.println("writing sectors " + chunk.getSectors());
-			raf.write(chunk.getSectors());
-
-			System.out.println("go to locations index " + (4096 + i * 4));
-			raf.seek(4096 + i * 4);
-			//write timestamp
-			System.out.println("writing timestamp " + chunk.getTimestamp());
-			raf.writeInt(chunk.getTimestamp());
-
-			//recalculate offset
-			offset += chunk.getSectors();
-
-			System.out.println("new offset " + offset);
+//			chunk.saveData(raf, offset * 4096);
+//			//padding for each chunk is written automatically by skipping bytes
+//			System.out.println("go to indices index " + i * 4);
+//			raf.seek(i * 4);
+//			//write offset
+//			System.out.println("writing offset " + offset + " as offset << 8");
+//			raf.writeInt(offset << 8);
+//
+//			System.out.println("going back by 1 byte");
+//			raf.seek(raf.getFilePointer() - 1);
+//			//write sector count
+//			System.out.println("writing sectors " + chunk.getSectors());
+//			raf.write(chunk.getSectors());
+//
+//			System.out.println("go to locations index " + (4096 + i * 4));
+//			raf.seek(4096 + i * 4);
+//			//write timestamp
+//			System.out.println("writing timestamp " + chunk.getTimestamp());
+//			raf.writeInt(chunk.getTimestamp());
+//
+//			//recalculate offset
+//			offset += chunk.getSectors();
+//
+//			System.out.println("new offset " + offset);
 		}
 
 		//padding

@@ -47,16 +47,15 @@ public class OptionBar extends MenuBar {
 		selection.getItems().addAll(clear, delete);
 
 		open.setOnAction(e -> {
-			String appdata = Helper.getAppdataDir();
-			if (appdata != null) {
-				File file = createDirectoryChooser(appdata + "/.minecraft/saves").showDialog(primaryStage);
-				if (file != null && file.isDirectory()) {
-					File[] files = file.listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.mca"));
-					if (files != null && files.length > 0) {
-						System.out.println("setting world dir to " + file.getAbsolutePath());
-						Config.setWorldDir(file);
-						tileMap.clear();
-					}
+			String savesDir = Helper.getMCSavesDir();
+			File file = createDirectoryChooser(savesDir).showDialog(primaryStage);
+			if (file != null && file.isDirectory()) {
+				File[] files = file.listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.mca"));
+				if (files != null && files.length > 0) {
+					System.out.println("setting world dir to " + file.getAbsolutePath());
+					Config.setWorldDir(file);
+					tileMap.clear();
+					tileMap.update();
 				}
 			}
 		});
@@ -80,7 +79,9 @@ public class OptionBar extends MenuBar {
 				for (File file : files) {
 					if (!file.isDirectory()) {
 						System.out.println("deleting " + file);
-						file.delete();
+						if (!file.delete()) {
+							System.out.println("could not delete file " + file);
+						}
 					}
 				}
 			}
@@ -107,27 +108,47 @@ public class OptionBar extends MenuBar {
 							MCAFile mcaFile = null;
 							MCAChunkData[] mcaChunkDataArray = null;
 
-							try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+							try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
 								mcaFile = MCALoader.read(createMCAFilePath(entry.getKey()), raf);
+								mcaChunkDataArray = new MCAChunkData[1024];
 								if (mcaFile == null) {
 									System.out.println("error reading " + file + ", skipping");
 									continue;
 								}
 
-								mcaChunkDataArray = new MCAChunkData[1024];
-
 								for (int i = 0; i < 1024; i++) {
 									MCAChunkData mcaChunkData = mcaFile.getChunkData(i);
 									if (!mcaChunkData.isEmpty() && !entry.getValue().contains(getChunkCoordinate(entry.getKey(), i))) {
-										mcaChunkData.readHeader(raf);
-										mcaChunkData.loadRawData(raf);
 										mcaChunkDataArray[i] = mcaChunkData;
 									}
 								}
+
 							} catch (Exception ex) {
 								ex.printStackTrace();
 								continue;
 							}
+
+//							try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+//								mcaFile = MCALoader.read(createMCAFilePath(entry.getKey()), raf);
+//								if (mcaFile == null) {
+//									System.out.println("error reading " + file + ", skipping");
+//									continue;
+//								}
+//
+//								mcaChunkDataArray = new MCAChunkData[1024];
+//
+//								for (int i = 0; i < 1024; i++) {
+//									MCAChunkData mcaChunkData = mcaFile.getChunkData(i);
+//									if (!mcaChunkData.isEmpty() && !entry.getValue().contains(getChunkCoordinate(entry.getKey(), i))) {
+//										mcaChunkData.readHeader(raf);
+//										mcaChunkData.loadRawData(raf);
+//										mcaChunkDataArray[i] = mcaChunkData;
+//									}
+//								}
+//							} catch (Exception ex) {
+//								ex.printStackTrace();
+//								continue;
+//							}
 
 							//need to close raf before reopening
 							MCALoader.backup(mcaFile);
