@@ -171,7 +171,7 @@ public class TileMap extends Canvas {
 
 	public List<Point2i> getVisibleRegions() {
 		List<Point2i> regions = new ArrayList<>();
-		runOnVisibleRegions(r -> regions.add(Helper.blockToChunk(r)));
+		runOnVisibleRegions(r -> regions.add(Helper.blockToRegion(r)));
 		return regions;
 	}
 
