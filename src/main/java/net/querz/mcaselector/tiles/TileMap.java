@@ -56,11 +56,16 @@ public class TileMap extends Canvas {
 
 	private void onMouseMoved(MouseEvent event) {
 		hoveredBlock = getMouseBlock(event.getX(), event.getY());
-		hoverListener.accept(this);
+		if (hoverListener != null) {
+			hoverListener.accept(this);
+		}
 	}
 
 	private void onMouseExited() {
 		hoveredBlock = null;
+		if (hoverListener != null) {
+			hoverListener.accept(this);
+		}
 	}
 
 	private void onScroll(ScrollEvent event) {

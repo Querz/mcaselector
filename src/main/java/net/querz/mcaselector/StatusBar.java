@@ -12,9 +12,9 @@ public class StatusBar extends BorderPane {
 
 	private GridPane grid = new GridPane();
 	private Label selectedChunks = new Label("selected: 0");
-	private Label hoveredBlock = new Label("block: 0, 0");
-	private Label hoveredChunk = new Label("chunk: 0, 0");
-	private Label hoveredRegion = new Label("region: 0, 0");
+	private Label hoveredBlock = new Label("block: -, -");
+	private Label hoveredChunk = new Label("chunk: -, -");
+	private Label hoveredRegion = new Label("region: -, -");
 
 	private static final Color textColor = Color.WHITE;
 	private static final Color backgroundColor = new Color(0.15, 0.15, 0.15, 1);
@@ -25,7 +25,7 @@ public class StatusBar extends BorderPane {
 		tileMap.setOnUpdate(this::update);
 		tileMap.setOnHover(this::update);
 		for (int i = 0; i < 4; i++) {
-			grid.getColumnConstraints().add(new ColumnConstraints(120, 120, 120));
+			grid.getColumnConstraints().add(new ColumnConstraints(120, 120, 200));
 		}
 		hoveredBlock.setTextFill(textColor);
 		hoveredChunk.setTextFill(textColor);
@@ -47,6 +47,10 @@ public class StatusBar extends BorderPane {
 			hoveredChunk.setText("chunk: " + c.getX() + ", " + c.getY());
 			Point2i r = Helper.blockToRegion(b);
 			hoveredRegion.setText("region: " + r.getX() + ", " + r.getY());
+		} else {
+			hoveredBlock.setText("block: -, -");
+			hoveredChunk.setText("chunk: -, -");
+			hoveredRegion.setText("region: -, -");
 		}
 	}
 }
