@@ -116,7 +116,9 @@ public class TileMap extends Canvas {
 	}
 
 	public void update() {
-		callUpdateListener();
+		if (updateListener != null) {
+			updateListener.accept(this);
+		}
 		qrig.validateJobs();
 		for (Tile tile : visibleTiles) {
 			if (!tile.isVisible(this, TILE_VISIBILITY_THRESHOLD)) {
@@ -270,12 +272,6 @@ public class TileMap extends Canvas {
 					}
 				}
 			}
-		}
-	}
-
-	private void callUpdateListener() {
-		if (updateListener != null) {
-			updateListener.accept(this);
 		}
 	}
 

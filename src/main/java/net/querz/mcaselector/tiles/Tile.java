@@ -3,13 +3,10 @@ package net.querz.mcaselector.tiles;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.FillRule;
-import javafx.scene.text.Font;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.anvil112.Anvil112ChunkDataProcessor;
 import net.querz.mcaselector.anvil112.Anvil112ColorMapping;
@@ -18,7 +15,6 @@ import net.querz.mcaselector.io.MCALoader;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -30,8 +26,8 @@ public class Tile {
 	public static final int SIZE = 512;
 	public static final int CHUNK_SIZE = 16;
 
-	public static final Color REGION_MARKED_COLOR = new Color(1, 0, 0, 0.5);
-	public static final Color CHUNK_MARKED_COLOR = new Color(0, 0, 1, 0.5);
+	public static final Color REGION_MARKED_COLOR = new Color(1, 0, 0, 0.8);
+	public static final Color CHUNK_MARKED_COLOR = new Color(1, 0.45, 0, 0.8);
 	public static final Color REGION_GRID_COLOR = Color.BLACK;
 	public static final Color CHUNK_GRID_COLOR = Color.DARKGRAY;
 	public static final double GRID_LINE_WIDTH = 0.5;
@@ -158,9 +154,11 @@ public class Tile {
 		if (isLoaded() && image != null) {
 			ctx.drawImage(getImage(), offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 			if (marked) {
+				//draw marked region
 				ctx.setFill(REGION_MARKED_COLOR);
 				ctx.fillRect(offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 			} else if (markedChunks.size() > 0) {
+				//draw marked chunks
 				ctx.setFill(CHUNK_MARKED_COLOR);
 				for (Point2i p : markedChunks) {
 					//location is the real location of the region in the world
@@ -171,7 +169,7 @@ public class Tile {
 					//(p.x - location.x) / scale --> location in pixel
 					int regionChunkOffsetX = (int) ((p.getX() - location.getX()) / scale + offset.getX());
 					int regionChunkOffsetY = (int) ((p.getY() - location.getY()) / scale + offset.getY());
-					ctx.fillRect(regionChunkOffsetX, regionChunkOffsetY, CHUNK_SIZE / scale, CHUNK_SIZE / scale);
+					ctx.fillRect(regionChunkOffsetX, regionChunkOffsetY, Math.ceil(CHUNK_SIZE / scale), Math.ceil(CHUNK_SIZE / scale));
 				}
 			}
 		} else {
