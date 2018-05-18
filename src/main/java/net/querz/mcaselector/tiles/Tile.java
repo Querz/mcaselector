@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.anvil112.Anvil112ChunkDataProcessor;
 import net.querz.mcaselector.anvil112.Anvil112ColorMapping;
+import net.querz.mcaselector.anvil112.Anvil112TextureColorMapping;
 import net.querz.mcaselector.io.MCAFile;
 import net.querz.mcaselector.io.MCALoader;
 import net.querz.mcaselector.util.Helper;
@@ -245,7 +246,7 @@ public class Tile {
 					return;
 				}
 
-				BufferedImage bufferedImage = mcaFile.createImage(new Anvil112ChunkDataProcessor(), new Anvil112ColorMapping(), raf);
+				BufferedImage bufferedImage = mcaFile.createImage(new Anvil112ChunkDataProcessor(), new Anvil112TextureColorMapping(), raf);
 
 				image = SwingFXUtils.toFXImage(bufferedImage, null);
 

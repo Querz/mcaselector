@@ -31,14 +31,18 @@ public class Helper {
 		return i.shiftLeft(4);
 	}
 
-	public static String getAppdataDir() {
+	public static String getMCDir() {
 		String os = System.getProperty("os.name").toLowerCase();
-		String appdataDir;
+		String appdataDir = null;
 		if (os.contains("win")) {
-			appdataDir = System.getenv("AppData");
+			String env = System.getenv("AppData");
+			File file = new File(env == null ? "" : env, ".minecraft");
+			if (file.exists()) {
+				appdataDir = file.getAbsolutePath();
+			}
 		} else {
 			appdataDir = getHomeDir();
-			appdataDir += "/Library/Application Support";
+			appdataDir += "/Library/Application Support/minecraft";
 		}
 		return appdataDir;
 	}
@@ -48,9 +52,9 @@ public class Helper {
 	}
 
 	public static String getMCSavesDir() {
-		String appData = getAppdataDir();
+		String appData = getMCDir();
 		File saves;
-		if (appData == null || !(saves = new File(appData, ".minecraft/saves")).exists()) {
+		if (appData == null || !(saves = new File(appData, "saves")).exists()) {
 			return getHomeDir();
 		}
 		return saves.getAbsolutePath();
@@ -85,7 +89,7 @@ public class Helper {
 	}
 
 	public static void clearAllCache(TileMap tileMap) {
-		File[] files = Config.getCacheDir().listFiles((f, n) -> n.matches("^r\\.-?\\d+\\.-?\\d+\\.png"));
+		File[] files = Config.getCacheDir().listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.png"));
 		if (files != null) {
 			for (File file : files) {
 				if (!file.isDirectory()) {
