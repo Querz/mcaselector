@@ -6,22 +6,60 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.paint.Color;
 import net.querz.mcaselector.ColorMapping;
 import net.querz.mcaselector.util.Helper;
-
 import javax.imageio.ImageIO;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Anvil112TextureColorMapping implements ColorMapping {
 
+	private static Map<Integer, Integer> mapping = new HashMap<>();
+
+	static {
+		try (BufferedReader bis = new BufferedReader(
+				new InputStreamReader(Anvil112TextureColorMapping.class.getClass().getResourceAsStream("/colors.csv")))) {
+			String line;
+			while ((line = bis.readLine()) != null) {
+				String[] elements = line.split(";");
+				if (elements.length != 3) {
+					System.out.println("invalid line in color file: \"" + line + "\"");
+					continue;
+				}
+				int id = parseInt(elements[0], 10);
+				if (id < 0 || id > 255) {
+					System.out.println("Invalid block id in color file: \"" + elements[0] + "\"");
+					continue;
+				}
+				int data = parseInt(elements[1], 10);
+				if (data < 0 || data > 15) {
+					System.out.println("Invalid block data in color file: \"" + elements[1] + "\"");
+					continue;
+				}
+				int color = parseInt(elements[2], 16);
+				if (color < 0x0 || color > 0xFFFFFF) {
+					System.out.println("Invalid color code in color file: \"" + elements[2] + "\"");
+				}
+				mapping.put((id << 4) + data, color);
+			}
+		} catch (IOException ex) {
+			throw new RuntimeException("Unable to open color file");
+		}
+	}
+
+	private static int parseInt(String s, int radix) {
+		try {
+			return Integer.parseInt(s, radix);
+		} catch (NumberFormatException ex) {
+			return -1;
+		}
+	}
+
 	@Override
 	public int getRGB(Object blockID) {
-		return Mapping.getByIDAndData((int) blockID).getRGB();
+		return mapping.getOrDefault(blockID, 0x000000);
+//		return Mapping.getByIDAndData((int) blockID).getRGB();
 	}
 
 	private enum FoliageType {
@@ -606,13 +644,10 @@ public class Anvil112TextureColorMapping implements ColorMapping {
 		}
 
 		private short toByteColor(double d) {
-			short c = (short) (d * 255);
-//			System.out.println("byte color: " + c);
-			return c;
+			return (short) (d * 255);
 		}
 
 		private void loadRGB(FoliageType foliage) {
-//			System.out.println("loadRGB");
 			try (InputStream inputStream = new FileInputStream(new File(Helper.getWorkingDir(), "src/main/resources/1.12.2/assets/minecraft/textures/blocks/" +texture + ".png"))) {
 
 				Image image = new Image(inputStream);
@@ -626,14 +661,10 @@ public class Anvil112TextureColorMapping implements ColorMapping {
 					for (int x = 0; x < image.getWidth(); x++) {
 						for (int y = 0; y < image.getHeight(); y++) {
 							Color c = pr.getColor(x, y);
-//							System.out.printf("template color: %f %f %f\n", c.getRed(), c.getGreen(), c.getBlue());
-//							System.out.println("foliageColor: " + Integer.toHexString(foliageColor));
-							int nr = (fc >> 16) * toByteColor(c.getRed()) / 255;
-							int ng = (fc >> 8 & 0x00FF) * toByteColor(c.getGreen()) / 255;
-							int nb = (fc & 0x0000FF) * toByteColor(c.getBlue()) / 255;
+							int nr = (fc >> 16 & 0xFF) * toByteColor(c.getRed()) / 255;
+							int ng = (fc >> 8 & 0xFF) * toByteColor(c.getGreen()) / 255;
+							int nb = (fc & 0xFF) * toByteColor(c.getBlue()) / 255;
 							java.awt.Color nc = new java.awt.Color(nr, ng, nb, toByteColor(c.getOpacity()));
-//							Color nc = new Color(nr / 256,  ng / 256, nb / 256, 1);
-//							System.out.printf("FOLIAGE %d %d %d\n", nr, ng, nb);
 							graphics.setColor(nc);
 							graphics.fillRect(x, y, 1, 1);
 						}
@@ -643,7 +674,6 @@ public class Anvil112TextureColorMapping implements ColorMapping {
 				}
 
 				pr = image.getPixelReader();
-
 
 				double r = 0, g = 0, b = 0;
 				int c = 0;
@@ -658,14 +688,10 @@ public class Anvil112TextureColorMapping implements ColorMapping {
 						}
 					}
 				}
-				r /= c;
-				g /= c;
-				b /= c;
-				int ir = (int) (r * 256d);
-				int ig = (int) (g * 256d);
-				int ib = (int) (b * 256d);
+				int ir = (int) (r / c * 255);
+				int ig = (int) (g / c * 255);
+				int ib = (int) (b / c * 255);
 				rgb = (ir << 16) + (ig << 8) + ib;
-//				System.out.printf("%s / %d %d %d / %s\n", this, ir, ig, ib, Integer.toHexString(rgb));
 			} catch (IOException ex) {
 				System.out.println("texture " + texture + " doesn't exist: " + ex.getMessage());
 			}
