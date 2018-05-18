@@ -51,6 +51,10 @@ public class Helper {
 		return System.getProperty("user.home");
 	}
 
+	public static String getWorkingDir() {
+		return System.getProperty("user.dir");
+	}
+
 	public static String getMCSavesDir() {
 		String appData = getMCDir();
 		File saves;
