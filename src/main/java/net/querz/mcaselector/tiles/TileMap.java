@@ -314,10 +314,7 @@ public class TileMap extends Canvas {
 			Point2i regionOffset = region.sub((int) offset.getX(), (int) offset.getY());
 
 			if (!tile.isLoaded() && !tile.isLoading()) {
-				tile.loadFromCache();
-				if (!tile.isLoaded()) {
-					qrig.addJob(tile);
-				}
+				qrig.addJob(tile);
 			}
 			tile.draw(ctx, scale, new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale), showRegionGrid, showChunkGrid);
 		});

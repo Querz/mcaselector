@@ -19,13 +19,13 @@ public class QueuedRegionImageGenerator {
 
 	private TileMap tileMap;
 	private ThreadPoolExecutor executor;
-	private List<Job> inQueue = new ArrayList<>();
+	private Set<Job> inQueue = ConcurrentHashMap.newKeySet();
 
 	public QueuedRegionImageGenerator(int maxThreads, TileMap tileMap) {
 		this.tileMap = tileMap;
 		executor = new ThreadPoolExecutor(maxThreads, maxThreads,
 				0L, TimeUnit.MILLISECONDS,
-				new LinkedBlockingQueue<>());
+				new PriorityBlockingQueue<>(10, this::compareJobs));
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> executor.shutdownNow()));
 	}
 
@@ -41,24 +41,31 @@ public class QueuedRegionImageGenerator {
 
 	//tests if the Tiles in the Queue are still valid, and if they are not, removes them.
 	public void validateJobs() {
-		for (int i = 0; i < inQueue.size(); i++) {
-			Job job = inQueue.get(i);
+		Iterator<Job> jobs = inQueue.iterator();
+		while (jobs.hasNext()) {
+			Job job = jobs.next();
 			if (!executor.getQueue().contains(job)) {
-				inQueue.remove(i);
-				i--;
+				jobs.remove();
 			} else if (!job.tile.isVisible(tileMap)) {
 				boolean removed = executor.getQueue().remove(job);
 				if (removed) {
 					job.tile.setLoading(false);
 				}
-				inQueue.remove(i);
-				i--;
+				jobs.remove();
 			}
 		}
 	}
 
+	private int compareJobs(Runnable a, Runnable b) {
+		if (a instanceof Job && b instanceof Job) {
+			return ((Job) a).highPriority ? ((Job) b).highPriority ? 0 : 1 : -1;
+		}
+		return 0;
+	}
+
 	private class Job implements Runnable {
 		private Tile tile;
+		private boolean highPriority = true;
 
 		Job(Tile tile) {
 			this.tile = tile;
@@ -66,9 +73,19 @@ public class QueuedRegionImageGenerator {
 
 		@Override
 		public void run() {
+			inQueue.remove(this);
 			System.out.println("executing job for tile " + tile.getLocation());
 			if (tile.isVisible(tileMap)) {
-				tile.loadImage(tileMap);
+				if (highPriority) {
+					tile.loadFromCache(tileMap);
+					if (!tile.isLoaded()) {
+						highPriority = false;
+						inQueue.add(this);
+						executor.execute(this);
+					}
+				} else {
+					tile.loadImage(tileMap);
+				}
 			} else {
 				System.out.println("tile at " + tile.getLocation() + " not visible, skipping");
 			}

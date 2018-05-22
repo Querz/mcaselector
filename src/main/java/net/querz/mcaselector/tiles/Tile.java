@@ -200,7 +200,7 @@ public class Tile {
 		}
 	}
 
-	public void loadFromCache() {
+	public void loadFromCache(TileMap tileMap) {
 		if (loaded) {
 			System.out.println("region already loaded");
 			return;
@@ -219,6 +219,7 @@ public class Tile {
 			//do nothing
 		}
 		loading = false;
+		Platform.runLater(tileMap::update);
 	}
 
 	public void loadImage(TileMap tileMap) {
@@ -233,7 +234,7 @@ public class Tile {
 		File file = new File(Config.getWorldDir().getAbsolutePath() + "/r." + p.getX() + "." + p.getY() + ".mca");
 
 		if (!file.exists()) {
-			System.out.println("region file " + res + " does not exist, skipping.");
+			System.out.println("region file " + file + " does not exist, skipping.");
 			image = null;
 		} else {
 			try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
