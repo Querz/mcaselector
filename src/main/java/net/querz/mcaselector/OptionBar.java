@@ -9,10 +9,11 @@ public class OptionBar extends MenuBar {
 	/*
 	* File		View				Selection
 	* - Open	- Chunk Grid		- Clear
-	* - Quit	- Region Grid		- Delete
-	*			- Goto				- Clear cache
-	*			- Clear cache
-	*			- Clear all cache
+	* - Quit	- Region Grid		- Export chunks
+	*			- Goto				- Delete chunks
+	*			- Clear cache		- Import selection
+	*			- Clear all cache	- Export selection
+	*								- Clear cache
 	* */
 
 	private Menu file = new Menu("File");
@@ -27,7 +28,9 @@ public class OptionBar extends MenuBar {
 	private MenuItem clearViewCache = new MenuItem("Clear cache");
 	private MenuItem clearAllCache = new MenuItem("Clear all cache");
 	private MenuItem clear = new MenuItem("Clear");
-	private MenuItem delete = new MenuItem("Delete");
+	private MenuItem delete = new MenuItem("Delete chunks");
+	private MenuItem importSelection = new MenuItem("Import selection");
+	private MenuItem exportSelection = new MenuItem("Export selection");
 	private MenuItem clearSelectionCache = new MenuItem("Clear cache");
 
 	public OptionBar(TileMap tileMap, Stage primaryStage) {
@@ -47,6 +50,8 @@ public class OptionBar extends MenuBar {
 		clearViewCache.setOnAction(e -> Helper.clearViewCache(tileMap));
 		clear.setOnAction(e -> tileMap.clearSelection());
 		delete.setOnAction(e -> Helper.deleteSelection(tileMap));
+		importSelection.setOnAction(e -> Helper.importSelection(tileMap, primaryStage));
+		exportSelection.setOnAction(e -> Helper.exportSelection(tileMap, primaryStage));
 		clearSelectionCache.setOnAction(e -> Helper.clearSelectionCache(tileMap));
 	}
 

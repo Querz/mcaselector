@@ -2,11 +2,13 @@ package net.querz.mcaselector.util;
 
 import javafx.scene.control.ButtonType;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.DeleteConfirmationDialog;
 import net.querz.mcaselector.GotoDialog;
 import net.querz.mcaselector.io.MCALoader;
+import net.querz.mcaselector.io.SelectionExporter;
 import net.querz.mcaselector.tiles.TileMap;
 import java.io.File;
 import java.util.Map;
@@ -29,6 +31,14 @@ public class Helper {
 
 	public static Point2i chunkToBlock(Point2i i) {
 		return i.shiftLeft(4);
+	}
+
+	public static Integer parseInt(String s, int radix) {
+		try {
+			return Integer.parseInt(s, radix);
+		} catch (NumberFormatException ex) {
+			return null;
+		}
 	}
 
 	public static String getMCDir() {
@@ -86,10 +96,35 @@ public class Helper {
 		}
 	}
 
+	public static void importSelection(TileMap tileMap, Stage primaryStage) {
+		File file = createFileChooser(null).showOpenDialog(primaryStage);
+		if (file != null) {
+			Map<Point2i, Set<Point2i>> chunks = SelectionExporter.importSelection(file);
+			tileMap.setMarkedChunks(chunks);
+			tileMap.update();
+		}
+	}
+
+	public static void exportSelection(TileMap tileMap, Stage primaryStage) {
+		File file = createFileChooser(null).showSaveDialog(primaryStage);
+		if (file != null) {
+			SelectionExporter.exportSelection(tileMap.getMarkedChunks(), file);
+			tileMap.update();
+		}
+	}
+
 	private static DirectoryChooser createDirectoryChooser(String initialDirectory) {
 		DirectoryChooser directoryChooser = new DirectoryChooser();
 		directoryChooser.setInitialDirectory(new File(initialDirectory));
 		return directoryChooser;
+	}
+
+	private static FileChooser createFileChooser(String initialDirectory) {
+		FileChooser fileChooser = new FileChooser();
+		if (initialDirectory != null) {
+			fileChooser.setInitialDirectory(new File(initialDirectory));
+		}
+		return fileChooser;
 	}
 
 	public static void clearAllCache(TileMap tileMap) {
