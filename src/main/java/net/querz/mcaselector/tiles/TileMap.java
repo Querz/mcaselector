@@ -36,8 +36,8 @@ public class TileMap extends Canvas {
 	private boolean showChunkGrid = true;
 	private boolean showRegionGrid = true;
 
-	private Consumer<TileMap> updateListener;
-	private Consumer<TileMap> hoverListener;
+	private List<Consumer<TileMap>> updateListener = new ArrayList<>(1);
+	private List<Consumer<TileMap>> hoverListener = new ArrayList<>(1);
 
 	private QueuedRegionImageGenerator qrig;
 
@@ -56,16 +56,12 @@ public class TileMap extends Canvas {
 
 	private void onMouseMoved(MouseEvent event) {
 		hoveredBlock = getMouseBlock(event.getX(), event.getY());
-		if (hoverListener != null) {
-			hoverListener.accept(this);
-		}
+		runHoverListeners();
 	}
 
 	private void onMouseExited() {
 		hoveredBlock = null;
-		if (hoverListener != null) {
-			hoverListener.accept(this);
-		}
+		runHoverListeners();
 	}
 
 	private void onScroll(ScrollEvent event) {
@@ -121,9 +117,7 @@ public class TileMap extends Canvas {
 	}
 
 	public void update() {
-		if (updateListener != null) {
-			updateListener.accept(this);
-		}
+		runUpdateListeners();
 		qrig.validateJobs();
 		for (Tile tile : visibleTiles) {
 			if (!tile.isVisible(this, TILE_VISIBILITY_THRESHOLD)) {
@@ -138,11 +132,19 @@ public class TileMap extends Canvas {
 	}
 
 	public void setOnUpdate(Consumer<TileMap> listener) {
-		updateListener = listener;
+		updateListener.add(listener);
 	}
 
 	public void setOnHover(Consumer<TileMap> listener) {
-		hoverListener = listener;
+		hoverListener.add(listener);
+	}
+
+	private void runUpdateListeners() {
+		updateListener.forEach(c -> c.accept(this));
+	}
+
+	private void runHoverListeners() {
+		hoverListener.forEach(c -> c.accept(this));
 	}
 
 	public Point2f getOffset() {

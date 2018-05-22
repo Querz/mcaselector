@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io;
 
+import net.querz.mcaselector.Config;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import java.io.*;
@@ -22,8 +23,12 @@ public class MCALoader {
 	}
 
 	public static void deleteChunks(Map<Point2i, Set<Point2i>> chunksToBeDeleted) {
+		deleteChunks(chunksToBeDeleted, Config.getWorldDir());
+	}
+
+	public static void deleteChunks(Map<Point2i, Set<Point2i>> chunksToBeDeleted, File dir) {
 		for (Map.Entry<Point2i, Set<Point2i>> entry : chunksToBeDeleted.entrySet()) {
-			File file = Helper.createMCAFilePath(entry.getKey());
+			File file = new File(dir, Helper.createMCAFileName(entry.getKey()));
 			//delete region
 
 			System.out.println("creating backup of " + file);
@@ -39,7 +44,7 @@ public class MCALoader {
 				MCAFile mcaFile = null;
 
 				try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-					mcaFile = MCALoader.read(Helper.createMCAFilePath(entry.getKey()), raf);
+					mcaFile = MCALoader.read(new File(dir, Helper.createMCAFileName(entry.getKey())), raf);
 
 					if (mcaFile == null) {
 						System.out.println("error reading " + file + ", skipping");

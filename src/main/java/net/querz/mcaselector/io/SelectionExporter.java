@@ -1,8 +1,10 @@
 package net.querz.mcaselector.io;
 
+import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import java.io.*;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -65,5 +67,37 @@ public class SelectionExporter {
 			ex.printStackTrace();
 		}
 		return chunks;
+	}
+
+	public static void exportSelectedChunks(Map<Point2i, Set<Point2i>> chunks, File dir) {
+		for (Map.Entry<Point2i, Set<Point2i>> entry : chunks.entrySet()) {
+			File file = Helper.createMCAFilePath(entry.getKey());
+			if (file.exists()) {
+				File to = new File(dir, Helper.createMCAFileName(entry.getKey()));
+				if (to.exists()) {
+					System.out.println(to.getAbsolutePath() + " exists, not overwriting");
+					continue;
+				}
+				try {
+					Files.copy(file.toPath(), to.toPath());
+				} catch (IOException e) {
+					e.printStackTrace();
+					continue;
+				}
+				//invert selected chunks and tell the MCALoader to delete them
+				Set<Point2i> c = new HashSet<>(Tile.CHUNKS - entry.getValue().size());
+				for (int x = Helper.regionToChunk(entry.getKey()).getX(); x < Tile.SIZE_IN_CHUNKS; x++) {
+					for (int z = Helper.regionToChunk(entry.getKey()).getY(); z < Tile.SIZE_IN_CHUNKS; z++) {
+						Point2i cp = new Point2i(x, z);
+						if (!entry.getValue().contains(cp)) {
+							c.add(cp);
+						}
+					}
+				}
+				Map<Point2i, Set<Point2i>> inverted = new HashMap<>(1);
+				inverted.put(entry.getKey(), c);
+				MCALoader.deleteChunks(inverted, dir);
+			}
+		}
 	}
 }

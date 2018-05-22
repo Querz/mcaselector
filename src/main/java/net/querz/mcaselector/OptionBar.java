@@ -28,16 +28,26 @@ public class OptionBar extends MenuBar {
 	private MenuItem clearViewCache = new MenuItem("Clear cache");
 	private MenuItem clearAllCache = new MenuItem("Clear all cache");
 	private MenuItem clear = new MenuItem("Clear");
+	private MenuItem exportChunks = new MenuItem("Export chunks");
 	private MenuItem delete = new MenuItem("Delete chunks");
 	private MenuItem importSelection = new MenuItem("Import selection");
 	private MenuItem exportSelection = new MenuItem("Export selection");
 	private MenuItem clearSelectionCache = new MenuItem("Clear cache");
 
 	public OptionBar(TileMap tileMap, Stage primaryStage) {
+		tileMap.setOnUpdate(this::onUpdate);
+
 		getMenus().addAll(file, view, selection);
 		file.getItems().addAll(open, quit);
-		view.getItems().addAll(chunkGrid, regionGrid, separator(), goTo, separator(), clearViewCache, clearAllCache);
-		selection.getItems().addAll(clear, delete, separator(), importSelection, exportSelection, separator(), clearSelectionCache);
+		view.getItems().addAll(
+				chunkGrid, regionGrid, separator(),
+				goTo, separator(),
+				clearViewCache, clearAllCache);
+		selection.getItems().addAll(
+				clear, separator(),
+				exportChunks, delete, separator(),
+				importSelection, exportSelection, separator(),
+				clearSelectionCache);
 		chunkGrid.setSelected(true);
 		regionGrid.setSelected(true);
 
@@ -49,10 +59,26 @@ public class OptionBar extends MenuBar {
 		clearAllCache.setOnAction(e -> Helper.clearAllCache(tileMap));
 		clearViewCache.setOnAction(e -> Helper.clearViewCache(tileMap));
 		clear.setOnAction(e -> tileMap.clearSelection());
+		exportChunks.setOnAction(e -> Helper.exportSelectedChunks(tileMap, primaryStage));
 		delete.setOnAction(e -> Helper.deleteSelection(tileMap));
 		importSelection.setOnAction(e -> Helper.importSelection(tileMap, primaryStage));
 		exportSelection.setOnAction(e -> Helper.exportSelection(tileMap, primaryStage));
 		clearSelectionCache.setOnAction(e -> Helper.clearSelectionCache(tileMap));
+	}
+
+	private void onUpdate(TileMap tileMap) {
+		if (tileMap.getSelectedChunks() == 0) {
+			clear.setDisable(true);
+			exportChunks.setDisable(true);
+			exportSelection.setDisable(true);
+			delete.setDisable(true);
+
+		} else {
+			clear.setDisable(false);
+			exportChunks.setDisable(false);
+			exportSelection.setDisable(false);
+			delete.setDisable(false);
+		}
 	}
 
 	private SeparatorMenuItem separator() {

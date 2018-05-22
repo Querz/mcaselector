@@ -25,6 +25,10 @@ public class Helper {
 		return i.shiftLeft(9);
 	}
 
+	public static Point2i regionToChunk(Point2i i) {
+		return i.shiftLeft(5);
+	}
+
 	public static Point2i blockToChunk(Point2i i) {
 		return i.shiftRight(4);
 	}
@@ -75,11 +79,19 @@ public class Helper {
 	}
 
 	public static File createMCAFilePath(Point2i r) {
-		return new File(Config.getWorldDir(), String.format("r.%d.%d.mca", r.getX(), r.getY()));
+		return new File(Config.getWorldDir(), createMCAFileName(r));
 	}
 
 	public static File createPNGFilePath(Point2i r) {
-		return new File(Config.getCacheDir(), String.format("r.%d.%d.png", r.getX(), r.getY()));
+		return new File(Config.getCacheDir(), createPNGFileName(r));
+	}
+
+	public static String createMCAFileName(Point2i r) {
+		return String.format("r.%d.%d.mca", r.getX(), r.getY());
+	}
+
+	public static String createPNGFileName(Point2i r) {
+		return String.format("r.%d.%d.png", r.getX(), r.getY());
 	}
 
 	public static void openWorld(TileMap tileMap, Stage primaryStage) {
@@ -117,7 +129,9 @@ public class Helper {
 
 	private static DirectoryChooser createDirectoryChooser(String initialDirectory) {
 		DirectoryChooser directoryChooser = new DirectoryChooser();
-		directoryChooser.setInitialDirectory(new File(initialDirectory));
+		if (initialDirectory != null) {
+			directoryChooser.setInitialDirectory(new File(initialDirectory));
+		}
 		return directoryChooser;
 	}
 
@@ -183,6 +197,11 @@ public class Helper {
 				clearSelectionCache(tileMap);
 			}
 		});
+	}
+
+	public static void exportSelectedChunks(TileMap tileMap, Stage primaryStage) {
+		File dir = createDirectoryChooser(null).showDialog(primaryStage);
+		SelectionExporter.exportSelectedChunks(tileMap.getMarkedChunks(), dir);
 	}
 
 	public static void gotoCoordinate(TileMap tileMap) {
