@@ -1,4 +1,4 @@
-package net.querz.mcaselector.anvil112;
+package net.querz.mcaselector.version.anvil112;
 
 import net.querz.mcaselector.ColorMapping;
 import net.querz.mcaselector.util.Helper;
@@ -7,13 +7,13 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Anvil112TextureColorMapping implements ColorMapping {
+public class Anvil112ColorMapping implements ColorMapping {
 
 	private static Map<Integer, Integer> mapping = new HashMap<>();
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Anvil112TextureColorMapping.class.getClass().getResourceAsStream("/colors.csv")))) {
+				new InputStreamReader(Anvil112ColorMapping.class.getClass().getResourceAsStream("/colors.csv")))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				String[] elements = line.split(";");

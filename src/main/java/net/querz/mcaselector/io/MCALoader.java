@@ -11,6 +11,8 @@ import java.util.Set;
 
 public class MCALoader {
 
+	private MCALoader() {}
+
 	public static MCAFile read(File file, RandomAccessFile raf) {
 		try {
 			MCAFile mcaFile = new MCAFile(file);

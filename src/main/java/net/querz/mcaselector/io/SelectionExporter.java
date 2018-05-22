@@ -12,6 +12,8 @@ import java.util.Set;
 
 public class SelectionExporter {
 
+	private SelectionExporter() {}
+
 	public static void exportSelection(Map<Point2i, Set<Point2i>> chunks, File file) {
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
 			for (Map.Entry<Point2i, Set<Point2i>> entry : chunks.entrySet()) {

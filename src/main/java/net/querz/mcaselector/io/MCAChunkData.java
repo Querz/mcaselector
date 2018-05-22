@@ -2,6 +2,7 @@ package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.ChunkDataProcessor;
 import net.querz.mcaselector.ColorMapping;
+import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.NBTInputStream;
 import net.querz.nbt.Tag;
@@ -38,17 +39,16 @@ public class MCAChunkData {
 
 	public void loadData(RandomAccessFile raf) throws Exception {
 		raf.seek(offset + 5);
-		MCAInputStream in = new MCAInputStream(raf);
 		NBTInputStream nbtIn = null;
 		Tag tag;
 
 		try {
 			switch (compressionType) {
 			case GZIP:
-				nbtIn = new NBTInputStream(new BufferedInputStream(new GZIPInputStream(in)));
+				nbtIn = new NBTInputStream(new BufferedInputStream(new GZIPInputStream(new MCAInputStream(raf))));
 				break;
 			case ZLIB:
-				nbtIn = new NBTInputStream(new BufferedInputStream(new InflaterInputStream(in)));
+				nbtIn = new NBTInputStream(new BufferedInputStream(new InflaterInputStream(new MCAInputStream(raf))));
 				break;
 			case NONE:
 				data = null;
@@ -68,9 +68,15 @@ public class MCAChunkData {
 		}
 	}
 
-	public void drawImage(ChunkDataProcessor chunkDataProcessor, ColorMapping colorMapping, int x, int z, BufferedImage image) {
+	public void drawImage(int x, int z, BufferedImage image) {
 		if (data != null) {
-			chunkDataProcessor.drawImage(data, colorMapping, x, z, image);
+			int dataVersion = data.getInt("DataVersion");
+			VersionController.getChunkDataProcessor(dataVersion).drawChunk(
+					data,
+					VersionController.getColorMapping(dataVersion),
+					x, z,
+					image
+			);
 		}
 	}
 

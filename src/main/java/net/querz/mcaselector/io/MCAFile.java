@@ -62,7 +62,7 @@ public class MCAFile {
 		return file;
 	}
 
-	public BufferedImage createImage(ChunkDataProcessor chunkDataProcessor, ColorMapping colorMapping, RandomAccessFile raf) {
+	public BufferedImage createImage(RandomAccessFile raf) {
 		try {
 			BufferedImage finalImage = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
 
@@ -80,7 +80,7 @@ public class MCAFile {
 					int imageX = cx * 16;
 					int imageZ = cz * 16;
 
-					data.drawImage(chunkDataProcessor, colorMapping, imageX, imageZ, finalImage);
+					data.drawImage(imageX, imageZ, finalImage);
 				}
 			}
 			return finalImage;
