@@ -9,7 +9,6 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.anvil112.Anvil112ChunkDataProcessor;
-import net.querz.mcaselector.anvil112.Anvil112ColorMapping;
 import net.querz.mcaselector.anvil112.Anvil112TextureColorMapping;
 import net.querz.mcaselector.io.MCAFile;
 import net.querz.mcaselector.io.MCALoader;
@@ -26,6 +25,8 @@ public class Tile {
 
 	public static final int SIZE = 512;
 	public static final int CHUNK_SIZE = 16;
+	public static final int SIZE_IN_CHUNKS = 32;
+	public static final int CHUNKS = 1024;
 
 	public static final Color REGION_MARKED_COLOR = new Color(1, 0, 0, 0.8);
 	public static final Color CHUNK_MARKED_COLOR = new Color(1, 0.45, 0, 0.8);
@@ -116,7 +117,7 @@ public class Tile {
 
 	public void mark(Point2i chunkBlock) {
 		markedChunks.add(chunkBlock);
-		if (markedChunks.size() == 1024) {
+		if (markedChunks.size() == CHUNKS) {
 			markedChunks.clear();
 			mark(true);
 		}
@@ -132,8 +133,8 @@ public class Tile {
 
 	public void unMark(Point2i chunkBlock) {
 		if (isMarked()) {
-			for (int x = 0; x < 32; x++) {
-				for (int z = 0; z < 32; z++) {
+			for (int x = 0; x < SIZE_IN_CHUNKS; x++) {
+				for (int z = 0; z < SIZE_IN_CHUNKS; z++) {
 					markedChunks.add(new Point2i(location.getX() + x * CHUNK_SIZE, location.getY() + z * CHUNK_SIZE));
 				}
 			}

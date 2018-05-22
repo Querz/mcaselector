@@ -219,6 +219,7 @@ public class TileMap extends Canvas {
 	}
 
 	public void setMarkedChunks(Map<Point2i, Set<Point2i>> chunks) {
+		clearSelection();
 		for (Map.Entry<Point2i, Set<Point2i>> entry : chunks.entrySet()) {
 			Point2i region = Helper.regionToBlock(entry.getKey());
 			Tile tile = tiles.get(region);
@@ -228,9 +229,11 @@ public class TileMap extends Canvas {
 			}
 			if (entry.getValue() == null) {
 				tile.mark(true);
+				selectedChunks += Tile.CHUNKS;
 			} else {
 				for (Point2i chunk : entry.getValue()) {
 					tile.mark(Helper.chunkToBlock(chunk));
+					selectedChunks++;
 				}
 			}
 		}
@@ -268,9 +271,9 @@ public class TileMap extends Canvas {
 					Tile tile = tiles.get(new Point2i(x, z));
 					if (tile != null && !tile.isEmpty()) {
 						if (tile.isMarked() && !marked) {
-							selectedChunks -= 1024;
+							selectedChunks -= Tile.CHUNKS;
 						} else if (!tile.isMarked() && marked) {
-							selectedChunks += 1024 - tile.getMarkedChunks().size();
+							selectedChunks += Tile.CHUNKS - tile.getMarkedChunks().size();
 						}
 						tile.mark(marked);
 					}

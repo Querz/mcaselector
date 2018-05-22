@@ -97,7 +97,8 @@ public class Helper {
 	}
 
 	public static void importSelection(TileMap tileMap, Stage primaryStage) {
-		File file = createFileChooser(null).showOpenDialog(primaryStage);
+		File file = createFileChooser(null,
+				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showOpenDialog(primaryStage);
 		if (file != null) {
 			Map<Point2i, Set<Point2i>> chunks = SelectionExporter.importSelection(file);
 			tileMap.setMarkedChunks(chunks);
@@ -106,7 +107,8 @@ public class Helper {
 	}
 
 	public static void exportSelection(TileMap tileMap, Stage primaryStage) {
-		File file = createFileChooser(null).showSaveDialog(primaryStage);
+		File file = createFileChooser(null,
+				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showSaveDialog(primaryStage);
 		if (file != null) {
 			SelectionExporter.exportSelection(tileMap.getMarkedChunks(), file);
 			tileMap.update();
@@ -119,8 +121,12 @@ public class Helper {
 		return directoryChooser;
 	}
 
-	private static FileChooser createFileChooser(String initialDirectory) {
+	private static FileChooser createFileChooser(String initialDirectory, FileChooser.ExtensionFilter filter) {
 		FileChooser fileChooser = new FileChooser();
+		if (filter != null) {
+			fileChooser.getExtensionFilters().add(filter);
+//			fileChooser.setSelectedExtensionFilter(filter);
+		}
 		if (initialDirectory != null) {
 			fileChooser.setInitialDirectory(new File(initialDirectory));
 		}

@@ -37,7 +37,7 @@ public class OptionBar extends MenuBar {
 		getMenus().addAll(file, view, selection);
 		file.getItems().addAll(open, quit);
 		view.getItems().addAll(chunkGrid, regionGrid, separator(), goTo, separator(), clearViewCache, clearAllCache);
-		selection.getItems().addAll(clear, delete, separator(), clearSelectionCache);
+		selection.getItems().addAll(clear, delete, separator(), importSelection, exportSelection, separator(), clearSelectionCache);
 		chunkGrid.setSelected(true);
 		regionGrid.setSelected(true);
 
