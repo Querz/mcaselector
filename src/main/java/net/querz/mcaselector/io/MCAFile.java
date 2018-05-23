@@ -70,9 +70,13 @@ public class MCAFile {
 		try {
 			BufferedImage finalImage = new BufferedImage(Tile.SIZE, Tile.SIZE, BufferedImage.TYPE_INT_RGB);
 
+			long start = System.currentTimeMillis();
+			long loadingTime = 0;
 			for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
 				for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
 					int index = cz  * Tile.SIZE_IN_CHUNKS + cx;
+
+					long s = System.currentTimeMillis();
 					MCAChunkData data = getChunkData(index);
 					data.readHeader(raf);
 					try {
@@ -80,6 +84,7 @@ public class MCAFile {
 					} catch (Exception ex) {
 						Debug.error(ex);
 					}
+					loadingTime += (System.currentTimeMillis() - s);
 
 					int imageX = cx * Tile.CHUNK_SIZE;
 					int imageZ = cz * Tile.CHUNK_SIZE;
@@ -87,6 +92,8 @@ public class MCAFile {
 					data.drawImage(imageX, imageZ, finalImage);
 				}
 			}
+			Debug.dump("took " + (System.currentTimeMillis() - start)
+					+ "ms to generate image of region, loading time: " + loadingTime + "ms");
 			return finalImage;
 		} catch (Exception ex) {
 			Debug.error(ex);

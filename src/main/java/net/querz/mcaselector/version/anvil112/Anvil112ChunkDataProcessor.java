@@ -7,6 +7,9 @@ import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.Tag;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
@@ -14,6 +17,7 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, BufferedImage image) {
 		ListTag sections = (ListTag) ((CompoundTag) root.get("Level")).get("Sections");
 		sections.getValue().sort(this::filterSections);
+
 		//loop over x / z
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop: for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {

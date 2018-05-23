@@ -41,24 +41,18 @@ public class MCAChunkData {
 		NBTInputStream nbtIn = null;
 		Tag tag;
 
-		try {
-			switch (compressionType) {
-			case GZIP:
-				nbtIn = new NBTInputStream(new BufferedInputStream(new GZIPInputStream(new MCAInputStream(raf))));
-				break;
-			case ZLIB:
-				nbtIn = new NBTInputStream(new BufferedInputStream(new InflaterInputStream(new MCAInputStream(raf))));
-				break;
-			case NONE:
-				data = null;
-				return;
-			}
-			tag = nbtIn.readTag();
-		} finally {
-			if (nbtIn != null) {
-				nbtIn.close();
-			}
+		switch (compressionType) {
+		case GZIP:
+			nbtIn = new NBTInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(raf.getFD()))));
+			break;
+		case ZLIB:
+			nbtIn = new NBTInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(raf.getFD()))));
+			break;
+		case NONE:
+			data = null;
+			return;
 		}
+		tag = nbtIn.readTag();
 
 		if (tag instanceof CompoundTag) {
 			data = (CompoundTag) tag;
