@@ -1,0 +1,46 @@
+.menu-bar, .menu, .menu-item, .context-menu {
+	-fx-background-color: #262626;
+}
+
+.menu-bar {
+	-fx-padding: 0;
+}
+
+.menu {
+	-fx-padding: 2 5 2 5;
+}
+
+.menu .context-menu {
+	-fx-padding: 1;
+}
+
+.menu >.label, .menu-item >.label {
+	-fx-text-fill: #f2f2f2;
+}
+
+#menu-item-disabled {
+	-fx-background-color: #2e2e2e;
+	-fx-opacity: 1;
+}
+
+.check-menu-item {
+	-fx-focused-mark-color: #f2f2f2;
+	-fx-mark-color: #f2f2f2;
+}
+
+.separator *.line {
+	-fx-border-width: 0;
+	-fx-background-color: #898989;
+}
+
+.menu:hover, #menu-item-enabled:hover, .check-menu-item:hover {
+	-fx-background-color: #3f3f3f;
+}
+
+#status-bar {
+	-fx-background-color: #262626;
+}
+
+#status-bar .label {
+	-fx-text-fill: #f2f2f2;
+}

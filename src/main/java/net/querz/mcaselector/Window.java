@@ -9,8 +9,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import net.querz.mcaselector.tiles.TileMap;
 
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,7 +25,6 @@ public class Window extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-
 		primaryStage.setTitle("MCA Selector");
 
 		TileMap tileMap = new TileMap(this, width, height);
@@ -51,6 +52,12 @@ public class Window extends Application {
 		pane.setBottom(new StatusBar(tileMap));
 
 		Scene scene = new Scene(pane, width, height);
+
+		URL cssRes = Window.class.getClassLoader().getResource("style.css");
+		if (cssRes != null) {
+			String styleSheet = cssRes.toExternalForm();
+			scene.getStylesheets().add(styleSheet);
+		}
 
 		scene.setOnKeyPressed(e -> pressedKeys.add(e.getCode()));
 		scene.setOnKeyReleased(e -> pressedKeys.remove(e.getCode()));

@@ -230,8 +230,9 @@ public class Tile {
 		loading = true;
 		Point2i p = Helper.blockToRegion(getLocation());
 		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/r.%d.%d.png", p.getX(), p.getY());
-		System.out.println("Generating image for region " + p.getX() + " " + p.getY());
 		File file = new File(Config.getWorldDir().getAbsolutePath() + "/r." + p.getX() + "." + p.getY() + ".mca");
+		System.out.println("Generating image for region " + p.getX() + " " + p.getY() + " from " + file);
+
 
 		if (!file.exists()) {
 			System.out.println("region file " + file + " does not exist, skipping.");

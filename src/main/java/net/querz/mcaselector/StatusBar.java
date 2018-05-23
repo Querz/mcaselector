@@ -16,21 +16,15 @@ public class StatusBar extends BorderPane {
 	private Label hoveredChunk = new Label("chunk: -, -");
 	private Label hoveredRegion = new Label("region: -, -");
 
-	private static final Color textColor = Color.WHITE;
-	private static final Color backgroundColor = new Color(0.15, 0.15, 0.15, 1);
 
 	public StatusBar(TileMap tileMap) {
-		setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
+		setId("status-bar");
 
 		tileMap.setOnUpdate(this::update);
 		tileMap.setOnHover(this::update);
 		for (int i = 0; i < 4; i++) {
 			grid.getColumnConstraints().add(new ColumnConstraints(120, 120, 200));
 		}
-		hoveredBlock.setTextFill(textColor);
-		hoveredChunk.setTextFill(textColor);
-		hoveredRegion.setTextFill(textColor);
-		selectedChunks.setTextFill(textColor);
 		grid.add(hoveredBlock, 0, 0, 1, 1);
 		grid.add(hoveredChunk, 1, 0, 1, 1);
 		grid.add(hoveredRegion, 2, 0, 1 ,1);
