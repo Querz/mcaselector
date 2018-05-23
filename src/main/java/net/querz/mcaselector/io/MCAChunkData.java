@@ -1,7 +1,5 @@
 package net.querz.mcaselector.io;
 
-import net.querz.mcaselector.ChunkDataProcessor;
-import net.querz.mcaselector.ColorMapping;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.NBTInputStream;
@@ -22,7 +20,7 @@ public class MCAChunkData {
 
 	//offset in 4KiB chunks
 	public MCAChunkData(int offset, int timestamp, byte sectors) {
-		this.offset = ((long) offset) * 4096;
+		this.offset = ((long) offset) * MCAFile.SECTION_SIZE;
 		this.timestamp = timestamp;
 		this.sectors = sectors;
 	}
@@ -38,6 +36,7 @@ public class MCAChunkData {
 	}
 
 	public void loadData(RandomAccessFile raf) throws Exception {
+		//offset + length of length (4 bytes) + length of compression type (1 byte)
 		raf.seek(offset + 5);
 		NBTInputStream nbtIn = null;
 		Tag tag;
@@ -85,7 +84,7 @@ public class MCAChunkData {
 	}
 
 	void setOffset(int sectorOffset) {
-		this.offset = ((long) sectorOffset) * 4096;
+		this.offset = ((long) sectorOffset) * MCAFile.SECTION_SIZE;
 	}
 
 	public int getLength() {

@@ -9,8 +9,6 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.version.anvil112.Anvil112ChunkDataProcessor;
-import net.querz.mcaselector.version.anvil112.Anvil112ColorMapping;
 import net.querz.mcaselector.io.MCAFile;
 import net.querz.mcaselector.io.MCALoader;
 import net.querz.mcaselector.util.Helper;
@@ -172,7 +170,11 @@ public class Tile {
 					//(p.x - location.x) / scale --> location in pixel
 					int regionChunkOffsetX = (int) ((p.getX() - location.getX()) / scale + offset.getX());
 					int regionChunkOffsetY = (int) ((p.getY() - location.getY()) / scale + offset.getY());
-					ctx.fillRect(regionChunkOffsetX, regionChunkOffsetY, Math.ceil(CHUNK_SIZE / scale), Math.ceil(CHUNK_SIZE / scale));
+					ctx.fillRect(
+							regionChunkOffsetX,
+							regionChunkOffsetY,
+							Math.ceil(CHUNK_SIZE / scale),
+							Math.ceil(CHUNK_SIZE / scale));
 				}
 			}
 		} else {
@@ -193,10 +195,18 @@ public class Tile {
 			//draw chunk grid
 			ctx.setStroke(CHUNK_GRID_COLOR);
 			for (int x = regionGrid ? 1 : 0; x < SIZE / CHUNK_SIZE; x++) {
-				ctx.strokeLine(offset.getX() + (x * CHUNK_SIZE / scale), offset.getY(), offset.getX() + (x * CHUNK_SIZE / scale), offset.getY() + SIZE / scale);
+				ctx.strokeLine(
+						offset.getX() + (x * CHUNK_SIZE / scale),
+						offset.getY(),
+						offset.getX() + (x * CHUNK_SIZE / scale),
+						offset.getY() + SIZE / scale);
 			}
 			for (int z = regionGrid ? 1 : 0; z < SIZE / CHUNK_SIZE; z++) {
-				ctx.strokeLine(offset.getX(), offset.getY() + (z * CHUNK_SIZE / scale), offset.getX() + SIZE / scale, offset.getY() + (z * CHUNK_SIZE / scale));
+				ctx.strokeLine(
+						offset.getX(),
+						offset.getY() + (z * CHUNK_SIZE / scale),
+						offset.getX() + SIZE / scale,
+						offset.getY() + (z * CHUNK_SIZE / scale));
 			}
 		}
 	}
@@ -267,7 +277,7 @@ public class Tile {
 				}
 				ImageIO.write(bufferedImage, "png", new File(res));
 			} catch (IOException ex) {
-				ex.printStackTrace();
+				Debug.error(ex);
 			}
 		}
 		loaded = true;

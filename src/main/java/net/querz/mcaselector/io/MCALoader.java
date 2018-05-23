@@ -20,7 +20,7 @@ public class MCALoader {
 			mcaFile.read(raf);
 			return mcaFile;
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			Debug.error(ex);
 		}
 		return null;
 	}
@@ -42,8 +42,8 @@ public class MCALoader {
 			if (entry.getValue() == null) {
 				try {
 					Files.deleteIfExists(file.toPath());
-				} catch (IOException e1) {
-					e1.printStackTrace();
+				} catch (IOException ex) {
+					Debug.error(ex);
 				}
 			} else {
 				MCAFile mcaFile = null;
@@ -58,7 +58,7 @@ public class MCALoader {
 
 					mcaFile.deleteChunkIndices(entry.getValue(), raf);
 				} catch (Exception ex) {
-					ex.printStackTrace();
+					Debug.error(ex);
 					if (backup && mcaFile != null) {
 						restore(mcaFile);
 					}
@@ -79,8 +79,7 @@ public class MCALoader {
 		try {
 			Files.copy(oldFile, backupFile);
 		} catch (IOException ex) {
-			ex.printStackTrace();
-			Debug.error("error trying to create backup file for " + mcaFile);
+			Debug.error("error trying to create backup file for " + mcaFile, ex);
 		}
 	}
 
@@ -91,8 +90,7 @@ public class MCALoader {
 		try {
 			Files.move(backupFile, oldFile);
 		} catch (IOException ex) {
-			ex.printStackTrace();
-			Debug.error("error trying to restore backup file for " + mcaFile.getFile());
+			Debug.error("error trying to restore backup file for " + mcaFile.getFile(), ex);
 		}
 	}
 }

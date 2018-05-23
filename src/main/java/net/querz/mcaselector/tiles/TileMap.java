@@ -323,7 +323,8 @@ public class TileMap extends Canvas {
 			if (!tile.isLoaded() && !tile.isLoading()) {
 				qrig.addJob(tile);
 			}
-			tile.draw(ctx, scale, new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale), showRegionGrid, showChunkGrid);
+			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
+			tile.draw(ctx, scale, p, showRegionGrid, showChunkGrid);
 		});
 	}
 

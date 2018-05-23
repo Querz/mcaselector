@@ -28,7 +28,7 @@ public class SelectionExporter {
 				}
 			}
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			Debug.error(ex);
 		}
 	}
 
@@ -67,7 +67,7 @@ public class SelectionExporter {
 				}
 			}
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			Debug.error(ex);
 		}
 		return chunks;
 	}
@@ -83,8 +83,8 @@ public class SelectionExporter {
 				}
 				try {
 					Files.copy(file.toPath(), to.toPath());
-				} catch (IOException e) {
-					e.printStackTrace();
+				} catch (IOException ex) {
+					Debug.error(ex);
 					continue;
 				}
 				if (entry.getValue() == null) {

@@ -27,7 +27,7 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 					for (int cy = Tile.CHUNK_SIZE - 1; cy >= 0; cy--) {
 						int index = getBlockIndex(cx, cy, cz);
 						short block = (short) (blocks[index] & 0xFF);
-						byte blockData = (byte) (index % 2 == 0 ? data[index / 2] & 0x0F : (data[index / 2]>>4)&0x0F);
+						byte blockData = (byte) (index % 2 == 0 ? data[index / 2] & 0x0F : (data[index / 2] >> 4) & 0x0F);
 						if (block != 0) {
 							image.setRGB(x + cx, z + cz, colorMapping.getRGB(((block << 4) + blockData)));
 							continue zLoop;

@@ -1,13 +1,17 @@
 package net.querz.mcaselector.io;
 
-import net.querz.mcaselector.ChunkDataProcessor;
-import net.querz.mcaselector.ColorMapping;
+import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Point2i;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Set;
 
 public class MCAFile {
+
+	public static final int INDEX_HEADER_LOCATION = 0;
+	public static final int TIMESTAMP_HEADER_LOCATION = 4096;
+	public static final int SECTION_SIZE = 4096;
 
 	private File file;
 	private int[] offsets;
@@ -16,9 +20,9 @@ public class MCAFile {
 
 	public MCAFile(File file) {
 		this.file = file;
-		offsets = new int[1024];
-		sectors = new byte[1024];
-		timestamps = new int[1024];
+		offsets = new int[Tile.CHUNKS];
+		sectors = new byte[Tile.CHUNKS];
+		timestamps = new int[Tile.CHUNKS];
 	}
 
 	public void read(RandomAccessFile raf) throws IOException {
@@ -41,16 +45,17 @@ public class MCAFile {
 	public void deleteChunkIndices(Set<Point2i> chunks, RandomAccessFile raf) throws Exception {
 		for (Point2i chunk : chunks) {
 			int index = getChunkIndex(chunk);
-			raf.seek(index * 4);
+			raf.seek(INDEX_HEADER_LOCATION + index * 4);
 			raf.writeInt(0);
 			//set timestamp to 0
-			raf.seek(4096 + index * 4);
+			raf.seek(TIMESTAMP_HEADER_LOCATION + index * 4);
 			raf.writeInt(0);
 		}
 	}
 
 	private int getChunkIndex(Point2i chunkCoordinate) {
-		return (chunkCoordinate.getX() & 31) + (chunkCoordinate.getY() & 31) * 32;
+		return (chunkCoordinate.getX() & (Tile.SIZE_IN_CHUNKS - 1))
+				+ (chunkCoordinate.getY() & (Tile.SIZE_IN_CHUNKS - 1)) * Tile.SIZE_IN_CHUNKS;
 	}
 
 	public MCAChunkData getChunkData(int index) {
@@ -63,28 +68,28 @@ public class MCAFile {
 
 	public BufferedImage createImage(RandomAccessFile raf) {
 		try {
-			BufferedImage finalImage = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
+			BufferedImage finalImage = new BufferedImage(Tile.SIZE, Tile.SIZE, BufferedImage.TYPE_INT_RGB);
 
-			for (int cx = 0; cx < 32; cx++) {
-				for (int cz = 0; cz < 32; cz++) {
-					int index = cz  * 32 + cx;
+			for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
+				for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
+					int index = cz  * Tile.SIZE_IN_CHUNKS + cx;
 					MCAChunkData data = getChunkData(index);
 					data.readHeader(raf);
 					try {
 						data.loadData(raf);
 					} catch (Exception ex) {
-						ex.printStackTrace();
+						Debug.error(ex);
 					}
 
-					int imageX = cx * 16;
-					int imageZ = cz * 16;
+					int imageX = cx * Tile.CHUNK_SIZE;
+					int imageZ = cz * Tile.CHUNK_SIZE;
 
 					data.drawImage(imageX, imageZ, finalImage);
 				}
 			}
 			return finalImage;
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			Debug.error(ex);
 		}
 		return null;
 	}

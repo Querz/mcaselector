@@ -1,14 +1,10 @@
 package net.querz.mcaselector;
 
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.util.Helper;
-
-import static javafx.scene.input.KeyCombination.*;
 
 public class OptionBar extends MenuBar {
 	/*
