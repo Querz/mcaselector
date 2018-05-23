@@ -1,6 +1,7 @@
 package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import java.io.*;
@@ -41,7 +42,7 @@ public class SelectionExporter {
 					Integer x = Helper.parseInt(elements[0], 10);
 					Integer z = Helper.parseInt(elements[1], 10);
 					if (x == null || z == null) {
-						System.out.println("could not read region in selection import: " + line);
+						Debug.error("could not read region in selection import: " + line);
 						continue;
 					}
 					Integer cx = null, cz = null;
@@ -49,7 +50,7 @@ public class SelectionExporter {
 						cx = Helper.parseInt(elements[2], 10);
 						cz = Helper.parseInt(elements[3], 10);
 						if (cx == null || cz == null) {
-							System.out.println("could not read chunk in selection import: " + line);
+							Debug.error("could not read chunk in selection import: " + line);
 							continue;
 						}
 					}
@@ -77,7 +78,7 @@ public class SelectionExporter {
 			if (file.exists()) {
 				File to = new File(dir, Helper.createMCAFileName(entry.getKey()));
 				if (to.exists()) {
-					System.out.println(to.getAbsolutePath() + " exists, not overwriting");
+					Debug.dump(to.getAbsolutePath() + " exists, not overwriting");
 					continue;
 				}
 				try {

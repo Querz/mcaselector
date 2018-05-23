@@ -1,6 +1,7 @@
 package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import java.io.*;
@@ -34,7 +35,7 @@ public class MCALoader {
 			//delete region
 
 			if (backup) {
-				System.out.println("creating backup of " + file);
+				Debug.dump("creating backup of " + file);
 				backup(file);
 			}
 
@@ -51,7 +52,7 @@ public class MCALoader {
 					mcaFile = MCALoader.read(new File(dir, Helper.createMCAFileName(entry.getKey())), raf);
 
 					if (mcaFile == null) {
-						System.out.println("error reading " + file + ", skipping");
+						Debug.error("error reading " + file + ", skipping");
 						continue;
 					}
 
@@ -72,14 +73,14 @@ public class MCALoader {
 		Path oldFile = mcaFile.toPath();
 		Path backupFile = oldFile.resolveSibling(mcaFile.getName() + "_old");
 		if (backupFile.toFile().exists()) {
-			System.out.println("backup file " + backupFile + " already exists");
+			Debug.dump("backup file " + backupFile + " already exists");
 			return;
 		}
 		try {
 			Files.copy(oldFile, backupFile);
 		} catch (IOException ex) {
 			ex.printStackTrace();
-			System.out.println("error trying to create backup file for " + mcaFile.getAbsolutePath());
+			Debug.error("error trying to create backup file for " + mcaFile);
 		}
 	}
 
@@ -91,7 +92,7 @@ public class MCALoader {
 			Files.move(backupFile, oldFile);
 		} catch (IOException ex) {
 			ex.printStackTrace();
-			System.out.println("error trying to restore backup file for " + mcaFile.getFile().getAbsolutePath());
+			Debug.error("error trying to restore backup file for " + mcaFile.getFile());
 		}
 	}
 }

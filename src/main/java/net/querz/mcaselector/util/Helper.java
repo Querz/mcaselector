@@ -100,7 +100,7 @@ public class Helper {
 		if (file != null && file.isDirectory()) {
 			File[] files = file.listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.mca"));
 			if (files != null && files.length > 0) {
-				System.out.println("setting world dir to " + file.getAbsolutePath());
+				Debug.dump("setting world dir to " + file.getAbsolutePath());
 				Config.setWorldDir(file);
 				tileMap.clear();
 				tileMap.update();
@@ -152,9 +152,9 @@ public class Helper {
 		if (files != null) {
 			for (File file : files) {
 				if (!file.isDirectory()) {
-					System.out.println("deleting " + file);
+					Debug.dump("deleting " + file);
 					if (!file.delete()) {
-						System.out.println("could not delete file " + file);
+						Debug.error("could not delete file " + file);
 					}
 				}
 			}
@@ -168,7 +168,7 @@ public class Helper {
 			File file = Helper.createPNGFilePath(regionBlock);
 			if (file.exists()) {
 				if (!file.delete()) {
-					System.out.println("could not delete file " + file);
+					Debug.error("could not delete file " + file);
 				}
 			}
 		}
@@ -181,7 +181,7 @@ public class Helper {
 			File file = Helper.createPNGFilePath(entry.getKey());
 			if (file.exists()) {
 				if (!file.delete()) {
-					System.out.println("could not delete file " + file);
+					Debug.error("could not delete file " + file);
 				}
 			}
 			tileMap.clearTile(Helper.regionToBlock(entry.getKey()));

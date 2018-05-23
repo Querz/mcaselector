@@ -41,7 +41,6 @@ public class MCAFile {
 	public void deleteChunkIndices(Set<Point2i> chunks, RandomAccessFile raf) throws Exception {
 		for (Point2i chunk : chunks) {
 			int index = getChunkIndex(chunk);
-			System.out.println("deleting index " + index + " of " + chunk);
 			raf.seek(index * 4);
 			raf.writeInt(0);
 			//set timestamp to 0

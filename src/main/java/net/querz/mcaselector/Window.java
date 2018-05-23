@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.tiles.TileMap;
+import net.querz.mcaselector.util.Debug;
 
 import java.net.URL;
 import java.util.HashSet;
@@ -38,7 +39,7 @@ public class Window extends Application {
 		HBox tileMapBox = new HBox();
 		ChangeListener<Number> sizeListener = (o, r, n) -> {
 			tileMap.resize(primaryStage.getWidth(), primaryStage.getHeight());
-			System.out.println("resize to " + primaryStage.getWidth() + " " + primaryStage.getHeight());
+			Debug.dump("resizing to " + primaryStage.getWidth() + " " + primaryStage.getHeight());
 		};
 		primaryStage.widthProperty().addListener(sizeListener);
 		primaryStage.heightProperty().addListener(sizeListener);

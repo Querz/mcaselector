@@ -1,5 +1,7 @@
 package net.querz.mcaselector.tiles;
 
+import net.querz.mcaselector.util.Debug;
+
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -74,7 +76,7 @@ public class QueuedRegionImageGenerator {
 		@Override
 		public void run() {
 			inQueue.remove(this);
-			System.out.println("executing job for tile " + tile.getLocation());
+			Debug.dump("executing job for region at " + tile.getLocation());
 			if (tile.isVisible(tileMap)) {
 				if (highPriority) {
 					tile.loadFromCache(tileMap);
@@ -87,7 +89,7 @@ public class QueuedRegionImageGenerator {
 					tile.loadImage(tileMap);
 				}
 			} else {
-				System.out.println("tile at " + tile.getLocation() + " not visible, skipping");
+				Debug.dump("tile at " + tile.getLocation() + " not visible, skipping");
 			}
 		}
 	}
