@@ -5,14 +5,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.util.Debug;
-
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,6 +34,7 @@ public class Window extends Application {
 
 		//tilemap
 		HBox tileMapBox = new HBox();
+		tileMapBox.setId("tile-map-box");
 		ChangeListener<Number> sizeListener = (o, r, n) -> {
 			tileMap.resize(primaryStage.getWidth(), primaryStage.getHeight());
 			Debug.dump("resizing to " + primaryStage.getWidth() + " " + primaryStage.getHeight());

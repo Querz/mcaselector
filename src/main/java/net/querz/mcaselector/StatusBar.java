@@ -1,9 +1,7 @@
 package net.querz.mcaselector;
 
-import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;

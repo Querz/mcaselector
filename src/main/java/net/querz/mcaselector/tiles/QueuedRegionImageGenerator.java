@@ -1,7 +1,6 @@
 package net.querz.mcaselector.tiles;
 
 import net.querz.mcaselector.util.Debug;
-
 import java.util.*;
 import java.util.concurrent.*;
 

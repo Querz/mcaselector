@@ -37,6 +37,10 @@
 	-fx-background-color: #3f3f3f;
 }
 
+#tile-map-box {
+	-fx-effect: innershadow(gaussian, black, 8, 0, 0, 0);
+}
+
 #status-bar {
 	-fx-background-color: #262626;
 }
