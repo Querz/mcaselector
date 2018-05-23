@@ -184,8 +184,8 @@ public class Helper {
 					System.out.println("could not delete file " + file);
 				}
 			}
+			tileMap.clearTile(Helper.regionToBlock(entry.getKey()));
 		}
-		tileMap.clear();
 		tileMap.update();
 	}
 

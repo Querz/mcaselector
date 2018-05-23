@@ -2,8 +2,8 @@ package net.querz.mcaselector.tiles;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.*;
+import net.querz.mcaselector.Window;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
@@ -19,6 +19,8 @@ public class TileMap extends Canvas {
 	public static final float MIN_SCALE = 0.2f;
 	public static final float CHUNK_GRID_SCALE = 1.5f; //show chunk grid if scale is larger than this
 	public static final int TILE_VISIBILITY_THRESHOLD = 2;
+
+	private Window window;
 
 	private GraphicsContext context;
 
@@ -41,8 +43,9 @@ public class TileMap extends Canvas {
 
 	private QueuedRegionImageGenerator qrig;
 
-	public TileMap(int width, int height) {
+	public TileMap(Window window, int width, int height) {
 		super(width, height);
+		this.window = window;
 		context = getGraphicsContext2D();
 		this.setOnMousePressed(this::onMousePressed);
 		this.setOnMouseReleased(e -> onMouseReleased());
@@ -80,13 +83,10 @@ public class TileMap extends Canvas {
 	private void onMousePressed(MouseEvent event) {
 		firstMouseLocation = new Point2f(event.getX(), event.getY());
 
-		switch (event.getButton()) {
-			case PRIMARY:
-				mark(event.getX(), event.getY(), true);
-				break;
-			case SECONDARY:
-				mark(event.getX(), event.getY(), false);
-				break;
+		if (event.getButton() == MouseButton.PRIMARY && !window.isKeyPressed(KeyCode.COMMAND)) {
+			mark(event.getX(), event.getY(), true);
+		} else if (event.getButton() == MouseButton.SECONDARY) {
+			mark(event.getX(), event.getY(), false);
 		}
 		update();
 	}
@@ -96,22 +96,19 @@ public class TileMap extends Canvas {
 	}
 
 	private void onMouseDragged(MouseEvent event) {
-		switch (event.getButton()) {
-			case MIDDLE:
-				Point2f mouseLocation = new Point2f(event.getX(), event.getY());
-				if (previousMouseLocation != null) {
-					Point2f diff = mouseLocation.sub(previousMouseLocation);
-					diff = diff.mul(-1);
-					offset = offset.add(diff.mul(scale));
-				}
-				previousMouseLocation = mouseLocation;
-				break;
-			case PRIMARY:
-				mark(event.getX(), event.getY(), true);
-				break;
-			case SECONDARY:
-				mark(event.getX(), event.getY(), false);
-				break;
+		if (event.getButton() == MouseButton.MIDDLE
+				|| event.getButton() == MouseButton.PRIMARY && window.isKeyPressed(KeyCode.COMMAND)) {
+			Point2f mouseLocation = new Point2f(event.getX(), event.getY());
+			if (previousMouseLocation != null) {
+				Point2f diff = mouseLocation.sub(previousMouseLocation);
+				diff = diff.mul(-1);
+				offset = offset.add(diff.mul(scale));
+			}
+			previousMouseLocation = mouseLocation;
+		} else if (event.getButton() == MouseButton.PRIMARY) {
+			mark(event.getX(), event.getY(), true);
+		} else if (event.getButton() == MouseButton.SECONDARY) {
+			mark(event.getX(), event.getY(), false);
 		}
 		update();
 	}
@@ -186,7 +183,17 @@ public class TileMap extends Canvas {
 
 	public void clear() {
 		tiles.clear();
+		visibleTiles.clear();
 		selectedChunks = 0;
+	}
+
+	public void clearTile(Point2i p) {
+		Tile tile = tiles.remove(p);
+		if (tile != null) {
+			visibleTiles.remove(tile);
+			selectedChunks -= tile.getMarkedChunks().size();
+			selectedChunks -= tile.isMarked() ? Tile.CHUNKS : 0;
+		}
 	}
 
 	public void clearSelection() {

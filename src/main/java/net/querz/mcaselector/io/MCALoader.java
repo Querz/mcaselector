@@ -25,16 +25,18 @@ public class MCALoader {
 	}
 
 	public static void deleteChunks(Map<Point2i, Set<Point2i>> chunksToBeDeleted) {
-		deleteChunks(chunksToBeDeleted, Config.getWorldDir());
+		deleteChunks(chunksToBeDeleted, Config.getWorldDir(), true);
 	}
 
-	public static void deleteChunks(Map<Point2i, Set<Point2i>> chunksToBeDeleted, File dir) {
+	public static void deleteChunks(Map<Point2i, Set<Point2i>> chunksToBeDeleted, File dir, boolean backup) {
 		for (Map.Entry<Point2i, Set<Point2i>> entry : chunksToBeDeleted.entrySet()) {
 			File file = new File(dir, Helper.createMCAFileName(entry.getKey()));
 			//delete region
 
-			System.out.println("creating backup of " + file);
-			backup(file);
+			if (backup) {
+				System.out.println("creating backup of " + file);
+				backup(file);
+			}
 
 			if (entry.getValue() == null) {
 				try {
@@ -56,7 +58,7 @@ public class MCALoader {
 					mcaFile.deleteChunkIndices(entry.getValue(), raf);
 				} catch (Exception ex) {
 					ex.printStackTrace();
-					if (mcaFile != null) {
+					if (backup && mcaFile != null) {
 						restore(mcaFile);
 					}
 				}

@@ -86,10 +86,14 @@ public class SelectionExporter {
 					e.printStackTrace();
 					continue;
 				}
+				if (entry.getValue() == null) {
+					continue;
+				}
 				//invert selected chunks and tell the MCALoader to delete them
 				Set<Point2i> c = new HashSet<>(Tile.CHUNKS - entry.getValue().size());
-				for (int x = Helper.regionToChunk(entry.getKey()).getX(); x < Tile.SIZE_IN_CHUNKS; x++) {
-					for (int z = Helper.regionToChunk(entry.getKey()).getY(); z < Tile.SIZE_IN_CHUNKS; z++) {
+				Point2i origin = Helper.regionToChunk(entry.getKey());
+				for (int x = origin.getX(); x < origin.getX() + Tile.SIZE_IN_CHUNKS; x++) {
+					for (int z = origin.getY(); z < origin.getY() + Tile.SIZE_IN_CHUNKS; z++) {
 						Point2i cp = new Point2i(x, z);
 						if (!entry.getValue().contains(cp)) {
 							c.add(cp);
@@ -98,7 +102,7 @@ public class SelectionExporter {
 				}
 				Map<Point2i, Set<Point2i>> inverted = new HashMap<>(1);
 				inverted.put(entry.getKey(), c);
-				MCALoader.deleteChunks(inverted, dir);
+				MCALoader.deleteChunks(inverted, dir, false);
 			}
 		}
 	}
