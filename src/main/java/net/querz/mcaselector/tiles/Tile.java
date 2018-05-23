@@ -218,6 +218,14 @@ public class Tile {
 		}
 		loading = true;
 		Point2i p = Helper.blockToRegion(location);
+
+		if (Config.getCacheDir() == null) {
+			//load empty map (start screen)
+			loading = false;
+			loaded = true;
+			return;
+		}
+
 		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/r.%d.%d.png", p.getX(), p.getY());
 
 		Debug.dump("loading region " + p + " from cache: " + res);

@@ -5,9 +5,9 @@ import java.util.UUID;
 
 public class Config {
 
-	private static File worldDir = new File(System.getProperty("user.dir"));
+	private static File worldDir = null;
 	private static File baseCacheDir = new File(System.getProperty("user.dir") + "/cache");
-	private static File cacheDir = new File(baseCacheDir, "unknown");
+	private static File cacheDir = null;
 
 	private static boolean debug = false;
 
