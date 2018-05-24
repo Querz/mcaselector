@@ -34,7 +34,7 @@ public class Window extends Application {
 
 		//tilemap
 		HBox tileMapBox = new HBox();
-		tileMapBox.setId("tile-map-box");
+		tileMapBox.getStyleClass().add("tile-map-box");
 		ChangeListener<Number> sizeListener = (o, r, n) -> {
 			tileMap.resize(primaryStage.getWidth(), primaryStage.getHeight());
 			Debug.dump("resizing to " + primaryStage.getWidth() + " " + primaryStage.getHeight());

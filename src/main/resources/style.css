@@ -1,7 +1,9 @@
+/* basic menu background color */
 .menu-bar, .menu, .menu-item, .context-menu {
 	-fx-background-color: #262626;
 }
 
+/* menu paddings */
 .menu-bar {
 	-fx-padding: 0;
 }
@@ -14,37 +16,40 @@
 	-fx-padding: 1;
 }
 
-.menu >.label, .menu-item >.label {
+/* menu text color and check-menu icon */
+.menu >.label, .menu-item >.label, .check-menu-item {
 	-fx-text-fill: #f2f2f2;
-}
-
-#menu-item-disabled {
-	-fx-background-color: #2e2e2e;
-	-fx-opacity: 1;
-}
-
-.check-menu-item {
 	-fx-focused-mark-color: #f2f2f2;
 	-fx-mark-color: #f2f2f2;
 }
 
+/* menu hovering */
+.menu:hover, .menu-item:hover, .check-menu-item:hover {
+	-fx-background-color: #3f3f3f;
+}
+
+/* if the menu-item is disabled, this will overwrite the hover style */
+.menu-item:disabled {
+	-fx-background-color: #2e2e2e;
+	-fx-opacity: 1;
+}
+
+/* separator lines in menus */
 .separator *.line {
 	-fx-border-width: 0;
 	-fx-background-color: #898989;
 }
 
-.menu:hover, #menu-item-enabled:hover, .check-menu-item:hover {
-	-fx-background-color: #3f3f3f;
-}
-
-#tile-map-box {
+/* shadow for tilemap box */
+.tile-map-box {
 	-fx-effect: innershadow(gaussian, black, 8, 0, 0, 0);
 }
 
-#status-bar {
+/* status bar styles */
+.status-bar {
 	-fx-background-color: #262626;
 }
 
-#status-bar .label {
+.status-bar .label {
 	-fx-text-fill: #f2f2f2;
 }

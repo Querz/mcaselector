@@ -16,7 +16,7 @@ public class StatusBar extends BorderPane {
 
 
 	public StatusBar(TileMap tileMap) {
-		setId("status-bar");
+		getStyleClass().add("status-bar");
 
 		tileMap.setOnUpdate(this::update);
 		tileMap.setOnHover(this::update);

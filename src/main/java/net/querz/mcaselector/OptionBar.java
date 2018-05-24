@@ -1,5 +1,7 @@
 package net.querz.mcaselector;
 
+import com.sun.javafx.css.PseudoClassState;
+import javafx.css.PseudoClass;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
@@ -35,8 +37,11 @@ public class OptionBar extends MenuBar {
 	private MenuItem exportSelection = menuItem("Export selection");
 	private MenuItem clearSelectionCache = menuItem("Clear cache");
 
+	private int previousSelectedChunks = 0;
+
 	public OptionBar(TileMap tileMap, Stage primaryStage) {
-		setId("option-bar");
+		getStyleClass().add("option-bar");
+
 		tileMap.setOnUpdate(this::onUpdate);
 
 		getMenus().addAll(file, view, selection);
@@ -77,46 +82,37 @@ public class OptionBar extends MenuBar {
 		importSelection.setAccelerator(KeyCombination.keyCombination("Ctrl+I"));
 		exportSelection.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
 		clearSelectionCache.setAccelerator(KeyCombination.keyCombination("Ctrl+J"));
+
+		setMenuItemsEnabled(false);
 	}
 
 	private void onUpdate(TileMap tileMap) {
-		if (tileMap.getSelectedChunks() == 0) {
-			clear.setDisable(true);
-			clear.setId("menu-item-disabled");
-			exportChunks.setDisable(true);
-			exportChunks.setId("menu-item-disabled");
-			exportSelection.setDisable(true);
-			exportSelection.setId("menu-item-disabled");
-			delete.setDisable(true);
-			delete.setId("menu-item-disabled");
-
-		} else {
-			clear.setDisable(false);
-			clear.setId("menu-item-enabled");
-			exportChunks.setDisable(false);
-			exportChunks.setId("menu-item-enabled");
-			exportSelection.setDisable(false);
-			exportSelection.setId("menu-item-enabled");
-			delete.setDisable(false);
-			delete.setId("menu-item-enabled");
+		int selectedChunks = tileMap.getSelectedChunks();
+		if (previousSelectedChunks != 0 && selectedChunks == 0
+				|| previousSelectedChunks == 0 && selectedChunks != 0) {
+			setMenuItemsEnabled(selectedChunks != 0);
 		}
+		previousSelectedChunks = selectedChunks;
+	}
+
+	private void setMenuItemsEnabled(boolean enabled) {
+		clear.setDisable(!enabled);
+		exportChunks.setDisable(!enabled);
+		exportSelection.setDisable(!enabled);
+		delete.setDisable(!enabled);
 	}
 
 	private Menu menu(String text) {
-		Menu menu = new Menu(text);
-		menu.setId("menu");
-		return menu;
+		return new Menu(text);
 	}
 
 	private MenuItem menuItem(String text) {
 		MenuItem item = new MenuItem(text);
-		item.setId("menu-item-enabled");
 		return item;
 	}
 
 	private CheckMenuItem checkMenuItem(String text, boolean selected) {
 		CheckMenuItem item = new CheckMenuItem(text);
-		item.setId("check-menu-item-enabled");
 		item.setSelected(selected);
 		return item;
 	}
