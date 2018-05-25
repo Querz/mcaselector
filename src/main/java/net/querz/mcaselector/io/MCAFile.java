@@ -1,5 +1,8 @@
 package net.querz.mcaselector.io;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Point2i;
@@ -66,9 +69,11 @@ public class MCAFile {
 		return file;
 	}
 
-	public BufferedImage createImage(RandomAccessFile raf) {
+	public Image createImage(RandomAccessFile raf) {
 		try {
-			BufferedImage finalImage = new BufferedImage(Tile.SIZE, Tile.SIZE, BufferedImage.TYPE_INT_RGB);
+//			BufferedImage finalImage = new BufferedImage(Tile.SIZE, Tile.SIZE, BufferedImage.TYPE_INT_RGB);
+			WritableImage finalImage = new WritableImage(Tile.SIZE, Tile.SIZE);
+			PixelWriter writer = finalImage.getPixelWriter();
 
 			long start = System.currentTimeMillis();
 			long loadingTime = 0;
@@ -89,7 +94,7 @@ public class MCAFile {
 					int imageX = cx * Tile.CHUNK_SIZE;
 					int imageZ = cz * Tile.CHUNK_SIZE;
 
-					data.drawImage(imageX, imageZ, finalImage);
+					data.drawImage(imageX, imageZ, writer);
 				}
 			}
 			Debug.dump("took " + (System.currentTimeMillis() - start)

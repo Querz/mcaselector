@@ -1,10 +1,11 @@
 package net.querz.mcaselector.io;
 
+import javafx.scene.image.PixelWriter;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.NBTInputStream;
 import net.querz.nbt.Tag;
-import java.awt.image.BufferedImage;
+
 import java.io.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
@@ -61,14 +62,14 @@ public class MCAChunkData {
 		}
 	}
 
-	public void drawImage(int x, int z, BufferedImage image) {
+	public void drawImage(int x, int z, PixelWriter writer) {
 		if (data != null) {
 			int dataVersion = data.getInt("DataVersion");
 			VersionController.getChunkDataProcessor(dataVersion).drawChunk(
 					data,
 					VersionController.getColorMapping(dataVersion),
 					x, z,
-					image
+					writer
 			);
 		}
 	}

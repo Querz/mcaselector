@@ -268,13 +268,13 @@ public class Tile {
 					return;
 				}
 
-				BufferedImage bufferedImage = mcaFile.createImage(raf);
-
-				image = SwingFXUtils.toFXImage(bufferedImage, null);
+				Image tmp = image = mcaFile.createImage(raf);
 
 				Debug.dump("done generating image from " + file + " updating now");
 				loading = false;
 				loaded = true;
+
+				//show image as fast as possible, even before it was cached
 				Platform.runLater(tileMap::update);
 
 				File cacheFile = new File(res);
@@ -283,7 +283,7 @@ public class Tile {
 						Debug.error("failed to create cache directory for " + cacheFile);
 					}
 				}
-				ImageIO.write(bufferedImage, "png", new File(res));
+				ImageIO.write(SwingFXUtils.fromFXImage(tmp, null), "png", new File(res));
 			} catch (IOException ex) {
 				Debug.error(ex);
 			}

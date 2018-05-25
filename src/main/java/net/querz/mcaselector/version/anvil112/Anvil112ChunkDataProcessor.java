@@ -1,20 +1,17 @@
 package net.querz.mcaselector.version.anvil112;
 
+import javafx.scene.image.PixelWriter;
 import net.querz.mcaselector.ChunkDataProcessor;
 import net.querz.mcaselector.ColorMapping;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.Tag;
-import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
 	@Override
-	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, BufferedImage image) {
+	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, PixelWriter writer) {
 		ListTag sections = (ListTag) ((CompoundTag) root.get("Level")).get("Sections");
 		sections.getValue().sort(this::filterSections);
 
@@ -33,7 +30,7 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 						short block = (short) (blocks[index] & 0xFF);
 						byte blockData = (byte) (index % 2 == 0 ? data[index / 2] & 0x0F : (data[index / 2] >> 4) & 0x0F);
 						if (block != 0) {
-							image.setRGB(x + cx, z + cz, colorMapping.getRGB(((block << 4) + blockData)));
+							writer.setArgb(x + cx, z + cz, colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000);
 							continue zLoop;
 						}
 					}
