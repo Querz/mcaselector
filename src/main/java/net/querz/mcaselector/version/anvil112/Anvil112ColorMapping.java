@@ -9,9 +9,9 @@ import java.util.Map;
 
 public class Anvil112ColorMapping implements ColorMapping {
 
-	private static Map<Integer, Integer> mapping = new HashMap<>();
+	private Map<Integer, Integer> mapping = new HashMap<>();
 
-	static {
+	public Anvil112ColorMapping() {
 		try (BufferedReader bis = new BufferedReader(
 				new InputStreamReader(Anvil112ColorMapping.class.getClass().getResourceAsStream("/colors.csv")))) {
 			String line;
