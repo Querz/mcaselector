@@ -16,8 +16,8 @@ import java.util.Set;
 
 public class Window extends Application {
 
-//	private int width = 800, height = 600;
-	private int width = 300, height = 300;
+	private int width = 800, height = 600;
+//	private int width = 300, height = 300;
 
 	private Set<KeyCode> pressedKeys = new HashSet<>();
 
