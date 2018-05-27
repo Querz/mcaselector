@@ -311,6 +311,8 @@ public class TileMap extends Canvas {
 	}
 
 	private void draw(GraphicsContext ctx) {
+		ctx.setFill(Tile.EMPTY_CHUNK_BACKGROUND_COLOR);
+		ctx.fillRect(0, 0, getWidth(), getHeight());
 		runOnVisibleRegions(region -> {
 			if (!tiles.containsKey(region)) {
 				tiles.put(region, new Tile(region));

@@ -15,7 +15,6 @@ import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,6 +30,7 @@ public class Tile {
 	public static final Color CHUNK_MARKED_COLOR = new Color(1, 0.45, 0, 0.8);
 	public static final Color REGION_GRID_COLOR = Color.BLACK;
 	public static final Color CHUNK_GRID_COLOR = Color.DARKGRAY;
+	public static final Color EMPTY_CHUNK_BACKGROUND_COLOR = Color.BLACK;
 	public static final double GRID_LINE_WIDTH = 0.5;
 
 	private static final Image empty;
