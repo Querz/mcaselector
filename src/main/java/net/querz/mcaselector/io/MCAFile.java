@@ -6,7 +6,6 @@ import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Point2i;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Set;
 
@@ -30,17 +29,19 @@ public class MCAFile {
 
 	public void read(RandomAccessFile raf) throws IOException {
 		raf.seek(0);
+		//use streams wherever possible, because they can be buffered
+		DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(raf.getFD()), SECTION_SIZE * 2));
 		for (int i = 0; i < offsets.length; i++) {
-			int offset = raf.readByte() & 0xFF;
+			int offset = dis.readByte() & 0xFF;
 			offset <<= 8;
-			offset |= raf.readByte() & 0xFF;
+			offset |= dis.readByte() & 0xFF;
 			offset <<= 8;
-			offset |= raf.readByte() & 0xFF;
+			offset |= dis.readByte() & 0xFF;
 			offsets[i] = offset;
-			sectors[i] = raf.readByte();
+			sectors[i] = dis.readByte();
 		}
 		for (int i = 0; i < timestamps.length; i++) {
-			timestamps[i] = raf.readInt();
+			timestamps[i] = dis.readInt();
 		}
 	}
 

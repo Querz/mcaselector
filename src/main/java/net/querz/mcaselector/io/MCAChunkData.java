@@ -5,7 +5,6 @@ import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.NBTInputStream;
 import net.querz.nbt.Tag;
-
 import java.io.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
@@ -44,10 +43,10 @@ public class MCAChunkData {
 
 		switch (compressionType) {
 		case GZIP:
-			nbtIn = new NBTInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(raf.getFD()))));
+			nbtIn = new NBTInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(raf.getFD())), sectors * MCAFile.SECTION_SIZE));
 			break;
 		case ZLIB:
-			nbtIn = new NBTInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(raf.getFD()))));
+			nbtIn = new NBTInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(raf.getFD())), sectors * MCAFile.SECTION_SIZE));
 			break;
 		case NONE:
 			data = null;
