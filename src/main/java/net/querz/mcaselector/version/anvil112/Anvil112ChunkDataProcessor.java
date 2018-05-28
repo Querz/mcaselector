@@ -17,7 +17,8 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
 		//loop over x / z
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
-			zLoop: for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+			zLoop:
+			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
 				//loop over sections
 				for (int i = 0; i < sections.size(); i++) {
 
