@@ -15,6 +15,10 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 		ListTag sections = (ListTag) ((CompoundTag) root.get("Level")).get("Sections");
 		sections.getValue().sort(this::filterSections);
 
+		for (Tag section : sections.getValue()) {
+			System.out.println(((CompoundTag) section).get("Palette"));
+		}
+
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
@@ -29,7 +33,7 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 
 					for (int cy = Tile.CHUNK_SIZE - 1; cy >= 0; cy--) {
 						CompoundTag blockData = getBlockData(cx, cy, cz, blockStates, palette, bits, clean);
-						if (!blockData.getString("Name").equals("minecraft:air") || blockData.getValue().size() > 1) {
+						if (!isEmpty(blockData)) {
 							writer.setArgb(x + cx, z + cz, colorMapping.getRGB(blockData) | 0xFF000000);
 							continue zLoop;
 						}
@@ -37,6 +41,12 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 				}
 			}
 		}
+	}
+
+	private boolean isEmpty(CompoundTag blockData) {
+		return (blockData.getString("Name").equals("minecraft:air")
+				|| blockData.getString("Name").equals("minecraft:cave_air"))
+				&& blockData.getValue().size() == 1;
 	}
 
 	private CompoundTag getBlockData(int x, int y, int z, long[] blockStates, ListTag palette, int bits, int clean) {
