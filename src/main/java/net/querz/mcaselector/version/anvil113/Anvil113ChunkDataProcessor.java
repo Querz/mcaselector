@@ -24,8 +24,11 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 					long[] blockStates = ((CompoundTag) sections.get(i)).getLongs("BlockStates");
 					ListTag palette = (ListTag) ((CompoundTag) sections.get(i)).get("Palette");
 
+					int bits = blockStates.length / 64;
+					int clean = ((int) Math.pow(2, bits) - 1);
+
 					for (int cy = Tile.CHUNK_SIZE - 1; cy >= 0; cy--) {
-						CompoundTag blockData = getBlockData(cx, cy, cz, blockStates, palette);
+						CompoundTag blockData = getBlockData(cx, cy, cz, blockStates, palette, bits, clean);
 						if (!blockData.getString("Name").equals("minecraft:air") || blockData.getValue().size() > 1) {
 							writer.setArgb(x + cx, z + cz, colorMapping.getRGB(blockData) | 0xFF000000);
 							continue zLoop;
@@ -36,33 +39,36 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 		}
 	}
 
-	private CompoundTag getBlockData(int x, int y, int z, long[] blockStates, ListTag palette) {
-		int paletteIndex = getPaletteIndex(getIndex(x, y, z), blockStates, blockStates.length / 64);
-		return palette.getCompoundTag(paletteIndex);
+	private CompoundTag getBlockData(int x, int y, int z, long[] blockStates, ListTag palette, int bits, int clean) {
+		return palette.getCompoundTag(getPaletteIndex(getIndex(x, y, z), blockStates, bits, clean));
 	}
 
 	private int getIndex(int x, int y, int z) {
 		return y * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + z * Tile.CHUNK_SIZE + x;
 	}
 
-	private int getPaletteIndex(int index, long[] blockStates, int bits) {
-		double blockStatesIndex = index / (4096 / blockStates.length);
+	private int getPaletteIndex(int index, long[] blockStates, int bits, int clean) {
+		double blockStatesIndex = index / (4096D / blockStates.length);
 
-		long firstLong = blockStates[(int) blockStatesIndex];
-
-		//calculate the bit where the index starts in this particular long value
-		int startBit = (int) ((blockStatesIndex - Math.floor(blockStatesIndex)) * 64);
+		int longIndex = (int) blockStatesIndex;
+		int startBit = (int) ((blockStatesIndex - Math.floor(blockStatesIndex)) * 64D);
 
 		if (startBit + bits > 64) {
-			//get first x bits of next long
-			long secondLong = blockStates[(int) blockStatesIndex + 1];
-			int first = (int) (firstLong >> startBit);
-			int remainingBits = 64 - startBit;
-			int last = (int) (secondLong >> remainingBits) & ((int) (Math.pow(2, remainingBits)) - 1);
-			return first << remainingBits + last;
+
+			//cleanup pattern for bits from current long
+			int previousClean = ((int) Math.pow(2, 64 - startBit) - 1);
+
+			//get msb from current long
+			int previous = (int) (blockStates[longIndex] >> startBit) & previousClean;
+
+			//cleanup pattern for bits from next long
+			int remainingClean = ((int) Math.pow(2, startBit + bits - 64) - 1);
+
+			//get lsb from next long
+			int next = ((int) blockStates[longIndex + 1]) & remainingClean;
+			return (next << 64 - startBit) + previous;
 		} else {
-			//           shift right               only keep <bits> amount of lsb
-			return (int) (firstLong >> startBit) & ((int) Math.pow(2, bits) - 1);
+			return (int) (blockStates[longIndex] >> startBit) & clean;
 		}
 	}
 

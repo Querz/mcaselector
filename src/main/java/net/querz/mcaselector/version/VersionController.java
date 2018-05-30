@@ -4,6 +4,8 @@ import net.querz.mcaselector.ChunkDataProcessor;
 import net.querz.mcaselector.ColorMapping;
 import net.querz.mcaselector.version.anvil112.Anvil112ChunkDataProcessor;
 import net.querz.mcaselector.version.anvil112.Anvil112ColorMapping;
+import net.querz.mcaselector.version.anvil113.Anvil113ChunkDataProcessor;
+import net.querz.mcaselector.version.anvil113.Anvil113ColorMapping;
 
 public class VersionController {
 
@@ -19,7 +21,7 @@ public class VersionController {
 
 	private enum Mapping {
 		ANVIL_1_12(0, 1343, new Anvil112ChunkDataProcessor(), new Anvil112ColorMapping()),
-		ANVIL_1_13(1344, Integer.MAX_VALUE, null, null); //TODO
+		ANVIL_1_13(1344, Integer.MAX_VALUE, new Anvil113ChunkDataProcessor(), new Anvil113ColorMapping());
 
 		private int from, to;
 		private ChunkDataProcessor cdp;
