@@ -26,8 +26,8 @@ activator_rail:powered=true,shape=north_south;8d5146
 allium;b18dd3
 andesite;828383
 anvil;403c3c
-attached_melon_stem;8b8b8b
-attached_pumpkin_stem;8b8b8b
+attached_melon_stem;0f7200
+attached_pumpkin_stem;0f7200
 azure_bluet;a2bf8a
 beacon;daf0f4
 bedrock;535353
@@ -573,7 +573,7 @@ redstone_wall_torch:facing=south,lit=false;5d3e26
 redstone_wall_torch:facing=south,lit=true;a74b29
 redstone_wall_torch:facing=west,lit=false;5d3e26
 redstone_wall_torch:facing=west,lit=true;a74b29
-redstone_wire;000000
+redstone_wire;ff0000
 repeater:delay=1,facing=east,locked=false,powered=false;979393
 repeater:delay=1,facing=east,locked=false,powered=true;a09393
 repeater:delay=1,facing=east,locked=true,powered=false;979393
