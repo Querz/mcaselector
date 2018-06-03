@@ -15,9 +15,9 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 		ListTag sections = (ListTag) ((CompoundTag) root.get("Level")).get("Sections");
 		sections.getValue().sort(this::filterSections);
 
-		for (Tag section : sections.getValue()) {
-			System.out.println(((CompoundTag) section).get("Palette"));
-		}
+//		for (Tag section : sections.getValue()) {
+//			System.out.println(((CompoundTag) section).get("Palette"));
+//		}
 
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop:
@@ -32,8 +32,9 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 					int clean = ((int) Math.pow(2, bits) - 1);
 
 					for (int cy = Tile.CHUNK_SIZE - 1; cy >= 0; cy--) {
-						CompoundTag blockData = getBlockData(cx, cy, cz, blockStates, palette, bits, clean);
-						if (!isEmpty(blockData)) {
+						int paletteIndex = getPaletteIndex(getIndex(cx, cy, cz), blockStates, bits, clean);
+						CompoundTag blockData = palette.getCompoundTag(paletteIndex);
+						if (!isEmpty(paletteIndex, blockData)) {
 							writer.setArgb(x + cx, z + cz, colorMapping.getRGB(blockData) | 0xFF000000);
 							continue zLoop;
 						}
@@ -43,14 +44,18 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 		}
 	}
 
-	private boolean isEmpty(CompoundTag blockData) {
-		return (blockData.getString("Name").equals("minecraft:air")
-				|| blockData.getString("Name").equals("minecraft:cave_air"))
-				&& blockData.getValue().size() == 1;
-	}
-
-	private CompoundTag getBlockData(int x, int y, int z, long[] blockStates, ListTag palette, int bits, int clean) {
-		return palette.getCompoundTag(getPaletteIndex(getIndex(x, y, z), blockStates, bits, clean));
+	private boolean isEmpty(int paletteIndex, CompoundTag blockData) {
+		if (paletteIndex == 0) {
+			return true;
+		}
+		switch (blockData.getString("Name")) {
+			case "minecraft:air":
+			case "minecraft:cave_air":
+			case "minecraft:barrier":
+			case "minecraft:structure_void":
+				return blockData.getValue().size() == 1;
+		}
+		return false;
 	}
 
 	private int getIndex(int x, int y, int z) {
@@ -84,10 +89,8 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 
 	private int filterSections(Tag sectionA, Tag sectionB) {
 		if (sectionA instanceof CompoundTag && sectionB instanceof CompoundTag) {
-			CompoundTag a = (CompoundTag) sectionA;
-			CompoundTag b = (CompoundTag) sectionB;
 			//There are no sections with the same Y value
-			return a.getByte("Y") > b.getByte("Y") ? -1 : 1;
+			return ((CompoundTag) sectionA).getByte("Y") > ((CompoundTag) sectionB).getByte("Y") ? -1 : 1;
 		}
 		throw new IllegalArgumentException("Can't compare non-CompoundTags");
 	}
