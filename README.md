@@ -26,5 +26,5 @@ The MCA Selector currently supports the following Minecraft versions:
 
 | Minecraft Version | DataVersion | Type                         | Supported |
 | ----------------- | ----------- | ---------------------------- | :-------: |
-| Beta 1.3 - 1.12.2 | 0 - 1343    | Genernal color mapping file  | Yes       |
-| 1.13 - ?          | 1344 - ?    | Generated from resource pack | No        |
+| Beta 1.3 - 1.12.2 | 0 - 1343    | Internal color mapping file  | Yes       |
+| 1.13              | 1344 - ?    | Internal color mapping file  | Yes       |
