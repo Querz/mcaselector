@@ -30,7 +30,7 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 						int index = getBlockIndex(cx, cy, cz);
 						short block = (short) (blocks[index] & 0xFF);
 						byte blockData = (byte) (index % 2 == 0 ? data[index / 2] & 0x0F : (data[index / 2] >> 4) & 0x0F);
-						if (block != 0) {
+						if (!isEmpty(block)) {
 							writer.setArgb(x + cx, z + cz, colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000);
 							continue zLoop;
 						}
@@ -38,6 +38,10 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 				}
 			}
 		}
+	}
+
+	private boolean isEmpty(int blockID) {
+		return blockID == 0 || blockID == 166 || blockID == 217;
 	}
 
 	private int getBlockIndex(int x, int y, int z) {

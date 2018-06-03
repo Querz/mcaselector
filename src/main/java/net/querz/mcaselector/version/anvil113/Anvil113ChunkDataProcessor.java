@@ -15,10 +15,6 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 		ListTag sections = (ListTag) ((CompoundTag) root.get("Level")).get("Sections");
 		sections.getValue().sort(this::filterSections);
 
-//		for (Tag section : sections.getValue()) {
-//			System.out.println(((CompoundTag) section).get("Palette"));
-//		}
-
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
