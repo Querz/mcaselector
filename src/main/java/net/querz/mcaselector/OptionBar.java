@@ -100,6 +100,7 @@ public class OptionBar extends MenuBar {
 		exportChunks.setDisable(!enabled);
 		exportSelection.setDisable(!enabled);
 		delete.setDisable(!enabled);
+		clearSelectionCache.setDisable(!enabled);
 	}
 
 	private Menu menu(String text) {
