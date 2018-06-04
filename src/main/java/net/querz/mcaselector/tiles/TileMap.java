@@ -163,7 +163,7 @@ public class TileMap extends Canvas {
 	}
 
 	public void goTo(int x, int z) {
-		offset = new Point2f(x + getWidth() / 2, z + getHeight() / 2);
+		offset = new Point2f(x - getWidth() * scale / 2, z - getHeight() * scale / 2);
 		update();
 	}
 
@@ -179,6 +179,14 @@ public class TileMap extends Canvas {
 		List<Point2i> regions = new ArrayList<>();
 		runOnVisibleRegions(r -> regions.add(Helper.blockToRegion(r)));
 		return regions;
+	}
+
+	public int getVisibleTiles() {
+		return visibleTiles.size();
+	}
+
+	public int getLoadedTiles() {
+		return tiles.size();
 	}
 
 	public void clear() {
