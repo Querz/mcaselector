@@ -1,7 +1,5 @@
 package net.querz.mcaselector;
 
-import com.sun.javafx.css.PseudoClassState;
-import javafx.css.PseudoClass;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
@@ -108,8 +106,7 @@ public class OptionBar extends MenuBar {
 	}
 
 	private MenuItem menuItem(String text) {
-		MenuItem item = new MenuItem(text);
-		return item;
+		return new MenuItem(text);
 	}
 
 	private CheckMenuItem checkMenuItem(String text, boolean selected) {

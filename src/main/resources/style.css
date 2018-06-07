@@ -47,6 +47,7 @@
 	-marked-chunk-color: rgba(255, 115, 0, 0.8);
 	-region-grid-color: black;
 	-chunk-grid-color: darkgray;
+	-grid-line-width: 0.5;
 	-empty-chunk-background-color: black;
 	-empty-color: rgba(51, 51, 51, 1);
 }

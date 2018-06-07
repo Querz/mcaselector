@@ -21,20 +21,20 @@ import java.util.Set;
 
 public class Tile {
 
-	public static final int SIZE = 512;
-	public static final int CHUNK_SIZE = 16;
-	public static final int SIZE_IN_CHUNKS = 32;
-	public static final int CHUNKS = 1024;
-
 	public static Color REGION_MARKED_COLOR = new Color(1, 0, 0, 0.8);
 	public static Color CHUNK_MARKED_COLOR = new Color(1, 0.45, 0, 0.8);
 	public static Color REGION_GRID_COLOR = Color.BLACK;
 	public static Color CHUNK_GRID_COLOR = Color.DARKGRAY;
 	public static Color EMPTY_CHUNK_BACKGROUND_COLOR = Color.BLACK;
-	public static final double GRID_LINE_WIDTH = 0.5;
+	public static Color EMPTY_COLOR = new Color(0.2, 0.2, 0.2, 1);
+	public static double GRID_LINE_WIDTH = 0.5;
+
+	public static final int SIZE = 512;
+	public static final int CHUNK_SIZE = 16;
+	public static final int SIZE_IN_CHUNKS = 32;
+	public static final int CHUNKS = 1024;
 
 	private static Image empty;
-	public static Color EMPTY_COLOR = new Color(0.2, 0.2, 0.2, 1);
 
 	private Point2i location;
 	private Image image;

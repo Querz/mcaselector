@@ -66,6 +66,19 @@ public class TileMapBox extends HBox {
 		}
 	};
 
+	private final StyleableDoubleProperty gridLineWidthProperty = new SimpleStyleableDoubleProperty(gridLineWidthMetaData, this, "gridLineWidth");
+	private static final CssMetaData<TileMapBox, Number> gridLineWidthMetaData = new CssMetaData<TileMapBox, Number>("-grid-line-width", StyleConverter.getSizeConverter()) {
+		@Override
+		public boolean isSettable(TileMapBox styleable) {
+			return !styleable.gridLineWidthProperty.isBound();
+		}
+
+		@Override
+		public StyleableProperty<Number> getStyleableProperty(TileMapBox styleable) {
+			return styleable.gridLineWidthProperty;
+		}
+	};
+
 	private final StyleableObjectProperty<Color> emptyChunkBackgroundColorProperty = new SimpleStyleableObjectProperty<>(emptyChunkBackgroundColorMetaData, this, "emptyChunkBackgroundColor");
 	private static final CssMetaData<TileMapBox, Color> emptyChunkBackgroundColorMetaData = new CssMetaData<TileMapBox, Color>("-empty-chunk-background-color", StyleConverter.getColorConverter()) {
 		@Override
@@ -102,6 +115,7 @@ public class TileMapBox extends HBox {
 				markedChunkColorMetaData,
 				regionGridColorMetaData,
 				chunkGridColorMetaData,
+				gridLineWidthMetaData,
 				emptyChunkBackgroundColorMetaData,
 				emptyColorMetaData
 		);
@@ -129,6 +143,7 @@ public class TileMapBox extends HBox {
 		markedChunkColorProperty.addListener((o, r, n) -> Tile.CHUNK_MARKED_COLOR = markedChunkColorProperty.get());
 		regionGridColorProperty.addListener((o, r, n) -> Tile.REGION_GRID_COLOR = regionGridColorProperty.get());
 		chunkGridColorProperty.addListener((o, r, n) -> Tile.CHUNK_GRID_COLOR = chunkGridColorProperty.get());
+		gridLineWidthProperty.addListener((o, r, n) -> Tile.GRID_LINE_WIDTH = gridLineWidthProperty.get());
 		emptyChunkBackgroundColorProperty.addListener((o, r, n) -> Tile.EMPTY_CHUNK_BACKGROUND_COLOR = emptyChunkBackgroundColorProperty.get());
 		emptyColorProperty.addListener((o, r, n) -> {
 			Tile.EMPTY_COLOR = emptyColorProperty.get();

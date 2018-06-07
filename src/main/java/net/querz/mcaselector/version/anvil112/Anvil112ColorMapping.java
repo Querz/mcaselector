@@ -2,7 +2,6 @@ package net.querz.mcaselector.version.anvil112;
 
 import net.querz.mcaselector.ColorMapping;
 import net.querz.mcaselector.util.Helper;
-
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
