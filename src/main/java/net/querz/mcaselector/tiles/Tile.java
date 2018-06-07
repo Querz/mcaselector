@@ -26,15 +26,15 @@ public class Tile {
 	public static final int SIZE_IN_CHUNKS = 32;
 	public static final int CHUNKS = 1024;
 
-	public static final Color REGION_MARKED_COLOR = new Color(1, 0, 0, 0.8);
-	public static final Color CHUNK_MARKED_COLOR = new Color(1, 0.45, 0, 0.8);
-	public static final Color REGION_GRID_COLOR = Color.BLACK;
-	public static final Color CHUNK_GRID_COLOR = Color.DARKGRAY;
-	public static final Color EMPTY_CHUNK_BACKGROUND_COLOR = Color.BLACK;
+	public static Color REGION_MARKED_COLOR = new Color(1, 0, 0, 0.8);
+	public static Color CHUNK_MARKED_COLOR = new Color(1, 0.45, 0, 0.8);
+	public static Color REGION_GRID_COLOR = Color.BLACK;
+	public static Color CHUNK_GRID_COLOR = Color.DARKGRAY;
+	public static Color EMPTY_CHUNK_BACKGROUND_COLOR = Color.BLACK;
 	public static final double GRID_LINE_WIDTH = 0.5;
 
-	private static final Image empty;
-	private static final Color emptyColor = new Color(0.2, 0.2, 0.2, 1);
+	private static Image empty;
+	public static Color EMPTY_COLOR = new Color(0.2, 0.2, 0.2, 1);
 
 	private Point2i location;
 	private Image image;
@@ -44,14 +44,7 @@ public class Tile {
 	private Set<Point2i> markedChunks = new HashSet<>();
 
 	static {
-		WritableImage wImage = new WritableImage(SIZE, SIZE);
-		PixelWriter pWriter = wImage.getPixelWriter();
-		for (int x = 0; x < SIZE; x++) {
-			for (int y = 0; y < SIZE; y++) {
-				pWriter.setColor(x, y, emptyColor);
-			}
-		}
-		empty = wImage;
+		reloadEmpty();
 	}
 
 	public Tile(Point2i location) {
@@ -149,6 +142,17 @@ public class Tile {
 
 	public Set<Point2i> getMarkedChunks() {
 		return markedChunks;
+	}
+
+	static void reloadEmpty() {
+		WritableImage wImage = new WritableImage(SIZE, SIZE);
+		PixelWriter pWriter = wImage.getPixelWriter();
+		for (int x = 0; x < SIZE; x++) {
+			for (int y = 0; y < SIZE; y++) {
+				pWriter.setColor(x, y, EMPTY_COLOR);
+			}
+		}
+		empty = wImage;
 	}
 
 	public void draw(GraphicsContext ctx, float scale, Point2f offset, boolean regionGrid, boolean chunkGrid) {

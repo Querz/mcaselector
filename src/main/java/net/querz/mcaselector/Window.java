@@ -1,18 +1,14 @@
 package net.querz.mcaselector;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import net.querz.mcaselector.tiles.TileMap;
-import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.tiles.TileMapBox;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class Window extends Application {
 
@@ -33,18 +29,7 @@ public class Window extends Application {
 		pane.setTop(new OptionBar(tileMap, primaryStage));
 
 		//tilemap
-		HBox tileMapBox = new HBox();
-		tileMapBox.getStyleClass().add("tile-map-box");
-		ChangeListener<Number> sizeListener = (o, r, n) -> {
-			tileMap.resize(primaryStage.getWidth(), primaryStage.getHeight());
-			Debug.dump("resizing to " + primaryStage.getWidth() + " " + primaryStage.getHeight());
-		};
-		primaryStage.widthProperty().addListener(sizeListener);
-		primaryStage.heightProperty().addListener(sizeListener);
-
-		tileMapBox.setAlignment(Pos.TOP_LEFT);
-		tileMapBox.getChildren().add(tileMap);
-
+		TileMapBox tileMapBox = new TileMapBox(tileMap, primaryStage);
 		pane.setCenter(tileMapBox);
 
 		//status bar

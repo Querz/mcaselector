@@ -40,9 +40,15 @@
 	-fx-background-color: #898989;
 }
 
-/* shadow for tilemap box */
+/* shadow for tilemap box and colors for tilemap control elements */
 .tile-map-box {
 	-fx-effect: innershadow(gaussian, black, 8, 0, 0, 0);
+	-marked-region-color: rgba(255, 0, 0, 0.8);
+	-marked-chunk-color: rgba(255, 115, 0, 0.8);
+	-region-grid-color: black;
+	-chunk-grid-color: darkgray;
+	-empty-chunk-background-color: black;
+	-empty-color: rgba(51, 51, 51, 1);
 }
 
 /* status bar styles */
