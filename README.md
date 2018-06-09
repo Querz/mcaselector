@@ -11,7 +11,6 @@ Zooming out far enough disables the selection of single chunks but lets you sele
 
 ### Selections
 Upon finishing selecting chunks and regions, they can be deleted or exported using the ```Selection```-menu. Exported chunks and regions are not deleted from the original world.
-For the sake of performance, the tool does not actually delete chunks from mca-files, it only removes the chunk indices and lets Minecraft handle the generation of new chunks and defragmentation of the mca-files.
 
 ![alt text](https://raw.githubusercontent.com/Querz/mcaselector/assets/assets/mca_selector_selections.png "MCA Selector window showing chunk and region selection export")
 
@@ -24,7 +23,7 @@ The tool creates an image for each region from the provided mca-files. These ima
 ## Supported Versions
 The MCA Selector currently supports the following Minecraft versions:
 
-| Minecraft Version | DataVersion | Type                         | Supported |
-| ----------------- | ----------- | ---------------------------- | :-------: |
-| Beta 1.3 - 1.12.2 | 0 - 1343    | Internal color mapping file  | Yes       |
-| 1.13              | 1344 - ?    | Internal color mapping file  | Yes       |
+| Minecraft Version | DataVersion | Supported |
+| ----------------- | ----------- | :-------: |
+| Beta 1.3 - 1.12.2 | 0 - 1343    | Yes       |
+| 1.13              | 1344 - ?    | Yes       |
