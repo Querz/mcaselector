@@ -9,9 +9,9 @@ import net.querz.mcaselector.util.Helper;
 public class OptionBar extends MenuBar {
 	/*
 	* File		View				Selection
-	* - Open	- Chunk Grid		- Clear
-	* - Quit	- Region Grid		- Export chunks
-	*			- Goto				- Delete chunks
+	* - Open	- Chunk Grid		- Clear selection
+	* - Quit	- Region Grid		- Export selected chunks
+	*			- Goto				- Delete selected chunks
 	*			- Clear cache		- Import selection
 	*			- Clear all cache	- Export selection
 	*								- Clear cache
@@ -29,8 +29,8 @@ public class OptionBar extends MenuBar {
 	private MenuItem clearViewCache = menuItem("Clear cache");
 	private MenuItem clearAllCache = menuItem("Clear all cache");
 	private MenuItem clear = menuItem("Clear");
-	private MenuItem exportChunks = menuItem("Export chunks");
-	private MenuItem delete = menuItem("Delete chunks");
+	private MenuItem exportChunks = menuItem("Export selected chunks");
+	private MenuItem delete = menuItem("Delete selected chunks");
 	private MenuItem importSelection = menuItem("Import selection");
 	private MenuItem exportSelection = menuItem("Export selection");
 	private MenuItem clearSelectionCache = menuItem("Clear cache");

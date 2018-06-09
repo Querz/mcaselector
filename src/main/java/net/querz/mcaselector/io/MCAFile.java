@@ -21,7 +21,7 @@ public class MCAFile {
 	private int[] timestamps;
 
 	public MCAFile(File file) {
-		this.file = file;
+		this.file = file.getAbsoluteFile();
 		offsets = new int[Tile.CHUNKS];
 		sectors = new byte[Tile.CHUNKS];
 		timestamps = new int[Tile.CHUNKS];
@@ -46,15 +46,64 @@ public class MCAFile {
 	}
 
 	//chunks contains chunk coordinates to be deleted in this file.
-	public void deleteChunkIndices(Set<Point2i> chunks, RandomAccessFile raf) throws Exception {
+	public void deleteChunkIndices(Set<Point2i> chunks) {
 		for (Point2i chunk : chunks) {
 			int index = getChunkIndex(chunk);
-			raf.seek(INDEX_HEADER_LOCATION + index * 4);
-			raf.writeInt(0);
-			//set timestamp to 0
-			raf.seek(TIMESTAMP_HEADER_LOCATION + index * 4);
-			raf.writeInt(0);
+			offsets[index] = 0;
+			sectors[index] = 0;
+			timestamps[index] = 0;
 		}
+	}
+
+	//will rearrange the chunk data in the mca file to take up as few space as possible
+	public File deFragment(RandomAccessFile raf) throws Exception {
+		//only works if read has been called before
+
+		File tmpFile = File.createTempFile(file.getName(), null, null);
+		int globalOffset = 2; //chunk data starts at 8192 (after 2 sectors)
+
+		//rafTmp if on the new file
+		try (RandomAccessFile rafTmp = new RandomAccessFile(tmpFile, "rw")) {
+			//loop over all offsets, read the raw byte data (complete sections) and write it to new file
+			for (int i = 0; i < offsets.length; i++) {
+				//don't do anything if this chunk is empty
+				if (offsets[i] == 0) {
+					continue;
+				}
+
+				int sectors = this.sectors[i];
+
+				//write offset and sector size to tmp file
+				rafTmp.seek(INDEX_HEADER_LOCATION + i * 4);
+				rafTmp.writeByte(globalOffset >>> 16);
+				rafTmp.writeByte(globalOffset >> 8 & 0xFF);
+				rafTmp.writeByte(globalOffset & 0xFF);
+				rafTmp.writeByte(sectors);
+
+				//write timestamp to tmp file
+				rafTmp.seek(TIMESTAMP_HEADER_LOCATION + i * 4);
+				rafTmp.writeInt(timestamps[i]);
+
+				//copy chunk data to tmp file
+				raf.seek(offsets[i] * SECTION_SIZE);
+				rafTmp.seek(globalOffset * SECTION_SIZE);
+
+				DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(raf.getFD()), sectors * SECTION_SIZE));
+				DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(rafTmp.getFD()), sectors * SECTION_SIZE));
+
+				byte[] data = new byte[sectors * SECTION_SIZE];
+				int read = dis.read(data);
+
+				if (read != sectors * SECTION_SIZE) {
+					throw new RuntimeException("deFragment read less data from original file than expected: " + read + " instead of " + sectors * SECTION_SIZE);
+				}
+
+				dos.write(data);
+				offsets[i] = globalOffset; //always keep MCAFile information up to date
+				globalOffset += sectors;
+			}
+		}
+		return tmpFile;
 	}
 
 	private int getChunkIndex(Point2i chunkCoordinate) {
