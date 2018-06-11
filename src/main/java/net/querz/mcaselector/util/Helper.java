@@ -139,7 +139,6 @@ public class Helper {
 		FileChooser fileChooser = new FileChooser();
 		if (filter != null) {
 			fileChooser.getExtensionFilters().add(filter);
-//			fileChooser.setSelectedExtensionFilter(filter);
 		}
 		if (initialDirectory != null) {
 			fileChooser.setInitialDirectory(new File(initialDirectory));
@@ -207,5 +206,21 @@ public class Helper {
 	public static void gotoCoordinate(TileMap tileMap) {
 		Optional<Point2i> result = new GotoDialog().showAndWait();
 		result.ifPresent(r -> tileMap.goTo(r.getX(), r.getY()));
+	}
+
+	public static String byteToBinaryString(byte b) {
+		StringBuilder s = new StringBuilder(Integer.toBinaryString(b & 0xFF));
+		for (int i = s.length(); i < 8; i++) {
+			s.insert(0, "0");
+		}
+		return s.toString();
+	}
+
+	public static String intToBinaryString(int n) {
+		StringBuilder s = new StringBuilder(Integer.toBinaryString(n));
+		for (int i = s.length(); i < 32; i++) {
+			s.insert(0, "0");
+		}
+		return s.toString();
 	}
 }

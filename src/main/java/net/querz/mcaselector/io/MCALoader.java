@@ -7,6 +7,7 @@ import net.querz.mcaselector.util.Point2i;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public class MCALoader {
 	}
 
 	public static void deleteChunks(Map<Point2i, Set<Point2i>> chunksToBeDeleted) {
-		deleteChunks(chunksToBeDeleted, Config.getWorldDir(), true);
+		deleteChunks(chunksToBeDeleted, Config.getWorldDir(), false);
 	}
 
 	public static void deleteChunks(Map<Point2i, Set<Point2i>> chunksToBeDeleted, File dir, boolean backup) {
@@ -56,7 +57,10 @@ public class MCALoader {
 						continue;
 					}
 
-					mcaFile.deleteChunkIndices(entry.getValue(), raf);
+					mcaFile.deleteChunkIndices(entry.getValue());
+					File tmpFile = mcaFile.deFragment(raf);
+					raf.close();
+					Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 				} catch (Exception ex) {
 					Debug.error(ex);
 					if (backup && mcaFile != null) {
@@ -65,7 +69,6 @@ public class MCALoader {
 				}
 			}
 		}
-
 	}
 
 	private static void backup(File mcaFile) {
