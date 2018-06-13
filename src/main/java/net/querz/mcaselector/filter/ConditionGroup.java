@@ -1,10 +1,9 @@
 package net.querz.mcaselector.filter;
 
-import net.querz.nbt.CompoundTag;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConditionGroup implements Filter {
+public class ConditionGroup extends Filter {
 
 	private List<Filter> filters = new ArrayList<>();
 	private Operator operator = Operator.AND;
@@ -22,6 +21,11 @@ public class ConditionGroup implements Filter {
 	@Override
 	public Operator getOperator() {
 		return operator;
+	}
+
+	@Override
+	public Comparator getComparator() {
+		return null;
 	}
 
 	@Override

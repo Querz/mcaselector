@@ -1,6 +1,6 @@
 package net.querz.mcaselector.filter;
 
-public abstract class Condition implements Filter {
+public abstract class Condition extends Filter {
 
 	private Operator operator = Operator.AND;
 	protected Comparator comparator;
@@ -17,6 +17,11 @@ public abstract class Condition implements Filter {
 	@Override
 	public Operator getOperator() {
 		return operator;
+	}
+
+	@Override
+	public Comparator getComparator() {
+		return comparator;
 	}
 
 	@Override

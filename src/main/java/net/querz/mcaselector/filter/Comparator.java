@@ -2,9 +2,9 @@ package net.querz.mcaselector.filter;
 
 public enum Comparator {
 
+	EQUAL("="),
 	LARGER_THAN(">"),
-	SMALLER_THAN("<"),
-	EQUAL("==");
+	SMALLER_THAN("<");
 
 	private String string;
 

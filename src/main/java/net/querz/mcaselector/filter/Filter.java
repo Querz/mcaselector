@@ -1,8 +1,10 @@
 package net.querz.mcaselector.filter;
 
-public interface Filter {
+public abstract class Filter {
 
-	Operator getOperator();
+	public abstract Operator getOperator();
 
-	boolean matches(FilterData data);
+	public abstract Comparator getComparator();
+
+	public abstract boolean matches(FilterData data);
 }

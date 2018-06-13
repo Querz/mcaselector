@@ -60,3 +60,28 @@
 .status-bar .label {
 	-fx-text-fill: #f2f2f2;
 }
+
+.combo-box {
+	-fx-background-color: #262626;
+	-fx-background-radius: 0;
+	-fx-border-width: 0;
+	/*-fx-border-color: red;*/
+	-fx-pref-width: 100px;
+	-fx-min-width: 70px;
+}
+
+.filter-cell-box {
+	-fx-background-color: #262626;
+	-fx-pref-height: 22px;
+	-fx-max-height: 22px;
+}
+
+.combo-box .list-cell {
+	-fx-text-fill: #f2f2f2;
+	/*-fx-background-color: red;*/
+	-fx-padding: 2 5 2 5;
+}
+
+.combo-box-popup .list-cell {
+	-fx-background-color: #262626;
+}
