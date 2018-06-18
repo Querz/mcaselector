@@ -4,19 +4,19 @@ import net.querz.nbt.CompoundTag;
 
 public class FilterData {
 
-	private CompoundTag chunkData;
-	private int timestamp;
+	private int lastUpdated;
+	private CompoundTag chunk;
 
-	public FilterData(int timestamp, CompoundTag chunkData) {
-		this.timestamp = timestamp;
-		this.chunkData = chunkData;
+	public FilterData(int lastUpdated, CompoundTag chunk) {
+		this.lastUpdated = lastUpdated;
+		this.chunk = chunk;
 	}
 
-	public CompoundTag getChunkData() {
-		return chunkData;
+	public int getLastUpdated() {
+		return lastUpdated;
 	}
 
-	public int getTimestamp() {
-		return timestamp;
+	public CompoundTag getChunk() {
+		return chunk;
 	}
 }

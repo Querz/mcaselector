@@ -1,9 +1,8 @@
 package net.querz.mcaselector.filter;
 
 public enum Operator {
-
-	AND("And"),
-	OR("Or");
+	AND("AND"),
+	OR("OR");
 
 	private String string;
 

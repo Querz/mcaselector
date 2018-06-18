@@ -1,10 +1,13 @@
 package net.querz.mcaselector.filter;
 
 public enum Comparator {
-
-	EQUAL("="),
-	LARGER_THAN(">"),
-	SMALLER_THAN("<");
+	EQ("=="),
+	NEQ("!="),
+	ST("<"),
+	LT(">"),
+	LEQ(">="),
+	SEQ("<="),
+	CONTAINS("contains");
 
 	private String string;
 
