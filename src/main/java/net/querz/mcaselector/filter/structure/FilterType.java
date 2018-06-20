@@ -1,4 +1,4 @@
-package net.querz.mcaselector.filter;
+package net.querz.mcaselector.filter.structure;
 
 public enum FilterType {
 
@@ -10,11 +10,20 @@ public enum FilterType {
 	LAST_UPDATE("LastUpdate", LastUpdateFilter.class);
 
 	private String string;
-	private Class clazz;
+	private Class<? extends Filter> clazz;
 
 	FilterType(String string, Class<? extends Filter> clazz) {
 		this.string = string;
 		this.clazz = clazz;
+	}
+
+	public Filter create() {
+		try {
+			return clazz.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override

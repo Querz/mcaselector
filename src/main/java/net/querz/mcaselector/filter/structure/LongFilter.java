@@ -1,16 +1,16 @@
-package net.querz.mcaselector.filter;
+package net.querz.mcaselector.filter.structure;
 
-public abstract class IntegerFilter extends NumberFilter<Integer> {
+public abstract class LongFilter extends NumberFilter<Long> {
 
-	private int value;
+	private long value;
 
-	public IntegerFilter(FilterType type, Operator operator, Comparator comparator, int value) {
+	public LongFilter(FilterType type, Operator operator, Comparator comparator, long value) {
 		super(type, operator, comparator);
 		this.value = value;
 	}
 
 	@Override
-	Integer getFilterNumber() {
+	Long getFilterNumber() {
 		return value;
 	}
 
@@ -21,7 +21,7 @@ public abstract class IntegerFilter extends NumberFilter<Integer> {
 			return true;
 		} else {
 			try {
-				value = Integer.parseInt(raw);
+				value = Long.parseLong(raw);
 				return true;
 			} catch (NumberFormatException ex) {
 				return false;
@@ -30,32 +30,32 @@ public abstract class IntegerFilter extends NumberFilter<Integer> {
 	}
 
 	@Override
-	boolean isEqual(Integer a, Integer b) {
+	boolean isEqual(Long a, Long b) {
 		return a.intValue() == b.intValue();
 	}
 
 	@Override
-	boolean isNotEqual(Integer a, Integer b) {
+	boolean isNotEqual(Long a, Long b) {
 		return a.intValue() != b.intValue();
 	}
 
 	@Override
-	boolean isLargerThan(Integer a, Integer b) {
+	boolean isLargerThan(Long a, Long b) {
 		return a > b;
 	}
 
 	@Override
-	boolean isSmallerThan(Integer a, Integer b) {
+	boolean isSmallerThan(Long a, Long b) {
 		return a < b;
 	}
 
 	@Override
-	boolean isLargerEqual(Integer a, Integer b) {
+	boolean isLargerEqual(Long a, Long b) {
 		return a >= b;
 	}
 
 	@Override
-	boolean isSmallerEqual(Integer a, Integer b) {
+	boolean isSmallerEqual(Long a, Long b) {
 		return a <= b;
 	}
 }

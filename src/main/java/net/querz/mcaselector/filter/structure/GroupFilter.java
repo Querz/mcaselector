@@ -1,4 +1,4 @@
-package net.querz.mcaselector.filter;
+package net.querz.mcaselector.filter.structure;
 
 import net.querz.mcaselector.util.Point2i;
 
@@ -17,12 +17,14 @@ public class GroupFilter extends Filter<List<Filter>> {
 		super(FilterType.GROUP, operator);
 	}
 
-	public void addFilter(Filter filter) {
+	public int addFilter(Filter filter) {
 		filter.setParent(this);
 		children.add(filter);
+		return children.size() - 1;
 	}
 
-	public void addFilterAfter(Filter filter, Filter after) {
+	//returns index of where this filter was added
+	public int addFilterAfter(Filter filter, Filter after) {
 		filter.setParent(this);
 		int i = children.indexOf(after);
 		if (i >= 0) {
@@ -30,6 +32,7 @@ public class GroupFilter extends Filter<List<Filter>> {
 		} else {
 			children.add(filter);
 		}
+		return i + 1;
 	}
 
 	public boolean removeFilter(Filter filter) {
@@ -97,6 +100,17 @@ public class GroupFilter extends Filter<List<Filter>> {
 		for (int i = 0; i < children.size(); i++) {
 			s.append(i != 0 ? " " + children.get(i).getOperator() + " " : "");
 			s.append(children.get(i).toString(data));
+		}
+		s.append(")");
+		return s.toString();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder s = new StringBuilder("(");
+		for (int i = 0; i < children.size(); i++) {
+			s.append(i != 0 ? " " + children.get(i).getOperator() + " " : "");
+			s.append(children.get(i));
 		}
 		s.append(")");
 		return s.toString();

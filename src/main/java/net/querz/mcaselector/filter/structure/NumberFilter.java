@@ -1,4 +1,4 @@
-package net.querz.mcaselector.filter;
+package net.querz.mcaselector.filter.structure;
 
 public abstract class NumberFilter<T extends Number> extends Filter<T> {
 
@@ -59,6 +59,11 @@ public abstract class NumberFilter<T extends Number> extends Filter<T> {
 	@Override
 	public String toString(FilterData data) {
 		return getFilterValue() + " " + comparator + " " + getNumber(data);
+	}
+
+	@Override
+	public String toString() {
+		return getType() + " " + comparator + " " + getFilterValue();
 	}
 
 	abstract T getFilterNumber();

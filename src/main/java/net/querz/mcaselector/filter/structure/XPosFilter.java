@@ -1,10 +1,14 @@
-package net.querz.mcaselector.filter;
+package net.querz.mcaselector.filter.structure;
 
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.nbt.CompoundTag;
 
 public class XPosFilter extends IntegerFilter {
+
+	public XPosFilter() {
+		this(Operator.AND, Comparator.EQ, 0);
+	}
 
 	public XPosFilter(Operator operator, Comparator comparator, int value) {
 		super(FilterType.X_POS, operator, comparator, value);

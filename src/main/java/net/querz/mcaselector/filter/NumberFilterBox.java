@@ -1,17 +1,22 @@
 package net.querz.mcaselector.filter;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
+import net.querz.mcaselector.filter.structure.Filter;
+import net.querz.mcaselector.filter.structure.NumberFilter;
 
 public class NumberFilterBox extends FilterBox {
 
 	private TextField input = new TextField();
 
-	public NumberFilterBox(NumberFilter filter) {
-		super(filter);
+	public NumberFilterBox(FilterBox parent, NumberFilter filter, boolean root) {
+		super(parent, filter, root);
+		getStyleClass().add("number-filter-box");
 		input.setPromptText(filter.getType().toString());
 		input.setText(filter.getFilterValue().toString());
 		input.textProperty().addListener((a, b, c) -> onTextInput(filter, b, c));
 
+		input.setAlignment(Pos.TOP_CENTER);
 		setCenter(input);
 	}
 

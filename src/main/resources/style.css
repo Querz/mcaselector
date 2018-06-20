@@ -1,6 +1,17 @@
+* {
+	-color-dark-background: #262626;
+	-color-dark-hover-background: #3f3f3f;
+	-color-dark-disabled-background: #2e2e2e;
+	-color-light-background: #f2f2f2;
+	-color-white: white;
+	-color-light: #f2f2f2;
+	-color-light-separator: #898989;
+	-color-light-group: #a8a8a8
+}
+
 /* basic menu background color */
 .menu-bar, .menu, .menu-item, .context-menu {
-	-fx-background-color: #262626;
+	-fx-background-color: -color-dark-background;
 }
 
 /* menu paddings */
@@ -18,26 +29,26 @@
 
 /* menu text color and check-menu icon */
 .menu >.label, .menu-item >.label, .check-menu-item {
-	-fx-text-fill: #f2f2f2;
-	-fx-focused-mark-color: #f2f2f2;
-	-fx-mark-color: #f2f2f2;
+	-fx-text-fill: -color-light;
+	-fx-focused-mark-color: -color-light;
+	-fx-mark-color: -color-light;
 }
 
 /* menu hovering */
 .menu:hover, .menu-item:hover, .check-menu-item:hover {
-	-fx-background-color: #3f3f3f;
+	-fx-background-color: -color-dark-hover-background;
 }
 
 /* if the menu-item is disabled, this will overwrite the hover style */
 .menu-item:disabled {
-	-fx-background-color: #2e2e2e;
+	-fx-background-color: -color-dark-disabled-background;
 	-fx-opacity: 1;
 }
 
 /* separator lines in menus */
 .separator *.line {
 	-fx-border-width: 0;
-	-fx-background-color: #898989;
+	-fx-background-color: -color-light-separator;
 }
 
 /* shadow for tilemap box and colors for tilemap control elements */
@@ -54,34 +65,58 @@
 
 /* status bar styles */
 .status-bar {
-	-fx-background-color: #262626;
+	-fx-background-color: -color-dark-background;
 }
 
 .status-bar .label {
 	-fx-text-fill: #f2f2f2;
 }
 
+/*filter combobox*/
 .combo-box {
-	-fx-background-color: #262626;
+	-fx-background-color: -color-dark-background;
 	-fx-background-radius: 0;
-	-fx-border-width: 0;
-	/*-fx-border-color: red;*/
-	-fx-pref-width: 100px;
+	-fx-border-width: 0 2 0 0;
+	-fx-border-insets: 0 0 -1 0;
+	-fx-border-color: -color-light-background;
+	-fx-pref-width: 130px;
 	-fx-min-width: 70px;
 }
 
-.filter-cell-box {
-	-fx-background-color: #262626;
-	-fx-pref-height: 22px;
-	-fx-max-height: 22px;
-}
-
 .combo-box .list-cell {
-	-fx-text-fill: #f2f2f2;
-	/*-fx-background-color: red;*/
+	-fx-text-fill: -color-light;
 	-fx-padding: 2 5 2 5;
 }
 
 .combo-box-popup .list-cell {
-	-fx-background-color: #262626;
+	-fx-background-color: -color-dark-background;
+}
+
+.filter-box {
+	-fx-padding: 1 0 1 5;
+	-fx-background-color: -color-light-background;
+}
+
+/*no padding for root group*/
+.group-filter-box-root {
+	-fx-padding: 0;
+}
+
+/*no padding for group filters*/
+.group-filter-box {
+	-fx-padding: 1 0 1 1;
+	-fx-border-insets: 0 0 0 3;
+	-fx-border-width: 2 0 2 2;
+	-fx-border-color: -color-light-group;
+}
+
+.text-field {
+	-fx-background-color: -color-white;
+	-fx-background-radius: 0;
+	-fx-border-width: 1px;
+	-fx-border-color: -color-light-separator;
+	-fx-pref-height: 22px;
+	-fx-max-height: 22px;
+	-fx-padding: 0;
+	-fx-font-weight: bold;
 }

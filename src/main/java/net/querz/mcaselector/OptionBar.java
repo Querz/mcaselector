@@ -8,8 +8,8 @@ import net.querz.mcaselector.util.Helper;
 
 public class OptionBar extends MenuBar {
 	/*
-	* File		View				Selection
-	* - Open	- Chunk Grid		- Clear selection
+	* File		View				Selection					Tools
+	* - Open	- Chunk Grid		- Clear selection			- Delete chunks
 	* - Quit	- Region Grid		- Export selected chunks
 	*			- Goto				- Delete selected chunks
 	*			- Clear cache		- Import selection

@@ -1,4 +1,4 @@
-package net.querz.mcaselector.filter;
+package net.querz.mcaselector.filter.structure;
 
 public enum Comparator {
 	EQ("=="),

@@ -1,5 +1,13 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.filter.structure.Comparator;
+import net.querz.mcaselector.filter.structure.DataVersionFilter;
+import net.querz.mcaselector.filter.structure.FilterData;
+import net.querz.mcaselector.filter.structure.GroupFilter;
+import net.querz.mcaselector.filter.structure.InhabitedTimeFilter;
+import net.querz.mcaselector.filter.structure.Operator;
+import net.querz.mcaselector.filter.structure.XPosFilter;
+import net.querz.mcaselector.filter.structure.ZPosFilter;
 import net.querz.nbt.CompoundTag;
 
 public class Test {
