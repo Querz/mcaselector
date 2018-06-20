@@ -60,7 +60,17 @@ public class MCALoader {
 					mcaFile.deleteChunkIndices(entry.getValue());
 					File tmpFile = mcaFile.deFragment(raf);
 					raf.close();
-					Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+					//delete region file if it's empty, otherwise replace it with tmpFile
+					if (tmpFile == null) {
+						if (file.delete()) {
+							Debug.dump("deleted empty region file " + file);
+						} else {
+							Debug.dump("could not delete empty region file " + file);
+						}
+					} else {
+						Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+					}
 				} catch (Exception ex) {
 					Debug.error(ex);
 					if (backup && mcaFile != null) {

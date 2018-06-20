@@ -62,12 +62,15 @@ public class MCAFile {
 		File tmpFile = File.createTempFile(file.getName(), null, null);
 		int globalOffset = 2; //chunk data starts at 8192 (after 2 sectors)
 
+		int skippedChunks = 0;
+
 		//rafTmp if on the new file
 		try (RandomAccessFile rafTmp = new RandomAccessFile(tmpFile, "rw")) {
 			//loop over all offsets, read the raw byte data (complete sections) and write it to new file
 			for (int i = 0; i < offsets.length; i++) {
 				//don't do anything if this chunk is empty
 				if (offsets[i] == 0) {
+					skippedChunks++;
 					continue;
 				}
 
@@ -103,6 +106,15 @@ public class MCAFile {
 				globalOffset += sectors;
 			}
 		}
+
+		if (skippedChunks == Tile.CHUNKS && tmpFile.exists()) {
+			if (tmpFile.delete()) {
+				return null;
+			} else {
+				Debug.dump("could not delete tmpFile " + tmpFile + " after all chunks were deleted");
+			}
+		}
+
 		return tmpFile;
 	}
 
