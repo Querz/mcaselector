@@ -3,6 +3,8 @@ package net.querz.mcaselector.io;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import net.querz.mcaselector.filter.structure.Filter;
+import net.querz.mcaselector.filter.structure.FilterData;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Point2i;
@@ -52,6 +54,30 @@ public class MCAFile {
 			offsets[index] = 0;
 			sectors[index] = 0;
 			timestamps[index] = 0;
+		}
+	}
+
+	public void deleteChunkIndices(Filter filter, RandomAccessFile raf) throws Exception {
+		for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
+			for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
+				int index = cz  * Tile.SIZE_IN_CHUNKS + cx;
+
+				MCAChunkData data = getChunkData(index);
+				data.readHeader(raf);
+				try {
+					data.loadData(raf);
+				} catch (Exception ex) {
+					Debug.error(ex);
+				}
+
+				FilterData filterData = new FilterData(data.getTimestamp(), data.getData());
+
+				if (filter.matches(filterData)) {
+					offsets[index] = 0;
+					sectors[index] = 0;
+					timestamps[index] = 0;
+				}
+			}
 		}
 	}
 

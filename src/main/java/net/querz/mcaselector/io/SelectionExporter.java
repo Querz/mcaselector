@@ -103,7 +103,7 @@ public class SelectionExporter {
 				}
 				Map<Point2i, Set<Point2i>> inverted = new HashMap<>(1);
 				inverted.put(entry.getKey(), c);
-				MCALoader.deleteChunks(inverted, dir, false);
+				MCALoader.deleteChunks(inverted, (s, d) -> {}, dir, false);
 			}
 		}
 	}

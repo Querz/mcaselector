@@ -1,7 +1,6 @@
 package net.querz.mcaselector.filter;
 
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -21,9 +20,12 @@ public abstract class FilterBox extends BorderPane {
 	Label add = new Label("+");
 	Label move = new Label("\u2195");
 
-	private FilterBox parent;
+	FilterBox parent;
 
-	ComboBox<FilterType> typeComboBox = new ComboBox<>();
+	ComboBox<FilterType> type = new ComboBox<>();
+	ComboBox<Operator> operator = new ComboBox<>();
+
+	GridPane filterOperators = new GridPane();
 
 	private boolean root;
 
@@ -38,27 +40,39 @@ public abstract class FilterBox extends BorderPane {
 
 		GridPane controls = new GridPane();
 		controls.setAlignment(Pos.TOP_RIGHT);
-		controls.add(move, 0, 0, 1, 1);
 		controls.add(add, 1, 0, 1, 1);
-		if (!(this instanceof GroupFilterBox) || !root) {
-			controls.add(delete, 2, 0, 1, 1);
+		controls.add(move, 0, 0, 1, 1);
+		controls.add(delete, 2, 0, 1, 1);
+
+		if (this instanceof GroupFilterBox && root) {
+			delete.setVisible(false);
+			move.setVisible(false);
 		}
 
 		setRight(controls);
 
-		typeComboBox.getItems().addAll(FilterType.values());
-		typeComboBox.getSelectionModel().select(filter.getType());
+		operator.getItems().addAll(Operator.values());
+		operator.getSelectionModel().select(filter.getOperator());
+		operator.setOnAction(e -> onOperator(filter));
+		operator.getStyleClass().add("filter-operator-combo-box");
+		filterOperators.add(operator, 1, 0, 1, 1);
 
-		GridPane type = new GridPane();
-		type.setAlignment(Pos.TOP_LEFT);
-		type.add(typeComboBox, 0, 0, 1, 1);
+		if (filter.getParent() == null || ((GroupFilter) filter.getParent()).getFilterValue().get(0) == filter) {
+			operator.setVisible(false);
+		}
 
-		setLeft(type);
+		type.getItems().addAll(FilterType.values());
+		type.getSelectionModel().select(filter.getType());
+		type.setOnAction(e -> update(type.getSelectionModel().getSelectedItem()));
+
+		filterOperators.setAlignment(Pos.TOP_LEFT);
+		filterOperators.add(type, 0, 0, 1, 1);
+
+		setLeft(filterOperators);
 
 		//TODO: move
 		add.setOnMouseReleased(e -> onAdd(filter));
 		delete.setOnMouseReleased(e -> onDelete(filter));
-		typeComboBox.setOnAction(e -> update(typeComboBox.getSelectionModel().getSelectedItem()));
 	}
 
 	protected void onAdd(Filter filter) {
@@ -79,8 +93,8 @@ public abstract class FilterBox extends BorderPane {
 		System.out.println("before: " + root);
 
 		if (this instanceof GroupFilterBox) {
-			((GroupFilterBox) this).filters.getChildren().add(index, new NumberFilterBox(this, f, this.root));
-			typeComboBox.setDisable(true);
+			((GroupFilterBox) this).filters.getChildren().add(index, new NumberFilterBox(this, f, false));
+			type.setDisable(true);
 		} else if (parent instanceof GroupFilterBox) {
 			((GroupFilterBox) parent).filters.getChildren().add(index, new NumberFilterBox(this.parent, f, this.root));
 		}
@@ -102,7 +116,12 @@ public abstract class FilterBox extends BorderPane {
 		if (parent instanceof GroupFilterBox) {
 			((GroupFilterBox) parent).filters.getChildren().remove(this);
 			if (((GroupFilterBox) parent).filters.getChildren().isEmpty()) {
-				((GroupFilterBox) parent).typeComboBox.setDisable(false);
+				if (parent.parent != null) {
+					((GroupFilterBox) parent).type.setDisable(false);
+					System.out.println("enabled group");
+				}
+			} else {
+				((FilterBox) ((GroupFilterBox) parent).filters.getChildren().get(0)).operator.setVisible(false);
 			}
 		}
 	}
@@ -131,6 +150,10 @@ public abstract class FilterBox extends BorderPane {
 			((GroupFilterBox) this.parent).filters.getChildren().remove(index);
 			((GroupFilterBox) this.parent).filters.getChildren().add(index, newBox);
 		}
+	}
+
+	private void onOperator(Filter filter) {
+		filter.setOperator(operator.getSelectionModel().getSelectedItem());
 	}
 
 	private void onMove(Filter filter) {

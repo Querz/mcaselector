@@ -33,6 +33,10 @@ public abstract class NumberFilter<T extends Number> extends Filter<T> {
 		return comparator;
 	}
 
+	public void setComparator(Comparator comparator) {
+		this.comparator = comparator;
+	}
+
 	public boolean matches(T value, T data) {
 		switch (comparator) {
 			case EQ:

@@ -17,6 +17,10 @@ public class GroupFilter extends Filter<List<Filter>> {
 		super(FilterType.GROUP, operator);
 	}
 
+	public boolean isEmpty() {
+		return children.isEmpty();
+	}
+
 	public int addFilter(Filter filter) {
 		filter.setParent(this);
 		children.add(filter);

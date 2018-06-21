@@ -1,6 +1,8 @@
 package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.filter.structure.Filter;
+import net.querz.mcaselector.filter.structure.GroupFilter;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
@@ -10,6 +12,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MCALoader {
 
@@ -26,13 +32,20 @@ public class MCALoader {
 		return null;
 	}
 
-	public static void deleteChunks(Map<Point2i, Set<Point2i>> chunksToBeDeleted) {
-		deleteChunks(chunksToBeDeleted, Config.getWorldDir(), false);
+	public static void deleteChunks(Map<Point2i, Set<Point2i>> chunksToBeDeleted, BiConsumer<String, Double> progressChannel) {
+		deleteChunks(chunksToBeDeleted, progressChannel, Config.getWorldDir(), false);
 	}
 
-	public static void deleteChunks(Map<Point2i, Set<Point2i>> chunksToBeDeleted, File dir, boolean backup) {
+	public static void deleteChunks(Map<Point2i, Set<Point2i>> chunksToBeDeleted, BiConsumer<String, Double> progressChannel, File dir, boolean backup) {
+		double regionCount = chunksToBeDeleted.size();
+		int index = -1;
 		for (Map.Entry<Point2i, Set<Point2i>> entry : chunksToBeDeleted.entrySet()) {
+			index++;
 			File file = new File(dir, Helper.createMCAFileName(entry.getKey()));
+
+			progressChannel.accept(file.getName(), (double) index / regionCount);
+
+
 			//delete region
 
 			if (backup) {
@@ -79,6 +92,77 @@ public class MCALoader {
 				}
 			}
 		}
+		progressChannel.accept("Done", 1D);
+	}
+
+	public static void deleteChunks(GroupFilter filter, BiConsumer<String, Double> progressChannel) {
+		deleteChunks(filter, progressChannel, Config.getWorldDir(), false);
+	}
+
+	public static void deleteChunks(GroupFilter filter, BiConsumer<String, Double> progressChannel, File dir, boolean backup) {
+		File[] files = dir.listFiles((d, n) -> n.matches("^r\\.-?\\d+\\.-?\\d+\\.mca$"));
+		if (files == null) {
+			return;
+		}
+		double filesCount = files.length;
+		for (int i = 0; i < files.length; i++) {
+			File file = files[i];
+
+			progressChannel.accept(file.getName(), (double) i / filesCount);
+
+			Pattern p = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
+			Matcher m = p.matcher(file.getName());
+			if (m.find()) {
+				int regionX = Integer.parseInt(m.group("regionX"));
+				int regionZ = Integer.parseInt(m.group("regionZ"));
+
+				if (!filter.appliesToRegion(new Point2i(regionX, regionZ))) {
+					Debug.dump("filter does not apply to file " + file);
+					continue;
+				}
+
+				if (backup) {
+					Debug.dump("creating backup of " + file);
+					backup(file);
+				}
+
+				MCAFile mcaFile = null;
+
+				try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
+					mcaFile = MCALoader.read(file, raf);
+
+					if (mcaFile == null) {
+						Debug.error("error reading " + file + ", skipping");
+						continue;
+					}
+
+					mcaFile.deleteChunkIndices(filter, raf);
+					File tmpFile = mcaFile.deFragment(raf);
+					raf.close();
+
+					//delete region file if it's empty, otherwise replace it with tmpFile
+					if (tmpFile == null) {
+						if (file.delete()) {
+							Debug.dump("deleted empty region file " + file);
+						} else {
+							Debug.dump("could not delete empty region file " + file);
+						}
+					} else {
+						Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+					}
+
+				} catch (Exception ex) {
+					Debug.error(ex);
+					if (backup && mcaFile != null) {
+						restore(mcaFile);
+					}
+				}
+
+			} else {
+				Debug.dump("skipping " + file + ", could not parse file name");
+			}
+		}
+		progressChannel.accept("Done", 1D);
 	}
 
 	private static void backup(File mcaFile) {

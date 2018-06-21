@@ -6,7 +6,11 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.DeleteConfirmationDialog;
+import net.querz.mcaselector.FilterChunksDialog;
 import net.querz.mcaselector.GotoDialog;
+import net.querz.mcaselector.OptionBar;
+import net.querz.mcaselector.ProgressDialog;
+import net.querz.mcaselector.filter.structure.GroupFilter;
 import net.querz.mcaselector.io.MCALoader;
 import net.querz.mcaselector.io.SelectionExporter;
 import net.querz.mcaselector.tiles.TileMap;
@@ -94,16 +98,17 @@ public class Helper {
 		return String.format("r.%d.%d.png", r.getX(), r.getY());
 	}
 
-	public static void openWorld(TileMap tileMap, Stage primaryStage) {
+	public static void openWorld(TileMap tileMap, Stage primaryStage, OptionBar optionBar) {
 		String savesDir = Helper.getMCSavesDir();
 		File file = createDirectoryChooser(savesDir).showDialog(primaryStage);
 		if (file != null && file.isDirectory()) {
-			File[] files = file.listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.mca"));
+			File[] files = file.listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.mca$"));
 			if (files != null && files.length > 0) {
 				Debug.dump("setting world dir to " + file.getAbsolutePath());
 				Config.setWorldDir(file);
 				tileMap.clear();
 				tileMap.update();
+				optionBar.setWorldDependentMenuItemsEnabled(true);
 			}
 		}
 	}
@@ -147,7 +152,7 @@ public class Helper {
 	}
 
 	public static void clearAllCache(TileMap tileMap) {
-		File[] files = Config.getCacheDir().listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.png"));
+		File[] files = Config.getCacheDir().listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.png$"));
 		if (files != null) {
 			for (File file : files) {
 				if (!file.isDirectory()) {
@@ -192,7 +197,10 @@ public class Helper {
 		Optional<ButtonType> result = new DeleteConfirmationDialog(tileMap).showAndWait();
 		result.ifPresent(r -> {
 			if (r == ButtonType.OK) {
-				MCALoader.deleteChunks(tileMap.getMarkedChunks());
+				//TODO: progress bar
+				ProgressDialog pd = new ProgressDialog();
+				pd.show();
+				MCALoader.deleteChunks(tileMap.getMarkedChunks(), pd::updateProgress);
 				clearSelectionCache(tileMap);
 			}
 		});
@@ -206,6 +214,22 @@ public class Helper {
 	public static void gotoCoordinate(TileMap tileMap) {
 		Optional<Point2i> result = new GotoDialog().showAndWait();
 		result.ifPresent(r -> tileMap.goTo(r.getX(), r.getY()));
+	}
+
+	public static void filterChunks(TileMap tileMap, Stage primaryStage) {
+		Optional<GroupFilter> result = new FilterChunksDialog(primaryStage).showAndWait();
+		result.ifPresent(r -> {
+			if (r.isEmpty()) {
+				Debug.dump("filter is empty, won't delete everything");
+				return;
+			}
+			//TODO: progress bar
+			ProgressDialog pd = new ProgressDialog();
+			pd.show();
+			MCALoader.deleteChunks(r, pd::updateProgress);
+
+			clearAllCache(tileMap);
+		});
 	}
 
 	public static String byteToBinaryString(byte b) {

@@ -18,10 +18,10 @@ public class GroupFilterBox extends FilterBox {
 			getStyleClass().add("group-filter-box");
 		}
 
-		if (!filter.getFilterValue().isEmpty()) {
-			typeComboBox.setDisable(true);
+		if (!filter.getFilterValue().isEmpty() || root && parent == null) {
+			type.setDisable(true);
 		} else {
-			typeComboBox.setDisable(false);
+			type.setDisable(false);
 		}
 
 		for (Filter f : filter.getFilterValue()) {

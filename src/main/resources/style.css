@@ -92,8 +92,14 @@
 	-fx-background-color: -color-dark-background;
 }
 
+/*operator combo-box*/
+.filter-operator-combo-box {
+	-fx-pref-width: 70px;
+	-fx-min-width: 70px;
+}
+
 .filter-box {
-	-fx-padding: 1 0 1 5;
+	-fx-padding: 1 0 1 10;
 	-fx-background-color: -color-light-background;
 }
 
@@ -102,10 +108,9 @@
 	-fx-padding: 0;
 }
 
-/*no padding for group filters*/
 .group-filter-box {
 	-fx-padding: 1 0 1 1;
-	-fx-border-insets: 0 0 0 3;
+	-fx-border-insets: 0 0 0 8;
 	-fx-border-width: 2 0 2 2;
 	-fx-border-color: -color-light-group;
 }
@@ -119,4 +124,9 @@
 	-fx-max-height: 22px;
 	-fx-padding: 0;
 	-fx-font-weight: bold;
+}
+
+/* remove border from dialog */
+.filter-dialog-pane .content {
+	-fx-padding: 0;
 }

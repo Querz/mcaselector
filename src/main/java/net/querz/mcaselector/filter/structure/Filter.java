@@ -19,6 +19,10 @@ public abstract class Filter<T> {
 		return operator;
 	}
 
+	public void setOperator(Operator operator) {
+		this.operator = operator;
+	}
+
 	public FilterType getType() {
 		return type;
 	}
