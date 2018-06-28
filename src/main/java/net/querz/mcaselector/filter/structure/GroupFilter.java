@@ -1,13 +1,13 @@
 package net.querz.mcaselector.filter.structure;
 
 import net.querz.mcaselector.util.Point2i;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class GroupFilter extends Filter<List<Filter>> {
 
 	private List<Filter> children = new ArrayList<>();
+	private boolean inverted = false;
 
 	public GroupFilter() {
 		super(FilterType.GROUP);
@@ -25,6 +25,10 @@ public class GroupFilter extends Filter<List<Filter>> {
 		filter.setParent(this);
 		children.add(filter);
 		return children.size() - 1;
+	}
+
+	public void setInverted(boolean inverted) {
+		this.inverted = inverted;
 	}
 
 	//returns index of where this filter was added
@@ -73,13 +77,13 @@ public class GroupFilter extends Filter<List<Filter>> {
 			} else if (children.get(i).getOperator() == Operator.OR) {
 				//don't check other conditions if everything before OR is  already true
 				if (currentResult) {
-					return true;
+					return !currentResult;
 				}
 				//otherwise, reset currentResult
 				currentResult = children.get(i).matches(data);
 			}
 		}
-		return currentResult;
+		return inverted != currentResult;
 	}
 
 	public boolean appliesToRegion(Point2i region) {

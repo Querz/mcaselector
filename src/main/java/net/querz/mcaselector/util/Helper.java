@@ -1,6 +1,7 @@
 package net.querz.mcaselector.util;
 
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -47,6 +48,10 @@ public class Helper {
 		} catch (NumberFormatException ex) {
 			return null;
 		}
+	}
+
+	public static Image getIconFromResources(String name) {
+		return new Image(Helper.class.getClassLoader().getResourceAsStream(name + ".png"));
 	}
 
 	public static String getMCDir() {
@@ -208,7 +213,8 @@ public class Helper {
 
 	public static void exportSelectedChunks(TileMap tileMap, Stage primaryStage) {
 		File dir = createDirectoryChooser(null).showDialog(primaryStage);
-		SelectionExporter.exportSelectedChunks(tileMap.getMarkedChunks(), dir);
+		ProgressDialog pd = new ProgressDialog();
+		SelectionExporter.exportSelectedChunks(tileMap.getMarkedChunks(), dir, pd::updateProgress);
 	}
 
 	public static void gotoCoordinate(TileMap tileMap, Stage primaryStage) {
@@ -217,20 +223,30 @@ public class Helper {
 	}
 
 	public static void filterChunks(TileMap tileMap, Stage primaryStage) {
-		Optional<GroupFilter> result = new FilterChunksDialog(primaryStage).showAndWait();
+		Optional<FilterChunksDialog.Result> result = new FilterChunksDialog(primaryStage).showAndWait();
 		System.out.println("result: " + result);
 		result.ifPresent(r -> {
-			System.out.println("r: " + r);
-			if (r.isEmpty()) {
+			System.out.println("r: " + r.getFilter());
+			if (r.getFilter().isEmpty()) {
 				Debug.dump("filter is empty, won't delete everything");
 				return;
 			}
 			//TODO: progress bar
 			ProgressDialog pd = new ProgressDialog();
-			pd.show();
-			MCALoader.deleteChunks(r, pd::updateProgress);
-
-			clearAllCache(tileMap);
+			switch (r.getType()) {
+			case DELETE:
+				System.out.println("delete");
+				pd.show();
+				MCALoader.deleteChunks(r.getFilter(), pd::updateProgress);
+				clearAllCache(tileMap);
+			case EXPORT:
+				System.out.println("export");
+				File dir = createDirectoryChooser(null).showDialog(primaryStage);
+				pd.show();
+				SelectionExporter.exportFilteredChunks(r.getFilter(), dir, pd::updateProgress);
+			default:
+				Debug.dump("i have no idea how you got no selection there...");
+			}
 		});
 	}
 

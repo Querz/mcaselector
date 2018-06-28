@@ -1,6 +1,7 @@
 package net.querz.mcaselector.filter.structure;
 
 public enum Comparator {
+
 	EQ("=="),
 	NEQ("!="),
 	ST("<"),

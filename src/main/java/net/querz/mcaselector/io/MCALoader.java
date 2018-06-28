@@ -121,48 +121,52 @@ public class MCALoader {
 					continue;
 				}
 
-				if (backup) {
-					Debug.dump("creating backup of " + file);
-					backup(file);
-				}
-
-				MCAFile mcaFile = null;
-
-				try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-					mcaFile = MCALoader.read(file, raf);
-
-					if (mcaFile == null) {
-						Debug.error("error reading " + file + ", skipping");
-						continue;
-					}
-
-					mcaFile.deleteChunkIndices(filter, raf);
-					File tmpFile = mcaFile.deFragment(raf);
-					raf.close();
-
-					//delete region file if it's empty, otherwise replace it with tmpFile
-					if (tmpFile == null) {
-						if (file.delete()) {
-							Debug.dump("deleted empty region file " + file);
-						} else {
-							Debug.dump("could not delete empty region file " + file);
-						}
-					} else {
-						Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-					}
-
-				} catch (Exception ex) {
-					Debug.error(ex);
-					if (backup && mcaFile != null) {
-						restore(mcaFile);
-					}
-				}
+				deleteChunks(filter, file, backup);
 
 			} else {
 				Debug.dump("skipping " + file + ", could not parse file name");
 			}
 		}
 		progressChannel.accept("Done", 1D);
+	}
+
+	public static void deleteChunks(GroupFilter filter, File file, boolean backup) {
+		if (backup) {
+			Debug.dump("creating backup of " + file);
+			backup(file);
+		}
+
+		MCAFile mcaFile = null;
+
+		try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
+			mcaFile = MCALoader.read(file, raf);
+
+			if (mcaFile == null) {
+				Debug.error("error reading " + file + ", skipping");
+				return;
+			}
+
+			mcaFile.deleteChunkIndices(filter, raf);
+			File tmpFile = mcaFile.deFragment(raf);
+			raf.close();
+
+			//delete region file if it's empty, otherwise replace it with tmpFile
+			if (tmpFile == null) {
+				if (file.delete()) {
+					Debug.dump("deleted empty region file " + file);
+				} else {
+					Debug.dump("could not delete empty region file " + file);
+				}
+			} else {
+				Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			}
+
+		} catch (Exception ex) {
+			Debug.error(ex);
+			if (backup && mcaFile != null) {
+				restore(mcaFile);
+			}
+		}
 	}
 
 	private static void backup(File mcaFile) {

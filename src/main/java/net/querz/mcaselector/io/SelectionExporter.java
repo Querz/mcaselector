@@ -1,15 +1,22 @@
 package net.querz.mcaselector.io;
 
+import net.querz.mcaselector.Config;
+import net.querz.mcaselector.filter.structure.Filter;
+import net.querz.mcaselector.filter.structure.GroupFilter;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SelectionExporter {
 
@@ -72,9 +79,15 @@ public class SelectionExporter {
 		return chunks;
 	}
 
-	public static void exportSelectedChunks(Map<Point2i, Set<Point2i>> chunks, File dir) {
+	//TODO: progressChannel
+	public static void exportSelectedChunks(Map<Point2i, Set<Point2i>> chunks, File dir, BiConsumer<String, Double> progressChannel) {
+		double filesCount = chunks.size();
+		int i = 0;
 		for (Map.Entry<Point2i, Set<Point2i>> entry : chunks.entrySet()) {
 			File file = Helper.createMCAFilePath(entry.getKey());
+
+			progressChannel.accept(file.getName(), (double) i / filesCount);
+
 			if (file.exists()) {
 				File to = new File(dir, Helper.createMCAFileName(entry.getKey()));
 				if (to.exists()) {
@@ -105,6 +118,54 @@ public class SelectionExporter {
 				inverted.put(entry.getKey(), c);
 				MCALoader.deleteChunks(inverted, (s, d) -> {}, dir, false);
 			}
+			i++;
 		}
+		progressChannel.accept("Done", 1D);
+	}
+
+	public static void exportFilteredChunks(GroupFilter filter, File dir, BiConsumer<String, Double> progressChannel) {
+		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches("^r\\.-?\\d+\\.-?\\d+\\.mca$"));
+		if (files == null) {
+			return;
+		}
+		double filesCount = files.length;
+		for (int i = 0; i < files.length; i++) {
+			File file = files[i];
+
+			progressChannel.accept(file.getName(), (double) i / filesCount);
+
+			Pattern p = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
+			Matcher m = p.matcher(file.getName());
+			if (m.find()) {
+				int regionX = Integer.parseInt(m.group("regionX"));
+				int regionZ = Integer.parseInt(m.group("regionZ"));
+
+				if (!filter.appliesToRegion(new Point2i(regionX, regionZ))) {
+					Debug.dump("filter does not apply to file " + file);
+					continue;
+				}
+
+				//copy file to new directory
+				File to = new File(dir, file.getName());
+				if (to.exists()) {
+					Debug.dump(to.getAbsolutePath() + " exists, not overwriting");
+					continue;
+				}
+				try {
+					Files.copy(file.toPath(), to.toPath());
+				} catch (IOException ex) {
+					Debug.error(ex);
+					continue;
+				}
+
+				filter.setInverted(true);
+				MCALoader.deleteChunks(filter, to, false);
+				filter.setInverted(false);
+
+			} else {
+				Debug.dump("skipping " + file + ", could not parse file name");
+			}
+		}
+		progressChannel.accept("Done", 1D);
 	}
 }
