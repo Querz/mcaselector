@@ -4,12 +4,9 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import net.querz.mcaselector.filter.GroupFilterBox;
 import net.querz.mcaselector.filter.structure.Comparator;
@@ -49,7 +46,9 @@ public class FilterChunksDialog extends Dialog<GroupFilter> {
 	public FilterChunksDialog(Stage primaryStage) {
 		setTitle("Filter chunks");
 
-		setResultConverter(p -> value);
+		getDialogPane().getStyleClass().add("filter-dialog-pane");
+
+		setResultConverter(p -> p == ButtonType.OK ? value : null);
 
 		//apply same stylesheets to this dialog
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
@@ -59,7 +58,6 @@ public class FilterChunksDialog extends Dialog<GroupFilter> {
 		setResizable(true);
 		getDialogPane().setMinWidth(300);
 
-		getDialogPane().getStyleClass().add("filter-dialog-pane");
 
 		toggleGroup.getToggles().addAll(delete, export);
 		export.fire();
@@ -69,11 +67,11 @@ public class FilterChunksDialog extends Dialog<GroupFilter> {
 		groupFilterBox.prefWidthProperty().bind(scrollPane.prefWidthProperty());
 		scrollPane.setPrefHeight(300);
 		scrollPane.setMaxHeight(300);
-		scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+
+		Separator separator = new Separator();
 
 		VBox box = new VBox();
-		box.getChildren().addAll(scrollPane, delete, export);
+		box.getChildren().addAll(scrollPane, separator, delete, export);
 		getDialogPane().setContent(box);
 	}
-
 }

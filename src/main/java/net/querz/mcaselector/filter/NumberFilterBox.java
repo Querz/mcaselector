@@ -24,6 +24,8 @@ public class NumberFilterBox extends FilterBox {
 		comparator.getSelectionModel().select(filter.getComparator());
 		comparator.setOnAction(e -> onComparator(filter));
 
+		comparator.getStyleClass().add("filter-comparator-combo-box");
+
 		filterOperators.add(comparator, 2, 0, 1, 1);
 
 		setCenter(input);

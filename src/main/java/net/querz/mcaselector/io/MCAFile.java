@@ -64,6 +64,11 @@ public class MCAFile {
 
 				MCAChunkData data = getChunkData(index);
 				data.readHeader(raf);
+
+				if (data.isEmpty()) {
+					continue;
+				}
+
 				try {
 					data.loadData(raf);
 				} catch (Exception ex) {

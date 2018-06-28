@@ -25,7 +25,7 @@ public abstract class NumberFilter<T extends Number> extends Filter<T> {
 
 	@Override
 	public Comparator[] getComparators() {
-		return new Comparator[]{};
+		return comparators;
 	}
 
 	@Override

@@ -1,6 +1,8 @@
 package net.querz.mcaselector.filter.structure;
 
-public abstract class Filter<T> {
+import java.io.Serializable;
+
+public abstract class Filter<T> implements Serializable {
 
 	private FilterType type;
 	private Operator operator;

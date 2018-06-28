@@ -193,8 +193,8 @@ public class Helper {
 		tileMap.update();
 	}
 
-	public static void deleteSelection(TileMap tileMap) {
-		Optional<ButtonType> result = new DeleteConfirmationDialog(tileMap).showAndWait();
+	public static void deleteSelection(TileMap tileMap, Stage primaryStage) {
+		Optional<ButtonType> result = new DeleteConfirmationDialog(tileMap, primaryStage).showAndWait();
 		result.ifPresent(r -> {
 			if (r == ButtonType.OK) {
 				//TODO: progress bar
@@ -211,14 +211,16 @@ public class Helper {
 		SelectionExporter.exportSelectedChunks(tileMap.getMarkedChunks(), dir);
 	}
 
-	public static void gotoCoordinate(TileMap tileMap) {
-		Optional<Point2i> result = new GotoDialog().showAndWait();
+	public static void gotoCoordinate(TileMap tileMap, Stage primaryStage) {
+		Optional<Point2i> result = new GotoDialog(primaryStage).showAndWait();
 		result.ifPresent(r -> tileMap.goTo(r.getX(), r.getY()));
 	}
 
 	public static void filterChunks(TileMap tileMap, Stage primaryStage) {
 		Optional<GroupFilter> result = new FilterChunksDialog(primaryStage).showAndWait();
+		System.out.println("result: " + result);
 		result.ifPresent(r -> {
+			System.out.println("r: " + r);
 			if (r.isEmpty()) {
 				Debug.dump("filter is empty, won't delete everything");
 				return;

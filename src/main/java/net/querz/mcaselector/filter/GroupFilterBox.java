@@ -1,5 +1,6 @@
 package net.querz.mcaselector.filter;
 
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import net.querz.mcaselector.filter.structure.Filter;
 import net.querz.mcaselector.filter.structure.GroupFilter;

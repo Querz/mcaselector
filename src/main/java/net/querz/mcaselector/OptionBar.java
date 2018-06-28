@@ -61,12 +61,12 @@ public class OptionBar extends MenuBar {
 		quit.setOnAction(e -> System.exit(0));
 		chunkGrid.setOnAction(e -> tileMap.setShowChunkGrid(chunkGrid.isSelected()));
 		regionGrid.setOnAction(e -> tileMap.setShowRegionGrid(regionGrid.isSelected()));
-		goTo.setOnAction(e -> Helper.gotoCoordinate(tileMap));
+		goTo.setOnAction(e -> Helper.gotoCoordinate(tileMap, primaryStage));
 		clearAllCache.setOnAction(e -> Helper.clearAllCache(tileMap));
 		clearViewCache.setOnAction(e -> Helper.clearViewCache(tileMap));
 		clear.setOnAction(e -> tileMap.clearSelection());
 		exportChunks.setOnAction(e -> Helper.exportSelectedChunks(tileMap, primaryStage));
-		delete.setOnAction(e -> Helper.deleteSelection(tileMap));
+		delete.setOnAction(e -> Helper.deleteSelection(tileMap, primaryStage));
 		importSelection.setOnAction(e -> Helper.importSelection(tileMap, primaryStage));
 		exportSelection.setOnAction(e -> Helper.exportSelection(tileMap, primaryStage));
 		clearSelectionCache.setOnAction(e -> Helper.clearSelectionCache(tileMap));
@@ -86,8 +86,8 @@ public class OptionBar extends MenuBar {
 		clearSelectionCache.setAccelerator(KeyCombination.keyCombination("Ctrl+J"));
 		filterChunks.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
 
-		setSelectionDependentMenuItemsEnabled(false);
-		setWorldDependentMenuItemsEnabled(false);
+//		setSelectionDependentMenuItemsEnabled(false);
+//		setWorldDependentMenuItemsEnabled(false);
 	}
 
 	private void onUpdate(TileMap tileMap) {

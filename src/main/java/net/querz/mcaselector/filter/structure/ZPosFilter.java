@@ -21,6 +21,6 @@ public class ZPosFilter extends IntegerFilter {
 
 	public boolean matchesRegion(Point2i region) {
 		int value = (getFilterNumber() >> 5) << 5;
-		return matches(value, Helper.regionToChunk(region).getX());
+		return matches(value, Helper.regionToChunk(region).getY());
 	}
 }
