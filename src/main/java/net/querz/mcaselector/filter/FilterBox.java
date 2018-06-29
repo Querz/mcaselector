@@ -1,11 +1,13 @@
 package net.querz.mcaselector.filter;
 
 import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
@@ -23,6 +25,8 @@ import net.querz.mcaselector.filter.structure.FilterType;
 import net.querz.mcaselector.filter.structure.GroupFilter;
 import net.querz.mcaselector.filter.structure.NumberFilter;
 import net.querz.mcaselector.filter.structure.Operator;
+import net.querz.mcaselector.util.Helper;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -30,10 +34,14 @@ import java.io.IOException;
 
 public abstract class FilterBox extends BorderPane {
 
+	private static final Image deleteIcon = Helper.getIconFromResources("img/delete");
+	private static final Image addIcon = Helper.getIconFromResources("img/add");
+	private static final Image moveImage = Helper.getIconFromResources("img/move");
+
 	private Filter filter;
-	Label delete = new Label(Character.toString((char) 128465));
-	Label add = new Label("+");
-	Label move = new Label("\u2195");
+	Label delete = new Label("", new ImageView(deleteIcon));
+	Label add = new Label("", new ImageView(addIcon));
+	Label move = new Label("", new ImageView(moveImage));
 
 	FilterBox parent;
 
@@ -55,8 +63,8 @@ public abstract class FilterBox extends BorderPane {
 
 		GridPane controls = new GridPane();
 		controls.setAlignment(Pos.TOP_RIGHT);
+//		controls.add(move, 0, 0, 1, 1);
 		controls.add(add, 1, 0, 1, 1);
-		controls.add(move, 0, 0, 1, 1);
 		controls.add(delete, 2, 0, 1, 1);
 
 		if (this instanceof GroupFilterBox && root) {
@@ -88,12 +96,13 @@ public abstract class FilterBox extends BorderPane {
 
 		setLeft(filterOperators);
 
-		//TODO: move
 		add.setOnMouseReleased(e -> onAdd(filter));
 		delete.setOnMouseReleased(e -> onDelete(filter));
 
-		move.setOnDragDetected(this::onDragDetected);
-		setOnDragOver(this::onDragOver);
+		//TODO: move
+//		move.setOnDragDetected(this::onDragDetected);
+//		setOnDragOver(this::onDragOver);
+//		setOnDragDropped(this::onDragDropped);
 	}
 
 	protected void onAdd(Filter filter) {
@@ -180,16 +189,23 @@ public abstract class FilterBox extends BorderPane {
 	private static final DataFormat dragDataFormat = new DataFormat("filter.content");
 
 	private void onDragDetected(MouseEvent event) {
-		System.out.println("onMove");
+		System.out.println("onDragDetected " + event.getX() + " " + event.getY());
+		Bounds m = move.localToScene(move.getBoundsInLocal());
+		Bounds p = localToScene(getBoundsInLocal());
+		double x = m.getMinX() - p.getMinX();
+		double y = m.getMinY() - p.getMinY();
+		System.out.println(x + " " + y);
 
 		Dragboard db = startDragAndDrop(TransferMode.MOVE);
-		Image image = snapshot(null, null);
+		WritableImage image = snapshot(null, null);
 //		try {
 //			ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", new File("src/main/resources/test.png"));
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
+
 		db.setDragView(image);
+		System.out.println(image.getWidth());
 
 		ClipboardContent content = new ClipboardContent();
 		content.put(dragDataFormat, filter);
@@ -205,7 +221,12 @@ public abstract class FilterBox extends BorderPane {
 		e.consume();
 	}
 
-	//TODO: onDragDropped
+	private void onDragDropped(DragEvent e) {
+		if (e.getDragboard().hasContent(dragDataFormat)) {
+			Filter source = (Filter) e.getDragboard().getContent(dragDataFormat);
+		}
+		e.consume();
+	}
 
 	private Filter getRoot(Filter filter) {
 		Filter root = filter;
