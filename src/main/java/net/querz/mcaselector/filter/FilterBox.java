@@ -1,9 +1,7 @@
 package net.querz.mcaselector.filter;
 
-import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -13,7 +11,6 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
@@ -26,11 +23,6 @@ import net.querz.mcaselector.filter.structure.GroupFilter;
 import net.querz.mcaselector.filter.structure.NumberFilter;
 import net.querz.mcaselector.filter.structure.Operator;
 import net.querz.mcaselector.util.Helper;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 public abstract class FilterBox extends BorderPane {
 
@@ -106,7 +98,6 @@ public abstract class FilterBox extends BorderPane {
 	}
 
 	protected void onAdd(Filter filter) {
-		System.out.println("onAdd");
 		NumberFilter f = new DataVersionFilter(Operator.AND, Comparator.EQ, 1344);
 
 		int index;
@@ -118,9 +109,7 @@ public abstract class FilterBox extends BorderPane {
 			index = ((GroupFilter) filter.getParent()).addFilterAfter(f, filter);
 		}
 
-
 		Filter root = getRoot(filter);
-		System.out.println("before: " + root);
 
 		if (this instanceof GroupFilterBox) {
 			((GroupFilterBox) this).filters.getChildren().add(index, new NumberFilterBox(this, f, false));
@@ -128,27 +117,17 @@ public abstract class FilterBox extends BorderPane {
 		} else if (parent instanceof GroupFilterBox) {
 			((GroupFilterBox) parent).filters.getChildren().add(index, new NumberFilterBox(this.parent, f, this.root));
 		}
-
-		System.out.println("after: " + root);
 	}
 
 	protected void onDelete(Filter filter) {
-		System.out.println("onDelete");
-
 		Filter root = getRoot(filter);
-		System.out.println("before: " + root);
-
 		((GroupFilter) filter.getParent()).removeFilter(filter);
-
-		System.out.println("after: " + root);
-
 
 		if (parent instanceof GroupFilterBox) {
 			((GroupFilterBox) parent).filters.getChildren().remove(this);
 			if (((GroupFilterBox) parent).filters.getChildren().isEmpty()) {
 				if (parent.parent != null) {
 					((GroupFilterBox) parent).type.setDisable(false);
-					System.out.println("enabled group");
 				}
 			} else {
 				((FilterBox) ((GroupFilterBox) parent).filters.getChildren().get(0)).operator.setVisible(false);
@@ -158,7 +137,6 @@ public abstract class FilterBox extends BorderPane {
 
 	protected void update(FilterType type) {
 		if (type != filter.getType()) {
-			System.out.println("update");
 			Filter newFilter = type.create();
 
 			//removes this filter and replaces it by a new filter

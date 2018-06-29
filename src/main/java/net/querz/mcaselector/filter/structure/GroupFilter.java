@@ -77,7 +77,7 @@ public class GroupFilter extends Filter<List<Filter>> {
 			} else if (children.get(i).getOperator() == Operator.OR) {
 				//don't check other conditions if everything before OR is  already true
 				if (currentResult) {
-					return !currentResult;
+					return !inverted;
 				}
 				//otherwise, reset currentResult
 				currentResult = children.get(i).matches(data);

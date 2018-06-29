@@ -1,10 +1,10 @@
 package net.querz.mcaselector.filter;
 
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import net.querz.mcaselector.filter.structure.Filter;
 import net.querz.mcaselector.filter.structure.GroupFilter;
 import net.querz.mcaselector.filter.structure.NumberFilter;
+import net.querz.mcaselector.util.Debug;
 
 public class GroupFilterBox extends FilterBox {
 
@@ -31,7 +31,7 @@ public class GroupFilterBox extends FilterBox {
 			} else if (f instanceof GroupFilter) {
 				filters.getChildren().add(new GroupFilterBox(this, (GroupFilter) f, false));
 			} else {
-				System.out.println("cannot display filter " + f.getClass().getSimpleName());
+				Debug.error("cannot display filter " + f.getClass().getSimpleName());
 			}
 		}
 		setBottom(filters);
