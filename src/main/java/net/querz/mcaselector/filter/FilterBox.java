@@ -20,12 +20,10 @@ public abstract class FilterBox extends BorderPane {
 
 	private static final Image deleteIcon = Helper.getIconFromResources("img/delete");
 	private static final Image addIcon = Helper.getIconFromResources("img/add");
-	private static final Image moveImage = Helper.getIconFromResources("img/move");
 
 	private Filter filter;
 	Label delete = new Label("", new ImageView(deleteIcon));
 	Label add = new Label("", new ImageView(addIcon));
-	Label move = new Label("", new ImageView(moveImage));
 
 	FilterBox parent;
 
@@ -52,7 +50,6 @@ public abstract class FilterBox extends BorderPane {
 
 		if (this instanceof GroupFilterBox && root) {
 			delete.setVisible(false);
-			move.setVisible(false);
 		}
 
 		setRight(controls);
