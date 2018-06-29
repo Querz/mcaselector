@@ -1,7 +1,7 @@
 package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.filter.structure.Filter;
+import net.querz.mcaselector.ProgressTask;
 import net.querz.mcaselector.filter.structure.GroupFilter;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Debug;
@@ -9,12 +9,10 @@ import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,13 +78,13 @@ public class SelectionExporter {
 	}
 
 	//TODO: progressChannel
-	public static void exportSelectedChunks(Map<Point2i, Set<Point2i>> chunks, File dir, BiConsumer<String, Double> progressChannel) {
+	public static void exportSelectedChunks(Map<Point2i, Set<Point2i>> chunks, File dir, ProgressTask progressChannel) {
 		double filesCount = chunks.size();
 		int i = 0;
 		for (Map.Entry<Point2i, Set<Point2i>> entry : chunks.entrySet()) {
 			File file = Helper.createMCAFilePath(entry.getKey());
 
-			progressChannel.accept(file.getName(), (double) i / filesCount);
+			progressChannel.updateProgress(file.getName(), i, filesCount);
 
 			if (file.exists()) {
 				File to = new File(dir, Helper.createMCAFileName(entry.getKey()));
@@ -116,14 +114,14 @@ public class SelectionExporter {
 				}
 				Map<Point2i, Set<Point2i>> inverted = new HashMap<>(1);
 				inverted.put(entry.getKey(), c);
-				MCALoader.deleteChunks(inverted, (s, d) -> {}, dir, false);
+				MCALoader.deleteChunks(inverted, new ProgressTask.Dummy(), dir, false);
 			}
 			i++;
 		}
-		progressChannel.accept("Done", 1D);
+		progressChannel.updateProgress("Done", 1, filesCount);
 	}
 
-	public static void exportFilteredChunks(GroupFilter filter, File dir, BiConsumer<String, Double> progressChannel) {
+	public static void exportFilteredChunks(GroupFilter filter, File dir, ProgressTask progressChannel) {
 		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches("^r\\.-?\\d+\\.-?\\d+\\.mca$"));
 		if (files == null) {
 			return;
@@ -132,7 +130,7 @@ public class SelectionExporter {
 		for (int i = 0; i < files.length; i++) {
 			File file = files[i];
 
-			progressChannel.accept(file.getName(), (double) i / filesCount);
+			progressChannel.updateProgress(file.getName(), i, filesCount);
 
 			Pattern p = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
 			Matcher m = p.matcher(file.getName());
@@ -166,6 +164,6 @@ public class SelectionExporter {
 				Debug.dump("skipping " + file + ", could not parse file name");
 			}
 		}
-		progressChannel.accept("Done", 1D);
+		progressChannel.updateProgress("Done", 1, filesCount);
 	}
 }

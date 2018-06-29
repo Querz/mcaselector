@@ -1,18 +1,10 @@
 package net.querz.mcaselector.filter;
 
-import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import net.querz.mcaselector.filter.structure.Comparator;
@@ -55,7 +47,6 @@ public abstract class FilterBox extends BorderPane {
 
 		GridPane controls = new GridPane();
 		controls.setAlignment(Pos.TOP_RIGHT);
-//		controls.add(move, 0, 0, 1, 1);
 		controls.add(add, 1, 0, 1, 1);
 		controls.add(delete, 2, 0, 1, 1);
 
@@ -90,27 +81,17 @@ public abstract class FilterBox extends BorderPane {
 
 		add.setOnMouseReleased(e -> onAdd(filter));
 		delete.setOnMouseReleased(e -> onDelete(filter));
-
-		//TODO: move
-//		move.setOnDragDetected(this::onDragDetected);
-//		setOnDragOver(this::onDragOver);
-//		setOnDragDropped(this::onDragDropped);
 	}
 
 	protected void onAdd(Filter filter) {
 		NumberFilter f = new DataVersionFilter(Operator.AND, Comparator.EQ, 1344);
-
 		int index;
-
 		if (filter.getParent() == null || filter instanceof GroupFilter) {
 			//root group
 			index = ((GroupFilter) filter).addFilter(f);
 		} else {
 			index = ((GroupFilter) filter.getParent()).addFilterAfter(f, filter);
 		}
-
-		Filter root = getRoot(filter);
-
 		if (this instanceof GroupFilterBox) {
 			((GroupFilterBox) this).filters.getChildren().add(index, new NumberFilterBox(this, f, false));
 			type.setDisable(true);
@@ -120,9 +101,7 @@ public abstract class FilterBox extends BorderPane {
 	}
 
 	protected void onDelete(Filter filter) {
-		Filter root = getRoot(filter);
 		((GroupFilter) filter.getParent()).removeFilter(filter);
-
 		if (parent instanceof GroupFilterBox) {
 			((GroupFilterBox) parent).filters.getChildren().remove(this);
 			if (((GroupFilterBox) parent).filters.getChildren().isEmpty()) {
@@ -145,9 +124,7 @@ public abstract class FilterBox extends BorderPane {
 			parent.getFilterValue().remove(filter);
 
 			//remove this filter from view and add new filterbox
-
 			FilterBox newBox;
-
 			if (type == FilterType.GROUP) {
 				newBox = new GroupFilterBox(this.parent, (GroupFilter) newFilter, root);
 			} else {
@@ -162,57 +139,5 @@ public abstract class FilterBox extends BorderPane {
 
 	private void onOperator(Filter filter) {
 		filter.setOperator(operator.getSelectionModel().getSelectedItem());
-	}
-
-	private static final DataFormat dragDataFormat = new DataFormat("filter.content");
-
-	private void onDragDetected(MouseEvent event) {
-		System.out.println("onDragDetected " + event.getX() + " " + event.getY());
-		Bounds m = move.localToScene(move.getBoundsInLocal());
-		Bounds p = localToScene(getBoundsInLocal());
-		double x = m.getMinX() - p.getMinX();
-		double y = m.getMinY() - p.getMinY();
-		System.out.println(x + " " + y);
-
-		Dragboard db = startDragAndDrop(TransferMode.MOVE);
-		WritableImage image = snapshot(null, null);
-//		try {
-//			ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", new File("src/main/resources/test.png"));
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-
-		db.setDragView(image);
-		System.out.println(image.getWidth());
-
-		ClipboardContent content = new ClipboardContent();
-		content.put(dragDataFormat, filter);
-		db.setContent(content);
-
-		event.consume();
-	}
-
-	private void onDragOver(DragEvent e) {
-		if (e.getDragboard().hasContent(dragDataFormat)) {
-			e.acceptTransferModes(TransferMode.MOVE);
-		}
-		e.consume();
-	}
-
-	private void onDragDropped(DragEvent e) {
-		if (e.getDragboard().hasContent(dragDataFormat)) {
-			Filter source = (Filter) e.getDragboard().getContent(dragDataFormat);
-		}
-		e.consume();
-	}
-
-	private Filter getRoot(Filter filter) {
-		Filter root = filter;
-		for (;;) {
-			if (root.getParent() == null) {
-				return root;
-			}
-			root = root.getParent();
-		}
 	}
 }

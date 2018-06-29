@@ -5,12 +5,7 @@ import javafx.scene.image.Image;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import net.querz.mcaselector.Config;
-import net.querz.mcaselector.DeleteConfirmationDialog;
-import net.querz.mcaselector.FilterChunksDialog;
-import net.querz.mcaselector.GotoDialog;
-import net.querz.mcaselector.OptionBar;
-import net.querz.mcaselector.ProgressDialog;
+import net.querz.mcaselector.*;
 import net.querz.mcaselector.filter.structure.GroupFilter;
 import net.querz.mcaselector.io.MCALoader;
 import net.querz.mcaselector.io.SelectionExporter;
@@ -202,10 +197,8 @@ public class Helper {
 		Optional<ButtonType> result = new DeleteConfirmationDialog(tileMap, primaryStage).showAndWait();
 		result.ifPresent(r -> {
 			if (r == ButtonType.OK) {
-				//TODO: progress bar
-				ProgressDialog pd = new ProgressDialog();
-				pd.show();
-				MCALoader.deleteChunks(tileMap.getMarkedChunks(), pd::updateProgress);
+				new ProgressDialog("Deleting selection...", primaryStage)
+						.showProgressBar(t -> MCALoader.deleteChunks(tileMap.getMarkedChunks(), t));
 				clearSelectionCache(tileMap);
 			}
 		});
@@ -213,8 +206,8 @@ public class Helper {
 
 	public static void exportSelectedChunks(TileMap tileMap, Stage primaryStage) {
 		File dir = createDirectoryChooser(null).showDialog(primaryStage);
-		ProgressDialog pd = new ProgressDialog();
-		SelectionExporter.exportSelectedChunks(tileMap.getMarkedChunks(), dir, pd::updateProgress);
+		new ProgressDialog("Exporting selection...", primaryStage)
+				.showProgressBar(t -> SelectionExporter.exportSelectedChunks(tileMap.getMarkedChunks(), dir, t));
 	}
 
 	public static void gotoCoordinate(TileMap tileMap, Stage primaryStage) {
@@ -224,27 +217,28 @@ public class Helper {
 
 	public static void filterChunks(TileMap tileMap, Stage primaryStage) {
 		Optional<FilterChunksDialog.Result> result = new FilterChunksDialog(primaryStage).showAndWait();
-		System.out.println("result: " + result);
 		result.ifPresent(r -> {
-			System.out.println("r: " + r.getFilter());
+			Debug.dump("chunk filter query: " + r.getFilter());
 			if (r.getFilter().isEmpty()) {
 				Debug.dump("filter is empty, won't delete everything");
 				return;
 			}
-			//TODO: progress bar
-			ProgressDialog pd = new ProgressDialog();
+
 			switch (r.getType()) {
 			case DELETE:
-				System.out.println("delete");
-				pd.show();
-				MCALoader.deleteChunks(r.getFilter(), pd::updateProgress);
+				new ProgressDialog("Deleting filtered chunks...", primaryStage)
+						.showProgressBar(t -> MCALoader.deleteChunks(r.getFilter(), t));
 				clearAllCache(tileMap);
 				break;
 			case EXPORT:
-				System.out.println("export");
 				File dir = createDirectoryChooser(null).showDialog(primaryStage);
-				pd.show();
-				SelectionExporter.exportFilteredChunks(r.getFilter(), dir, pd::updateProgress);
+				if (dir != null) {
+					Debug.dump("exporting chunks to " + dir);
+					new ProgressDialog("Exporting filtered chunks...", primaryStage)
+							.showProgressBar(t -> SelectionExporter.exportFilteredChunks(r.getFilter(), dir, t));
+				} else {
+					Debug.dump("cancelled exporting chunks, no valid destination directory");
+				}
 				break;
 			default:
 				Debug.dump("i have no idea how you got no selection there...");

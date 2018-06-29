@@ -3,6 +3,8 @@
 	-color-dialog-background: #3c3f41;
 	-color-dialog-header-background: #494d50;
 	-color-dialog-separator: #515151;
+	-color-progress-bar-track: #616b6b;
+	-color-progress-bar-background: #494d50;
 	-color-combo-box-background: #3c3f41;
 	-color-combo-box-border: #646464;
 	-color-combo-box-arrow: #bbbbbb;
@@ -206,6 +208,8 @@
 	-fx-fit-to-width: true;
 	-fx-border-width: 1;
 	-fx-border-color: -color-scroll-pane-border;
+	-fx-pref-height: 300;
+	-fx-max-height: 300;
 }
 
 .scroll-pane > .viewport {
@@ -262,6 +266,46 @@
 
 .goto-dialog-pane .coordinate-box {
 	-fx-spacing: 5;
+}
+
+/*---------- PROGRESS DIALOG ----------*/
+
+.progress-dialog {
+	-fx-background-color: transparent;
+	-fx-pref-width: 200;
+	-fx-background-insets: 5 10 10 5;
+	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 4, 4)
+}
+
+.progress-dialog .progress-title {
+	-fx-background-color: -color-dialog-background;
+	-fx-text-fill: -color-text-light;
+	-fx-padding: 10 15 5 15;
+	-fx-background-insets: 5 15 0 5;
+}
+
+.progress-dialog .progress-bar {
+	-fx-background-color: -color-progress-bar-background;
+	-fx-padding: 5 20 5 10;
+	-fx-background-insets: 0 15 0 5;
+}
+
+.progress-dialog .progress-bar .bar {
+	-fx-background-insets: 0 5 0 5;
+	-fx-padding: 5;
+}
+
+.progress-dialog .progress-bar .track {
+	-fx-background-color: -color-progress-bar-track;
+	-fx-background-radius: 1;
+	-fx-background-insets: 0 5 0 5;
+}
+
+.progress-dialog .progress-info {
+	-fx-background-color: -color-dialog-background;
+	-fx-text-fill: -color-text-light;
+	-fx-padding: 5 10 20 15;
+	-fx-background-insets: 0 15 15 5;
 }
 
 /*---------- TILE MAP ----------*/

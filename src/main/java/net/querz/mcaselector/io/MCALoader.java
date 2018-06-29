@@ -1,7 +1,7 @@
 package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.filter.structure.Filter;
+import net.querz.mcaselector.ProgressTask;
 import net.querz.mcaselector.filter.structure.GroupFilter;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
@@ -12,8 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,19 +30,18 @@ public class MCALoader {
 		return null;
 	}
 
-	public static void deleteChunks(Map<Point2i, Set<Point2i>> chunksToBeDeleted, BiConsumer<String, Double> progressChannel) {
+	public static void deleteChunks(Map<Point2i, Set<Point2i>> chunksToBeDeleted, ProgressTask progressChannel) {
 		deleteChunks(chunksToBeDeleted, progressChannel, Config.getWorldDir(), false);
 	}
 
-	public static void deleteChunks(Map<Point2i, Set<Point2i>> chunksToBeDeleted, BiConsumer<String, Double> progressChannel, File dir, boolean backup) {
+	public static void deleteChunks(Map<Point2i, Set<Point2i>> chunksToBeDeleted, ProgressTask progressChannel, File dir, boolean backup) {
 		double regionCount = chunksToBeDeleted.size();
 		int index = -1;
 		for (Map.Entry<Point2i, Set<Point2i>> entry : chunksToBeDeleted.entrySet()) {
 			index++;
 			File file = new File(dir, Helper.createMCAFileName(entry.getKey()));
 
-			progressChannel.accept(file.getName(), (double) index / regionCount);
-
+			progressChannel.updateProgress(file.getName(), index, regionCount);
 
 			//delete region
 
@@ -92,14 +89,14 @@ public class MCALoader {
 				}
 			}
 		}
-		progressChannel.accept("Done", 1D);
+		progressChannel.updateProgress("Done", 1, regionCount);
 	}
 
-	public static void deleteChunks(GroupFilter filter, BiConsumer<String, Double> progressChannel) {
+	public static void deleteChunks(GroupFilter filter, ProgressTask progressChannel) {
 		deleteChunks(filter, progressChannel, Config.getWorldDir(), false);
 	}
 
-	public static void deleteChunks(GroupFilter filter, BiConsumer<String, Double> progressChannel, File dir, boolean backup) {
+	public static void deleteChunks(GroupFilter filter, ProgressTask progressChannel, File dir, boolean backup) {
 		File[] files = dir.listFiles((d, n) -> n.matches("^r\\.-?\\d+\\.-?\\d+\\.mca$"));
 		if (files == null) {
 			return;
@@ -108,7 +105,7 @@ public class MCALoader {
 		for (int i = 0; i < files.length; i++) {
 			File file = files[i];
 
-			progressChannel.accept(file.getName(), (double) i / filesCount);
+			progressChannel.updateProgress(file.getName(), i, filesCount);
 
 			Pattern p = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
 			Matcher m = p.matcher(file.getName());
@@ -127,7 +124,7 @@ public class MCALoader {
 				Debug.dump("skipping " + file + ", could not parse file name");
 			}
 		}
-		progressChannel.accept("Done", 1D);
+		progressChannel.updateProgress("Done", 1, filesCount);
 	}
 
 	public static void deleteChunks(GroupFilter filter, File file, boolean backup) {
