@@ -86,8 +86,8 @@ public class OptionBar extends MenuBar {
 		clearSelectionCache.setAccelerator(KeyCombination.keyCombination("Ctrl+J"));
 		filterChunks.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
 
-//		setSelectionDependentMenuItemsEnabled(false);
-//		setWorldDependentMenuItemsEnabled(false);
+		setSelectionDependentMenuItemsEnabled(false);
+		setWorldDependentMenuItemsEnabled(false);
 	}
 
 	private void onUpdate(TileMap tileMap) {

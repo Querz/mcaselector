@@ -45,8 +45,8 @@ public abstract class FilterBox extends BorderPane {
 
 		GridPane controls = new GridPane();
 		controls.setAlignment(Pos.TOP_RIGHT);
-		controls.add(add, 1, 0, 1, 1);
-		controls.add(delete, 2, 0, 1, 1);
+		controls.add(add, 0, 0, 1, 1);
+		controls.add(delete, 1, 0, 1, 1);
 
 		if (this instanceof GroupFilterBox && root) {
 			delete.setVisible(false);
