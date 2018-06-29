@@ -16,7 +16,7 @@ public abstract class IntegerFilter extends NumberFilter<Integer> {
 
 	@Override
 	public boolean setFilterValue(String raw) {
-		if (raw == null || raw.isEmpty()) {
+		if (raw == null || raw.isEmpty() || raw.equals("-") || raw.equals("+")) {
 			value = 0;
 			return true;
 		} else {
