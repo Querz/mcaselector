@@ -94,12 +94,12 @@ public class GroupFilter extends Filter<List<Filter>> {
 		}
 
 		for (Filter child : children) {
-			if (child instanceof XPosFilter && ((XPosFilter) child).matchesRegion(region)
-				|| child instanceof ZPosFilter && ((ZPosFilter) child).matchesRegion(region)) {
-				return true;
+			if (child instanceof XPosFilter && !((XPosFilter) child).matchesRegion(region)
+				|| child instanceof ZPosFilter && !((ZPosFilter) child).matchesRegion(region)) {
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 
 	@Override

@@ -20,7 +20,13 @@ public class ZPosFilter extends IntegerFilter {
 	}
 
 	public boolean matchesRegion(Point2i region) {
-		int value = (getFilterNumber() >> 5) << 5;
-		return matches(value, Helper.regionToChunk(region).getY());
+		Point2i chunk = Helper.regionToChunk(region);
+		for (int i = 0; i < 32; i++) {
+			Point2i p = chunk.add(i);
+			if (matches(getFilterNumber(), p.getY())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

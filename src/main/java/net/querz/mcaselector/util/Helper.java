@@ -239,11 +239,13 @@ public class Helper {
 				pd.show();
 				MCALoader.deleteChunks(r.getFilter(), pd::updateProgress);
 				clearAllCache(tileMap);
+				break;
 			case EXPORT:
 				System.out.println("export");
 				File dir = createDirectoryChooser(null).showDialog(primaryStage);
 				pd.show();
 				SelectionExporter.exportFilteredChunks(r.getFilter(), dir, pd::updateProgress);
+				break;
 			default:
 				Debug.dump("i have no idea how you got no selection there...");
 			}
