@@ -8,6 +8,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import net.querz.mcaselector.filter.GroupFilterBox;
 import net.querz.mcaselector.filter.structure.Comparator;
 import net.querz.mcaselector.filter.structure.GroupFilter;
@@ -33,6 +34,8 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 	public FilterChunksDialog(Stage primaryStage) {
 		setTitle("Filter chunks");
+
+		initStyle(StageStyle.UTILITY);
 
 		getDialogPane().getStyleClass().add("filter-dialog-pane");
 
