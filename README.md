@@ -1,6 +1,7 @@
 # MCA Selector
 #### An external tool to export or delete selected chunks and regions from a Minecraft world.
 ---
+
 ## Usage
 ### Navigation
 Executing the tool, it shows an empty window with a chunk and a region grid. To actually show a world, open a folder containing Minecraft Anvil (\*.mca) files. The tool will then render a top-down view of this world that you can zoom into and zoom out of by scrolling up and down and that you can move around using the middle mouse button (```Cmd+LMB``` on Mac OS).
@@ -32,3 +33,16 @@ The MCA Selector currently supports the following Minecraft versions:
 | ----------------- | ----------- | :-------: |
 | Beta 1.3 - 1.12.2 | 0 - 1343    | Yes       |
 | 1.13              | 1344 - ?    | Yes       |
+
+---
+
+## Download and installation
+
+[**Download Version 1.0**](https://github.com/Querz/mcaselector/releases/download/1.0/mcaselector-1.0.jar)
+
+"Requirements":
+* JRE 8+, you can get it from [HERE](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
+* A computer
+* A brain
+
+If ```.jar``` files are associated with java on your computer, it should launch by simply double-clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try ```java -jar mcaselector-1.0.jar``` from your console. If this still doesn't work, apply "A brain" that you providently helt ready after having read the "Requirements" section carefully.
