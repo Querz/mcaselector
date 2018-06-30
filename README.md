@@ -16,6 +16,11 @@ Upon finishing selecting chunks and regions, they can be deleted or exported usi
 
 A selection (not the chunks and regions themselves) can also be exported or imported and even be applied to different worlds.
 
+### Chunk filter
+The MCA Selector also contains a powerful tool to delete chunks and regions by conditions like the data version, the time it was last updated, hoch much time players have spent in this chunk or the location of that chunk. Multiple of these conditions can be used to create a very specific query about what chunks and regions should be deleted or exported.
+
+![alt text](https://raw.githubusercontent.com/Querz/mcaselector/assets/assets/mca_selector_filter_chunks.png "MCA Selector window showing the chunk filter")
+
 ### Caching
 The tool creates an image for each region from the provided mca-files. These images are saved separately inside a ```cache```-folder in the working directory of the program for future usage. Experience showed that a Minecraft world with a size of 10GB resulted in cached image files with a total size of 80-100MB. Caching as many regions as possible significantly improves loading times though.
 
