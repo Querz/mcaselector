@@ -22,6 +22,21 @@ The MCA Selector also contains a powerful tool to delete chunks and regions by c
 
 ![alt text](https://raw.githubusercontent.com/Querz/mcaselector/assets/assets/mca_selector_filter_chunks.png "MCA Selector window showing the chunk filter")
 
+Because the conditions use internal values used by minecraft, they are not very easy to understand:
+
+| Condition | Type | Description |
+| --------- | ----- | ----------- |
+| Group | - | Groups multiple conditions. |
+| DataVersion | int | The DataVersion tag of the chunk. 100-1343 for 1.12.2 and below, 1444 for 1.13 snapshots and above. |
+| InhabitedTime | long | The total amount of time in game-ticks players have spent in that chunk. 1 second ~20 ticks. |
+| LastUpdate | int | The time a chunk was last updated in seconds since 1970-01-01. |
+| xPos | int | The location of the chunk on the x-axis in chunk coordinates. |
+| zPos | int | The location of the chunk on the z-axis in chunk coordinates. |
+
+**Notice**
+Running the query will check the ```.mca```-file's name first if the query would even apply to any chunk in this file using the xPos and zPos conditions, as long as the query is built in a way that allows doing this.
+
+
 ### Caching
 The tool creates an image for each region from the provided mca-files. These images are saved separately inside a ```cache```-folder in the working directory of the program for future usage. Experience showed that a Minecraft world with a size of 10GB resulted in cached image files with a total size of 80-100MB. Caching as many regions as possible significantly improves loading times though.
 
@@ -31,8 +46,8 @@ The MCA Selector currently supports the following Minecraft versions:
 
 | Minecraft Version | DataVersion | Supported |
 | ----------------- | ----------- | :-------: |
-| Beta 1.3 - 1.12.2 | 0 - 1343    | Yes       |
-| 1.13              | 1344 - ?    | Yes       |
+| Beta 1.3 - 1.12.2 | 100 - 1343  | Yes       |
+| 1.13              | 1444 - ?    | Yes       |
 
 ---
 
