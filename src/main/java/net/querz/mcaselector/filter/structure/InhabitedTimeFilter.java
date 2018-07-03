@@ -14,7 +14,7 @@ public class InhabitedTimeFilter extends LongFilter {
 	}
 
 	@Override
-	Long getNumber(FilterData data) {
+	protected Long getNumber(FilterData data) {
 		return ((CompoundTag) data.getChunk().get("Level")).getLong("InhabitedTime");
 	}
 
@@ -23,11 +23,12 @@ public class InhabitedTimeFilter extends LongFilter {
 		super.setFilterValue(raw);
 		if (!isValid()) {
 			try {
-				value = Helper.parseDuration(raw) * 20;
-				valid = true;
+				//InhabitedTime is in ticks, not seconds
+				setFilterNumber(Helper.parseDuration(raw) * 20);
+				setValid(true);
 			} catch (IllegalArgumentException ex) {
-				value = 0;
-				valid = false;
+				setFilterNumber(0L);
+				setValid(false);
 			}
 		}
 	}

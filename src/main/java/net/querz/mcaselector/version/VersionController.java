@@ -20,6 +20,7 @@ public class VersionController {
 	}
 
 	private enum Mapping {
+
 		ANVIL_1_12(0, 1343, Anvil112ChunkDataProcessor.class, Anvil112ColorMapping.class),
 		ANVIL_1_13(1344, Integer.MAX_VALUE, Anvil113ChunkDataProcessor.class, Anvil113ColorMapping.class);
 

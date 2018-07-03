@@ -11,16 +11,16 @@ public class DataVersionFilter extends IntegerFilter {
 	}
 
 	@Override
-	Integer getNumber(FilterData data) {
+	protected Integer getNumber(FilterData data) {
 		return data.getChunk().getInt("DataVersion");
 	}
 
 	@Override
 	public void setFilterValue(String raw) {
 		super.setFilterValue(raw);
-		if (isValid() && value < 0) {
-			valid = false;
-			value = 0;
+		if (isValid() && getFilterNumber() < 0) {
+			setValid(false);
+			setFilterNumber(0);
 		}
 	}
 }

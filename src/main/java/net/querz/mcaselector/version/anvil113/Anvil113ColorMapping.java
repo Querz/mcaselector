@@ -76,6 +76,7 @@ public class Anvil113ColorMapping implements ColorMapping {
 	}
 
 	private class BlockStateMapping {
+
 		private Map<Set<String>, Integer> blockStateMapping = new HashMap<>();
 
 		public int getColor(CompoundTag properties) {

@@ -22,11 +22,11 @@ public class LastUpdateFilter extends IntegerFilter {
 		super.setFilterValue(raw);
 		if (!isValid()) {
 			try {
-				value = Helper.parseTimestamp(raw);
-				valid = true;
+				setFilterNumber(Helper.parseTimestamp(raw));
+				setValid(true);
 			} catch (IllegalArgumentException ex) {
-				value = 0;
-				valid = false;
+				setFilterNumber(0);
+				setValid(false);
 			}
 		}
 	}

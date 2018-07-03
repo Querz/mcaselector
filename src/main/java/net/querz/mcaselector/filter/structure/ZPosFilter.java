@@ -15,7 +15,7 @@ public class ZPosFilter extends IntegerFilter {
 	}
 
 	@Override
-	Integer getNumber(FilterData data) {
+	protected Integer getNumber(FilterData data) {
 		return ((CompoundTag) data.getChunk().get("Level")).getInt("zPos");
 	}
 

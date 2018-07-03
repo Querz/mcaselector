@@ -13,6 +13,8 @@ public class GroupFilterBox extends FilterBox {
 
 	public GroupFilterBox(FilterBox parent, GroupFilter filter, boolean root) {
 		super(parent, filter, root);
+		delete.setVisible(!root);
+
 		if (root) {
 			getStyleClass().add("group-filter-box-root");
 		} else {

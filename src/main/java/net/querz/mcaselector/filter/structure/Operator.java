@@ -1,6 +1,7 @@
 package net.querz.mcaselector.filter.structure;
 
 public enum Operator {
+
 	AND("AND"),
 	OR("OR");
 

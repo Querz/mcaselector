@@ -164,7 +164,6 @@ public class MCAFile {
 
 	public Image createImage(RandomAccessFile raf) {
 		try {
-//			BufferedImage finalImage = new BufferedImage(Tile.SIZE, Tile.SIZE, BufferedImage.TYPE_INT_RGB);
 			WritableImage finalImage = new WritableImage(Tile.SIZE, Tile.SIZE);
 			PixelWriter writer = finalImage.getPixelWriter();
 

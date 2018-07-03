@@ -26,7 +26,7 @@ public abstract class ProgressTask extends Task<Void> {
 		}
 
 		@Override
-		protected Void call() throws Exception {
+		protected Void call() {
 			return null;
 		}
 	}

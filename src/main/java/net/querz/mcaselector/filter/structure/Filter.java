@@ -5,7 +5,7 @@ import java.io.Serializable;
 public abstract class Filter<T> implements Serializable {
 
 	private String rawValue;
-	protected boolean valid = true;
+	private boolean valid = true;
 	private FilterType type;
 	private Operator operator;
 	private Filter parent;
@@ -21,6 +21,10 @@ public abstract class Filter<T> implements Serializable {
 
 	public boolean isValid() {
 		return valid;
+	}
+
+	protected void setValid(boolean valid) {
+		this.valid = valid;
 	}
 
 	public String getRawValue() {

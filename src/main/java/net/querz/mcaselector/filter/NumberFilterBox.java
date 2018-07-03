@@ -17,7 +17,7 @@ public class NumberFilterBox extends FilterBox {
 		getStyleClass().add("number-filter-box");
 		input.setPromptText(filter.getFormatText());
 		input.setText(filter.getFilterValue().toString());
-		input.textProperty().addListener((a, b, c) -> onTextInput(filter, b, c));
+		input.textProperty().addListener((a, b, c) -> onTextInput(filter, c));
 		input.setAlignment(Pos.TOP_CENTER);
 
 		comparator.getItems().addAll(filter.getComparators());
@@ -35,7 +35,7 @@ public class NumberFilterBox extends FilterBox {
 		input.setText(text);
 	}
 
-	private void onTextInput(Filter filter, String oldValue, String newValue) {
+	private void onTextInput(Filter filter, String newValue) {
 		filter.setFilterValue(newValue);
 		if (!filter.isValid()) {
 			if (!getStyleClass().contains("number-filter-box-invalid")) {

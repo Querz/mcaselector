@@ -15,7 +15,6 @@ import net.querz.mcaselector.filter.structure.GroupFilter;
 import net.querz.mcaselector.filter.structure.NumberFilter;
 import net.querz.mcaselector.filter.structure.Operator;
 import net.querz.mcaselector.util.Helper;
-
 import java.util.function.Consumer;
 
 public abstract class FilterBox extends BorderPane {
@@ -24,18 +23,15 @@ public abstract class FilterBox extends BorderPane {
 	private static final Image addIcon = Helper.getIconFromResources("img/add");
 
 	private Filter filter;
-	Label delete = new Label("", new ImageView(deleteIcon));
-	Label add = new Label("", new ImageView(addIcon));
+	private FilterBox parent;
 
-	FilterBox parent;
-
-	ComboBox<FilterType> type = new ComboBox<>();
-	ComboBox<Operator> operator = new ComboBox<>();
-
-	GridPane filterOperators = new GridPane();
+	protected Label delete = new Label("", new ImageView(deleteIcon));
+	protected Label add = new Label("", new ImageView(addIcon));
+	protected ComboBox<FilterType> type = new ComboBox<>();
+	protected ComboBox<Operator> operator = new ComboBox<>();
+	protected GridPane filterOperators = new GridPane();
 
 	private Consumer<FilterBox> updateListener;
-
 	private boolean root;
 
 	public FilterBox(FilterBox parent, Filter filter, boolean root) {
@@ -51,10 +47,6 @@ public abstract class FilterBox extends BorderPane {
 		controls.setAlignment(Pos.TOP_RIGHT);
 		controls.add(add, 0, 0, 1, 1);
 		controls.add(delete, 1, 0, 1, 1);
-
-		if (this instanceof GroupFilterBox && root) {
-			delete.setVisible(false);
-		}
 
 		setRight(controls);
 

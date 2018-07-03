@@ -304,6 +304,7 @@ public class Helper {
 					.parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
 					.parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
 					.toFormatter();
+
 	private static final ZoneId ZONE_ID = ZoneId.systemDefault();
 
 	public static int parseTimestamp(String t) {

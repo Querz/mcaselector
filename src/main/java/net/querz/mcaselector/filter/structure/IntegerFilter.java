@@ -10,22 +10,27 @@ public abstract class IntegerFilter extends NumberFilter<Integer> {
 	}
 
 	@Override
-	Integer getFilterNumber() {
+	protected Integer getFilterNumber() {
 		return value;
+	}
+
+	@Override
+	protected void setFilterNumber(Integer value) {
+		this.value = value;
 	}
 
 	@Override
 	public void setFilterValue(String raw) {
 		if (raw == null) {
 			value = 0;
-			valid = false;
+			setValid(false);
 		} else {
 			try {
 				value = Integer.parseInt(raw);
-				valid = true;
+				setValid(true);
 			} catch (NumberFormatException ex) {
 				value = 0;
-				valid = false;
+				setValid(false);
 			}
 		}
 	}

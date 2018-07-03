@@ -3,6 +3,7 @@ package net.querz.mcaselector.util;
 import net.querz.mcaselector.Config;
 
 public class Debug {
+
 	public static void dump(Object... objects) {
 		if (Config.debug()) {
 			for (Object o : objects) {

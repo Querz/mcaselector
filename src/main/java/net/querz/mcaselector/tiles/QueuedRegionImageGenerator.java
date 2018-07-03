@@ -65,6 +65,7 @@ public class QueuedRegionImageGenerator {
 	}
 
 	private class Job implements Runnable {
+		
 		private Tile tile;
 		private boolean highPriority = true;
 

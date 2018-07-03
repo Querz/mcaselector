@@ -155,5 +155,4 @@ public class TileMapBox extends HBox {
 	public List<CssMetaData<? extends Styleable, ?>> getCssMetaData() {
 		return CLASS_CSS_META_DATA;
 	}
-
 }

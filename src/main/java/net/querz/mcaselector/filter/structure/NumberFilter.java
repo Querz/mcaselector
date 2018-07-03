@@ -74,6 +74,8 @@ public abstract class NumberFilter<T extends Number> extends Filter<T> {
 
 	abstract T getFilterNumber();
 
+	abstract void setFilterNumber(T value);
+
 	abstract T getNumber(FilterData data);
 
 	abstract boolean isEqual(T a, T b);
