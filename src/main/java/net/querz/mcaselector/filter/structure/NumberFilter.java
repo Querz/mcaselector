@@ -70,6 +70,8 @@ public abstract class NumberFilter<T extends Number> extends Filter<T> {
 		return getType() + " " + comparator + " " + getFilterValue();
 	}
 
+	public abstract String getFormatText();
+
 	abstract T getFilterNumber();
 
 	abstract T getNumber(FilterData data);

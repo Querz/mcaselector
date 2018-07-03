@@ -59,4 +59,9 @@ public abstract class IntegerFilter extends NumberFilter<Integer> {
 	boolean isSmallerEqual(Integer a, Integer b) {
 		return a <= b;
 	}
+
+	@Override
+	public String getFormatText() {
+		return "+/-int";
+	}
 }

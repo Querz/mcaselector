@@ -30,4 +30,9 @@ public class LastUpdateFilter extends IntegerFilter {
 			}
 		}
 	}
+
+	@Override
+	public String getFormatText() {
+		return "YYYY-MM-DD hh:mm:ss";
+	}
 }

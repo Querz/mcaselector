@@ -6,15 +6,17 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.querz.mcaselector.*;
-import net.querz.mcaselector.filter.structure.GroupFilter;
 import net.querz.mcaselector.io.MCALoader;
 import net.querz.mcaselector.io.SelectionExporter;
 import net.querz.mcaselector.tiles.TileMap;
 import java.io.File;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -269,21 +271,21 @@ public class Helper {
 		return s.toString();
 	}
 
-	private static final Map<Pattern, Long> durationRegexp = new HashMap<>();
+	private static final Map<Pattern, Long> DURATION_REGEXP = new HashMap<>();
 
 	static {
-		durationRegexp.put(Pattern.compile("(?<data>\\d+)\\W*(?:years?|y)"), 31536000L);
-		durationRegexp.put(Pattern.compile("(?<data>\\d+)\\W*(?:months?|m)"), 2628000L);
-		durationRegexp.put(Pattern.compile("(?<data>\\d+)\\W*(?:days?|d)"), 90000L);
-		durationRegexp.put(Pattern.compile("(?<data>\\d+)\\W*(?:hours?|h)"), 3600L);
-		durationRegexp.put(Pattern.compile("(?<data>\\d+)\\W*(?:minutes?|mins?)"), 60L);
-		durationRegexp.put(Pattern.compile("(?<data>\\d+)\\W*(?:seconds?|secs?|s)"), 1L);
+		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:years?|y)"), 31536000L);
+		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:months?|m)"), 2628000L);
+		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:days?|d)"), 90000L);
+		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:hours?|h)"), 3600L);
+		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:minutes?|mins?)"), 60L);
+		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:seconds?|secs?|s)"), 1L);
 	}
 
 	public static long parseDuration(String d) {
 		boolean result = false;
 		int duration = 0;
-		for (Map.Entry<Pattern, Long> entry : durationRegexp.entrySet()) {
+		for (Map.Entry<Pattern, Long> entry : DURATION_REGEXP.entrySet()) {
 			Matcher m = entry.getKey().matcher(d);
 			if (m.find()) {
 				duration += Long.parseLong(m.group("data")) * entry.getValue();
@@ -296,22 +298,23 @@ public class Helper {
 		return duration;
 	}
 
-	private static final DateFormat[] dateFormats = {
-			new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"),
-			new SimpleDateFormat("yyyy/MM/dd HH:mm:ss"),
-			new SimpleDateFormat("yyyy-MM-dd"),
-			new SimpleDateFormat("yyyy/MM/dd")
-	};
+	private static final DateTimeFormatter TIMESTAMP_FORMAT =
+			new DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd[ [HH][:mm][:ss]]")
+					.parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+					.parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+					.parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+					.toFormatter();
+	private static final ZoneId ZONE_ID = ZoneId.systemDefault();
 
 	public static int parseTimestamp(String t) {
 		String trim = t.trim();
-		for (DateFormat f : dateFormats) {
-			try {
-				Date date = f.parse(trim);
-				return (int) (date.getTime() / 1000L);
-			} catch (ParseException e) {
-				//retry
-			}
+		try {
+			LocalDateTime date = LocalDateTime.parse(trim, TIMESTAMP_FORMAT);
+			ZonedDateTime zdt = ZonedDateTime.of(date, ZONE_ID);
+			return (int) zdt.toInstant().getEpochSecond();
+		} catch (DateTimeParseException e) {
+			System.out.println(e.getMessage());
+			//retry
 		}
 		throw new IllegalArgumentException("could not parse date time");
 	}

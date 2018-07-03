@@ -59,4 +59,9 @@ public abstract class LongFilter extends NumberFilter<Long> {
 	boolean isSmallerEqual(Long a, Long b) {
 		return a <= b;
 	}
+
+	@Override
+	public String getFormatText() {
+		return "+/-long";
+	}
 }

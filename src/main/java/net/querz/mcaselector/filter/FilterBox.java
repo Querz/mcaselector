@@ -89,7 +89,7 @@ public abstract class FilterBox extends BorderPane {
 	}
 
 	protected void onAdd(Filter filter) {
-		NumberFilter f = new DataVersionFilter(Operator.AND, Comparator.EQ, 1344);
+		NumberFilter f = new DataVersionFilter(Operator.AND, Comparator.EQ, 0);
 		int index;
 		if (filter.getParent() == null || filter instanceof GroupFilter) {
 			//root group
@@ -98,10 +98,14 @@ public abstract class FilterBox extends BorderPane {
 			index = ((GroupFilter) filter.getParent()).addFilterAfter(f, filter);
 		}
 		if (this instanceof GroupFilterBox) {
-			((GroupFilterBox) this).filters.getChildren().add(index, new NumberFilterBox(this, f, false));
+			NumberFilterBox fb = new NumberFilterBox(this, f, false);
+			fb.setText("");
+			((GroupFilterBox) this).filters.getChildren().add(index, fb);
 			type.setDisable(true);
 		} else if (parent instanceof GroupFilterBox) {
-			((GroupFilterBox) parent).filters.getChildren().add(index, new NumberFilterBox(this.parent, f, this.root));
+			NumberFilterBox fb = new NumberFilterBox(this.parent, f, this.root);
+			fb.setText("");
+			((GroupFilterBox) parent).filters.getChildren().add(index, fb);
 		}
 
 		callUpdateEvent();
