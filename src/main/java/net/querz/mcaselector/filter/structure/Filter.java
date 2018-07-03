@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public abstract class Filter<T> implements Serializable {
 
+	private String rawValue;
+	protected boolean valid = true;
 	private FilterType type;
 	private Operator operator;
 	private Filter parent;
@@ -15,6 +17,18 @@ public abstract class Filter<T> implements Serializable {
 	public Filter(FilterType type, Operator operator) {
 		this.type = type;
 		this.operator = operator;
+	}
+
+	public boolean isValid() {
+		return valid;
+	}
+
+	public String getRawValue() {
+		return rawValue;
+	}
+
+	public void setRawValue(String rawValue) {
+		this.rawValue = rawValue;
 	}
 
 	public Operator getOperator() {
@@ -39,7 +53,7 @@ public abstract class Filter<T> implements Serializable {
 
 	public abstract T getFilterValue();
 
-	public abstract boolean setFilterValue(String raw);
+	public abstract void setFilterValue(String raw);
 
 	public abstract Comparator[] getComparators();
 

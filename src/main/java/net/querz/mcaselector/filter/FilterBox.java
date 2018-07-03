@@ -16,6 +16,8 @@ import net.querz.mcaselector.filter.structure.NumberFilter;
 import net.querz.mcaselector.filter.structure.Operator;
 import net.querz.mcaselector.util.Helper;
 
+import java.util.function.Consumer;
+
 public abstract class FilterBox extends BorderPane {
 
 	private static final Image deleteIcon = Helper.getIconFromResources("img/delete");
@@ -31,6 +33,8 @@ public abstract class FilterBox extends BorderPane {
 	ComboBox<Operator> operator = new ComboBox<>();
 
 	GridPane filterOperators = new GridPane();
+
+	private Consumer<FilterBox> updateListener;
 
 	private boolean root;
 
@@ -80,6 +84,10 @@ public abstract class FilterBox extends BorderPane {
 		delete.setOnMouseReleased(e -> onDelete(filter));
 	}
 
+	public void setOnUpdate(Consumer<FilterBox> listener) {
+		updateListener = listener;
+	}
+
 	protected void onAdd(Filter filter) {
 		NumberFilter f = new DataVersionFilter(Operator.AND, Comparator.EQ, 1344);
 		int index;
@@ -95,6 +103,8 @@ public abstract class FilterBox extends BorderPane {
 		} else if (parent instanceof GroupFilterBox) {
 			((GroupFilterBox) parent).filters.getChildren().add(index, new NumberFilterBox(this.parent, f, this.root));
 		}
+
+		callUpdateEvent();
 	}
 
 	protected void onDelete(Filter filter) {
@@ -109,6 +119,8 @@ public abstract class FilterBox extends BorderPane {
 				((FilterBox) ((GroupFilterBox) parent).filters.getChildren().get(0)).operator.setVisible(false);
 			}
 		}
+
+		callUpdateEvent();
 	}
 
 	protected void update(FilterType type) {
@@ -132,9 +144,21 @@ public abstract class FilterBox extends BorderPane {
 			((GroupFilterBox) this.parent).filters.getChildren().remove(index);
 			((GroupFilterBox) this.parent).filters.getChildren().add(index, newBox);
 		}
+		callUpdateEvent();
 	}
 
 	private void onOperator(Filter filter) {
 		filter.setOperator(operator.getSelectionModel().getSelectedItem());
+		callUpdateEvent();
+	}
+
+	protected void callUpdateEvent() {
+		FilterBox p = this;
+		while (p != null) {
+			if (p.updateListener != null) {
+				p.updateListener.accept(this);
+			}
+			p = p.parent;
+		}
 	}
 }

@@ -11,9 +11,16 @@ import net.querz.mcaselector.io.MCALoader;
 import net.querz.mcaselector.io.SelectionExporter;
 import net.querz.mcaselector.tiles.TileMap;
 import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Helper {
 
@@ -260,5 +267,52 @@ public class Helper {
 			s.insert(0, "0");
 		}
 		return s.toString();
+	}
+
+	private static final Map<Pattern, Long> durationRegexp = new HashMap<>();
+
+	static {
+		durationRegexp.put(Pattern.compile("(?<data>\\d+)\\W*(?:years?|y)"), 31536000L);
+		durationRegexp.put(Pattern.compile("(?<data>\\d+)\\W*(?:months?|m)"), 2628000L);
+		durationRegexp.put(Pattern.compile("(?<data>\\d+)\\W*(?:days?|d)"), 90000L);
+		durationRegexp.put(Pattern.compile("(?<data>\\d+)\\W*(?:hours?|h)"), 3600L);
+		durationRegexp.put(Pattern.compile("(?<data>\\d+)\\W*(?:minutes?|mins?)"), 60L);
+		durationRegexp.put(Pattern.compile("(?<data>\\d+)\\W*(?:seconds?|secs?|s)"), 1L);
+	}
+
+	public static long parseDuration(String d) {
+		boolean result = false;
+		int duration = 0;
+		for (Map.Entry<Pattern, Long> entry : durationRegexp.entrySet()) {
+			Matcher m = entry.getKey().matcher(d);
+			if (m.find()) {
+				duration += Long.parseLong(m.group("data")) * entry.getValue();
+				result = true;
+			}
+		}
+		if (!result) {
+			throw new IllegalArgumentException("could not parse anything from duration string");
+		}
+		return duration;
+	}
+
+	private static final DateFormat[] dateFormats = {
+			new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"),
+			new SimpleDateFormat("yyyy/MM/dd HH:mm:ss"),
+			new SimpleDateFormat("yyyy-MM-dd"),
+			new SimpleDateFormat("yyyy/MM/dd")
+	};
+
+	public static int parseTimestamp(String t) {
+		String trim = t.trim();
+		for (DateFormat f : dateFormats) {
+			try {
+				Date date = f.parse(trim);
+				return (int) (date.getTime() / 1000L);
+			} catch (ParseException e) {
+				//retry
+			}
+		}
+		throw new IllegalArgumentException("could not parse date time");
 	}
 }

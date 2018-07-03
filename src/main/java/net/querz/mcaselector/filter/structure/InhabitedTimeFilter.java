@@ -1,5 +1,6 @@
 package net.querz.mcaselector.filter.structure;
 
+import net.querz.mcaselector.util.Helper;
 import net.querz.nbt.CompoundTag;
 
 public class InhabitedTimeFilter extends LongFilter {
@@ -15,5 +16,19 @@ public class InhabitedTimeFilter extends LongFilter {
 	@Override
 	Long getNumber(FilterData data) {
 		return ((CompoundTag) data.getChunk().get("Level")).getLong("InhabitedTime");
+	}
+
+	@Override
+	public void setFilterValue(String raw) {
+		super.setFilterValue(raw);
+		if (!isValid()) {
+			try {
+				value = Helper.parseDuration(raw) * 20;
+				valid = true;
+			} catch (IllegalArgumentException ex) {
+				value = 0;
+				valid = false;
+			}
+		}
 	}
 }

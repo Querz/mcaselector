@@ -14,4 +14,13 @@ public class DataVersionFilter extends IntegerFilter {
 	Integer getNumber(FilterData data) {
 		return data.getChunk().getInt("DataVersion");
 	}
+
+	@Override
+	public void setFilterValue(String raw) {
+		super.setFilterValue(raw);
+		if (isValid() && value < 0) {
+			valid = false;
+			value = 0;
+		}
+	}
 }

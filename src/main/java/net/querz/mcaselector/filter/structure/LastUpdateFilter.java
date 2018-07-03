@@ -1,5 +1,7 @@
 package net.querz.mcaselector.filter.structure;
 
+import net.querz.mcaselector.util.Helper;
+
 public class LastUpdateFilter extends IntegerFilter {
 
 	public LastUpdateFilter() {
@@ -13,5 +15,19 @@ public class LastUpdateFilter extends IntegerFilter {
 	@Override
 	Integer getNumber(FilterData data) {
 		return data.getLastUpdated();
+	}
+
+	@Override
+	public void setFilterValue(String raw) {
+		super.setFilterValue(raw);
+		if (!isValid()) {
+			try {
+				value = Helper.parseTimestamp(raw);
+				valid = true;
+			} catch (IllegalArgumentException ex) {
+				value = 0;
+				valid = false;
+			}
+		}
 	}
 }

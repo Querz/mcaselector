@@ -16,6 +16,8 @@
 	-color-text-field-background: #45494a;
 	-color-text-field-border: #646464;
 	-color-text-field-focused-shadow: #00bfff;
+	-color-filter-box-invalid-background: #9e494a;
+	-color-filter-box-invalid-shadow: #ff4000;
 	-color-radio-button-background: #43494a;
 	-color-radio-button-circle: #6a6a6a;
 	-color-radio-button-dot: #bbbbbb;
@@ -356,6 +358,11 @@
 	-fx-border-width: 1 0 0 0;
 	-fx-border-insets: 3 0 0 0;
 	-fx-border-color: -color-dialog-separator;
+}
+
+.number-filter-box-invalid .text-field {
+	-fx-background-color: -color-filter-box-invalid-background;
+	-fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
 }
 
 /*no padding for root group*/

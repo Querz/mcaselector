@@ -2,7 +2,7 @@ package net.querz.mcaselector.filter.structure;
 
 public abstract class IntegerFilter extends NumberFilter<Integer> {
 
-	private int value;
+	protected int value;
 
 	public IntegerFilter(FilterType type, Operator operator, Comparator comparator, int value) {
 		super(type, operator, comparator);
@@ -15,16 +15,17 @@ public abstract class IntegerFilter extends NumberFilter<Integer> {
 	}
 
 	@Override
-	public boolean setFilterValue(String raw) {
-		if (raw == null || raw.isEmpty() || raw.equals("-") || raw.equals("+")) {
+	public void setFilterValue(String raw) {
+		if (raw == null) {
 			value = 0;
-			return true;
+			valid = false;
 		} else {
 			try {
 				value = Integer.parseInt(raw);
-				return true;
+				valid = true;
 			} catch (NumberFormatException ex) {
-				return false;
+				value = 0;
+				valid = false;
 			}
 		}
 	}

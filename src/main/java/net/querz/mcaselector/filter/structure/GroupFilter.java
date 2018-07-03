@@ -53,8 +53,8 @@ public class GroupFilter extends Filter<List<Filter>> {
 	}
 
 	@Override
-	public boolean setFilterValue(String raw) {
-		return false;
+	public void setFilterValue(String raw) {
+
 	}
 
 	@Override
@@ -122,5 +122,15 @@ public class GroupFilter extends Filter<List<Filter>> {
 		}
 		s.append(")");
 		return s.toString();
+	}
+
+	@Override
+	public boolean isValid() {
+		for (Filter c : children) {
+			if (!c.isValid()) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

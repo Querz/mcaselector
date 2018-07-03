@@ -15,6 +15,7 @@ import net.querz.mcaselector.filter.structure.GroupFilter;
 import net.querz.mcaselector.filter.structure.Operator;
 import net.querz.mcaselector.filter.structure.XPosFilter;
 import net.querz.mcaselector.filter.structure.ZPosFilter;
+import net.querz.mcaselector.util.Debug;
 
 public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
@@ -54,6 +55,11 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setContent(groupFilterBox);
 		groupFilterBox.prefWidthProperty().bind(scrollPane.prefWidthProperty());
+
+		groupFilterBox.setOnUpdate(f -> {
+			getDialogPane().lookupButton(ButtonType.OK).setDisable(!value.isValid());
+			Debug.dump(value);
+		});
 
 		VBox box = new VBox();
 		box.getChildren().addAll(scrollPane,  new Separator(), delete, export);

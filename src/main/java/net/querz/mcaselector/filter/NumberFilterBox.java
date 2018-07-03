@@ -32,12 +32,19 @@ public class NumberFilterBox extends FilterBox {
 	}
 
 	private void onTextInput(Filter filter, String oldValue, String newValue) {
-		if (!filter.setFilterValue(newValue)) {
-			input.setText(oldValue);
+		filter.setFilterValue(newValue);
+		if (!filter.isValid()) {
+			if (!getStyleClass().contains("number-filter-box-invalid")) {
+				getStyleClass().add("number-filter-box-invalid");
+			}
+		} else {
+			getStyleClass().remove("number-filter-box-invalid");
 		}
+		callUpdateEvent();
 	}
 
 	private void onComparator(NumberFilter filter) {
 		filter.setComparator(comparator.getSelectionModel().getSelectedItem());
+		callUpdateEvent();
 	}
 }

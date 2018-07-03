@@ -2,7 +2,7 @@ package net.querz.mcaselector.filter.structure;
 
 public abstract class LongFilter extends NumberFilter<Long> {
 
-	private long value;
+	protected long value;
 
 	public LongFilter(FilterType type, Operator operator, Comparator comparator, long value) {
 		super(type, operator, comparator);
@@ -15,16 +15,17 @@ public abstract class LongFilter extends NumberFilter<Long> {
 	}
 
 	@Override
-	public boolean setFilterValue(String raw) {
-		if (raw == null || raw.isEmpty() || raw.equals("-") || raw.equals("+")) {
+	public void setFilterValue(String raw) {
+		if (raw == null) {
 			value = 0;
-			return true;
+			valid = false;
 		} else {
 			try {
 				value = Long.parseLong(raw);
-				return true;
+				valid = true;
 			} catch (NumberFormatException ex) {
-				return false;
+				value = 0;
+				valid = false;
 			}
 		}
 	}
