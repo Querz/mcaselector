@@ -1,4 +1,4 @@
-package net.querz.mcaselector;
+package net.querz.mcaselector.ui;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -6,7 +6,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import net.querz.mcaselector.tiles.TileMap;
-import net.querz.mcaselector.tiles.TileMapBox;
 import net.querz.mcaselector.util.Helper;
 import java.net.URL;
 import java.util.*;

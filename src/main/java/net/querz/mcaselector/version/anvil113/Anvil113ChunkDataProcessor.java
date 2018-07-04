@@ -1,8 +1,8 @@
 package net.querz.mcaselector.version.anvil113;
 
 import javafx.scene.image.PixelWriter;
-import net.querz.mcaselector.ChunkDataProcessor;
-import net.querz.mcaselector.ColorMapping;
+import net.querz.mcaselector.version.ChunkDataProcessor;
+import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;

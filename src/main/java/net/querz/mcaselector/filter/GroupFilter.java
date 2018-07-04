@@ -1,4 +1,4 @@
-package net.querz.mcaselector.filter.structure;
+package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.util.Point2i;
 import java.util.ArrayList;

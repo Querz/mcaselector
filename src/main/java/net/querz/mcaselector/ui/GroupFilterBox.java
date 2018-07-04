@@ -1,9 +1,9 @@
-package net.querz.mcaselector.filter;
+package net.querz.mcaselector.ui;
 
 import javafx.scene.layout.VBox;
-import net.querz.mcaselector.filter.structure.Filter;
-import net.querz.mcaselector.filter.structure.GroupFilter;
-import net.querz.mcaselector.filter.structure.NumberFilter;
+import net.querz.mcaselector.filter.Filter;
+import net.querz.mcaselector.filter.GroupFilter;
+import net.querz.mcaselector.filter.NumberFilter;
 import net.querz.mcaselector.util.Debug;
 
 public class GroupFilterBox extends FilterBox {

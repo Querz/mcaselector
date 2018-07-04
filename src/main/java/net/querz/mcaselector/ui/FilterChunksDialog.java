@@ -1,4 +1,4 @@
-package net.querz.mcaselector;
+package net.querz.mcaselector.ui;
 
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -9,12 +9,11 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import net.querz.mcaselector.filter.GroupFilterBox;
-import net.querz.mcaselector.filter.structure.Comparator;
-import net.querz.mcaselector.filter.structure.GroupFilter;
-import net.querz.mcaselector.filter.structure.Operator;
-import net.querz.mcaselector.filter.structure.XPosFilter;
-import net.querz.mcaselector.filter.structure.ZPosFilter;
+import net.querz.mcaselector.filter.Comparator;
+import net.querz.mcaselector.filter.GroupFilter;
+import net.querz.mcaselector.filter.Operator;
+import net.querz.mcaselector.filter.XPosFilter;
+import net.querz.mcaselector.filter.ZPosFilter;
 import net.querz.mcaselector.util.Debug;
 
 public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {

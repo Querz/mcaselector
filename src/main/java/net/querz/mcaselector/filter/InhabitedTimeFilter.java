@@ -1,4 +1,4 @@
-package net.querz.mcaselector.filter.structure;
+package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.util.Helper;
 import net.querz.nbt.CompoundTag;

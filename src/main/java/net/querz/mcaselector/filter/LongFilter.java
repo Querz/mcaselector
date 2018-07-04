@@ -1,4 +1,4 @@
-package net.querz.mcaselector.filter.structure;
+package net.querz.mcaselector.filter;
 
 public abstract class LongFilter extends NumberFilter<Long> {
 

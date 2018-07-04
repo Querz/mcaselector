@@ -1,4 +1,4 @@
-package net.querz.mcaselector;
+package net.querz.mcaselector.version;
 
 public interface ColorMapping {
 

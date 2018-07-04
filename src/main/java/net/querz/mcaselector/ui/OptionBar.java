@@ -1,4 +1,4 @@
-package net.querz.mcaselector;
+package net.querz.mcaselector.ui;
 
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;

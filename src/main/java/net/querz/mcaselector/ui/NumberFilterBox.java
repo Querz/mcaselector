@@ -1,11 +1,11 @@
-package net.querz.mcaselector.filter;
+package net.querz.mcaselector.ui;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
-import net.querz.mcaselector.filter.structure.Comparator;
-import net.querz.mcaselector.filter.structure.Filter;
-import net.querz.mcaselector.filter.structure.NumberFilter;
+import net.querz.mcaselector.filter.Comparator;
+import net.querz.mcaselector.filter.Filter;
+import net.querz.mcaselector.filter.NumberFilter;
 
 public class NumberFilterBox extends FilterBox {
 

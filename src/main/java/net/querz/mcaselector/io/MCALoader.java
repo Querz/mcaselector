@@ -1,8 +1,8 @@
 package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.ProgressTask;
-import net.querz.mcaselector.filter.structure.GroupFilter;
+import net.querz.mcaselector.ui.ProgressTask;
+import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;

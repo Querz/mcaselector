@@ -1,29 +1,29 @@
-package net.querz.mcaselector.filter.structure;
+package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.nbt.CompoundTag;
 
-public class ZPosFilter extends IntegerFilter {
+public class XPosFilter extends IntegerFilter {
 
-	public ZPosFilter() {
+	public XPosFilter() {
 		this(Operator.AND, Comparator.EQ, 0);
 	}
 
-	public ZPosFilter(Operator operator, Comparator comparator, int value) {
-		super(FilterType.Z_POS, operator, comparator, value);
+	public XPosFilter(Operator operator, Comparator comparator, int value) {
+		super(FilterType.X_POS, operator, comparator, value);
 	}
 
 	@Override
 	protected Integer getNumber(FilterData data) {
-		return ((CompoundTag) data.getChunk().get("Level")).getInt("zPos");
+		return ((CompoundTag) data.getChunk().get("Level")).getInt("xPos");
 	}
 
 	public boolean matchesRegion(Point2i region) {
 		Point2i chunk = Helper.regionToChunk(region);
 		for (int i = 0; i < 32; i++) {
 			Point2i p = chunk.add(i);
-			if (matches(getFilterNumber(), p.getY())) {
+			if (matches(getFilterNumber(), p.getX())) {
 				return true;
 			}
 		}

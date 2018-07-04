@@ -144,7 +144,7 @@ public class Tile {
 		return markedChunks;
 	}
 
-	static void reloadEmpty() {
+	public static void reloadEmpty() {
 		WritableImage wImage = new WritableImage(SIZE, SIZE);
 		PixelWriter pWriter = wImage.getPixelWriter();
 		for (int x = 0; x < SIZE; x++) {

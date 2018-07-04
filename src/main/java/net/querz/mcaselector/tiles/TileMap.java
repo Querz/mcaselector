@@ -3,7 +3,7 @@ package net.querz.mcaselector.tiles;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.*;
-import net.querz.mcaselector.Window;
+import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;

@@ -1,4 +1,4 @@
-package net.querz.mcaselector;
+package net.querz.mcaselector.ui;
 
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;

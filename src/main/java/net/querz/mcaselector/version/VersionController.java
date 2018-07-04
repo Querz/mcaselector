@@ -1,7 +1,5 @@
 package net.querz.mcaselector.version;
 
-import net.querz.mcaselector.ChunkDataProcessor;
-import net.querz.mcaselector.ColorMapping;
 import net.querz.mcaselector.version.anvil112.Anvil112ChunkDataProcessor;
 import net.querz.mcaselector.version.anvil112.Anvil112ColorMapping;
 import net.querz.mcaselector.version.anvil113.Anvil113ChunkDataProcessor;

@@ -1,4 +1,4 @@
-package net.querz.mcaselector.tiles;
+package net.querz.mcaselector.ui;
 
 import javafx.beans.value.ChangeListener;
 import javafx.css.*;
@@ -6,6 +6,8 @@ import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.util.Debug;
 import java.util.ArrayList;
 import java.util.Arrays;

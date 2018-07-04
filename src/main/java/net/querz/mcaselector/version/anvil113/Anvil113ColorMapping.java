@@ -1,6 +1,6 @@
 package net.querz.mcaselector.version.anvil113;
 
-import net.querz.mcaselector.ColorMapping;
+import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.version.anvil112.Anvil112ColorMapping;
 import net.querz.nbt.CompoundTag;
