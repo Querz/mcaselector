@@ -18,11 +18,20 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+
+				byte[] biomes = ((CompoundTag) root.get("Level")).getBytes("Biomes");
+				int biome = -1;
+				if (biomes.length != 0) {
+					biome = biomes[getIndex(cx, 0, cz)];
+				}
+
 				//loop over sections
 				for (int i = 0; i < sections.size(); i++) {
 
 					long[] blockStates = ((CompoundTag) sections.get(i)).getLongs("BlockStates");
 					ListTag palette = (ListTag) ((CompoundTag) sections.get(i)).get("Palette");
+
+					int sectionHeight = ((CompoundTag) sections.get(i)).getByte("Y") * 16;
 
 					int bits = blockStates.length / 64;
 					int clean = ((int) Math.pow(2, bits) - 1);
@@ -30,6 +39,12 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 					for (int cy = Tile.CHUNK_SIZE - 1; cy >= 0; cy--) {
 						int paletteIndex = getPaletteIndex(getIndex(cx, cy, cz), blockStates, bits, clean);
 						CompoundTag blockData = palette.getCompoundTag(paletteIndex);
+
+						//ignore bedrock and netherrack until 75
+						if (isIgnoredInNether(biome, blockData, sectionHeight + cy)) {
+							continue;
+						}
+
 						if (!isEmpty(paletteIndex, blockData)) {
 							writer.setArgb(x + cx, z + cz, colorMapping.getRGB(blockData) | 0xFF000000);
 							continue zLoop;
@@ -38,6 +53,20 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 				}
 			}
 		}
+	}
+
+	private boolean isIgnoredInNether(int biome, CompoundTag blockData, int height) {
+		if (biome == 8) {
+			switch (blockData.getString("Name")) {
+			case "minecraft:bedrock":
+			case "minecraft:lava":
+			case "minecraft:flowing_lava":
+			case "minecraft:netherrack":
+			case "minecraft:nether_quartz_ore":
+				return height > 75;
+			}
+		}
+		return false;
 	}
 
 	private boolean isEmpty(int paletteIndex, CompoundTag blockData) {
