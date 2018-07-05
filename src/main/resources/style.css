@@ -18,6 +18,7 @@
 	-color-text-field-focused-shadow: #00bfff;
 	-color-filter-box-invalid-background: #9e494a;
 	-color-filter-box-invalid-shadow: #ff4000;
+	-color-filter-box-control-hover-background: #494d50;
 	-color-radio-button-background: #43494a;
 	-color-radio-button-circle: #6a6a6a;
 	-color-radio-button-dot: #bbbbbb;
@@ -340,6 +341,11 @@
 	-fx-padding: 0 5 0 0;
 }
 
+.filter-controls-grid {
+	-fx-hgap: 5;
+	-fx-padding: 0 2 0 5;
+}
+
 /* operator combo-box */
 .filter-operator-combo-box {
 	-fx-pref-width: 70px;
@@ -358,6 +364,10 @@
 	-fx-border-width: 1 0 0 0;
 	-fx-border-insets: 3 0 0 0;
 	-fx-border-color: -color-dialog-separator;
+}
+
+.filter-box .control-label:hover {
+	-fx-background-color: -color-filter-box-control-hover-background
 }
 
 .number-filter-box-invalid .text-field {

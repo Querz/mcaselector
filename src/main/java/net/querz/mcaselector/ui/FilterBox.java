@@ -43,7 +43,11 @@ public abstract class FilterBox extends BorderPane {
 		getStyleClass().add("filter-box");
 		this.filter = filter;
 
+		add.getStyleClass().add("control-label");
+		delete.getStyleClass().add("control-label");
+
 		GridPane controls = new GridPane();
+		controls.getStyleClass().add("filter-controls-grid");
 		controls.setAlignment(Pos.TOP_RIGHT);
 		controls.add(add, 0, 0, 1, 1);
 		controls.add(delete, 1, 0, 1, 1);
