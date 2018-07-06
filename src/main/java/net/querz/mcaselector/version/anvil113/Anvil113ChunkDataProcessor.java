@@ -59,8 +59,8 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 		if (biome == 8) {
 			switch (blockData.getString("Name")) {
 			case "minecraft:bedrock":
-			case "minecraft:lava":
 			case "minecraft:flowing_lava":
+			case "minecraft:lava":
 			case "minecraft:netherrack":
 			case "minecraft:nether_quartz_ore":
 				return height > 75;

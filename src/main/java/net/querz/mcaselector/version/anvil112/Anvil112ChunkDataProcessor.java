@@ -59,11 +59,11 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 	private boolean isIgnoredInNether(int biome, short block, int height) {
 		if (biome == 8) {
 			switch (block) {
-			case 7:
-			case 10:
-			case 11:
-			case 87:
-			case 153:
+			case 7:   //bedrock
+			case 10:  //flowing_lava
+			case 11:  //lava
+			case 87:  //netherrack
+			case 153: //quartz_ore
 				return height > 75;
 			}
 		}

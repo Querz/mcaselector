@@ -23,6 +23,7 @@ public class QueuedRegionImageGenerator {
 	private Set<Job> inQueue = ConcurrentHashMap.newKeySet();
 
 	public QueuedRegionImageGenerator(int maxThreads, TileMap tileMap) {
+		Debug.dump("creating QueuedRegionImageGenerator with " + maxThreads + " Threads");
 		this.tileMap = tileMap;
 		executor = new ThreadPoolExecutor(maxThreads, maxThreads,
 				0L, TimeUnit.MILLISECONDS,
@@ -89,7 +90,7 @@ public class QueuedRegionImageGenerator {
 					tile.loadImage(tileMap);
 				}
 			} else {
-				Debug.dump("tile at " + tile.getLocation() + " not visible, skipping");
+				Debug.dump("skipping tile at " + tile.getLocation() + ", not visible");
 			}
 		}
 	}
