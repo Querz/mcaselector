@@ -18,7 +18,7 @@ Upon finishing selecting chunks and regions, they can be deleted or exported usi
 A selection (not the chunks and regions themselves) can also be exported or imported and even be applied to different worlds.
 
 ### Chunk filter
-The MCA Selector also contains a powerful tool to delete chunks and regions by conditions like the data version, the time it was last updated, hoch much time players have spent in this chunk or the location of that chunk. Multiple of these conditions can be used to create a very specific query about what chunks and regions should be deleted or exported.
+The MCA Selector also contains a powerful tool to delete chunks and regions by conditions like the data version, the time it was last updated, hoch much time players have spent in this chunk, the location of that chunk or if that chunk contains specific blocks. Multiple of these conditions can be used to create a very specific query about what chunks and regions should be deleted or exported.
 
 ![alt text](https://raw.githubusercontent.com/Querz/mcaselector/assets/assets/mca_selector_filter_chunks.png "MCA Selector window showing the chunk filter")
 
@@ -32,13 +32,16 @@ Because the conditions use internal values used by minecraft, they are not very 
 | LastUpdate | int | The time a chunk was last updated in seconds since 1970-01-01. |
 | xPos | int | The location of the chunk on the x-axis in chunk coordinates. |
 | zPos | int | The location of the chunk on the z-axis in chunk coordinates. |
+| Blocks | String | A list of comma (,) separated 1.13 block names. The block names will be converted to block ids for chunks with DataVersion 1343 or below. The validation of block names can be skipped by writing them in double quotes ("). Example: ```sand,"new_block",gravel```.|
 
 **Notice**
 Running the query will check the ```.mca```-file's name first if the query would even apply to any chunk in this file using the xPos and zPos conditions, as long as the query is built in a way that allows doing this.
 
-
 ### Caching
 The tool creates an image for each region from the provided mca-files. These images are saved separately inside a ```cache```-folder in the working directory of the program for future usage. Experience showed that a Minecraft world with a size of 10GB resulted in cached image files with a total size of 80-100MB. Caching as many regions as possible significantly improves loading times though.
+
+### Debugging
+If something is not working properly or if you want to see the exact query that is run using the chunk filter, the MCA Selector can be executed with ```-debug``` to print some additional information to the console.
 
 ---
 ## Supported Versions
