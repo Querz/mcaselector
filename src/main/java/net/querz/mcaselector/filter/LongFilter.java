@@ -7,6 +7,7 @@ public abstract class LongFilter extends NumberFilter<Long> {
 	public LongFilter(FilterType type, Operator operator, Comparator comparator, long value) {
 		super(type, operator, comparator);
 		this.value = value;
+		setRawValue(value + "");
 	}
 
 	@Override
@@ -28,6 +29,7 @@ public abstract class LongFilter extends NumberFilter<Long> {
 			try {
 				setFilterNumber(Long.parseLong(raw));
 				setValid(true);
+				setRawValue(raw);
 			} catch (NumberFormatException ex) {
 				setFilterNumber(0L);
 				setValid(false);

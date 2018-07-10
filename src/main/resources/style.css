@@ -370,7 +370,7 @@
 	-fx-background-color: -color-filter-box-control-hover-background
 }
 
-.number-filter-box-invalid .text-field {
+.number-filter-box-invalid .text-field, .text-filter-box-invalid .text-field {
 	-fx-background-color: -color-filter-box-invalid-background;
 	-fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
 }

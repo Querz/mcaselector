@@ -4,6 +4,7 @@ import javafx.scene.layout.VBox;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.filter.NumberFilter;
+import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.util.Debug;
 
 public class GroupFilterBox extends FilterBox {
@@ -30,6 +31,8 @@ public class GroupFilterBox extends FilterBox {
 		for (Filter f : filter.getFilterValue()) {
 			if (f instanceof NumberFilter) {
 				filters.getChildren().add(new NumberFilterBox(this, (NumberFilter) f, root));
+			} else if (f instanceof TextFilter) {
+				filters.getChildren().add(new TextFilterBox(this, (TextFilter) f, root));
 			} else if (f instanceof GroupFilter) {
 				filters.getChildren().add(new GroupFilterBox(this, (GroupFilter) f, false));
 			} else {

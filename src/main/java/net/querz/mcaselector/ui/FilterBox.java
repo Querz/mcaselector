@@ -14,6 +14,7 @@ import net.querz.mcaselector.filter.FilterType;
 import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.filter.NumberFilter;
 import net.querz.mcaselector.filter.Operator;
+import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.util.Helper;
 import java.util.function.Consumer;
 
@@ -94,14 +95,10 @@ public abstract class FilterBox extends BorderPane {
 			index = ((GroupFilter) filter.getParent()).addFilterAfter(f, filter);
 		}
 		if (this instanceof GroupFilterBox) {
-			NumberFilterBox fb = new NumberFilterBox(this, f, false);
-			fb.setText("");
-			((GroupFilterBox) this).filters.getChildren().add(index, fb);
+			((GroupFilterBox) this).filters.getChildren().add(index, new NumberFilterBox(this, f, false));
 			type.setDisable(true);
 		} else if (parent instanceof GroupFilterBox) {
-			NumberFilterBox fb = new NumberFilterBox(this.parent, f, this.root);
-			fb.setText("");
-			((GroupFilterBox) parent).filters.getChildren().add(index, fb);
+			((GroupFilterBox) parent).filters.getChildren().add(index, new NumberFilterBox(this.parent, f, this.root));
 		}
 
 		callUpdateEvent();
@@ -136,6 +133,8 @@ public abstract class FilterBox extends BorderPane {
 			FilterBox newBox;
 			if (type == FilterType.GROUP) {
 				newBox = new GroupFilterBox(this.parent, (GroupFilter) newFilter, root);
+			} else if (type == FilterType.BLOCK) {
+				newBox = new TextFilterBox(this.parent, (TextFilter) newFilter, root);
 			} else {
 				newBox = new NumberFilterBox(this.parent, (NumberFilter) newFilter, root);
 			}

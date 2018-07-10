@@ -1,8 +1,10 @@
 package net.querz.mcaselector.version;
 
 import net.querz.mcaselector.version.anvil112.Anvil112ChunkDataProcessor;
+import net.querz.mcaselector.version.anvil112.Anvil112ChunkFilter;
 import net.querz.mcaselector.version.anvil112.Anvil112ColorMapping;
 import net.querz.mcaselector.version.anvil113.Anvil113ChunkDataProcessor;
+import net.querz.mcaselector.version.anvil113.Anvil113ChunkFilter;
 import net.querz.mcaselector.version.anvil113.Anvil113ColorMapping;
 
 public class VersionController {
@@ -17,22 +19,29 @@ public class VersionController {
 		return Mapping.match(dataVersion).getColorMapping();
 	}
 
+	public static ChunkFilter getChunkFilter(int dataVersion) {
+		return Mapping.match(dataVersion).getChunkFilter();
+	}
+
 	private enum Mapping {
 
-		ANVIL_1_12(0, 1343, Anvil112ChunkDataProcessor.class, Anvil112ColorMapping.class),
-		ANVIL_1_13(1344, Integer.MAX_VALUE, Anvil113ChunkDataProcessor.class, Anvil113ColorMapping.class);
+		ANVIL_1_12(0, 1343, Anvil112ChunkDataProcessor.class, Anvil112ColorMapping.class, Anvil112ChunkFilter.class),
+		ANVIL_1_13(1344, Integer.MAX_VALUE, Anvil113ChunkDataProcessor.class, Anvil113ColorMapping.class, Anvil113ChunkFilter.class);
 
 		private int from, to;
 		private Class<? extends ChunkDataProcessor> cdp;
 		private Class<? extends ColorMapping> cm;
+		private Class<? extends ChunkFilter> cf;
 		private ChunkDataProcessor cdpInstance;
 		private ColorMapping cmInstance;
+		private ChunkFilter cfInstance;
 
-		Mapping(int from, int to, Class<? extends ChunkDataProcessor> cdp, Class<? extends ColorMapping> cm) {
+		Mapping(int from, int to, Class<? extends ChunkDataProcessor> cdp, Class<? extends ColorMapping> cm, Class<? extends ChunkFilter> cf) {
 			this.from = from;
 			this.to = to;
 			this.cdp = cdp;
 			this.cm = cm;
+			this.cf = cf;
 		}
 
 		ChunkDataProcessor getChunkDataProcessor() {
@@ -47,6 +56,15 @@ public class VersionController {
 		ColorMapping getColorMapping() {
 			try {
 				return cmInstance == null ? cmInstance = cm.newInstance() : cmInstance;
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		ChunkFilter getChunkFilter() {
+			try {
+				return cfInstance == null ? cfInstance = cf.newInstance() : cfInstance;
 			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 			}

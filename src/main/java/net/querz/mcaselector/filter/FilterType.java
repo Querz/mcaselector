@@ -7,7 +7,8 @@ public enum FilterType {
 	INHABITED_TIME("InhabitedTime", InhabitedTimeFilter.class),
 	X_POS("xPos", XPosFilter.class),
 	Z_POS("zPos", ZPosFilter.class),
-	LAST_UPDATE("LastUpdate", LastUpdateFilter.class);
+	LAST_UPDATE("LastUpdate", LastUpdateFilter.class),
+	BLOCK("Block", BlockFilter.class);
 
 	private String string;
 	private Class<? extends Filter> clazz;

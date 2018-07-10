@@ -5,18 +5,18 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import net.querz.mcaselector.filter.Comparator;
 import net.querz.mcaselector.filter.Filter;
-import net.querz.mcaselector.filter.NumberFilter;
+import net.querz.mcaselector.filter.TextFilter;
 
-public class NumberFilterBox extends FilterBox {
+public class TextFilterBox extends FilterBox {
 
 	private TextField input = new TextField();
 	private ComboBox<Comparator> comparator = new ComboBox<>();
 
-	public NumberFilterBox(FilterBox parent, NumberFilter filter, boolean root) {
+	public TextFilterBox(FilterBox parent, TextFilter filter, boolean root) {
 		super(parent, filter, root);
-		getStyleClass().add("number-filter-box");
+		getStyleClass().add("text-filter-box");
 		input.setPromptText(filter.getFormatText());
-		input.setText(filter.getFilterValue().toString());
+		input.setText(filter.getRawValue());
 		input.textProperty().addListener((a, b, c) -> onTextInput(filter, c));
 		input.setAlignment(Pos.TOP_CENTER);
 
@@ -38,18 +38,19 @@ public class NumberFilterBox extends FilterBox {
 	}
 
 	private void onTextInput(Filter filter, String newValue) {
+		System.out.println("input");
 		filter.setFilterValue(newValue);
 		if (!filter.isValid()) {
-			if (!getStyleClass().contains("number-filter-box-invalid")) {
-				getStyleClass().add("number-filter-box-invalid");
+			if (!getStyleClass().contains("text-filter-box-invalid")) {
+				getStyleClass().add("text-filter-box-invalid");
 			}
 		} else {
-			getStyleClass().remove("number-filter-box-invalid");
+			getStyleClass().remove("text-filter-box-invalid");
 		}
 		callUpdateEvent();
 	}
 
-	private void onComparator(NumberFilter filter) {
+	private void onComparator(TextFilter filter) {
 		filter.setComparator(comparator.getSelectionModel().getSelectedItem());
 		callUpdateEvent();
 	}

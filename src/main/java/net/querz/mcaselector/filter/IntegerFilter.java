@@ -7,6 +7,7 @@ public abstract class IntegerFilter extends NumberFilter<Integer> {
 	public IntegerFilter(FilterType type, Operator operator, Comparator comparator, int value) {
 		super(type, operator, comparator);
 		this.value = value;
+		setRawValue(value + "");
 	}
 
 	@Override
@@ -28,6 +29,7 @@ public abstract class IntegerFilter extends NumberFilter<Integer> {
 			try {
 				value = Integer.parseInt(raw);
 				setValid(true);
+				setRawValue(raw);
 			} catch (NumberFormatException ex) {
 				value = 0;
 				setValid(false);
