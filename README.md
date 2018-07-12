@@ -56,7 +56,7 @@ The MCA Selector currently supports the following Minecraft versions:
 
 ## Download and installation
 
-[**Download Version 1.0**](https://github.com/Querz/mcaselector/releases/download/1.0/mcaselector-1.0.jar)
+[**Download Version 1.1**](https://github.com/Querz/mcaselector/releases/download/1.1/mcaselector-1.1.jar)
 
 "Requirements":
 * JRE 8+, you can get it from [HERE](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
