@@ -2,8 +2,6 @@ package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.mcaselector.version.anvil112.Anvil112ColorMapping;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,11 +13,11 @@ import java.util.Set;
 
 public class BlockFilter extends TextFilter<List<String>> {
 
-	private static final Set<String> validNames = new HashSet<>();
+	private static Set<String> validNames = new HashSet<>();
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(BlockFilter.class.getClass().getResourceAsStream("/block-names.csv")))) {
+				new InputStreamReader(BlockFilter.class.getClassLoader().getResourceAsStream("block-names.csv")))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				validNames.add(line);

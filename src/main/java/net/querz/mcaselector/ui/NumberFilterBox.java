@@ -16,7 +16,6 @@ public class NumberFilterBox extends FilterBox {
 		super(parent, filter, root);
 		getStyleClass().add("number-filter-box");
 		input.setPromptText(filter.getFormatText());
-		input.setText(filter.getFilterValue().toString());
 		input.textProperty().addListener((a, b, c) -> onTextInput(filter, c));
 		input.setAlignment(Pos.TOP_CENTER);
 

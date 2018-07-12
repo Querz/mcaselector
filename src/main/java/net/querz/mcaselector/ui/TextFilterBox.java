@@ -16,7 +16,6 @@ public class TextFilterBox extends FilterBox {
 		super(parent, filter, root);
 		getStyleClass().add("text-filter-box");
 		input.setPromptText(filter.getFormatText());
-		input.setText(filter.getRawValue());
 		input.textProperty().addListener((a, b, c) -> onTextInput(filter, c));
 		input.setAlignment(Pos.TOP_CENTER);
 
@@ -38,7 +37,6 @@ public class TextFilterBox extends FilterBox {
 	}
 
 	private void onTextInput(Filter filter, String newValue) {
-		System.out.println("input");
 		filter.setFilterValue(newValue);
 		if (!filter.isValid()) {
 			if (!getStyleClass().contains("text-filter-box-invalid")) {

@@ -20,7 +20,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	public Anvil112ChunkFilter() {
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Anvil112ColorMapping.class.getClass().getResourceAsStream("/block-id-mapping.csv")))) {
+				new InputStreamReader(Anvil112ChunkFilter.class.getClassLoader().getResourceAsStream("block-id-mapping.csv")))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				line = line.trim();

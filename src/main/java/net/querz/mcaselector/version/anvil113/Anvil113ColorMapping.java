@@ -19,7 +19,7 @@ public class Anvil113ColorMapping implements ColorMapping {
 	public Anvil113ColorMapping() {
 		// note_block:pitch=1,powered=true,instrument=flute;01ab9f
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Anvil112ColorMapping.class.getClass().getResourceAsStream("/colors113.csv")))) {
+				new InputStreamReader(Anvil113ColorMapping.class.getClassLoader().getResourceAsStream("colors113.csv")))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				String[] elements = line.split(";");
