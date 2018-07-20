@@ -8,8 +8,8 @@ public enum Comparator {
 	LT(">"),
 	LEQ(">="),
 	SEQ("<="),
-	CONTAINS("contains"),
-	CONTAINS_NOT("does not contain");
+	CONTAINS("\u2286"),
+	CONTAINS_NOT("!\u2286");
 
 	private String string;
 
