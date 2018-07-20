@@ -11,13 +11,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class BlockFilter extends TextFilter<List<String>> {
+public class PaletteFilter extends TextFilter<List<String>> {
 
 	private static Set<String> validNames = new HashSet<>();
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(BlockFilter.class.getClassLoader().getResourceAsStream("block-names.csv")))) {
+				new InputStreamReader(PaletteFilter.class.getClassLoader().getResourceAsStream("block-names.csv")))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				validNames.add(line);
@@ -27,12 +27,12 @@ public class BlockFilter extends TextFilter<List<String>> {
 		}
 	}
 
-	public BlockFilter() {
+	public PaletteFilter() {
 		this(Operator.AND, Comparator.CONTAINS, null);
 	}
 
-	public BlockFilter(Operator operator, Comparator comparator, List<String> value) {
-		super(FilterType.BLOCK, operator, comparator, value);
+	public PaletteFilter(Operator operator, Comparator comparator, List<String> value) {
+		super(FilterType.PALETTE, operator, comparator, value);
 		setRawValue(String.join(",", value == null ? new ArrayList<>(0) : value));
 	}
 
@@ -83,6 +83,6 @@ public class BlockFilter extends TextFilter<List<String>> {
 
 	@Override
 	public String toString() {
-		return "Blocks " + getComparator() + " " + (getFilterValue() != null ? Arrays.toString(getFilterValue().toArray()) : "null");
+		return "Palette " + getComparator() + " " + (getFilterValue() != null ? Arrays.toString(getFilterValue().toArray()) : "null");
 	}
 }

@@ -133,7 +133,7 @@ public abstract class FilterBox extends BorderPane {
 			FilterBox newBox;
 			if (type == FilterType.GROUP) {
 				newBox = new GroupFilterBox(this.parent, (GroupFilter) newFilter, root);
-			} else if (type == FilterType.BLOCK) {
+			} else if (type == FilterType.PALETTE) {
 				newBox = new TextFilterBox(this.parent, (TextFilter) newFilter, root);
 			} else {
 				newBox = new NumberFilterBox(this.parent, (NumberFilter) newFilter, root);

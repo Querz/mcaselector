@@ -8,7 +8,7 @@ public enum FilterType {
 	X_POS("xPos", XPosFilter.class),
 	Z_POS("zPos", ZPosFilter.class),
 	LAST_UPDATE("LastUpdate", LastUpdateFilter.class),
-	BLOCK("Block", BlockFilter.class);
+	PALETTE("Palette", PaletteFilter.class);
 
 	private String string;
 	private Class<? extends Filter> clazz;
