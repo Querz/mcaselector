@@ -13,6 +13,9 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, PixelWriter writer) {
 		ListTag sections = (ListTag) ((CompoundTag) root.get("Level")).get("Sections");
+		if ("empty".equals(((CompoundTag) root.get("Level")).getString("Status"))) {
+			return;
+		}
 		sections.getValue().sort(this::filterSections);
 
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
