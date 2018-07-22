@@ -32,7 +32,7 @@ Because the conditions use internal values used by minecraft, they are not very 
 | LastUpdate | int | The time a chunk was last updated in seconds since 1970-01-01. Also accepts a timestamp in the ```yyyy-MM-dd HH-mm-ss```-format such as ```2018-01-02 15:03:04```. If the time is omitted, it will default to ```00:00:00```. |
 | xPos | int | The location of the chunk on the x-axis in chunk coordinates. |
 | zPos | int | The location of the chunk on the z-axis in chunk coordinates. |
-| Blocks | String | A list of comma (,) separated 1.13 block names. The block names will be converted to block ids for chunks with DataVersion 1343 or below. The validation of block names can be skipped by writing them in double quotes ("). Example: ```sand,"new_block",gravel```.|
+| Palette | String | A list of comma (,) separated 1.13 block names. The block names will be converted to block ids for chunks with DataVersion 1343 or below. The validation of block names can be skipped by writing them in double quotes ("). Example: ```sand,"new_block",gravel```.|
 
 **Notice**
 Running the query will check the ```.mca```-file's name first if the query would even apply to any chunk in this file using the xPos and zPos conditions, as long as the query is built in a way that allows doing this.
@@ -63,4 +63,4 @@ The MCA Selector currently supports the following Minecraft versions:
 * A computer
 * A brain
 
-If ```.jar``` files are associated with java on your computer, it should launch by simply double-clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try ```java -jar mcaselector-1.0.jar``` from your console. If this still doesn't work, apply "A brain" that you providently helt ready after having read the "Requirements" section carefully.
+If ```.jar``` files are associated with java on your computer, it should launch by simply double-clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try ```java -jar mcaselector-1.1.jar``` from your console. If this still doesn't work, apply "A brain" that you providently helt ready after having read the "Requirements" section carefully.
