@@ -6,23 +6,22 @@ import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
-import net.querz.nbt.Tag;
 
 public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, PixelWriter writer) {
-		ListTag sections = (ListTag) ((CompoundTag) root.get("Level")).get("Sections");
+		ListTag<CompoundTag> sections = root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList();
 		if ("empty".equals(((CompoundTag) root.get("Level")).getString("Status"))) {
 			return;
 		}
-		sections.getValue().sort(this::filterSections);
+		sections.sort(this::filterSections);
 
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
 
-				byte[] biomes = ((CompoundTag) root.get("Level")).getBytes("Biomes");
+				byte[] biomes = root.getCompoundTag("Level").getByteArray("Biomes");
 				int biome = -1;
 				if (biomes.length != 0) {
 					biome = biomes[getIndex(cx, 0, cz)];
@@ -31,17 +30,17 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 				//loop over sections
 				for (int i = 0; i < sections.size(); i++) {
 
-					long[] blockStates = ((CompoundTag) sections.get(i)).getLongs("BlockStates");
-					ListTag palette = (ListTag) ((CompoundTag) sections.get(i)).get("Palette");
+					long[] blockStates = sections.get(i).getLongArray("BlockStates");
+					ListTag<CompoundTag> palette = sections.get(i).getListTag("Palette").asCompoundTagList();
 
-					int sectionHeight = ((CompoundTag) sections.get(i)).getByte("Y") * 16;
+					int sectionHeight = sections.get(i).getByte("Y") * 16;
 
 					int bits = blockStates.length / 64;
 					int clean = ((int) Math.pow(2, bits) - 1);
 
 					for (int cy = Tile.CHUNK_SIZE - 1; cy >= 0; cy--) {
 						int paletteIndex = getPaletteIndex(getIndex(cx, cy, cz), blockStates, bits, clean);
-						CompoundTag blockData = palette.getCompoundTag(paletteIndex);
+						CompoundTag blockData = palette.get(paletteIndex);
 
 						//ignore bedrock and netherrack until 75
 						if (isIgnoredInNether(biome, blockData, sectionHeight + cy)) {
@@ -81,7 +80,7 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 			case "minecraft:cave_air":
 			case "minecraft:barrier":
 			case "minecraft:structure_void":
-				return blockData.getValue().size() == 1;
+				return blockData.size() == 1;
 		}
 		return false;
 	}
@@ -111,11 +110,7 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 		}
 	}
 
-	private int filterSections(Tag sectionA, Tag sectionB) {
-		if (sectionA instanceof CompoundTag && sectionB instanceof CompoundTag) {
-			//There are no sections with the same Y value
-			return ((CompoundTag) sectionA).getByte("Y") > ((CompoundTag) sectionB).getByte("Y") ? -1 : 1;
-		}
-		throw new IllegalArgumentException("Can't compare non-CompoundTags");
+	private int filterSections(CompoundTag sectionA, CompoundTag sectionB) {
+		return sectionA.getByte("Y") > sectionB.getByte("Y") ? -1 : 1;
 	}
 }

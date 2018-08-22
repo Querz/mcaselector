@@ -7,10 +7,13 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 
 group 'net.querz.mcaselector'
-version '1.1.1'
-
+version '1.2'
 
 sourceCompatibility = 1.8
+
+idea {
+	module.downloadSources = true
+}
 
 repositories {
 	mavenCentral()
@@ -20,8 +23,8 @@ repositories {
 }
 
 dependencies {
-	compile 'com.github.Querz:NBT:1.0'
-	shadow 'com.github.Querz:NBT:1.0'
+	compile 'com.github.Querz:NBT:2.2'
+	shadow 'com.github.Querz:NBT:2.2'
 	testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 

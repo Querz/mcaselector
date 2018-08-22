@@ -3,7 +3,7 @@ package net.querz.mcaselector.io;
 import javafx.scene.image.PixelWriter;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
-import net.querz.nbt.NBTInputStream;
+import net.querz.nbt.IntTag;
 import net.querz.nbt.Tag;
 import java.io.*;
 import java.util.zip.GZIPInputStream;
@@ -38,21 +38,20 @@ public class MCAChunkData {
 	public void loadData(RandomAccessFile raf) throws Exception {
 		//offset + length of length (4 bytes) + length of compression type (1 byte)
 		raf.seek(offset + 5);
-		NBTInputStream nbtIn = null;
-		Tag tag;
+		DataInputStream nbtIn = null;
 
 		switch (compressionType) {
 		case GZIP:
-			nbtIn = new NBTInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(raf.getFD())), sectors * MCAFile.SECTION_SIZE));
+			nbtIn = new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(raf.getFD())), sectors * MCAFile.SECTION_SIZE));
 			break;
 		case ZLIB:
-			nbtIn = new NBTInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(raf.getFD())), sectors * MCAFile.SECTION_SIZE));
+			nbtIn = new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(raf.getFD())), sectors * MCAFile.SECTION_SIZE));
 			break;
 		case NONE:
 			data = null;
 			return;
 		}
-		tag = nbtIn.readTag();
+		Tag tag = Tag.deserialize(nbtIn, 0);
 
 		if (tag instanceof CompoundTag) {
 			data = (CompoundTag) tag;
@@ -63,13 +62,18 @@ public class MCAChunkData {
 
 	public void drawImage(int x, int z, PixelWriter writer) {
 		if (data != null) {
-			int dataVersion = data.getInt("DataVersion");
-			VersionController.getChunkDataProcessor(dataVersion).drawChunk(
-					data,
-					VersionController.getColorMapping(dataVersion),
-					x, z,
-					writer
-			);
+			IntTag dataVersion = data.getIntTag("DataVersion");
+			int dv = dataVersion == null ? 0 : dataVersion.asInt();
+			try {
+				VersionController.getChunkDataProcessor(dv).drawChunk(
+						data,
+						VersionController.getColorMapping(dv),
+						x, z,
+						writer
+				);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 

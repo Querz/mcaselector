@@ -261,6 +261,10 @@ public class Helper {
 		});
 	}
 
+	public static void setLightPopulated(TileMap tileMap, Stage primaryStage) {
+
+	}
+
 	public static String byteToBinaryString(byte b) {
 		StringBuilder s = new StringBuilder(Integer.toBinaryString(b & 0xFF));
 		for (int i = s.length(); i < 8; i++) {

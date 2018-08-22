@@ -4,7 +4,6 @@ import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
-import net.querz.nbt.Tag;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -76,7 +75,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchBlockNames(CompoundTag data, String... names) {
-		ListTag sections = (ListTag) ((CompoundTag) data.get("Level")).get("Sections");
+		ListTag<CompoundTag> sections = data.getCompoundTag("Level").getListTag("Sections").asCompoundTagList();
 		int c = 0;
 		nameLoop:
 		for (String name : names) {
@@ -85,9 +84,9 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 				Debug.dump("No mapping found for " + name);
 				continue;
 			}
-			for (Tag t : sections.getValue()) {
-				byte[] blocks = ((CompoundTag) t).getBytes("Blocks");
-				byte[] blockData = ((CompoundTag) t).getBytes("Data");
+			for (CompoundTag t : sections) {
+				byte[] blocks = t.getByteArray("Blocks");
+				byte[] blockData = t.getByteArray("Data");
 
 				for (int i = 0; i < blocks.length; i++) {
 					short b = (short) (blocks[i] & 0xFF);

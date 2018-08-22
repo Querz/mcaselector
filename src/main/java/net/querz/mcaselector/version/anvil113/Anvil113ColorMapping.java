@@ -2,7 +2,6 @@ package net.querz.mcaselector.version.anvil113;
 
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.version.anvil112.Anvil112ColorMapping;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.StringTag;
 import net.querz.nbt.Tag;
@@ -66,13 +65,13 @@ public class Anvil113ColorMapping implements ColorMapping {
 		if (value instanceof Integer) {
 			return (int) value;
 		} else if (value instanceof BlockStateMapping) {
-			return ((BlockStateMapping) value).getColor((CompoundTag) ((CompoundTag) o).get("Properties"));
+			return ((BlockStateMapping) value).getColor(((CompoundTag) o).getCompoundTag("Properties"));
 		}
 		return 0x000000;
 	}
 
 	private boolean isWaterlogged(CompoundTag data) {
-		return data.get("Properties") != null && "true".equals(((CompoundTag) data.get("Properties")).getString("waterlogged"));
+		return data.get("Properties") != null && "true".equals(data.getCompoundTag("Properties").getString("waterlogged"));
 	}
 
 	private class BlockStateMapping {
@@ -80,7 +79,7 @@ public class Anvil113ColorMapping implements ColorMapping {
 		private Map<Set<String>, Integer> blockStateMapping = new HashMap<>();
 
 		public int getColor(CompoundTag properties) {
-			for (Map.Entry<String, Tag> property : properties.getValue().entrySet()) {
+			for (Map.Entry<String, Tag> property : properties.entrySet()) {
 				Map<Set<String>, Integer> clone = new HashMap<>(blockStateMapping);
 				for (Map.Entry<Set<String>, Integer> blockState : blockStateMapping.entrySet()) {
 					String value = property.getKey() + "=" + ((StringTag) property.getValue()).getValue();
