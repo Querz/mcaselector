@@ -3,12 +3,16 @@ package net.querz.mcaselector.io;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.filter.FilterData;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Point2i;
+import net.querz.nbt.CompoundTag;
+
 import java.io.*;
+import java.util.List;
 import java.util.Set;
 
 public class MCAFile {
@@ -84,6 +88,59 @@ public class MCAFile {
 				}
 			}
 		}
+	}
+
+	//returns the modified file
+	public File applyFieldChanges(List<Field> fields, boolean force, RandomAccessFile raf) throws Exception {
+		File tmpFile = File.createTempFile(file.getName(), null, null);
+
+		int globalOffset = 2;
+
+		try (RandomAccessFile rafTmp = new RandomAccessFile(tmpFile, "rw")) {
+			int lastWritten = 0;
+
+			for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
+				for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
+					int index = cz * Tile.SIZE_IN_CHUNKS + cx;
+
+					MCAChunkData data = getChunkData(index);
+					data.readHeader(raf);
+
+					if (data.isEmpty()) {
+						continue;
+					}
+
+					data.loadData(raf);
+					data.changeData(fields, force);
+					rafTmp.seek(globalOffset * SECTION_SIZE);
+					lastWritten = data.saveData(rafTmp);
+
+					int sectors = (lastWritten >> 12) + 1;
+
+					System.out.println("wrote " + sectors + " to file (" + lastWritten + " bytes) for index " + index);
+
+					rafTmp.seek(INDEX_HEADER_LOCATION + index * 4);
+					rafTmp.writeByte(globalOffset >>> 16);
+					rafTmp.writeByte(globalOffset >> 8 & 0xFF);
+					rafTmp.writeByte(globalOffset & 0xFF);
+					rafTmp.writeByte(sectors);
+
+					//write timestamp to tmp file
+					rafTmp.seek(TIMESTAMP_HEADER_LOCATION + index * 4);
+					rafTmp.writeInt(timestamps[index]);
+
+					globalOffset += sectors;
+				}
+			}
+
+			//padding
+			if (lastWritten % SECTION_SIZE != 0) {
+				rafTmp.seek(globalOffset * SECTION_SIZE - 1);
+				rafTmp.write(0);
+			}
+		}
+
+		return tmpFile;
 	}
 
 	//will rearrange the chunk data in the mca file to take up as few space as possible

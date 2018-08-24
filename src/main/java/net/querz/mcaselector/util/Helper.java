@@ -6,9 +6,12 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.querz.mcaselector.*;
+import net.querz.mcaselector.changer.Field;
+import net.querz.mcaselector.io.FieldChanger;
 import net.querz.mcaselector.io.MCALoader;
 import net.querz.mcaselector.io.SelectionExporter;
 import net.querz.mcaselector.tiles.TileMap;
+import net.querz.mcaselector.ui.ChangeNBTDialog;
 import net.querz.mcaselector.ui.DeleteConfirmationDialog;
 import net.querz.mcaselector.ui.FilterChunksDialog;
 import net.querz.mcaselector.ui.GotoDialog;
@@ -24,6 +27,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -261,8 +265,12 @@ public class Helper {
 		});
 	}
 
-	public static void setLightPopulated(TileMap tileMap, Stage primaryStage) {
-
+	public static void changeFields(TileMap tileMap, Stage primaryStage) {
+		Optional<ChangeNBTDialog.Result> result = new ChangeNBTDialog(primaryStage).showAndWait();
+		result.ifPresent(r -> {
+			new ProgressDialog("Changing nbt data...", primaryStage)
+					.showProgressBar(t -> FieldChanger.changeNBTFields(r.getFields(), r.isForce(), t));
+		});
 	}
 
 	public static String byteToBinaryString(byte b) {

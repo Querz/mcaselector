@@ -77,7 +77,6 @@ public class SelectionExporter {
 		return chunks;
 	}
 
-	//TODO: progressChannel
 	public static void exportSelectedChunks(Map<Point2i, Set<Point2i>> chunks, File dir, ProgressTask progressChannel) {
 		double filesCount = chunks.size();
 		int i = 0;

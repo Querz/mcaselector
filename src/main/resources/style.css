@@ -40,6 +40,10 @@
 	-color-menu-separator: #898989;
 	-color-check-menu-item-enabled: #f2f2f2;
 	-color-tilemap-shadow: #000000;
+	-color-field-cell-odd: #46494b;
+	-color-field-cell-even: #3c3f41;
+	-color-field-valid-shadow: #00ff40;
+	-color-field-valid-background: #489d5e;
 }
 
 /*---------- MENU BAR, MENU AND MENU ITEM ----------*/
@@ -103,6 +107,27 @@
 
 .radio-button .radio .dot {
 	-fx-padding: 3;
+	-fx-mark-color: -color-radio-button-dot;
+}
+
+/*---------- CHECKBOX ----------*/
+
+.check-box {
+	-fx-padding: 4 0 -3 0;
+	-fx-text-fill: -color-text-light;
+}
+
+.check-box .box {
+	-fx-background-color: -color-radio-button-background;
+	-fx-border-color: -color-radio-button-circle;
+	-fx-border-radius: 2;
+	-fx-border-width: 2;
+	-fx-border-insets: 3;
+	-fx-background-insets: 3;
+}
+
+.check-box .box .mark {
+	-fx-padding: 5;
 	-fx-mark-color: -color-radio-button-dot;
 }
 
@@ -388,4 +413,42 @@
 	-fx-border-width: 2 0 2 2;
 	-fx-border-color: -color-dialog-separator;
 	-fx-background-color: -color-dialog-background;
+}
+
+/*---------- NBT Changer ----------*/
+
+.change-nbt-dialog-pane .text-field {
+	-fx-text-fill: -color-text-light;
+}
+
+.change-nbt-dialog-pane .field-view {
+	-fx-background-color: -color-dialog-background;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell {
+	-fx-padding: 2 5 2 5;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell-even {
+	-fx-background-color: -color-field-cell-even;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell-odd {
+	-fx-background-color: -color-field-cell-odd;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell .label {
+	-fx-text-fill: -color-text-light;
+	-fx-pref-width: 130px;
+	-fx-min-width: 70px;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell-valid {
+	-fx-background-color: -color-field-valid-background;
+	-fx-effect: dropshadow(gaussian, -color-field-valid-shadow, 4, 0, 0, 0);
+}
+
+.change-nbt-dialog-pane .change-nbt-change-options {
+	-fx-pref-width: 130px;
+	-fx-min-width: 70px;
 }

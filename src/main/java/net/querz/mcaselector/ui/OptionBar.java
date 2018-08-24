@@ -10,7 +10,7 @@ public class OptionBar extends MenuBar {
 	/*
 	* File		View				Selection					Tools
 	* - Open	- Chunk Grid		- Clear selection			- Filter chunks
-	* - Quit	- Region Grid		- Export selected chunks
+	* - Quit	- Region Grid		- Export selected chunks	- Change fields
 	*			- Goto				- Delete selected chunks
 	*			- Clear cache		- Import selection
 	*			- Clear all cache	- Export selection
@@ -36,6 +36,7 @@ public class OptionBar extends MenuBar {
 	private MenuItem exportSelection = menuItem("Export selection");
 	private MenuItem clearSelectionCache = menuItem("Clear cache");
 	private MenuItem filterChunks = menuItem("Filter chunks");
+	private MenuItem changeFields = menuItem("Change fields");
 
 	private int previousSelectedChunks = 0;
 
@@ -55,7 +56,7 @@ public class OptionBar extends MenuBar {
 				exportChunks, delete, separator(),
 				importSelection, exportSelection, separator(),
 				clearSelectionCache);
-		tools.getItems().addAll(filterChunks);
+		tools.getItems().addAll(filterChunks, changeFields);
 
 		open.setOnAction(e -> Helper.openWorld(tileMap, primaryStage, this));
 		quit.setOnAction(e -> System.exit(0));
@@ -71,6 +72,7 @@ public class OptionBar extends MenuBar {
 		exportSelection.setOnAction(e -> Helper.exportSelection(tileMap, primaryStage));
 		clearSelectionCache.setOnAction(e -> Helper.clearSelectionCache(tileMap));
 		filterChunks.setOnAction(e -> Helper.filterChunks(tileMap, primaryStage));
+		changeFields.setOnAction(e -> Helper.changeFields(tileMap, primaryStage));
 
 		open.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
 		chunkGrid.setAccelerator(KeyCombination.keyCombination("Ctrl+R"));
@@ -101,6 +103,7 @@ public class OptionBar extends MenuBar {
 
 	public void setWorldDependentMenuItemsEnabled(boolean enabled) {
 		filterChunks.setDisable(!enabled);
+		changeFields.setDisable(!enabled);
 	}
 
 	private void setSelectionDependentMenuItemsEnabled(boolean enabled) {

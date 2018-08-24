@@ -1,12 +1,17 @@
 package net.querz.mcaselector.io;
 
 import javafx.scene.image.PixelWriter;
+import net.querz.mcaselector.changer.Field;
+import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.IntTag;
 import net.querz.nbt.Tag;
 import java.io.*;
+import java.util.List;
+import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import java.util.zip.InflaterInputStream;
 
 public class MCAChunkData {
@@ -60,14 +65,58 @@ public class MCAChunkData {
 		}
 	}
 
+	//saves to offset provided by raf, because it might be different when data changed
+	//returns the number of bytes that were written to the file
+	public int saveData(RandomAccessFile raf) throws Exception {
+		DataOutputStream nbtOut;
+
+		ByteArrayOutputStream baos;
+
+		switch (compressionType) {
+		case GZIP:
+			nbtOut = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(baos = new ByteArrayOutputStream()), sectors * MCAFile.SECTION_SIZE));
+			break;
+		case ZLIB:
+			nbtOut = new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(baos = new ByteArrayOutputStream()), sectors * MCAFile.SECTION_SIZE));
+			break;
+		default:
+			return 0;
+		}
+
+		data.serialize(nbtOut, 0);
+		nbtOut.close();
+
+		byte[] rawData = baos.toByteArray();
+
+		raf.writeInt(rawData.length);
+		raf.writeByte(compressionType.getByte());
+		raf.write(rawData);
+
+		return rawData.length + 5;
+	}
+
+	public void changeData(List<Field> fields, boolean force) {
+		for (Field field : fields) {
+			try {
+				if (force) {
+					field.force(data);
+				} else {
+					field.change(data);
+				}
+			} catch (Exception ex) {
+				Debug.dump("error trying to update field: " + ex.getMessage());
+				ex.printStackTrace();
+			}
+		}
+	}
+
 	public void drawImage(int x, int z, PixelWriter writer) {
 		if (data != null) {
-			IntTag dataVersion = data.getIntTag("DataVersion");
-			int dv = dataVersion == null ? 0 : dataVersion.asInt();
+			int dataVersion = data.getInt("DataVersion");
 			try {
-				VersionController.getChunkDataProcessor(dv).drawChunk(
+				VersionController.getChunkDataProcessor(dataVersion).drawChunk(
 						data,
-						VersionController.getColorMapping(dv),
+						VersionController.getColorMapping(dataVersion),
 						x, z,
 						writer
 				);
