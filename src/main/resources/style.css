@@ -448,7 +448,7 @@
 	-fx-effect: dropshadow(gaussian, -color-field-valid-shadow, 4, 0, 0, 0);
 }
 
-.change-nbt-dialog-pane .change-nbt-change-options {
-	-fx-pref-width: 130px;
-	-fx-min-width: 70px;
+.change-nbt-dialog-pane .scroll-pane {
+	-fx-pref-height: inherit;
+	-fx-max-height: 300;
 }

@@ -5,9 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum FieldType {
+
 	LIGHT_POPULATED("LightPopulated", LightPopulatedField.class),
 	DATA_VERSION("DataVersion", DataVersionField.class),
-	INHABITED_TIME("InhabitedTime", InhabitedTimeField.class);
+	INHABITED_TIME("InhabitedTime", InhabitedTimeField.class),
+	LAST_UPDATE("LastUpdate", LastUpdateField.class),
+	STATUS("Status", StatusField.class);
 
 	private String name;
 	private Class<? extends Field> clazz;

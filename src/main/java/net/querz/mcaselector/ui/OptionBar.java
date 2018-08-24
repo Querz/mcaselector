@@ -87,6 +87,7 @@ public class OptionBar extends MenuBar {
 		exportSelection.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
 		clearSelectionCache.setAccelerator(KeyCombination.keyCombination("Ctrl+J"));
 		filterChunks.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
+		changeFields.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
 
 		setSelectionDependentMenuItemsEnabled(false);
 		setWorldDependentMenuItemsEnabled(false);
