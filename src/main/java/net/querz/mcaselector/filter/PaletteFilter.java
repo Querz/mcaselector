@@ -78,7 +78,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 
 	@Override
 	public String toString(FilterData data) {
-		return "";
+		return "PaletteFilter " + getComparator() + " <data>";
 	}
 
 	@Override

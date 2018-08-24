@@ -15,6 +15,7 @@ import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.filter.NumberFilter;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.filter.TextFilter;
+import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import java.util.function.Consumer;
 
@@ -130,13 +131,19 @@ public abstract class FilterBox extends BorderPane {
 			parent.getFilterValue().remove(filter);
 
 			//remove this filter from view and add new filterbox
-			FilterBox newBox;
-			if (type == FilterType.GROUP) {
+			FilterBox newBox = null;
+			switch (type.getFormat()) {
+			case GROUP:
 				newBox = new GroupFilterBox(this.parent, (GroupFilter) newFilter, root);
-			} else if (type == FilterType.PALETTE) {
+				break;
+			case TEXT:
 				newBox = new TextFilterBox(this.parent, (TextFilter) newFilter, root);
-			} else {
+				break;
+			case NUMBER:
 				newBox = new NumberFilterBox(this.parent, (NumberFilter) newFilter, root);
+				break;
+			default:
+				Debug.dump("unknown FilterType Format: " + type.getFormat());
 			}
 
 			int index = ((GroupFilterBox) this.parent).filters.getChildren().indexOf(this);
