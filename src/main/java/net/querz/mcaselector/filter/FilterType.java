@@ -9,7 +9,8 @@ public enum FilterType {
 	Z_POS("zPos", ZPosFilter.class, Format.NUMBER),
 	LAST_UPDATE("LastUpdate", LastUpdateFilter.class, Format.NUMBER),
 	PALETTE("Palette", PaletteFilter.class, Format.TEXT),
-	STATUS("Status", StatusFilter.class, Format.TEXT);
+	STATUS("Status", StatusFilter.class, Format.TEXT),
+	LIGHT_POPULATED("LightPopulated", LightPopulatedFilter.class, Format.NUMBER);
 
 	private String string;
 	private Class<? extends Filter> clazz;
