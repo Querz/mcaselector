@@ -5,7 +5,6 @@ import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Timer;
-
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
@@ -23,8 +22,8 @@ public class FieldChanger {
 		progressChannel.setMax(files.length);
 		progressChannel.updateProgress(files[0].getName(), 0);
 
-		for (int i = 0; i < files.length; i++) {
-			MCAFilePipe.addJob(new MCAFieldChangeLoadJob(files[i], fields, force, i, progressChannel));
+		for (File file : files) {
+			MCAFilePipe.addJob(new MCAFieldChangeLoadJob(file, fields, force, progressChannel));
 		}
 	}
 
@@ -33,21 +32,19 @@ public class FieldChanger {
 		private ProgressTask progressChannel;
 		private List<Field> fields;
 		private boolean force;
-		private int index;
 
-		public MCAFieldChangeLoadJob(File file, List<Field> fields, boolean force, int index, ProgressTask progressChannel) {
+		MCAFieldChangeLoadJob(File file, List<Field> fields, boolean force, ProgressTask progressChannel) {
 			super(file);
 			this.fields = fields;
 			this.force = force;
 			this.progressChannel = progressChannel;
-			this.index = index;
 		}
 
 		@Override
 		public void execute() {
 			byte[] data = load();
 			if (data != null) {
-				MCAFilePipe.executeProcessData(new MCAFieldChangeProcessJob(getFile(), data, fields, force, index, progressChannel));
+				MCAFilePipe.executeProcessData(new MCAFieldChangeProcessJob(getFile(), data, fields, force, progressChannel));
 			}
 		}
 	}
@@ -57,13 +54,11 @@ public class FieldChanger {
 		private ProgressTask progressChannel;
 		private List<Field> fields;
 		private boolean force;
-		private int index;
 
-		public MCAFieldChangeProcessJob(File file, byte[] data, List<Field> fields, boolean force, int index, ProgressTask progressChannel) {
+		MCAFieldChangeProcessJob(File file, byte[] data, List<Field> fields, boolean force, ProgressTask progressChannel) {
 			super(file, data);
 			this.fields = fields;
 			this.force = force;
-			this.index = index;
 			this.progressChannel = progressChannel;
 		}
 
@@ -73,19 +68,17 @@ public class FieldChanger {
 			Timer t = new Timer();
 			MCAFile mca = MCAFile.readAll(getFile(), new ByteArrayPointer(getData()));
 			mca.applyFieldChanges(fields, force);
-			MCAFilePipe.executeSaveData(new MCAFieldChangeSaveJob(getFile(), mca, index, progressChannel));
+			MCAFilePipe.executeSaveData(new MCAFieldChangeSaveJob(getFile(), mca, progressChannel));
 			Debug.dumpf("took %s to apply field changes to %s", t, getFile().getName());
 		}
 	}
 
 	public static class MCAFieldChangeSaveJob extends SaveDataJob<MCAFile> {
 
-		private int index;
 		private ProgressTask progressChannel;
 
-		public MCAFieldChangeSaveJob(File file, MCAFile data, int index, ProgressTask progressChannel) {
+		MCAFieldChangeSaveJob(File file, MCAFile data, ProgressTask progressChannel) {
 			super(file, data);
-			this.index = index;
 			this.progressChannel = progressChannel;
 		}
 
