@@ -78,7 +78,7 @@ public class SelectionExporter {
 	}
 
 	public static void exportSelectedChunks(Map<Point2i, Set<Point2i>> chunks, File dir, ProgressTask progressChannel) {
-		double filesCount = chunks.size();
+		int filesCount = chunks.size();
 		int i = 0;
 		for (Map.Entry<Point2i, Set<Point2i>> entry : chunks.entrySet()) {
 			File file = Helper.createMCAFilePath(entry.getKey());
@@ -125,7 +125,7 @@ public class SelectionExporter {
 		if (files == null) {
 			return;
 		}
-		double filesCount = files.length;
+		int filesCount = files.length;
 		for (int i = 0; i < files.length; i++) {
 			File file = files[i];
 

@@ -54,7 +54,7 @@ public class ProgressDialog extends Stage {
 		};
 		progressBar.progressProperty().bind(task.progressProperty());
 		label.textProperty().bind(task.infoProperty());
-		task.setOnSucceeded(e -> close());
+		task.setOnFinish(this::close);
 		Thread thread = new Thread(task);
 		thread.start();
 		showAndWait();

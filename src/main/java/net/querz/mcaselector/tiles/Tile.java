@@ -8,12 +8,15 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.io.MCAFile;
 import net.querz.mcaselector.io.MCALoader;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.util.Timer;
+
 import javax.imageio.ImageIO;
 import java.io.*;
 import java.util.HashSet;
@@ -84,7 +87,7 @@ public class Tile {
 		return loaded;
 	}
 
-	void setLoading(boolean loading) {
+	public void setLoading(boolean loading) {
 		this.loading = loading;
 	}
 
@@ -215,6 +218,18 @@ public class Tile {
 		}
 	}
 
+	public boolean isCached() {
+		return Config.getCacheDir() == null || Helper.createPNGFilePath(Helper.blockToRegion(location)).exists();
+	}
+
+	public File getMCAFile() {
+		return Helper.createMCAFilePath(Helper.blockToRegion(location));
+	}
+
+	public File getCacheFile() {
+		return Helper.createPNGFilePath(Helper.blockToRegion(location));
+	}
+
 	public void loadFromCache(TileMap tileMap) {
 		if (loaded) {
 			Debug.dump("region at " + location + " already loaded");
@@ -245,54 +260,39 @@ public class Tile {
 		Platform.runLater(tileMap::update);
 	}
 
-	public void loadImage(TileMap tileMap) {
+	public Image generateImage(TileMap tileMap, byte[] rawData) {
 		if (loaded) {
 			Debug.dump("region at " + location + " already loaded");
-			return;
+			return image;
 		}
+
+		Timer t = new Timer();
+
 		loading = true;
-		Point2i p = Helper.blockToRegion(location);
-		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/r.%d.%d.png", p.getX(), p.getY());
-		File file = new File(Config.getWorldDir().getAbsolutePath() + "/r." + p.getX() + "." + p.getY() + ".mca");
-		Debug.dump("Generating image for region " + p + " from " + file);
+		File file = getMCAFile();
 
+		ByteArrayPointer ptr = new ByteArrayPointer(rawData);
 
-		if (!file.exists()) {
-			Debug.dump("region file " + file + " does not exist, skipping.");
-			image = null;
-		} else {
-			try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
-
-				MCAFile mcaFile = MCALoader.read(file, raf);
-				if (mcaFile == null) {
-					Debug.error("error reading mca file " + file);
-					//mark as loaded, we won't try to load this again
-					loaded = true;
-					loading = false;
-					return;
-				}
-
-				Image tmp = image = mcaFile.createImage(raf);
-
-				Debug.dump("done generating image from " + file + " updating now");
-				loading = false;
-				loaded = true;
-
-				//show image as fast as possible, even before it was cached
-				Platform.runLater(tileMap::update);
-
-				File cacheFile = new File(res);
-				if (!cacheFile.getParentFile().exists()) {
-					if (!cacheFile.getParentFile().mkdirs()) {
-						Debug.error("failed to create cache directory for " + cacheFile);
-					}
-				}
-				ImageIO.write(SwingFXUtils.fromFXImage(tmp, null), "png", new File(res));
-			} catch (IOException ex) {
-				Debug.error(ex);
-			}
+		MCAFile mcaFile = MCAFile.read(file, ptr);
+		if (mcaFile == null) {
+			Debug.error("error reading mca file " + file);
+			//mark as loaded, we won't try to load this again
+			loading = false;
+			loaded = true;
+			return image;
 		}
-		loaded = true;
+		Debug.dumpf("took %s to read mca file header of %s", t, file.getName());
+
+		t.reset();
+
+		image = mcaFile.createImage(ptr);
 		loading = false;
+		loaded = true;
+
+		Platform.runLater(tileMap::update);
+
+		Debug.dumpf("took %s to generate image of %s", t, file.getName());
+
+		return image;
 	}
 }

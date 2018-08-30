@@ -4,6 +4,8 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.util.Timer;
+
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
@@ -14,44 +16,105 @@ public class FieldChanger {
 
 	public static void changeNBTFields(List<Field> fields, boolean force, ProgressTask progressChannel) {
 		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches("^r\\.-?\\d+\\.-?\\d+\\.mca$"));
-		if (files == null) {
+		if (files == null || files.length == 0) {
 			return;
 		}
-		double filesCount = files.length;
+
+		progressChannel.setMax(files.length);
+		progressChannel.updateProgress(files[0].getName(), 0);
+
 		for (int i = 0; i < files.length; i++) {
-			File file = files[i];
+			MCAFilePipe.addJob(new MCAFieldChangeLoadJob(files[i], fields, force, i, progressChannel));
+		}
+	}
 
-			progressChannel.updateProgress(file.getName(), i, filesCount);
+	public static class MCAFieldChangeLoadJob extends LoadDataJob {
 
+		private ProgressTask progressChannel;
+		private List<Field> fields;
+		private boolean force;
+		private int index;
 
-			MCAFile mcaFile;
+		public MCAFieldChangeLoadJob(File file, List<Field> fields, boolean force, int index, ProgressTask progressChannel) {
+			super(file);
+			this.fields = fields;
+			this.force = force;
+			this.progressChannel = progressChannel;
+			this.index = index;
+		}
 
-			try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-				mcaFile = MCALoader.read(file, raf);
+		@Override
+		public void execute() {
+			byte[] data = load();
+			if (data != null) {
+				MCAFilePipe.executeProcessData(new MCAFieldChangeProcessJob(getFile(), data, fields, force, index, progressChannel));
+			}
+		}
+	}
 
-				if (mcaFile == null) {
-					Debug.error("error reading " + file + ", skipping");
-					return;
+	public static class MCAFieldChangeProcessJob extends ProcessDataJob {
+
+		private ProgressTask progressChannel;
+		private List<Field> fields;
+		private boolean force;
+		private int index;
+
+		public MCAFieldChangeProcessJob(File file, byte[] data, List<Field> fields, boolean force, int index, ProgressTask progressChannel) {
+			super(file, data);
+			this.fields = fields;
+			this.force = force;
+			this.index = index;
+			this.progressChannel = progressChannel;
+		}
+
+		@Override
+		public void execute() {
+			//load MCAFile
+			Timer t = new Timer();
+			MCAFile mca = MCAFile.readAll(getFile(), new ByteArrayPointer(getData()));
+			mca.applyFieldChanges(fields, force);
+			MCAFilePipe.executeSaveData(new MCAFieldChangeSaveJob(getFile(), mca, index, progressChannel));
+			Debug.dumpf("took %s to apply field changes to %s", t, getFile().getName());
+		}
+	}
+
+	public static class MCAFieldChangeSaveJob extends SaveDataJob<MCAFile> {
+
+		private int index;
+		private ProgressTask progressChannel;
+
+		public MCAFieldChangeSaveJob(File file, MCAFile data, int index, ProgressTask progressChannel) {
+			super(file, data);
+			this.index = index;
+			this.progressChannel = progressChannel;
+		}
+
+		@Override
+		public void execute() {
+			Timer t = new Timer();
+			try {
+				File tmpFile = File.createTempFile(getFile().getName(), null, null);
+
+				boolean empty;
+
+				try (RandomAccessFile raf = new RandomAccessFile(tmpFile, "rw")) {
+					empty = !getData().saveAll(raf);
 				}
 
-				File tmpFile = mcaFile.applyFieldChanges(fields, force, raf);
-				raf.close();
-
-				//delete region file if it's empty, otherwise replace it with tmpFile
-				if (tmpFile == null) {
-					if (file.delete()) {
-						Debug.dump("deleted empty region file " + file);
+				if (empty) {
+					if (getFile().delete()) {
+						Debug.dumpf("deleted empty region file %s", getFile().getAbsolutePath());
 					} else {
-						Debug.dump("could not delete empty region file " + file);
+						Debug.dumpf("could not delete empty region file %s", getFile().getAbsolutePath());
 					}
 				} else {
-					Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+					Files.move(tmpFile.toPath(), getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
 				}
-
 			} catch (Exception ex) {
 				Debug.error(ex);
 			}
+			progressChannel.incrementProgress(getFile().getName());
+			Debug.dumpf("took %s to save data to %s", t, getFile().getName());
 		}
-		progressChannel.updateProgress("Done", 1, filesCount);
 	}
 }

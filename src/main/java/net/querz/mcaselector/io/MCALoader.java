@@ -19,10 +19,10 @@ public class MCALoader {
 
 	private MCALoader() {}
 
-	public static MCAFile read(File file, RandomAccessFile raf) {
+	public static MCAFile read(File file, ByteArrayPointer ptr) {
 		try {
 			MCAFile mcaFile = new MCAFile(file);
-			mcaFile.read(raf);
+			mcaFile.readHeader(ptr);
 			return mcaFile;
 		} catch (Exception ex) {
 			Debug.error(ex);
@@ -35,7 +35,7 @@ public class MCALoader {
 	}
 
 	public static void deleteChunks(Map<Point2i, Set<Point2i>> chunksToBeDeleted, ProgressTask progressChannel, File dir, boolean backup) {
-		double regionCount = chunksToBeDeleted.size();
+		int regionCount = chunksToBeDeleted.size();
 		int index = -1;
 		for (Map.Entry<Point2i, Set<Point2i>> entry : chunksToBeDeleted.entrySet()) {
 			index++;
@@ -60,7 +60,7 @@ public class MCALoader {
 				MCAFile mcaFile = null;
 
 				try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-					mcaFile = MCALoader.read(new File(dir, Helper.createMCAFileName(entry.getKey())), raf);
+					mcaFile = MCALoader.read(new File(dir, Helper.createMCAFileName(entry.getKey())), new ByteArrayPointer(null));
 
 					if (mcaFile == null) {
 						Debug.error("error reading " + file + ", skipping");
@@ -101,7 +101,7 @@ public class MCALoader {
 		if (files == null) {
 			return;
 		}
-		double filesCount = files.length;
+		int filesCount = files.length;
 		for (int i = 0; i < files.length; i++) {
 			File file = files[i];
 
@@ -136,7 +136,7 @@ public class MCALoader {
 		MCAFile mcaFile = null;
 
 		try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-			mcaFile = MCALoader.read(file, raf);
+			mcaFile = MCALoader.read(file, new ByteArrayPointer(null));
 
 			if (mcaFile == null) {
 				Debug.error("error reading " + file + ", skipping");

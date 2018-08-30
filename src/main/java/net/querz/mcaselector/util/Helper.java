@@ -267,10 +267,8 @@ public class Helper {
 
 	public static void changeFields(TileMap tileMap, Stage primaryStage) {
 		Optional<ChangeNBTDialog.Result> result = new ChangeNBTDialog(primaryStage).showAndWait();
-		result.ifPresent(r -> {
-			new ProgressDialog("Changing nbt data...", primaryStage)
-					.showProgressBar(t -> FieldChanger.changeNBTFields(r.getFields(), r.isForce(), t));
-		});
+		result.ifPresent(r -> new ProgressDialog("Changing nbt data...", primaryStage)
+				.showProgressBar(t -> FieldChanger.changeNBTFields(r.getFields(), r.isForce(), t)));
 	}
 
 	public static String byteToBinaryString(byte b) {
