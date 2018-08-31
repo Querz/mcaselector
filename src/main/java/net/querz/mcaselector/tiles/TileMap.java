@@ -3,7 +3,11 @@ package net.querz.mcaselector.tiles;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.*;
+import net.querz.mcaselector.io.Job;
+import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.RegionImageGenerator;
 import net.querz.mcaselector.ui.Window;
+import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
@@ -41,7 +45,7 @@ public class TileMap extends Canvas {
 	private List<Consumer<TileMap>> updateListener = new ArrayList<>(1);
 	private List<Consumer<TileMap>> hoverListener = new ArrayList<>(1);
 
-	private QueuedRegionImageGenerator qrig;
+//	private QueuedRegionImageGenerator qrig;
 
 	public TileMap(Window window, int width, int height) {
 		super(width, height);
@@ -53,7 +57,8 @@ public class TileMap extends Canvas {
 		this.setOnScroll(this::onScroll);
 		this.setOnMouseMoved(this::onMouseMoved);
 		this.setOnMouseExited(e -> onMouseExited());
-		qrig = new QueuedRegionImageGenerator(QueuedRegionImageGenerator.PROCESSOR_COUNT, this);
+//		qrig = new QueuedRegionImageGenerator(QueuedRegionImageGenerator.PROCESSOR_COUNT, this);
+//		qrig = new QueuedRegionImageGenerator(this);
 		update();
 	}
 
@@ -115,7 +120,22 @@ public class TileMap extends Canvas {
 
 	public void update() {
 		runUpdateListeners();
-		qrig.validateJobs();
+
+		MCAFilePipe.validateLoadDataJobs(j -> {
+			if (j instanceof RegionImageGenerator.MCAImageLoadJob && !((RegionImageGenerator.MCAImageLoadJob) j).getTile().isVisible(this)) {
+				Debug.dumpf("removing %s for tile %s from queue", j.getClass().getSimpleName(), ((RegionImageGenerator.MCAImageLoadJob) j).getTile().getLocation());
+				return true;
+			}
+			return false;
+		});
+
+		MCAFilePipe.validateProcessDataJobs(j -> {
+			if (j instanceof RegionImageGenerator.MCAImageProcessJob && !((RegionImageGenerator.MCAImageProcessJob) j).getTile().isVisible(this)) {
+				Debug.dumpf("removing %s for tile %s from queue", j.getClass().getSimpleName(), ((RegionImageGenerator.MCAImageProcessJob) j).getTile().getLocation());
+				return true;
+			}
+			return false;
+		});
 		for (Tile tile : visibleTiles) {
 			if (!tile.isVisible(this, TILE_VISIBILITY_THRESHOLD)) {
 				visibleTiles.remove(tile);
@@ -331,7 +351,7 @@ public class TileMap extends Canvas {
 			Point2i regionOffset = region.sub((int) offset.getX(), (int) offset.getY());
 
 			if (!tile.isLoaded() && !tile.isLoading()) {
-				qrig.addJob(tile);
+				RegionImageGenerator.generate(tile, this);
 			}
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
 			tile.draw(ctx, scale, p, showRegionGrid, showChunkGrid);

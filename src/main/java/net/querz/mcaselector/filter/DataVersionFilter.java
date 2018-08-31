@@ -23,4 +23,9 @@ public class DataVersionFilter extends IntegerFilter {
 			setFilterNumber(0);
 		}
 	}
+
+	@Override
+	public DataVersionFilter clone() {
+		return new DataVersionFilter(getOperator(), getComparator(), value);
+	}
 }

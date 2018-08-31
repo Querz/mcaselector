@@ -9,8 +9,6 @@ import net.querz.mcaselector.filter.FilterData;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Point2i;
-import net.querz.nbt.CompoundTag;
-
 import java.io.*;
 import java.util.List;
 import java.util.Set;
@@ -26,28 +24,98 @@ public class MCAFile {
 	private byte[] sectors;
 	private int[] timestamps;
 
+	private MCAChunkData[] chunks;
+
 	public MCAFile(File file) {
 		this.file = file.getAbsoluteFile();
 		offsets = new int[Tile.CHUNKS];
 		sectors = new byte[Tile.CHUNKS];
 		timestamps = new int[Tile.CHUNKS];
+		chunks = new MCAChunkData[Tile.CHUNKS];
 	}
 
-	public void read(RandomAccessFile raf) throws IOException {
+	//returns whether there were any chunks written to file
+	public boolean saveAll(RandomAccessFile raf) throws Exception {
+		int globalOffset = 2;
+		int lastWritten = 0;
+
 		raf.seek(0);
-		//use streams wherever possible, because they can be buffered
-		DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(raf.getFD()), SECTION_SIZE * 2));
+		for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
+			for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
+				int index = cz * Tile.SIZE_IN_CHUNKS + cx;
+
+				raf.seek(globalOffset * SECTION_SIZE);
+				MCAChunkData data = chunks[index];
+
+				if (data == null || data.isEmpty()) {
+					continue;
+				}
+
+				lastWritten = data.saveData(raf);
+
+				int sectors = (lastWritten >> 12) + 1;
+
+				raf.seek(INDEX_HEADER_LOCATION + index * 4);
+				raf.writeByte(globalOffset >>> 16);
+				raf.writeByte(globalOffset >> 8 & 0xFF);
+				raf.writeByte(globalOffset & 0xFF);
+				raf.writeByte(sectors);
+
+				//write timestamp to tmp file
+				raf.seek(TIMESTAMP_HEADER_LOCATION + index * 4);
+				raf.writeInt(timestamps[index]);
+
+				globalOffset += sectors;
+			}
+		}
+
+		//padding
+		if (lastWritten % SECTION_SIZE != 0) {
+			raf.seek(globalOffset * SECTION_SIZE - 1);
+			raf.write(0);
+		}
+
+		return globalOffset != 2;
+	}
+
+	public static MCAFile readAll(File file, ByteArrayPointer ptr) {
+		MCAFile m = readHeader(file, ptr);
+		if (m != null) {
+			for (int i = 0; i < m.offsets.length; i++) {
+				m.chunks[i] = m.getChunkData(i);
+				try {
+					m.chunks[i].readHeader(ptr);
+					m.chunks[i].loadData(ptr);
+				} catch (Exception ex) {
+					Debug.errorf("failed to load chunk at index %d: %s", i, ex.getMessage());
+					ex.printStackTrace();
+				}
+			}
+		}
+		return m;
+	}
+
+	public static MCAFile readHeader(File file, ByteArrayPointer ptr) {
+		try {
+			MCAFile mcaFile = new MCAFile(file);
+			mcaFile.readHeader(ptr);
+			return mcaFile;
+		} catch (Exception ex) {
+			Debug.error(ex);
+		}
+		return null;
+	}
+
+	public void readHeader(ByteArrayPointer ptr) throws IOException {
+		ptr.seek(0);
 		for (int i = 0; i < offsets.length; i++) {
-			int offset = dis.readByte() & 0xFF;
-			offset <<= 8;
-			offset |= dis.readByte() & 0xFF;
-			offset <<= 8;
-			offset |= dis.readByte() & 0xFF;
-			offsets[i] = offset;
-			sectors[i] = dis.readByte();
+			int offset = (ptr.read()) << 16;
+			offset |= (ptr.read() & 0xFF) << 8;
+			offsets[i] = offset | ptr.read() & 0xFF;
+			sectors[i] = ptr.readByte();
 		}
 		for (int i = 0; i < timestamps.length; i++) {
-			timestamps[i] = dis.readInt();
+			timestamps[i] = ptr.readInt();
 		}
 	}
 
@@ -61,22 +129,15 @@ public class MCAFile {
 		}
 	}
 
-	public void deleteChunkIndices(Filter filter, RandomAccessFile raf) throws Exception {
+	public void deleteChunkIndices(Filter filter) {
 		for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
 			for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
 				int index = cz  * Tile.SIZE_IN_CHUNKS + cx;
 
-				MCAChunkData data = getChunkData(index);
-				data.readHeader(raf);
+				MCAChunkData data = chunks[index];
 
-				if (data.isEmpty()) {
+				if (data == null || data.isEmpty()) {
 					continue;
-				}
-
-				try {
-					data.loadData(raf);
-				} catch (Exception ex) {
-					Debug.error(ex);
 				}
 
 				FilterData filterData = new FilterData(data.getTimestamp(), data.getData());
@@ -90,62 +151,19 @@ public class MCAFile {
 		}
 	}
 
-	//returns the modified file
-	public File applyFieldChanges(List<Field> fields, boolean force, RandomAccessFile raf) throws Exception {
-		File tmpFile = File.createTempFile(file.getName(), null, null);
-
-		int globalOffset = 2;
-
-		try (RandomAccessFile rafTmp = new RandomAccessFile(tmpFile, "rw")) {
-			int lastWritten = 0;
-
-			for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
-				for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
-					int index = cz * Tile.SIZE_IN_CHUNKS + cx;
-
-					MCAChunkData data = getChunkData(index);
-					data.readHeader(raf);
-
-					if (data.isEmpty()) {
-						continue;
-					}
-
-					data.loadData(raf);
-					data.changeData(fields, force);
-					rafTmp.seek(globalOffset * SECTION_SIZE);
-					lastWritten = data.saveData(rafTmp);
-
-					int sectors = (lastWritten >> 12) + 1;
-
-					System.out.println("wrote " + sectors + " to file (" + lastWritten + " bytes) for index " + index);
-
-					rafTmp.seek(INDEX_HEADER_LOCATION + index * 4);
-					rafTmp.writeByte(globalOffset >>> 16);
-					rafTmp.writeByte(globalOffset >> 8 & 0xFF);
-					rafTmp.writeByte(globalOffset & 0xFF);
-					rafTmp.writeByte(sectors);
-
-					//write timestamp to tmp file
-					rafTmp.seek(TIMESTAMP_HEADER_LOCATION + index * 4);
-					rafTmp.writeInt(timestamps[index]);
-
-					globalOffset += sectors;
-				}
-			}
-
-			//padding
-			if (lastWritten % SECTION_SIZE != 0) {
-				rafTmp.seek(globalOffset * SECTION_SIZE - 1);
-				rafTmp.write(0);
+	public void applyFieldChanges(List<Field> fields, boolean force) {
+		for (int i = 0; i < chunks.length; i++) {
+			MCAChunkData chunk = chunks[i];
+			if (chunk != null && !chunk.isEmpty()) {
+				chunk.changeData(fields, force);
 			}
 		}
-
-		return tmpFile;
 	}
 
 	//will rearrange the chunk data in the mca file to take up as few space as possible
+	//returns the tmp file
 	public File deFragment(RandomAccessFile raf) throws Exception {
-		//only works if read has been called before
+		//only works if readHeader has been called before
 
 		File tmpFile = File.createTempFile(file.getName(), null, null);
 		int globalOffset = 2; //chunk data starts at 8192 (after 2 sectors)
@@ -154,7 +172,7 @@ public class MCAFile {
 
 		//rafTmp if on the new file
 		try (RandomAccessFile rafTmp = new RandomAccessFile(tmpFile, "rw")) {
-			//loop over all offsets, read the raw byte data (complete sections) and write it to new file
+			//loop over all offsets, readHeader the raw byte data (complete sections) and write it to new file
 			for (int i = 0; i < offsets.length; i++) {
 				//don't do anything if this chunk is empty
 				if (offsets[i] == 0) {
@@ -186,7 +204,7 @@ public class MCAFile {
 				int read = dis.read(data);
 
 				if (read != sectors * SECTION_SIZE) {
-					throw new RuntimeException("deFragment read less data from original file than expected: " + read + " instead of " + sectors * SECTION_SIZE);
+					throw new RuntimeException("deFragment readHeader less data from original file than expected: " + read + " instead of " + sectors * SECTION_SIZE);
 				}
 
 				dos.write(data);
@@ -199,7 +217,7 @@ public class MCAFile {
 			if (tmpFile.delete()) {
 				return null;
 			} else {
-				Debug.dump("could not delete tmpFile " + tmpFile + " after all chunks were deleted");
+				Debug.dumpf("could not delete tmpFile %s after all chunks were deleted", tmpFile.getAbsolutePath());
 			}
 		}
 
@@ -219,35 +237,28 @@ public class MCAFile {
 		return file;
 	}
 
-	public Image createImage(RandomAccessFile raf) {
+	public Image createImage(ByteArrayPointer ptr) {
 		try {
 			WritableImage finalImage = new WritableImage(Tile.SIZE, Tile.SIZE);
 			PixelWriter writer = finalImage.getPixelWriter();
 
-			long start = System.currentTimeMillis();
-			long loadingTime = 0;
 			for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
 				for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
 					int index = cz  * Tile.SIZE_IN_CHUNKS + cx;
 
-					long s = System.currentTimeMillis();
 					MCAChunkData data = getChunkData(index);
-					data.readHeader(raf);
+
+					data.readHeader(ptr);
+
 					try {
-						data.loadData(raf);
+						data.loadData(ptr);
 					} catch (Exception ex) {
 						Debug.error(ex);
 					}
-					loadingTime += (System.currentTimeMillis() - s);
 
-					int imageX = cx * Tile.CHUNK_SIZE;
-					int imageZ = cz * Tile.CHUNK_SIZE;
-
-					data.drawImage(imageX, imageZ, writer);
+					data.drawImage(cx * Tile.CHUNK_SIZE, cz * Tile.CHUNK_SIZE, writer);
 				}
 			}
-			Debug.dump("took " + (System.currentTimeMillis() - start)
-					+ "ms to generate image of region, loading time: " + loadingTime + "ms");
 			return finalImage;
 		} catch (Exception ex) {
 			Debug.error(ex);

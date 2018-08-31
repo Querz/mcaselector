@@ -69,4 +69,9 @@ public class StatusFilter extends TextFilter<String> {
 	public String toString() {
 		return "Status " + getComparator() + " " + (getFilterValue() != null ? getFilterValue() : "null");
 	}
+
+	@Override
+	public StatusFilter clone() {
+		return new StatusFilter(getOperator(), getComparator(), value);
+	}
 }

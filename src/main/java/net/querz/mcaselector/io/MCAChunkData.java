@@ -5,7 +5,6 @@ import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
-import net.querz.nbt.IntTag;
 import net.querz.nbt.Tag;
 import java.io.*;
 import java.util.List;
@@ -34,23 +33,23 @@ public class MCAChunkData {
 		return offset == 0 && timestamp == 0 && sectors == 0;
 	}
 
-	public void readHeader(RandomAccessFile raf) throws Exception {
-		raf.seek(offset);
-		length = raf.readInt();
-		compressionType = CompressionType.fromByte(raf.readByte());
+	public void readHeader(ByteArrayPointer ptr) throws Exception {
+		ptr.seek(offset);
+		length = ptr.readInt();
+		compressionType = CompressionType.fromByte(ptr.readByte());
 	}
 
-	public void loadData(RandomAccessFile raf) throws Exception {
+	public void loadData(ByteArrayPointer ptr) throws Exception {
 		//offset + length of length (4 bytes) + length of compression type (1 byte)
-		raf.seek(offset + 5);
+		ptr.seek(offset + 5);
 		DataInputStream nbtIn = null;
 
 		switch (compressionType) {
 		case GZIP:
-			nbtIn = new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(raf.getFD())), sectors * MCAFile.SECTION_SIZE));
+			nbtIn = new DataInputStream(new BufferedInputStream(new GZIPInputStream(ptr)));
 			break;
 		case ZLIB:
-			nbtIn = new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(raf.getFD())), sectors * MCAFile.SECTION_SIZE));
+			nbtIn = new DataInputStream(new BufferedInputStream(new InflaterInputStream(ptr)));
 			break;
 		case NONE:
 			data = null;
@@ -104,25 +103,25 @@ public class MCAChunkData {
 					field.change(data);
 				}
 			} catch (Exception ex) {
-				Debug.dump("error trying to update field: " + ex.getMessage());
-				ex.printStackTrace();
+				Debug.dumpf("error trying to update field: %s", ex.getMessage());
 			}
 		}
 	}
 
 	public void drawImage(int x, int z, PixelWriter writer) {
-		if (data != null) {
-			int dataVersion = data.getInt("DataVersion");
-			try {
-				VersionController.getChunkDataProcessor(dataVersion).drawChunk(
-						data,
-						VersionController.getColorMapping(dataVersion),
-						x, z,
-						writer
-				);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+		if (data == null) {
+			return;
+		}
+		int dataVersion = data.getInt("DataVersion");
+		try {
+			VersionController.getChunkDataProcessor(dataVersion).drawChunk(
+					data,
+					VersionController.getColorMapping(dataVersion),
+					x, z,
+					writer
+			);
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 

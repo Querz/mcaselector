@@ -7,7 +7,7 @@ public abstract class TextFilter<T> extends Filter<T> {
 			Comparator.CONTAINS_NOT
 	};
 
-	private T value;
+	protected T value;
 
 	private Comparator comparator;
 
