@@ -102,15 +102,7 @@ public final class MCAFilePipe {
 		saveDataExecutor.execute(job);
 	}
 
-	public static void validateLoadDataJobs(Predicate<Runnable> p) {
-		loadDataExecutor.getQueue().removeIf(p);
-	}
-
-	public static void validateProcessDataJobs(Predicate<Runnable> p) {
-		processDataExecutor.getQueue().removeIf(p);
-	}
-
-	public static void validateSaveDataJobs(Predicate<Runnable> p) {
-		saveDataExecutor.getQueue().removeIf(p);
+	public static void validateJobs(Predicate<LoadDataJob> p) {
+		waitingForLoad.removeIf(p);
 	}
 }

@@ -121,17 +121,9 @@ public class TileMap extends Canvas {
 	public void update() {
 		runUpdateListeners();
 
-		MCAFilePipe.validateLoadDataJobs(j -> {
-			if (j instanceof RegionImageGenerator.MCAImageLoadJob && !((RegionImageGenerator.MCAImageLoadJob) j).getTile().isVisible(this)) {
+		MCAFilePipe.validateJobs(j -> {
+			if (j instanceof  RegionImageGenerator.MCAImageLoadJob && !((RegionImageGenerator.MCAImageLoadJob) j).getTile().isVisible(this)) {
 				Debug.dumpf("removing %s for tile %s from queue", j.getClass().getSimpleName(), ((RegionImageGenerator.MCAImageLoadJob) j).getTile().getLocation());
-				return true;
-			}
-			return false;
-		});
-
-		MCAFilePipe.validateProcessDataJobs(j -> {
-			if (j instanceof RegionImageGenerator.MCAImageProcessJob && !((RegionImageGenerator.MCAImageProcessJob) j).getTile().isVisible(this)) {
-				Debug.dumpf("removing %s for tile %s from queue", j.getClass().getSimpleName(), ((RegionImageGenerator.MCAImageProcessJob) j).getTile().getLocation());
 				return true;
 			}
 			return false;
