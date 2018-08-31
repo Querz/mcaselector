@@ -204,7 +204,7 @@ public class MCAFile {
 				int read = dis.read(data);
 
 				if (read != sectors * SECTION_SIZE) {
-					throw new RuntimeException("deFragment readHeader less data from original file than expected: " + read + " instead of " + sectors * SECTION_SIZE);
+					throw new RuntimeException("deFragment read less data from original file than expected: " + read + " instead of " + sectors * SECTION_SIZE);
 				}
 
 				dos.write(data);

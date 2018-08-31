@@ -11,7 +11,7 @@ import java.util.function.Predicate;
  * This will be an abstract version of the QueuedRegionImageGenerator so it can be used
  * for more stuff than just creating images.
  *
- * It has a thread to readHeader files, a threadpool to work with the files and a thread
+ * It has a thread to read files, a threadpool to work with the files and a thread
  * to write the files back to disk.
  *
  * Writing can also be skipped if it is not needed, as we can create our own worker job.

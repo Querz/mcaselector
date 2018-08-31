@@ -272,7 +272,7 @@ public class Tile {
 			loaded = true;
 			return image;
 		}
-		Debug.dumpf("took %s to readHeader mca file header of %s", t, file.getName());
+		Debug.dumpf("took %s to read mca file header of %s", t, file.getName());
 
 		t.reset();
 

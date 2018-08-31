@@ -45,7 +45,7 @@ public class SelectionUtil {
 					Integer x = Helper.parseInt(elements[0], 10);
 					Integer z = Helper.parseInt(elements[1], 10);
 					if (x == null || z == null) {
-						Debug.error("could not readHeader region in selection import: " + line);
+						Debug.error("could not read region in selection import: " + line);
 						continue;
 					}
 					Integer cx = null, cz = null;
@@ -53,7 +53,7 @@ public class SelectionUtil {
 						cx = Helper.parseInt(elements[2], 10);
 						cz = Helper.parseInt(elements[3], 10);
 						if (cx == null || cz == null) {
-							Debug.error("could not readHeader chunk in selection import: " + line);
+							Debug.error("could not read chunk in selection import: " + line);
 							continue;
 						}
 					}

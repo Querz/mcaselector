@@ -3,7 +3,6 @@ package net.querz.mcaselector.tiles;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.*;
-import net.querz.mcaselector.io.Job;
 import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.RegionImageGenerator;
 import net.querz.mcaselector.ui.Window;
