@@ -29,4 +29,9 @@ public class ZPosFilter extends IntegerFilter {
 		}
 		return false;
 	}
+
+	@Override
+	public ZPosFilter clone() {
+		return new ZPosFilter(getOperator(), getComparator(), value);
+	}
 }

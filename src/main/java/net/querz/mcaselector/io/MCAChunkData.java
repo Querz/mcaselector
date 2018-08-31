@@ -5,7 +5,6 @@ import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
-import net.querz.nbt.IntTag;
 import net.querz.nbt.Tag;
 import java.io.*;
 import java.util.List;
@@ -38,7 +37,6 @@ public class MCAChunkData {
 		ptr.seek(offset);
 		length = ptr.readInt();
 		compressionType = CompressionType.fromByte(ptr.readByte());
-//		System.out.println("length: " + length + "    ct: " + compressionType);
 	}
 
 	public void loadData(ByteArrayPointer ptr) throws Exception {
@@ -105,8 +103,7 @@ public class MCAChunkData {
 					field.change(data);
 				}
 			} catch (Exception ex) {
-//				Debug.dump("error trying to update field: " + ex.getMessage());
-//				ex.printStackTrace();
+				Debug.dumpf("error trying to update field: %s", ex.getMessage());
 			}
 		}
 	}

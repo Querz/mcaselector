@@ -85,4 +85,10 @@ public class PaletteFilter extends TextFilter<List<String>> {
 	public String toString() {
 		return "Palette " + getComparator() + " " + (getFilterValue() != null ? Arrays.toString(getFilterValue().toArray()) : "null");
 	}
+
+	@Override
+	public PaletteFilter clone() {
+		List<String> cloneValue = new ArrayList<>(value);
+		return new PaletteFilter(getOperator(), getComparator(), cloneValue);
+	}
 }

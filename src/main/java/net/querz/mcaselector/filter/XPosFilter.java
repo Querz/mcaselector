@@ -29,4 +29,9 @@ public class XPosFilter extends IntegerFilter {
 		}
 		return false;
 	}
+
+	@Override
+	public XPosFilter clone() {
+		return new XPosFilter(getOperator(), getComparator(), value);
+	}
 }

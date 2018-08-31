@@ -12,6 +12,8 @@ import java.io.IOException;
 
 public class RegionImageGenerator {
 
+	private RegionImageGenerator() {}
+
 	public static void generate(Tile tile, TileMap tileMap) {
 		tile.setLoading(true);
 		MCAFilePipe.addJob(new MCAImageLoadJob(tile.getMCAFile(), tile, tileMap));

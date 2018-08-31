@@ -1,7 +1,6 @@
 package net.querz.mcaselector.tiles;
 
 import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
@@ -11,13 +10,10 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.io.MCAFile;
-import net.querz.mcaselector.io.MCALoader;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.mcaselector.util.Timer;
-
-import javax.imageio.ImageIO;
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -273,7 +269,7 @@ public class Tile {
 
 		ByteArrayPointer ptr = new ByteArrayPointer(rawData);
 
-		MCAFile mcaFile = MCAFile.read(file, ptr);
+		MCAFile mcaFile = MCAFile.readHeader(file, ptr);
 		if (mcaFile == null) {
 			Debug.error("error reading mca file " + file);
 			//mark as loaded, we won't try to load this again
@@ -281,7 +277,7 @@ public class Tile {
 			loaded = true;
 			return image;
 		}
-		Debug.dumpf("took %s to read mca file header of %s", t, file.getName());
+		Debug.dumpf("took %s to readHeader mca file header of %s", t, file.getName());
 
 		t.reset();
 

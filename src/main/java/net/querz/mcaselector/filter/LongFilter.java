@@ -2,7 +2,7 @@ package net.querz.mcaselector.filter;
 
 public abstract class LongFilter extends NumberFilter<Long> {
 
-	private long value;
+	protected long value;
 
 	public LongFilter(FilterType type, Operator operator, Comparator comparator, long value) {
 		super(type, operator, comparator);

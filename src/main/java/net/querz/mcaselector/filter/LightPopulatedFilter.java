@@ -38,4 +38,9 @@ public class LightPopulatedFilter extends ByteFilter {
 	public String getFormatText() {
 		return "1|0";
 	}
+
+	@Override
+	public LightPopulatedFilter clone() {
+		return new LightPopulatedFilter(getOperator(), getComparator(), value);
+	}
 }

@@ -1,6 +1,5 @@
 package net.querz.mcaselector.io;
 
-
 import java.io.File;
 
 public abstract class SaveDataJob<T> extends Job {

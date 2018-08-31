@@ -133,4 +133,14 @@ public class GroupFilter extends Filter<List<Filter>> {
 		}
 		return true;
 	}
+
+	@Override
+	public GroupFilter clone() {
+		List<Filter> cloneChildren = new ArrayList<>(children.size());
+		children.forEach(c -> cloneChildren.add(c.clone()));
+		GroupFilter clone = new GroupFilter(getOperator());
+		clone.inverted = inverted;
+		clone.children = cloneChildren;
+		return clone;
+	}
 }

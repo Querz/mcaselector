@@ -35,4 +35,9 @@ public class LastUpdateFilter extends IntegerFilter {
 	public String getFormatText() {
 		return "YYYY-MM-DD hh:mm:ss";
 	}
+
+	@Override
+	public LastUpdateFilter clone() {
+		return new LastUpdateFilter(getOperator(), getComparator(), value);
+	}
 }

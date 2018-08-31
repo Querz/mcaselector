@@ -6,10 +6,12 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.querz.mcaselector.*;
-import net.querz.mcaselector.changer.Field;
+import net.querz.mcaselector.io.ChunkFilterDeleter;
+import net.querz.mcaselector.io.ChunkFilterExporter;
 import net.querz.mcaselector.io.FieldChanger;
-import net.querz.mcaselector.io.MCALoader;
+import net.querz.mcaselector.io.SelectionDeleter;
 import net.querz.mcaselector.io.SelectionExporter;
+import net.querz.mcaselector.io.SelectionUtil;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.ui.ChangeNBTDialog;
 import net.querz.mcaselector.ui.DeleteConfirmationDialog;
@@ -17,7 +19,6 @@ import net.querz.mcaselector.ui.FilterChunksDialog;
 import net.querz.mcaselector.ui.GotoDialog;
 import net.querz.mcaselector.ui.OptionBar;
 import net.querz.mcaselector.ui.ProgressDialog;
-
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -27,7 +28,6 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -54,6 +54,10 @@ public class Helper {
 
 	public static Point2i chunkToBlock(Point2i i) {
 		return i.shiftLeft(4);
+	}
+
+	public static Point2i chunkToRegion(Point2i i) {
+		return i.shiftRight(5);
 	}
 
 	public static Integer parseInt(String s, int radix) {
@@ -136,7 +140,7 @@ public class Helper {
 		File file = createFileChooser(null,
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showOpenDialog(primaryStage);
 		if (file != null) {
-			Map<Point2i, Set<Point2i>> chunks = SelectionExporter.importSelection(file);
+			Map<Point2i, Set<Point2i>> chunks = SelectionUtil.importSelection(file);
 			tileMap.setMarkedChunks(chunks);
 			tileMap.update();
 		}
@@ -146,7 +150,7 @@ public class Helper {
 		File file = createFileChooser(null,
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showSaveDialog(primaryStage);
 		if (file != null) {
-			SelectionExporter.exportSelection(tileMap.getMarkedChunks(), file);
+			SelectionUtil.exportSelection(tileMap.getMarkedChunks(), file);
 			tileMap.update();
 		}
 	}
@@ -217,7 +221,7 @@ public class Helper {
 		result.ifPresent(r -> {
 			if (r == ButtonType.OK) {
 				new ProgressDialog("Deleting selection...", primaryStage)
-						.showProgressBar(t -> MCALoader.deleteChunks(tileMap.getMarkedChunks(), t));
+						.showProgressBar(t -> SelectionDeleter.deleteSelection(tileMap.getMarkedChunks(), t));
 				clearSelectionCache(tileMap);
 			}
 		});
@@ -226,7 +230,7 @@ public class Helper {
 	public static void exportSelectedChunks(TileMap tileMap, Stage primaryStage) {
 		File dir = createDirectoryChooser(null).showDialog(primaryStage);
 		new ProgressDialog("Exporting selection...", primaryStage)
-				.showProgressBar(t -> SelectionExporter.exportSelectedChunks(tileMap.getMarkedChunks(), dir, t));
+				.showProgressBar(t -> SelectionExporter.exportSelection(tileMap.getMarkedChunks(), dir, t));
 	}
 
 	public static void gotoCoordinate(TileMap tileMap, Stage primaryStage) {
@@ -246,7 +250,7 @@ public class Helper {
 			switch (r.getType()) {
 			case DELETE:
 				new ProgressDialog("Deleting filtered chunks...", primaryStage)
-						.showProgressBar(t -> MCALoader.deleteChunks(r.getFilter(), t));
+						.showProgressBar(t -> ChunkFilterDeleter.deleteFilter(r.getFilter(), t));
 				clearAllCache(tileMap);
 				break;
 			case EXPORT:
@@ -254,7 +258,7 @@ public class Helper {
 				if (dir != null) {
 					Debug.dump("exporting chunks to " + dir);
 					new ProgressDialog("Exporting filtered chunks...", primaryStage)
-							.showProgressBar(t -> SelectionExporter.exportFilteredChunks(r.getFilter(), dir, t));
+							.showProgressBar(t -> ChunkFilterExporter.exportFilter(r.getFilter(), dir, t));
 				} else {
 					Debug.dump("cancelled exporting chunks, no valid destination directory");
 				}

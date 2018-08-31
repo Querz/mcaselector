@@ -37,4 +37,9 @@ public class InhabitedTimeFilter extends LongFilter {
 	public String getFormatText() {
 		return "duration";
 	}
+
+	@Override
+	public InhabitedTimeFilter clone() {
+		return new InhabitedTimeFilter(getOperator(), getComparator(), value);
+	}
 }

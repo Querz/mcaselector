@@ -66,4 +66,6 @@ public abstract class Filter<T> implements Serializable {
 	public abstract boolean matches(FilterData data);
 
 	public abstract String toString(FilterData data);
+
+	public abstract Filter<T> clone();
 }

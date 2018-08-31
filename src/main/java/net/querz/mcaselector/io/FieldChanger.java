@@ -13,6 +13,8 @@ import java.util.List;
 
 public class FieldChanger {
 
+	private FieldChanger() {}
+
 	public static void changeNBTFields(List<Field> fields, boolean force, ProgressTask progressChannel) {
 		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches("^r\\.-?\\d+\\.-?\\d+\\.mca$"));
 		if (files == null || files.length == 0) {
@@ -45,6 +47,9 @@ public class FieldChanger {
 			byte[] data = load();
 			if (data != null) {
 				MCAFilePipe.executeProcessData(new MCAFieldChangeProcessJob(getFile(), data, fields, force, progressChannel));
+			} else {
+				Debug.errorf("error loading mca file %s", getFile().getName());
+				progressChannel.incrementProgress(getFile().getName() + ": error");
 			}
 		}
 	}
@@ -66,10 +71,15 @@ public class FieldChanger {
 		public void execute() {
 			//load MCAFile
 			Timer t = new Timer();
-			MCAFile mca = MCAFile.readAll(getFile(), new ByteArrayPointer(getData()));
-			mca.applyFieldChanges(fields, force);
-			MCAFilePipe.executeSaveData(new MCAFieldChangeSaveJob(getFile(), mca, progressChannel));
-			Debug.dumpf("took %s to apply field changes to %s", t, getFile().getName());
+			try {
+				MCAFile mca = MCAFile.readAll(getFile(), new ByteArrayPointer(getData()));
+				mca.applyFieldChanges(fields, force);
+				Debug.dumpf("took %s to apply field changes to %s", t, getFile().getName());
+				MCAFilePipe.executeSaveData(new MCAFieldChangeSaveJob(getFile(), mca, progressChannel));
+			} catch (Exception ex) {
+				progressChannel.incrementProgress(getFile().getName());
+				Debug.errorf("error changing fields in %s", getFile().getName());
+			}
 		}
 	}
 
