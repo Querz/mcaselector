@@ -10,18 +10,17 @@ import net.querz.mcaselector.util.Timer;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RegionImageGenerator {
 
-	private static Set<Point2i> loading = new HashSet<>();
+	private static Set<Point2i> loading = ConcurrentHashMap.newKeySet();
 
 	private RegionImageGenerator() {}
 
 	public static void generate(Tile tile, TileMap tileMap) {
-		tile.setLoading(true);
-		loading.add(tile.getLocation());
+		setLoading(tile, true);
 		MCAFilePipe.addJob(new MCAImageLoadJob(tile.getMCAFile(), tile, tileMap));
 	}
 
@@ -57,11 +56,10 @@ public class RegionImageGenerator {
 				byte[] data = load();
 				if (data != null) {
 					MCAFilePipe.executeProcessData(new MCAImageProcessJob(getFile(), data, tile, tileMap));
+					return;
 				}
-			} else {
-				tile.setLoading(false);
-				loading.remove(tile.getLocation());
 			}
+			setLoading(tile, false);
 		}
 
 		public Tile getTile() {
@@ -86,8 +84,7 @@ public class RegionImageGenerator {
 			if (image != null) {
 				MCAFilePipe.executeSaveData(new MCAImageSaveCacheJob(getFile(), image, tile));
 			} else {
-				tile.setLoading(false);
-				loading.remove(tile.getLocation());
+				setLoading(tile, false);
 			}
 		}
 
@@ -120,8 +117,7 @@ public class RegionImageGenerator {
 				e.printStackTrace();
 			}
 
-			tile.setLoading(false);
-			loading.remove(tile.getLocation());
+			setLoading(tile, false);
 
 			Debug.dumpf("took %s to cache image of %s to %s", t, tile.getMCAFile().getName(), cacheFile.getName());
 		}

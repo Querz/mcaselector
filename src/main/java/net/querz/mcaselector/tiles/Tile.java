@@ -236,6 +236,7 @@ public class Tile {
 		if (Config.getCacheDir() == null) {
 			//load empty map (start screen)
 			loaded = true;
+			Platform.runLater(tileMap::update);
 			return;
 		}
 
@@ -246,11 +247,11 @@ public class Tile {
 		try (InputStream inputStream = new FileInputStream(res)) {
 			image = new Image(inputStream);
 			loaded = true;
+			Platform.runLater(tileMap::update);
 		} catch (IOException ex) {
 			Debug.dump("region " + p + " not cached");
 			//do nothing
 		}
-		Platform.runLater(tileMap::update);
 	}
 
 	public Image generateImage(TileMap tileMap, byte[] rawData) {

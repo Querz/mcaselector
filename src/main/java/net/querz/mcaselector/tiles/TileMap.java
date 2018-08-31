@@ -44,8 +44,6 @@ public class TileMap extends Canvas {
 	private List<Consumer<TileMap>> updateListener = new ArrayList<>(1);
 	private List<Consumer<TileMap>> hoverListener = new ArrayList<>(1);
 
-//	private QueuedRegionImageGenerator qrig;
-
 	public TileMap(Window window, int width, int height) {
 		super(width, height);
 		this.window = window;
@@ -56,8 +54,6 @@ public class TileMap extends Canvas {
 		this.setOnScroll(this::onScroll);
 		this.setOnMouseMoved(this::onMouseMoved);
 		this.setOnMouseExited(e -> onMouseExited());
-//		qrig = new QueuedRegionImageGenerator(QueuedRegionImageGenerator.PROCESSOR_COUNT, this);
-//		qrig = new QueuedRegionImageGenerator(this);
 		update();
 	}
 
@@ -132,11 +128,13 @@ public class TileMap extends Canvas {
 			return false;
 		});
 		for (Tile tile : visibleTiles) {
-			if (!tile.isVisible(this, TILE_VISIBILITY_THRESHOLD) && !RegionImageGenerator.isLoading(tile)) {
+			if (!tile.isVisible(this, TILE_VISIBILITY_THRESHOLD)) {
 				visibleTiles.remove(tile);
-				tile.unload();
-				if (!tile.isMarked() && tile.getMarkedChunks().size() == 0) {
-					tiles.remove(tile.getLocation());
+				if (!RegionImageGenerator.isLoading(tile)) {
+					tile.unload();
+					if (!tile.isMarked() && tile.getMarkedChunks().size() == 0) {
+						tiles.remove(tile.getLocation());
+					}
 				}
 			}
 		}
