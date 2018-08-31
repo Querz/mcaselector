@@ -122,14 +122,18 @@ public class TileMap extends Canvas {
 		runUpdateListeners();
 
 		MCAFilePipe.validateJobs(j -> {
-			if (j instanceof  RegionImageGenerator.MCAImageLoadJob && !((RegionImageGenerator.MCAImageLoadJob) j).getTile().isVisible(this)) {
-				Debug.dumpf("removing %s for tile %s from queue", j.getClass().getSimpleName(), ((RegionImageGenerator.MCAImageLoadJob) j).getTile().getLocation());
-				return true;
+			if (j instanceof  RegionImageGenerator.MCAImageLoadJob) {
+				RegionImageGenerator.MCAImageLoadJob job = (RegionImageGenerator.MCAImageLoadJob) j;
+				if (!job.getTile().isVisible(this)) {
+					Debug.dumpf("removing %s for tile %s from queue", job.getClass().getSimpleName(), job.getTile().getLocation());
+					RegionImageGenerator.setLoading(job.getTile(), false);
+					return true;
+				}
 			}
 			return false;
 		});
 		for (Tile tile : visibleTiles) {
-			if (!tile.isVisible(this, TILE_VISIBILITY_THRESHOLD)) {
+			if (!tile.isVisible(this, TILE_VISIBILITY_THRESHOLD) && !RegionImageGenerator.isLoading(tile)) {
 				visibleTiles.remove(tile);
 				tile.unload();
 				if (!tile.isMarked() && tile.getMarkedChunks().size() == 0) {

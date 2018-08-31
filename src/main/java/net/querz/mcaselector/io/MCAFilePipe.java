@@ -82,10 +82,10 @@ public final class MCAFilePipe {
 	public static void addJob(LoadDataJob job) {
 		if (processDataExecutor.getQueue().size() + loadDataExecutor.getQueue().size() > MAX_LOADED_FILES
 				|| saveDataExecutor.getQueue().size() > MAX_LOADED_FILES) {
-			Debug.dumpf("adding DataLoadJob for %s to wait queue", job.getFile().getName());
+			Debug.dumpf("adding DataLoadJob %s for %s to wait queue", job, job.getFile().getName());
 			waitingForLoad.offer(job);
 		} else {
-			Debug.dumpf("adding DataLoadJob for %s to executor queue", job.getFile().getName());
+			Debug.dumpf("adding DataLoadJob %s for %s to executor queue", job, job.getFile().getName());
 			loadDataExecutor.execute(job);
 		}
 	}

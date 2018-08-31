@@ -231,12 +231,10 @@ public class Tile {
 			Debug.dump("region at " + location + " already loaded");
 			return;
 		}
-		loading = true;
 		Point2i p = Helper.blockToRegion(location);
 
 		if (Config.getCacheDir() == null) {
 			//load empty map (start screen)
-			loading = false;
 			loaded = true;
 			return;
 		}
@@ -252,7 +250,6 @@ public class Tile {
 			Debug.dump("region " + p + " not cached");
 			//do nothing
 		}
-		loading = false;
 		Platform.runLater(tileMap::update);
 	}
 
@@ -264,7 +261,6 @@ public class Tile {
 
 		Timer t = new Timer();
 
-		loading = true;
 		File file = getMCAFile();
 
 		ByteArrayPointer ptr = new ByteArrayPointer(rawData);
@@ -273,7 +269,6 @@ public class Tile {
 		if (mcaFile == null) {
 			Debug.error("error reading mca file " + file);
 			//mark as loaded, we won't try to load this again
-			loading = false;
 			loaded = true;
 			return image;
 		}
@@ -282,7 +277,6 @@ public class Tile {
 		t.reset();
 
 		image = mcaFile.createImage(ptr);
-		loading = false;
 		loaded = true;
 
 		Platform.runLater(tileMap::update);
