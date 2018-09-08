@@ -334,8 +334,7 @@ public class Helper {
 			ZonedDateTime zdt = ZonedDateTime.of(date, ZONE_ID);
 			return (int) zdt.toInstant().getEpochSecond();
 		} catch (DateTimeParseException e) {
-			System.out.println(e.getMessage());
-			//retry
+			Debug.dump(e.getMessage());
 		}
 		throw new IllegalArgumentException("could not parse date time");
 	}

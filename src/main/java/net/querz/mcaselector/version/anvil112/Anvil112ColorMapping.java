@@ -1,5 +1,6 @@
 package net.querz.mcaselector.version.anvil112;
 
+import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.util.Helper;
 import java.io.*;
@@ -17,22 +18,22 @@ public class Anvil112ColorMapping implements ColorMapping {
 			while ((line = bis.readLine()) != null) {
 				String[] elements = line.split(";");
 				if (elements.length != 3) {
-					System.out.println("invalid line in color file: \"" + line + "\"");
+					Debug.dumpf("invalid line in color file: \"%s\"", line);
 					continue;
 				}
 				Integer id = Helper.parseInt(elements[0], 10);
 				if (id == null || id < 0 || id > 255) {
-					System.out.println("Invalid block id in color file: \"" + elements[0] + "\"");
+					Debug.dumpf("Invalid block id in color file: \"%s\"", elements[0]);
 					continue;
 				}
 				Integer data = Helper.parseInt(elements[1], 10);
 				if (data == null || data < 0 || data > 15) {
-					System.out.println("Invalid block data in color file: \"" + elements[1] + "\"");
+					Debug.dumpf("Invalid block data in color file: \"%s\"", elements[1]);
 					continue;
 				}
 				Integer color = Helper.parseInt(elements[2], 16);
 				if (color == null || color < 0x0 || color > 0xFFFFFF) {
-					System.out.println("Invalid color code in color file: \"" + elements[2] + "\"");
+					Debug.dumpf("Invalid color code in color file: \"%s\"", elements[2]);
 				}
 				mapping.put((id << 4) + data, color);
 			}

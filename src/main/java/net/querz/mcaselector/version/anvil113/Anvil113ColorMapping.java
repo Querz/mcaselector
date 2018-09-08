@@ -1,5 +1,6 @@
 package net.querz.mcaselector.version.anvil113;
 
+import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.util.Helper;
 import net.querz.nbt.CompoundTag;
@@ -23,17 +24,17 @@ public class Anvil113ColorMapping implements ColorMapping {
 			while ((line = bis.readLine()) != null) {
 				String[] elements = line.split(";");
 				if (elements.length != 2) {
-					System.out.println("invalid line in color file: \"" + line + "\"");
+					Debug.dumpf("invalid line in color file: \"%s\"", line);
 					continue;
 				}
 				String[] blockData = elements[0].split(":");
 				if (blockData.length > 2) {
-					System.out.println("invalid line in color file: \"" + line + "\"");
+					Debug.dumpf("invalid line in color file: \"%s\"", line);
 					continue;
 				}
 				Integer color = Helper.parseInt(elements[1], 16);
 				if (color == null || color < 0x0 || color > 0xFFFFFF) {
-					System.out.println("Invalid color code in color file: \"" + elements[1] + "\"");
+					Debug.dumpf("Invalid color code in color file: \"%s\"", elements[1]);
 				}
 
 				if (blockData.length == 1) {

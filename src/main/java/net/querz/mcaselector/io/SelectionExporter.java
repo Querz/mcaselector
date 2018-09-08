@@ -93,12 +93,10 @@ public class SelectionExporter {
 
 					Set<Point2i> inverted = new HashSet<>(Tile.CHUNKS - chunksToBeExported.size());
 					Point2i origin = Helper.regionToChunk(Helper.chunkToRegion(chunksToBeExported.iterator().next()));
-					System.out.println("origin: " + origin);
 					for (int x = origin.getX(); x < origin.getX() + Tile.SIZE_IN_CHUNKS; x++) {
 						for (int z = origin.getY(); z < origin.getY() + Tile.SIZE_IN_CHUNKS; z++) {
 							Point2i cp = new Point2i(x, z);
 							if (!chunksToBeExported.contains(cp)) {
-								System.out.println("added inverted chunk: " + cp);
 								inverted.add(cp);
 							}
 						}
