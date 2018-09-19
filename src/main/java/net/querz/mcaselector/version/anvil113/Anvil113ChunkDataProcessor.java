@@ -21,7 +21,7 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
 
-				byte[] biomes = root.getCompoundTag("Level").getByteArray("Biomes");
+				int[] biomes = root.getCompoundTag("Level").getIntArray("Biomes");
 				int biome = -1;
 				if (biomes.length != 0) {
 					biome = biomes[getIndex(cx, 0, cz)];
