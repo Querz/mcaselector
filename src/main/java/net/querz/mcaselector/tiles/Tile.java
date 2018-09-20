@@ -40,6 +40,7 @@ public class Tile {
 	private boolean loading = false;
 	private boolean loaded = false;
 	private boolean marked = false;
+	//a set of all marked chunks in the tile in block locations
 	private Set<Point2i> markedChunks = new HashSet<>();
 
 	static {

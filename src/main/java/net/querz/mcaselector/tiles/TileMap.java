@@ -269,6 +269,30 @@ public class TileMap extends Canvas {
 		}
 	}
 
+	public void addMarkedChunks(Map<Point2i, Set<Point2i>> chunks) {
+		for (Map.Entry<Point2i, Set<Point2i>> entry : chunks.entrySet()) {
+			Point2i region = Helper.regionToBlock(entry.getKey());
+			Tile tile = tiles.get(region);
+			if (tile == null) {
+				tile = new Tile(region);
+				tiles.put(region, tile);
+			}
+			if (entry.getValue() == null) {
+				selectedChunks -= tile.getMarkedChunks().size();
+				tile.mark(true);
+				selectedChunks += Tile.CHUNKS;
+			} else {
+				for (Point2i chunk : entry.getValue()) {
+					Point2i block = Helper.chunkToBlock(chunk);
+					if (!tile.isMarked(block)) {
+						selectedChunks++;
+					}
+					tile.mark(block);
+				}
+			}
+		}
+	}
+
 	private Point2i getMouseBlock(double x, double z) {
 		int blockX = (int) (offset.getX() + x * scale);
 		int blockZ = (int) (offset.getY() + z * scale);

@@ -3,6 +3,7 @@ package net.querz.mcaselector.io;
 import javafx.scene.image.PixelWriter;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.util.Point2i;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.Tag;
@@ -151,5 +152,12 @@ public class MCAChunkData {
 
 	public CompoundTag getData() {
 		return data;
+	}
+
+	public Point2i getLocation() {
+		if (data == null || !data.containsKey("Level") || !data.getCompoundTag("Level").containsKey("xPos") || !data.getCompoundTag("Level").containsKey("zPos")) {
+			return null;
+		}
+		return new Point2i(data.getCompoundTag("Level").getInt("xPos"), data.getCompoundTag("Level").getInt("zPos"));
 	}
 }

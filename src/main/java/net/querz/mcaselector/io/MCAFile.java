@@ -10,8 +10,7 @@ import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Point2i;
 import java.io.*;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MCAFile {
 
@@ -149,6 +148,32 @@ public class MCAFile {
 				}
 			}
 		}
+	}
+
+	public Set<Point2i> getFilteredChunks(Filter filter) {
+		Set<Point2i> chunks = new HashSet<>();
+		for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
+			for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
+				int index = cz * Tile.SIZE_IN_CHUNKS + cx;
+
+				MCAChunkData data = this.chunks[index];
+
+				if (data == null || data.isEmpty()) {
+					continue;
+				}
+
+				FilterData filterData = new FilterData(data.getTimestamp(), data.getData());
+
+				if (filter.matches(filterData)) {
+					Point2i location = data.getLocation();
+					if (location == null) {
+						continue;
+					}
+					chunks.add(location);
+				}
+			}
+		}
+		return chunks;
 	}
 
 	public void applyFieldChanges(List<Field> fields, boolean force) {

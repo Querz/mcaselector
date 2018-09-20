@@ -31,6 +31,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 	private ToggleGroup toggleGroup = new ToggleGroup();
 	private RadioButton delete = new RadioButton("Delete");
 	private RadioButton export = new RadioButton("Export");
+	private RadioButton select = new RadioButton("Select");
 
 	public FilterChunksDialog(Stage primaryStage) {
 		setTitle("Filter chunks");
@@ -46,7 +47,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-		toggleGroup.getToggles().addAll(delete, export);
+		toggleGroup.getToggles().addAll(delete, export, select);
 		export.fire();
 
 		setResizable(true);
@@ -61,7 +62,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		});
 
 		VBox box = new VBox();
-		box.getChildren().addAll(scrollPane,  new Separator(), delete, export);
+		box.getChildren().addAll(scrollPane,  new Separator(), delete, export, select);
 		getDialogPane().setContent(box);
 	}
 
@@ -70,6 +71,8 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 			return HandleType.DELETE;
 		} else if (export.isSelected()) {
 			return HandleType.EXPORT;
+		} else if (select.isSelected()) {
+			return HandleType.SELECT;
 		}
 		return null;
 	}
@@ -94,6 +97,6 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 	}
 
 	public enum HandleType {
-		DELETE, EXPORT
+		DELETE, EXPORT, SELECT
 	}
 }

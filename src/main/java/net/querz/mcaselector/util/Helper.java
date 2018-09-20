@@ -6,12 +6,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.querz.mcaselector.*;
-import net.querz.mcaselector.io.ChunkFilterDeleter;
-import net.querz.mcaselector.io.ChunkFilterExporter;
-import net.querz.mcaselector.io.FieldChanger;
-import net.querz.mcaselector.io.SelectionDeleter;
-import net.querz.mcaselector.io.SelectionExporter;
-import net.querz.mcaselector.io.SelectionUtil;
+import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.ui.ChangeNBTDialog;
 import net.querz.mcaselector.ui.DeleteConfirmationDialog;
@@ -262,6 +257,11 @@ public class Helper {
 				} else {
 					Debug.dump("cancelled exporting chunks, no valid destination directory");
 				}
+				break;
+			case SELECT:
+				tileMap.clearSelection();
+				new ProgressDialog("Selecting filtered chunks...", primaryStage)
+					.showProgressBar(t -> ChunkFilterSelector.selectFilter(r.getFilter(), tileMap, t));
 				break;
 			default:
 				Debug.dump("i have no idea how you got no selection there...");
