@@ -295,7 +295,7 @@ public class Helper {
 
 	static {
 		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:years?|y)"), 31536000L);
-		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:months?|m)"), 2628000L);
+		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:months?)"), 2628000L);
 		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:days?|d)"), 90000L);
 		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:hours?|h)"), 3600L);
 		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:minutes?|mins?)"), 60L);

@@ -26,6 +26,7 @@ public class InhabitedTimeFilter extends LongFilter {
 				//InhabitedTime is in ticks, not seconds
 				setFilterNumber(Helper.parseDuration(raw) * 20);
 				setValid(true);
+				setRawValue(raw);
 			} catch (IllegalArgumentException ex) {
 				setFilterNumber(0L);
 				setValid(false);

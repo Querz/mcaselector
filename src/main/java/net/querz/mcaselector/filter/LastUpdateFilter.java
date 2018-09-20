@@ -24,6 +24,7 @@ public class LastUpdateFilter extends IntegerFilter {
 			try {
 				setFilterNumber(Helper.parseTimestamp(raw));
 				setValid(true);
+				setRawValue(raw);
 			} catch (IllegalArgumentException ex) {
 				setFilterNumber(0);
 				setValid(false);
