@@ -67,7 +67,7 @@
 }
 
 /* menu text color and check-menu icon */
-.menu >.label, .menu-item >.label, .check-menu-item {
+.menu .label, .menu-item >.label, .check-menu-item {
 	-fx-text-fill: -color-text-light;
 	-fx-focused-mark-color: -color-check-menu-item-enabled;
 	-fx-mark-color: -color-check-menu-item-enabled;
