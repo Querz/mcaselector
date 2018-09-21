@@ -51,6 +51,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
 		toggleGroup.getToggles().addAll(select, export, delete);
+		toggleGroup.selectedToggleProperty().addListener(l -> selectionOnly.setDisable(select.isSelected()));
 		select.fire();
 
 		setResizable(true);
