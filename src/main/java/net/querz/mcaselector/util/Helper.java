@@ -310,7 +310,12 @@ public class Helper {
 			confRes.ifPresent(confR -> {
 				if (confR == ButtonType.OK) {
 					new ProgressDialog("Changing nbt data...", primaryStage)
-							.showProgressBar(t -> FieldChanger.changeNBTFields(r.getFields(), r.isForce(), t));
+							.showProgressBar(t -> FieldChanger.changeNBTFields(
+									r.getFields(),
+									r.isForce(),
+									r.isSelectionOnly() ? tileMap.getMarkedChunks() : null,
+									t
+							));
 				}
 			});
 		});

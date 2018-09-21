@@ -24,7 +24,7 @@ public class AboutDialog extends Alert {
 		initStyle(StageStyle.UTILITY);
 		getDialogPane().getStyleClass().add("about-dialog-pane");
 		setTitle("About");
-		setHeaderText("MCA Selector by Querz");
+		setHeaderText("About MCA Selector");
 
 		GridPane grid = new GridPane();
 		grid.getStyleClass().add("about-dialog-grid-pane");

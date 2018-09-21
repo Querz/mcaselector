@@ -200,11 +200,16 @@ public class MCAFile {
 		return chunks;
 	}
 
-	public void applyFieldChanges(List<Field> fields, boolean force) {
-		for (int i = 0; i < chunks.length; i++) {
-			MCAChunkData chunk = chunks[i];
-			if (chunk != null && !chunk.isEmpty()) {
-				chunk.changeData(fields, force);
+	public void applyFieldChanges(List<Field> fields, boolean force, Set<Point2i> selection) {
+		for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
+			for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
+				int index = cz * Tile.SIZE_IN_CHUNKS + cx;
+				MCAChunkData chunk = chunks[index];
+				if (selection == null || selection.contains(chunk.getLocation())) {
+					if (chunk != null && !chunk.isEmpty()) {
+						chunk.changeData(fields, force);
+					}
+				}
 			}
 		}
 	}

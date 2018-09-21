@@ -4,18 +4,25 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.util.Point2i;
 import net.querz.mcaselector.util.Timer;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FieldChanger {
 
+	private static final Pattern regionGroupPattern = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
+
 	private FieldChanger() {}
 
-	public static void changeNBTFields(List<Field> fields, boolean force, ProgressTask progressChannel) {
+	public static void changeNBTFields(List<Field> fields, boolean force, Map<Point2i, Set<Point2i>> selection, ProgressTask progressChannel) {
 		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches("^r\\.-?\\d+\\.-?\\d+\\.mca$"));
 		if (files == null || files.length == 0) {
 			return;
@@ -25,7 +32,7 @@ public class FieldChanger {
 		progressChannel.updateProgress(files[0].getName(), 0);
 
 		for (File file : files) {
-			MCAFilePipe.addJob(new MCAFieldChangeLoadJob(file, fields, force, progressChannel));
+			MCAFilePipe.addJob(new MCAFieldChangeLoadJob(file, fields, force, selection, progressChannel));
 		}
 	}
 
@@ -34,11 +41,13 @@ public class FieldChanger {
 		private ProgressTask progressChannel;
 		private List<Field> fields;
 		private boolean force;
+		private Map<Point2i, Set<Point2i>> selection;
 
-		MCAFieldChangeLoadJob(File file, List<Field> fields, boolean force, ProgressTask progressChannel) {
+		MCAFieldChangeLoadJob(File file, List<Field> fields, boolean force, Map<Point2i, Set<Point2i>> selection, ProgressTask progressChannel) {
 			super(file);
 			this.fields = fields;
 			this.force = force;
+			this.selection = selection;
 			this.progressChannel = progressChannel;
 		}
 
@@ -46,7 +55,22 @@ public class FieldChanger {
 		public void execute() {
 			byte[] data = load();
 			if (data != null) {
-				MCAFilePipe.executeProcessData(new MCAFieldChangeProcessJob(getFile(), data, fields, force, progressChannel));
+				Set<Point2i> chunks = null;
+				if (selection != null) {
+					Matcher m = regionGroupPattern.matcher(getFile().getName());
+					if (m.find()) {
+						int regionX = Integer.parseInt(m.group("regionX"));
+						int regionZ = Integer.parseInt(m.group("regionZ"));
+						Point2i location = new Point2i(regionX, regionZ);
+						if (!selection.containsKey(location)) {
+							Debug.dumpf("will not apply nbt changes to %s", getFile().getName());
+							progressChannel.incrementProgress(getFile().getName());
+							return;
+						}
+						chunks = selection.get(location);
+					}
+				}
+				MCAFilePipe.executeProcessData(new MCAFieldChangeProcessJob(getFile(), data, fields, force, chunks, progressChannel));
 			} else {
 				Debug.errorf("error loading mca file %s", getFile().getName());
 				progressChannel.incrementProgress(getFile().getName() + ": error");
@@ -59,11 +83,13 @@ public class FieldChanger {
 		private ProgressTask progressChannel;
 		private List<Field> fields;
 		private boolean force;
+		private Set<Point2i> selection;
 
-		MCAFieldChangeProcessJob(File file, byte[] data, List<Field> fields, boolean force, ProgressTask progressChannel) {
+		MCAFieldChangeProcessJob(File file, byte[] data, List<Field> fields, boolean force, Set<Point2i> selection, ProgressTask progressChannel) {
 			super(file, data);
 			this.fields = fields;
 			this.force = force;
+			this.selection = selection;
 			this.progressChannel = progressChannel;
 		}
 
@@ -73,7 +99,7 @@ public class FieldChanger {
 			Timer t = new Timer();
 			try {
 				MCAFile mca = MCAFile.readAll(getFile(), new ByteArrayPointer(getData()));
-				mca.applyFieldChanges(fields, force);
+				mca.applyFieldChanges(fields, force, selection);
 				Debug.dumpf("took %s to apply field changes to %s", t, getFile().getName());
 				MCAFilePipe.executeSaveData(new MCAFieldChangeSaveJob(getFile(), mca, progressChannel));
 			} catch (Exception ex) {

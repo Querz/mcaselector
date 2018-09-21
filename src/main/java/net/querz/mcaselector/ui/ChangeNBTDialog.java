@@ -32,7 +32,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 	private ToggleGroup toggleGroup = new ToggleGroup();
 	private RadioButton change = new RadioButton("Change");
 	private RadioButton force = new RadioButton("Force");
-	private CheckBox export = new CheckBox("Export");
+	private CheckBox selectionOnly = new CheckBox("Apply to selection only");
 
 	public ChangeNBTDialog(Stage primaryStage) {
 		setTitle("Change NBT");
@@ -49,7 +49,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 						i--;
 					}
 				}
-				return value.isEmpty() ? null : new Result(value, force.isSelected());
+				return value.isEmpty() ? null : new Result(value, force.isSelected(), selectionOnly.isSelected());
 			}
 			return null;
 		});
@@ -72,8 +72,17 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setContent(fw);
 
+		VBox actionBox = new VBox();
+		actionBox.getChildren().addAll(change, force);
+
+		VBox optionBox = new VBox();
+		optionBox.getChildren().add(selectionOnly);
+
+		HBox selectionBox = new HBox();
+		selectionBox.getChildren().addAll(actionBox, optionBox);
+
 		VBox box = new VBox();
-		box.getChildren().addAll(scrollPane, new Separator(), change, force);
+		box.getChildren().addAll(scrollPane, new Separator(), selectionBox);
 		getDialogPane().setContent(box);
 	}
 
@@ -119,10 +128,12 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 		private boolean force;
 		private List<Field> fields;
+		private boolean selectionOnly;
 
-		public Result(List<Field> fields, boolean force) {
+		public Result(List<Field> fields, boolean force, boolean selectionOnly) {
 			this.force = force;
 			this.fields = fields;
+			this.selectionOnly = selectionOnly;
 		}
 
 		public boolean isForce() {
@@ -131,6 +142,10 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 		public List<Field> getFields() {
 			return fields;
+		}
+
+		public boolean isSelectionOnly() {
+			return selectionOnly;
 		}
 	}
 }
