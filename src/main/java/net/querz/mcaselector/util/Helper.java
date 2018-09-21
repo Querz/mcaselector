@@ -8,8 +8,10 @@ import javafx.stage.Stage;
 import net.querz.mcaselector.*;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.tiles.TileMap;
+import net.querz.mcaselector.ui.ChangeFieldsConfirmationDialog;
 import net.querz.mcaselector.ui.ChangeNBTDialog;
 import net.querz.mcaselector.ui.DeleteConfirmationDialog;
+import net.querz.mcaselector.ui.ExportConfirmationDialog;
 import net.querz.mcaselector.ui.FilterChunksDialog;
 import net.querz.mcaselector.ui.GotoDialog;
 import net.querz.mcaselector.ui.OptionBar;
@@ -224,8 +226,15 @@ public class Helper {
 
 	public static void exportSelectedChunks(TileMap tileMap, Stage primaryStage) {
 		File dir = createDirectoryChooser(null).showDialog(primaryStage);
-		new ProgressDialog("Exporting selection...", primaryStage)
-				.showProgressBar(t -> SelectionExporter.exportSelection(tileMap.getMarkedChunks(), dir, t));
+		if (dir != null) {
+			Optional<ButtonType> result = new ExportConfirmationDialog(tileMap, primaryStage).showAndWait();
+			result.ifPresent(r -> {
+				if (r == ButtonType.OK) {
+					new ProgressDialog("Exporting selection...", primaryStage)
+							.showProgressBar(t -> SelectionExporter.exportSelection(tileMap.getMarkedChunks(), dir, t));
+				}
+			});
+		}
 	}
 
 	public static void gotoCoordinate(TileMap tileMap, Stage primaryStage) {
@@ -244,16 +253,26 @@ public class Helper {
 
 			switch (r.getType()) {
 			case DELETE:
-				new ProgressDialog("Deleting filtered chunks...", primaryStage)
-						.showProgressBar(t -> ChunkFilterDeleter.deleteFilter(r.getFilter(), t));
-				clearAllCache(tileMap);
+				Optional<ButtonType> confRes = new DeleteConfirmationDialog(null, primaryStage).showAndWait();
+				confRes.ifPresent(confR -> {
+					if (confR == ButtonType.OK) {
+						new ProgressDialog("Deleting filtered chunks...", primaryStage)
+								.showProgressBar(t -> ChunkFilterDeleter.deleteFilter(r.getFilter(), t));
+						clearAllCache(tileMap);
+					}
+				});
 				break;
 			case EXPORT:
 				File dir = createDirectoryChooser(null).showDialog(primaryStage);
 				if (dir != null) {
-					Debug.dump("exporting chunks to " + dir);
-					new ProgressDialog("Exporting filtered chunks...", primaryStage)
-							.showProgressBar(t -> ChunkFilterExporter.exportFilter(r.getFilter(), dir, t));
+					confRes = new ExportConfirmationDialog(null, primaryStage).showAndWait();
+					confRes.ifPresent(confR -> {
+						if (confR == ButtonType.OK) {
+							Debug.dump("exporting chunks to " + dir);
+							new ProgressDialog("Exporting filtered chunks...", primaryStage)
+									.showProgressBar(t -> ChunkFilterExporter.exportFilter(r.getFilter(), dir, t));
+						}
+					});
 				} else {
 					Debug.dump("cancelled exporting chunks, no valid destination directory");
 				}
@@ -271,8 +290,15 @@ public class Helper {
 
 	public static void changeFields(TileMap tileMap, Stage primaryStage) {
 		Optional<ChangeNBTDialog.Result> result = new ChangeNBTDialog(primaryStage).showAndWait();
-		result.ifPresent(r -> new ProgressDialog("Changing nbt data...", primaryStage)
-				.showProgressBar(t -> FieldChanger.changeNBTFields(r.getFields(), r.isForce(), t)));
+		result.ifPresent(r -> {
+			Optional<ButtonType> confRes = new ChangeFieldsConfirmationDialog(null, primaryStage).showAndWait();
+			confRes.ifPresent(confR -> {
+				if (confR == ButtonType.OK) {
+					new ProgressDialog("Changing nbt data...", primaryStage)
+							.showProgressBar(t -> FieldChanger.changeNBTFields(r.getFields(), r.isForce(), t));
+				}
+			});
+		});
 	}
 
 	public static String byteToBinaryString(byte b) {
