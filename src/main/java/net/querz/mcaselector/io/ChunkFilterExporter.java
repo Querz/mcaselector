@@ -2,14 +2,19 @@ package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.filter.GroupFilter;
+import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.mcaselector.util.Timer;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,7 +24,7 @@ public class ChunkFilterExporter {
 
 	private ChunkFilterExporter() {}
 
-	public static void exportFilter(GroupFilter filter, File destination, ProgressTask progressChannel) {
+	public static void exportFilter(GroupFilter filter, Map<Point2i, Set<Point2i>> selection, File destination, ProgressTask progressChannel) {
 		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches("^r\\.-?\\d+\\.-?\\d+\\.mca$"));
 		if (files == null || files.length == 0) {
 			return;
@@ -28,23 +33,25 @@ public class ChunkFilterExporter {
 		progressChannel.setMax(files.length);
 		progressChannel.updateProgress(files[0].getName(), 0);
 
-		GroupFilter cloneFilter = filter.clone();
-		cloneFilter.setInverted(true);
+//		GroupFilter cloneFilter = filter.clone();
+//		cloneFilter.setInverted(true);
 
 		for (File file : files) {
-			MCAFilePipe.addJob(new MCAExportFilterLoadJob(file, cloneFilter, destination, progressChannel));
+			MCAFilePipe.addJob(new MCAExportFilterLoadJob(file, filter, selection, destination, progressChannel));
 		}
 	}
 
 	public static class MCAExportFilterLoadJob extends LoadDataJob {
 
 		private GroupFilter filter;
+		private Map<Point2i, Set<Point2i>> selection;
 		private ProgressTask progressChannel;
 		private File destination;
 
-		MCAExportFilterLoadJob(File file, GroupFilter filter, File destination, ProgressTask progressChannel) {
+		MCAExportFilterLoadJob(File file, GroupFilter filter, Map<Point2i, Set<Point2i>> selection, File destination, ProgressTask progressChannel) {
 			super(file);
 			this.filter = filter;
+			this.selection = selection;
 			this.destination = destination;
 			this.progressChannel = progressChannel;
 		}
@@ -55,8 +62,9 @@ public class ChunkFilterExporter {
 			if (m.find()) {
 				int regionX = Integer.parseInt(m.group("regionX"));
 				int regionZ = Integer.parseInt(m.group("regionZ"));
+				Point2i location = new Point2i(regionX, regionZ);
 
-				if (!filter.appliesToRegion(new Point2i(regionX, regionZ))) {
+				if (!filter.appliesToRegion(location) || selection != null && !selection.containsKey(location)) {
 					Debug.dump("filter does not apply to file " + getFile().getName());
 					progressChannel.incrementProgress(getFile().getName());
 					return;
@@ -72,7 +80,7 @@ public class ChunkFilterExporter {
 
 				byte[] data = load();
 				if (data != null) {
-					MCAFilePipe.executeProcessData(new MCAExportFilterProcessJob(getFile(), data, filter, to, progressChannel));
+					MCAFilePipe.executeProcessData(new MCAExportFilterProcessJob(getFile(), data, filter, selection == null ? null : selection.get(location), to, progressChannel));
 				} else {
 					Debug.errorf("error loading mca file %s", getFile().getName());
 					progressChannel.incrementProgress(getFile().getName());
@@ -88,11 +96,13 @@ public class ChunkFilterExporter {
 
 		private ProgressTask progressChannel;
 		private GroupFilter filter;
+		private Set<Point2i> selection;
 		private File destination;
 
-		MCAExportFilterProcessJob(File file, byte[] data, GroupFilter filter, File destination, ProgressTask progressChannel) {
+		MCAExportFilterProcessJob(File file, byte[] data, GroupFilter filter, Set<Point2i> selection, File destination, ProgressTask progressChannel) {
 			super(file, data);
 			this.filter = filter;
+			this.selection = selection;
 			this.destination = destination;
 			this.progressChannel = progressChannel;
 		}
@@ -104,7 +114,7 @@ public class ChunkFilterExporter {
 			try {
 				MCAFile mca = MCAFile.readAll(getFile(), new ByteArrayPointer(getData()));
 				if (mca != null) {
-					mca.deleteChunkIndices(filter);
+					mca.keepChunkIndices(filter, selection);
 					Debug.dumpf("took %s to delete chunk indices in %s", t, getFile().getName());
 					MCAFilePipe.executeSaveData(new MCAExportFilterSaveJob(getFile(), mca, destination, progressChannel));
 				}

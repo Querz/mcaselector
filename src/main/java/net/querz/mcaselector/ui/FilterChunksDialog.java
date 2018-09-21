@@ -1,11 +1,13 @@
 package net.querz.mcaselector.ui;
 
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -29,9 +31,10 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 	private GroupFilter value = gf;
 	private GroupFilterBox groupFilterBox = new GroupFilterBox(null, value, true);
 	private ToggleGroup toggleGroup = new ToggleGroup();
-	private RadioButton delete = new RadioButton("Delete");
-	private RadioButton export = new RadioButton("Export");
 	private RadioButton select = new RadioButton("Select");
+	private RadioButton export = new RadioButton("Export");
+	private RadioButton delete = new RadioButton("Delete");
+	private CheckBox selectionOnly = new CheckBox("Apply to selection only");
 
 	public FilterChunksDialog(Stage primaryStage) {
 		setTitle("Filter chunks");
@@ -40,15 +43,15 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 		getDialogPane().getStyleClass().add("filter-dialog-pane");
 
-		setResultConverter(p -> p == ButtonType.OK ? new Result(value, getHandleType()) : null);
+		setResultConverter(p -> p == ButtonType.OK ? new Result(value, getHandleType(), selectionOnly.isSelected()) : null);
 
 		//apply same stylesheets to this dialog
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-		toggleGroup.getToggles().addAll(delete, export, select);
-		export.fire();
+		toggleGroup.getToggles().addAll(select, export, delete);
+		select.fire();
 
 		setResizable(true);
 
@@ -61,18 +64,27 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 			Debug.dump(value);
 		});
 
+		VBox actionBox = new VBox();
+		actionBox.getChildren().addAll(select, export, delete);
+
+		VBox optionBox =  new VBox();
+		optionBox.getChildren().add(selectionOnly);
+
+		HBox selectionBox = new HBox();
+		selectionBox.getChildren().addAll(actionBox, optionBox);
+
 		VBox box = new VBox();
-		box.getChildren().addAll(scrollPane,  new Separator(), delete, export, select);
+		box.getChildren().addAll(scrollPane, new Separator(), selectionBox);
 		getDialogPane().setContent(box);
 	}
 
 	private HandleType getHandleType() {
-		if (delete.isSelected()) {
-			return HandleType.DELETE;
+		if (select.isSelected()) {
+			return HandleType.SELECT;
 		} else if (export.isSelected()) {
 			return HandleType.EXPORT;
-		} else if (select.isSelected()) {
-			return HandleType.SELECT;
+		} else if (delete.isSelected()) {
+			return HandleType.DELETE;
 		}
 		return null;
 	}
@@ -80,11 +92,13 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 	public class Result {
 
 		private HandleType type;
+		private boolean selectionOnly;
 		private GroupFilter filter;
 
-		public Result(GroupFilter filter, HandleType type) {
+		public Result(GroupFilter filter, HandleType type, boolean selectionOnly) {
 			this.filter = filter;
 			this.type = type;
+			this.selectionOnly = selectionOnly;
 		}
 
 		public HandleType getType() {
@@ -94,9 +108,13 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		public GroupFilter getFilter() {
 			return filter;
 		}
+
+		public boolean isSelectionOnly() {
+			return selectionOnly;
+		}
 	}
 
 	public enum HandleType {
-		DELETE, EXPORT, SELECT
+		SELECT, EXPORT, DELETE
 	}
 }

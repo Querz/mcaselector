@@ -94,6 +94,7 @@
 
 .radio-button {
 	-fx-text-fill: -color-text-light;
+	-fx-min-width: 150px;
 }
 
 .radio-button .radio {

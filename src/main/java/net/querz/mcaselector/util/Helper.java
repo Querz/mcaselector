@@ -257,7 +257,11 @@ public class Helper {
 				confRes.ifPresent(confR -> {
 					if (confR == ButtonType.OK) {
 						new ProgressDialog("Deleting filtered chunks...", primaryStage)
-								.showProgressBar(t -> ChunkFilterDeleter.deleteFilter(r.getFilter(), t));
+								.showProgressBar(t -> ChunkFilterDeleter.deleteFilter(
+										r.getFilter(),
+										r.isSelectionOnly() ? tileMap.getMarkedChunks() : null,
+										t
+								));
 						clearAllCache(tileMap);
 					}
 				});
@@ -270,7 +274,12 @@ public class Helper {
 						if (confR == ButtonType.OK) {
 							Debug.dump("exporting chunks to " + dir);
 							new ProgressDialog("Exporting filtered chunks...", primaryStage)
-									.showProgressBar(t -> ChunkFilterExporter.exportFilter(r.getFilter(), dir, t));
+									.showProgressBar(t -> ChunkFilterExporter.exportFilter(
+											r.getFilter(),
+											r.isSelectionOnly() ? tileMap.getMarkedChunks() : null,
+											dir,
+											t
+									));
 						}
 					});
 				} else {

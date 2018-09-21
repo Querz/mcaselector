@@ -128,10 +128,32 @@ public class MCAFile {
 		}
 	}
 
-	public void deleteChunkIndices(Filter filter) {
+	public void deleteChunkIndices(Filter filter, Set<Point2i> selection) {
 		for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
 			for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
 				int index = cz  * Tile.SIZE_IN_CHUNKS + cx;
+
+				MCAChunkData data = chunks[index];
+
+				if (data == null || data.isEmpty() || selection != null && !selection.contains(data.getLocation())) {
+					continue;
+				}
+
+				FilterData filterData = new FilterData(data.getTimestamp(), data.getData());
+
+				if (filter.matches(filterData)) {
+					offsets[index] = 0;
+					sectors[index] = 0;
+					timestamps[index] = 0;
+				}
+			}
+		}
+	}
+
+	public void keepChunkIndices(Filter filter, Set<Point2i> selection) {
+		for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
+			for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
+				int index = cz * Tile.SIZE_IN_CHUNKS + cx;
 
 				MCAChunkData data = chunks[index];
 
@@ -141,7 +163,9 @@ public class MCAFile {
 
 				FilterData filterData = new FilterData(data.getTimestamp(), data.getData());
 
-				if (filter.matches(filterData)) {
+				//keep chunk if filter AND selection applies
+				//ignore selection if it's null
+				if (!filter.matches(filterData) || selection != null && !selection.contains(data.getLocation())) {
 					offsets[index] = 0;
 					sectors[index] = 0;
 					timestamps[index] = 0;

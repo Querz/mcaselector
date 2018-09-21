@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,7 +21,7 @@ public class ChunkFilterDeleter {
 
 	private ChunkFilterDeleter() {}
 
-	public static void deleteFilter(GroupFilter filter, ProgressTask progressChannel) {
+	public static void deleteFilter(GroupFilter filter, Map<Point2i, Set<Point2i>> selection, ProgressTask progressChannel) {
 		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches("^r\\.-?\\d+\\.-?\\d+\\.mca$"));
 		if (files == null || files.length == 0) {
 			return;
@@ -29,18 +31,20 @@ public class ChunkFilterDeleter {
 		progressChannel.updateProgress(files[0].getName(), 0);
 
 		for (File file : files) {
-			MCAFilePipe.addJob(new MCADeleteFilterLoadJob(file, filter, progressChannel));
+			MCAFilePipe.addJob(new MCADeleteFilterLoadJob(file, filter, selection, progressChannel));
 		}
 	}
 
 	public static class MCADeleteFilterLoadJob extends LoadDataJob {
 
 		private GroupFilter filter;
+		private Map<Point2i, Set<Point2i>> selection;
 		private ProgressTask progressChannel;
 
-		MCADeleteFilterLoadJob(File file, GroupFilter filter, ProgressTask progressChannel) {
+		MCADeleteFilterLoadJob(File file, GroupFilter filter, Map<Point2i, Set<Point2i>> selection, ProgressTask progressChannel) {
 			super(file);
 			this.filter = filter;
+			this.selection = selection;
 			this.progressChannel = progressChannel;
 		}
 
@@ -50,8 +54,9 @@ public class ChunkFilterDeleter {
 			if (m.find()) {
 				int regionX = Integer.parseInt(m.group("regionX"));
 				int regionZ = Integer.parseInt(m.group("regionZ"));
+				Point2i location = new Point2i(regionX, regionZ);
 
-				if (!filter.appliesToRegion(new Point2i(regionX, regionZ))) {
+				if (!filter.appliesToRegion(location) || selection != null && !selection.containsKey(location)) {
 					Debug.dump("filter does not apply to file " + getFile().getName());
 					progressChannel.incrementProgress(getFile().getName());
 					return;
@@ -59,7 +64,7 @@ public class ChunkFilterDeleter {
 
 				byte[] data = load();
 				if (data != null) {
-					MCAFilePipe.executeProcessData(new MCADeleteFilterProcessJob(getFile(), data, filter, progressChannel));
+					MCAFilePipe.executeProcessData(new MCADeleteFilterProcessJob(getFile(), data, filter, selection != null ? selection.get(location) : null, progressChannel));
 				} else {
 					Debug.errorf("error loading mca file %s", getFile().getName());
 					progressChannel.incrementProgress(getFile().getName());
@@ -75,10 +80,12 @@ public class ChunkFilterDeleter {
 
 		private ProgressTask progressChannel;
 		private GroupFilter filter;
+		private Set<Point2i> selection;
 
-		MCADeleteFilterProcessJob(File file, byte[] data, GroupFilter filter, ProgressTask progressChannel) {
+		MCADeleteFilterProcessJob(File file, byte[] data, GroupFilter filter, Set<Point2i> selection, ProgressTask progressChannel) {
 			super(file, data);
 			this.filter = filter;
+			this.selection = selection;
 			this.progressChannel = progressChannel;
 		}
 
@@ -89,7 +96,7 @@ public class ChunkFilterDeleter {
 			try {
 				MCAFile mca = MCAFile.readAll(getFile(), new ByteArrayPointer(getData()));
 				if (mca != null) {
-					mca.deleteChunkIndices(filter);
+					mca.deleteChunkIndices(filter, selection);
 					Debug.dumpf("took %s to delete chunk indices in %s", t, getFile().getName());
 					MCAFilePipe.executeSaveData(new MCADeleteFilterSaveJob(getFile(), mca, progressChannel));
 				}
