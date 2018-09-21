@@ -271,6 +271,10 @@
 	-fx-background-color: -color-dialog-header-background;
 }
 
+.dialog-pane .label {
+	-fx-text-fill: -color-text-light;
+}
+
 .dialog-pane:header .header-panel .label {
 	-fx-background-color: -color-dialog-header-background;
 	-fx-text-fill: -color-text-light;
@@ -295,6 +299,18 @@
 
 .goto-dialog-pane .coordinate-box {
 	-fx-spacing: 5;
+}
+
+.about-dialog-pane .about-dialog-grid-pane .label {
+	-fx-label-padding: 8 15 8 0;
+}
+
+.about-dialog-pane .about-dialog-grid-pane .hyperlink {
+	-fx-padding: 8 15 8 -8;
+}
+
+.about-dialog-pane .about-dialog-grid-pane .hyperlink .label {
+	-fx-padding: 0;
 }
 
 /*---------- PROGRESS DIALOG ----------*/

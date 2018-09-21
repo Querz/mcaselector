@@ -30,7 +30,7 @@ dependencies {
 
 jar {
 	manifest {
-		attributes 'Main-Class': 'net.querz.mcaselector.Main'
+		attributes 'Main-Class': 'net.querz.mcaselector.Main', 'Application-Version': project.version
 	}
 }
 

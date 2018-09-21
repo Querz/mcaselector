@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import net.querz.mcaselector.*;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.tiles.TileMap;
+import net.querz.mcaselector.ui.AboutDialog;
 import net.querz.mcaselector.ui.ChangeFieldsConfirmationDialog;
 import net.querz.mcaselector.ui.ChangeNBTDialog;
 import net.querz.mcaselector.ui.DeleteConfirmationDialog;
@@ -17,6 +18,9 @@ import net.querz.mcaselector.ui.GotoDialog;
 import net.querz.mcaselector.ui.OptionBar;
 import net.querz.mcaselector.ui.ProgressDialog;
 import java.io.File;
+import java.io.IOException;
+import java.net.JarURLConnection;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -28,6 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -310,6 +316,10 @@ public class Helper {
 		});
 	}
 
+	public static void showAboutDialog(TileMap tileMap, Stage primaryStage) {
+		new AboutDialog(primaryStage).showAndWait();
+	}
+
 	public static String byteToBinaryString(byte b) {
 		StringBuilder s = new StringBuilder(Integer.toBinaryString(b & 0xFF));
 		for (int i = s.length(); i < 8; i++) {
@@ -372,5 +382,17 @@ public class Helper {
 			Debug.dump(e.getMessage());
 		}
 		throw new IllegalArgumentException("could not parse date time");
+	}
+
+	public static Attributes getManifestAttributes() throws IOException {
+		String className = Helper.class.getSimpleName() + ".class";
+		String classPath = Helper.class.getResource(className).toString();
+		if (!classPath.startsWith("jar")) {
+			throw new IOException("application not running in jar file");
+		}
+		URL url = new URL(classPath);
+		JarURLConnection jarConnection = (JarURLConnection) url.openConnection();
+		Manifest manifest = jarConnection.getManifest();
+		return manifest.getMainAttributes();
 	}
 }

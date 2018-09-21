@@ -21,6 +21,7 @@ public class OptionBar extends MenuBar {
 	private Menu view = menu("View");
 	private Menu selection = menu("Selection");
 	private Menu tools = menu("Tools");
+	private Menu about = menu("About");
 
 	private MenuItem open = menuItem("Open");
 	private MenuItem quit = menuItem("Quit");
@@ -45,7 +46,7 @@ public class OptionBar extends MenuBar {
 
 		tileMap.setOnUpdate(this::onUpdate);
 
-		getMenus().addAll(file, view, selection, tools);
+		getMenus().addAll(file, view, selection, tools, about);
 		file.getItems().addAll(open, quit);
 		view.getItems().addAll(
 				chunkGrid, regionGrid, separator(),
@@ -57,6 +58,14 @@ public class OptionBar extends MenuBar {
 				importSelection, exportSelection, separator(),
 				clearSelectionCache);
 		tools.getItems().addAll(filterChunks, changeFields);
+
+		//add dummy menu item to be able to use listener on showingProperty
+		about.getItems().add(new MenuItem());
+		about.showingProperty().addListener((a, oldValue, newValue) -> {
+			if (newValue) {
+				Helper.showAboutDialog(tileMap, primaryStage);
+			}
+		});
 
 		open.setOnAction(e -> Helper.openWorld(tileMap, primaryStage, this));
 		quit.setOnAction(e -> System.exit(0));
