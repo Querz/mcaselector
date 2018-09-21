@@ -1,6 +1,56 @@
+* {
+	-color-text-light: #f2f2f2;
+	-color-dialog-background: #3c3f41;
+	-color-dialog-header-background: #494d50;
+	-color-dialog-separator: #515151;
+	-color-progress-bar-track: #616b6b;
+	-color-progress-bar-background: #494d50;
+	-color-combo-box-background: #3c3f41;
+	-color-combo-box-border: #646464;
+	-color-combo-box-arrow: #bbbbbb;
+	-color-combo-box-hover-background: #494d50;
+	-color-combo-box-hover-border: #666666;
+	-color-combo-box-hover-arrow: #bfbfbf;
+	-color-combo-box-list-border: #020202;
+	-color-combo-box-focused-shadow: #00bfff;
+	-color-text-field-background: #45494a;
+	-color-text-field-border: #646464;
+	-color-text-field-focused-shadow: #00bfff;
+	-color-filter-box-invalid-background: #9e494a;
+	-color-filter-box-invalid-shadow: #ff4000;
+	-color-filter-box-control-hover-background: #494d50;
+	-color-radio-button-background: #43494a;
+	-color-radio-button-circle: #6a6a6a;
+	-color-radio-button-dot: #bbbbbb;
+	-color-scroll-pane-border: #646464;
+	-color-scroll-pane-shadow: #000000;
+	-color-scroll-bar-thumb: #7c7c7c;
+	-color-button-background: #4c5052;
+	-color-button-border: #5e6060;
+	-color-button-text: #acbbbb;
+	-color-button-hover-background: #565a5d;
+	-color-button-hover-border: #656767;
+	-color-button-hover-text: #b9c6c6;
+	-color-button-focused-shadow: #00bfff;
+	-color-button-disabled-background: #3c3f41;
+	-color-button-disabled-text: #6f7777;
+	-color-menu-background: #3c3f41;
+	-color-menu-disabled-background: #303336;
+	-color-menu-hover-background: #494d50;
+	-color-menu-separator: #898989;
+	-color-check-menu-item-enabled: #f2f2f2;
+	-color-tilemap-shadow: #000000;
+	-color-field-cell-odd: #46494b;
+	-color-field-cell-even: #3c3f41;
+	-color-field-valid-shadow: #00ff40;
+	-color-field-valid-background: #489d5e;
+}
+
+/*---------- MENU BAR, MENU AND MENU ITEM ----------*/
+
 /* basic menu background color */
 .menu-bar, .menu, .menu-item, .context-menu {
-	-fx-background-color: #262626;
+	-fx-background-color: -color-menu-background;
 }
 
 /* menu paddings */
@@ -17,39 +67,405 @@
 }
 
 /* menu text color and check-menu icon */
-.menu >.label, .menu-item >.label, .check-menu-item {
-	-fx-text-fill: #f2f2f2;
-	-fx-focused-mark-color: #f2f2f2;
-	-fx-mark-color: #f2f2f2;
+.menu .label, .menu-item >.label, .check-menu-item {
+	-fx-text-fill: -color-text-light;
+	-fx-focused-mark-color: -color-check-menu-item-enabled;
+	-fx-mark-color: -color-check-menu-item-enabled;
 }
 
 /* menu hovering */
 .menu:hover, .menu-item:hover, .check-menu-item:hover {
-	-fx-background-color: #3f3f3f;
+	-fx-background-color: -color-menu-hover-background;
 }
 
 /* if the menu-item is disabled, this will overwrite the hover style */
 .menu-item:disabled {
-	-fx-background-color: #2e2e2e;
+	-fx-background-color: -color-menu-disabled-background;
 	-fx-opacity: 1;
 }
 
 /* separator lines in menus */
-.separator *.line {
+.menu .separator *.line {
 	-fx-border-width: 0;
-	-fx-background-color: #898989;
+	-fx-background-color: -color-menu-separator;
 }
 
-/* shadow for tilemap box */
+/*---------- RADIO BUTTON ----------*/
+
+.radio-button {
+	-fx-text-fill: -color-text-light;
+	-fx-min-width: 150px;
+}
+
+.radio-button .radio {
+	-fx-background-color: -color-radio-button-background;
+	-fx-border-color: -color-radio-button-circle;
+	-fx-border-radius: 10;
+	-fx-border-width: 2;
+	-fx-border-insets: 4;
+	-fx-background-insets: 4;
+}
+
+.radio-button .radio .dot {
+	-fx-padding: 3;
+	-fx-mark-color: -color-radio-button-dot;
+}
+
+/*---------- CHECKBOX ----------*/
+
+.check-box {
+	-fx-padding: 4 0 -3 0;
+	-fx-text-fill: -color-text-light;
+}
+
+.check-box .box {
+	-fx-background-color: -color-radio-button-background;
+	-fx-border-color: -color-radio-button-circle;
+	-fx-border-radius: 2;
+	-fx-border-width: 2;
+	-fx-border-insets: 3;
+	-fx-background-insets: 3;
+}
+
+.check-box .box .mark {
+	-fx-padding: 5;
+	-fx-mark-color: -color-radio-button-dot;
+}
+
+/*---------- BUTTON ----------*/
+
+.button {
+	-fx-background-color: -color-button-background;
+	-fx-border-color: -color-button-border;
+	-fx-text-fill: -color-button-text;
+	-fx-border-width: 1;
+	-fx-border-radius: 1;
+	-fx-background-radius: 1;
+	-fx-pref-height: 22px;
+	-fx-max-height: 22px;
+	-fx-padding: 0;
+}
+
+.button:hover {
+	-fx-background-color: -color-button-hover-background;
+	-fx-border-color: -color-button-hover-border;
+	-fx-text-fill: -color-button-hover-text;
+}
+
+.button:focused {
+	-fx-effect: dropshadow(gaussian, -color-combo-box-focused-shadow, 4, 0, 0, 0);
+}
+
+.button-base:disabled {
+	-fx-background-color: -color-button-disabled-background;
+	-fx-text-fill: -color-button-text;
+}
+
+/*---------- COMBO BOX ----------*/
+
+.combo-box {
+	-fx-background-color: -color-combo-box-background;
+	-fx-background-radius: 0;
+	-fx-border-width: 1;
+	-fx-border-color: -color-combo-box-border;
+	-fx-pref-width: 130px;
+	-fx-min-width: 70px;
+	-fx-padding: 0;
+}
+
+.combo-box:hover {
+	-fx-background-color: -color-combo-box-hover-background;
+	-fx-border-color: -color-combo-box-hover-border;
+}
+
+.combo-box:focused {
+	-fx-effect: dropshadow(gaussian, -color-combo-box-focused-shadow, 4, 0, 0, 0);
+}
+
+.combo-box-base .arrow-button {
+	-fx-border-width: 0 0 0 1;
+	-fx-border-color: -color-combo-box-border;
+	-fx-padding: 0 5 0 5;
+}
+
+.combo-box-base .arrow-button .arrow {
+	-fx-background-color: -color-combo-box-arrow;
+}
+
+.combo-box .list-cell {
+	-fx-text-fill: -color-text-light;
+	-fx-padding: 2 5 2 5;
+}
+
+.combo-box-popup .list-view {
+	-fx-padding: 0;
+	-fx-border-width: 0 1 1 1;
+	-fx-border-color: -color-combo-box-list-border;
+}
+
+.combo-box-popup .list-cell:hover {
+	-fx-background-color: -color-menu-hover-background;
+}
+
+.combo-box-popup .list-cell {
+	-fx-background-color: -color-menu-background;
+}
+
+/*---------- TEXT FIELD ----------*/
+
+.text-field {
+	-fx-background-color: -color-text-field-background;
+	-fx-background-radius: 0;
+	-fx-border-width: 1px;
+	-fx-border-color: -color-text-field-border;
+	-fx-pref-height: 22px;
+	-fx-max-height: 22px;
+	-fx-min-width: 30px;
+	-fx-padding: 0;
+	-fx-font-weight: bold;
+	-fx-text-fill: -color-text-light;
+}
+
+.text-field:focused {
+	-fx-effect: dropshadow(gaussian, -color-text-field-focused-shadow, 4, 0, 0, 0);
+}
+
+/*---------- SCROLL PANE ----------*/
+
+.scroll-pane {
+	-fx-background-color: -color-dialog-background;
+	-fx-fit-to-width: true;
+	-fx-border-width: 1;
+	-fx-border-color: -color-scroll-pane-border;
+	-fx-pref-height: 300;
+	-fx-max-height: 300;
+}
+
+.scroll-pane > .viewport {
+	-fx-effect: innershadow(gaussian, -color-scroll-pane-shadow, 4, 0, 0, 0);
+	-fx-background-color: transparent;
+}
+
+.scroll-bar {
+	-fx-background-color: -color-dialog-background;
+}
+
+.scroll-bar .thumb {
+	-fx-background-color: -color-scroll-bar-thumb;
+}
+
+.scroll-bar .increment-button, .scroll-bar .decrement-button, .scroll-bar .increment-arrow, .scroll-bar .decrement-arrow {
+	visibility: hidden;
+	-fx-max-height: 0;
+	-fx-pref-height: 0;
+	-fx-padding: 0;
+}
+
+/*---------- DIALOG ----------*/
+
+.dialog-pane {
+	-fx-background-color: -color-dialog-background;
+}
+
+.dialog-pane:header .header-panel {
+	-fx-background-color: -color-dialog-header-background;
+}
+
+.dialog-pane .label {
+	-fx-text-fill: -color-text-light;
+}
+
+.dialog-pane:header .header-panel .label {
+	-fx-background-color: -color-dialog-header-background;
+	-fx-text-fill: -color-text-light;
+}
+
+.dialog-pane > .button-bar > .container {
+	-fx-background-color: -color-dialog-background;
+}
+
+.dialog-pane > .content.label {
+	-fx-background-color: -color-dialog-background;
+	-fx-text-fill: -color-text-light;
+}
+
+.dialog-pane .separator {
+	-fx-padding: 10 0 10 0;
+}
+
+.dialog-pane .separator *.line {
+	-fx-background-color: -color-dialog-separator;
+}
+
+.goto-dialog-pane .coordinate-box {
+	-fx-spacing: 5;
+}
+
+.about-dialog-pane .about-dialog-grid-pane .label {
+	-fx-label-padding: 8 15 8 0;
+}
+
+.about-dialog-pane .about-dialog-grid-pane .hyperlink {
+	-fx-padding: 8 15 8 -8;
+}
+
+.about-dialog-pane .about-dialog-grid-pane .hyperlink .label {
+	-fx-padding: 0;
+}
+
+/*---------- PROGRESS DIALOG ----------*/
+
+.progress-dialog {
+	-fx-background-color: transparent;
+	-fx-pref-width: 200;
+	-fx-background-insets: 5 10 10 5;
+	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 4, 4)
+}
+
+.progress-dialog .progress-title {
+	-fx-background-color: -color-dialog-background;
+	-fx-text-fill: -color-text-light;
+	-fx-padding: 10 15 5 15;
+	-fx-background-insets: 5 15 0 5;
+}
+
+.progress-dialog .progress-bar {
+	-fx-background-color: -color-progress-bar-background;
+	-fx-padding: 5 20 5 10;
+	-fx-background-insets: 0 15 0 5;
+}
+
+.progress-dialog .progress-bar .bar {
+	-fx-background-insets: 0 5 0 5;
+	-fx-padding: 5;
+}
+
+.progress-dialog .progress-bar .track {
+	-fx-background-color: -color-progress-bar-track;
+	-fx-background-radius: 1;
+	-fx-background-insets: 0 5 0 5;
+}
+
+.progress-dialog .progress-info {
+	-fx-background-color: -color-dialog-background;
+	-fx-text-fill: -color-text-light;
+	-fx-padding: 5 10 20 15;
+	-fx-background-insets: 0 15 15 5;
+}
+
+/*---------- TILE MAP ----------*/
+
 .tile-map-box {
-	-fx-effect: innershadow(gaussian, black, 8, 0, 0, 0);
+	-fx-effect: innershadow(gaussian, -color-tilemap-shadow, 8, 0, 0, 0);
+	-marked-region-color: rgba(255, 0, 0, 0.8);
+	-marked-chunk-color: rgba(255, 115, 0, 0.8);
+	-region-grid-color: black;
+	-chunk-grid-color: darkgray;
+	-grid-line-width: 0.5;
+	-empty-chunk-background-color: black;
+	-empty-color: rgba(51, 51, 51, 1);
 }
 
-/* status bar styles */
+/*---------- STATUS BAR ----------*/
+
 .status-bar {
-	-fx-background-color: #262626;
+	-fx-background-color: -color-menu-background;
 }
 
 .status-bar .label {
-	-fx-text-fill: #f2f2f2;
+	-fx-text-fill: -color-text-light;
+}
+
+/*---------- FILTER ----------*/
+
+.filter-operators-grid {
+	-fx-hgap: 5;
+	-fx-padding: 0 5 0 0;
+}
+
+.filter-controls-grid {
+	-fx-hgap: 5;
+	-fx-padding: 0 2 0 5;
+}
+
+/* operator combo-box */
+.filter-operator-combo-box {
+	-fx-pref-width: 70px;
+	-fx-min-width: 70px;
+}
+
+/* comparator combo-box */
+.filter-comparator-combo-box {
+	-fx-pref-width: 60px;
+	-fx-min-width: 60px;
+}
+
+.filter-box {
+	-fx-padding: 6 0 3 10;
+	-fx-background-color: -color-dialog-background;
+	-fx-border-width: 1 0 0 0;
+	-fx-border-insets: 3 0 0 0;
+	-fx-border-color: -color-dialog-separator;
+}
+
+.filter-box .control-label:hover {
+	-fx-background-color: -color-filter-box-control-hover-background
+}
+
+.number-filter-box-invalid .text-field, .text-filter-box-invalid .text-field {
+	-fx-background-color: -color-filter-box-invalid-background;
+	-fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
+}
+
+/*no padding for root group*/
+.group-filter-box-root {
+	-fx-padding: 0;
+	-fx-border-width: 0;
+	-fx-border-insets: 0;
+}
+
+.group-filter-box {
+	-fx-padding: 1 0 1 1;
+	-fx-border-insets: 0 0 0 8;
+	-fx-border-width: 2 0 2 2;
+	-fx-border-color: -color-dialog-separator;
+	-fx-background-color: -color-dialog-background;
+}
+
+/*---------- NBT Changer ----------*/
+
+.change-nbt-dialog-pane .text-field {
+	-fx-text-fill: -color-text-light;
+}
+
+.change-nbt-dialog-pane .field-view {
+	-fx-background-color: -color-dialog-background;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell {
+	-fx-padding: 2 5 2 5;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell-even {
+	-fx-background-color: -color-field-cell-even;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell-odd {
+	-fx-background-color: -color-field-cell-odd;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell .label {
+	-fx-text-fill: -color-text-light;
+	-fx-pref-width: 130px;
+	-fx-min-width: 70px;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell-valid {
+	-fx-background-color: -color-field-valid-background;
+	-fx-effect: dropshadow(gaussian, -color-field-valid-shadow, 4, 0, 0, 0);
+}
+
+.change-nbt-dialog-pane .scroll-pane {
+	-fx-pref-height: inherit;
+	-fx-max-height: 300;
 }

@@ -1,12 +1,14 @@
 package net.querz.mcaselector.io;
 
+import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.util.Timer;
 import java.io.*;
 import java.nio.file.Files;
-import java.util.HashMap;
+import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -15,96 +17,131 @@ public class SelectionExporter {
 
 	private SelectionExporter() {}
 
-	public static void exportSelection(Map<Point2i, Set<Point2i>> chunks, File file) {
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-			for (Map.Entry<Point2i, Set<Point2i>> entry : chunks.entrySet()) {
-				Point2i r = entry.getKey();
-				if (entry.getValue() != null) {
-					for (Point2i c : entry.getValue()) {
-						bw.write(r.getX() + ";" + r.getY() + ";" + c.getX() + ";" + c.getY() + "\n");
-					}
-				} else {
-					bw.write(r.getX() + ";" + r.getY() + "\n");
-				}
-			}
-		} catch (IOException ex) {
-			Debug.error(ex);
+	public static void exportSelection(Map<Point2i, Set<Point2i>> chunksToBeExported, File destination, ProgressTask progressChannel) {
+		if (chunksToBeExported.isEmpty()) {
+			return;
+		}
+
+		progressChannel.setMax(chunksToBeExported.size());
+		Point2i first = chunksToBeExported.entrySet().iterator().next().getKey();
+		progressChannel.updateProgress(Helper.createMCAFileName(first), 0);
+
+		for (Map.Entry<Point2i, Set<Point2i>> entry : chunksToBeExported.entrySet()) {
+			MCAFilePipe.addJob(new MCADeleteSelectionLoadJob(
+					Helper.createMCAFilePath(entry.getKey()),
+					entry.getValue(),
+					new File(destination,Helper.createMCAFileName(entry.getKey())),
+					progressChannel));
 		}
 	}
 
-	public static Map<Point2i, Set<Point2i>> importSelection(File file) {
-		Map<Point2i, Set<Point2i>> chunks = new HashMap<>();
-		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-			String line;
-			while ((line = br.readLine()) != null) {
-				String[] elements = line.split(";");
-				if (elements.length == 2 || elements.length == 4) {
-					Integer x = Helper.parseInt(elements[0], 10);
-					Integer z = Helper.parseInt(elements[1], 10);
-					if (x == null || z == null) {
-						Debug.error("could not read region in selection import: " + line);
-						continue;
-					}
-					Integer cx = null, cz = null;
-					if (elements.length == 4) {
-						cx = Helper.parseInt(elements[2], 10);
-						cz = Helper.parseInt(elements[3], 10);
-						if (cx == null || cz == null) {
-							Debug.error("could not read chunk in selection import: " + line);
-							continue;
-						}
-					}
-					Point2i region = new Point2i(x, z);
-					if (cx == null) {
-						//don't overwrite possibly selected chunks in this region with null
-						if (!chunks.containsKey(region)) {
-							chunks.put(region, null);
-						}
-					} else {
-						chunks.computeIfAbsent(region, k -> new HashSet<>());
-						chunks.get(region).add(new Point2i(cx, cz));
-					}
-				}
-			}
-		} catch (IOException ex) {
-			Debug.error(ex);
-		}
-		return chunks;
-	}
+	public static class MCADeleteSelectionLoadJob extends LoadDataJob {
 
-	public static void exportSelectedChunks(Map<Point2i, Set<Point2i>> chunks, File dir) {
-		for (Map.Entry<Point2i, Set<Point2i>> entry : chunks.entrySet()) {
-			File file = Helper.createMCAFilePath(entry.getKey());
-			if (file.exists()) {
-				File to = new File(dir, Helper.createMCAFileName(entry.getKey()));
-				if (to.exists()) {
-					Debug.dump(to.getAbsolutePath() + " exists, not overwriting");
-					continue;
-				}
+		private Set<Point2i> chunksToBeExported;
+		private File destination;
+		private ProgressTask progressChannel;
+
+		MCADeleteSelectionLoadJob(File file, Set<Point2i> chunksToBeExported, File destination, ProgressTask progressChannel) {
+			super(file);
+			this.chunksToBeExported = chunksToBeExported;
+			this.destination = destination;
+			this.progressChannel = progressChannel;
+		}
+
+		@Override
+		public void execute() {
+			if (chunksToBeExported == null) {
 				try {
-					Files.copy(file.toPath(), to.toPath());
-				} catch (IOException ex) {
-					Debug.error(ex);
-					continue;
+					Files.copy(getFile().toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+					Debug.dumpf("moved file %s", getFile().getName());
+				} catch (Exception ex) {
+					Debug.errorf("error moving file: ", getFile().getName());
 				}
-				if (entry.getValue() == null) {
-					continue;
-				}
-				//invert selected chunks and tell the MCALoader to delete them
-				Set<Point2i> c = new HashSet<>(Tile.CHUNKS - entry.getValue().size());
-				Point2i origin = Helper.regionToChunk(entry.getKey());
-				for (int x = origin.getX(); x < origin.getX() + Tile.SIZE_IN_CHUNKS; x++) {
-					for (int z = origin.getY(); z < origin.getY() + Tile.SIZE_IN_CHUNKS; z++) {
-						Point2i cp = new Point2i(x, z);
-						if (!entry.getValue().contains(cp)) {
-							c.add(cp);
+				progressChannel.incrementProgress(getFile().getName());
+				return;
+			}
+			byte[] data = load(MCAFile.SECTION_SIZE * 2); //load header only
+			if (data != null) {
+				MCAFilePipe.executeProcessData(new MCADeleteSelectionProcessJob(getFile(), data, chunksToBeExported, destination, progressChannel));
+			} else {
+				Debug.errorf("error loading mca file %s", getFile().getName());
+				progressChannel.incrementProgress(getFile().getName());
+			}
+		}
+	}
+
+	public static class MCADeleteSelectionProcessJob extends ProcessDataJob {
+
+		private ProgressTask progressChannel;
+		private Set<Point2i> chunksToBeExported;
+		private File destination;
+
+		MCADeleteSelectionProcessJob(File file, byte[] data, Set<Point2i> chunksToBeExported, File destination, ProgressTask progressChannel) {
+			super(file, data);
+			this.chunksToBeExported = chunksToBeExported;
+			this.destination = destination;
+			this.progressChannel = progressChannel;
+		}
+
+		@Override
+		public void execute() {
+			//load MCAFile
+			Timer t = new Timer();
+			try {
+				MCAFile mca = MCAFile.readHeader(getFile(), new ByteArrayPointer(getData()));
+				if (mca != null) {
+
+					Set<Point2i> inverted = new HashSet<>(Tile.CHUNKS - chunksToBeExported.size());
+					Point2i origin = Helper.regionToChunk(Helper.chunkToRegion(chunksToBeExported.iterator().next()));
+					for (int x = origin.getX(); x < origin.getX() + Tile.SIZE_IN_CHUNKS; x++) {
+						for (int z = origin.getY(); z < origin.getY() + Tile.SIZE_IN_CHUNKS; z++) {
+							Point2i cp = new Point2i(x, z);
+							if (!chunksToBeExported.contains(cp)) {
+								inverted.add(cp);
+							}
 						}
 					}
+
+					mca.deleteChunkIndices(inverted);
+					Debug.dumpf("took %s to delete chunk indices in %s", t, getFile().getName());
+					MCAFilePipe.executeSaveData(new MCADeleteSelectionSaveJob(getFile(), mca, destination, progressChannel));
 				}
-				Map<Point2i, Set<Point2i>> inverted = new HashMap<>(1);
-				inverted.put(entry.getKey(), c);
-				MCALoader.deleteChunks(inverted, dir, false);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				progressChannel.incrementProgress(getFile().getName());
+				Debug.errorf("error deleting chunk indices in %s: %s", getFile().getName(), ex.getMessage());
 			}
+		}
+	}
+
+	public static class MCADeleteSelectionSaveJob extends SaveDataJob<MCAFile> {
+
+		private ProgressTask progressChannel;
+		private File destination;
+
+		MCADeleteSelectionSaveJob(File file, MCAFile data, File destination, ProgressTask progressChannel) {
+			super(file, data);
+			this.destination = destination;
+			this.progressChannel = progressChannel;
+		}
+
+		@Override
+		public void execute() {
+			Timer t = new Timer();
+			try {
+				File tmpFile;
+				try (RandomAccessFile raf = new RandomAccessFile(getFile(), "r")) {
+					tmpFile = getData().deFragment(raf);
+				}
+
+				if (tmpFile != null) {
+					Files.move(tmpFile.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				}
+			} catch (Exception ex) {
+				Debug.error(ex);
+			}
+			progressChannel.incrementProgress(getFile().getName());
+			Debug.dumpf("took %s to save data to %s", t, getFile().getName());
 		}
 	}
 }

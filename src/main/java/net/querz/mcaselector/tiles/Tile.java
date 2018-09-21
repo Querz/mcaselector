@@ -1,57 +1,50 @@
 package net.querz.mcaselector.tiles;
 
 import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.io.MCAFile;
-import net.querz.mcaselector.io.MCALoader;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
+import net.querz.mcaselector.util.Timer;
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Tile {
 
+	public static Color REGION_MARKED_COLOR = new Color(1, 0, 0, 0.8);
+	public static Color CHUNK_MARKED_COLOR = new Color(1, 0.45, 0, 0.8);
+	public static Color REGION_GRID_COLOR = Color.BLACK;
+	public static Color CHUNK_GRID_COLOR = Color.DARKGRAY;
+	public static Color EMPTY_CHUNK_BACKGROUND_COLOR = Color.BLACK;
+	public static Color EMPTY_COLOR = new Color(0.2, 0.2, 0.2, 1);
+	public static double GRID_LINE_WIDTH = 0.5;
+
 	public static final int SIZE = 512;
 	public static final int CHUNK_SIZE = 16;
 	public static final int SIZE_IN_CHUNKS = 32;
 	public static final int CHUNKS = 1024;
 
-	public static final Color REGION_MARKED_COLOR = new Color(1, 0, 0, 0.8);
-	public static final Color CHUNK_MARKED_COLOR = new Color(1, 0.45, 0, 0.8);
-	public static final Color REGION_GRID_COLOR = Color.BLACK;
-	public static final Color CHUNK_GRID_COLOR = Color.DARKGRAY;
-	public static final double GRID_LINE_WIDTH = 0.5;
-
-	private static final Image empty;
-	private static final Color emptyColor = new Color(0.2, 0.2, 0.2, 1);
+	private static Image empty;
 
 	private Point2i location;
 	private Image image;
 	private boolean loading = false;
 	private boolean loaded = false;
 	private boolean marked = false;
+	//a set of all marked chunks in the tile in block locations
 	private Set<Point2i> markedChunks = new HashSet<>();
 
 	static {
-		WritableImage wImage = new WritableImage(SIZE, SIZE);
-		PixelWriter pWriter = wImage.getPixelWriter();
-		for (int x = 0; x < SIZE; x++) {
-			for (int y = 0; y < SIZE; y++) {
-				pWriter.setColor(x, y, emptyColor);
-			}
-		}
-		empty = wImage;
+		reloadEmpty();
 	}
 
 	public Tile(Point2i location) {
@@ -91,7 +84,7 @@ public class Tile {
 		return loaded;
 	}
 
-	void setLoading(boolean loading) {
+	public void setLoading(boolean loading) {
 		this.loading = loading;
 	}
 
@@ -149,6 +142,17 @@ public class Tile {
 
 	public Set<Point2i> getMarkedChunks() {
 		return markedChunks;
+	}
+
+	public static void reloadEmpty() {
+		WritableImage wImage = new WritableImage(SIZE, SIZE);
+		PixelWriter pWriter = wImage.getPixelWriter();
+		for (int x = 0; x < SIZE; x++) {
+			for (int y = 0; y < SIZE; y++) {
+				pWriter.setColor(x, y, EMPTY_COLOR);
+			}
+		}
+		empty = wImage;
 	}
 
 	public void draw(GraphicsContext ctx, float scale, Point2f offset, boolean regionGrid, boolean chunkGrid) {
@@ -211,18 +215,29 @@ public class Tile {
 		}
 	}
 
+	public boolean isCached() {
+		return Config.getCacheDir() == null || Helper.createPNGFilePath(Helper.blockToRegion(location)).exists();
+	}
+
+	public File getMCAFile() {
+		return Helper.createMCAFilePath(Helper.blockToRegion(location));
+	}
+
+	public File getCacheFile() {
+		return Helper.createPNGFilePath(Helper.blockToRegion(location));
+	}
+
 	public void loadFromCache(TileMap tileMap) {
 		if (loaded) {
 			Debug.dump("region at " + location + " already loaded");
 			return;
 		}
-		loading = true;
 		Point2i p = Helper.blockToRegion(location);
 
 		if (Config.getCacheDir() == null) {
 			//load empty map (start screen)
-			loading = false;
 			loaded = true;
+			Platform.runLater(tileMap::update);
 			return;
 		}
 
@@ -233,62 +248,43 @@ public class Tile {
 		try (InputStream inputStream = new FileInputStream(res)) {
 			image = new Image(inputStream);
 			loaded = true;
+			Platform.runLater(tileMap::update);
 		} catch (IOException ex) {
 			Debug.dump("region " + p + " not cached");
 			//do nothing
 		}
-		loading = false;
-		Platform.runLater(tileMap::update);
 	}
 
-	public void loadImage(TileMap tileMap) {
+	public Image generateImage(TileMap tileMap, byte[] rawData) {
 		if (loaded) {
 			Debug.dump("region at " + location + " already loaded");
-			return;
+			return image;
 		}
-		loading = true;
-		Point2i p = Helper.blockToRegion(location);
-		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/r.%d.%d.png", p.getX(), p.getY());
-		File file = new File(Config.getWorldDir().getAbsolutePath() + "/r." + p.getX() + "." + p.getY() + ".mca");
-		Debug.dump("Generating image for region " + p + " from " + file);
 
+		Timer t = new Timer();
 
-		if (!file.exists()) {
-			Debug.dump("region file " + file + " does not exist, skipping.");
-			image = null;
-		} else {
-			try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+		File file = getMCAFile();
 
-				MCAFile mcaFile = MCALoader.read(file, raf);
-				if (mcaFile == null) {
-					Debug.error("error reading mca file " + file);
-					//mark as loaded, we won't try to load this again
-					loaded = true;
-					loading = false;
-					return;
-				}
+		ByteArrayPointer ptr = new ByteArrayPointer(rawData);
 
-				Image tmp = image = mcaFile.createImage(raf);
-
-				Debug.dump("done generating image from " + file + " updating now");
-				loading = false;
-				loaded = true;
-
-				//show image as fast as possible, even before it was cached
-				Platform.runLater(tileMap::update);
-
-				File cacheFile = new File(res);
-				if (!cacheFile.getParentFile().exists()) {
-					if (!cacheFile.getParentFile().mkdirs()) {
-						Debug.error("failed to create cache directory for " + cacheFile);
-					}
-				}
-				ImageIO.write(SwingFXUtils.fromFXImage(tmp, null), "png", new File(res));
-			} catch (IOException ex) {
-				Debug.error(ex);
-			}
+		MCAFile mcaFile = MCAFile.readHeader(file, ptr);
+		if (mcaFile == null) {
+			Debug.error("error reading mca file " + file);
+			//mark as loaded, we won't try to load this again
+			loaded = true;
+			return image;
 		}
+		Debug.dumpf("took %s to read mca file header of %s", t, file.getName());
+
+		t.reset();
+
+		image = mcaFile.createImage(ptr);
 		loaded = true;
-		loading = false;
+
+		Platform.runLater(tileMap::update);
+
+		Debug.dumpf("took %s to generate image of %s", t, file.getName());
+
+		return image;
 	}
 }

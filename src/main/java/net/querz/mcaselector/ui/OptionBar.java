@@ -1,7 +1,5 @@
-package net.querz.mcaselector;
+package net.querz.mcaselector.ui;
 
-import com.sun.javafx.css.PseudoClassState;
-import javafx.css.PseudoClass;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
@@ -10,10 +8,10 @@ import net.querz.mcaselector.util.Helper;
 
 public class OptionBar extends MenuBar {
 	/*
-	* File		View				Selection
-	* - Open	- Chunk Grid		- Clear
-	* - Quit	- Region Grid		- Export chunks
-	*			- Goto				- Delete chunks
+	* File		View				Selection					Tools
+	* - Open	- Chunk Grid		- Clear selection			- Filter chunks
+	* - Quit	- Region Grid		- Export selected chunks	- Change fields
+	*			- Goto				- Delete selected chunks
 	*			- Clear cache		- Import selection
 	*			- Clear all cache	- Export selection
 	*								- Clear cache
@@ -22,6 +20,8 @@ public class OptionBar extends MenuBar {
 	private Menu file = menu("File");
 	private Menu view = menu("View");
 	private Menu selection = menu("Selection");
+	private Menu tools = menu("Tools");
+	private Label about = new Label("About");
 
 	private MenuItem open = menuItem("Open");
 	private MenuItem quit = menuItem("Quit");
@@ -31,11 +31,13 @@ public class OptionBar extends MenuBar {
 	private MenuItem clearViewCache = menuItem("Clear cache");
 	private MenuItem clearAllCache = menuItem("Clear all cache");
 	private MenuItem clear = menuItem("Clear");
-	private MenuItem exportChunks = menuItem("Export chunks");
-	private MenuItem delete = menuItem("Delete chunks");
+	private MenuItem exportChunks = menuItem("Export selected chunks");
+	private MenuItem delete = menuItem("Delete selected chunks");
 	private MenuItem importSelection = menuItem("Import selection");
 	private MenuItem exportSelection = menuItem("Export selection");
 	private MenuItem clearSelectionCache = menuItem("Clear cache");
+	private MenuItem filterChunks = menuItem("Filter chunks");
+	private MenuItem changeFields = menuItem("Change fields");
 
 	private int previousSelectedChunks = 0;
 
@@ -44,7 +46,6 @@ public class OptionBar extends MenuBar {
 
 		tileMap.setOnUpdate(this::onUpdate);
 
-		getMenus().addAll(file, view, selection);
 		file.getItems().addAll(open, quit);
 		view.getItems().addAll(
 				chunkGrid, regionGrid, separator(),
@@ -55,20 +56,28 @@ public class OptionBar extends MenuBar {
 				exportChunks, delete, separator(),
 				importSelection, exportSelection, separator(),
 				clearSelectionCache);
+		tools.getItems().addAll(filterChunks, changeFields);
+		about.setOnMouseClicked(e -> Helper.showAboutDialog(tileMap, primaryStage));
+		Menu aboutMenu = new Menu();
+		aboutMenu.setGraphic(about);
 
-		open.setOnAction(e -> Helper.openWorld(tileMap, primaryStage));
+		getMenus().addAll(file, view, selection, tools, aboutMenu);
+
+		open.setOnAction(e -> Helper.openWorld(tileMap, primaryStage, this));
 		quit.setOnAction(e -> System.exit(0));
 		chunkGrid.setOnAction(e -> tileMap.setShowChunkGrid(chunkGrid.isSelected()));
 		regionGrid.setOnAction(e -> tileMap.setShowRegionGrid(regionGrid.isSelected()));
-		goTo.setOnAction(e -> Helper.gotoCoordinate(tileMap));
+		goTo.setOnAction(e -> Helper.gotoCoordinate(tileMap, primaryStage));
 		clearAllCache.setOnAction(e -> Helper.clearAllCache(tileMap));
 		clearViewCache.setOnAction(e -> Helper.clearViewCache(tileMap));
 		clear.setOnAction(e -> tileMap.clearSelection());
 		exportChunks.setOnAction(e -> Helper.exportSelectedChunks(tileMap, primaryStage));
-		delete.setOnAction(e -> Helper.deleteSelection(tileMap));
+		delete.setOnAction(e -> Helper.deleteSelection(tileMap, primaryStage));
 		importSelection.setOnAction(e -> Helper.importSelection(tileMap, primaryStage));
 		exportSelection.setOnAction(e -> Helper.exportSelection(tileMap, primaryStage));
 		clearSelectionCache.setOnAction(e -> Helper.clearSelectionCache(tileMap));
+		filterChunks.setOnAction(e -> Helper.filterChunks(tileMap, primaryStage));
+		changeFields.setOnAction(e -> Helper.changeFields(tileMap, primaryStage));
 
 		open.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
 		chunkGrid.setAccelerator(KeyCombination.keyCombination("Ctrl+R"));
@@ -82,24 +91,33 @@ public class OptionBar extends MenuBar {
 		importSelection.setAccelerator(KeyCombination.keyCombination("Ctrl+I"));
 		exportSelection.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
 		clearSelectionCache.setAccelerator(KeyCombination.keyCombination("Ctrl+J"));
+		filterChunks.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
+		changeFields.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
 
-		setMenuItemsEnabled(false);
+		setSelectionDependentMenuItemsEnabled(false);
+		setWorldDependentMenuItemsEnabled(false);
 	}
 
 	private void onUpdate(TileMap tileMap) {
 		int selectedChunks = tileMap.getSelectedChunks();
 		if (previousSelectedChunks != 0 && selectedChunks == 0
 				|| previousSelectedChunks == 0 && selectedChunks != 0) {
-			setMenuItemsEnabled(selectedChunks != 0);
+			setSelectionDependentMenuItemsEnabled(selectedChunks != 0);
 		}
 		previousSelectedChunks = selectedChunks;
 	}
 
-	private void setMenuItemsEnabled(boolean enabled) {
+	public void setWorldDependentMenuItemsEnabled(boolean enabled) {
+		filterChunks.setDisable(!enabled);
+		changeFields.setDisable(!enabled);
+	}
+
+	private void setSelectionDependentMenuItemsEnabled(boolean enabled) {
 		clear.setDisable(!enabled);
 		exportChunks.setDisable(!enabled);
 		exportSelection.setDisable(!enabled);
 		delete.setDisable(!enabled);
+		clearSelectionCache.setDisable(!enabled);
 	}
 
 	private Menu menu(String text) {
@@ -107,8 +125,7 @@ public class OptionBar extends MenuBar {
 	}
 
 	private MenuItem menuItem(String text) {
-		MenuItem item = new MenuItem(text);
-		return item;
+		return new MenuItem(text);
 	}
 
 	private CheckMenuItem checkMenuItem(String text, boolean selected) {

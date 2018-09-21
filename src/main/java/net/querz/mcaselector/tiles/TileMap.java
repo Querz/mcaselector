@@ -3,7 +3,10 @@ package net.querz.mcaselector.tiles;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.*;
-import net.querz.mcaselector.Window;
+import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.RegionImageGenerator;
+import net.querz.mcaselector.ui.Window;
+import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
@@ -41,8 +44,6 @@ public class TileMap extends Canvas {
 	private List<Consumer<TileMap>> updateListener = new ArrayList<>(1);
 	private List<Consumer<TileMap>> hoverListener = new ArrayList<>(1);
 
-	private QueuedRegionImageGenerator qrig;
-
 	public TileMap(Window window, int width, int height) {
 		super(width, height);
 		this.window = window;
@@ -53,7 +54,6 @@ public class TileMap extends Canvas {
 		this.setOnScroll(this::onScroll);
 		this.setOnMouseMoved(this::onMouseMoved);
 		this.setOnMouseExited(e -> onMouseExited());
-		qrig = new QueuedRegionImageGenerator(QueuedRegionImageGenerator.PROCESSOR_COUNT, this);
 		update();
 	}
 
@@ -115,13 +115,26 @@ public class TileMap extends Canvas {
 
 	public void update() {
 		runUpdateListeners();
-		qrig.validateJobs();
+
+		MCAFilePipe.validateJobs(j -> {
+			if (j instanceof  RegionImageGenerator.MCAImageLoadJob) {
+				RegionImageGenerator.MCAImageLoadJob job = (RegionImageGenerator.MCAImageLoadJob) j;
+				if (!job.getTile().isVisible(this)) {
+					Debug.dumpf("removing %s for tile %s from queue", job.getClass().getSimpleName(), job.getTile().getLocation());
+					RegionImageGenerator.setLoading(job.getTile(), false);
+					return true;
+				}
+			}
+			return false;
+		});
 		for (Tile tile : visibleTiles) {
 			if (!tile.isVisible(this, TILE_VISIBILITY_THRESHOLD)) {
 				visibleTiles.remove(tile);
-				tile.unload();
-				if (!tile.isMarked() && tile.getMarkedChunks().size() == 0) {
-					tiles.remove(tile.getLocation());
+				if (!RegionImageGenerator.isLoading(tile)) {
+					tile.unload();
+					if (!tile.isMarked() && tile.getMarkedChunks().size() == 0) {
+						tiles.remove(tile.getLocation());
+					}
 				}
 			}
 		}
@@ -163,7 +176,7 @@ public class TileMap extends Canvas {
 	}
 
 	public void goTo(int x, int z) {
-		offset = new Point2f(x + getWidth() / 2, z + getHeight() / 2);
+		offset = new Point2f(x - getWidth() * scale / 2, z - getHeight() * scale / 2);
 		update();
 	}
 
@@ -179,6 +192,14 @@ public class TileMap extends Canvas {
 		List<Point2i> regions = new ArrayList<>();
 		runOnVisibleRegions(r -> regions.add(Helper.blockToRegion(r)));
 		return regions;
+	}
+
+	public int getVisibleTiles() {
+		return visibleTiles.size();
+	}
+
+	public int getLoadedTiles() {
+		return tiles.size();
 	}
 
 	public void clear() {
@@ -248,6 +269,30 @@ public class TileMap extends Canvas {
 		}
 	}
 
+	public void addMarkedChunks(Map<Point2i, Set<Point2i>> chunks) {
+		for (Map.Entry<Point2i, Set<Point2i>> entry : chunks.entrySet()) {
+			Point2i region = Helper.regionToBlock(entry.getKey());
+			Tile tile = tiles.get(region);
+			if (tile == null) {
+				tile = new Tile(region);
+				tiles.put(region, tile);
+			}
+			if (entry.getValue() == null) {
+				selectedChunks -= tile.getMarkedChunks().size();
+				tile.mark(true);
+				selectedChunks += Tile.CHUNKS;
+			} else {
+				for (Point2i chunk : entry.getValue()) {
+					Point2i block = Helper.chunkToBlock(chunk);
+					if (!tile.isMarked(block)) {
+						selectedChunks++;
+					}
+					tile.mark(block);
+				}
+			}
+		}
+	}
+
 	private Point2i getMouseBlock(double x, double z) {
 		int blockX = (int) (offset.getX() + x * scale);
 		int blockZ = (int) (offset.getY() + z * scale);
@@ -311,6 +356,8 @@ public class TileMap extends Canvas {
 	}
 
 	private void draw(GraphicsContext ctx) {
+		ctx.setFill(Tile.EMPTY_CHUNK_BACKGROUND_COLOR);
+		ctx.fillRect(0, 0, getWidth(), getHeight());
 		runOnVisibleRegions(region -> {
 			if (!tiles.containsKey(region)) {
 				tiles.put(region, new Tile(region));
@@ -321,7 +368,7 @@ public class TileMap extends Canvas {
 			Point2i regionOffset = region.sub((int) offset.getX(), (int) offset.getY());
 
 			if (!tile.isLoaded() && !tile.isLoading()) {
-				qrig.addJob(tile);
+				RegionImageGenerator.generate(tile, this);
 			}
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
 			tile.draw(ctx, scale, p, showRegionGrid, showChunkGrid);

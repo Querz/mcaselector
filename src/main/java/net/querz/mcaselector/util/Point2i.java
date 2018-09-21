@@ -121,5 +121,4 @@ public class Point2i implements Cloneable {
 		}
 		return null;
 	}
-
 }

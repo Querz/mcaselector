@@ -1,4 +1,4 @@
-package net.querz.mcaselector;
+package net.querz.mcaselector.version;
 
 import javafx.scene.image.PixelWriter;
 import net.querz.nbt.CompoundTag;
