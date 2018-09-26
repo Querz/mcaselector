@@ -21,6 +21,8 @@ public class SelectionDeleter {
 			return;
 		}
 
+		MCAFilePipe.clearQueues();
+
 		progressChannel.setMax(chunksToBeDeleted.size());
 		Point2i first = chunksToBeDeleted.entrySet().iterator().next().getKey();
 		progressChannel.updateProgress(Helper.createMCAFileName(first), 0);

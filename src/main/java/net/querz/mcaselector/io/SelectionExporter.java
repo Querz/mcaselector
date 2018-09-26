@@ -22,6 +22,8 @@ public class SelectionExporter {
 			return;
 		}
 
+		MCAFilePipe.clearQueues();
+
 		progressChannel.setMax(chunksToBeExported.size());
 		Point2i first = chunksToBeExported.entrySet().iterator().next().getKey();
 		progressChannel.updateProgress(Helper.createMCAFileName(first), 0);

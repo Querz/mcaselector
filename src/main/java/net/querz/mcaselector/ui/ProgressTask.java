@@ -11,6 +11,7 @@ public abstract class ProgressTask extends Task<Void> {
 	private int current = 0;
 	private StringProperty infoProperty = new SimpleStringProperty("running...");
 	private Runnable onFinish;
+	private boolean locked = false;
 
 	public ProgressTask() {}
 
@@ -26,15 +27,30 @@ public abstract class ProgressTask extends Task<Void> {
 		updateProgress(info, ++current, max);
 	}
 
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
+
+	public void done(String info) {
+		updateProgress(info, 1, 1);
+	}
+
+	public void setIndeterminate(String info) {
+		Platform.runLater(() -> infoProperty.setValue(info));
+		updateProgress(-1, 0);
+	}
+
 	public void updateProgress(String info, double progress) {
 		updateProgress(info, progress, max);
 	}
 
 	public void updateProgress(String info, double progress, int max) {
-		Platform.runLater(() -> infoProperty.setValue(info));
-		updateProgress(progress, max);
-		if (progress == max && onFinish != null) {
-			Platform.runLater(onFinish);
+		if (!locked) {
+			Platform.runLater(() -> infoProperty.setValue(info));
+			updateProgress(progress, max);
+			if (progress == max && onFinish != null) {
+				Platform.runLater(onFinish);
+			}
 		}
 	}
 

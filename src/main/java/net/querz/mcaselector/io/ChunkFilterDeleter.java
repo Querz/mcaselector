@@ -27,6 +27,8 @@ public class ChunkFilterDeleter {
 			return;
 		}
 
+		MCAFilePipe.clearQueues();
+
 		progressChannel.setMax(files.length);
 		progressChannel.updateProgress(files[0].getName(), 0);
 

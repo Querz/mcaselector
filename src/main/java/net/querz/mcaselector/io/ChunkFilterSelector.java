@@ -28,6 +28,8 @@ public class ChunkFilterSelector {
 			return;
 		}
 
+		MCAFilePipe.clearQueues();
+
 		progressChannel.setMax(files.length);
 		progressChannel.updateProgress(files[0].getName(), 0);
 

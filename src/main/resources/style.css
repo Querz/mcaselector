@@ -318,6 +318,7 @@
 .progress-dialog {
 	-fx-background-color: transparent;
 	-fx-pref-width: 200;
+	-fx-pref-height: 120;
 	-fx-background-insets: 5 10 10 5;
 	-fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 4, 4)
 }
@@ -351,6 +352,17 @@
 	-fx-text-fill: -color-text-light;
 	-fx-padding: 5 10 20 15;
 	-fx-background-insets: 0 15 15 5;
+}
+
+.progress-dialog .cancel-box {
+	-fx-alignment: top-center;
+	-fx-background-color: -color-dialog-background;
+	-fx-padding: -10 15 5 0;
+	-fx-background-insets: -15 15 0 5;
+}
+
+.progress-dialog .cancel-box .button {
+	-fx-padding: 0 10 0 10;
 }
 
 /*---------- TILE MAP ----------*/

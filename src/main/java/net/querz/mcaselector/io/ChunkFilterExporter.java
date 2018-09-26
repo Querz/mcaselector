@@ -30,11 +30,10 @@ public class ChunkFilterExporter {
 			return;
 		}
 
+		MCAFilePipe.clearQueues();
+
 		progressChannel.setMax(files.length);
 		progressChannel.updateProgress(files[0].getName(), 0);
-
-//		GroupFilter cloneFilter = filter.clone();
-//		cloneFilter.setInverted(true);
 
 		for (File file : files) {
 			MCAFilePipe.addJob(new MCAExportFilterLoadJob(file, filter, selection, destination, progressChannel));

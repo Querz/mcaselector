@@ -1,13 +1,16 @@
 package net.querz.mcaselector.ui;
 
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import net.querz.mcaselector.io.MCAFilePipe;
 
 import java.util.function.Consumer;
 
@@ -16,6 +19,9 @@ public class ProgressDialog extends Stage {
 	private Label title = new Label("Progress");
 	private ProgressBar progressBar = new ProgressBar(-1);
 	private Label label = new Label("running...");
+	private Button cancel = new Button("Cancel");
+
+	private ProgressTask currentTask;
 
 	public ProgressDialog(String title, Stage primaryStage) {
 		initStyle(StageStyle.TRANSPARENT);
@@ -28,9 +34,21 @@ public class ProgressDialog extends Stage {
 
 		label.getStyleClass().add("progress-info");
 
+		HBox cancelBox = new HBox();
+		cancelBox.getStyleClass().add("cancel-box");
+		cancelBox.getChildren().add(cancel);
+
 		VBox box = new VBox();
 		box.getStyleClass().add("progress-dialog");
-		box.getChildren().addAll(this.title, progressBar, label);
+		box.getChildren().addAll(this.title, progressBar, label, cancelBox);
+		cancel.setOnAction(e -> {
+			currentTask.setLocked(true);
+			currentTask.setIndeterminate("cancelling...");
+			MCAFilePipe.cancelAllJobs(() -> {
+				currentTask.done("done.");
+				close();
+			});
+		});
 
 		progressBar.prefWidthProperty().bind(box.widthProperty());
 		this.title.prefWidthProperty().bind(box.widthProperty());
@@ -45,17 +63,17 @@ public class ProgressDialog extends Stage {
 	}
 
 	public void showProgressBar(Consumer<ProgressTask> r) {
-		ProgressTask task = new ProgressTask() {
+		currentTask = new ProgressTask() {
 			@Override
 			protected Void call() {
 				r.accept(this);
 				return null;
 			}
 		};
-		progressBar.progressProperty().bind(task.progressProperty());
-		label.textProperty().bind(task.infoProperty());
-		task.setOnFinish(this::close);
-		Thread thread = new Thread(task);
+		progressBar.progressProperty().bind(currentTask.progressProperty());
+		label.textProperty().bind(currentTask.infoProperty());
+		currentTask.setOnFinish(this::close);
+		Thread thread = new Thread(currentTask);
 		thread.start();
 		showAndWait();
 	}

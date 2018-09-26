@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io;
 
+import javafx.application.Platform;
 import net.querz.mcaselector.util.Debug;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -82,10 +83,10 @@ public final class MCAFilePipe {
 	public static void addJob(LoadDataJob job) {
 		if (processDataExecutor.getQueue().size() + loadDataExecutor.getQueue().size() > MAX_LOADED_FILES
 				|| saveDataExecutor.getQueue().size() > MAX_LOADED_FILES) {
-			Debug.dumpf("adding DataLoadJob %s for %s to wait queue", job, job.getFile().getName());
+			Debug.dumpf("adding LoadDataJob %s for %s to wait queue", job, job.getFile().getName());
 			waitingForLoad.offer(job);
 		} else {
-			Debug.dumpf("adding DataLoadJob %s for %s to executor queue", job, job.getFile().getName());
+			Debug.dumpf("adding LoadDataJob %s for %s to executor queue", job, job.getFile().getName());
 			loadDataExecutor.execute(job);
 		}
 	}
@@ -104,5 +105,27 @@ public final class MCAFilePipe {
 
 	public static void validateJobs(Predicate<LoadDataJob> p) {
 		waitingForLoad.removeIf(p);
+	}
+
+	public static void clearQueues() {
+		waitingForLoad.clear();
+		loadDataExecutor.getQueue().clear();
+		processDataExecutor.getQueue().clear();
+		saveDataExecutor.getQueue().clear();
+	}
+
+	public static void cancelAllJobs(Runnable callback) {
+		clearQueues();
+		Thread thread = new Thread(() -> {
+			for (;;) {
+				if (loadDataExecutor.getActiveCount() == 0
+						&& processDataExecutor.getActiveCount() == 0
+						&& saveDataExecutor.getActiveCount() == 0) {
+					break;
+				}
+			}
+			Platform.runLater(callback);
+		});
+		thread.start();
 	}
 }
