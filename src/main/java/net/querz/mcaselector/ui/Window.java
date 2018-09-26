@@ -50,9 +50,6 @@ public class Window extends Application {
 		primaryStage.setOnCloseRequest(e -> System.exit(0));
 		primaryStage.setScene(scene);
 		primaryStage.show();
-
-		new ProgressDialog("Changing nbt data...", primaryStage)
-				.showProgressBar(t -> new ProgressTask.Dummy());
 	}
 
 	public boolean isKeyPressed(KeyCode keyCode) {
