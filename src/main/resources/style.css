@@ -309,6 +309,10 @@
 	-fx-padding: 8 15 8 -8;
 }
 
+.about-dialog-pane .about-dialog-grid-pane .hyperlink:visited  {
+	-fx-text-fill: -color-text-light;
+}
+
 .about-dialog-pane .about-dialog-grid-pane .hyperlink .label {
 	-fx-padding: 0;
 }

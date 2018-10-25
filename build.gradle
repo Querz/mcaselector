@@ -1,10 +1,12 @@
 plugins {
 	id 'com.github.johnrengelman.shadow' version '2.0.1'
+	id 'com.eriwen.gradle.css' version '2.14.0'
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'css'
 
 group 'net.querz.mcaselector'
 version '1.4'
@@ -39,4 +41,9 @@ shadowJar {
 		attributes 'Main-Class': 'net.querz.mcaselector.Main'
 	}
 	configurations = [project.configurations.shadow]
+}
+
+minifyCss {
+	source = "${sourceSets.main.resources.srcDirs[0]}/style.css"
+	dest = "${sourceSets.main.output.resourcesDir}/style.css"
 }
