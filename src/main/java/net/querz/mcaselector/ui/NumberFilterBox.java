@@ -3,6 +3,7 @@ package net.querz.mcaselector.ui;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import net.querz.mcaselector.filter.Comparator;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.filter.NumberFilter;
@@ -19,6 +20,7 @@ public class NumberFilterBox extends FilterBox {
 		input.textProperty().addListener((a, b, c) -> onTextInput(filter, c));
 		input.setAlignment(Pos.CENTER);
 
+		comparator.setTooltip(new Tooltip("The comparator."));
 		comparator.getItems().addAll(filter.getComparators());
 		comparator.getSelectionModel().select(filter.getComparator());
 		comparator.setOnAction(e -> onComparator(filter));

@@ -10,6 +10,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -73,9 +74,12 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		scrollPane.setContent(fw);
 
 		VBox actionBox = new VBox();
+		change.setTooltip(new Tooltip("Changes the value only if its key exists."));
+		force.setTooltip(new Tooltip("Creates the tag if it doesn't exist."));
 		actionBox.getChildren().addAll(change, force);
 
 		VBox optionBox = new VBox();
+		selectionOnly.setTooltip(new Tooltip("If this filter should only apply to the current selection."));
 		optionBox.getChildren().add(selectionOnly);
 
 		HBox selectionBox = new HBox();

@@ -1,5 +1,6 @@
 package net.querz.mcaselector.ui;
 
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.filter.GroupFilter;
@@ -14,6 +15,7 @@ public class GroupFilterBox extends FilterBox {
 
 	public GroupFilterBox(FilterBox parent, GroupFilter filter, boolean root) {
 		super(parent, filter, root);
+		add.setTooltip(new Tooltip("Add a new condition to this group."));
 		delete.setVisible(!root);
 
 		if (root) {

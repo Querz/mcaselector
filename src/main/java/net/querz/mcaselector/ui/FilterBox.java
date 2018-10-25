@@ -3,6 +3,7 @@ package net.querz.mcaselector.ui;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -45,7 +46,10 @@ public abstract class FilterBox extends BorderPane {
 		getStyleClass().add("filter-box");
 		this.filter = filter;
 
+		add.setTooltip(new Tooltip("Add a new condition below this one."));
 		add.getStyleClass().add("control-label");
+
+		delete.setTooltip(new Tooltip("Delete this condition."));
 		delete.getStyleClass().add("control-label");
 
 		GridPane controls = new GridPane();
@@ -58,6 +62,7 @@ public abstract class FilterBox extends BorderPane {
 
 		filterOperators.getStyleClass().add("filter-operators-grid");
 
+		operator.setTooltip(new Tooltip("The operator to link multiple conditions."));
 		operator.getItems().addAll(Operator.values());
 		operator.getSelectionModel().select(filter.getOperator());
 		operator.setOnAction(e -> onOperator(filter));
@@ -68,6 +73,7 @@ public abstract class FilterBox extends BorderPane {
 			operator.setVisible(false);
 		}
 
+		type.setTooltip(new Tooltip("The type of this condition."));
 		type.getItems().addAll(FilterType.values());
 		type.getSelectionModel().select(filter.getType());
 		type.setOnAction(e -> update(type.getSelectionModel().getSelectedItem()));

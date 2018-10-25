@@ -7,6 +7,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -50,6 +51,10 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
+		select.setTooltip(new Tooltip("Creates a selection of the affected chunks."));
+		export.setTooltip(new Tooltip("Exports all affected chunks into a new directory."));
+		delete.setTooltip(new Tooltip("Deletes all affected chunk from the current world."));
+
 		toggleGroup.getToggles().addAll(select, export, delete);
 		toggleGroup.selectedToggleProperty().addListener(l -> selectionOnly.setDisable(select.isSelected()));
 		select.fire();
@@ -69,6 +74,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		actionBox.getChildren().addAll(select, export, delete);
 
 		VBox optionBox =  new VBox();
+		selectionOnly.setTooltip(new Tooltip("If this filter should only apply to the current selection."));
 		optionBox.getChildren().add(selectionOnly);
 
 		HBox selectionBox = new HBox();
