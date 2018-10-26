@@ -16,7 +16,7 @@ public class TransparentStage extends Stage {
 	private StackPane content;
 	private int shadowSize = 10;
 
-	public TransparentStage(Stage parent) {
+	public TransparentStage(javafx.stage.Window parent) {
 		//create ONE Pane that contains all the elements
 		initStyle(StageStyle.TRANSPARENT);
 		setResizable(false);
@@ -46,11 +46,7 @@ public class TransparentStage extends Stage {
 		);
 
 		content = new StackPane(shadow);
-
-		content.setStyle(
-				"-fx-background-color: rgba(255, 255, 255, 0.0);" +
-						"-fx-background-insets: " + shadowSize + ";"
-		);
+		content.getStyleClass().add("transparent-stage-content-root");
 
 		Scene scene = new Scene(content);
 		scene.setFill(Color.TRANSPARENT);

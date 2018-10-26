@@ -16,32 +16,6 @@ import java.util.List;
 
 public class TileMapBox extends HBox {
 
-	private final StyleableObjectProperty<Color> markedRegionColorProperty = new SimpleStyleableObjectProperty<>(markedRegionColorMetaData, this, "markedRegionColor");
-	private static final CssMetaData<TileMapBox, Color> markedRegionColorMetaData = new CssMetaData<TileMapBox, Color>("-marked-region-color", StyleConverter.getColorConverter()) {
-		@Override
-		public boolean isSettable(TileMapBox styleable) {
-			return !styleable.markedRegionColorProperty.isBound();
-		}
-
-		@Override
-		public StyleableProperty<Color> getStyleableProperty(TileMapBox styleable) {
-			return styleable.markedRegionColorProperty;
-		}
-	};
-
-	private final StyleableObjectProperty<Color> markedChunkColorProperty = new SimpleStyleableObjectProperty<>(markedRegionColorMetaData, this, "markedChunkColor");
-	private static final CssMetaData<TileMapBox, Color> markedChunkColorMetaData = new CssMetaData<TileMapBox, Color>("-marked-chunk-color", StyleConverter.getColorConverter()) {
-		@Override
-		public boolean isSettable(TileMapBox styleable) {
-			return !styleable.markedChunkColorProperty.isBound();
-		}
-
-		@Override
-		public StyleableProperty<Color> getStyleableProperty(TileMapBox styleable) {
-			return styleable.markedChunkColorProperty;
-		}
-	};
-
 	private final StyleableObjectProperty<Color> regionGridColorProperty = new SimpleStyleableObjectProperty<>(regionGridColorMetaData, this, "regionGridColor");
 	private static final CssMetaData<TileMapBox, Color> regionGridColorMetaData = new CssMetaData<TileMapBox, Color>("-region-grid-color", StyleConverter.getColorConverter()) {
 		@Override
@@ -113,8 +87,6 @@ public class TileMapBox extends HBox {
 		// combine already available properties in HBox with new properties
 		List<CssMetaData<? extends Styleable, ?>> parent = HBox.getClassCssMetaData();
 		List<CssMetaData<? extends Styleable, ?>> additional = Arrays.asList(
-				markedRegionColorMetaData,
-				markedChunkColorMetaData,
 				regionGridColorMetaData,
 				chunkGridColorMetaData,
 				gridLineWidthMetaData,
@@ -141,8 +113,6 @@ public class TileMapBox extends HBox {
 	}
 
 	private void bind() {
-		markedRegionColorProperty.addListener((o, r, n) -> Tile.REGION_MARKED_COLOR = markedRegionColorProperty.get());
-		markedChunkColorProperty.addListener((o, r, n) -> Tile.CHUNK_MARKED_COLOR = markedChunkColorProperty.get());
 		regionGridColorProperty.addListener((o, r, n) -> Tile.REGION_GRID_COLOR = regionGridColorProperty.get());
 		chunkGridColorProperty.addListener((o, r, n) -> Tile.CHUNK_GRID_COLOR = chunkGridColorProperty.get());
 		gridLineWidthProperty.addListener((o, r, n) -> Tile.GRID_LINE_WIDTH = gridLineWidthProperty.get());

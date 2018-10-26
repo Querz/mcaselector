@@ -20,8 +20,6 @@ import java.util.Set;
 
 public class Tile {
 
-	public static Color REGION_MARKED_COLOR = new Color(1, 0, 0, 0.8);
-	public static Color CHUNK_MARKED_COLOR = new Color(1, 0.45, 0, 0.8);
 	public static Color REGION_GRID_COLOR = Color.BLACK;
 	public static Color CHUNK_GRID_COLOR = Color.DARKGRAY;
 	public static Color EMPTY_CHUNK_BACKGROUND_COLOR = Color.BLACK;
@@ -160,11 +158,11 @@ public class Tile {
 			ctx.drawImage(getImage(), offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 			if (marked) {
 				//draw marked region
-				ctx.setFill(REGION_MARKED_COLOR);
+				ctx.setFill(Config.getRegionSelectionColor());
 				ctx.fillRect(offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 			} else if (markedChunks.size() > 0) {
 				//draw marked chunks
-				ctx.setFill(CHUNK_MARKED_COLOR);
+				ctx.setFill(Config.getChunkSelectionColor());
 				for (Point2i p : markedChunks) {
 					//location is the real location of the region in the world
 					//p is the real location of the chunk in the world

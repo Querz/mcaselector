@@ -325,8 +325,23 @@ public class Helper {
 		});
 	}
 
-	public static void editSettings(Stage primaryStage) {
-		new SettingsDialog(primaryStage).showAndWait();
+	public static void editSettings(TileMap tileMap, Stage primaryStage) {
+		Optional<SettingsDialog.Result> result = new SettingsDialog(primaryStage).showAndWait();
+		result.ifPresent(r -> {
+			if (Config.getLoadThreads() != r.getReadThreads()
+					|| Config.getProcessThreads() != r.getProcessThreads()
+					|| Config.getWriteThreads() != r.getWriteThreads()
+					|| Config.getMaxLoadedFiles() != r.getMaxLoadedFiles()) {
+				MCAFilePipe.init(r.getReadThreads(), r.getProcessThreads(), r.getWriteThreads(), r.getMaxLoadedFiles());
+			}
+			Config.setLoadThreads(r.getReadThreads());
+			Config.setProcessThreads(r.getProcessThreads());
+			Config.setWriteThreads(r.getWriteThreads());
+			Config.setMaxLoadedFiles(r.getMaxLoadedFiles());
+			Config.setRegionSelectionColor(r.getRegionColor());
+			Config.setChunkSelectionColor(r.getChunkColor());
+			tileMap.update();
+		});
 	}
 
 	public static void showAboutDialog(TileMap tileMap, Stage primaryStage) {

@@ -13,7 +13,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import net.querz.mcaselector.util.Helper;
 import java.util.Optional;
 
@@ -28,7 +27,7 @@ public class ColorPicker extends TransparentStage {
 	private Button cancel = new Button("Cancel");
 	private Color result;
 
-	public ColorPicker(Stage stage, Color color) {
+	public ColorPicker(javafx.stage.Window stage, Color color) {
 		super(stage);
 		cancel.setOnAction(e -> {
 			result = null;

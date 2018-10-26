@@ -65,7 +65,7 @@ public class OptionBar extends MenuBar {
 		getMenus().addAll(file, view, selection, tools, aboutMenu);
 
 		open.setOnAction(e -> Helper.openWorld(tileMap, primaryStage, this));
-		settings.setOnAction(e -> Helper.editSettings(primaryStage));
+		settings.setOnAction(e -> Helper.editSettings(tileMap, primaryStage));
 		quit.setOnAction(e -> System.exit(0));
 		chunkGrid.setOnAction(e -> tileMap.setShowChunkGrid(chunkGrid.isSelected()));
 		regionGrid.setOnAction(e -> tileMap.setShowRegionGrid(regionGrid.isSelected()));
