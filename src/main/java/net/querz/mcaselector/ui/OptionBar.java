@@ -8,13 +8,13 @@ import net.querz.mcaselector.util.Helper;
 
 public class OptionBar extends MenuBar {
 	/*
-	* File		View				Selection					Tools
-	* - Open	- Chunk Grid		- Clear selection			- Filter chunks
-	* - Quit	- Region Grid		- Export selected chunks	- Change fields
-	*			- Goto				- Delete selected chunks
-	*			- Clear cache		- Import selection
-	*			- Clear all cache	- Export selection
-	*								- Clear cache
+	* File			View				Selection					Tools				About
+	* - Open		- Chunk Grid		- Clear selection			- Filter chunks
+	* - Settings	- Region Grid		- Export selected chunks	- Change fields
+	* - Quit		- Goto				- Delete selected chunks
+	*				- Clear cache		- Import selection
+	*				- Clear all cache	- Export selection
+	*									- Clear cache
 	* */
 
 	private Menu file = menu("File");
@@ -24,6 +24,7 @@ public class OptionBar extends MenuBar {
 	private Label about = new Label("About");
 
 	private MenuItem open = menuItem("Open");
+	private MenuItem settings = menuItem("Settings");
 	private MenuItem quit = menuItem("Quit");
 	private CheckMenuItem chunkGrid = checkMenuItem("Chunk Grid", true);
 	private CheckMenuItem regionGrid = checkMenuItem("Region Grid", true);
@@ -46,7 +47,7 @@ public class OptionBar extends MenuBar {
 
 		tileMap.setOnUpdate(this::onUpdate);
 
-		file.getItems().addAll(open, quit);
+		file.getItems().addAll(open, settings, separator(), quit);
 		view.getItems().addAll(
 				chunkGrid, regionGrid, separator(),
 				goTo, separator(),
@@ -64,6 +65,7 @@ public class OptionBar extends MenuBar {
 		getMenus().addAll(file, view, selection, tools, aboutMenu);
 
 		open.setOnAction(e -> Helper.openWorld(tileMap, primaryStage, this));
+		settings.setOnAction(e -> Helper.editSettings(primaryStage));
 		quit.setOnAction(e -> System.exit(0));
 		chunkGrid.setOnAction(e -> tileMap.setShowChunkGrid(chunkGrid.isSelected()));
 		regionGrid.setOnAction(e -> tileMap.setShowRegionGrid(regionGrid.isSelected()));

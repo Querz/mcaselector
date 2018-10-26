@@ -20,14 +20,16 @@ import java.util.function.Predicate;
  * */
 public final class MCAFilePipe {
 
-	public static final int THREAD_COUNT = Runtime.getRuntime().availableProcessors();
+	public static final int DEFAULT_THREAD_COUNT = Runtime.getRuntime().availableProcessors();
 //	public static final int THREAD_COUNT = 2;
 
-	public static final int MAX_LOADED_FILES = THREAD_COUNT + (THREAD_COUNT / 2);
+	public static final int DEFAULT_MAX_LOADED_FILES = DEFAULT_THREAD_COUNT + (DEFAULT_THREAD_COUNT / 2);
 
-	public static final int MAX_WRITE_THREADS = 4;
+	public static final int DEFAULT_MAX_WRITE_THREADS = 4;
 
-	public static final int MAX_READ_THREADS = 1;
+	public static final int DEFAULT_MAX_READ_THREADS = 1;
+
+	private static int maxLoadedFiles = DEFAULT_MAX_READ_THREADS;
 
 	//loading mca files into memory should occur single threaded
 	private static ThreadPoolExecutor loadDataExecutor;
@@ -45,24 +47,40 @@ public final class MCAFilePipe {
 	}
 
 	private MCAFilePipe() {
-		loadDataExecutor = new ThreadPoolExecutor(
-				MAX_READ_THREADS, MAX_READ_THREADS,
-				0L, TimeUnit.MILLISECONDS,
-				new LinkedBlockingQueue<>());
-		Debug.dump("created data load ThreadPoolExecutor");
-		processDataExecutor = new ThreadPoolExecutor(
-				THREAD_COUNT, THREAD_COUNT,
-				0L, TimeUnit.MILLISECONDS,
-				new LinkedBlockingQueue<>());
-		Debug.dumpf("created image creation ThreadPoolExecutor with %d threads", THREAD_COUNT);
-		saveDataExecutor = new ThreadPoolExecutor(
-				MAX_WRITE_THREADS, MAX_WRITE_THREADS,
-				0L, TimeUnit.MILLISECONDS,
-				new LinkedBlockingQueue<>());
-		Debug.dump("created image cache ThreadPoolExecutor");
+		init(DEFAULT_MAX_READ_THREADS, DEFAULT_THREAD_COUNT, DEFAULT_MAX_WRITE_THREADS, DEFAULT_MAX_LOADED_FILES);
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> loadDataExecutor.shutdownNow()));
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> processDataExecutor.shutdownNow()));
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> saveDataExecutor.shutdownNow()));
+	}
+
+	public static void init(int readThreads, int processThreads, int writeThreads, int maxLoadedFiles) {
+		//first shutdown everything if there were Threads initialized already
+		clearQueues();
+		if (loadDataExecutor != null) {
+			loadDataExecutor.shutdownNow();
+		}
+		if (processDataExecutor != null) {
+			processDataExecutor.shutdownNow();
+		}
+		if (saveDataExecutor != null) {
+			saveDataExecutor.shutdownNow();
+		}
+		loadDataExecutor = new ThreadPoolExecutor(
+				readThreads, readThreads,
+				0L, TimeUnit.MILLISECONDS,
+				new LinkedBlockingQueue<>());
+		Debug.dumpf("created data load ThreadPoolExecutor with %d threads", readThreads);
+		processDataExecutor = new ThreadPoolExecutor(
+				processThreads, processThreads,
+				0L, TimeUnit.MILLISECONDS,
+				new LinkedBlockingQueue<>());
+		Debug.dumpf("created data processor ThreadPoolExecutor with %d threads", processThreads);
+		saveDataExecutor = new ThreadPoolExecutor(
+				writeThreads, writeThreads,
+				0L, TimeUnit.MILLISECONDS,
+				new LinkedBlockingQueue<>());
+		Debug.dumpf("created data save ThreadPoolExecutor with %d threads", writeThreads);
+		MCAFilePipe.maxLoadedFiles = maxLoadedFiles;
 	}
 
 	static void refillDataLoadExecutorQueue() {
@@ -70,8 +88,8 @@ public final class MCAFilePipe {
 		//should only refill if saveDataExecutor is not jamming the other executors
 		//--> loadDataExecutor waits for processDataExecutor AND saveDataExecutor
 		while (!waitingForLoad.isEmpty()
-				&& processDataExecutor.getQueue().size() + loadDataExecutor.getQueue().size() < MAX_LOADED_FILES
-				&& saveDataExecutor.getQueue().size() < MAX_LOADED_FILES) {
+				&& processDataExecutor.getQueue().size() + loadDataExecutor.getQueue().size() < maxLoadedFiles
+				&& saveDataExecutor.getQueue().size() < maxLoadedFiles) {
 			LoadDataJob job = waitingForLoad.poll();
 			if (job != null) {
 				Debug.dumpf("refilling data load executor queue with %s", job.getFile().getAbsolutePath());
@@ -81,8 +99,8 @@ public final class MCAFilePipe {
 	}
 
 	public static void addJob(LoadDataJob job) {
-		if (processDataExecutor.getQueue().size() + loadDataExecutor.getQueue().size() > MAX_LOADED_FILES
-				|| saveDataExecutor.getQueue().size() > MAX_LOADED_FILES) {
+		if (processDataExecutor.getQueue().size() + loadDataExecutor.getQueue().size() > maxLoadedFiles
+				|| saveDataExecutor.getQueue().size() > maxLoadedFiles) {
 			Debug.dumpf("adding LoadDataJob %s for %s to wait queue", job, job.getFile().getName());
 			waitingForLoad.offer(job);
 		} else {
@@ -108,10 +126,18 @@ public final class MCAFilePipe {
 	}
 
 	public static void clearQueues() {
-		waitingForLoad.clear();
-		loadDataExecutor.getQueue().clear();
-		processDataExecutor.getQueue().clear();
-		saveDataExecutor.getQueue().clear();
+		if (waitingForLoad != null) {
+			waitingForLoad.clear();
+		}
+		if (loadDataExecutor != null) {
+			loadDataExecutor.getQueue().clear();
+		}
+		if (processDataExecutor != null) {
+			processDataExecutor.getQueue().clear();
+		}
+		if (saveDataExecutor != null) {
+			saveDataExecutor.getQueue().clear();
+		}
 	}
 
 	public static void cancelAllJobs(Runnable callback) {

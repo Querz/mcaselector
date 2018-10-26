@@ -22,6 +22,7 @@
 	-color-radio-button-background: #43494a;
 	-color-radio-button-circle: #6a6a6a;
 	-color-radio-button-dot: #bbbbbb;
+	-color-slider-thumb-background: #bbbbbb;
 	-color-scroll-pane-border: #646464;
 	-color-scroll-pane-shadow: #000000;
 	-color-scroll-bar-thumb: #7c7c7c;
@@ -485,3 +486,117 @@
 	-fx-pref-height: inherit;
 	-fx-max-height: 300;
 }
+
+/*---------- Slider ----------*/
+
+.slider {
+	-fx-show-tick-labels: true;
+	-fx-show-tick-marks: true;
+	-fx-snap-to-ticks: true;
+}
+
+.slider .thumb {
+	-fx-background-radius: 0;
+	-fx-pref-width: 6;
+}
+
+.slider .track {
+	-fx-background-color: #616b6b;
+	-fx-background-radius: 0;
+}
+
+.slider .axis {
+	-fx-tick-label-fill: -color-text-light;
+}
+
+.slider-value-field {
+	-fx-pref-width: 40;
+}
+
+/*---------- Settings Dialog ----------*/
+
+.slider-grid-pane .slider {
+	-fx-pref-width: 200;
+	-fx-padding: 0 10 0 10;
+}
+
+/*---------- Transparent Stage ----------*/
+
+.transparent-stage-content {
+	-fx-padding: 10;
+	-fx-background-insets: 10;
+}
+
+.transparent-stage-shadow {
+	-fx-background-color: white;
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 10, 0, 4, 4);
+	-fx-background-insets: 10;
+}
+
+/*---------- Color Picker ----------*/
+
+.color-picker-preview {
+	-fx-pref-height: 30;
+}
+
+.color-picker-sliders, .border-element-vertical, .color-picker-button-box {
+	-fx-background-color: -color-dialog-background;
+	-fx-padding: 10;
+}
+
+.color-picker-sliders {
+	-fx-hgap: 10;
+}
+
+.color-picker-button-box {
+	-fx-alignment: center-right;
+	-fx-spacing: 10;
+}
+
+.color-picker-button-box .button {
+	-fx-padding: 0 10 0 10;
+}
+
+.color-picker-slider-label {
+	-fx-text-fill: -color-text-light;
+}
+
+
+/*.color-picker-shadow {
+	-fx-padding: 10;
+	-fx-background-color: transparent;
+	-fx-effect: dropshadow(three-pass-box, red, 10, 0, 4, 4)
+}
+
+.border-element-vertical {
+	-fx-padding: 20;
+}
+
+.color-picker-sliders, .color-picker-button-box, .border-element-vertical {
+	-fx-background-color: green;
+}
+
+.color-picker-preview {
+	-fx-pref-height: 30;
+}*/
+
+/*.color-picker > .content {
+	-fx-padding: 0;
+	-fx-effect: dropshadow(three-pass-box, red, 10, 0, 4, 4)
+}
+
+.color-picker-scene, .color-picker {
+	-fx-background-color: transparent;
+}
+
+.color-picker .color-picker-sliders, .color-picker .border-element-vertical, .color-picker .border-element-horizontal {
+	-fx-background-color: -color-dialog-background;
+	-fx-padding: 10 20 10 20;
+}
+
+.color-picker .slider {
+	-fx-show-tick-labels: false;
+	-fx-show-tick-marks: false;
+	-fx-snap-to-ticks: false;
+	-fx-padding: 10;
+}*/

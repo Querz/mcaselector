@@ -191,6 +191,7 @@ fire_coral
 fire_coral_block
 fire_coral_fan
 flower_pot
+flowing_lava
 flowing_water
 furnace
 glass
@@ -267,6 +268,7 @@ ladder
 lapis_block
 lapis_ore
 large_fern
+lava
 lever
 light_blue_banner
 light_blue_bed
@@ -563,5 +565,3 @@ yellow_stained_glass_pane
 yellow_terracotta
 yellow_wool
 zombie_head
-lava
-flowing_lava

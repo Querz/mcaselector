@@ -9,7 +9,8 @@ public class Main {
 	public static void main(String[] args) {
 		Locale.setDefault(Locale.ENGLISH);
 		Config.importArgs(args);
-		Debug.dump("java version: " + System.getProperty("java.version"));
+		Debug.dumpf("java version: %s", System.getProperty("java.version"));
+		Debug.dumpf("jvm max mem:  %d", Runtime.getRuntime().maxMemory());
 		Window.launch(Window.class, args);
 	}
 }

@@ -1,6 +1,8 @@
 package net.querz.mcaselector.util;
 
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -17,6 +19,8 @@ import net.querz.mcaselector.ui.FilterChunksDialog;
 import net.querz.mcaselector.ui.GotoDialog;
 import net.querz.mcaselector.ui.OptionBar;
 import net.querz.mcaselector.ui.ProgressDialog;
+import net.querz.mcaselector.ui.SettingsDialog;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -321,8 +325,38 @@ public class Helper {
 		});
 	}
 
+	public static void editSettings(Stage primaryStage) {
+		new SettingsDialog(primaryStage).showAndWait();
+	}
+
 	public static void showAboutDialog(TileMap tileMap, Stage primaryStage) {
 		new AboutDialog(primaryStage).showAndWait();
+	}
+
+	public static TextField attachTextFieldToSlider(Slider slider) {
+		TextField sliderValue = new TextField();
+		sliderValue.getStyleClass().add("slider-value-field");
+		sliderValue.textProperty().addListener((l, o, n) -> {
+			if (!n.matches("\\d*")) {
+				sliderValue.setText(n.replaceAll("[^\\d]", ""));
+			} else if ("".equals(n)) {
+				slider.setValue(slider.getMin());
+			} else {
+				slider.setValue(Integer.parseInt(n));
+			}
+		});
+		sliderValue.focusedProperty().addListener((l, o, n) -> {
+			if (!n) {
+				sliderValue.setText((int) slider.getValue() + "");
+			}
+		});
+		slider.valueProperty().addListener((l, o, n) -> {
+			if (n.intValue() != slider.getMin() || slider.isFocused()) {
+				sliderValue.setText(n.intValue() + "");
+			}
+		});
+		sliderValue.setText((int) slider.getValue() + "");
+		return sliderValue;
 	}
 
 	public static String byteToBinaryString(byte b) {
