@@ -71,13 +71,14 @@ public class TileMap extends Canvas {
 		float oldScale = scale;
 		scale -= event.getDeltaY() / 100;
 		scale = scale < MAX_SCALE ? (scale > MIN_SCALE ? scale : MIN_SCALE) : MAX_SCALE;
-
-		//calculate the difference between the old max and the new max point
-		Point2f diff = offset.add((float) getWidth() * oldScale, (float) getHeight() * oldScale)
+		if (oldScale != scale) {
+			//calculate the difference between the old max and the new max point
+			Point2f diff = offset.add((float) getWidth() * oldScale, (float) getHeight() * oldScale)
 				.sub(offset.add((float) getWidth() * scale, (float) getHeight() * scale));
 
-		offset = offset.add(diff.div(2));
-		update();
+			offset = offset.add(diff.div(2));
+			update();
+		}
 	}
 
 	private void onMousePressed(MouseEvent event) {
