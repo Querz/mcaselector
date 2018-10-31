@@ -75,11 +75,11 @@ The MCA Selector currently supports the following Minecraft versions:
 
 ## Download and installation
 
-[**Download Version 1.4**](https://github.com/Querz/mcaselector/releases/download/1.4/mcaselector-1.4.jar)
+[**Download Version 1.5**](https://github.com/Querz/mcaselector/releases/download/1.5/mcaselector-1.5.jar)
 
 "Requirements":
 * JRE 8+, you can get it from [HERE](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
 * A computer
 * A brain
 
-If `.jar` files are associated with java on your computer, it should launch by simply double-clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.4.jar` from your console. If this still doesn't work, apply "A brain" that you providently helt ready after having read the "Requirements" section carefully.
+If `.jar` files are associated with java on your computer, it should launch by simply double-clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.5.jar` from your console. If this still doesn't work, apply "A brain" that you providently helt ready after having read the "Requirements" section carefully.
