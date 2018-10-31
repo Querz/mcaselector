@@ -49,7 +49,7 @@ You can change the following values:
 | Field | Type | Description |
 | ----- | ----- | ----------- |
 | LightPopulated | byte | Whether the light levels for the chunk have been calculated. If this is set to 0, converting a world from 1.12.x to 1.13 will omit that chunk. Allowed values are `0` and `1` |
-| DataVersion | int | Allowes to change the DataVersion of the chunks. Should be used with extreme care. |
+| DataVersion | int | Allows to change the DataVersion of the chunks. Should be used with extreme care. |
 | InhabitedTime | long | This field stores the amount of game-ticks players have spent in a chunk. Impacts the local difficulty. |
 | LastUpdate | long | Stores a timestamp when this chunk was last updated in Milliseconds. |
 | Status | String | The status of the chunk generation. Only recognized by Minecraft 1.13+ (DataVersion 1444+) |
@@ -60,7 +60,7 @@ For more information about the fields have a look at the chunk format descriptio
 The tool creates an image for each region from the provided mca-files. These images are saved separately inside a `cache`-folder in the working directory of the program for future usage. Experience showed that a Minecraft world with a size of 10GB resulted in cached image files with a total size of 80-100MB. Caching as many regions as possible significantly improves loading times though.
 
 ### Debugging
-If something is not working properly or if you want to see the exact query that is run using the chunk filter, the MCA Selector can be executed with `-debug` to print some additional information to the console.
+If something is not working properly or if you want to see the exact query that is run using the chunk filter, debugging can be enabled in the settings. It will print useful information about what the program is currently doing to the console.
 
 ---
 ## Supported Versions
