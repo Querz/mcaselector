@@ -340,6 +340,7 @@ public class Helper {
 			Config.setMaxLoadedFiles(r.getMaxLoadedFiles());
 			Config.setRegionSelectionColor(r.getRegionColor());
 			Config.setChunkSelectionColor(r.getChunkColor());
+			Config.setDebug(r.getDebug());
 			tileMap.update();
 		});
 	}

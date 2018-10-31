@@ -63,7 +63,7 @@ public class ColorPicker extends TransparentStage {
 		grid.add(Helper.attachTextFieldToSlider(opacity), 2, 3, 1, 1);
 
 		HBox buttonBox = new HBox();
-		buttonBox.getChildren().addAll(cancel, ok);
+		buttonBox.getChildren().addAll(ok, cancel);
 		buttonBox.getStyleClass().add("color-picker-button-box");
 
 		BorderPane borderPane = new BorderPane();

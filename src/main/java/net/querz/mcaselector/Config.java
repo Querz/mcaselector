@@ -8,14 +8,14 @@ import java.util.*;
 
 public final class Config {
 
-	private static final File DEFAULT_BASE_CACHE_DIR = new File(System.getProperty("user.dir") + "/cache");
-	private static final Color DEFAULT_REGION_SELECTION_COLOR = new Color(1, 0, 0, 0.8);
-	private static final Color DEFAULT_CHUNK_SELECTION_COLOR = new Color(1, 0.45, 0, 0.8);
-	private static final int DEFAULT_LOAD_THREADS = 1;
-	private static final int DEFAULT_PROCESS_THREADS = Runtime.getRuntime().availableProcessors();
-	private static final int DEFAULT_WRITE_THREADS = 4;
-	private static final int DEFAULT_MAX_LOADED_FILES = DEFAULT_PROCESS_THREADS + (DEFAULT_PROCESS_THREADS / 2);
-	private static final boolean DEFAULT_DEBUG = false;
+	public static final File DEFAULT_BASE_CACHE_DIR = new File(System.getProperty("user.dir") + "/cache");
+	public static final Color DEFAULT_REGION_SELECTION_COLOR = new Color(1, 0, 0, 0.8);
+	public static final Color DEFAULT_CHUNK_SELECTION_COLOR = new Color(1, 0.45, 0, 0.8);
+	public static final int DEFAULT_LOAD_THREADS = 1;
+	public static final int DEFAULT_PROCESS_THREADS = Runtime.getRuntime().availableProcessors();
+	public static final int DEFAULT_WRITE_THREADS = 4;
+	public static final int DEFAULT_MAX_LOADED_FILES = DEFAULT_PROCESS_THREADS + (DEFAULT_PROCESS_THREADS / 2);
+	public static final boolean DEFAULT_DEBUG = false;
 
 	private static File worldDir = null;
 	private static File baseCacheDir = DEFAULT_BASE_CACHE_DIR;
@@ -118,6 +118,9 @@ public final class Config {
 		addSettingsLine("MaxLoadedFiles", maxLoadedFiles, DEFAULT_MAX_LOADED_FILES, lines);
 		addSettingsLine("Debug", debug, DEFAULT_DEBUG, lines);
 		if (lines.size() == 0) {
+			if (file.exists() && !file.delete()) {
+				Debug.errorf("could not delete %s", file.getAbsolutePath());
+			}
 			return;
 		}
 		try {

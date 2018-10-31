@@ -1,16 +1,12 @@
 package net.querz.mcaselector.ui;
 
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -18,7 +14,6 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.util.Helper;
 import java.util.Optional;
 
-//does not return something, but sets the configuration directly
 public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 	/*
@@ -41,25 +36,52 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private Slider maxLoadedFilesSlider = createSlider(1, (int) Math.ceil(maxMem / 100_000_000L), 1, procCount + procCount / 2);
 	private Button regionSelectionColorPreview = new Button();
 	private Button chunkSelectionColorPreview = new Button();
+	private CheckBox debugCheckBox = new CheckBox();
 
 	private Color regionSelectionColor = Config.getRegionSelectionColor();
 	private Color chunkSelectionColor = Config.getChunkSelectionColor();
+
+	private ButtonType reset = new ButtonType("Reset", ButtonBar.ButtonData.LEFT);
 
 	public SettingsDialog(Stage primaryStage) {
 		setTitle("Edit settings");
 		initStyle(StageStyle.UTILITY);
 		getDialogPane().getStyleClass().add("settings-dialog-pane");
 		getDialogPane().getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
-		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL, reset);
 
-		setResultConverter(c -> new Result(
-				(int) readThreadsSlider.getValue(),
-				(int) processThreadsSlider.getValue(),
-				(int) writeThreadsSlider.getValue(),
-				(int) maxLoadedFilesSlider.getValue(),
-				regionSelectionColor,
-				chunkSelectionColor
-		));
+		getDialogPane().lookupButton(reset).addEventFilter(ActionEvent.ACTION, e -> {
+			e.consume();
+			readThreadsSlider.setValue(Config.DEFAULT_LOAD_THREADS);
+			processThreadsSlider.setValue(Config.DEFAULT_PROCESS_THREADS);
+			writeThreadsSlider.setValue(Config.DEFAULT_WRITE_THREADS);
+			maxLoadedFilesSlider.setValue(Config.DEFAULT_MAX_LOADED_FILES);
+			regionSelectionColor = Config.DEFAULT_REGION_SELECTION_COLOR;
+			regionSelectionColorPreview.setBackground(new Background(new BackgroundFill(Config.DEFAULT_REGION_SELECTION_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
+			chunkSelectionColor = Config.DEFAULT_CHUNK_SELECTION_COLOR;
+			chunkSelectionColorPreview.setBackground(new Background(new BackgroundFill(Config.DEFAULT_CHUNK_SELECTION_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
+			debugCheckBox.setSelected(Config.DEFAULT_DEBUG);
+		});
+
+		setResultConverter(c -> {
+			if (c.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+				return new SettingsDialog.Result(
+					(int) readThreadsSlider.getValue(),
+					(int) processThreadsSlider.getValue(),
+					(int) writeThreadsSlider.getValue(),
+					(int) maxLoadedFilesSlider.getValue(),
+					regionSelectionColor,
+					chunkSelectionColor,
+					debugCheckBox.isSelected()
+				);
+			}
+			return null;
+		});
+
+		readThreadsSlider.setValue(Config.getLoadThreads());
+		processThreadsSlider.setValue(Config.getProcessThreads());
+		writeThreadsSlider.setValue(Config.getWriteThreads());
+		maxLoadedFilesSlider.setValue(Config.getMaxLoadedFiles());
 
 		regionSelectionColorPreview.getStyleClass().clear();
 		chunkSelectionColorPreview.getStyleClass().clear();
@@ -67,6 +89,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		chunkSelectionColorPreview.getStyleClass().add("color-preview-button");
 		regionSelectionColorPreview.setBackground(new Background(new BackgroundFill(regionSelectionColor, CornerRadii.EMPTY, Insets.EMPTY)));
 		chunkSelectionColorPreview.setBackground(new Background(new BackgroundFill(chunkSelectionColor, CornerRadii.EMPTY, Insets.EMPTY)));
+		debugCheckBox.setSelected(Config.debug());
 
 		regionSelectionColorPreview.setOnMousePressed(e -> {
 			Optional<Color> result = new ColorPicker(getDialogPane().getScene().getWindow(), regionSelectionColor).showColorPicker();
@@ -77,9 +100,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		});
 		chunkSelectionColorPreview.setOnMousePressed(e -> {
 			Optional<Color> result = new ColorPicker(getDialogPane().getScene().getWindow(), chunkSelectionColor).showColorPicker();
-			result.ifPresent(c -> {
-				chunkSelectionColor = c;
-			});
+			result.ifPresent(c -> chunkSelectionColor = c);
 		});
 
 		GridPane grid = new GridPane();
@@ -90,12 +111,14 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		grid.add(new Label("Max loaded Files"), 0, 3, 1, 1);
 		grid.add(new Label("Region selection color"), 0, 4, 1, 1);
 		grid.add(new Label("Chunk selection color"), 0, 5, 1, 1);
+		grid.add(new Label("Print debug messages"), 0, 6, 1, 1);
 		grid.add(readThreadsSlider, 1, 0, 1, 1);
 		grid.add(processThreadsSlider, 1, 1, 1, 1);
 		grid.add(writeThreadsSlider, 1, 2, 1, 1);
 		grid.add(maxLoadedFilesSlider, 1, 3, 1, 1);
 		grid.add(regionSelectionColorPreview, 1, 4, 2, 1);
 		grid.add(chunkSelectionColorPreview, 1, 5, 2, 1);
+		grid.add(debugCheckBox, 1, 6, 2, 1);
 		grid.add(Helper.attachTextFieldToSlider(readThreadsSlider), 2, 0, 1, 1);
 		grid.add(Helper.attachTextFieldToSlider(processThreadsSlider), 2, 1, 1, 1);
 		grid.add(Helper.attachTextFieldToSlider(writeThreadsSlider), 2, 2, 1, 1);
@@ -116,14 +139,16 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		private int readThreads, processThreads, writeThreads, maxLoadedFiles;
 		private Color regionColor, chunkColor;
+		private boolean debug;
 
-		public Result(int readThreads, int processThreads, int writeThreads, int maxLoadedFiles, Color regionColor, Color chunkColor) {
+		public Result(int readThreads, int processThreads, int writeThreads, int maxLoadedFiles, Color regionColor, Color chunkColor, boolean debug) {
 			this.readThreads = readThreads;
 			this.processThreads = processThreads;
 			this.writeThreads = writeThreads;
 			this.maxLoadedFiles = maxLoadedFiles;
 			this.regionColor = regionColor;
 			this.chunkColor = chunkColor;
+			this.debug = debug;
 		}
 
 		public int getReadThreads() {
@@ -148,6 +173,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		public Color getChunkColor() {
 			return chunkColor;
+		}
+
+		public boolean getDebug() {
+			return debug;
 		}
 	}
 }

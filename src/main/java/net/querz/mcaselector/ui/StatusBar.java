@@ -17,7 +17,6 @@ public class StatusBar extends BorderPane {
 	private Label visibleRegions = new Label("visible regions: 0");
 	private Label totalRegions = new Label("total regions: 0");
 
-
 	public StatusBar(TileMap tileMap) {
 		getStyleClass().add("status-bar");
 
