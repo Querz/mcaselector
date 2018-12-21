@@ -80,7 +80,7 @@ public class Anvil113ColorMapping implements ColorMapping {
 		private Map<Set<String>, Integer> blockStateMapping = new HashMap<>();
 
 		public int getColor(CompoundTag properties) {
-			for (Map.Entry<String, Tag> property : properties.entrySet()) {
+			for (Map.Entry<String, Tag<?>> property : properties.entrySet()) {
 				Map<Set<String>, Integer> clone = new HashMap<>(blockStateMapping);
 				for (Map.Entry<Set<String>, Integer> blockState : blockStateMapping.entrySet()) {
 					String value = property.getKey() + "=" + ((StringTag) property.getValue()).getValue();
