@@ -56,7 +56,7 @@ public class MCAChunkData {
 			data = null;
 			return;
 		}
-		Tag tag = Tag.deserialize(nbtIn, 0);
+		Tag tag = Tag.deserialize(nbtIn, Tag.DEFAULT_MAX_DEPTH);
 
 		if (tag instanceof CompoundTag) {
 			data = (CompoundTag) tag;
@@ -83,7 +83,7 @@ public class MCAChunkData {
 			return 0;
 		}
 
-		data.serialize(nbtOut, 0);
+		data.serialize(nbtOut, Tag.DEFAULT_MAX_DEPTH);
 		nbtOut.close();
 
 		byte[] rawData = baos.toByteArray();
