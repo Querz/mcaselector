@@ -1,4 +1,5 @@
 # MCA Selector
+![total downloads](https://img.shields.io/github/downloads/Querz/mcaselector/total.svg)
 #### An external tool to export or delete selected chunks and regions from a Minecraft world.
 ---
 
