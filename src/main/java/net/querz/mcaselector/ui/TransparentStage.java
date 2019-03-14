@@ -10,11 +10,15 @@ import javafx.scene.shape.Shape;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import net.querz.mcaselector.util.Debug;
 
 public class TransparentStage extends Stage {
 
 	private StackPane content;
 	private int shadowSize = 10;
+
+	private double xOffset = 0;
+	private double yOffset = 0;
 
 	public TransparentStage(javafx.stage.Window parent) {
 		//create ONE Pane that contains all the elements
@@ -47,6 +51,17 @@ public class TransparentStage extends Stage {
 
 		content = new StackPane(shadow);
 		content.getStyleClass().add("transparent-stage-content-root");
+
+		content.setOnMousePressed(e -> {
+			xOffset = e.getSceneX();
+			yOffset = e.getSceneY();
+		});
+
+		content.setOnMouseDragged(e -> {
+			setX(e.getScreenX() - xOffset);
+			setY(e.getScreenY() - yOffset);
+			Debug.dumpf("dragging transparent stage to %d / %d", (int) (e.getScreenX() - xOffset), (int) (e.getScreenY() - yOffset));
+		});
 
 		Scene scene = new Scene(content);
 		scene.setFill(Color.TRANSPARENT);
