@@ -27,7 +27,7 @@ public abstract class ByteFilter extends NumberFilter<Byte> {
 			setValid(false);
 		} else {
 			try {
-				value = Byte.parseByte(raw);
+				value = Byte.parseByte(raw.replace(" ", ""));
 				setValid(true);
 				setRawValue(raw);
 			} catch (NumberFormatException ex) {

@@ -27,7 +27,7 @@ public abstract class LongFilter extends NumberFilter<Long> {
 			setValid(false);
 		} else {
 			try {
-				setFilterNumber(Long.parseLong(raw));
+				setFilterNumber(Long.parseLong(raw.replace(" ", "")));
 				setValid(true);
 				setRawValue(raw);
 			} catch (NumberFormatException ex) {

@@ -27,7 +27,7 @@ public abstract class IntegerFilter extends NumberFilter<Integer> {
 			setValid(false);
 		} else {
 			try {
-				value = Integer.parseInt(raw);
+				value = Integer.parseInt(raw.replace(" ", ""));
 				setValid(true);
 				setRawValue(raw);
 			} catch (NumberFormatException ex) {

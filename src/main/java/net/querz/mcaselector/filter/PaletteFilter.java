@@ -48,7 +48,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 
 	@Override
 	public void setFilterValue(String raw) {
-		String[] rawBlockNames = raw.split(",");
+		String[] rawBlockNames = raw.replace(" ", "").split(",");
 		if (raw.isEmpty() || rawBlockNames.length == 0) {
 			setValid(false);
 			setValue(null);
