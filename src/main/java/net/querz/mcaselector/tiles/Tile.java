@@ -155,7 +155,8 @@ public class Tile {
 
 	public void draw(GraphicsContext ctx, float scale, Point2f offset, boolean regionGrid, boolean chunkGrid) {
 		if (isLoaded() && image != null) {
-			ctx.drawImage(getImage(), offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
+			double size =  getImage().getHeight() * (SIZE / getImage().getWidth());
+			ctx.drawImage(getImage(), offset.getX(), offset.getY(), size / scale, size / scale);
 			if (marked) {
 				//draw marked region
 				ctx.setFill(Config.getRegionSelectionColor());
@@ -213,16 +214,8 @@ public class Tile {
 		}
 	}
 
-	public boolean isCached() {
-		return Config.getCacheDir() == null || Helper.createPNGFilePath(Helper.blockToRegion(location)).exists();
-	}
-
 	public File getMCAFile() {
 		return Helper.createMCAFilePath(Helper.blockToRegion(location));
-	}
-
-	public File getCacheFile() {
-		return Helper.createPNGFilePath(Helper.blockToRegion(location));
 	}
 
 	public void loadFromCache(TileMap tileMap) {
@@ -230,7 +223,6 @@ public class Tile {
 			Debug.dump("region at " + location + " already loaded");
 			return;
 		}
-		Point2i p = Helper.blockToRegion(location);
 
 		if (Config.getCacheDir() == null) {
 			//load empty map (start screen)
@@ -239,7 +231,8 @@ public class Tile {
 			return;
 		}
 
-		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/r.%d.%d.png", p.getX(), p.getY());
+		Point2i p = Helper.blockToRegion(location);
+		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/" + Helper.getZoomLevel(tileMap.getScale()) + "/r.%d.%d.png", p.getX(), p.getY());
 
 		Debug.dump("loading region " + p + " from cache: " + res);
 
