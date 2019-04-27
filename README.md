@@ -79,8 +79,22 @@ The MCA Selector currently supports the following Minecraft versions:
 [**Download Version 1.5**](https://github.com/Querz/mcaselector/releases/download/1.5/mcaselector-1.5.jar)
 
 "Requirements":
-* JRE 8+, you can get it from [HERE](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
+* Either:
+  * JRE 8+, you can get it from [HERE](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
+  * A Minecraft Java Edition installation
 * A computer
 * A brain
 
-If `.jar` files are associated with java on your computer, it should launch by simply double-clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.5.jar` from your console. If this still doesn't work, apply "A brain" that you providently held ready after having read the "Requirements" section carefully.
+#### If you have Java from Oracle installed on your system:
+
+Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.5.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
+
+#### If you have Minecraft Java Edition installed on your system:
+
+Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.5.jar>`. On Mac OS you should find it in `Applications/Minecraft.app/Contents/runtime/jre-x64/1.8.0_74/bin` where you can execute `./java -jar <path-to-mcaselector-1.5.jar>`.
+
+#### If you are using OpenJDK:
+
+If you are using a distribution of OpenJDK, you have to make sure that it comes with JavaFX, as it is needed to run the MCA Selector. Some distributions like AdoptOpenJDK do not automatically ship with JavaFX.
+##
+If none of these instructions work, apply "A brain" that you providently held ready after having read the "Requirements" section carefully.
