@@ -95,6 +95,6 @@ Minecraft Java Edition comes with a JRE that you can use to start the MCA Select
 
 #### If you are using OpenJDK:
 
-If you are using a distribution of OpenJDK, you have to make sure that it comes with JavaFX, as it is needed to run the MCA Selector. Some distributions like AdoptOpenJDK do not automatically ship with JavaFX.
+If you are using a distribution of OpenJDK, you have to make sure that it comes with JavaFX, as it is needed to run the MCA Selector. Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. On Debian distributions, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of JavaFX is required to run the `.jar`.
 ##
 If none of these instructions work, apply "A brain" that you providently held ready after having read the "Requirements" section carefully.
