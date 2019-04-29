@@ -2,6 +2,8 @@ package net.querz.mcaselector;
 
 import javafx.scene.paint.Color;
 import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.util.Helper;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
@@ -44,6 +46,19 @@ public final class Config {
 
 	public static File getCacheDir() {
 		return cacheDir;
+	}
+
+	public static File[] getCacheDirs() {
+		int lodLevels = 0;
+		for (int i = Helper.getMaxZoomLevel(); i >= 1; i /= 2) {
+			lodLevels++;
+		}
+		File[] cacheDirs = new File[lodLevels];
+		for (int i = 0; i < cacheDirs.length; i++) {
+			int zoomLevel = (int) Math.pow(2, i);
+			cacheDirs[i] = new File(getCacheDir(), zoomLevel + "");
+		}
+		return cacheDirs;
 	}
 
 	public static void setDebug(boolean debug) {
