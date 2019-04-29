@@ -16,9 +16,9 @@ import java.util.function.Consumer;
 
 public class TileMap extends Canvas {
 
-	private float scale = 1;	//higher --> -    lower --> +
+	private float scale = 1;	//higher --> +    lower -->  -
 
-	public static final float MAX_SCALE = 15.9f;
+	public static final float MAX_SCALE = 5;
 	public static final float MIN_SCALE = 0.2f;
 	public static final float CHUNK_GRID_SCALE = 1.5f; //show chunk grid if scale is larger than this
 	public static final int TILE_VISIBILITY_THRESHOLD = 2;
@@ -77,11 +77,6 @@ public class TileMap extends Canvas {
 				.sub(offset.add((float) getWidth() * scale, (float) getHeight() * scale));
 
 			offset = offset.add(diff.div(2));
-
-			if (Helper.getZoomLevel(oldScale) != Helper.getZoomLevel(scale)) {
-				unloadTiles();
-			}
-
 			update();
 		}
 	}
@@ -229,12 +224,6 @@ public class TileMap extends Canvas {
 		}
 		selectedChunks = 0;
 		update();
-	}
-
-	public void unloadTiles() {
-		for (Tile tile : visibleTiles) {
-			tile.unload();
-		}
 	}
 
 	//will return a map of all chunks marked for deletion, mapped to regions.
