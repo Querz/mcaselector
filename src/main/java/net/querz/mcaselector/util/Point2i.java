@@ -87,6 +87,30 @@ public class Point2i implements Cloneable {
 		return div(f, f);
 	}
 
+	public Point2i mod(int x, int z) {
+		return new Point2i(this.x % x, this.z % z);
+	}
+
+	public Point2i mod(float x, float z) {
+		return new Point2i((int) (this.x % x), (int) (this.z % z));
+	}
+
+	public Point2i mod(Point2i p) {
+		return mod(p.x, p.z);
+	}
+
+	public Point2i mod(int i) {
+		return mod(i, i);
+	}
+
+	public Point2i mod(float f) {
+		return mod(f, f);
+	}
+
+	public Point2i abs() {
+		return new Point2i(x < 0 ? x * -1 : x, z < 0 ? z * -1 : z);
+	}
+
 	public Point2i shiftRight(int i) {
 		return new Point2i(x >> i, z >> i);
 	}

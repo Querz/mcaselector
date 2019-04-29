@@ -16,9 +16,9 @@ import java.util.function.Consumer;
 
 public class TileMap extends Canvas {
 
-	private float scale = 1;	//higher --> +    lower -->  -
+	private float scale = 1;	//higher --> -    lower --> +
 
-	public static final float MAX_SCALE = 5;
+	public static final float MAX_SCALE = 15.9f;
 	public static final float MIN_SCALE = 0.2f;
 	public static final float CHUNK_GRID_SCALE = 1.5f; //show chunk grid if scale is larger than this
 	public static final int TILE_VISIBILITY_THRESHOLD = 2;
@@ -77,6 +77,11 @@ public class TileMap extends Canvas {
 				.sub(offset.add((float) getWidth() * scale, (float) getHeight() * scale));
 
 			offset = offset.add(diff.div(2));
+
+			if (Helper.getZoomLevel(oldScale) != Helper.getZoomLevel(scale)) {
+				unloadTiles();
+			}
+
 			update();
 		}
 	}
@@ -224,6 +229,12 @@ public class TileMap extends Canvas {
 		}
 		selectedChunks = 0;
 		update();
+	}
+
+	public void unloadTiles() {
+		for (Tile tile : visibleTiles) {
+			tile.unload();
+		}
 	}
 
 	//will return a map of all chunks marked for deletion, mapped to regions.
@@ -376,15 +387,48 @@ public class TileMap extends Canvas {
 		});
 	}
 
+	//performs an action on regions in a spiral pattern starting from the center of all visible regions in the TileMap.
 	private void runOnVisibleRegions(Consumer<Point2i> consumer) {
-		//regionLocation is the south-west-most visible region in the window
-		Point2i regionLocation = Helper.regionToBlock(Helper.blockToRegion(offset.toPoint2i()));
-
-		//get all tiles that are visible inside the window
-		for (int x = regionLocation.getX(); x < offset.getX() + getWidth() * scale; x += Tile.SIZE) {
-			for (int z = regionLocation.getY(); z < offset.getY() + getHeight() * scale; z += Tile.SIZE) {
-				consumer.accept(new Point2i(x, z));
+		Point2i min = Helper.regionToBlock(Helper.blockToRegion(offset.toPoint2i()));
+		Point2i max = Helper.regionToBlock(Helper.blockToRegion(offset.add((float) getWidth() * scale, (float) getHeight() * scale).toPoint2i()));
+		Point2i mid = Helper.regionToBlock(Helper.blockToRegion(min.add(max).div(2)));
+		int dir = 0; //0 = right, 1 = down, 2 = left, 3 = up
+		int steps = 1;
+		int xSteps = 0;
+		int ySteps = 0;
+		int step = 0;
+		int x = mid.getX();
+		int y = mid.getY();
+		while ((x <= max.getX() || y <= max.getY()) && (x >= min.getX() || y >= min.getY())) {
+			for (int i = 0; i < steps * 2; i++) {
+				x = mid.getX() + xSteps * Tile.SIZE;
+				y = mid.getY() + ySteps * Tile.SIZE;
+				if (x <= max.getX() && x >= min.getX() && y <= max.getY() && y >= min.getY()) {
+					consumer.accept(new Point2i(x, y));
+				}
+				switch (dir) {
+				case 0:
+					xSteps++;
+					break;
+				case 1:
+					ySteps++;
+					break;
+				case 2:
+					xSteps--;
+					break;
+				case 3:
+					ySteps--;
+					break;
+				}
+				if (++step == steps) {
+					step = 0;
+					dir++;
+					if (dir > 3) {
+						dir = 0;
+					}
+				}
 			}
+			steps++;
 		}
 	}
 

@@ -4,6 +4,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -21,6 +22,9 @@ import net.querz.mcaselector.ui.OptionBar;
 import net.querz.mcaselector.ui.ProgressDialog;
 import net.querz.mcaselector.ui.SettingsDialog;
 
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -116,8 +120,8 @@ public class Helper {
 		return new File(Config.getWorldDir(), createMCAFileName(r));
 	}
 
-	public static File createPNGFilePath(Point2i r) {
-		return new File(Config.getCacheDir(), createPNGFileName(r));
+	public static File createPNGFilePath(File cacheDir, Point2i r) {
+		return new File(cacheDir, createPNGFileName(r));
 	}
 
 	public static String createMCAFileName(Point2i r) {
@@ -126,6 +130,32 @@ public class Helper {
 
 	public static String createPNGFileName(Point2i r) {
 		return String.format("r.%d.%d.png", r.getX(), r.getY());
+	}
+
+	public static BufferedImage scaleImage(BufferedImage before, double newSize) {
+		double w = before.getWidth();
+		double h = before.getHeight();
+		BufferedImage after = new BufferedImage((int) newSize, (int) newSize, BufferedImage.TYPE_INT_ARGB);
+		AffineTransform at = new AffineTransform();
+		at.scale(newSize / w, newSize / h);
+		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+		return scaleOp.filter(before, after);
+	}
+
+	public static int getZoomLevel(float scale) {
+		int b = 1;
+		while (b <= scale) {
+			b = b << 1;
+		}
+		return (int) Math.ceil(b / 2.0);
+	}
+
+	public static int getMaxZoomLevel() {
+		return getZoomLevel(TileMap.MAX_SCALE);
+	}
+
+	public static int getMinZoomLevel() {
+		return getZoomLevel(TileMap.MIN_SCALE);
 	}
 
 	public static void openWorld(TileMap tileMap, Stage primaryStage, OptionBar optionBar) {
@@ -182,11 +212,30 @@ public class Helper {
 	}
 
 	public static void clearAllCache(TileMap tileMap) {
-		File[] files = Config.getCacheDir().listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.png$"));
-		if (files != null) {
-			for (File file : files) {
-				if (!file.isDirectory()) {
-					Debug.dump("deleting " + file);
+		for (File cacheDir : Config.getCacheDirs()) {
+			File[] files = cacheDir.listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.png$"));
+			if (files != null) {
+				for (File file : files) {
+					if (!file.isDirectory()) {
+						Debug.dump("deleting " + file);
+						if (!file.delete()) {
+							Debug.error("could not delete file " + file);
+						}
+					}
+				}
+			}
+		}
+
+
+		tileMap.clear();
+		tileMap.update();
+	}
+
+	public static void clearViewCache(TileMap tileMap) {
+		for (Point2i regionBlock : tileMap.getVisibleRegions()) {
+			for (File cacheDir : Config.getCacheDirs()) {
+				File file = Helper.createPNGFilePath(cacheDir, regionBlock);
+				if (file.exists()) {
 					if (!file.delete()) {
 						Debug.error("could not delete file " + file);
 					}
@@ -197,28 +246,17 @@ public class Helper {
 		tileMap.update();
 	}
 
-	public static void clearViewCache(TileMap tileMap) {
-		for (Point2i regionBlock : tileMap.getVisibleRegions()) {
-			File file = Helper.createPNGFilePath(regionBlock);
-			if (file.exists()) {
-				if (!file.delete()) {
-					Debug.error("could not delete file " + file);
-				}
-			}
-		}
-		tileMap.clear();
-		tileMap.update();
-	}
-
 	public static void clearSelectionCache(TileMap tileMap) {
 		for (Map.Entry<Point2i, Set<Point2i>> entry : tileMap.getMarkedChunks().entrySet()) {
-			File file = Helper.createPNGFilePath(entry.getKey());
-			if (file.exists()) {
-				if (!file.delete()) {
-					Debug.error("could not delete file " + file);
+			for (File cacheDir : Config.getCacheDirs()) {
+				File file = Helper.createPNGFilePath(cacheDir, entry.getKey());
+				if (file.exists()) {
+					if (!file.delete()) {
+						Debug.error("could not delete file " + file);
+					}
 				}
+				tileMap.clearTile(Helper.regionToBlock(entry.getKey()));
 			}
-			tileMap.clearTile(Helper.regionToBlock(entry.getKey()));
 		}
 		tileMap.update();
 	}
