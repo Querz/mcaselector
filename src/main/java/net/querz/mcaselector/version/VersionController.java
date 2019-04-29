@@ -25,6 +25,8 @@ public class VersionController {
 
 	private enum Mapping {
 
+		// see https://minecraft-de.gamepedia.com/Versionen
+
 		ANVIL_1_12(0, 1343, Anvil112ChunkDataProcessor.class, Anvil112ColorMapping.class, Anvil112ChunkFilter.class),
 		ANVIL_1_13(1344, Integer.MAX_VALUE, Anvil113ChunkDataProcessor.class, Anvil113ColorMapping.class, Anvil113ChunkFilter.class);
 
@@ -73,6 +75,7 @@ public class VersionController {
 
 		//wohooo! Runtime optimization!
 		static Mapping match(int dataVersion) {
+			System.out.println(dataVersion);
 			for (Mapping m : Mapping.values()) {
 				if (m.from <= dataVersion && m.to >= dataVersion) {
 					return m;
