@@ -1,9 +1,6 @@
 package net.querz.mcaselector.tiles;
 
 import javafx.application.Platform;
-import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
@@ -38,9 +35,6 @@ public class Tile {
 
 	private Point2i location;
 	private Image image;
-
-	private Image markedChunksImage;
-
 	private boolean loading = false;
 	private boolean loaded = false;
 	private boolean marked = false;
@@ -101,10 +95,6 @@ public class Tile {
 			image.cancel();
 			image = null;
 		}
-		if (markedChunksImage != null) {
-			markedChunksImage.cancel();
-			markedChunksImage = null;
-		}
 		loaded = false;
 	}
 
@@ -112,16 +102,14 @@ public class Tile {
 		this.marked = marked;
 		if (marked) {
 			markedChunks.clear();
-			markedChunksImage = null;
 		}
 	}
 
 	public void mark(Point2i chunkBlock) {
 		markedChunks.add(chunkBlock);
 		if (markedChunks.size() == CHUNKS) {
+			markedChunks.clear();
 			mark(true);
-		} else {
-			markedChunksImage = null; //reset markedChunksImage
 		}
 	}
 
@@ -143,7 +131,6 @@ public class Tile {
 			mark(false);
 		}
 		markedChunks.remove(chunkBlock);
-		markedChunksImage = null; //reset markedChunksImage
 	}
 
 	public void clearMarks() {
@@ -175,32 +162,23 @@ public class Tile {
 				ctx.setFill(Config.getRegionSelectionColor());
 				ctx.fillRect(offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 			} else if (markedChunks.size() > 0) {
-
-				if (markedChunksImage == null) {
-					createMarkedChunksImage(Helper.getZoomLevel(scale));
+				//draw marked chunks
+				ctx.setFill(Config.getChunkSelectionColor());
+				for (Point2i p : markedChunks) {
+					//location is the real location of the region in the world
+					//p is the real location of the chunk in the world
+					//offset is the offset in pixel the region is drawn based on 0|0 of the canvas
+					//need the location of the chunk inside the region in pixel
+					//p.x - location.x --> location in blocks
+					//(p.x - location.x) / scale --> location in pixel
+					int regionChunkOffsetX = (int) ((p.getX() - location.getX()) / scale + offset.getX());
+					int regionChunkOffsetY = (int) ((p.getY() - location.getY()) / scale + offset.getY());
+					ctx.fillRect(
+							regionChunkOffsetX,
+							regionChunkOffsetY,
+							Math.ceil(CHUNK_SIZE / scale),
+							Math.ceil(CHUNK_SIZE / scale));
 				}
-
-				// apply markedChunksImage to ctx
-
-				ctx.drawImage(markedChunksImage, offset.getX(), offset.getY(), size / scale, size / scale);
-
-//				//draw marked chunks
-//				ctx.setFill(Config.getChunkSelectionColor());
-//				for (Point2i p : markedChunks) {
-//					//location is the real location of the region in the world
-//					//p is the real location of the chunk in the world
-//					//offset is the offset in pixel the region is drawn based on 0|0 of the canvas
-//					//need the location of the chunk inside the region in pixel
-//					//p.x - location.x --> location in blocks
-//					//(p.x - location.x) / scale --> location in pixel
-//					int regionChunkOffsetX = (int) ((p.getX() - location.getX()) / scale + offset.getX());
-//					int regionChunkOffsetY = (int) ((p.getY() - location.getY()) / scale + offset.getY());
-//					ctx.fillRect(
-//							regionChunkOffsetX,
-//							regionChunkOffsetY,
-//							Math.ceil(CHUNK_SIZE / scale),
-//							Math.ceil(CHUNK_SIZE / scale));
-//				}
 			}
 		} else {
 			ctx.drawImage(empty, offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
@@ -234,33 +212,6 @@ public class Tile {
 						offset.getY() + (z * CHUNK_SIZE / scale));
 			}
 		}
-	}
-
-	private void createMarkedChunksImage(int zoomLevel) {
-		WritableImage wImage = new WritableImage(SIZE / zoomLevel, SIZE / zoomLevel);
-
-		Canvas canvas = new Canvas(SIZE / (float) zoomLevel, SIZE / (float) zoomLevel);
-		GraphicsContext ctx = canvas.getGraphicsContext2D();
-		ctx.setFill(Config.getChunkSelectionColor());
-
-		for (Point2i markedChunk : markedChunks) {
-			Point2i regionChunk = Helper.blockToChunk(markedChunk).mod(SIZE_IN_CHUNKS);
-			if (regionChunk.getX() < 0) {
-				regionChunk.setX(regionChunk.getX() + SIZE_IN_CHUNKS);
-			}
-			if (regionChunk.getY() < 0) {
-				regionChunk.setY(regionChunk.getY() + SIZE_IN_CHUNKS);
-			}
-
-			ctx.fillRect(regionChunk.getX() * CHUNK_SIZE / (float) zoomLevel, regionChunk.getY() * CHUNK_SIZE / (float) zoomLevel, CHUNK_SIZE / (float) zoomLevel, CHUNK_SIZE / (float) zoomLevel);
-		}
-
-		SnapshotParameters params = new SnapshotParameters();
-		params.setFill(Color.TRANSPARENT);
-
-		canvas.snapshot(params, wImage);
-
-		markedChunksImage = wImage;
 	}
 
 	public File getMCAFile() {
