@@ -30,8 +30,12 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 				//loop over sections
 				for (int i = 0; i < sections.size(); i++) {
 
+					ListTag<?> genericPalette = sections.get(i).getListTag("Palette");
+					if (genericPalette == null) {
+						continue;
+					}
+					ListTag<CompoundTag> palette = genericPalette.asCompoundTagList();
 					long[] blockStates = sections.get(i).getLongArray("BlockStates");
-					ListTag<CompoundTag> palette = sections.get(i).getListTag("Palette").asCompoundTagList();
 
 					int sectionHeight = sections.get(i).getByte("Y") * 16;
 
