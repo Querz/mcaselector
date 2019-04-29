@@ -13,7 +13,11 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		nameLoop:
 		for (String name : names) {
 			for (CompoundTag t : sections) {
-				ListTag<CompoundTag> palette = t.getListTag("Palette").asCompoundTagList();
+				ListTag<?> genericPalette = t.getListTag("Palette");
+				if (genericPalette == null) {
+					continue;
+				}
+				ListTag<CompoundTag> palette = genericPalette.asCompoundTagList();
 				for (CompoundTag p : palette) {
 					if (p.getString("Name").equals("minecraft:" + name)) {
 						c++;
