@@ -1,5 +1,6 @@
 package net.querz.mcaselector.tiles;
 
+import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.*;
@@ -8,6 +9,7 @@ import net.querz.mcaselector.io.RegionImageGenerator;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.util.KeyActivator;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
 import java.util.*;
@@ -44,16 +46,26 @@ public class TileMap extends Canvas {
 	private List<Consumer<TileMap>> updateListener = new ArrayList<>(1);
 	private List<Consumer<TileMap>> hoverListener = new ArrayList<>(1);
 
+	private KeyActivator keyActivator = new KeyActivator();
+
 	public TileMap(Window window, int width, int height) {
 		super(width, height);
 		this.window = window;
 		context = getGraphicsContext2D();
+		setFocusTraversable(true);
 		this.setOnMousePressed(this::onMousePressed);
 		this.setOnMouseReleased(e -> onMouseReleased());
 		this.setOnMouseDragged(this::onMouseDragged);
 		this.setOnScroll(this::onScroll);
 		this.setOnMouseMoved(this::onMouseMoved);
 		this.setOnMouseExited(e -> onMouseExited());
+		keyActivator.registerAction(KeyCode.W, () -> offset = offset.sub(0, 5 * scale));
+		keyActivator.registerAction(KeyCode.A, () -> offset = offset.sub(5 * scale, 0));
+		keyActivator.registerAction(KeyCode.S, () -> offset = offset.add(0, 5 * scale));
+		keyActivator.registerAction(KeyCode.D, () -> offset = offset.add(5 * scale, 0));
+		keyActivator.registerGlobalAction(() -> Platform.runLater(this::update));
+		this.setOnKeyPressed(e -> keyActivator.pressKey(e.getCode()));
+		this.setOnKeyReleased(e -> keyActivator.releaseKey(e.getCode()));
 		update();
 	}
 
