@@ -1,6 +1,7 @@
 package net.querz.mcaselector.tiles;
 
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
@@ -17,6 +18,8 @@ import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.mcaselector.util.Timer;
+
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -86,6 +89,10 @@ public class Tile {
 
 	public boolean isLoaded() {
 		return loaded;
+	}
+
+	public void setLoaded(boolean loaded) {
+		this.loaded = loaded;
 	}
 
 	public void setLoading(boolean loading) {
@@ -265,6 +272,16 @@ public class Tile {
 
 	public File getMCAFile() {
 		return Helper.createMCAFilePath(location);
+	}
+
+	public void setImage(Image image) {
+		this.image = image;
+	}
+
+	public void mergeImage(BufferedImage image, Point2i location) {
+		BufferedImage bufferedImage = SwingFXUtils.fromFXImage(this.image, null);
+		Helper.mergeImages(image, bufferedImage, location);
+		this.image = SwingFXUtils.toFXImage(bufferedImage, null);
 	}
 
 	public void loadFromCache(TileMap tileMap) {

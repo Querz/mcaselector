@@ -183,6 +183,10 @@ public class TileMap extends Canvas {
 		return scale;
 	}
 
+	public int getZoomLevel() {
+		return Helper.getZoomLevel(scale);
+	}
+
 	public void setShowRegionGrid(boolean showRegionGrid) {
 		this.showRegionGrid = showRegionGrid;
 		update();

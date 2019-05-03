@@ -1,5 +1,6 @@
 package net.querz.mcaselector.util;
 
+import javafx.application.Platform;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -10,6 +11,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.querz.mcaselector.*;
 import net.querz.mcaselector.io.*;
+import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.ui.AboutDialog;
 import net.querz.mcaselector.ui.ChangeFieldsConfirmationDialog;
@@ -22,10 +24,13 @@ import net.querz.mcaselector.ui.OptionBar;
 import net.querz.mcaselector.ui.ProgressDialog;
 import net.querz.mcaselector.ui.SettingsDialog;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -157,6 +162,107 @@ public class Helper {
 	public static int getMinZoomLevel() {
 		return getZoomLevel(TileMap.MIN_SCALE);
 	}
+
+	//-----------------------------------------------------------------
+
+	public static File createPNGFilePath(Point2i r, int zoomLevel) {
+		File cacheDir = new File(Config.getCacheDir(), zoomLevel + "");
+		//r is a region location
+		Point2i scaledRegion = getZoomLevelOrigin(r, zoomLevel);
+		return new File(cacheDir, createPNGFileName(scaledRegion));
+	}
+
+	public static Point2i getPointInCachedImage(Point2i region, int zoomLevel) {
+		Point2i result = region.mod(zoomLevel).mul(Tile.SIZE / zoomLevel);
+		if (result.getX() < 0) {
+			result.setX(Tile.SIZE + result.getX());
+		}
+		if (result.getY() < 0) {
+			result.setY(Tile.SIZE + result.getY());
+		}
+		return result;
+	}
+
+	public static Point2i getZoomLevelOrigin(Point2i region, int zoomLevel) {
+		Point2i result = region.sub(region.mod(zoomLevel));
+		if (region.getX() < 0) {
+			int absX = -region.getX() - 1;
+			result.setX(-(absX - absX % zoomLevel) - zoomLevel);
+		}
+		if (region.getY() < 0) {
+			int absY = -region.getY() - 1;
+			result.setY(-(absY - absY % zoomLevel) - zoomLevel);
+		}
+		return result;
+	}
+
+	public static Image loadCachedImage(Point2i origin, int zoomLevel) {
+		try (FileInputStream fis = new FileInputStream(Helper.createPNGFilePath(origin, zoomLevel))) {
+			return new Image(fis);
+		} catch (IOException e) {
+			System.out.println("error reading cached file " + Helper.createPNGFilePath(origin, zoomLevel) + ": " + e.getMessage());
+		}
+		return null;
+	}
+
+	public static Image generateImage(File file, byte[] rawData) {
+		Timer t = new Timer();
+
+		ByteArrayPointer ptr = new ByteArrayPointer(rawData);
+
+		MCAFile mcaFile = MCAFile.readHeader(file, ptr);
+		if (mcaFile == null) {
+			Debug.error("error reading mca file " + file);
+			//mark as loaded, we won't try to load this again
+			return null;
+		}
+		Debug.dumpf("took %s to read mca file header of %s", t, file.getName());
+
+		t.reset();
+
+		Image image = mcaFile.createImage(ptr);
+
+		Debug.dumpf("took %s to generate image of %s", t, file.getName());
+
+		return image;
+	}
+
+	public static void mergeImageToPNGCacheFiles(BufferedImage image, Point2i r) throws IOException {
+		// loop through all zoom levels
+		for (int z = getMinZoomLevel(); z <= getMaxZoomLevel(); z *= 2) {
+			// get origin png file
+			File cacheFile = createPNGFilePath(r, z);
+
+			Point2i pointInCachedImage = getPointInCachedImage(r, z);
+
+			BufferedImage scaledImage = scaleImage(image, (float) Tile.SIZE / (float) z);
+
+			BufferedImage cachedImage;
+
+			if (cacheFile.exists()) {
+				cachedImage = ImageIO.read(cacheFile);
+			} else {
+				cacheFile.getParentFile().mkdirs();
+				cachedImage = new BufferedImage(Tile.SIZE, Tile.SIZE, image.getType());
+			}
+
+			Graphics graphics = cachedImage.getGraphics();
+
+			System.out.println("drawing " + r + " in " + z + "/" + cacheFile.getName() + " at " + pointInCachedImage);
+
+			graphics.drawImage(scaledImage, pointInCachedImage.getX(), pointInCachedImage.getY(), null);
+
+			ImageIO.write(cachedImage, "png", cacheFile);
+		}
+	}
+
+	// from is already scaled
+	public static void mergeImages(BufferedImage from, BufferedImage to, Point2i offset) {
+		Graphics graphics = to.getGraphics();
+		graphics.drawImage(from, offset.getX(), offset.getY(), null);
+	}
+
+//-----------------------------------------------------------------
 
 	public static void openWorld(TileMap tileMap, Stage primaryStage, OptionBar optionBar) {
 		String savesDir = Helper.getMCSavesDir();
