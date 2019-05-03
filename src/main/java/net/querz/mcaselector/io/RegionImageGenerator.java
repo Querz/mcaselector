@@ -115,7 +115,7 @@ public class RegionImageGenerator {
 			try {
 				BufferedImage img = SwingFXUtils.fromFXImage(getData(), null);
 				for (int i = Helper.getMinZoomLevel(); i <= Helper.getMaxZoomLevel(); i *= 2) {
-					File cacheFile = Helper.createPNGFilePath(new File(Config.getCacheDir().getAbsolutePath(), i + ""), Helper.blockToRegion(tile.getLocation()));
+					File cacheFile = Helper.createPNGFilePath(new File(Config.getCacheDir().getAbsolutePath(), i + ""), tile.getLocation());
 					if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
 						Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
 					}
@@ -129,7 +129,7 @@ public class RegionImageGenerator {
 
 			setLoading(tile, false);
 
-			Debug.dumpf("took %s to cache image of %s to %s", t, tile.getMCAFile().getName(), Helper.createPNGFileName(Helper.blockToRegion(tile.getLocation())));
+			Debug.dumpf("took %s to cache image of %s to %s", t, tile.getMCAFile().getName(), Helper.createPNGFileName(tile.getLocation()));
 		}
 	}
 }

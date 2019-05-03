@@ -52,7 +52,7 @@ public class Tile {
 	}
 
 	public Tile(Point2i location) {
-		this.location = Helper.regionToBlock(Helper.blockToRegion(location));
+		this.location = location;
 	}
 
 	public boolean isVisible(TileMap tileMap) {
@@ -68,8 +68,8 @@ public class Tile {
 		Point2i max = Helper.regionToBlock(Helper.blockToRegion(new Point2i(
 				(int) (o.getX() + tileMap.getWidth() * tileMap.getScale()),
 				(int) (o.getY() + tileMap.getHeight() * tileMap.getScale())).add(threshold * SIZE)));
-		return location.getX() >= min.getX() && location.getY() >= min.getY()
-				&& location.getX() <= max.getX() && location.getY() <= max.getY();
+		return location.getX() * SIZE >= min.getX() && location.getY() * SIZE >= min.getY()
+				&& location.getX() * SIZE <= max.getX() && location.getY() * SIZE <= max.getY();
 	}
 
 	public Image getImage() {
@@ -264,7 +264,7 @@ public class Tile {
 	}
 
 	public File getMCAFile() {
-		return Helper.createMCAFilePath(Helper.blockToRegion(location));
+		return Helper.createMCAFilePath(location);
 	}
 
 	public void loadFromCache(TileMap tileMap) {
@@ -280,17 +280,16 @@ public class Tile {
 			return;
 		}
 
-		Point2i p = Helper.blockToRegion(location);
-		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/" + Helper.getZoomLevel(tileMap.getScale()) + "/r.%d.%d.png", p.getX(), p.getY());
+		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/" + Helper.getZoomLevel(tileMap.getScale()) + "/r.%d.%d.png", location.getX(), location.getY());
 
-		Debug.dump("loading region " + p + " from cache: " + res);
+		Debug.dump("loading region " + location + " from cache: " + res);
 
 		try (InputStream inputStream = new FileInputStream(res)) {
 			image = new Image(inputStream);
 			loaded = true;
 			Platform.runLater(tileMap::update);
 		} catch (IOException ex) {
-			Debug.dump("region " + p + " not cached");
+			Debug.dump("region " + location + " not cached");
 			//do nothing
 		}
 	}

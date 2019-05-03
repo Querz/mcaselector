@@ -258,7 +258,7 @@ public class TileMap extends Canvas {
 
 		for (Map.Entry<Point2i, Tile> entry : tiles.entrySet()) {
 			if (entry.getValue().isMarked()) {
-				chunks.put(Helper.blockToRegion(entry.getKey()), null);
+				chunks.put(entry.getKey(), null);
 				continue;
 			}
 			Set<Point2i> markedChunks = entry.getValue().getMarkedChunks();
@@ -267,7 +267,7 @@ public class TileMap extends Canvas {
 			}
 			Set<Point2i> markedChunksList = new HashSet<>(markedChunks.size());
 			markedChunks.forEach(c -> markedChunksList.add(Helper.blockToChunk(c)));
-			chunks.put(Helper.blockToRegion(entry.getKey()), markedChunksList);
+			chunks.put(entry.getKey(), markedChunksList);
 		}
 		return chunks;
 	}
@@ -275,7 +275,7 @@ public class TileMap extends Canvas {
 	public void setMarkedChunks(Map<Point2i, Set<Point2i>> chunks) {
 		clearSelection();
 		for (Map.Entry<Point2i, Set<Point2i>> entry : chunks.entrySet()) {
-			Point2i region = Helper.regionToBlock(entry.getKey());
+			Point2i region = entry.getKey();
 			Tile tile = tiles.get(region);
 			if (tile == null) {
 				tile = new Tile(region);
@@ -286,7 +286,7 @@ public class TileMap extends Canvas {
 				selectedChunks += Tile.CHUNKS;
 			} else {
 				for (Point2i chunk : entry.getValue()) {
-					tile.mark(Helper.chunkToBlock(chunk));
+					tile.mark(chunk);
 					selectedChunks++;
 				}
 			}
@@ -295,7 +295,7 @@ public class TileMap extends Canvas {
 
 	public void addMarkedChunks(Map<Point2i, Set<Point2i>> chunks) {
 		for (Map.Entry<Point2i, Set<Point2i>> entry : chunks.entrySet()) {
-			Point2i region = Helper.regionToBlock(entry.getKey());
+			Point2i region = entry.getKey();
 			Tile tile = tiles.get(region);
 			if (tile == null) {
 				tile = new Tile(region);
@@ -307,11 +307,10 @@ public class TileMap extends Canvas {
 				selectedChunks += Tile.CHUNKS;
 			} else {
 				for (Point2i chunk : entry.getValue()) {
-					Point2i block = Helper.chunkToBlock(chunk);
-					if (!tile.isMarked(block)) {
+					if (!tile.isMarked(chunk)) {
 						selectedChunks++;
 					}
-					tile.mark(block);
+					tile.mark(chunk);
 				}
 			}
 		}
@@ -383,13 +382,14 @@ public class TileMap extends Canvas {
 		ctx.setFill(Tile.EMPTY_CHUNK_BACKGROUND_COLOR);
 		ctx.fillRect(0, 0, getWidth(), getHeight());
 		runOnVisibleRegions(region -> {
+			System.out.println("runOnVisibleRegion " + region);
 			if (!tiles.containsKey(region)) {
 				tiles.put(region, new Tile(region));
 			}
 			Tile tile = tiles.get(region);
 			visibleTiles.add(tile);
 
-			Point2i regionOffset = region.sub((int) offset.getX(), (int) offset.getY());
+			Point2i regionOffset = Helper.regionToBlock(region).sub((int) offset.getX(), (int) offset.getY());
 
 			if (!tile.isLoaded() && !tile.isLoading()) {
 				RegionImageGenerator.generate(tile, this);
@@ -401,9 +401,9 @@ public class TileMap extends Canvas {
 
 	//performs an action on regions in a spiral pattern starting from the center of all visible regions in the TileMap.
 	private void runOnVisibleRegions(Consumer<Point2i> consumer) {
-		Point2i min = Helper.regionToBlock(Helper.blockToRegion(offset.toPoint2i()));
-		Point2i max = Helper.regionToBlock(Helper.blockToRegion(offset.add((float) getWidth() * scale, (float) getHeight() * scale).toPoint2i()));
-		Point2i mid = Helper.regionToBlock(Helper.blockToRegion(min.add(max).div(2)));
+		Point2i min = Helper.blockToRegion(offset.toPoint2i());
+		Point2i max = Helper.blockToRegion(offset.add((float) getWidth() * scale, (float) getHeight() * scale).toPoint2i());
+		Point2i mid = Helper.blockToRegion(Helper.regionToBlock(Helper.blockToRegion(Helper.regionToBlock(min).add(Helper.regionToBlock(max)).div(2))));
 		int dir = 0; //0 = right, 1 = down, 2 = left, 3 = up
 		int steps = 1;
 		int xSteps = 0;
@@ -413,8 +413,8 @@ public class TileMap extends Canvas {
 		int y = mid.getY();
 		while ((x <= max.getX() || y <= max.getY()) && (x >= min.getX() || y >= min.getY())) {
 			for (int i = 0; i < steps * 2; i++) {
-				x = mid.getX() + xSteps * Tile.SIZE;
-				y = mid.getY() + ySteps * Tile.SIZE;
+				x = mid.getX() + xSteps;
+				y = mid.getY() + ySteps;
 				if (x <= max.getX() && x >= min.getX() && y <= max.getY() && y >= min.getY()) {
 					consumer.accept(new Point2i(x, y));
 				}
