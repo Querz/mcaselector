@@ -20,7 +20,9 @@ import java.io.IOException;
 public class RegionImageGenerator {
 
 	public static void generate(Tile tile, TileMap tileMap) {
-
+		tile.setLoading(true);
+		tile.setLoaded(false);
+		JobExecutor.addLoadDataJob(new RegionImageGeneratorLoadDataJob(tile, tileMap));
 	}
 
 	public static class RegionImageGeneratorLoadDataJob extends LoadDataJob {
