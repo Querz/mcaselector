@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.*;
+import javafx.scene.paint.Color;
 import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.RegionImageGenerator;
 import net.querz.mcaselector.ui.Window;
@@ -150,6 +151,7 @@ public class TileMap extends Canvas {
 	public void update() {
 		runUpdateListeners();
 
+		// removes jobs from queue that are no longer needed
 		MCAFilePipe.validateJobs(j -> {
 			if (j instanceof  RegionImageGenerator.MCAImageLoadJob) {
 				RegionImageGenerator.MCAImageLoadJob job = (RegionImageGenerator.MCAImageLoadJob) j;
@@ -161,6 +163,8 @@ public class TileMap extends Canvas {
 			}
 			return false;
 		});
+
+		// removes tiles from visibleTiles if they are no longer visible
 		for (Tile tile : visibleTiles) {
 			if (!tile.isVisible(this, TILE_VISIBILITY_THRESHOLD)) {
 				visibleTiles.remove(tile);
@@ -417,6 +421,40 @@ public class TileMap extends Canvas {
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
 			tile.draw(ctx, scale, p, showRegionGrid, showChunkGrid);
 		});
+
+		// draw region grid
+		if (showRegionGrid) {
+			ctx.setLineWidth(Tile.GRID_LINE_WIDTH);
+			ctx.setStroke(Color.GREEN);
+
+			Point2f p = Helper.getRegionGridMin(offset, scale);
+
+			for (float x = p.getX(); x <= getWidth(); x += Tile.SIZE / scale) {
+				ctx.strokeLine(x, 0, x, getHeight());
+			}
+
+			for (float y = p.getY(); y <= getHeight(); y += Tile.SIZE / scale) {
+				ctx.strokeLine(0, y, getWidth(), y);
+			}
+		}
+
+		// draw chunk grid
+		if (showChunkGrid && scale <= CHUNK_GRID_SCALE) {
+			ctx.setLineWidth(Tile.GRID_LINE_WIDTH);
+			ctx.setStroke(Color.YELLOW);
+
+			Point2f p = Helper.getChunkGridMin(offset, scale);
+
+			for (float x = p.getX() + Tile.CHUNK_SIZE / scale; x <= getWidth(); x += Tile.CHUNK_SIZE / scale) {
+				System.out.println("chunk line vertical: " + x);
+				ctx.strokeLine(x, 0, x, getHeight());
+			}
+
+			for (float y = p.getY() + Tile.CHUNK_SIZE / scale; y <= getHeight(); y += Tile.CHUNK_SIZE / scale) {
+				System.out.println("chunk line horizontal: " + y);
+				ctx.strokeLine(0, y, getWidth(), y);
+			}
+		}
 	}
 
 	//performs an action on regions in a spiral pattern starting from the center of all visible regions in the TileMap.

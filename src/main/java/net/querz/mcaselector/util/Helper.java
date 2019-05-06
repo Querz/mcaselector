@@ -163,6 +163,28 @@ public class Helper {
 		return getZoomLevel(TileMap.MIN_SCALE);
 	}
 
+	public static Point2f getRegionGridMin(Point2f offset, float scale) {
+		Point2i min = Helper.blockToRegion(offset.toPoint2i());
+		Point2i regionOffset = Helper.regionToBlock(min).sub((int) offset.getX(), (int) offset.getY());
+		return new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
+	}
+
+	public static Point2f getChunkGridMin(Point2f offset, float scale) {
+		Point2i min = Helper.blockToChunk(offset.toPoint2i());
+		Point2i chunkOffset = Helper.chunkToBlock(min).sub((int) offset.getX(), (int) offset.getY());
+		return new Point2f(chunkOffset.getX() / scale, chunkOffset.getY() / scale);
+	}
+
+	public static boolean isChunkGridLineRegionGridLine(float offset, float l, float scale) {
+		// base offset as int
+		int mod = ((int) offset) % (int) (Tile.CHUNK_SIZE / scale);
+
+		int regMod = ((int) offset) - mod % (int) (Tile.SIZE / scale);
+
+		return false;
+
+	}
+
 	//-----------------------------------------------------------------
 
 	public static File createPNGFilePath(Point2i r, int zoomLevel) {

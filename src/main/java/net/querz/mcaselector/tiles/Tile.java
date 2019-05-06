@@ -213,34 +213,34 @@ public class Tile {
 			ctx.drawImage(empty, offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 		}
 
-		if (regionGrid) {
-			ctx.setLineWidth(GRID_LINE_WIDTH);
-			//draw region grid
-			ctx.setStroke(REGION_GRID_COLOR);
-			ctx.strokeLine(offset.getX(), offset.getY(), offset.getX(), offset.getY() + SIZE / scale);
-			ctx.strokeLine(offset.getX(), offset.getY(), offset.getX() + SIZE / scale, offset.getY());
-
-		}
-
-		if (chunkGrid && scale <= TileMap.CHUNK_GRID_SCALE) {
-			ctx.setLineWidth(GRID_LINE_WIDTH);
-			//draw chunk grid
-			ctx.setStroke(CHUNK_GRID_COLOR);
-			for (int x = regionGrid ? 1 : 0; x < SIZE / CHUNK_SIZE; x++) {
-				ctx.strokeLine(
-						offset.getX() + (x * CHUNK_SIZE / scale),
-						offset.getY(),
-						offset.getX() + (x * CHUNK_SIZE / scale),
-						offset.getY() + SIZE / scale);
-			}
-			for (int z = regionGrid ? 1 : 0; z < SIZE / CHUNK_SIZE; z++) {
-				ctx.strokeLine(
-						offset.getX(),
-						offset.getY() + (z * CHUNK_SIZE / scale),
-						offset.getX() + SIZE / scale,
-						offset.getY() + (z * CHUNK_SIZE / scale));
-			}
-		}
+//		if (regionGrid) {
+//			ctx.setLineWidth(GRID_LINE_WIDTH);
+//			//draw region grid
+//			ctx.setStroke(REGION_GRID_COLOR);
+//			ctx.strokeLine(offset.getX(), offset.getY(), offset.getX(), offset.getY() + SIZE / scale);
+//			ctx.strokeLine(offset.getX(), offset.getY(), offset.getX() + SIZE / scale, offset.getY());
+//
+//		}
+//
+//		if (chunkGrid && scale <= TileMap.CHUNK_GRID_SCALE) {
+//			ctx.setLineWidth(GRID_LINE_WIDTH);
+//			//draw chunk grid
+//			ctx.setStroke(CHUNK_GRID_COLOR);
+//			for (int x = regionGrid ? 1 : 0; x < SIZE / CHUNK_SIZE; x++) {
+//				ctx.strokeLine(
+//						offset.getX() + (x * CHUNK_SIZE / scale),
+//						offset.getY(),
+//						offset.getX() + (x * CHUNK_SIZE / scale),
+//						offset.getY() + SIZE / scale);
+//			}
+//			for (int z = regionGrid ? 1 : 0; z < SIZE / CHUNK_SIZE; z++) {
+//				ctx.strokeLine(
+//						offset.getX(),
+//						offset.getY() + (z * CHUNK_SIZE / scale),
+//						offset.getX() + SIZE / scale,
+//						offset.getY() + (z * CHUNK_SIZE / scale));
+//			}
+//		}
 	}
 
 	private void createMarkedChunksImage(int zoomLevel) {
