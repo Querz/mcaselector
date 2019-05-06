@@ -1,7 +1,6 @@
 package net.querz.mcaselector.util;
 
 import javafx.scene.input.KeyCode;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Consumer;
 
 public class KeyActivator extends TimerTask {
 
@@ -17,7 +17,9 @@ public class KeyActivator extends TimerTask {
 
 	private Set<KeyCode> pressedButtons = new HashSet<>();
 
-	private Map<KeyCode, List<Runnable>> actions = new HashMap<>();
+	private Set<KeyCode> pressedActionKeys = new HashSet<>();
+
+	private Map<KeyCode, List<Consumer<Set<KeyCode>>>> actions = new HashMap<>();
 
 	private Runnable globalAction;
 
@@ -28,17 +30,27 @@ public class KeyActivator extends TimerTask {
 
 	@Override
 	public void run() {
+		int executed = 0;
 		for (KeyCode pressedButton : pressedButtons) {
-			List<Runnable> actionList = actions.get(pressedButton);
+			List<Consumer<Set<KeyCode>>> actionList = actions.get(pressedButton);
 			if (actionList != null) {
-				for (Runnable runnable : actionList) {
-					runnable.run();
+				for (Consumer<Set<KeyCode>> consumer : actionList) {
+					consumer.accept(pressedActionKeys);
+					executed++;
 				}
 			}
 		}
-		if (globalAction != null && pressedButtons.size() > 0) {
+		if (globalAction != null && executed > 0) {
 			globalAction.run();
 		}
+	}
+
+	public void pressActionKey(KeyCode key) {
+		pressedActionKeys.add(key);
+	}
+
+	public void releaseActionKey(KeyCode key) {
+		pressedActionKeys.remove(key);
 	}
 
 	public void pressKey(KeyCode key) {
@@ -49,8 +61,8 @@ public class KeyActivator extends TimerTask {
 		pressedButtons.remove(key);
 	}
 
-	public void registerAction(KeyCode key, Runnable action) {
-		List<Runnable> actionList = actions.getOrDefault(key, new ArrayList<>());
+	public void registerAction(KeyCode key, Consumer<Set<KeyCode>> action) {
+		List<Consumer<Set<KeyCode>>> actionList = actions.getOrDefault(key, new ArrayList<>());
 		actionList.add(action);
 		actions.put(key, actionList);
 	}

@@ -59,14 +59,30 @@ public class TileMap extends Canvas {
 		this.setOnScroll(this::onScroll);
 		this.setOnMouseMoved(this::onMouseMoved);
 		this.setOnMouseExited(e -> onMouseExited());
-		keyActivator.registerAction(KeyCode.W, () -> offset = offset.sub(0, 5 * scale));
-		keyActivator.registerAction(KeyCode.A, () -> offset = offset.sub(5 * scale, 0));
-		keyActivator.registerAction(KeyCode.S, () -> offset = offset.add(0, 5 * scale));
-		keyActivator.registerAction(KeyCode.D, () -> offset = offset.add(5 * scale, 0));
+		keyActivator.registerAction(KeyCode.W, c -> offset = offset.sub(0, (c.contains(KeyCode.SHIFT) ? 10 : 5) * scale));
+		keyActivator.registerAction(KeyCode.A, c -> offset = offset.sub((c.contains(KeyCode.SHIFT) ? 10 : 5) * scale, 0));
+		keyActivator.registerAction(KeyCode.S, c -> offset = offset.add(0, (c.contains(KeyCode.SHIFT) ? 10 : 5) * scale));
+		keyActivator.registerAction(KeyCode.D, c -> offset = offset.add((c.contains(KeyCode.SHIFT) ? 10 : 5) * scale, 0));
 		keyActivator.registerGlobalAction(() -> Platform.runLater(this::update));
-		this.setOnKeyPressed(e -> keyActivator.pressKey(e.getCode()));
-		this.setOnKeyReleased(e -> keyActivator.releaseKey(e.getCode()));
+		this.setOnKeyPressed(this::onKeyPressed);
+		this.setOnKeyReleased(this::onKeyReleased);
 		update();
+	}
+
+	private void onKeyPressed(KeyEvent event) {
+		if (event.getCode() == KeyCode.SHIFT) {
+			keyActivator.pressActionKey(event.getCode());
+		} else {
+			keyActivator.pressKey(event.getCode());
+		}
+	}
+
+	private void onKeyReleased(KeyEvent event) {
+		if (event.getCode() == KeyCode.SHIFT) {
+			keyActivator.releaseActionKey(event.getCode());
+		} else {
+			keyActivator.releaseKey(event.getCode());
+		}
 	}
 
 	private void onMouseMoved(MouseEvent event) {
