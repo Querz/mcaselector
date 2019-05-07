@@ -5,4 +5,6 @@ import net.querz.nbt.CompoundTag;
 public interface ChunkFilter {
 
 	boolean matchBlockNames(CompoundTag data, String... names);
+
+	boolean matchBiomeIDs(CompoundTag data, int... ids);
 }
