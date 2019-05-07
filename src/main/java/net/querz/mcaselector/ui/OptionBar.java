@@ -33,6 +33,7 @@ public class OptionBar extends MenuBar {
 	private MenuItem clearAllCache = menuItem("Clear all cache");
 	private MenuItem clear = menuItem("Clear");
 	private MenuItem exportChunks = menuItem("Export selected chunks");
+	private MenuItem importChunks = menuItem("Import chunks");
 	private MenuItem delete = menuItem("Delete selected chunks");
 	private MenuItem importSelection = menuItem("Import selection");
 	private MenuItem exportSelection = menuItem("Export selection");
@@ -54,7 +55,7 @@ public class OptionBar extends MenuBar {
 				clearViewCache, clearAllCache);
 		selection.getItems().addAll(
 				clear, separator(),
-				exportChunks, delete, separator(),
+				exportChunks, importChunks, delete, separator(),
 				importSelection, exportSelection, separator(),
 				clearSelectionCache);
 		tools.getItems().addAll(filterChunks, changeFields);
@@ -74,6 +75,7 @@ public class OptionBar extends MenuBar {
 		clearViewCache.setOnAction(e -> Helper.clearViewCache(tileMap));
 		clear.setOnAction(e -> tileMap.clearSelection());
 		exportChunks.setOnAction(e -> Helper.exportSelectedChunks(tileMap, primaryStage));
+		importChunks.setOnAction(e -> Helper.importChunks(tileMap, primaryStage));
 		delete.setOnAction(e -> Helper.deleteSelection(tileMap, primaryStage));
 		importSelection.setOnAction(e -> Helper.importSelection(tileMap, primaryStage));
 		exportSelection.setOnAction(e -> Helper.exportSelection(tileMap, primaryStage));
@@ -89,6 +91,7 @@ public class OptionBar extends MenuBar {
 		clearViewCache.setAccelerator(KeyCombination.keyCombination("Ctrl+K"));
 		clear.setAccelerator(KeyCombination.keyCombination("Ctrl+L"));
 		exportChunks.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+E"));
+		importChunks.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+I"));
 		delete.setAccelerator(KeyCombination.keyCombination("Ctrl+D"));
 		importSelection.setAccelerator(KeyCombination.keyCombination("Ctrl+I"));
 		exportSelection.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
@@ -112,6 +115,7 @@ public class OptionBar extends MenuBar {
 	public void setWorldDependentMenuItemsEnabled(boolean enabled) {
 		filterChunks.setDisable(!enabled);
 		changeFields.setDisable(!enabled);
+		importChunks.setDisable(!enabled);
 	}
 
 	private void setSelectionDependentMenuItemsEnabled(boolean enabled) {

@@ -27,7 +27,8 @@ public class Window extends Application {
 		BorderPane pane = new BorderPane();
 
 		//menu bar
-		pane.setTop(new OptionBar(tileMap, primaryStage));
+		OptionBar optionBar = new OptionBar(tileMap, primaryStage);
+		pane.setTop(optionBar);
 
 		//tilemap
 		TileMapBox tileMapBox = new TileMapBox(tileMap, primaryStage);

@@ -20,6 +20,7 @@ import net.querz.mcaselector.ui.DeleteConfirmationDialog;
 import net.querz.mcaselector.ui.ExportConfirmationDialog;
 import net.querz.mcaselector.ui.FilterChunksDialog;
 import net.querz.mcaselector.ui.GotoDialog;
+import net.querz.mcaselector.ui.ImportConfirmationDialog;
 import net.querz.mcaselector.ui.OptionBar;
 import net.querz.mcaselector.ui.ProgressDialog;
 import net.querz.mcaselector.ui.SettingsDialog;
@@ -51,6 +52,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Helper {
+
+	public static final String MCA_FILE_PATTERN = "^r\\.-?\\d+\\.-?\\d+\\.png$";
 
 	public static Point2i blockToRegion(Point2i i) {
 		return i.shiftRight(9);
@@ -398,6 +401,19 @@ public class Helper {
 				if (r == ButtonType.OK) {
 					new ProgressDialog("Exporting selection...", primaryStage)
 							.showProgressBar(t -> SelectionExporter.exportSelection(tileMap.getMarkedChunks(), dir, t));
+				}
+			});
+		}
+	}
+
+	public static void importChunks(TileMap tileMap, Stage primaryStage) {
+		File dir = createDirectoryChooser(null).showDialog(primaryStage);
+		if (dir != null) {
+			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage).showAndWait();
+			result.ifPresent(r -> {
+				if (r == ButtonType.OK) {
+//					new ProgressDialog("Importing chunks...", primaryStage)
+//							.showProgressBar(t -> );
 				}
 			});
 		}
