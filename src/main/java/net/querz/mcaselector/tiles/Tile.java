@@ -144,7 +144,7 @@ public class Tile {
 		if (isMarked()) {
 			for (int x = 0; x < SIZE_IN_CHUNKS; x++) {
 				for (int z = 0; z < SIZE_IN_CHUNKS; z++) {
-					markedChunks.add(new Point2i(location.getX() + x * CHUNK_SIZE, location.getY() + z * CHUNK_SIZE));
+					markedChunks.add(new Point2i(location.getX() + x, location.getY() + z));
 				}
 			}
 			mark(false);
@@ -173,11 +173,12 @@ public class Tile {
 		empty = wImage;
 	}
 
-	public void draw(GraphicsContext ctx, float scale, Point2f offset, boolean regionGrid, boolean chunkGrid) {
+	public void draw(GraphicsContext ctx, float scale, Point2f offset) {
 		if (isLoaded() && image != null) {
 			double size =  getImage().getHeight() * (SIZE / getImage().getWidth());
 			ctx.drawImage(getImage(), offset.getX(), offset.getY(), size / scale, size / scale);
 			if (marked) {
+				System.out.println("drawing marked region " + location);
 				//draw marked region
 				ctx.setFill(Config.getRegionSelectionColor());
 				ctx.fillRect(offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
@@ -190,57 +191,10 @@ public class Tile {
 				// apply markedChunksImage to ctx
 
 				ctx.drawImage(markedChunksImage, offset.getX(), offset.getY(), size / scale, size / scale);
-
-//				//draw marked chunks
-//				ctx.setFill(Config.getChunkSelectionColor());
-//				for (Point2i p : markedChunks) {
-//					//location is the real location of the region in the world
-//					//p is the real location of the chunk in the world
-//					//offset is the offset in pixel the region is drawn based on 0|0 of the canvas
-//					//need the location of the chunk inside the region in pixel
-//					//p.x - location.x --> location in blocks
-//					//(p.x - location.x) / scale --> location in pixel
-//					int regionChunkOffsetX = (int) ((p.getX() - location.getX()) / scale + offset.getX());
-//					int regionChunkOffsetY = (int) ((p.getY() - location.getY()) / scale + offset.getY());
-//					ctx.fillRect(
-//							regionChunkOffsetX,
-//							regionChunkOffsetY,
-//							Math.ceil(CHUNK_SIZE / scale),
-//							Math.ceil(CHUNK_SIZE / scale));
-//				}
 			}
 		} else {
 			ctx.drawImage(empty, offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 		}
-
-//		if (regionGrid) {
-//			ctx.setLineWidth(GRID_LINE_WIDTH);
-//			//draw region grid
-//			ctx.setStroke(REGION_GRID_COLOR);
-//			ctx.strokeLine(offset.getX(), offset.getY(), offset.getX(), offset.getY() + SIZE / scale);
-//			ctx.strokeLine(offset.getX(), offset.getY(), offset.getX() + SIZE / scale, offset.getY());
-//
-//		}
-//
-//		if (chunkGrid && scale <= TileMap.CHUNK_GRID_SCALE) {
-//			ctx.setLineWidth(GRID_LINE_WIDTH);
-//			//draw chunk grid
-//			ctx.setStroke(CHUNK_GRID_COLOR);
-//			for (int x = regionGrid ? 1 : 0; x < SIZE / CHUNK_SIZE; x++) {
-//				ctx.strokeLine(
-//						offset.getX() + (x * CHUNK_SIZE / scale),
-//						offset.getY(),
-//						offset.getX() + (x * CHUNK_SIZE / scale),
-//						offset.getY() + SIZE / scale);
-//			}
-//			for (int z = regionGrid ? 1 : 0; z < SIZE / CHUNK_SIZE; z++) {
-//				ctx.strokeLine(
-//						offset.getX(),
-//						offset.getY() + (z * CHUNK_SIZE / scale),
-//						offset.getX() + SIZE / scale,
-//						offset.getY() + (z * CHUNK_SIZE / scale));
-//			}
-//		}
 	}
 
 	private void createMarkedChunksImage(int zoomLevel) {
@@ -251,7 +205,7 @@ public class Tile {
 		ctx.setFill(Config.getChunkSelectionColor());
 
 		for (Point2i markedChunk : markedChunks) {
-			Point2i regionChunk = Helper.blockToChunk(markedChunk).mod(SIZE_IN_CHUNKS);
+			Point2i regionChunk = markedChunk.mod(SIZE_IN_CHUNKS);
 			if (regionChunk.getX() < 0) {
 				regionChunk.setX(regionChunk.getX() + SIZE_IN_CHUNKS);
 			}

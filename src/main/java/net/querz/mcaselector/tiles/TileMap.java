@@ -232,7 +232,7 @@ public class TileMap extends Canvas {
 
 	public List<Point2i> getVisibleRegions() {
 		List<Point2i> regions = new ArrayList<>();
-		runOnVisibleRegions(r -> regions.add(Helper.blockToRegion(r)));
+		runOnVisibleRegions(regions::add);
 		return regions;
 	}
 
@@ -289,9 +289,7 @@ public class TileMap extends Canvas {
 			if (markedChunks.size() == 0) {
 				continue;
 			}
-			Set<Point2i> markedChunksList = new HashSet<>(markedChunks.size());
-			markedChunks.forEach(c -> markedChunksList.add(Helper.blockToChunk(c)));
-			chunks.put(entry.getKey(), markedChunksList);
+			chunks.put(entry.getKey(), markedChunks);
 		}
 		return chunks;
 	}
@@ -347,11 +345,11 @@ public class TileMap extends Canvas {
 	}
 
 	private Point2i getMouseRegionBlock(double x, double z) {
-		return Helper.regionToBlock(Helper.blockToRegion(getMouseBlock(x, z)));
+		return Helper.blockToRegion(getMouseBlock(x, z));
 	}
 
 	private Point2i getMouseChunkBlock(double x, double z) {
-		return Helper.chunkToBlock(Helper.blockToChunk(getMouseBlock(x, z)));
+		return Helper.blockToChunk(getMouseBlock(x, z));
 	}
 
 	private void sortPoints(Point2i a, Point2i b) {
@@ -367,8 +365,8 @@ public class TileMap extends Canvas {
 			Point2i regionBlock = getMouseRegionBlock(mouseX, mouseY);
 			Point2i firstRegionBlock = getMouseRegionBlock(firstMouseLocation.getX(), firstMouseLocation.getY());
 			sortPoints(firstRegionBlock, regionBlock);
-			for (int x = firstRegionBlock.getX(); x <= regionBlock.getX(); x += Tile.SIZE) {
-				for (int z = firstRegionBlock.getY(); z <= regionBlock.getY(); z += Tile.SIZE) {
+			for (int x = firstRegionBlock.getX(); x <= regionBlock.getX(); x++) {
+				for (int z = firstRegionBlock.getY(); z <= regionBlock.getY(); z++) {
 					Tile tile = tiles.get(new Point2i(x, z));
 					if (tile != null && !tile.isEmpty()) {
 						if (tile.isMarked() && !marked) {
@@ -384,10 +382,10 @@ public class TileMap extends Canvas {
 			Point2i chunkBlock = getMouseChunkBlock(mouseX, mouseY);
 			Point2i firstChunkBlock = getMouseChunkBlock(firstMouseLocation.getX(), firstMouseLocation.getY());
 			sortPoints(firstChunkBlock, chunkBlock);
-			for (int x = firstChunkBlock.getX(); x <= chunkBlock.getX(); x += Tile.CHUNK_SIZE) {
-				for (int z = firstChunkBlock.getY(); z <= chunkBlock.getY(); z += Tile.CHUNK_SIZE) {
+			for (int x = firstChunkBlock.getX(); x <= chunkBlock.getX(); x++) {
+				for (int z = firstChunkBlock.getY(); z <= chunkBlock.getY(); z++) {
 					Point2i chunk = new Point2i(x, z);
-					Tile tile = tiles.get(Helper.regionToBlock(Helper.blockToRegion(chunk)));
+					Tile tile = tiles.get(Helper.chunkToRegion(chunk));
 					if (tile != null) {
 						if (tile.isMarked(chunk) && !marked && !tile.isEmpty()) {
 							selectedChunks--;
@@ -406,7 +404,6 @@ public class TileMap extends Canvas {
 		ctx.setFill(Tile.EMPTY_CHUNK_BACKGROUND_COLOR);
 		ctx.fillRect(0, 0, getWidth(), getHeight());
 		runOnVisibleRegions(region -> {
-			System.out.println("runOnVisibleRegion " + region);
 			if (!tiles.containsKey(region)) {
 				tiles.put(region, new Tile(region));
 			}
@@ -419,41 +416,55 @@ public class TileMap extends Canvas {
 				RegionImageGenerator.generate(tile, this);
 			}
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
-			tile.draw(ctx, scale, p, showRegionGrid, showChunkGrid);
+			tile.draw(ctx, scale, p);
 		});
 
-		// draw region grid
 		if (showRegionGrid) {
-			ctx.setLineWidth(Tile.GRID_LINE_WIDTH);
-			ctx.setStroke(Color.GREEN);
-
-			Point2f p = Helper.getRegionGridMin(offset, scale);
-
-			for (float x = p.getX(); x <= getWidth(); x += Tile.SIZE / scale) {
-				ctx.strokeLine(x, 0, x, getHeight());
-			}
-
-			for (float y = p.getY(); y <= getHeight(); y += Tile.SIZE / scale) {
-				ctx.strokeLine(0, y, getWidth(), y);
-			}
+			drawRegionGrid(ctx);
 		}
 
-		// draw chunk grid
 		if (showChunkGrid && scale <= CHUNK_GRID_SCALE) {
-			ctx.setLineWidth(Tile.GRID_LINE_WIDTH);
-			ctx.setStroke(Color.YELLOW);
+			drawChunkGrid(ctx);
+		}
+	}
 
-			Point2f p = Helper.getChunkGridMin(offset, scale);
+	private void drawRegionGrid(GraphicsContext ctx) {
+		ctx.setLineWidth(Tile.GRID_LINE_WIDTH);
+		ctx.setStroke(Tile.REGION_GRID_COLOR);
 
-			for (float x = p.getX() + Tile.CHUNK_SIZE / scale; x <= getWidth(); x += Tile.CHUNK_SIZE / scale) {
-				System.out.println("chunk line vertical: " + x);
-				ctx.strokeLine(x, 0, x, getHeight());
+		Point2f p = Helper.getRegionGridMin(offset, scale);
+
+		for (float x = p.getX(); x <= getWidth(); x += Tile.SIZE / scale) {
+			ctx.strokeLine(x, 0, x, getHeight());
+		}
+
+		for (float y = p.getY(); y <= getHeight(); y += Tile.SIZE / scale) {
+			ctx.strokeLine(0, y, getWidth(), y);
+		}
+	}
+
+	private void drawChunkGrid(GraphicsContext ctx) {
+		ctx.setLineWidth(Tile.GRID_LINE_WIDTH);
+		ctx.setStroke(Tile.CHUNK_GRID_COLOR);
+
+		Point2f p = Helper.getChunkGridMin(offset, scale);
+		Point2f pReg = Helper.getRegionGridMin(offset, scale);
+
+		for (float x = p.getX() + Tile.CHUNK_SIZE / scale; x <= getWidth(); x += Tile.CHUNK_SIZE / scale) {
+			if (showRegionGrid && (int) (pReg.getX() + Tile.SIZE / scale) == (int) x) {
+				pReg.setX(pReg.getX() + Tile.SIZE / scale);
+				continue;
 			}
 
-			for (float y = p.getY() + Tile.CHUNK_SIZE / scale; y <= getHeight(); y += Tile.CHUNK_SIZE / scale) {
-				System.out.println("chunk line horizontal: " + y);
-				ctx.strokeLine(0, y, getWidth(), y);
+			ctx.strokeLine(x, 0, x, getHeight());
+		}
+
+		for (float y = p.getY() + Tile.CHUNK_SIZE / scale; y <= getHeight(); y += Tile.CHUNK_SIZE / scale) {
+			if (showRegionGrid && (int) (pReg.getY() + Tile.SIZE / scale) == (int) y) {
+				pReg.setY(pReg.getY() + Tile.SIZE / scale);
+				continue;
 			}
+			ctx.strokeLine(0, y, getWidth(), y);
 		}
 	}
 

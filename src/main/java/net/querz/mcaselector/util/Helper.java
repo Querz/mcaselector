@@ -175,16 +175,6 @@ public class Helper {
 		return new Point2f(chunkOffset.getX() / scale, chunkOffset.getY() / scale);
 	}
 
-	public static boolean isChunkGridLineRegionGridLine(float offset, float l, float scale) {
-		// base offset as int
-		int mod = ((int) offset) % (int) (Tile.CHUNK_SIZE / scale);
-
-		int regMod = ((int) offset) - mod % (int) (Tile.SIZE / scale);
-
-		return false;
-
-	}
-
 	//-----------------------------------------------------------------
 
 	public static File createPNGFilePath(Point2i r, int zoomLevel) {
