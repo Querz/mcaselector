@@ -75,7 +75,6 @@ public class VersionController {
 
 		//wohooo! Runtime optimization!
 		static Mapping match(int dataVersion) {
-			System.out.println(dataVersion);
 			for (Mapping m : Mapping.values()) {
 				if (m.from <= dataVersion && m.to >= dataVersion) {
 					return m;

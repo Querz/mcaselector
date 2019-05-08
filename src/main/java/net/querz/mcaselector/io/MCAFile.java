@@ -214,6 +214,25 @@ public class MCAFile {
 		}
 	}
 
+	public void mergeChunksInto(MCAFile destination, boolean overwrite) {
+		for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
+			for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
+				int index = cz * Tile.SIZE_IN_CHUNKS + cx;
+				MCAChunkData sourceChunk = chunks[index];
+				MCAChunkData destinationChunk = destination.chunks[index];
+
+				if (!overwrite && destinationChunk != null && !destinationChunk.isEmpty()) {
+					continue;
+				}
+
+				if (sourceChunk != null && !sourceChunk.isEmpty()) {
+					System.out.println("merging " + cx + " " + cz);
+					destination.chunks[index] = sourceChunk;
+				}
+			}
+		}
+	}
+
 	//will rearrange the chunk data in the mca file to take up as few space as possible
 	//returns the tmp file
 	public File deFragment(RandomAccessFile raf) throws Exception {

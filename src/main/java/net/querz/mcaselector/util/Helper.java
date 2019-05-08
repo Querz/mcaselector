@@ -53,7 +53,8 @@ import java.util.regex.Pattern;
 
 public class Helper {
 
-	public static final String MCA_FILE_PATTERN = "^r\\.-?\\d+\\.-?\\d+\\.png$";
+	public static final String MCA_FILE_PATTERN = "^r\\.-?\\d+\\.-?\\d+\\.mca$";
+	public static final Pattern REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
 
 	public static Point2i blockToRegion(Point2i i) {
 		return i.shiftRight(9);
@@ -412,8 +413,9 @@ public class Helper {
 			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage).showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
-//					new ProgressDialog("Importing chunks...", primaryStage)
-//							.showProgressBar(t -> );
+					new ProgressDialog("Importing chunks...", primaryStage)
+							.showProgressBar(t -> ChunkImporter.importChunks(dir, t));
+					clearAllCache(tileMap);
 				}
 			});
 		}
