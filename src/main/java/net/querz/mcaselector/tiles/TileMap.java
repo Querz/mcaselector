@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.*;
-import javafx.scene.paint.Color;
 import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.RegionImageGenerator;
 import net.querz.mcaselector.ui.Window;
@@ -13,7 +12,12 @@ import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.KeyActivator;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
-import java.util.*;
+import net.querz.mcaselector.util.Timer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -48,6 +52,11 @@ public class TileMap extends Canvas {
 	private List<Consumer<TileMap>> hoverListener = new ArrayList<>(1);
 
 	private KeyActivator keyActivator = new KeyActivator();
+
+	private boolean updatesLocked = false;
+	private boolean updateQueued = false;
+
+	private long totalUpdates = 0;
 
 	public TileMap(Window window, int width, int height) {
 		super(width, height);
@@ -148,7 +157,41 @@ public class TileMap extends Canvas {
 		update();
 	}
 
+	public void queueUpdate() {
+		if (updatesLocked) {
+			updateQueued = true;
+		} else {
+			updatesLocked = true;
+			Platform.runLater(this::runUpdate);
+		}
+	}
+
+	private void runUpdate() {
+		update();
+		if (updateQueued) {
+			Platform.runLater(this::runUpdate);
+			updateQueued = false;
+		} else {
+			updatesLocked = false;
+		}
+	}
+
+	public void update2() {
+		runUpdateListeners();
+
+		runOnVisibleRegions(region -> {
+			// assume nothing is loaded
+			Tile regionTile = tiles.get(region);
+			if (regionTile == null) {
+				regionTile = new Tile(region);
+				tiles.put(region, regionTile);
+				visibleTiles.add(regionTile);
+			}
+		});
+	}
+
 	public void update() {
+		Timer t = new Timer();
 		runUpdateListeners();
 
 		// removes jobs from queue that are no longer needed
@@ -177,6 +220,8 @@ public class TileMap extends Canvas {
 			}
 		}
 		draw(context);
+		totalUpdates++;
+		Debug.dumpf("update took: %s #%d", t, totalUpdates);
 	}
 
 	public void setOnUpdate(Consumer<TileMap> listener) {

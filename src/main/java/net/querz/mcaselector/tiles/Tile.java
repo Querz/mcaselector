@@ -196,6 +196,27 @@ public class Tile {
 		}
 	}
 
+	public void draw2(GraphicsContext ctx, float scale, Point2f offset) {
+		float imageSize = Helper.getZoomLevelImageSize(scale);
+	}
+
+	public void drawMarkings(GraphicsContext ctx, float scale, Point2f offset) {
+		if (marked) {
+			//draw marked region
+			ctx.setFill(Config.getRegionSelectionColor());
+			ctx.fillRect(offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
+		} else if (markedChunks.size() > 0) {
+
+			if (markedChunksImage == null) {
+				createMarkedChunksImage(Helper.getZoomLevel(scale));
+			}
+
+			// apply markedChunksImage to ctx
+
+			ctx.drawImage(markedChunksImage, offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
+		}
+	}
+
 	private void createMarkedChunksImage(int zoomLevel) {
 		WritableImage wImage = new WritableImage(SIZE / zoomLevel, SIZE / zoomLevel);
 
