@@ -226,7 +226,6 @@ public class MCAFile {
 				}
 
 				if (sourceChunk != null && !sourceChunk.isEmpty()) {
-					System.out.println("merging " + cx + " " + cz);
 					destination.chunks[index] = sourceChunk;
 				}
 			}

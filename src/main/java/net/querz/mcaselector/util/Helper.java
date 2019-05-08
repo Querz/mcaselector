@@ -1,11 +1,10 @@
 package net.querz.mcaselector.util;
 
-import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -24,7 +23,6 @@ import net.querz.mcaselector.ui.ImportConfirmationDialog;
 import net.querz.mcaselector.ui.OptionBar;
 import net.querz.mcaselector.ui.ProgressDialog;
 import net.querz.mcaselector.ui.SettingsDialog;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -216,7 +214,7 @@ public class Helper {
 		try (FileInputStream fis = new FileInputStream(Helper.createPNGFilePath(origin, zoomLevel))) {
 			return new Image(fis);
 		} catch (IOException e) {
-			System.out.println("error reading cached file " + Helper.createPNGFilePath(origin, zoomLevel) + ": " + e.getMessage());
+			Debug.errorf("error reading cached file %s: %s", Helper.createPNGFilePath(origin, zoomLevel), e.getMessage());
 		}
 		return null;
 	}
@@ -264,7 +262,7 @@ public class Helper {
 
 			Graphics graphics = cachedImage.getGraphics();
 
-			System.out.println("drawing " + r + " in " + z + "/" + cacheFile.getName() + " at " + pointInCachedImage);
+			Debug.dumpf("drawing %s in %d/%s at %s", r, z, cacheFile.getName(), pointInCachedImage);
 
 			graphics.drawImage(scaledImage, pointInCachedImage.getX(), pointInCachedImage.getY(), null);
 
@@ -409,12 +407,13 @@ public class Helper {
 
 	public static void importChunks(TileMap tileMap, Stage primaryStage) {
 		File dir = createDirectoryChooser(null).showDialog(primaryStage);
+		SimpleBooleanProperty overwriteProperty = new SimpleBooleanProperty();
 		if (dir != null) {
-			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage).showAndWait();
+			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, overwriteProperty::set).showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
 					new ProgressDialog("Importing chunks...", primaryStage)
-							.showProgressBar(t -> ChunkImporter.importChunks(dir, t));
+							.showProgressBar(t -> ChunkImporter.importChunks(dir, t, overwriteProperty.get()));
 					clearAllCache(tileMap);
 				}
 			});

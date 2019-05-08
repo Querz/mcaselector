@@ -9,9 +9,9 @@ import net.querz.mcaselector.util.Helper;
 public class OptionBar extends MenuBar {
 	/*
 	* File			View				Selection					Tools				About
-	* - Open		- Chunk Grid		- Clear selection			- Filter chunks
-	* - Settings	- Region Grid		- Export selected chunks	- Change fields
-	* - Quit		- Goto				- Delete selected chunks
+	* - Open		- Chunk Grid		- Clear selection			- Import chunks
+	* - Settings	- Region Grid		- Export selected chunks	- Filter chunks
+	* - Quit		- Goto				- Delete selected chunks	- Change fields
 	*				- Clear cache		- Import selection
 	*				- Clear all cache	- Export selection
 	*									- Clear cache
@@ -55,10 +55,10 @@ public class OptionBar extends MenuBar {
 				clearViewCache, clearAllCache);
 		selection.getItems().addAll(
 				clear, separator(),
-				exportChunks, importChunks, delete, separator(),
+				exportChunks, delete, separator(),
 				importSelection, exportSelection, separator(),
 				clearSelectionCache);
-		tools.getItems().addAll(filterChunks, changeFields);
+		tools.getItems().addAll(importChunks, filterChunks, changeFields);
 		about.setOnMouseClicked(e -> Helper.showAboutDialog(tileMap, primaryStage));
 		Menu aboutMenu = new Menu();
 		aboutMenu.setGraphic(about);

@@ -1,5 +1,6 @@
 * {
 	-color-text-light: #f2f2f2;
+	-color-text-dark: #a6a6a6;
 	-color-dialog-background: #3c3f41;
 	-color-dialog-header-background: #494d50;
 	-color-dialog-separator: #515151;
@@ -584,4 +585,29 @@
 .color-picker-preview {
 	-fx-pref-height: 30;
 	-fx-effect: innershadow(gaussian, -color-picker-preview-shadow, 8, 0, 0, 0);
+}
+
+/*---------- titled border ----------*/
+
+.bordered-titled-title {
+  -fx-background-color: -color-dialog-background;
+  -fx-text-fill: -color-text-dark;
+  -fx-translate-y: -10;
+}
+
+.bordered-titled-border {
+  -fx-content-display: top;
+  -fx-border-insets: 20 2 2 2;
+  -fx-border-color: -color-dialog-separator;
+  -fx-border-width: 2;
+}
+
+.bordered-titled-content {
+  -fx-padding: 30 10 10 22;
+}
+
+/*---------- import confirmation dialog ----------*/
+
+.import-confirmation-dialog-content >.label {
+	-fx-padding: 20 0 0 0;
 }

@@ -15,14 +15,12 @@ public class ChunkImporter {
 
 	private ChunkImporter() {}
 
-	public static void importChunks(File importDir, ProgressTask progressChannel) {
+	public static void importChunks(File importDir, ProgressTask progressChannel, boolean overwrite) {
 		File[] importFiles = importDir.listFiles((dir, name) -> name.matches(Helper.MCA_FILE_PATTERN));
 		if (importFiles == null || importFiles.length == 0) {
 			progressChannel.done("no files");
 			return;
 		}
-
-		System.out.println("going to import chunks from " + importFiles.length + " files");
 
 		MCAFilePipe.clearQueues();
 
@@ -30,17 +28,19 @@ public class ChunkImporter {
 		progressChannel.updateProgress(importFiles[0].getName(), 0);
 
 		for (File file : importFiles) {
-			MCAFilePipe.addJob(new MCAChunkImporterLoadJob(file, progressChannel));
+			MCAFilePipe.addJob(new MCAChunkImporterLoadJob(file, progressChannel, overwrite));
 		}
 	}
 
 	public static class MCAChunkImporterLoadJob extends LoadDataJob {
 
 		private ProgressTask progressChannel;
+		private boolean overwrite;
 
-		MCAChunkImporterLoadJob(File file, ProgressTask progressChannel) {
+		MCAChunkImporterLoadJob(File file, ProgressTask progressChannel, boolean overwrite) {
 			super(file);
 			this.progressChannel = progressChannel;
+			this.overwrite = overwrite;
 		}
 
 		@Override
@@ -74,7 +74,7 @@ public class ChunkImporter {
 				return;
 			}
 
-			MCAFilePipe.executeProcessData(new MCAChunkImporterProcessJob(getFile(), dest, sourceData, destData, progressChannel));
+			MCAFilePipe.executeProcessData(new MCAChunkImporterProcessJob(getFile(), dest, sourceData, destData, progressChannel, overwrite));
 		}
 	}
 
@@ -83,12 +83,14 @@ public class ChunkImporter {
 		private File destFile;
 		private byte[] destData;
 		private ProgressTask progressChannel;
+		private boolean overwrite;
 
-		MCAChunkImporterProcessJob(File sourceFile, File destFile, byte[] sourceData, byte[] destData, ProgressTask progressChannel) {
+		MCAChunkImporterProcessJob(File sourceFile, File destFile, byte[] sourceData, byte[] destData, ProgressTask progressChannel, boolean overwrite) {
 			super(sourceFile, sourceData);
 			this.destFile = destFile;
 			this.destData = destData;
 			this.progressChannel = progressChannel;
+			this.overwrite = overwrite;
 		}
 
 		@Override
@@ -110,7 +112,7 @@ public class ChunkImporter {
 					return;
 				}
 
-				source.mergeChunksInto(dest, true); // TODO: overwrite
+				source.mergeChunksInto(dest, overwrite);
 
 				MCAFilePipe.executeSaveData(new MCAChunkImporterSaveJob(destFile, dest, progressChannel));
 

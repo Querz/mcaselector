@@ -37,11 +37,9 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 			return false;
 		}
 
-		System.out.println("data " + Arrays.toString(data.getCompoundTag("Level").getIntArray("Biomes")));
 		filterLoop: for (int filterID : ids) {
 			for (int dataID : data.getCompoundTag("Level").getIntArray("Biomes")) {
 				if (filterID == dataID) {
-					System.out.println("found biome match for: " + filterID);
 					continue filterLoop;
 				}
 			}

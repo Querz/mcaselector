@@ -178,7 +178,6 @@ public class Tile {
 			double size =  getImage().getHeight() * (SIZE / getImage().getWidth());
 			ctx.drawImage(getImage(), offset.getX(), offset.getY(), size / scale, size / scale);
 			if (marked) {
-				System.out.println("drawing marked region " + location);
 				//draw marked region
 				ctx.setFill(Config.getRegionSelectionColor());
 				ctx.fillRect(offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
