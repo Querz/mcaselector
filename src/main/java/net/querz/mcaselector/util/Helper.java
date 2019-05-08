@@ -165,6 +165,11 @@ public class Helper {
 		return getZoomLevel(TileMap.MIN_SCALE);
 	}
 
+	public static float getZoomLevelImageSize(float scale) {
+		int zoomLevel = getZoomLevel(scale);
+		return Tile.SIZE / ((scale - zoomLevel) / (zoomLevel * 2 - zoomLevel) + 1);
+	}
+
 	public static Point2f getRegionGridMin(Point2f offset, float scale) {
 		Point2i min = Helper.blockToRegion(offset.toPoint2i());
 		Point2i regionOffset = Helper.regionToBlock(min).sub((int) offset.getX(), (int) offset.getY());
