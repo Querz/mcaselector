@@ -19,6 +19,7 @@ public class SelectionExporter {
 
 	public static void exportSelection(Map<Point2i, Set<Point2i>> chunksToBeExported, File destination, ProgressTask progressChannel) {
 		if (chunksToBeExported.isEmpty()) {
+			progressChannel.done("no selection");
 			return;
 		}
 

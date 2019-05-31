@@ -4,6 +4,8 @@ import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 
+import java.util.Arrays;
+
 public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
@@ -27,5 +29,32 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 			}
 		}
 		return names.length == c;
+	}
+
+	@Override
+	public boolean matchBiomeIDs(CompoundTag data, int... ids) {
+		if (!data.containsKey("Level") || !data.getCompoundTag("Level").containsKey("Biomes")) {
+			return false;
+		}
+
+		filterLoop: for (int filterID : ids) {
+			for (int dataID : data.getCompoundTag("Level").getIntArray("Biomes")) {
+				if (filterID == dataID) {
+					continue filterLoop;
+				}
+			}
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public void changeBiome(CompoundTag data, int id) {
+		if (!data.containsKey("Level") || !data.getCompoundTag("Level").containsKey("Biomes")) {
+			return;
+		}
+		for (int i = 0; i < data.getCompoundTag("Level").getIntArray("Biomes").length; i++) {
+			data.getCompoundTag("Level").getIntArray("Biomes")[i] = id;
+		}
 	}
 }

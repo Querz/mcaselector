@@ -10,7 +10,8 @@ public enum FieldType {
 	DATA_VERSION("DataVersion", DataVersionField.class),
 	INHABITED_TIME("InhabitedTime", InhabitedTimeField.class),
 	LAST_UPDATE("LastUpdate", LastUpdateField.class),
-	STATUS("Status", StatusField.class);
+	STATUS("Status", StatusField.class),
+	BIOME("Biome", BiomeField.class);
 
 	private String name;
 	private Class<? extends Field> clazz;

@@ -13,34 +13,32 @@ public abstract class LoadDataJob extends Job {
 	}
 
 	public byte[] load() {
-		Timer t = new Timer();
-		long length = getFile().length();
+		return load(getFile());
+	}
+
+	public byte[] load(int length) {
+		return load(getFile(), length);
+	}
+
+	protected byte[] load(File file) {
+		long length = file.length();
 		if (length > 0) {
-			int read;
-			byte[] data = new byte[(int) length];
-			try (FileInputStream fis = new FileInputStream(getFile())) {
-				read = fis.read(data);
-			} catch (IOException ex) {
-				ex.printStackTrace();
-				return null;
-			}
-			Debug.dumpf("read %d bytes from %s in %s", read, getFile().getAbsolutePath(), t);
-			return data;
+			return load(file, (int) length);
 		}
 		return null;
 	}
 
-	public byte[] load(int length) {
+	protected byte[] load(File file, int length) {
 		Timer t = new Timer();
 		int read;
 		byte[] data = new byte[length];
-		try (FileInputStream fis = new FileInputStream(getFile())) {
+		try (FileInputStream fis = new FileInputStream(file)) {
 			read = fis.read(data);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 			return null;
 		}
-		Debug.dumpf("read %d bytes from %s in %s", read, getFile().getAbsolutePath(), t);
+		Debug.dumpf("read %d bytes from %s in %s", read, file.getAbsolutePath(), t);
 		return data;
 	}
 
