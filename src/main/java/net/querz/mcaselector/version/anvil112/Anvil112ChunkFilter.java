@@ -135,4 +135,14 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		}
 		return true;
 	}
+
+	@Override
+	public void changeBiome(CompoundTag data, int id) {
+		if (!data.containsKey("Level") || !data.getCompoundTag("Level").containsKey("Biomes")) {
+			return;
+		}
+		for (int i = 0; i < data.getCompoundTag("Level").getByteArray("Biomes").length; i++) {
+			data.getCompoundTag("Level").getByteArray("Biomes")[i] = (byte) id;
+		}
+	}
 }
