@@ -25,7 +25,7 @@ public class TileMap extends Canvas {
 
 	private float scale = 1;	//higher --> -    lower --> +
 
-	public static final float MAX_SCALE = 15.9f;
+	public static final float MAX_SCALE = 7.9999f;
 	public static final float MIN_SCALE = 0.2f;
 	public static final float CHUNK_GRID_SCALE = 1.5f; //show chunk grid if scale is larger than this
 	public static final int TILE_VISIBILITY_THRESHOLD = 2;
