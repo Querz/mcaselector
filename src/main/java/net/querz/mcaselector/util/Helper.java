@@ -1,5 +1,6 @@
 package net.querz.mcaselector.util;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -9,6 +10,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.querz.mcaselector.*;
 import net.querz.mcaselector.io.*;
+import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.ui.AboutDialog;
 import net.querz.mcaselector.ui.ChangeFieldsConfirmationDialog;
@@ -17,11 +19,17 @@ import net.querz.mcaselector.ui.DeleteConfirmationDialog;
 import net.querz.mcaselector.ui.ExportConfirmationDialog;
 import net.querz.mcaselector.ui.FilterChunksDialog;
 import net.querz.mcaselector.ui.GotoDialog;
+import net.querz.mcaselector.ui.ImportConfirmationDialog;
 import net.querz.mcaselector.ui.OptionBar;
 import net.querz.mcaselector.ui.ProgressDialog;
 import net.querz.mcaselector.ui.SettingsDialog;
-
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -42,6 +50,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Helper {
+
+	public static final String MCA_FILE_PATTERN = "^r\\.-?\\d+\\.-?\\d+\\.mca$";
+	public static final Pattern REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
 
 	public static Point2i blockToRegion(Point2i i) {
 		return i.shiftRight(9);
@@ -116,8 +127,8 @@ public class Helper {
 		return new File(Config.getWorldDir(), createMCAFileName(r));
 	}
 
-	public static File createPNGFilePath(Point2i r) {
-		return new File(Config.getCacheDir(), createPNGFileName(r));
+	public static File createPNGFilePath(File cacheDir, Point2i r) {
+		return new File(cacheDir, createPNGFileName(r));
 	}
 
 	public static String createMCAFileName(Point2i r) {
@@ -127,6 +138,150 @@ public class Helper {
 	public static String createPNGFileName(Point2i r) {
 		return String.format("r.%d.%d.png", r.getX(), r.getY());
 	}
+
+	public static BufferedImage scaleImage(BufferedImage before, double newSize) {
+		double w = before.getWidth();
+		double h = before.getHeight();
+		BufferedImage after = new BufferedImage((int) newSize, (int) newSize, BufferedImage.TYPE_INT_ARGB);
+		AffineTransform at = new AffineTransform();
+		at.scale(newSize / w, newSize / h);
+		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+		return scaleOp.filter(before, after);
+	}
+
+	public static int getZoomLevel(float scale) {
+		int b = 1;
+		while (b <= scale) {
+			b = b << 1;
+		}
+		return (int) Math.ceil(b / 2.0);
+	}
+
+	public static int getMaxZoomLevel() {
+		return getZoomLevel(TileMap.MAX_SCALE);
+	}
+
+	public static int getMinZoomLevel() {
+		return getZoomLevel(TileMap.MIN_SCALE);
+	}
+
+	public static float getZoomLevelImageSize(float scale) {
+		int zoomLevel = getZoomLevel(scale);
+		return Tile.SIZE / ((scale - zoomLevel) / (zoomLevel * 2 - zoomLevel) + 1);
+	}
+
+	public static Point2f getRegionGridMin(Point2f offset, float scale) {
+		Point2i min = Helper.blockToRegion(offset.toPoint2i());
+		Point2i regionOffset = Helper.regionToBlock(min).sub((int) offset.getX(), (int) offset.getY());
+		return new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
+	}
+
+	public static Point2f getChunkGridMin(Point2f offset, float scale) {
+		Point2i min = Helper.blockToChunk(offset.toPoint2i());
+		Point2i chunkOffset = Helper.chunkToBlock(min).sub((int) offset.getX(), (int) offset.getY());
+		return new Point2f(chunkOffset.getX() / scale, chunkOffset.getY() / scale);
+	}
+
+	//-----------------------------------------------------------------
+
+	public static File createPNGFilePath(Point2i r, int zoomLevel) {
+		File cacheDir = new File(Config.getCacheDir(), zoomLevel + "");
+		//r is a region location
+		Point2i scaledRegion = getZoomLevelOrigin(r, zoomLevel);
+		return new File(cacheDir, createPNGFileName(scaledRegion));
+	}
+
+	public static Point2i getPointInCachedImage(Point2i region, int zoomLevel) {
+		Point2i result = region.mod(zoomLevel).mul(Tile.SIZE / zoomLevel);
+		if (result.getX() < 0) {
+			result.setX(Tile.SIZE + result.getX());
+		}
+		if (result.getY() < 0) {
+			result.setY(Tile.SIZE + result.getY());
+		}
+		return result;
+	}
+
+	public static Point2i getZoomLevelOrigin(Point2i region, int zoomLevel) {
+		Point2i result = region.sub(region.mod(zoomLevel));
+		if (region.getX() < 0) {
+			int absX = -region.getX() - 1;
+			result.setX(-(absX - absX % zoomLevel) - zoomLevel);
+		}
+		if (region.getY() < 0) {
+			int absY = -region.getY() - 1;
+			result.setY(-(absY - absY % zoomLevel) - zoomLevel);
+		}
+		return result;
+	}
+
+	public static Image loadCachedImage(Point2i origin, int zoomLevel) {
+		try (FileInputStream fis = new FileInputStream(Helper.createPNGFilePath(origin, zoomLevel))) {
+			return new Image(fis);
+		} catch (IOException e) {
+			Debug.errorf("error reading cached file %s: %s", Helper.createPNGFilePath(origin, zoomLevel), e.getMessage());
+		}
+		return null;
+	}
+
+	public static Image generateImage(File file, byte[] rawData) {
+		Timer t = new Timer();
+
+		ByteArrayPointer ptr = new ByteArrayPointer(rawData);
+
+		MCAFile mcaFile = MCAFile.readHeader(file, ptr);
+		if (mcaFile == null) {
+			Debug.error("error reading mca file " + file);
+			//mark as loaded, we won't try to load this again
+			return null;
+		}
+		Debug.dumpf("took %s to read mca file header of %s", t, file.getName());
+
+		t.reset();
+
+		Image image = mcaFile.createImage(ptr);
+
+		Debug.dumpf("took %s to generate image of %s", t, file.getName());
+
+		return image;
+	}
+
+	public static void mergeImageToPNGCacheFiles(BufferedImage image, Point2i r) throws IOException {
+		// loop through all zoom levels
+		for (int z = getMinZoomLevel(); z <= getMaxZoomLevel(); z *= 2) {
+			// get origin png file
+			File cacheFile = createPNGFilePath(r, z);
+
+			Point2i pointInCachedImage = getPointInCachedImage(r, z);
+
+			BufferedImage scaledImage = scaleImage(image, (float) Tile.SIZE / (float) z);
+
+			BufferedImage cachedImage;
+
+			if (cacheFile.exists()) {
+				cachedImage = ImageIO.read(cacheFile);
+			} else {
+				cacheFile.getParentFile().mkdirs();
+				cachedImage = new BufferedImage(Tile.SIZE, Tile.SIZE, image.getType());
+			}
+
+			Graphics graphics = cachedImage.getGraphics();
+
+			Debug.dumpf("drawing %s in %d/%s at %s", r, z, cacheFile.getName(), pointInCachedImage);
+
+			graphics.drawImage(scaledImage, pointInCachedImage.getX(), pointInCachedImage.getY(), null);
+
+			ImageIO.write(cachedImage, "png", cacheFile);
+		}
+	}
+
+	// from is already scaled
+	public static void mergeImages(BufferedImage from, BufferedImage to, Point2i offset) {
+		Graphics graphics = to.getGraphics();
+		graphics.drawImage(from, offset.getX(), offset.getY(), null);
+	}
+
+//-----------------------------------------------------------------
 
 	public static void openWorld(TileMap tileMap, Stage primaryStage, OptionBar optionBar) {
 		String savesDir = Helper.getMCSavesDir();
@@ -182,11 +337,30 @@ public class Helper {
 	}
 
 	public static void clearAllCache(TileMap tileMap) {
-		File[] files = Config.getCacheDir().listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.png$"));
-		if (files != null) {
-			for (File file : files) {
-				if (!file.isDirectory()) {
-					Debug.dump("deleting " + file);
+		for (File cacheDir : Config.getCacheDirs()) {
+			File[] files = cacheDir.listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.png$"));
+			if (files != null) {
+				for (File file : files) {
+					if (!file.isDirectory()) {
+						Debug.dump("deleting " + file);
+						if (!file.delete()) {
+							Debug.error("could not delete file " + file);
+						}
+					}
+				}
+			}
+		}
+
+
+		tileMap.clear();
+		tileMap.update();
+	}
+
+	public static void clearViewCache(TileMap tileMap) {
+		for (Point2i regionBlock : tileMap.getVisibleRegions()) {
+			for (File cacheDir : Config.getCacheDirs()) {
+				File file = Helper.createPNGFilePath(cacheDir, regionBlock);
+				if (file.exists()) {
 					if (!file.delete()) {
 						Debug.error("could not delete file " + file);
 					}
@@ -197,28 +371,17 @@ public class Helper {
 		tileMap.update();
 	}
 
-	public static void clearViewCache(TileMap tileMap) {
-		for (Point2i regionBlock : tileMap.getVisibleRegions()) {
-			File file = Helper.createPNGFilePath(regionBlock);
-			if (file.exists()) {
-				if (!file.delete()) {
-					Debug.error("could not delete file " + file);
-				}
-			}
-		}
-		tileMap.clear();
-		tileMap.update();
-	}
-
 	public static void clearSelectionCache(TileMap tileMap) {
 		for (Map.Entry<Point2i, Set<Point2i>> entry : tileMap.getMarkedChunks().entrySet()) {
-			File file = Helper.createPNGFilePath(entry.getKey());
-			if (file.exists()) {
-				if (!file.delete()) {
-					Debug.error("could not delete file " + file);
+			for (File cacheDir : Config.getCacheDirs()) {
+				File file = Helper.createPNGFilePath(cacheDir, entry.getKey());
+				if (file.exists()) {
+					if (!file.delete()) {
+						Debug.error("could not delete file " + file);
+					}
 				}
+				tileMap.clearTile(Helper.regionToBlock(entry.getKey()));
 			}
-			tileMap.clearTile(Helper.regionToBlock(entry.getKey()));
 		}
 		tileMap.update();
 	}
@@ -242,6 +405,21 @@ public class Helper {
 				if (r == ButtonType.OK) {
 					new ProgressDialog("Exporting selection...", primaryStage)
 							.showProgressBar(t -> SelectionExporter.exportSelection(tileMap.getMarkedChunks(), dir, t));
+				}
+			});
+		}
+	}
+
+	public static void importChunks(TileMap tileMap, Stage primaryStage) {
+		File dir = createDirectoryChooser(null).showDialog(primaryStage);
+		SimpleBooleanProperty overwriteProperty = new SimpleBooleanProperty();
+		if (dir != null) {
+			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, overwriteProperty::set).showAndWait();
+			result.ifPresent(r -> {
+				if (r == ButtonType.OK) {
+					new ProgressDialog("Importing chunks...", primaryStage)
+							.showProgressBar(t -> ChunkImporter.importChunks(dir, t, overwriteProperty.get()));
+					clearAllCache(tileMap);
 				}
 			});
 		}

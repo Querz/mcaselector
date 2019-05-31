@@ -88,7 +88,6 @@ public class PaletteFilter extends TextFilter<List<String>> {
 
 	@Override
 	public PaletteFilter clone() {
-		List<String> cloneValue = new ArrayList<>(value);
-		return new PaletteFilter(getOperator(), getComparator(), cloneValue);
+		return new PaletteFilter(getOperator(), getComparator(), new ArrayList<>(value));
 	}
 }

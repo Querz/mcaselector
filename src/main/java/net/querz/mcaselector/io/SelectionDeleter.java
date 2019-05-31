@@ -18,6 +18,7 @@ public class SelectionDeleter {
 
 	public static void deleteSelection(Map<Point2i, Set<Point2i>> chunksToBeDeleted, ProgressTask progressChannel) {
 		if (chunksToBeDeleted.isEmpty()) {
+			progressChannel.done("no selection");
 			return;
 		}
 

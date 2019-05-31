@@ -7,21 +7,21 @@
 ### Navigation
 Executing the tool, it shows an empty window with a chunk and a region grid. To actually show a world, open a folder containing Minecraft Anvil (\*.mca) files. The tool will then render a top-down view of this world that you can zoom into and zoom out of by scrolling up and down and that you can move around using the middle mouse button (`Cmd+LMB` on Mac OS).
 
-![alt text](https://raw.githubusercontent.com/Querz/mcaselector/assets/assets/mca_selector_default.png "MCA Selector window showing chunk and region grid")
+![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/526de6c3ae247c21d720295508a5a0c534a11f52/mca_selector_default.png "MCA Selector window showing chunk and region grid")
 
 Zooming out far enough disables the selection of single chunks but lets you select entire regions.
 
 ### Selections
 Upon finishing selecting chunks and regions, they can be deleted or exported using the `Selection`-menu. Exported chunks and regions are not deleted from the original world.
 
-![alt text](https://raw.githubusercontent.com/Querz/mcaselector/assets/assets/mca_selector_selections.png "MCA Selector window showing chunk and region selection export")
+![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/526de6c3ae247c21d720295508a5a0c534a11f52/mca_selector_selections.png "MCA Selector window showing chunk and region selection export")
 
 A selection (not the chunks and regions themselves) can also be exported or imported and even be applied to different worlds.
 
 ### Chunk filter
 The MCA Selector also contains a powerful tool to delete or export chunks and regions by conditions like the data version, the time it was last updated, how much time players have spent in this chunk and some more. Multiple of these conditions can be used to create a very specific query describing what chunks and regions should be deleted or exported.
 
-![alt text](https://raw.githubusercontent.com/Querz/mcaselector/assets/assets/mca_selector_filter_chunks.png "MCA Selector window showing the chunk filter")
+![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/526de6c3ae247c21d720295508a5a0c534a11f52/mca_selector_filter_chunks.png "MCA Selector window showing the chunk filter")
 
 Because the conditions use internal values used by Minecraft, the following table gives a brief explanation on what they do:
 
@@ -43,7 +43,7 @@ Running the query will check the `.mca`-file's name first if the query would eve
 ### NBT Changer
 The NBT Changer modifies the world files directly by changing specific values.
 
-![alt text](https://raw.githubusercontent.com/Querz/mcaselector/assets/assets/mca_selector_change_nbt.png "MCA Selector window showing the nbt changer")
+![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/526de6c3ae247c21d720295508a5a0c534a11f52/mca_selector_change_nbt.png "MCA Selector window showing the nbt changer")
 
 You can change the following values:
 

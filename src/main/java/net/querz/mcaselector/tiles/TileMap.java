@@ -1,5 +1,6 @@
 package net.querz.mcaselector.tiles;
 
+import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.*;
@@ -8,17 +9,23 @@ import net.querz.mcaselector.io.RegionImageGenerator;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.util.KeyActivator;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
-import java.util.*;
+import net.querz.mcaselector.util.Timer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 public class TileMap extends Canvas {
 
-	private float scale = 1;	//higher --> +    lower -->  -
+	private float scale = 1;	//higher --> -    lower --> +
 
-	public static final float MAX_SCALE = 5;
+	public static final float MAX_SCALE = 7.9999f;
 	public static final float MIN_SCALE = 0.2f;
 	public static final float CHUNK_GRID_SCALE = 1.5f; //show chunk grid if scale is larger than this
 	public static final int TILE_VISIBILITY_THRESHOLD = 2;
@@ -44,17 +51,48 @@ public class TileMap extends Canvas {
 	private List<Consumer<TileMap>> updateListener = new ArrayList<>(1);
 	private List<Consumer<TileMap>> hoverListener = new ArrayList<>(1);
 
+	private KeyActivator keyActivator = new KeyActivator();
+
+	private boolean updatesLocked = false;
+	private boolean updateQueued = false;
+
+	private long totalUpdates = 0;
+
 	public TileMap(Window window, int width, int height) {
 		super(width, height);
 		this.window = window;
 		context = getGraphicsContext2D();
+		setFocusTraversable(true);
 		this.setOnMousePressed(this::onMousePressed);
 		this.setOnMouseReleased(e -> onMouseReleased());
 		this.setOnMouseDragged(this::onMouseDragged);
 		this.setOnScroll(this::onScroll);
 		this.setOnMouseMoved(this::onMouseMoved);
 		this.setOnMouseExited(e -> onMouseExited());
+		keyActivator.registerAction(KeyCode.W, c -> offset = offset.sub(0, (c.contains(KeyCode.SHIFT) ? 10 : 5) * scale));
+		keyActivator.registerAction(KeyCode.A, c -> offset = offset.sub((c.contains(KeyCode.SHIFT) ? 10 : 5) * scale, 0));
+		keyActivator.registerAction(KeyCode.S, c -> offset = offset.add(0, (c.contains(KeyCode.SHIFT) ? 10 : 5) * scale));
+		keyActivator.registerAction(KeyCode.D, c -> offset = offset.add((c.contains(KeyCode.SHIFT) ? 10 : 5) * scale, 0));
+		keyActivator.registerGlobalAction(() -> Platform.runLater(this::update));
+		this.setOnKeyPressed(this::onKeyPressed);
+		this.setOnKeyReleased(this::onKeyReleased);
 		update();
+	}
+
+	private void onKeyPressed(KeyEvent event) {
+		if (event.getCode() == KeyCode.SHIFT) {
+			keyActivator.pressActionKey(event.getCode());
+		} else {
+			keyActivator.pressKey(event.getCode());
+		}
+	}
+
+	private void onKeyReleased(KeyEvent event) {
+		if (event.getCode() == KeyCode.SHIFT) {
+			keyActivator.releaseActionKey(event.getCode());
+		} else {
+			keyActivator.releaseKey(event.getCode());
+		}
 	}
 
 	private void onMouseMoved(MouseEvent event) {
@@ -77,6 +115,11 @@ public class TileMap extends Canvas {
 				.sub(offset.add((float) getWidth() * scale, (float) getHeight() * scale));
 
 			offset = offset.add(diff.div(2));
+
+			if (Helper.getZoomLevel(oldScale) != Helper.getZoomLevel(scale)) {
+				unloadTiles();
+			}
+
 			update();
 		}
 	}
@@ -114,9 +157,44 @@ public class TileMap extends Canvas {
 		update();
 	}
 
-	public void update() {
+	public void queueUpdate() {
+		if (updatesLocked) {
+			updateQueued = true;
+		} else {
+			updatesLocked = true;
+			Platform.runLater(this::runUpdate);
+		}
+	}
+
+	private void runUpdate() {
+		update();
+		if (updateQueued) {
+			Platform.runLater(this::runUpdate);
+			updateQueued = false;
+		} else {
+			updatesLocked = false;
+		}
+	}
+
+	public void update2() {
 		runUpdateListeners();
 
+		runOnVisibleRegions(region -> {
+			// assume nothing is loaded
+			Tile regionTile = tiles.get(region);
+			if (regionTile == null) {
+				regionTile = new Tile(region);
+				tiles.put(region, regionTile);
+				visibleTiles.add(regionTile);
+			}
+		});
+	}
+
+	public void update() {
+		Timer t = new Timer();
+		runUpdateListeners();
+
+		// removes jobs from queue that are no longer needed
 		MCAFilePipe.validateJobs(j -> {
 			if (j instanceof  RegionImageGenerator.MCAImageLoadJob) {
 				RegionImageGenerator.MCAImageLoadJob job = (RegionImageGenerator.MCAImageLoadJob) j;
@@ -128,6 +206,8 @@ public class TileMap extends Canvas {
 			}
 			return false;
 		});
+
+		// removes tiles from visibleTiles if they are no longer visible
 		for (Tile tile : visibleTiles) {
 			if (!tile.isVisible(this, TILE_VISIBILITY_THRESHOLD)) {
 				visibleTiles.remove(tile);
@@ -140,6 +220,8 @@ public class TileMap extends Canvas {
 			}
 		}
 		draw(context);
+		totalUpdates++;
+		Debug.dumpf("update took: %s #%d", t, totalUpdates);
 	}
 
 	public void setOnUpdate(Consumer<TileMap> listener) {
@@ -164,6 +246,10 @@ public class TileMap extends Canvas {
 
 	public float getScale() {
 		return scale;
+	}
+
+	public int getZoomLevel() {
+		return Helper.getZoomLevel(scale);
 	}
 
 	public void setShowRegionGrid(boolean showRegionGrid) {
@@ -191,7 +277,7 @@ public class TileMap extends Canvas {
 
 	public List<Point2i> getVisibleRegions() {
 		List<Point2i> regions = new ArrayList<>();
-		runOnVisibleRegions(r -> regions.add(Helper.blockToRegion(r)));
+		runOnVisibleRegions(regions::add);
 		return regions;
 	}
 
@@ -226,6 +312,12 @@ public class TileMap extends Canvas {
 		update();
 	}
 
+	public void unloadTiles() {
+		for (Tile tile : visibleTiles) {
+			tile.unload();
+		}
+	}
+
 	//will return a map of all chunks marked for deletion, mapped to regions.
 	//if an entire region is marked for deletion, the value in the map will be null.
 	//keys are region coordinates
@@ -235,16 +327,14 @@ public class TileMap extends Canvas {
 
 		for (Map.Entry<Point2i, Tile> entry : tiles.entrySet()) {
 			if (entry.getValue().isMarked()) {
-				chunks.put(Helper.blockToRegion(entry.getKey()), null);
+				chunks.put(entry.getKey(), null);
 				continue;
 			}
 			Set<Point2i> markedChunks = entry.getValue().getMarkedChunks();
 			if (markedChunks.size() == 0) {
 				continue;
 			}
-			Set<Point2i> markedChunksList = new HashSet<>(markedChunks.size());
-			markedChunks.forEach(c -> markedChunksList.add(Helper.blockToChunk(c)));
-			chunks.put(Helper.blockToRegion(entry.getKey()), markedChunksList);
+			chunks.put(entry.getKey(), markedChunks);
 		}
 		return chunks;
 	}
@@ -252,7 +342,7 @@ public class TileMap extends Canvas {
 	public void setMarkedChunks(Map<Point2i, Set<Point2i>> chunks) {
 		clearSelection();
 		for (Map.Entry<Point2i, Set<Point2i>> entry : chunks.entrySet()) {
-			Point2i region = Helper.regionToBlock(entry.getKey());
+			Point2i region = entry.getKey();
 			Tile tile = tiles.get(region);
 			if (tile == null) {
 				tile = new Tile(region);
@@ -263,7 +353,7 @@ public class TileMap extends Canvas {
 				selectedChunks += Tile.CHUNKS;
 			} else {
 				for (Point2i chunk : entry.getValue()) {
-					tile.mark(Helper.chunkToBlock(chunk));
+					tile.mark(chunk);
 					selectedChunks++;
 				}
 			}
@@ -272,7 +362,7 @@ public class TileMap extends Canvas {
 
 	public void addMarkedChunks(Map<Point2i, Set<Point2i>> chunks) {
 		for (Map.Entry<Point2i, Set<Point2i>> entry : chunks.entrySet()) {
-			Point2i region = Helper.regionToBlock(entry.getKey());
+			Point2i region = entry.getKey();
 			Tile tile = tiles.get(region);
 			if (tile == null) {
 				tile = new Tile(region);
@@ -284,11 +374,10 @@ public class TileMap extends Canvas {
 				selectedChunks += Tile.CHUNKS;
 			} else {
 				for (Point2i chunk : entry.getValue()) {
-					Point2i block = Helper.chunkToBlock(chunk);
-					if (!tile.isMarked(block)) {
+					if (!tile.isMarked(chunk)) {
 						selectedChunks++;
 					}
-					tile.mark(block);
+					tile.mark(chunk);
 				}
 			}
 		}
@@ -301,11 +390,11 @@ public class TileMap extends Canvas {
 	}
 
 	private Point2i getMouseRegionBlock(double x, double z) {
-		return Helper.regionToBlock(Helper.blockToRegion(getMouseBlock(x, z)));
+		return Helper.blockToRegion(getMouseBlock(x, z));
 	}
 
 	private Point2i getMouseChunkBlock(double x, double z) {
-		return Helper.chunkToBlock(Helper.blockToChunk(getMouseBlock(x, z)));
+		return Helper.blockToChunk(getMouseBlock(x, z));
 	}
 
 	private void sortPoints(Point2i a, Point2i b) {
@@ -321,8 +410,8 @@ public class TileMap extends Canvas {
 			Point2i regionBlock = getMouseRegionBlock(mouseX, mouseY);
 			Point2i firstRegionBlock = getMouseRegionBlock(firstMouseLocation.getX(), firstMouseLocation.getY());
 			sortPoints(firstRegionBlock, regionBlock);
-			for (int x = firstRegionBlock.getX(); x <= regionBlock.getX(); x += Tile.SIZE) {
-				for (int z = firstRegionBlock.getY(); z <= regionBlock.getY(); z += Tile.SIZE) {
+			for (int x = firstRegionBlock.getX(); x <= regionBlock.getX(); x++) {
+				for (int z = firstRegionBlock.getY(); z <= regionBlock.getY(); z++) {
 					Tile tile = tiles.get(new Point2i(x, z));
 					if (tile != null && !tile.isEmpty()) {
 						if (tile.isMarked() && !marked) {
@@ -338,10 +427,10 @@ public class TileMap extends Canvas {
 			Point2i chunkBlock = getMouseChunkBlock(mouseX, mouseY);
 			Point2i firstChunkBlock = getMouseChunkBlock(firstMouseLocation.getX(), firstMouseLocation.getY());
 			sortPoints(firstChunkBlock, chunkBlock);
-			for (int x = firstChunkBlock.getX(); x <= chunkBlock.getX(); x += Tile.CHUNK_SIZE) {
-				for (int z = firstChunkBlock.getY(); z <= chunkBlock.getY(); z += Tile.CHUNK_SIZE) {
+			for (int x = firstChunkBlock.getX(); x <= chunkBlock.getX(); x++) {
+				for (int z = firstChunkBlock.getY(); z <= chunkBlock.getY(); z++) {
 					Point2i chunk = new Point2i(x, z);
-					Tile tile = tiles.get(Helper.regionToBlock(Helper.blockToRegion(chunk)));
+					Tile tile = tiles.get(Helper.chunkToRegion(chunk));
 					if (tile != null) {
 						if (tile.isMarked(chunk) && !marked && !tile.isEmpty()) {
 							selectedChunks--;
@@ -366,25 +455,106 @@ public class TileMap extends Canvas {
 			Tile tile = tiles.get(region);
 			visibleTiles.add(tile);
 
-			Point2i regionOffset = region.sub((int) offset.getX(), (int) offset.getY());
+			Point2i regionOffset = Helper.regionToBlock(region).sub((int) offset.getX(), (int) offset.getY());
 
 			if (!tile.isLoaded() && !tile.isLoading()) {
 				RegionImageGenerator.generate(tile, this);
 			}
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
-			tile.draw(ctx, scale, p, showRegionGrid, showChunkGrid);
+			tile.draw(ctx, scale, p);
 		});
+
+		if (showRegionGrid) {
+			drawRegionGrid(ctx);
+		}
+
+		if (showChunkGrid && scale <= CHUNK_GRID_SCALE) {
+			drawChunkGrid(ctx);
+		}
 	}
 
-	private void runOnVisibleRegions(Consumer<Point2i> consumer) {
-		//regionLocation is the south-west-most visible region in the window
-		Point2i regionLocation = Helper.regionToBlock(Helper.blockToRegion(offset.toPoint2i()));
+	private void drawRegionGrid(GraphicsContext ctx) {
+		ctx.setLineWidth(Tile.GRID_LINE_WIDTH);
+		ctx.setStroke(Tile.REGION_GRID_COLOR);
 
-		//get all tiles that are visible inside the window
-		for (int x = regionLocation.getX(); x < offset.getX() + getWidth() * scale; x += Tile.SIZE) {
-			for (int z = regionLocation.getY(); z < offset.getY() + getHeight() * scale; z += Tile.SIZE) {
-				consumer.accept(new Point2i(x, z));
+		Point2f p = Helper.getRegionGridMin(offset, scale);
+
+		for (float x = p.getX(); x <= getWidth(); x += Tile.SIZE / scale) {
+			ctx.strokeLine(x, 0, x, getHeight());
+		}
+
+		for (float y = p.getY(); y <= getHeight(); y += Tile.SIZE / scale) {
+			ctx.strokeLine(0, y, getWidth(), y);
+		}
+	}
+
+	private void drawChunkGrid(GraphicsContext ctx) {
+		ctx.setLineWidth(Tile.GRID_LINE_WIDTH);
+		ctx.setStroke(Tile.CHUNK_GRID_COLOR);
+
+		Point2f p = Helper.getChunkGridMin(offset, scale);
+		Point2f pReg = Helper.getRegionGridMin(offset, scale);
+
+		for (float x = p.getX() + Tile.CHUNK_SIZE / scale; x <= getWidth(); x += Tile.CHUNK_SIZE / scale) {
+			if (showRegionGrid && (int) (pReg.getX() + Tile.SIZE / scale) == (int) x) {
+				pReg.setX(pReg.getX() + Tile.SIZE / scale);
+				continue;
 			}
+
+			ctx.strokeLine(x, 0, x, getHeight());
+		}
+
+		for (float y = p.getY() + Tile.CHUNK_SIZE / scale; y <= getHeight(); y += Tile.CHUNK_SIZE / scale) {
+			if (showRegionGrid && (int) (pReg.getY() + Tile.SIZE / scale) == (int) y) {
+				pReg.setY(pReg.getY() + Tile.SIZE / scale);
+				continue;
+			}
+			ctx.strokeLine(0, y, getWidth(), y);
+		}
+	}
+
+	//performs an action on regions in a spiral pattern starting from the center of all visible regions in the TileMap.
+	private void runOnVisibleRegions(Consumer<Point2i> consumer) {
+		Point2i min = Helper.blockToRegion(offset.toPoint2i());
+		Point2i max = Helper.blockToRegion(offset.add((float) getWidth() * scale, (float) getHeight() * scale).toPoint2i());
+		Point2i mid = Helper.blockToRegion(Helper.regionToBlock(Helper.blockToRegion(Helper.regionToBlock(min).add(Helper.regionToBlock(max)).div(2))));
+		int dir = 0; //0 = right, 1 = down, 2 = left, 3 = up
+		int steps = 1;
+		int xSteps = 0;
+		int ySteps = 0;
+		int step = 0;
+		int x = mid.getX();
+		int y = mid.getY();
+		while ((x <= max.getX() || y <= max.getY()) && (x >= min.getX() || y >= min.getY())) {
+			for (int i = 0; i < steps * 2; i++) {
+				x = mid.getX() + xSteps;
+				y = mid.getY() + ySteps;
+				if (x <= max.getX() && x >= min.getX() && y <= max.getY() && y >= min.getY()) {
+					consumer.accept(new Point2i(x, y));
+				}
+				switch (dir) {
+				case 0:
+					xSteps++;
+					break;
+				case 1:
+					ySteps++;
+					break;
+				case 2:
+					xSteps--;
+					break;
+				case 3:
+					ySteps--;
+					break;
+				}
+				if (++step == steps) {
+					step = 0;
+					dir++;
+					if (dir > 3) {
+						dir = 0;
+					}
+				}
+			}
+			steps++;
 		}
 	}
 

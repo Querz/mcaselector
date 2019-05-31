@@ -2,7 +2,6 @@ package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.filter.GroupFilter;
-import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
@@ -12,21 +11,18 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ChunkFilterExporter {
-
-	private static final Pattern regionGroupPattern = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
 
 	private ChunkFilterExporter() {}
 
 	public static void exportFilter(GroupFilter filter, Map<Point2i, Set<Point2i>> selection, File destination, ProgressTask progressChannel) {
-		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches("^r\\.-?\\d+\\.-?\\d+\\.mca$"));
+		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(Helper.MCA_FILE_PATTERN));
 		if (files == null || files.length == 0) {
+			progressChannel.done("no files");
 			return;
 		}
 
@@ -57,7 +53,7 @@ public class ChunkFilterExporter {
 
 		@Override
 		public void execute() {
-			Matcher m = regionGroupPattern.matcher(getFile().getName());
+			Matcher m = Helper.REGION_GROUP_PATTERN.matcher(getFile().getName());
 			if (m.find()) {
 				int regionX = Integer.parseInt(m.group("regionX"));
 				int regionZ = Integer.parseInt(m.group("regionZ"));
