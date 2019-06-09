@@ -13,11 +13,8 @@ import net.querz.mcaselector.util.KeyActivator;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.mcaselector.util.Timer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -52,9 +49,6 @@ public class TileMap extends Canvas {
 	private List<Consumer<TileMap>> hoverListener = new ArrayList<>(1);
 
 	private KeyActivator keyActivator = new KeyActivator();
-
-	private boolean updatesLocked = false;
-	private boolean updateQueued = false;
 
 	private long totalUpdates = 0;
 
@@ -155,39 +149,6 @@ public class TileMap extends Canvas {
 			mark(event.getX(), event.getY(), false);
 		}
 		update();
-	}
-
-	public void queueUpdate() {
-		if (updatesLocked) {
-			updateQueued = true;
-		} else {
-			updatesLocked = true;
-			Platform.runLater(this::runUpdate);
-		}
-	}
-
-	private void runUpdate() {
-		update();
-		if (updateQueued) {
-			Platform.runLater(this::runUpdate);
-			updateQueued = false;
-		} else {
-			updatesLocked = false;
-		}
-	}
-
-	public void update2() {
-		runUpdateListeners();
-
-		runOnVisibleRegions(region -> {
-			// assume nothing is loaded
-			Tile regionTile = tiles.get(region);
-			if (regionTile == null) {
-				regionTile = new Tile(region);
-				tiles.put(region, regionTile);
-				visibleTiles.add(regionTile);
-			}
-		});
 	}
 
 	public void update() {
@@ -427,6 +388,7 @@ public class TileMap extends Canvas {
 			Point2i chunkBlock = getMouseChunkBlock(mouseX, mouseY);
 			Point2i firstChunkBlock = getMouseChunkBlock(firstMouseLocation.getX(), firstMouseLocation.getY());
 			sortPoints(firstChunkBlock, chunkBlock);
+			Set<Tile> changedTiles = new HashSet<>();
 			for (int x = firstChunkBlock.getX(); x <= chunkBlock.getX(); x++) {
 				for (int z = firstChunkBlock.getY(); z <= chunkBlock.getY(); z++) {
 					Point2i chunk = new Point2i(x, z);
@@ -435,13 +397,16 @@ public class TileMap extends Canvas {
 						if (tile.isMarked(chunk) && !marked && !tile.isEmpty()) {
 							selectedChunks--;
 							tile.unMark(chunk);
+							changedTiles.add(tile);
 						} else if (!tile.isMarked(chunk) && marked && !tile.isEmpty()) {
 							selectedChunks++;
 							tile.mark(chunk);
+							changedTiles.add(tile);
 						}
 					}
 				}
 			}
+			changedTiles.forEach(tile -> tile.createMarkedChunksImage(getZoomLevel()));
 		}
 	}
 

@@ -142,9 +142,10 @@ public class Tile {
 
 	public void unMark(Point2i chunkBlock) {
 		if (isMarked()) {
+			Point2i regionChunk = Helper.regionToChunk(location);
 			for (int x = 0; x < SIZE_IN_CHUNKS; x++) {
 				for (int z = 0; z < SIZE_IN_CHUNKS; z++) {
-					markedChunks.add(new Point2i(location.getX() + x, location.getY() + z));
+					markedChunks.add(regionChunk.add(x, z));
 				}
 			}
 			mark(false);
@@ -196,28 +197,7 @@ public class Tile {
 		}
 	}
 
-	public void draw2(GraphicsContext ctx, float scale, Point2f offset) {
-		float imageSize = Helper.getZoomLevelImageSize(scale);
-	}
-
-	public void drawMarkings(GraphicsContext ctx, float scale, Point2f offset) {
-		if (marked) {
-			//draw marked region
-			ctx.setFill(Config.getRegionSelectionColor());
-			ctx.fillRect(offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
-		} else if (markedChunks.size() > 0) {
-
-			if (markedChunksImage == null) {
-				createMarkedChunksImage(Helper.getZoomLevel(scale));
-			}
-
-			// apply markedChunksImage to ctx
-
-			ctx.drawImage(markedChunksImage, offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
-		}
-	}
-
-	private void createMarkedChunksImage(int zoomLevel) {
+	void createMarkedChunksImage(int zoomLevel) {
 		WritableImage wImage = new WritableImage(SIZE / zoomLevel, SIZE / zoomLevel);
 
 		Canvas canvas = new Canvas(SIZE / (float) zoomLevel, SIZE / (float) zoomLevel);
