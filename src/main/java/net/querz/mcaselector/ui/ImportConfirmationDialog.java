@@ -17,8 +17,11 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		);
 
 		CheckBox overwrite = new CheckBox("Overwrite existing chunks");
-		overwrite.setSelected(true);
 		overwrite.setOnAction(e -> overwriteAction.accept(overwrite.isSelected()));
+		overwrite.setSelected(true);
+		// we need to run this after setting overwrite to selected to export the value
+		// for the case when the user didn't interact with the checkbox.
+		overwriteAction.accept(overwrite.isSelected());
 
 		BorderedTitledPane options = new BorderedTitledPane("Options", overwrite);
 
