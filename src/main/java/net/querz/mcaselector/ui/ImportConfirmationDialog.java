@@ -4,6 +4,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.awt.*;
 import java.util.function.Consumer;
 
 public class ImportConfirmationDialog extends ConfirmationDialog {
@@ -18,10 +20,7 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 
 		CheckBox overwrite = new CheckBox("Overwrite existing chunks");
 		overwrite.setOnAction(e -> overwriteAction.accept(overwrite.isSelected()));
-		overwrite.setSelected(true);
-		// we need to run this after setting overwrite to selected to export the value
-		// for the case when the user didn't interact with the checkbox.
-		overwriteAction.accept(overwrite.isSelected());
+		setOverwriteCheckbox(overwrite, overwriteAction, true);
 
 		BorderedTitledPane options = new BorderedTitledPane("Options", overwrite);
 
@@ -30,5 +29,12 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		content.getStyleClass().add("import-confirmation-dialog-content");
 		content.getChildren().addAll(options, contentLabel);
 		getDialogPane().setContent(content);
+	}
+
+	private void setOverwriteCheckbox(CheckBox checkbox, Consumer<Boolean> action, boolean status) {
+		// we need to run this after setting overwrite to selected to export the value
+		// for the case when the user didn't interact with the checkbox.
+		checkbox.setSelected(status);
+		action.accept(status);
 	}
 }
