@@ -41,6 +41,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -511,6 +512,12 @@ public class Helper {
 					|| Config.getWriteThreads() != r.getWriteThreads()
 					|| Config.getMaxLoadedFiles() != r.getMaxLoadedFiles()) {
 				MCAFilePipe.init(r.getReadThreads(), r.getProcessThreads(), r.getWriteThreads(), r.getMaxLoadedFiles());
+			}
+
+			if (!Config.getLocale().equals(r.getLocale())) {
+				Config.setLocale(r.getLocale());
+				Locale.setDefault(Config.getLocale());
+				Translation.load(Config.getLocale());
 			}
 			Config.setLoadThreads(r.getReadThreads());
 			Config.setProcessThreads(r.getProcessThreads());

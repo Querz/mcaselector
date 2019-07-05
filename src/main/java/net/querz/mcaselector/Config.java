@@ -3,6 +3,7 @@ package net.querz.mcaselector;
 import javafx.scene.paint.Color;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.util.Translation;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -13,6 +14,7 @@ public final class Config {
 	public static final File DEFAULT_BASE_CACHE_DIR = new File(System.getProperty("user.dir") + "/cache");
 	public static final Color DEFAULT_REGION_SELECTION_COLOR = new Color(1, 0, 0, 0.8);
 	public static final Color DEFAULT_CHUNK_SELECTION_COLOR = new Color(1, 0.45, 0, 0.8);
+	public static final Locale DEFAULT_LOCALE = Locale.UK;
 	public static final int DEFAULT_LOAD_THREADS = 1;
 	public static final int DEFAULT_PROCESS_THREADS = Runtime.getRuntime().availableProcessors();
 	public static final int DEFAULT_WRITE_THREADS = 4;
@@ -23,6 +25,7 @@ public final class Config {
 	private static File baseCacheDir = DEFAULT_BASE_CACHE_DIR;
 	private static File cacheDir = null;
 
+	private static Locale locale = DEFAULT_LOCALE;
 	private static Color regionSelectionColor = DEFAULT_REGION_SELECTION_COLOR;
 	private static Color chunkSelectionColor = DEFAULT_CHUNK_SELECTION_COLOR;
 	private static int loadThreads = DEFAULT_LOAD_THREADS;
@@ -69,6 +72,15 @@ public final class Config {
 		return Config.debug;
 	}
 
+	public static Locale getLocale() {
+		return locale;
+	}
+
+	public static void setLocale(Locale locale) {
+		Config.locale = locale;
+		Translation.load(locale);
+	}
+
 	public static Color getRegionSelectionColor() {
 		return regionSelectionColor;
 	}
@@ -105,6 +117,11 @@ public final class Config {
 				"BaseCacheDir",
 				baseCacheDir.getAbsolutePath()).replace("{user.dir}", System.getProperty("user.dir"))
 			);
+
+			String localeString = config.getOrDefault("Locale", DEFAULT_LOCALE.toString());
+			String[] localeSplit = localeString.split("_");
+			setLocale(new Locale(localeSplit[0], localeSplit[1]));
+
 			regionSelectionColor = Color.web(config.getOrDefault("RegionSelectionColor", DEFAULT_REGION_SELECTION_COLOR.toString()));
 			chunkSelectionColor = Color.web(config.getOrDefault("ChunkSelectionColor", DEFAULT_CHUNK_SELECTION_COLOR.toString()));
 			loadThreads = Integer.parseInt(config.getOrDefault("LoadThreads", DEFAULT_LOAD_THREADS + ""));
@@ -125,6 +142,7 @@ public final class Config {
 			"BaseCacheDir",
 			baseCacheDir.getAbsolutePath().replace(userDir, "{user.dir}"),
 			DEFAULT_BASE_CACHE_DIR.getAbsolutePath().replace(userDir, "{user.dir}"), lines);
+		addSettingsLine("Locale", locale.toString(), DEFAULT_LOCALE.toString(), lines);
 		addSettingsLine("RegionSelectionColor", regionSelectionColor.toString(), DEFAULT_REGION_SELECTION_COLOR.toString(), lines);
 		addSettingsLine("ChunkSelectionColor", chunkSelectionColor.toString(), DEFAULT_CHUNK_SELECTION_COLOR.toString(), lines);
 		addSettingsLine("LoadThreads", loadThreads, DEFAULT_LOAD_THREADS, lines);

@@ -5,17 +5,18 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.util.Translation;
 import net.querz.mcaselector.util.Point2i;
 
 public class StatusBar extends BorderPane {
 
 	private GridPane grid = new GridPane();
-	private Label selectedChunks = new Label("selected: 0");
-	private Label hoveredRegion = new Label("region: -, -");
-	private Label hoveredChunk = new Label("chunk: -, -");
-	private Label hoveredBlock = new Label("block: -, -");
-	private Label visibleRegions = new Label("visible regions: 0");
-	private Label totalRegions = new Label("total regions: 0");
+	private Label selectedChunks = new Label(Translation.STATUS_SELECTED + ": 0");
+	private Label hoveredRegion = new Label(Translation.STATUS_REGION + ": -, -");
+	private Label hoveredChunk = new Label(Translation.STATUS_CHUNK + ": -, -");
+	private Label hoveredBlock = new Label(Translation.STATUS_BLOCK + ": -, -");
+	private Label visibleRegions = new Label(Translation.STATUS_VISIBLE + ": 0");
+	private Label totalRegions = new Label(Translation.STATUS_TOTAL + ": 0");
 
 	public StatusBar(TileMap tileMap) {
 		getStyleClass().add("status-bar");
@@ -25,12 +26,12 @@ public class StatusBar extends BorderPane {
 		for (int i = 0; i < 6; i++) {
 			grid.getColumnConstraints().add(new ColumnConstraints(120, 120, 200));
 		}
-		hoveredRegion.setTooltip(new Tooltip("The currently hovered region, represents the numbers in its file name."));
-		hoveredChunk.setTooltip(new Tooltip("The currenty hovered chunk."));
-		hoveredBlock.setTooltip(new Tooltip("An approximation of the currently hovered block."));
-		selectedChunks.setTooltip(new Tooltip("The currently selected amount of chunks."));
-		visibleRegions.setTooltip(new Tooltip("The amount of loaded region images for rendering."));
-		totalRegions.setTooltip(new Tooltip("The total amount of loaded regions, including not visible selected regions."));
+		hoveredRegion.setTooltip(new Tooltip(Translation.STATUS_SELECTED_TOOLTIP.toString()));
+		hoveredChunk.setTooltip(new Tooltip(Translation.STATUS_REGION_TOOLTIP.toString()));
+		hoveredBlock.setTooltip(new Tooltip(Translation.STATUS_CHUNK_TOOLTIP.toString()));
+		selectedChunks.setTooltip(new Tooltip(Translation.STATUS_BLOCK_TOOLTIP.toString()));
+		visibleRegions.setTooltip(new Tooltip(Translation.STATUS_VISIBLE_TOOLTIP.toString()));
+		totalRegions.setTooltip(new Tooltip(Translation.STATUS_TOTAL_TOOLTIP.toString()));
 		grid.add(hoveredRegion, 0, 0, 1 ,1);
 		grid.add(hoveredChunk, 1, 0, 1, 1);
 		grid.add(hoveredBlock, 2, 0, 1, 1);
@@ -41,20 +42,20 @@ public class StatusBar extends BorderPane {
 	}
 
 	private void update(TileMap tileMap) {
-		selectedChunks.setText("selected: " + tileMap.getSelectedChunks());
-		visibleRegions.setText("visible regions: " + tileMap.getVisibleTiles());
-		totalRegions.setText("total regions: " + tileMap.getLoadedTiles());
+		selectedChunks.setText(Translation.STATUS_SELECTED + ": " + tileMap.getSelectedChunks());
+		visibleRegions.setText(Translation.STATUS_VISIBLE + ": " + tileMap.getVisibleTiles());
+		totalRegions.setText(Translation.STATUS_TOTAL + ": " + tileMap.getLoadedTiles());
 		Point2i b = tileMap.getHoveredBlock();
 		if (b != null) {
-			hoveredBlock.setText("block: " + b.getX() + ", " + b.getY());
+			hoveredBlock.setText(Translation.STATUS_BLOCK + ": " + b.getX() + ", " + b.getY());
 			Point2i c = Helper.blockToChunk(b);
-			hoveredChunk.setText("chunk: " + c.getX() + ", " + c.getY());
+			hoveredChunk.setText(Translation.STATUS_CHUNK + ": " + c.getX() + ", " + c.getY());
 			Point2i r = Helper.blockToRegion(b);
-			hoveredRegion.setText("region: " + r.getX() + ", " + r.getY());
+			hoveredRegion.setText(Translation.STATUS_REGION + ": " + r.getX() + ", " + r.getY());
 		} else {
-			hoveredBlock.setText("block: -, -");
-			hoveredChunk.setText("chunk: -, -");
-			hoveredRegion.setText("region: -, -");
+			hoveredBlock.setText(Translation.STATUS_BLOCK + ": -, -");
+			hoveredChunk.setText(Translation.STATUS_CHUNK + ": -, -");
+			hoveredRegion.setText(Translation.STATUS_REGION + ": -, -");
 		}
 	}
 }

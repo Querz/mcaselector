@@ -4,8 +4,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import java.awt.*;
+import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.util.UIFactory;
 import java.util.function.Consumer;
 
 public class ImportConfirmationDialog extends ConfirmationDialog {
@@ -13,18 +13,18 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 	public ImportConfirmationDialog(Stage primaryStage, Consumer<Boolean> overwriteAction) {
 		super(
 				primaryStage,
-				"Import chunks",
-				"You are about to import an unknown number of chunks to this world.",
+				Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_TITLE,
+				Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_HEADER,
 				"import"
 		);
 
-		CheckBox overwrite = new CheckBox("Overwrite existing chunks");
+		CheckBox overwrite = UIFactory.checkbox(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_OVERWRITE);
 		overwrite.setOnAction(e -> overwriteAction.accept(overwrite.isSelected()));
 		setOverwriteCheckbox(overwrite, overwriteAction, true);
 
-		BorderedTitledPane options = new BorderedTitledPane("Options", overwrite);
+		BorderedTitledPane options = new BorderedTitledPane(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS, overwrite);
 
-		Label contentLabel = new Label(getContentText());
+		Label contentLabel = UIFactory.label(Translation.DIALOG_CONFIRMATION_QUESTION);
 		VBox content = new VBox();
 		content.getStyleClass().add("import-confirmation-dialog-content");
 		content.getChildren().addAll(options, contentLabel);

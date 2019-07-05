@@ -17,6 +17,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
+import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.util.UIFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,12 +34,12 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 	private List<Field> value = new ArrayList<>();
 	private ToggleGroup toggleGroup = new ToggleGroup();
-	private RadioButton change = new RadioButton("Change");
-	private RadioButton force = new RadioButton("Force");
-	private CheckBox selectionOnly = new CheckBox("Apply to selection only");
+	private RadioButton change = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_CHANGE);
+	private RadioButton force = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_FORCE);
+	private CheckBox selectionOnly = UIFactory.checkbox(Translation.DIALOG_CHANGE_NBT_SELECTION_ONLY);
 
 	public ChangeNBTDialog(Stage primaryStage) {
-		setTitle("Change NBT");
+		titleProperty().bind(Translation.DIALOG_CHANGE_NBT_TITLE.getProperty());
 
 		initStyle(StageStyle.UTILITY);
 
@@ -74,12 +77,12 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		scrollPane.setContent(fw);
 
 		VBox actionBox = new VBox();
-		change.setTooltip(new Tooltip("Changes the value only if its key exists."));
-		force.setTooltip(new Tooltip("Creates the tag if it doesn't exist."));
+		change.setTooltip(UIFactory.tooltip(Translation.DIALOG_CHANGE_NBT_CHANGE_TOOLTIP));
+		force.setTooltip(UIFactory.tooltip(Translation.DIALOG_CHANGE_NBT_FORCE_TOOLTIP));
 		actionBox.getChildren().addAll(change, force);
 
 		VBox optionBox = new VBox();
-		selectionOnly.setTooltip(new Tooltip("If this filter should only apply to the current selection."));
+		selectionOnly.setTooltip(UIFactory.tooltip(Translation.DIALOG_CHANGE_NBT_SELECTION_ONLY_TOOLTIP));
 		optionBox.getChildren().add(selectionOnly);
 
 		HBox selectionBox = new HBox();

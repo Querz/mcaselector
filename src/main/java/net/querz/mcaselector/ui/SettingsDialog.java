@@ -10,8 +10,15 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.StringConverter;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.util.UIFactory;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 public class SettingsDialog extends Dialog<SettingsDialog.Result> {
@@ -30,6 +37,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private static final int procCount = Runtime.getRuntime().availableProcessors();
 	private static final long maxMem = Runtime.getRuntime().maxMemory();
 
+	private ComboBox<Locale> languages = new ComboBox<>();
+
 	private Slider readThreadsSlider = createSlider(1, procCount, 1, 1);
 	private Slider processThreadsSlider = createSlider(1, procCount * 2, 1, procCount);
 	private Slider writeThreadsSlider = createSlider(1, procCount, 1, procCount < 4 ? procCount : 4);
@@ -41,10 +50,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private Color regionSelectionColor = Config.getRegionSelectionColor();
 	private Color chunkSelectionColor = Config.getChunkSelectionColor();
 
-	private ButtonType reset = new ButtonType("Reset", ButtonBar.ButtonData.LEFT);
+	private ButtonType reset = new ButtonType(Translation.DIALOG_SETTINGS_RESET.toString(), ButtonBar.ButtonData.LEFT);
 
 	public SettingsDialog(Stage primaryStage) {
-		setTitle("Edit settings");
+		titleProperty().bind(Translation.DIALOG_SETTINGS_TITLE.getProperty());
 		initStyle(StageStyle.UTILITY);
 		getDialogPane().getStyleClass().add("settings-dialog-pane");
 		getDialogPane().getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
@@ -52,6 +61,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		getDialogPane().lookupButton(reset).addEventFilter(ActionEvent.ACTION, e -> {
 			e.consume();
+			languages.setValue(Config.DEFAULT_LOCALE);
 			readThreadsSlider.setValue(Config.DEFAULT_LOAD_THREADS);
 			processThreadsSlider.setValue(Config.DEFAULT_PROCESS_THREADS);
 			writeThreadsSlider.setValue(Config.DEFAULT_WRITE_THREADS);
@@ -66,6 +76,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		setResultConverter(c -> {
 			if (c.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 				return new SettingsDialog.Result(
+					languages.getSelectionModel().getSelectedItem(),
 					(int) readThreadsSlider.getValue(),
 					(int) processThreadsSlider.getValue(),
 					(int) writeThreadsSlider.getValue(),
@@ -77,6 +88,26 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			}
 			return null;
 		});
+
+		languages.getItems().addAll(Translation.getAvailableLanguages());
+		languages.setValue(Config.getLocale());
+		languages.setConverter(new StringConverter<Locale>() {
+
+			Map<String, Locale> cache = new HashMap<>();
+
+			@Override
+			public String toString(Locale locale) {
+				String display = locale.getDisplayName();
+				cache.put(display, locale);
+				return display;
+			}
+
+			@Override
+			public Locale fromString(String string) {
+				return cache.get(string);
+			}
+		});
+		languages.getStyleClass().add("languages-combo-box");
 
 		readThreadsSlider.setValue(Config.getLoadThreads());
 		processThreadsSlider.setValue(Config.getProcessThreads());
@@ -105,24 +136,26 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		GridPane grid = new GridPane();
 		grid.getStyleClass().add("slider-grid-pane");
-		grid.add(new Label("Read Threads"), 0, 0, 1, 1);
-		grid.add(new Label("Process Threads"), 0, 1, 1, 1);
-		grid.add(new Label("Write Threads"), 0, 2, 1, 1);
-		grid.add(new Label("Max loaded Files"), 0, 3, 1, 1);
-		grid.add(new Label("Region selection color"), 0, 4, 1, 1);
-		grid.add(new Label("Chunk selection color"), 0, 5, 1, 1);
-		grid.add(new Label("Print debug messages"), 0, 6, 1, 1);
-		grid.add(readThreadsSlider, 1, 0, 1, 1);
-		grid.add(processThreadsSlider, 1, 1, 1, 1);
-		grid.add(writeThreadsSlider, 1, 2, 1, 1);
-		grid.add(maxLoadedFilesSlider, 1, 3, 1, 1);
-		grid.add(regionSelectionColorPreview, 1, 4, 2, 1);
-		grid.add(chunkSelectionColorPreview, 1, 5, 2, 1);
-		grid.add(debugCheckBox, 1, 6, 2, 1);
-		grid.add(Helper.attachTextFieldToSlider(readThreadsSlider), 2, 0, 1, 1);
-		grid.add(Helper.attachTextFieldToSlider(processThreadsSlider), 2, 1, 1, 1);
-		grid.add(Helper.attachTextFieldToSlider(writeThreadsSlider), 2, 2, 1, 1);
-		grid.add(Helper.attachTextFieldToSlider(maxLoadedFilesSlider), 2, 3, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_LANGUAGE), 0, 0, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_READ_THREADS), 0, 1, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_PROCESS_THREADS), 0, 2, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_WRITE_THREADS), 0, 3, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_MAX_FILES), 0, 4, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_REGION_COLOR), 0, 5, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_CHUNK_COLOR), 0, 6, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_PRINT_DEBUG), 0, 7, 1, 1);
+		grid.add(languages, 1, 0, 2, 1);
+		grid.add(readThreadsSlider, 1, 1, 1, 1);
+		grid.add(processThreadsSlider, 1, 2, 1, 1);
+		grid.add(writeThreadsSlider, 1, 3, 1, 1);
+		grid.add(maxLoadedFilesSlider, 1, 4, 1, 1);
+		grid.add(regionSelectionColorPreview, 1, 5, 2, 1);
+		grid.add(chunkSelectionColorPreview, 1, 6, 2, 1);
+		grid.add(debugCheckBox, 1, 7, 2, 1);
+		grid.add(Helper.attachTextFieldToSlider(readThreadsSlider), 2, 1, 1, 1);
+		grid.add(Helper.attachTextFieldToSlider(processThreadsSlider), 2, 2, 1, 1);
+		grid.add(Helper.attachTextFieldToSlider(writeThreadsSlider), 2, 3, 1, 1);
+		grid.add(Helper.attachTextFieldToSlider(maxLoadedFilesSlider), 2, 4, 1, 1);
 
 		getDialogPane().setContent(grid);
 	}
@@ -140,8 +173,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		private int readThreads, processThreads, writeThreads, maxLoadedFiles;
 		private Color regionColor, chunkColor;
 		private boolean debug;
+		private Locale locale;
 
-		public Result(int readThreads, int processThreads, int writeThreads, int maxLoadedFiles, Color regionColor, Color chunkColor, boolean debug) {
+		public Result(Locale locale, int readThreads, int processThreads, int writeThreads, int maxLoadedFiles, Color regionColor, Color chunkColor, boolean debug) {
+			this.locale = locale;
 			this.readThreads = readThreads;
 			this.processThreads = processThreads;
 			this.writeThreads = writeThreads;
@@ -149,6 +184,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			this.regionColor = regionColor;
 			this.chunkColor = chunkColor;
 			this.debug = debug;
+		}
+
+		public Locale getLocale() {
+			return locale;
 		}
 
 		public int getReadThreads() {

@@ -18,6 +18,9 @@ import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.util.UIFactory;
+
 import java.util.function.Consumer;
 
 public abstract class FilterBox extends BorderPane {
@@ -46,10 +49,10 @@ public abstract class FilterBox extends BorderPane {
 		getStyleClass().add("filter-box");
 		this.filter = filter;
 
-		add.setTooltip(new Tooltip("Add a new condition below this one."));
+		add.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_ADD_TOOLTIP));
 		add.getStyleClass().add("control-label");
 
-		delete.setTooltip(new Tooltip("Delete this condition."));
+		delete.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_DELETE_TOOLTIP));
 		delete.getStyleClass().add("control-label");
 
 		GridPane controls = new GridPane();
@@ -62,7 +65,7 @@ public abstract class FilterBox extends BorderPane {
 
 		filterOperators.getStyleClass().add("filter-operators-grid");
 
-		operator.setTooltip(new Tooltip("The operator to link multiple conditions."));
+		operator.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_OPERATOR_TOOLTIP));
 		operator.getItems().addAll(Operator.values());
 		operator.getSelectionModel().select(filter.getOperator());
 		operator.setOnAction(e -> onOperator(filter));
@@ -73,7 +76,7 @@ public abstract class FilterBox extends BorderPane {
 			operator.setVisible(false);
 		}
 
-		type.setTooltip(new Tooltip("The type of this condition."));
+		type.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_TYPE_TOOLTIP));
 		type.getItems().addAll(FilterType.values());
 		type.getSelectionModel().select(filter.getType());
 		type.setOnAction(e -> update(type.getSelectionModel().getSelectedItem()));

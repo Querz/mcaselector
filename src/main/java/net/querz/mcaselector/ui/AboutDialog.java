@@ -18,6 +18,8 @@ import javafx.stage.StageStyle;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.GithubVersionChecker;
 import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.util.UIFactory;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -35,13 +37,13 @@ public class AboutDialog extends Alert {
 		initStyle(StageStyle.UTILITY);
 		getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
 		getDialogPane().getStyleClass().add("about-dialog-pane");
-		setTitle("About");
-		setHeaderText("About MCA Selector");
+		titleProperty().bind(Translation.DIALOG_ABOUT_TITLE.getProperty());
+		headerTextProperty().bind(Translation.DIALOG_ABOUT_HEADER.getProperty());
 
 		GridPane grid = new GridPane();
 		grid.getStyleClass().add("about-dialog-grid-pane");
 
-		grid.add(new Label("Version:"), 0, 0);
+		grid.add(UIFactory.label(Translation.DIALOG_ABOUT_VERSION), 0, 0);
 		HBox versionLabel = new HBox();
 		versionLabel.setAlignment(Pos.CENTER);
 		String applicationVersion = "0";
@@ -51,7 +53,7 @@ public class AboutDialog extends Alert {
 		} catch (IOException ex) {
 			versionLabel.getChildren().add(new Label("unknown"));
 		}
-		Button checkForUpdates = new Button("check");
+		Button checkForUpdates = UIFactory.button(Translation.DIALOG_ABOUT_VERSION_CHECK);
 		final String finalApplicationVersion = applicationVersion;
 		checkForUpdates.setOnAction(
 				e -> handleCheckUpdate(finalApplicationVersion,
@@ -60,11 +62,11 @@ public class AboutDialog extends Alert {
 		versionLabel.getChildren().add(checkForUpdates);
 		versionLabel.getChildren().add(persistentVersionCheckResult);
 		grid.add(versionLabel, 1, 0);
-		grid.add(new Label("License:"), 0, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_ABOUT_LICENSE), 0, 1);
 		grid.add(new Label("MIT"), 1, 1);
-		grid.add(new Label("Copyright:"), 0, 2);
+		grid.add(UIFactory.label(Translation.DIALOG_ABOUT_COPYRIGHT), 0, 2);
 		grid.add(new Label("\u00A9 2018 Querz"), 1, 2);
-		grid.add(new Label("Source:"), 0, 3);
+		grid.add(UIFactory.label(Translation.DIALOG_ABOUT_SOURCE), 0, 3);
 		ImageView imgView = new ImageView(githubMark);
 		imgView.setScaleX(0.5);
 		imgView.setScaleY(0.5);
@@ -76,7 +78,7 @@ public class AboutDialog extends Alert {
 	}
 
 	private void handleCheckUpdate(String applicationVersion, Consumer<Node> resultUIHandler) {
-		Label checking = new Label("checking...");
+		Label checking = UIFactory.label(Translation.DIALOG_ABOUT_VERSION_CHECKING);
 		checking.getStyleClass().add("label-hint");
 		resultUIHandler.accept(checking);
 
@@ -95,14 +97,14 @@ public class AboutDialog extends Alert {
 					persistentVersionCheckResult = box;
 					Platform.runLater(() -> resultUIHandler.accept(box));
 				} else {
-					Label upToDate = new Label("Up to date");
+					Label upToDate = UIFactory.label(Translation.DIALOG_ABOUT_VERSION_UP_TO_DATE);
 					upToDate.getStyleClass().add("label-hint");
 					persistentVersionCheckResult = upToDate;
 					Platform.runLater(() -> resultUIHandler.accept(upToDate));
 				}
 			} catch (Exception ex) {
 				Debug.error(ex.getMessage());
-				Label error = new Label("Error");
+				Label error = UIFactory.label(Translation.DIALOG_ABOUT_VERSION_ERROR);
 				error.getStyleClass().add("label-hint");
 				Platform.runLater(() -> resultUIHandler.accept(error));
 			}

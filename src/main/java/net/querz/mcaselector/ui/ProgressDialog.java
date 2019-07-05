@@ -11,15 +11,17 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.util.UIFactory;
 
 import java.util.function.Consumer;
 
 public class ProgressDialog extends Stage {
 
-	private Label title = new Label("Progress");
+	private Label title = UIFactory.label(Translation.DIALOG_PROGRESS_TITLE);
 	private ProgressBar progressBar = new ProgressBar(-1);
-	private Label label = new Label("running...");
-	private Button cancel = new Button("Cancel");
+	private Label label = UIFactory.label(Translation.DIALOG_PROGRESS_RUNNING);
+	private Button cancel = UIFactory.button(Translation.BUTTON_CANCEL);
 
 	private ProgressTask currentTask;
 
@@ -43,9 +45,9 @@ public class ProgressDialog extends Stage {
 		box.getChildren().addAll(this.title, progressBar, label, cancelBox);
 		cancel.setOnAction(e -> {
 			currentTask.setLocked(true);
-			currentTask.setIndeterminate("cancelling...");
+			currentTask.setIndeterminate(Translation.DIALOG_PROGRESS_CANCELLING.toString());
 			MCAFilePipe.cancelAllJobs(() -> {
-				currentTask.done("done.");
+				currentTask.done(Translation.DIALOG_PROGRESS_DONE.toString());
 				close();
 			});
 		});

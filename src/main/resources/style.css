@@ -544,6 +544,11 @@
 	-fx-padding: 10 10 10 0;
 }
 
+.languages-combo-box {
+	-fx-alignment: center;
+	-fx-pref-width: 240;
+}
+
 /*---------- Transparent Stage ----------*/
 
 .transparent-stage-content {

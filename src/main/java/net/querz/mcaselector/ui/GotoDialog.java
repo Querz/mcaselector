@@ -7,6 +7,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.util.Translation;
 
 public class GotoDialog extends Dialog<Point2i> {
 
@@ -15,7 +16,7 @@ public class GotoDialog extends Dialog<Point2i> {
 	private TextField xValue, zValue;
 
 	public GotoDialog(Stage primaryStage) {
-		setTitle("Goto location");
+		titleProperty().bind(Translation.DIALOG_GOTO_TITLE.getProperty());
 		initStyle(StageStyle.UTILITY);
 		getDialogPane().getStyleClass().add("goto-dialog-pane");
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());

@@ -1,12 +1,13 @@
 package net.querz.mcaselector.ui;
 
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.filter.NumberFilter;
 import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.util.UIFactory;
 
 public class GroupFilterBox extends FilterBox {
 
@@ -15,7 +16,7 @@ public class GroupFilterBox extends FilterBox {
 
 	public GroupFilterBox(FilterBox parent, GroupFilter filter, boolean root) {
 		super(parent, filter, root);
-		add.setTooltip(new Tooltip("Add a new condition to this group."));
+		add.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_ADD_TOOLTIP));
 		delete.setVisible(!root);
 
 		if (root) {

@@ -5,6 +5,8 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.util.UIFactory;
 
 public class OptionBar extends MenuBar {
 	/*
@@ -17,29 +19,29 @@ public class OptionBar extends MenuBar {
 	*									- Clear cache
 	* */
 
-	private Menu file = menu("File");
-	private Menu view = menu("View");
-	private Menu selection = menu("Selection");
-	private Menu tools = menu("Tools");
-	private Label about = new Label("About");
+	private Menu file = UIFactory.menu(Translation.MENU_FILE);
+	private Menu view = UIFactory.menu(Translation.MENU_VIEW);
+	private Menu selection = UIFactory.menu(Translation.MENU_SELECTION);
+	private Menu tools = UIFactory.menu(Translation.MENU_TOOLS);
+	private Label about = UIFactory.label(Translation.MENU_ABOUT);
 
-	private MenuItem open = menuItem("Open");
-	private MenuItem settings = menuItem("Settings");
-	private MenuItem quit = menuItem("Quit");
-	private CheckMenuItem chunkGrid = checkMenuItem("Chunk Grid", true);
-	private CheckMenuItem regionGrid = checkMenuItem("Region Grid", true);
-	private MenuItem goTo = menuItem("Goto");
-	private MenuItem clearViewCache = menuItem("Clear cache");
-	private MenuItem clearAllCache = menuItem("Clear all cache");
-	private MenuItem clear = menuItem("Clear");
-	private MenuItem exportChunks = menuItem("Export selected chunks");
-	private MenuItem importChunks = menuItem("Import chunks");
-	private MenuItem delete = menuItem("Delete selected chunks");
-	private MenuItem importSelection = menuItem("Import selection");
-	private MenuItem exportSelection = menuItem("Export selection");
-	private MenuItem clearSelectionCache = menuItem("Clear cache");
-	private MenuItem filterChunks = menuItem("Filter chunks");
-	private MenuItem changeFields = menuItem("Change fields");
+	private MenuItem open = UIFactory.menuItem(Translation.MENU_FILE_OPEN);
+	private MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
+	private MenuItem quit = UIFactory.menuItem(Translation.MENU_FILE_QUIT);
+	private CheckMenuItem chunkGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_CHUNK_GRID, true);
+	private CheckMenuItem regionGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_REGION_GRID, true);
+	private MenuItem goTo = UIFactory.menuItem(Translation.MENU_VIEW_GOTO);
+	private MenuItem clearViewCache = UIFactory.menuItem(Translation.MENU_VIEW_CLEAR_CACHE);
+	private MenuItem clearAllCache = UIFactory.menuItem(Translation.MENU_VIEW_CLEAR_ALL_CACHE);
+	private MenuItem clear = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR);
+	private MenuItem exportChunks = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_CHUNKS);
+	private MenuItem importChunks = UIFactory.menuItem(Translation.MENU_TOOLS_IMPORT_CHUNKS);
+	private MenuItem delete = UIFactory.menuItem(Translation.MENU_SELECTION_DELETE_CHUNKS);
+	private MenuItem importSelection = UIFactory.menuItem(Translation.MENU_SELECTION_IMPORT_SELECTION);
+	private MenuItem exportSelection = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_SELECTION);
+	private MenuItem clearSelectionCache = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR_CACHE);
+	private MenuItem filterChunks = UIFactory.menuItem(Translation.MENU_TOOLS_FILTER_CHUNKS);
+	private MenuItem changeFields = UIFactory.menuItem(Translation.MENU_TOOLS_FILTER_CHUNKS);
 
 	private int previousSelectedChunks = 0;
 
@@ -48,15 +50,15 @@ public class OptionBar extends MenuBar {
 
 		tileMap.setOnUpdate(this::onUpdate);
 
-		file.getItems().addAll(open, settings, separator(), quit);
+		file.getItems().addAll(open, settings, UIFactory.separator(), quit);
 		view.getItems().addAll(
-				chunkGrid, regionGrid, separator(),
-				goTo, separator(),
+				chunkGrid, regionGrid, UIFactory.separator(),
+				goTo, UIFactory.separator(),
 				clearViewCache, clearAllCache);
 		selection.getItems().addAll(
-				clear, separator(),
-				exportChunks, delete, separator(),
-				importSelection, exportSelection, separator(),
+				clear, UIFactory.separator(),
+				exportChunks, delete, UIFactory.separator(),
+				importSelection, exportSelection, UIFactory.separator(),
 				clearSelectionCache);
 		tools.getItems().addAll(importChunks, filterChunks, changeFields);
 		about.setOnMouseClicked(e -> Helper.showAboutDialog(tileMap, primaryStage));
@@ -124,23 +126,5 @@ public class OptionBar extends MenuBar {
 		exportSelection.setDisable(!enabled);
 		delete.setDisable(!enabled);
 		clearSelectionCache.setDisable(!enabled);
-	}
-
-	private Menu menu(String text) {
-		return new Menu(text);
-	}
-
-	private MenuItem menuItem(String text) {
-		return new MenuItem(text);
-	}
-
-	private CheckMenuItem checkMenuItem(String text, boolean selected) {
-		CheckMenuItem item = new CheckMenuItem(text);
-		item.setSelected(selected);
-		return item;
-	}
-
-	private SeparatorMenuItem separator() {
-		return new SeparatorMenuItem();
 	}
 }

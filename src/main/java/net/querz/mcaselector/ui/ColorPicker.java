@@ -14,6 +14,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.util.UIFactory;
 import java.util.Optional;
 
 public class ColorPicker extends TransparentStage {
@@ -23,8 +25,8 @@ public class ColorPicker extends TransparentStage {
 	private Slider blue = createSlider(0, 255, 1, 0);
 	private Slider opacity = createSlider(0, 255, 1, 0);
 	private StackPane preview = new StackPane();
-	private Button ok = new Button("OK");
-	private Button cancel = new Button("Cancel");
+	private Button ok = UIFactory.button(Translation.BUTTON_OK);
+	private Button cancel = UIFactory.button(Translation.BUTTON_CANCEL);
 	private Color result;
 
 	public ColorPicker(javafx.stage.Window stage, Color color) {

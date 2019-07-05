@@ -7,7 +7,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -18,6 +17,8 @@ import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.filter.XPosFilter;
 import net.querz.mcaselector.filter.ZPosFilter;
 import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.util.UIFactory;
 
 public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
@@ -32,13 +33,13 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 	private GroupFilter value = gf;
 	private GroupFilterBox groupFilterBox = new GroupFilterBox(null, value, true);
 	private ToggleGroup toggleGroup = new ToggleGroup();
-	private RadioButton select = new RadioButton("Select");
-	private RadioButton export = new RadioButton("Export");
-	private RadioButton delete = new RadioButton("Delete");
-	private CheckBox selectionOnly = new CheckBox("Apply to selection only");
+	private RadioButton select = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_SELECT);
+	private RadioButton export = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_EXPORT);
+	private RadioButton delete = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_DELETE);
+	private CheckBox selectionOnly = UIFactory.checkbox(Translation.DIALOG_FILTER_CHUNKS_SELECTION_ONLY);
 
 	public FilterChunksDialog(Stage primaryStage) {
-		setTitle("Filter chunks");
+		titleProperty().bind(Translation.DIALOG_FILTER_CHUNKS_TITLE.getProperty());
 
 		initStyle(StageStyle.UTILITY);
 
@@ -51,9 +52,9 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-		select.setTooltip(new Tooltip("Creates a selection of the affected chunks."));
-		export.setTooltip(new Tooltip("Exports all affected chunks into a new directory."));
-		delete.setTooltip(new Tooltip("Deletes all affected chunk from the current world."));
+		select.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_SELECT_TOOLTIP));
+		export.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_EXPORT_TOOLTIP));
+		delete.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_DELETE_TOOLTIP));
 
 		toggleGroup.getToggles().addAll(select, export, delete);
 		toggleGroup.selectedToggleProperty().addListener(l -> selectionOnly.setDisable(select.isSelected()));
@@ -74,7 +75,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		actionBox.getChildren().addAll(select, export, delete);
 
 		VBox optionBox =  new VBox();
-		selectionOnly.setTooltip(new Tooltip("If this filter should only apply to the current selection."));
+		selectionOnly.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_SELECTION_ONLY_TOOLTIP));
 		optionBox.getChildren().add(selectionOnly);
 
 		HBox selectionBox = new HBox();

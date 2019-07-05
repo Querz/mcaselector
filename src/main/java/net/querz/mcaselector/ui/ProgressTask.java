@@ -4,12 +4,13 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
+import net.querz.mcaselector.util.Translation;
 
 public abstract class ProgressTask extends Task<Void> {
 
 	public int max;
 	private int current = 0;
-	private StringProperty infoProperty = new SimpleStringProperty("running...");
+	private StringProperty infoProperty = new SimpleStringProperty(Translation.DIALOG_PROGRESS_RUNNING.toString());
 	private Runnable onFinish;
 	private boolean locked = false;
 
