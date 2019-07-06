@@ -18,20 +18,20 @@ import java.util.function.Consumer;
 
 public class ProgressDialog extends Stage {
 
-	private Label title = UIFactory.label(Translation.DIALOG_PROGRESS_TITLE);
+	private Label title = new Label();
 	private ProgressBar progressBar = new ProgressBar(-1);
 	private Label label = UIFactory.label(Translation.DIALOG_PROGRESS_RUNNING);
 	private Button cancel = UIFactory.button(Translation.BUTTON_CANCEL);
 
 	private ProgressTask currentTask;
 
-	public ProgressDialog(String title, Stage primaryStage) {
+	public ProgressDialog(Translation title, Stage primaryStage) {
 		initStyle(StageStyle.TRANSPARENT);
 		setResizable(false);
 		initModality(Modality.APPLICATION_MODAL);
 		initOwner(primaryStage);
 
-		this.title.setText(title);
+		this.title.textProperty().bind(title.getProperty());
 		this.title.getStyleClass().add("progress-title");
 
 		label.getStyleClass().add("progress-info");

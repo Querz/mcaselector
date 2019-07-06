@@ -112,6 +112,13 @@ public enum Translation {
 	DIALOG_PROGRESS_RUNNING("dialog.progress.running"),
 	DIALOG_PROGRESS_CANCELLING("dialog.progress.cancelling"),
 	DIALOG_PROGRESS_DONE("dialog.progress.done"),
+	DIALOG_PROGRESS_TITLE_DELETING_SELECTION("dialog.progress.title.deleting_selection"),
+	DIALOG_PROGRESS_TITLE_EXPORTING_SELECTION("dialog.progress.title.exporting_selection"),
+	DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS("dialog.progress.title.importing_chunks"),
+	DIALOG_PROGRESS_TITLE_DELETING_FILTERED_CHUNKS("dialog.progress.title.deleting_filtered_chunks"),
+	DIALOG_PROGRESS_TITLE_EXPORTING_FILTERED_CHUNKS("dialog.progress.title.exporting_filtered_chunks"),
+	DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS("dialog.progress.title.selecting_filtered_chunks"),
+	DIALOG_PROGRESS_TITLE_CHANGING_NBT_DATA("dialog.progress.title.changing_nbt_data"),
 	BUTTON_CANCEL("button.cancel"),
 	BUTTON_OK("button.ok");
 

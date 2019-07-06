@@ -391,7 +391,7 @@ public class Helper {
 		Optional<ButtonType> result = new DeleteConfirmationDialog(tileMap, primaryStage).showAndWait();
 		result.ifPresent(r -> {
 			if (r == ButtonType.OK) {
-				new ProgressDialog("Deleting selection...", primaryStage)
+				new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_SELECTION, primaryStage)
 						.showProgressBar(t -> SelectionDeleter.deleteSelection(tileMap.getMarkedChunks(), t));
 				clearSelectionCache(tileMap);
 			}
@@ -404,7 +404,7 @@ public class Helper {
 			Optional<ButtonType> result = new ExportConfirmationDialog(tileMap, primaryStage).showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
-					new ProgressDialog("Exporting selection...", primaryStage)
+					new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_SELECTION, primaryStage)
 							.showProgressBar(t -> SelectionExporter.exportSelection(tileMap.getMarkedChunks(), dir, t));
 				}
 			});
@@ -418,7 +418,7 @@ public class Helper {
 			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, overwriteProperty::set).showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
-					new ProgressDialog("Importing chunks...", primaryStage)
+					new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(dir, t, overwriteProperty.get()));
 					clearAllCache(tileMap);
 				}
@@ -445,7 +445,7 @@ public class Helper {
 				Optional<ButtonType> confRes = new DeleteConfirmationDialog(null, primaryStage).showAndWait();
 				confRes.ifPresent(confR -> {
 					if (confR == ButtonType.OK) {
-						new ProgressDialog("Deleting filtered chunks...", primaryStage)
+						new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_FILTERED_CHUNKS, primaryStage)
 								.showProgressBar(t -> ChunkFilterDeleter.deleteFilter(
 										r.getFilter(),
 										r.isSelectionOnly() ? tileMap.getMarkedChunks() : null,
@@ -462,7 +462,7 @@ public class Helper {
 					confRes.ifPresent(confR -> {
 						if (confR == ButtonType.OK) {
 							Debug.dump("exporting chunks to " + dir);
-							new ProgressDialog("Exporting filtered chunks...", primaryStage)
+							new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_FILTERED_CHUNKS, primaryStage)
 									.showProgressBar(t -> ChunkFilterExporter.exportFilter(
 											r.getFilter(),
 											r.isSelectionOnly() ? tileMap.getMarkedChunks() : null,
@@ -477,7 +477,7 @@ public class Helper {
 				break;
 			case SELECT:
 				tileMap.clearSelection();
-				new ProgressDialog("Selecting filtered chunks...", primaryStage)
+				new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS, primaryStage)
 					.showProgressBar(t -> ChunkFilterSelector.selectFilter(r.getFilter(), tileMap, t));
 				break;
 			default:
@@ -492,7 +492,7 @@ public class Helper {
 			Optional<ButtonType> confRes = new ChangeFieldsConfirmationDialog(null, primaryStage).showAndWait();
 			confRes.ifPresent(confR -> {
 				if (confR == ButtonType.OK) {
-					new ProgressDialog("Changing nbt data...", primaryStage)
+					new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_CHANGING_NBT_DATA, primaryStage)
 							.showProgressBar(t -> FieldChanger.changeNBTFields(
 									r.getFields(),
 									r.isForce(),

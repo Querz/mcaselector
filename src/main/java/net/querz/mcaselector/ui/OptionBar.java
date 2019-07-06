@@ -41,7 +41,7 @@ public class OptionBar extends MenuBar {
 	private MenuItem exportSelection = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_SELECTION);
 	private MenuItem clearSelectionCache = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR_CACHE);
 	private MenuItem filterChunks = UIFactory.menuItem(Translation.MENU_TOOLS_FILTER_CHUNKS);
-	private MenuItem changeFields = UIFactory.menuItem(Translation.MENU_TOOLS_FILTER_CHUNKS);
+	private MenuItem changeFields = UIFactory.menuItem(Translation.MENU_TOOLS_CHANGE_FIELDS);
 
 	private int previousSelectedChunks = 0;
 
