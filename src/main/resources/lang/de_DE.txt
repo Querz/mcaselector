@@ -4,11 +4,11 @@ status.chunk;Chunk
 status.chunk.tooltip;Der sich unter dem Mauszeiger befindende Chunk.
 status.block;Block
 status.block.tooltip;Der sich ungefähr unter dem Mauszeiger befindende Block.
-status.selected;Ausgewählt
+status.selected;Selektiert
 status.selected.tooltip;Die Anzahl der ausgewählten Chunks.
-status.visible;Sichtbare Regionen
+status.visible;Sichtbar
 status.visible.tooltip;Die Anzahl gerenderter Regionen.
-status.total;Alle Regionen
+status.total;Alle
 status.total.tooltip;Die gesamte Anzahl geladener Regionen, inklusive der nicht sichtbaren selektierten Regionen.
 menu.file;Datei
 menu.view;Ansicht
@@ -40,7 +40,7 @@ dialog.settings.write_threads;Threads (schreiben)
 dialog.settings.max_files;Max. geladene Dateien
 dialog.settings.region_color;Farbe selektierte Region
 dialog.settings.chunk_color;Farbe selektierter Chunk
-dialog.settings.print_debug;Debug-Nachrichten drucken
+dialog.settings.print_debug;Debug
 dialog.settings.reset;Zurücksetzen
 dialog.goto.title;Gehe zu Koordinaten
 dialog.confirmation.question;Bist Du dir sicher?
