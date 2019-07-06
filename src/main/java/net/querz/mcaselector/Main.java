@@ -3,7 +3,6 @@ package net.querz.mcaselector;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Translation;
-
 import java.util.Locale;
 
 public class Main {

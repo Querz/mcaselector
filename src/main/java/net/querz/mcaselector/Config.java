@@ -4,7 +4,6 @@ import javafx.scene.paint.Color;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Translation;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
