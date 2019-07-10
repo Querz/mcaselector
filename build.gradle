@@ -47,3 +47,31 @@ minifyCss {
 	source = "${sourceSets.main.resources.srcDirs[0]}/style.css"
 	dest = "${sourceSets.main.output.resourcesDir}/style.css"
 }
+
+task updateVersion {
+	doLast {
+		ant.replaceregexp(
+				match: '(?:Download Version )\\d+\\.\\d+(?:\\.\\d+)?',
+				replace: "Download Version ${version}",
+				flags: 'g',
+				byline: true) {
+			fileset(dir: '.', includes: 'README.md')
+		}
+
+		ant.replaceregexp(
+				match: '(?:download/)\\d+\\.\\d+(?:\\.\\d+)?',
+				replace: "download/${version}",
+				flags: 'g',
+				byline: true) {
+			fileset(dir: '.', includes: 'README.md')
+		}
+
+		ant.replaceregexp(
+				match: '(?:mcaselector-)\\d+\\.\\d+(?:\\.\\d+)?',
+				replace: "mcaselector-${version}",
+				flags: 'g',
+				byline: true) {
+			fileset(dir: '.', includes: 'README.md')
+		}
+	}
+}
