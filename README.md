@@ -36,6 +36,7 @@ Because the conditions use internal values used by Minecraft, the following tabl
 | Palette | String | A list of comma (,) separated 1.13 block names. The block names will be converted to block ids for chunks with DataVersion 1343 or below. The validation of block names can be skipped by writing them in double quotes ("). Example: `sand,"new_block",gravel`.|
 | Status | String | The status of the chunk generation. Only recognized by Minecraft 1.13+ (DataVersion 1444+) |
 | LightPopulated | byte | Whether the light levels for the chunk have been calculated. If this is set to 0, converting a world from 1.12.x to 1.13 will omit that chunk. Allowed values are `0` and `1`. |
+| Biome | String | One or multiple biome names, separated by comma (,). For a reference of biome names, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Biomes). |
 
 **Notice**
 Running the query will check the `.mca`-file's name first if the query would even apply to any chunk in this file using the xPos and zPos conditions, as long as the query is built in a way that allows doing this.
@@ -54,6 +55,9 @@ You can change the following values:
 | InhabitedTime | long | This field stores the amount of game-ticks players have spent in a chunk. Impacts the local difficulty. |
 | LastUpdate | long | Stores a timestamp when this chunk was last updated in Milliseconds. |
 | Status | String | The status of the chunk generation. Only recognized by Minecraft 1.13+ (DataVersion 1444+) |
+| Biome | String | A biome name. This sets all biomes of this chunk to a single biome. For a reference of biome names, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Biomes). |
+
+Once the field is highlighted in green, the value is considered valid and will be changed. A gray field, no matter its content, will be ignored.
 
 For more information about the fields have a look at the chunk format description on [Minecraft Wiki](https://minecraft.gamepedia.com/Chunk_format)
 
