@@ -56,7 +56,7 @@ public class GithubVersionChecker {
 
 		@SuppressWarnings("unchecked")
 		List list = (List<Object>) result;
-		for (Object i : list) {
+		release: for (Object i : list) {
 			if (!(i instanceof Map)) {
 				throw new IOException("could not parse release object");
 			}
@@ -74,6 +74,8 @@ public class GithubVersionChecker {
 					currentTag = (String) e.getValue();
 				} else if ("html_url".equals(e.getKey())) {
 					currentLink = (String) e.getValue();
+				} else if ("prerelease".equals(e.getKey()) && (boolean) e.getValue()) {
+					continue release;
 				}
 			}
 
