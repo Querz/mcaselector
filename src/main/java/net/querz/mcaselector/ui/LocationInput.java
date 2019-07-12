@@ -20,6 +20,7 @@ public class LocationInput extends HBox {
 
 		if (emptyIsZero) {
 			x = z = 0;
+			value = new Point2i(0, 0);
 		}
 
 		getStyleClass().add("location-input");

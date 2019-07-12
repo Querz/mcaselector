@@ -37,6 +37,8 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		});
 
 		overwrite.setSelected(true);
+
+		data.offset = locationInput.getValue();
 		data.overwrite = true;
 		dataAction.accept(data);
 
@@ -54,6 +56,7 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		content.getStyleClass().add("import-confirmation-dialog-content");
 		content.getChildren().addAll(options, contentLabel);
 		getDialogPane().setContent(content);
+
 	}
 
 	private void setOverwriteCheckbox(CheckBox checkbox, Consumer<ChunkImportConfirmationData> action, ChunkImportConfirmationData data, boolean status) {

@@ -22,37 +22,45 @@ public class ChunkImporter {
 	private ChunkImporter() {}
 
 	public static void importChunks(File importDir, ProgressTask progressChannel, boolean overwrite, Point2i offset) {
-		File[] importFiles = importDir.listFiles((dir, name) -> name.matches(Helper.MCA_FILE_PATTERN));
-		if (importFiles == null || importFiles.length == 0) {
-			progressChannel.done("no files");
-			return;
-		}
-
-		MCAFilePipe.clearQueues();
-
-		progressChannel.setMax(importFiles.length * (offset.getX() % 32 != 0 ? 2 : 1) * (offset.getY() % 32 != 0 ? 2 : 1));
-//		progressChannel.updateProgress(importFiles[0].getName(), 0);
-
-		progressChannel.infoProperty().setValue(Translation.DIALOG_PROGRESS_COLLECTING_DATA.toString());
-
-		Map<Point2i, Set<Point2i>> targetMapping = new HashMap<>();
-
-
-		// find target files
-		for (File file : importFiles) {
-			Point2i source = Helper.parseMCAFileName(file);
-			if (source == null) {
-				Debug.dumpf("could not parse region from mca file name: %s", file.getName());
-				continue;
+		try {
+			File[] importFiles = importDir.listFiles((dir, name) -> name.matches(Helper.MCA_FILE_PATTERN));
+			if (importFiles == null || importFiles.length == 0) {
+				progressChannel.done("no files");
+				return;
 			}
 
-			Set<Point2i> targets = getTargetRegions(source, offset);
-			mapSourceRegionsByTargetRegion(source, targets, targetMapping);
-		}
+			MCAFilePipe.clearQueues();
 
-		for (Map.Entry<Point2i, Set<Point2i>> entry : targetMapping.entrySet()) {
-			File targetFile = Helper.createMCAFilePath(entry.getKey());
-			MCAFilePipe.executeLoadData(new MCAChunkImporterLoadJob(targetFile, importDir, entry.getKey(), entry.getValue(), offset, progressChannel, overwrite));
+			progressChannel.setMax(importFiles.length * (offset.getX() % 32 != 0 ? 2 : 1) * (offset.getY() % 32 != 0 ? 2 : 1));
+			progressChannel.infoProperty().setValue(Translation.DIALOG_PROGRESS_COLLECTING_DATA.toString());
+
+			Map<Point2i, Set<Point2i>> targetMapping = new HashMap<>();
+
+
+			// find target files
+			for (File file : importFiles) {
+				Point2i source = Helper.parseMCAFileName(file);
+				if (source == null) {
+					Debug.dumpf("could not parse region from mca file name: %s", file.getName());
+					continue;
+				}
+
+				try {
+					Set<Point2i> targets = getTargetRegions(source, offset);
+					mapSourceRegionsByTargetRegion(source, targets, targetMapping);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+
+			progressChannel.updateProgress(importFiles[0].getName(), 0);
+
+			for (Map.Entry<Point2i, Set<Point2i>> entry : targetMapping.entrySet()) {
+				File targetFile = Helper.createMCAFilePath(entry.getKey());
+				MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetFile, importDir, entry.getKey(), entry.getValue(), offset, progressChannel, overwrite));
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 
@@ -88,7 +96,7 @@ public class ChunkImporter {
 				} catch (IOException ex) {
 					Debug.errorf("failed to copy file %s to %s: %s", source, getFile(), ex.getMessage());
 				}
-				progressChannel.incrementProgress(getFile().getName());
+				progressChannel.incrementProgress(getFile().getName(), sources.size());
 				return;
 			}
 
@@ -103,6 +111,7 @@ public class ChunkImporter {
 
 				if (sourceData == null) {
 					Debug.errorf("error loading source mca file %s", source.getName());
+					progressChannel.incrementProgress(getFile().getName());
 					continue;
 				}
 
@@ -111,7 +120,7 @@ public class ChunkImporter {
 
 			if (sourceDataMapping.isEmpty()) {
 				Debug.errorf("could not load any source mca files to merge into %s with offset %s", getFile().getName(), offset);
-				progressChannel.incrementProgress(getFile().getName());
+				// don't increment progress here, if there were errors loading it has already been incremented
 				return;
 			}
 
@@ -121,7 +130,7 @@ public class ChunkImporter {
 				destData = load();
 				if (destData == null) {
 					Debug.errorf("error loading destination mca file %s", getFile().getName());
-					progressChannel.incrementProgress(getFile().getName());
+					progressChannel.incrementProgress(getFile().getName(), sourceDataMapping.size());
 					return;
 				}
 			} else {
@@ -164,7 +173,7 @@ public class ChunkImporter {
 				}
 
 				if (destination == null) {
-					progressChannel.incrementProgress(getFile().getName());
+					progressChannel.incrementProgress(getFile().getName(), sourceDataMapping.size());
 					Debug.errorf("failed to load target MCAFile %s", getFile().getName());
 					return;
 				}
@@ -177,7 +186,7 @@ public class ChunkImporter {
 					source.mergeChunksInto(destination, getRelativeOffset(sourceData.getKey(), target, offset), overwrite);
 				}
 
-				MCAFilePipe.executeSaveData(new MCAChunkImporterSaveJob(getFile(), destination, progressChannel));
+				MCAFilePipe.executeSaveData(new MCAChunkImporterSaveJob(getFile(), destination, sourceDataMapping.size(), progressChannel));
 
 			} catch (Exception ex) {
 				Debug.errorf("error merging chunks into %s with offset %s: %s", getFile(), offset, ex.getMessage());
@@ -190,10 +199,12 @@ public class ChunkImporter {
 
 	public static class MCAChunkImporterSaveJob extends SaveDataJob<MCAFile> {
 
+		private int sourceCount;
 		private ProgressTask progressChannel;
 
-		MCAChunkImporterSaveJob(File file, MCAFile data, ProgressTask progressChannel) {
+		MCAChunkImporterSaveJob(File file, MCAFile data, int sourceCount, ProgressTask progressChannel) {
 			super(file, data);
+			this.sourceCount = sourceCount;
 			this.progressChannel = progressChannel;
 		}
 
@@ -209,7 +220,7 @@ public class ChunkImporter {
 			} catch (Exception ex) {
 				Debug.error(ex);
 			}
-			progressChannel.incrementProgress(getFile().getName());
+			progressChannel.incrementProgress(getFile().getName(), sourceCount);
 			Debug.dumpf("took %s to save data to %s", t, getFile().getName());
 		}
 	}
