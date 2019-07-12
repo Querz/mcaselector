@@ -112,6 +112,7 @@ public enum Translation {
 	DIALOG_PROGRESS_TITLE("dialog.progress.title"),
 	DIALOG_PROGRESS_RUNNING("dialog.progress.running"),
 	DIALOG_PROGRESS_CANCELLING("dialog.progress.cancelling"),
+	DIALOG_PROGRESS_COLLECTING_DATA("dialog.progress.collecting_data"),
 	DIALOG_PROGRESS_DONE("dialog.progress.done"),
 	DIALOG_PROGRESS_TITLE_DELETING_SELECTION("dialog.progress.title.deleting_selection"),
 	DIALOG_PROGRESS_TITLE_EXPORTING_SELECTION("dialog.progress.title.exporting_selection"),

@@ -5,6 +5,8 @@ import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.mcaselector.util.Timer;
+import net.querz.mcaselector.util.Translation;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -29,16 +31,14 @@ public class ChunkImporter {
 		MCAFilePipe.clearQueues();
 
 		progressChannel.setMax(importFiles.length * (offset.getX() % 32 != 0 ? 2 : 1) * (offset.getY() % 32 != 0 ? 2 : 1));
-		progressChannel.updateProgress(importFiles[0].getName(), 0);
+//		progressChannel.updateProgress(importFiles[0].getName(), 0);
 
+		progressChannel.infoProperty().setValue(Translation.DIALOG_PROGRESS_COLLECTING_DATA.toString());
 
 		Map<Point2i, Set<Point2i>> targetMapping = new HashMap<>();
 
-//		progressChannel.infoProperty().setValue("collecting data...");
 
 		// find target files
-		System.out.println("1");
-
 		for (File file : importFiles) {
 			Point2i source = Helper.parseMCAFileName(file);
 			if (source == null) {
@@ -46,28 +46,14 @@ public class ChunkImporter {
 				continue;
 			}
 
-			System.out.println("1.1 " + file);
-
-			try {
-				Set<Point2i> targets = getTargetRegions(source, offset);
-				System.out.println("1.2 " + file);
-				mapSourceRegionsByTargetRegion(source, targets, targetMapping);
-				System.out.println("1.3 " + file);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-
-
+			Set<Point2i> targets = getTargetRegions(source, offset);
+			mapSourceRegionsByTargetRegion(source, targets, targetMapping);
 		}
-
-		System.out.println("2");
 
 		for (Map.Entry<Point2i, Set<Point2i>> entry : targetMapping.entrySet()) {
 			File targetFile = Helper.createMCAFilePath(entry.getKey());
 			MCAFilePipe.executeLoadData(new MCAChunkImporterLoadJob(targetFile, importDir, entry.getKey(), entry.getValue(), offset, progressChannel, overwrite));
 		}
-
-		System.out.println("3");
 	}
 
 	public static class MCAChunkImporterLoadJob extends LoadDataJob {
