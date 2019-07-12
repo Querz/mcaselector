@@ -50,6 +50,7 @@ dialog.delete_chunks_confirmation.header_verbose;Diese Aktion löscht %d Chunks 
 dialog.import_chunks_confirmation.title;Chunks importieren
 dialog.import_chunks_confirmation.header;Diese Aktion importiert eine ungekannt Anzahl von Chunks in diese Welt.
 dialog.import_chunks_confirmation.options;Optionen
+dialog.import_chunks_confirmation.options.offset;Offset
 dialog.import_chunks_confirmation.options.overwrite;Existierende Chunks überschreiben
 dialog.export_chunks_confirmation.title;Chunks exportieren
 dialog.export_chunks_confirmation.header_short;Diese Aktion exportiern eine unbekannte Anzahl von Chunks aus dieser Welt.

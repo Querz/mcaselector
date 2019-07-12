@@ -8,6 +8,7 @@ import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.filter.FilterData;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import java.io.*;
 import java.util.*;
@@ -18,6 +19,8 @@ public class MCAFile {
 	public static final int TIMESTAMP_HEADER_LOCATION = 4096;
 	public static final int SECTION_SIZE = 4096;
 
+	private Point2i location;
+
 	private File file;
 	private int[] offsets;
 	private byte[] sectors;
@@ -27,6 +30,10 @@ public class MCAFile {
 
 	public MCAFile(File file) {
 		this.file = file.getAbsoluteFile();
+		location = Helper.parseMCAFileName(file);
+		if (location == null) {
+			throw new IllegalArgumentException("invalid mca file name: " + file.getName());
+		}
 		offsets = new int[Tile.CHUNKS];
 		sectors = new byte[Tile.CHUNKS];
 		timestamps = new int[Tile.CHUNKS];
@@ -227,6 +234,36 @@ public class MCAFile {
 
 				if (sourceChunk != null && !sourceChunk.isEmpty()) {
 					destination.chunks[index] = sourceChunk;
+				}
+			}
+		}
+	}
+
+	public void mergeChunksInto(MCAFile destination, Point2i offset, boolean overwrite) {
+		int startX = offset.getX() > 0 ? 0 : Tile.SIZE_IN_CHUNKS - (Tile.SIZE_IN_CHUNKS + offset.getX());
+		int limitX = offset.getX() > 0 ? (Tile.SIZE_IN_CHUNKS - offset.getX()) : Tile.SIZE_IN_CHUNKS;
+		int startZ = offset.getY() > 0 ? 0 : Tile.SIZE_IN_CHUNKS - (Tile.SIZE_IN_CHUNKS + offset.getY());
+		int limitZ = offset.getY() > 0 ? (Tile.SIZE_IN_CHUNKS - offset.getY()) : Tile.SIZE_IN_CHUNKS;
+
+		for (int x = startX; x < limitX; x++) {
+			for (int z = startZ; z < limitZ; z++) {
+				int sourceIndex = z * Tile.SIZE_IN_CHUNKS + x;
+				int destX = offset.getX() > 0 ? offset.getX() + x : x - startX;
+				int destZ = offset.getY() > 0 ? offset.getY() + z : z - startZ;
+				int destIndex = destZ * Tile.SIZE_IN_CHUNKS + destX;
+
+				MCAChunkData sourceChunk = chunks[sourceIndex];
+				MCAChunkData destinationChunk = destination.chunks[destIndex];
+
+				if (!overwrite && destinationChunk != null && !destinationChunk.isEmpty()) {
+					continue;
+				}
+
+				if (sourceChunk != null && !sourceChunk.isEmpty()) {
+					if (!sourceChunk.setLocation(location.mul(32).add(destX, destZ))) {
+						continue;
+					}
+					destination.chunks[destIndex] = sourceChunk;
 				}
 			}
 		}

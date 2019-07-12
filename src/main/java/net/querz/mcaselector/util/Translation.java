@@ -68,6 +68,7 @@ public enum Translation {
 	DIALOG_IMPORT_CHUNKS_CONFIRMATION_TITLE("dialog.import_chunks_confirmation.title"),
 	DIALOG_IMPORT_CHUNKS_CONFIRMATION_HEADER("dialog.import_chunks_confirmation.header"),
 	DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS("dialog.import_chunks_confirmation.options"),
+	DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_OFFSET("dialog.import_chunks_confirmation.options.offset"),
 	DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_OVERWRITE("dialog.import_chunks_confirmation.options.overwrite"),
 	DIALOG_EXPORT_CHUNKS_CONFIRMATION_TITLE("dialog.export_chunks_confirmation.title"),
 	DIALOG_EXPORT_CHUNKS_CONFIRMATION_HEADER_SHORT("dialog.export_chunks_confirmation.header_short"),

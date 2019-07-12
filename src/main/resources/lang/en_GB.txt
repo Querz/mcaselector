@@ -50,6 +50,7 @@ dialog.delete_chunks_confirmation.header_verbose;You are about to delete %d chun
 dialog.import_chunks_confirmation.title;Import chunks
 dialog.import_chunks_confirmation.header;You are about to import an unknown number of chunks to this world.
 dialog.import_chunks_confirmation.options;Options
+dialog.import_chunks_confirmation.options.offset;Offset
 dialog.import_chunks_confirmation.options.overwrite;Overwrite existing chunks
 dialog.export_chunks_confirmation.title;Export chunks
 dialog.export_chunks_confirmation.header_short;You are about to export an unknown number of chunks from this world.

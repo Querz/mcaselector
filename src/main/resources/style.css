@@ -264,6 +264,12 @@
 	-fx-padding: 0;
 }
 
+/*---------- LOCATION INPUT ----------*/
+
+.location-input {
+	-fx-spacing: 5;
+}
+
 /*---------- DIALOG ----------*/
 
 .dialog-pane {
@@ -300,9 +306,7 @@
 	-fx-background-color: -color-dialog-separator;
 }
 
-.goto-dialog-pane .coordinate-box {
-	-fx-spacing: 5;
-}
+/*---------- ABOUT DIALOG ----------*/
 
 .about-dialog-pane {
 	-fx-min-width: 350px;
@@ -501,6 +505,13 @@
 .change-nbt-dialog-pane .scroll-pane {
 	-fx-pref-height: inherit;
 	-fx-max-height: 300;
+}
+
+/*---------- IMPORT CHUNKS OPTION GRID ----------*/
+
+.import-chunks-options-grid {
+	-fx-vgap: 15;
+	-fx-hgap: 10;
 }
 
 /*---------- Slider ----------*/

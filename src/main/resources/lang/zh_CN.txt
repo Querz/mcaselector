@@ -50,6 +50,7 @@ dialog.delete_chunks_confirmation.header_verbose;你将要从这个世界中删�
 dialog.import_chunks_confirmation.title;导入区块
 dialog.import_chunks_confirmation.header;您将要向这个世界导入未知数量的区块.
 dialog.import_chunks_confirmation.options;选项
+dialog.import_chunks_confirmation.options.offset;抵消
 dialog.import_chunks_confirmation.options.overwrite;覆盖现有区块
 dialog.export_chunks_confirmation.title;导出区块
 dialog.export_chunks_confirmation.header_short;您将要从这个世界导出未知数量的区块.
