@@ -110,6 +110,7 @@ public enum Translation {
 	DIALOG_ABOUT_COPYRIGHT("dialog.about.copyright"),
 	DIALOG_ABOUT_SOURCE("dialog.about.source"),
 	DIALOG_PROGRESS_TITLE("dialog.progress.title"),
+	DIALOG_PROGRESS_NO_FILES("dialog.progress.no_files"),
 	DIALOG_PROGRESS_RUNNING("dialog.progress.running"),
 	DIALOG_PROGRESS_CANCELLING("dialog.progress.cancelling"),
 	DIALOG_PROGRESS_COLLECTING_DATA("dialog.progress.collecting_data"),

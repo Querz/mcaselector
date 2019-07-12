@@ -7,6 +7,7 @@ import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.mcaselector.util.Timer;
+import net.querz.mcaselector.util.Translation;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
@@ -14,7 +15,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ChunkFilterDeleter {
 
@@ -23,7 +23,7 @@ public class ChunkFilterDeleter {
 	public static void deleteFilter(GroupFilter filter, Map<Point2i, Set<Point2i>> selection, ProgressTask progressChannel) {
 		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(Helper.MCA_FILE_PATTERN));
 		if (files == null || files.length == 0) {
-			progressChannel.done("no files");
+			progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
 			return;
 		}
 

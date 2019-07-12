@@ -6,7 +6,6 @@ import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.mcaselector.util.Timer;
 import net.querz.mcaselector.util.Translation;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -25,7 +24,7 @@ public class ChunkImporter {
 		try {
 			File[] importFiles = importDir.listFiles((dir, name) -> name.matches(Helper.MCA_FILE_PATTERN));
 			if (importFiles == null || importFiles.length == 0) {
-				progressChannel.done("no files");
+				progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
 				return;
 			}
 
