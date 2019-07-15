@@ -28,6 +28,10 @@ public abstract class ProgressTask extends Task<Void> {
 		updateProgress(info, ++current, max);
 	}
 
+	public void incrementProgress(String info, int count) {
+		updateProgress(info, current += count, max);
+	}
+
 	public void setLocked(boolean locked) {
 		this.locked = locked;
 	}

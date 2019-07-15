@@ -50,6 +50,7 @@ dialog.delete_chunks_confirmation.header_verbose;你将要从这个世界中删�
 dialog.import_chunks_confirmation.title;导入区块
 dialog.import_chunks_confirmation.header;您将要向这个世界导入未知数量的区块.
 dialog.import_chunks_confirmation.options;选项
+dialog.import_chunks_confirmation.options.offset;抵消
 dialog.import_chunks_confirmation.options.overwrite;覆盖现有区块
 dialog.export_chunks_confirmation.title;导出区块
 dialog.export_chunks_confirmation.header_short;您将要从这个世界导出未知数量的区块.
@@ -91,8 +92,10 @@ dialog.about.license;许可:
 dialog.about.copyright;版权:
 dialog.about.source;来源:
 dialog.progress.title;进度
+dialog.progress.no_files;没有文件
 dialog.progress.running;正在运行...
 dialog.progress.cancelling;正在取消...
+dialog.progress.collecting_data;收集数据...
 dialog.progress.done;完成.
 dialog.progress.title.deleting_selection;正在删除选择...
 dialog.progress.title.exporting_selection;正在导出选择...

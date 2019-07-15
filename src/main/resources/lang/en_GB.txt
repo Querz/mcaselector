@@ -50,6 +50,7 @@ dialog.delete_chunks_confirmation.header_verbose;You are about to delete %d chun
 dialog.import_chunks_confirmation.title;Import chunks
 dialog.import_chunks_confirmation.header;You are about to import an unknown number of chunks to this world.
 dialog.import_chunks_confirmation.options;Options
+dialog.import_chunks_confirmation.options.offset;Offset
 dialog.import_chunks_confirmation.options.overwrite;Overwrite existing chunks
 dialog.export_chunks_confirmation.title;Export chunks
 dialog.export_chunks_confirmation.header_short;You are about to export an unknown number of chunks from this world.
@@ -91,8 +92,10 @@ dialog.about.license;License:
 dialog.about.copyright;Copyright:
 dialog.about.source;Source:
 dialog.progress.title;Progress
+dialog.progress.no_files;no files
 dialog.progress.running;running...
 dialog.progress.cancelling;cancelling...
+dialog.progress.collecting_data;collecting data...
 dialog.progress.done;done.
 dialog.progress.title.deleting_selection;Deleting selection...
 dialog.progress.title.exporting_selection;Exporting selection...

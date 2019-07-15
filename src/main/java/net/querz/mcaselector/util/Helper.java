@@ -1,6 +1,5 @@
 package net.querz.mcaselector.util;
 
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -148,6 +147,16 @@ public class Helper {
 		at.scale(newSize / w, newSize / h);
 		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
 		return scaleOp.filter(before, after);
+	}
+
+	public static Point2i parseMCAFileName(File file) {
+		Matcher m = REGION_GROUP_PATTERN.matcher(file.getName());
+		if (m.find()) {
+			int x = Integer.parseInt(m.group("regionX"));
+			int z = Integer.parseInt(m.group("regionZ"));
+			return new Point2i(x, z);
+		}
+		return null;
 	}
 
 	public static int getZoomLevel(float scale) {
@@ -413,13 +422,14 @@ public class Helper {
 
 	public static void importChunks(TileMap tileMap, Stage primaryStage) {
 		File dir = createDirectoryChooser(null).showDialog(primaryStage);
-		SimpleBooleanProperty overwriteProperty = new SimpleBooleanProperty();
+		DataProperty<ImportConfirmationDialog.ChunkImportConfirmationData> dataProperty = new DataProperty<>();
 		if (dir != null) {
-			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, overwriteProperty::set).showAndWait();
+			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, dataProperty::set).showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
 					new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
-							.showProgressBar(t -> ChunkImporter.importChunks(dir, t, overwriteProperty.get()));
+							.showProgressBar(t -> ChunkImporter.importChunks(
+									dir, t, dataProperty.get().overwrite(), dataProperty.get().getOffset()));
 					clearAllCache(tileMap);
 				}
 			});

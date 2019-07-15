@@ -160,4 +160,14 @@ public class MCAChunkData {
 		}
 		return new Point2i(data.getCompoundTag("Level").getInt("xPos"), data.getCompoundTag("Level").getInt("zPos"));
 	}
+
+	public boolean setLocation(Point2i location) {
+		if (data == null || !data.containsKey("Level")) {
+			return false;
+		}
+
+		data.getCompoundTag("Level").putInt("xPos", location.getX());
+		data.getCompoundTag("Level").putInt("zPos", location.getY());
+		return true;
+	}
 }
