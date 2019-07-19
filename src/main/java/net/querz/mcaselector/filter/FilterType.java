@@ -41,6 +41,15 @@ public enum FilterType {
 		return string;
 	}
 
+	public static FilterType getByName(String name) {
+		for (FilterType t : FilterType.values()) {
+			if (t.string.equals(name)) {
+				return t;
+			}
+		}
+		return null;
+	}
+
 	public enum Format {
 		GROUP, NUMBER, TEXT
 	}

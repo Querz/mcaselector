@@ -120,7 +120,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		}
 
 		private void onInput(String newValue) {
-			Boolean result = value.parseNewValue(newValue);
+			boolean result = value.parseNewValue(newValue);
 			if (result) {
 				if (!textField.getStyleClass().contains("field-cell-valid")) {
 					textField.getStyleClass().add("field-cell-valid");
