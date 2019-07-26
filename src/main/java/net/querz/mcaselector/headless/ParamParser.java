@@ -6,30 +6,22 @@ import java.util.Map;
 
 public class ParamParser {
 
-	private StringPointer ptr;
+	private String[] args;
 
 	public ParamParser(String[] args) {
-		ptr = new StringPointer(String.join(" ", args));
+		this.args = args;
 	}
 
-	public Map<String, String> read() throws IOException {
+	public Map<String, String> parse() throws IOException {
 		Map<String, String> values = new HashMap<>();
 
-		/*
-		* -headless -key1 value -key2 "multiple values" -key3 \"escaped -key4 "\"escaped with quotes\""
-		*
-		*
-		* */
-
 		String currentKey = null;
-		while (ptr.hasNext()) {
-			String s = parseString();
-			ptr.skipWhitespace();
-			if (s.startsWith("-")) {
+		for (String s : args) {
+			if (s.startsWith("--")) {
 				if (values.containsKey(s)) {
-					throw new ParseException("duplicate parameter " + s);
+					throw new ParseException("duplicate paramter " + s);
 				}
-				currentKey = s.substring(1);
+				currentKey = s.substring(2);
 				values.put(currentKey, null);
 			} else {
 				if (values.get(currentKey) != null) {
@@ -40,12 +32,5 @@ public class ParamParser {
 			}
 		}
 		return values;
-	}
-
-	private String parseString() throws IOException {
-		if (ptr.currentChar() == '"') {
-			return ptr.parseQuotedString();
-		}
-		return ptr.parseSimpleString();
 	}
 }

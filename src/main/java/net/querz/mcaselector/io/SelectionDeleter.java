@@ -1,9 +1,9 @@
 package net.querz.mcaselector.io;
 
-import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.util.Progress;
 import net.querz.mcaselector.util.Timer;
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -16,7 +16,7 @@ public class SelectionDeleter {
 
 	private SelectionDeleter() {}
 
-	public static void deleteSelection(Map<Point2i, Set<Point2i>> chunksToBeDeleted, ProgressTask progressChannel) {
+	public static void deleteSelection(Map<Point2i, Set<Point2i>> chunksToBeDeleted, Progress progressChannel) {
 		if (chunksToBeDeleted.isEmpty()) {
 			progressChannel.done("no selection");
 			return;
@@ -36,9 +36,9 @@ public class SelectionDeleter {
 	public static class MCADeleteSelectionLoadJob extends LoadDataJob {
 
 		private Set<Point2i> chunksToBeDeleted;
-		private ProgressTask progressChannel;
+		private Progress progressChannel;
 
-		MCADeleteSelectionLoadJob(File file, Set<Point2i> chunksToBeDeleted, ProgressTask progressChannel) {
+		MCADeleteSelectionLoadJob(File file, Set<Point2i> chunksToBeDeleted, Progress progressChannel) {
 			super(file);
 			this.chunksToBeDeleted = chunksToBeDeleted;
 			this.progressChannel = progressChannel;
@@ -67,10 +67,10 @@ public class SelectionDeleter {
 
 	public static class MCADeleteSelectionProcessJob extends ProcessDataJob {
 
-		private ProgressTask progressChannel;
+		private Progress progressChannel;
 		private Set<Point2i> chunksToBeDeleted;
 
-		MCADeleteSelectionProcessJob(File file, byte[] data, Set<Point2i> chunksToBeDeleted, ProgressTask progressChannel) {
+		MCADeleteSelectionProcessJob(File file, byte[] data, Set<Point2i> chunksToBeDeleted, Progress progressChannel) {
 			super(file, data);
 			this.chunksToBeDeleted = chunksToBeDeleted;
 			this.progressChannel = progressChannel;
@@ -96,9 +96,9 @@ public class SelectionDeleter {
 
 	public static class MCADeleteSelectionSaveJob extends SaveDataJob<MCAFile> {
 
-		private ProgressTask progressChannel;
+		private Progress progressChannel;
 
-		MCADeleteSelectionSaveJob(File file, MCAFile data, ProgressTask progressChannel) {
+		MCADeleteSelectionSaveJob(File file, MCAFile data, Progress progressChannel) {
 			super(file, data);
 			this.progressChannel = progressChannel;
 		}

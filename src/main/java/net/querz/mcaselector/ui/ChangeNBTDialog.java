@@ -32,7 +32,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 	 * force --> set value even if it didn't exist.
 	 * */
 
-	private List<Field> value = new ArrayList<>();
+	private List<Field<?>> value = new ArrayList<>();
 	private ToggleGroup toggleGroup = new ToggleGroup();
 	private RadioButton change = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_CHANGE);
 	private RadioButton force = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_FORCE);
@@ -134,10 +134,10 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 	public class Result {
 
 		private boolean force;
-		private List<Field> fields;
+		private List<Field<?>> fields;
 		private boolean selectionOnly;
 
-		public Result(List<Field> fields, boolean force, boolean selectionOnly) {
+		public Result(List<Field<?>> fields, boolean force, boolean selectionOnly) {
 			this.force = force;
 			this.fields = fields;
 			this.selectionOnly = selectionOnly;
@@ -147,7 +147,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 			return force;
 		}
 
-		public List<Field> getFields() {
+		public List<Field<?>> getFields() {
 			return fields;
 		}
 

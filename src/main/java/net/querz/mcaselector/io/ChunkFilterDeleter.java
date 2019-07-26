@@ -2,10 +2,10 @@ package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.filter.GroupFilter;
-import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.util.Progress;
 import net.querz.mcaselector.util.Timer;
 import net.querz.mcaselector.util.Translation;
 import java.io.File;
@@ -20,7 +20,7 @@ public class ChunkFilterDeleter {
 
 	private ChunkFilterDeleter() {}
 
-	public static void deleteFilter(GroupFilter filter, Map<Point2i, Set<Point2i>> selection, ProgressTask progressChannel) {
+	public static void deleteFilter(GroupFilter filter, Map<Point2i, Set<Point2i>> selection, Progress progressChannel) {
 		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(Helper.MCA_FILE_PATTERN));
 		if (files == null || files.length == 0) {
 			progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
@@ -41,9 +41,9 @@ public class ChunkFilterDeleter {
 
 		private GroupFilter filter;
 		private Map<Point2i, Set<Point2i>> selection;
-		private ProgressTask progressChannel;
+		private Progress progressChannel;
 
-		MCADeleteFilterLoadJob(File file, GroupFilter filter, Map<Point2i, Set<Point2i>> selection, ProgressTask progressChannel) {
+		MCADeleteFilterLoadJob(File file, GroupFilter filter, Map<Point2i, Set<Point2i>> selection, Progress progressChannel) {
 			super(file);
 			this.filter = filter;
 			this.selection = selection;
@@ -80,11 +80,11 @@ public class ChunkFilterDeleter {
 
 	public static class MCADeleteFilterProcessJob extends ProcessDataJob {
 
-		private ProgressTask progressChannel;
+		private Progress progressChannel;
 		private GroupFilter filter;
 		private Set<Point2i> selection;
 
-		MCADeleteFilterProcessJob(File file, byte[] data, GroupFilter filter, Set<Point2i> selection, ProgressTask progressChannel) {
+		MCADeleteFilterProcessJob(File file, byte[] data, GroupFilter filter, Set<Point2i> selection, Progress progressChannel) {
 			super(file, data);
 			this.filter = filter;
 			this.selection = selection;
@@ -111,9 +111,9 @@ public class ChunkFilterDeleter {
 
 	public static class MCADeleteFilterSaveJob extends SaveDataJob<MCAFile> {
 
-		private ProgressTask progressChannel;
+		private Progress progressChannel;
 
-		MCADeleteFilterSaveJob(File file, MCAFile data, ProgressTask progressChannel) {
+		MCADeleteFilterSaveJob(File file, MCAFile data, Progress progressChannel) {
 			super(file, data);
 			this.progressChannel = progressChannel;
 		}

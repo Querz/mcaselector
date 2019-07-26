@@ -423,7 +423,7 @@ public class TileMap extends Canvas {
 			Point2i regionOffset = Helper.regionToBlock(region).sub((int) offset.getX(), (int) offset.getY());
 
 			if (!tile.isLoaded() && !tile.isLoading()) {
-				RegionImageGenerator.generate(tile, this);
+				RegionImageGenerator.generate(tile, () -> Platform.runLater(this::update), this::getScale, false, false, null);
 			}
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
 			tile.draw(ctx, scale, p);

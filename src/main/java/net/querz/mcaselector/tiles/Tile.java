@@ -2,7 +2,6 @@ package net.querz.mcaselector.tiles;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -18,11 +17,12 @@ import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.mcaselector.util.Timer;
-
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class Tile {
 
@@ -238,7 +238,7 @@ public class Tile {
 		this.image = SwingFXUtils.toFXImage(bufferedImage, null);
 	}
 
-	public void loadFromCache(TileMap tileMap) {
+	public void loadFromCache(Runnable callback, Supplier<Float> scaleSupplier) {
 		if (loaded) {
 			Debug.dump("region at " + location + " already loaded");
 			return;
@@ -247,25 +247,25 @@ public class Tile {
 		if (Config.getCacheDir() == null) {
 			//load empty map (start screen)
 			loaded = true;
-			Platform.runLater(tileMap::update);
+			callback.run();
 			return;
 		}
 
-		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/" + Helper.getZoomLevel(tileMap.getScale()) + "/r.%d.%d.png", location.getX(), location.getY());
+		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/" + Helper.getZoomLevel(scaleSupplier.get()) + "/r.%d.%d.png", location.getX(), location.getY());
 
 		Debug.dump("loading region " + location + " from cache: " + res);
 
 		try (InputStream inputStream = new FileInputStream(res)) {
 			image = new Image(inputStream);
 			loaded = true;
-			Platform.runLater(tileMap::update);
+			callback.run();
 		} catch (IOException ex) {
 			Debug.dump("region " + location + " not cached");
 			//do nothing
 		}
 	}
 
-	public Image generateImage(TileMap tileMap, byte[] rawData) {
+	public Image generateImage(Runnable callback, byte[] rawData) {
 		if (loaded) {
 			Debug.dump("region at " + location + " already loaded");
 			return image;
@@ -291,7 +291,7 @@ public class Tile {
 		image = mcaFile.createImage(ptr);
 		loaded = true;
 
-		Platform.runLater(tileMap::update);
+		callback.run();
 
 		Debug.dumpf("took %s to generate image of %s", t, file.getName());
 
