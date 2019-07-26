@@ -1,0 +1,108 @@
+status.region;region
+status.region.tooltip;Aktuálně zvýrazněný region reprezentovaný čísly z názvu souboru.
+status.chunk;chunk
+status.chunk.tooltip;Aktuálně zvýrazněný chunk.
+status.block;blok
+status.block.tooltip;Přibližně zvýrazněný block.
+status.selected;vybráno
+status.selected.tooltip;Počet aktuálně vybraných chunků.
+status.visible;viditelné regiony
+status.visible.tooltip;Počet obrázků regionů nahraných pro vykreslení.
+status.total;celkem regionů
+status.total.tooltip;Celkový počet nahraných regionů, včetně vybraných nezobrazených regionů.
+menu.file;Soubor
+menu.view;Pohled
+menu.selection;Výběr
+menu.tools;Nástroje
+menu.about;O aplikaci
+menu.file.open;Otevřít
+menu.file.settings;Nastavení
+menu.file.quit;Opustit
+menu.view.chunk_grid;Mřížka chunků
+menu.view.region_grid;Mřížka regionů
+menu.view.goto;Přejít
+menu.view.clear_cache;Smazat keš
+menu.view.clear_all_cache;Smazat všechny keše
+menu.selection.clear;Vyčistit
+menu.selection.export_chunks;Exportovat vybrané chunky
+menu.selection.delete_chunks;Smazat vybrané chunky
+menu.selection.import_selection;Importovat výběr
+menu.selection.export_selection;Exportovat výběr
+menu.selection.clear_cache;Smazat keš
+menu.tools.import_chunks;Importovat chunky
+menu.tools.filter_chunks;Filtrovat chunky
+menu.tools.change_fields;Změnit pole
+dialog.settings.title;Nastavení
+dialog.settings.language;Jazyk
+dialog.settings.read_threads;Vláken pro načítání
+dialog.settings.process_threads;Vláken pro zpracování
+dialog.settings.write_threads;Vláken pro zápis
+dialog.settings.max_files;Max nahraných souborů
+dialog.settings.region_color;Barva vybraného regionu
+dialog.settings.chunk_color;Barva vybraného chunku
+dialog.settings.print_debug;Vypisovat ladící zprávy
+dialog.settings.reset;Obnovit
+dialog.goto.title;Přejít na pozici
+dialog.confirmation.question;Jste si jisti?
+dialog.delete_chunks_confirmation.title;Smazat chunky
+dialog.delete_chunks_confirmation.header_short;Chcete smazat neznámý počet chunků vybraného světa.
+dialog.delete_chunks_confirmation.header_verbose;Chcete smazat  %d chunků vybraného světa.
+dialog.import_chunks_confirmation.title;Importovat chunky
+dialog.import_chunks_confirmation.header;Chcete importovat neznámý počet chunků do vybraného světa.
+dialog.import_chunks_confirmation.options;Volby
+dialog.import_chunks_confirmation.options.offset;Posun
+dialog.import_chunks_confirmation.options.overwrite;Přepsat existující chunky
+dialog.export_chunks_confirmation.title;Exportovat chunky
+dialog.export_chunks_confirmation.header_short;Chcete exportovat neznámý počet chunků vybraného světa.
+dialog.export_chunks_confirmation.header_verbose;Chcete exportovat %d chunků vybraného světa.
+dialog.filter_chunks.title;Filtrovat chunky
+dialog.filter_chunks.filter.group;Skupina
+dialog.filter_chunks.filter.add.tooltip;Přidá další podmínku pod stávající.
+dialog.filter_chunks.filter.delete.tooltip;Smaže tuto podmínku.
+dialog.filter_chunks.filter.type.tooltip;Typ podmínky.
+dialog.filter_chunks.filter.operator.tooltip;Operátor pro spojení několika podmínek.
+dialog.filter_chunks.filter.comparator.tooltip;Porovnávač.
+dialog.filter_chunks.select;Vybrat
+dialog.filter_chunks.select.tooltip;Vytvoří výběr ovlivněných chunků.
+dialog.filter_chunks.export;Exportovat
+dialog.filter_chunks.export.tooltip;Exportuje všechny ovlivněné chunky do nové složky.
+dialog.filter_chunks.delete;Smazat
+dialog.filter_chunks.delete.tooltip;Smaže všechny ovlivněné chunky z aktuálního světa.
+dialog.filter_chunks.selection_only;Aplikovat pouze na výběr
+dialog.filter_chunks.selection_only.tooltip;Zda má být filtr aplikován pouze na aktuální výběr.
+dialog.change_nbt.title;Změnit NBT
+dialog.change_nbt.change;změnit
+dialog.change_nbt.change.tooltip;Změní hodnotu pouze pokud klíč existuje.
+dialog.change_nbt.force;Vynutit
+dialog.change_nbt.force.tooltip;Pokud tag neexistuje, vytvoří jej.
+dialog.change_nbt.selection_only;Aplikovat pouze na výběr
+dialog.change_nbt.selection_only.tooltip;Zda má být filtr aplikován pouze na aktuální výběr.
+dialog.change_nbt_confirmation.title;Změnit NBT
+dialog.change_nbt_confirmation.header_short;Chcete změnit data v neznámém počtu chunků vybraného světa.
+dialog.change_nbt_confirmation.header_verbose;Chcete změnit data v %d chunků vybraného světa.
+dialog.about.title;O aplikaci
+dialog.about.header;O aplikaci MCA Selector
+dialog.about.version;Verze:
+dialog.about.version.unknown;neznámá
+dialog.about.version.check;zkontrolovat
+dialog.about.version.checking;kontroluji...
+dialog.about.version.up_to_date;Aktuální
+dialog.about.version.error;Chyba
+dialog.about.license;Licence:
+dialog.about.copyright;Copyright:
+dialog.about.source;Zdroj:
+dialog.progress.title;Průběh
+dialog.progress.no_files;žádné soubory
+dialog.progress.running;probíhá...
+dialog.progress.cancelling;rušení...
+dialog.progress.collecting_data;sběr dat...
+dialog.progress.done;hotovo.
+dialog.progress.title.deleting_selection;Mazání výběru...
+dialog.progress.title.exporting_selection;Exportování výběru...
+dialog.progress.title.importing_chunks;Importování chunků...
+dialog.progress.title.deleting_filtered_chunks;Mazání filtrovaných chunků...
+dialog.progress.title.exporting_filtered_chunks;Exporování filtrovaných chunků...
+dialog.progress.title.selecting_filtered_chunks;Vybírání filtrovaných chunků...
+dialog.progress.title.changing_nbt_data;Měním NBT data...
+button.cancel;Zrušit
+button.ok;OK
