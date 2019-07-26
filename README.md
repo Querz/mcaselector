@@ -208,7 +208,7 @@ gradlew.bat build minifyCss shadowJar
 
 ## Download and installation
 
-[**Download Version 1.7.4**](https://github.com/Querz/mcaselector/releases/download/1.7.4/mcaselector-1.7.4.jar)
+[**Download Version 1.8**](https://github.com/Querz/mcaselector/releases/download/1.8/mcaselector-1.8.jar)
 
 "Requirements":
 * Either:
@@ -219,11 +219,11 @@ gradlew.bat build minifyCss shadowJar
 
 #### If you have Java from Oracle installed on your system:
 
-Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.7.4.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
+Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.8.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
 
 #### If you have Minecraft Java Edition installed on your system:
 
-Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.7.4.jar>`. On Mac OS you should find it in `Applications/Minecraft.app/Contents/runtime/jre-x64/1.8.0_74/bin` where you can execute `./java -jar <path-to-mcaselector-1.7.4.jar>`.
+Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.8.jar>`. On Mac OS you should find it in `Applications/Minecraft.app/Contents/runtime/jre-x64/1.8.0_74/bin` where you can execute `./java -jar <path-to-mcaselector-1.8.jar>`.
 
 #### If you are using OpenJDK:
 
