@@ -26,10 +26,10 @@ public class StatusBar extends BorderPane {
 		for (int i = 0; i < 6; i++) {
 			grid.getColumnConstraints().add(new ColumnConstraints(120, 120, 200));
 		}
-		hoveredRegion.setTooltip(new Tooltip(Translation.STATUS_SELECTED_TOOLTIP.toString()));
-		hoveredChunk.setTooltip(new Tooltip(Translation.STATUS_REGION_TOOLTIP.toString()));
-		hoveredBlock.setTooltip(new Tooltip(Translation.STATUS_CHUNK_TOOLTIP.toString()));
-		selectedChunks.setTooltip(new Tooltip(Translation.STATUS_BLOCK_TOOLTIP.toString()));
+		hoveredRegion.setTooltip(new Tooltip(Translation.STATUS_REGION_TOOLTIP.toString()));
+		hoveredChunk.setTooltip(new Tooltip(Translation.STATUS_CHUNK_TOOLTIP.toString()));
+		hoveredBlock.setTooltip(new Tooltip(Translation.STATUS_BLOCK_TOOLTIP.toString()));
+		selectedChunks.setTooltip(new Tooltip(Translation.STATUS_SELECTED_TOOLTIP.toString()));
 		visibleRegions.setTooltip(new Tooltip(Translation.STATUS_VISIBLE_TOOLTIP.toString()));
 		totalRegions.setTooltip(new Tooltip(Translation.STATUS_TOTAL_TOOLTIP.toString()));
 		grid.add(hoveredRegion, 0, 0, 1 ,1);
