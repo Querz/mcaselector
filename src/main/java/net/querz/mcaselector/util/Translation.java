@@ -74,7 +74,6 @@ public enum Translation {
 	DIALOG_EXPORT_CHUNKS_CONFIRMATION_HEADER_SHORT("dialog.export_chunks_confirmation.header_short"),
 	DIALOG_EXPORT_CHUNKS_CONFIRMATION_HEADER_VERBOSE("dialog.export_chunks_confirmation.header_verbose"),
 	DIALOG_FILTER_CHUNKS_TITLE("dialog.filter_chunks.title"),
-	DIALOG_FILTER_CHUNKS_FILTER_GROUP("dialog.filter_chunks.filter.group"),
 	DIALOG_FILTER_CHUNKS_FILTER_ADD_TOOLTIP("dialog.filter_chunks.filter.add.tooltip"),
 	DIALOG_FILTER_CHUNKS_FILTER_DELETE_TOOLTIP("dialog.filter_chunks.filter.delete.tooltip"),
 	DIALOG_FILTER_CHUNKS_FILTER_TYPE_TOOLTIP("dialog.filter_chunks.filter.type.tooltip"),

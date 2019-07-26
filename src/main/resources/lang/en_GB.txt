@@ -56,7 +56,6 @@ dialog.export_chunks_confirmation.title;Export chunks
 dialog.export_chunks_confirmation.header_short;You are about to export an unknown number of chunks from this world.
 dialog.export_chunks_confirmation.header_verbose;You are about to export %d chunks from this world.
 dialog.filter_chunks.title;Filter chunks
-dialog.filter_chunks.filter.group;Group
 dialog.filter_chunks.filter.add.tooltip;Add a new condition below this one.
 dialog.filter_chunks.filter.delete.tooltip;Delete this condition.
 dialog.filter_chunks.filter.type.tooltip;The type of this condition.
