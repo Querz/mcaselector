@@ -5,7 +5,7 @@
 
 ## Usage
 ### Navigation
-Executing the tool, it shows an empty window with a chunk and a region grid. To actually show a world, open a folder containing Minecraft Anvil (\*.mca) files. The tool will then render a top-down view of this world that you can zoom into and zoom out of by scrolling up and down and that you can move around using the middle mouse button (`Cmd+LMB` on Mac OS).
+Executing the tool, it shows an empty window with a chunk and a region grid. To actually show a world, open a folder containing Minecraft Anvil (\*.mca) files. The tool will then render a top-down view of this world that you can zoom into and zoom out of by scrolling up and down and that you can move around using the middle mouse button (`Cmd+LMB` on Mac OS) or using `WASD`.
 
 ![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/526de6c3ae247c21d720295508a5a0c534a11f52/mca_selector_default.png "MCA Selector window showing chunk and region grid")
 
@@ -88,6 +88,22 @@ The following languages are available:
 * Czech (Czech Republic) (thanks to [@mkyral](https://github.com/mkyral) for translating)
 
 If you would like to contribute a translation, you can find the language files in [resources/lang/](https://github.com/Querz/mcaselector/tree/master/src/main/resources/lang). The files are automatically detected and shown in the settings drowdown menu once they are placed in this folder.
+
+---
+## Checkout and building
+
+To checkout master:
+```
+git clone https://github.com/Querz/mcaselector.git
+```
+To build a standalone jar file on Mac OS or Linux using the Gradle Wrapper, run
+```
+./gradlew build minifyCss shadowJar
+```
+On Windows, run
+```
+gradlew.bat build minifyCss shadowJar
+```
 
 ---
 
