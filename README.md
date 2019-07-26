@@ -90,6 +90,105 @@ The following languages are available:
 If you would like to contribute a translation, you can find the language files in [resources/lang/](https://github.com/Querz/mcaselector/tree/master/src/main/resources/lang). The files are automatically detected and shown in the settings drowdown menu once they are placed in this folder.
 
 ---
+## Headless mode
+
+The MCA Selector can be run in a headless mode without showing the UI. Use the program parameter `--headless` to do so.
+Headless mode can be run in different modes:
+
+| Mode | Parameter | Description |
+| ---- | --------- | ----------- |
+| Create selection | `--mode select` | Create a selection from a filter query and save it as a CSV file. |
+| Export chunks | `--mode export` | Export chunks based on a filter query and/or a selection. |
+| Import chunks | `--mode import` | Import chunks with an optional offset. |
+| Delete chunks | `--mode delete` | Delete chunks based on a filter query and/or a selection. |
+| Change NBT | `--mode change` | Changes NBT values in an entire world or only in chunks based on a selection. |
+| Cache images | `--mode cache` | Generates the cache images for an entire world. |
+
+### Mandatory and optional parameters
+
+#### Create selection
+
+| Parameter | Description | Mandatory |
+| --------- | ----------- | :-------: |
+| `--world <directory>` | The world for which to create the selection. | Yes |
+| `--output <csv-file>` | The CSV-file to save the selection to. | Yes |
+| `--query <filter-query>` | The filter query to use to create a selection. | Yes |
+
+#### Export chunks
+
+| Parameter | Description | Mandatory |
+| --------- | ----------- | :-------: |
+| `--world <directory>` | The world to export chunks from. | Yes |
+| `--output <directory>` | The destination of the exported chunks. The directory MUST be empty. | Yes |
+| `--query <filter-query>` | The filter query to use to export the chunks. | Yes (if `--input` is not set) |
+| `--input <csv-file>` | The csv-file to load a selection from. | Yes (if `--query` is not set) |
+
+#### Import chunks
+
+| Parameter | Description | Mandatory |
+| --------- | ----------- | :-------: |
+| `--world <directory>` | The world to import chunks to. | Yes |
+| `--input <directory>` | The world to import the chunks from. | Yes |
+| `--offset-x <number>` | The offset in chunks in x-direction. | No, default `0` |
+| `--offset-z <number>` | The offset in chunks in z-direction. | No, default `0` |
+| `--overwrite` | Whether to overwrite existing chunks. | No, default `false` |
+
+#### Delete chunks
+
+| Parameter | Description | Mandatory |
+| --------- | ----------- | :-------: |
+| `--world <directory>` | The world to delete chunks from. | Yes |
+| `--query <filter-query>` | The filter query to use to delete the chunks. | Yes (if `--input` is not set) |
+| `--input <csv-file>` | The csv-file to load a selection from. | Yes (if `--query` is not set) |
+
+#### Change NBT
+
+| Parameter | Description | Mandatory |
+| --------- | ----------- | :-------: |
+| `--world <directory>` | The world in which NBT values should be changed. | Yes |
+| `--query <values>` | The values to be changed. | Yes |
+| `--input <csv-file>` | The csv-file to load a selection from. | No |
+| `--force` | Whether the value should be created if the key doesn't exist. | No, default `false` |
+
+#### Cache images
+
+| Parameter | Description | Mandatory |
+| --------- | ----------- | :-------: |
+| `--world <directory>` | The world to create cache images from. | Yes |
+| `--output <directory>` | Where the cache files fille be saved. | Yes |
+| `--zoom-level <1\|2\|4>` | The zoom level for which to generate the images. | No, generates images for all zoom levels if not specified |
+
+#### Configuration parameters
+
+| Parameter | Description | Mandatory |
+| --------- | ----------- | :-------: |
+| `--debug` | Enables debug messages. | No |
+| `--read-threads <number>` | The amount of Threads to be used for reading files. | No, default `1` |
+| `--process-threads <number>` | The amounts of Threads to be used for processing data. | No, defaults to the amount of processor cores |
+| `--write-threads <number>` | The amount of Threads to be used for writing data to disk. | No, default `4` |
+| `--max-loaded-files <number>` | The maximum amount of simultaneously loaded files. | No, defaults to 1.5 * amount of processor cores |
+
+
+### Filter query
+
+A filter query is a text representation of the chunk filter that can be created in the UI of the program. When the debug mode is enabled, it will be printed into the console.
+Example:
+```
+--query "xPos >= 10 AND xPos <= 20 AND Palette contains \"sand,water\""
+```
+would select all chunks that contain sand and water blocks and their x-position ranges from 10 to 20.
+As shown, double quotes (") must be escaped with a backslash.
+
+### Change values
+
+The query for changing NBT values in chunks looks slightly different to the filter query. It is a comma (,) separated list of assignments.
+Example:
+```
+--query "LightPopulated = 1, Status = empty"
+```
+would set the field "LightPopulated" to "1" and "Status" to "empty". Just like the filter query, the query to change values is printed to the console when using the UI in debug mode.
+
+---
 ## Checkout and building
 
 To checkout master:
