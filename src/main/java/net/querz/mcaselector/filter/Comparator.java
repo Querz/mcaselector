@@ -30,6 +30,10 @@ public enum Comparator {
 		return string;
 	}
 
+	public String getQueryString() {
+		return query == null ? string : query;
+	}
+
 	public static Comparator fromString(String s) {
 		for (Comparator c : Comparator.values()) {
 			if (c.string.equals(s)) {

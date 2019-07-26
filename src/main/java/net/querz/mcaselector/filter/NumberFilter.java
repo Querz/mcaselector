@@ -62,12 +62,12 @@ public abstract class NumberFilter<T extends Number> extends Filter<T> {
 
 	@Override
 	public String toString(FilterData data) {
-		return getFilterValue() + " " + comparator + " " + getNumber(data);
+		return getFilterValue() + " " + comparator.getQueryString() + " " + getNumber(data);
 	}
 
 	@Override
 	public String toString() {
-		return getType() + " " + comparator + " " + getFilterValue();
+		return getType() + " " + comparator.getQueryString() + " " + getFilterValue();
 	}
 
 	public abstract String getFormatText();

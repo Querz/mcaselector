@@ -101,8 +101,8 @@ public class OptionBar extends MenuBar {
 		filterChunks.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
 		changeFields.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
 
-		setSelectionDependentMenuItemsEnabled(false);
-		setWorldDependentMenuItemsEnabled(false);
+//		setSelectionDependentMenuItemsEnabled(false);
+//		setWorldDependentMenuItemsEnabled(false);
 	}
 
 	private void onUpdate(TileMap tileMap) {

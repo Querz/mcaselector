@@ -35,6 +35,11 @@ public class InhabitedTimeFilter extends LongFilter {
 	}
 
 	@Override
+	public String toString() {
+		return "InhabitedTime " + getComparator().getQueryString() + " \"" + getRawValue() + "\"";
+	}
+
+	@Override
 	public String getFormatText() {
 		return "duration";
 	}

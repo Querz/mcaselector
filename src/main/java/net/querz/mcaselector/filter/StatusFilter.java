@@ -62,12 +62,12 @@ public class StatusFilter extends TextFilter<String> {
 	@Override
 	public String toString(FilterData data) {
 		StringTag tag = data.getChunk().getCompoundTag("Level").getStringTag("Status");
-		return getFilterValue() + " " + getComparator() + " " + (tag == null ? "null" : tag.getValue());
+		return getFilterValue() + " " + getComparator().getQueryString() + " " + (tag == null ? "null" : tag.getValue());
 	}
 
 	@Override
 	public String toString() {
-		return "Status " + getComparator() + " " + (getFilterValue() != null ? getFilterValue() : "null");
+		return "Status " + getComparator().getQueryString() + " " + getFilterValue();
 	}
 
 	@Override
