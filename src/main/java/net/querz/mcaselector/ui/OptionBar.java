@@ -1,7 +1,8 @@
 package net.querz.mcaselector.ui;
 
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.stage.Stage;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.util.Helper;
@@ -85,21 +86,22 @@ public class OptionBar extends MenuBar {
 		filterChunks.setOnAction(e -> Helper.filterChunks(tileMap, primaryStage));
 		changeFields.setOnAction(e -> Helper.changeFields(tileMap, primaryStage));
 
-		open.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
-		chunkGrid.setAccelerator(KeyCombination.keyCombination("Ctrl+R"));
-		regionGrid.setAccelerator(KeyCombination.keyCombination("Ctrl+T"));
-		goTo.setAccelerator(KeyCombination.keyCombination("Ctrl+G"));
-		clearAllCache.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+K"));
-		clearViewCache.setAccelerator(KeyCombination.keyCombination("Ctrl+K"));
-		clear.setAccelerator(KeyCombination.keyCombination("Ctrl+L"));
-		exportChunks.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+E"));
-		importChunks.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+I"));
-		delete.setAccelerator(KeyCombination.keyCombination("Ctrl+D"));
-		importSelection.setAccelerator(KeyCombination.keyCombination("Ctrl+I"));
-		exportSelection.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
-		clearSelectionCache.setAccelerator(KeyCombination.keyCombination("Ctrl+J"));
-		filterChunks.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
-		changeFields.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
+		open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN));
+		quit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCodeCombination.SHORTCUT_DOWN));
+		chunkGrid.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCodeCombination.SHORTCUT_DOWN));
+		regionGrid.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCodeCombination.SHORTCUT_DOWN));
+		goTo.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCodeCombination.SHORTCUT_DOWN));
+		clearAllCache.setAccelerator(new KeyCodeCombination(KeyCode.K, KeyCodeCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
+		clearViewCache.setAccelerator(new KeyCodeCombination(KeyCode.K, KeyCodeCombination.SHORTCUT_DOWN));
+		clear.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCodeCombination.SHORTCUT_DOWN));
+		exportChunks.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCodeCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
+		importChunks.setAccelerator(new KeyCodeCombination(KeyCode.I, KeyCodeCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
+		delete.setAccelerator(new KeyCodeCombination(KeyCode.D, KeyCodeCombination.SHORTCUT_DOWN));
+		importSelection.setAccelerator(new KeyCodeCombination(KeyCode.I, KeyCodeCombination.SHORTCUT_DOWN));
+		exportSelection.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCodeCombination.SHORTCUT_DOWN));
+		clearSelectionCache.setAccelerator(new KeyCodeCombination(KeyCode.J, KeyCodeCombination.SHORTCUT_DOWN));
+		filterChunks.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCodeCombination.SHORTCUT_DOWN));
+		changeFields.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCodeCombination.SHORTCUT_DOWN));
 
 		setSelectionDependentMenuItemsEnabled(false);
 		setWorldDependentMenuItemsEnabled(false);
