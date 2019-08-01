@@ -13,6 +13,7 @@ import net.querz.mcaselector.io.SelectionDeleter;
 import net.querz.mcaselector.io.SelectionExporter;
 import net.querz.mcaselector.io.SelectionUtil;
 import net.querz.mcaselector.util.DataProperty;
+import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import java.io.File;
@@ -38,9 +39,11 @@ public class ParamExecutor {
 
 		FutureTask<Boolean> future = new FutureTask<>(() -> {}, true);
 
+		DataProperty<Map<String, String>> params = new DataProperty<>();
+
 		try {
-			Map<String, String> params = new ParamParser(args).parse();
-			ParamInterpreter pi = new ParamInterpreter(params);
+			params.set(new ParamParser(args).parse());
+			ParamInterpreter pi = new ParamInterpreter(params.get());
 
 			// register parameter dependencies and restrictions
 			pi.registerDependencies("headless", null, new ActionKey("mode", null));
@@ -69,17 +72,17 @@ public class ParamExecutor {
 			pi.registerDependencies("process-threads", null, new ActionKey("headless", null));
 			pi.registerDependencies("write-threads", null, new ActionKey("headless", null));
 
-			parseConfig(params);
+			parseConfig(params.get());
 
 			DataProperty<Boolean> isHeadless = new DataProperty<>();
 
 			pi.registerAction("headless", null, v -> runModeHeadless(isHeadless::set));
-			pi.registerAction("mode", "select", v -> runModeSelect(params, future));
-			pi.registerAction("mode", "export", v -> runModeExport(params, future));
-			pi.registerAction("mode", "import", v -> runModeImport(params, future));
-			pi.registerAction("mode", "delete", v -> runModeDelete(params, future));
-			pi.registerAction("mode", "change", v -> runModeChange(params, future));
-			pi.registerAction("mode", "cache", v -> runModeCache(params, future));
+			pi.registerAction("mode", "select", v -> runModeSelect(params.get(), future));
+			pi.registerAction("mode", "export", v -> runModeExport(params.get(), future));
+			pi.registerAction("mode", "import", v -> runModeImport(params.get(), future));
+			pi.registerAction("mode", "delete", v -> runModeDelete(params.get(), future));
+			pi.registerAction("mode", "change", v -> runModeChange(params.get(), future));
+			pi.registerAction("mode", "cache", v -> runModeCache(params.get(), future));
 
 			pi.execute();
 
@@ -88,8 +91,10 @@ public class ParamExecutor {
 			}
 
 		} catch (Exception ex) {
-			ex.printStackTrace();
-			System.out.println("Error: " + ex.getMessage());
+			Debug.error("Error: " + ex.getMessage());
+			if (params.get() != null && params.get().containsKey("debug")) {
+				ex.printStackTrace();
+			}
 			future.run();
 			return future;
 		}
@@ -117,6 +122,8 @@ public class ParamExecutor {
 		createDirectoryIfNotExists(output);
 		checkDirectoryIsEmpty(output);
 		Config.setCacheDir(output);
+
+		printHeadlessSettings();
 
 		Integer zoomLevel = params.containsKey("zoom-level") ? parseInt(params.get("zoom-level")) : null;
 
@@ -152,15 +159,15 @@ public class ParamExecutor {
 		checkDirectoryForFiles(world, Helper.MCA_FILE_PATTERN);
 		Config.setWorldDir(world);
 
+		printHeadlessSettings();
+
 		GroupFilter g = null;
 		if (params.containsKey("query")) {
 			g = new FilterParser(params.get("query")).parse();
-			System.out.println("filter set: " + g);
+			Debug.print("filter set: " + g);
 		}
 
 		Map<Point2i, Set<Point2i>> selection = loadSelection(params, "input");
-
-		printHeadlessSettings();
 
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(future);
@@ -207,17 +214,17 @@ public class ParamExecutor {
 		createDirectoryIfNotExists(output);
 		checkDirectoryIsEmpty(output);
 
+		printHeadlessSettings();
+
 		GroupFilter g = null;
 		if (params.containsKey("query")) {
 			g = new FilterParser(params.get("query")).parse();
-			System.out.println("filter set: " + g);
+			Debug.print("filter set: " + g);
 		}
 
 		Map<Point2i, Set<Point2i>> selection = loadSelection(params, "input");
 
-		printHeadlessSettings();
-
-		System.out.println("exporting chunks...");
+		Debug.print("exporting chunks...");
 
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(future);
@@ -239,15 +246,12 @@ public class ParamExecutor {
 		File output = parseFile(params.get("output"), "csv");
 		createParentDirectoryIfNotExists(output);
 
-		GroupFilter g = new FilterParser(params.get("query")).parse();
-
 		printHeadlessSettings();
 
-		System.out.println("filter set: " + g);
+		GroupFilter g = new FilterParser(params.get("query")).parse();
 
-		System.out.println("selecting chunks...");
-
-		// select from filter
+		Debug.print("filter set: " + g);
+		Debug.print("selecting chunks...");
 
 		Map<Point2i, Set<Point2i>> selection = new HashMap<>();
 
@@ -261,9 +265,9 @@ public class ParamExecutor {
 	}
 
 	private static void printHeadlessSettings() {
-		System.out.println("read threads:    " + Config.getLoadThreads());
-		System.out.println("process threads: " + Config.getProcessThreads());
-		System.out.println("write threads:   " + Config.getWriteThreads());
+		Debug.print("read threads:    " + Config.getLoadThreads());
+		Debug.print("process threads: " + Config.getProcessThreads());
+		Debug.print("write threads:   " + Config.getWriteThreads());
 	}
 
 	private static int parseInt(String value) throws ParseException {
@@ -284,6 +288,7 @@ public class ParamExecutor {
 				if (i <= 0) {
 					throw new ParseException("number cannot be negative: \"" + value + "\"");
 				}
+				return i;
 			} catch (NumberFormatException ex) {
 				throw new ParseException(ex.getMessage());
 			}
@@ -293,7 +298,7 @@ public class ParamExecutor {
 
 	private static Map<Point2i, Set<Point2i>> loadSelection(Map<String, String> params, String key) throws ParseException {
 		if (params.containsKey(key)) {
-			System.out.println("loading selection...");
+			Debug.print("loading selection...");
 
 			File input = parseFile(params.get("input"), "csv");
 			fileMustExist(input);
@@ -310,7 +315,7 @@ public class ParamExecutor {
 		return file;
 	}
 
-	private static File parseDirectory(String value) throws ParseException {
+	private static File parseDirectory(String value) {
 		return new File(value);
 	}
 

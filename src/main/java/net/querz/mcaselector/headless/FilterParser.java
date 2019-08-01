@@ -30,7 +30,7 @@ public class FilterParser {
 
 			ptr.skipWhitespace();
 
-			//parse group
+			// parse group
 			if (ptr.currentChar() == '(') {
 				ptr.next();
 				GroupFilter child = parse();
@@ -51,7 +51,7 @@ public class FilterParser {
 	}
 
 	private Filter<?> parseFilterType(Operator operator) throws ParseException {
-		//parse value
+		// parse value
 		String type = ptr.parseSimpleString();
 		FilterType t = FilterType.getByName(type);
 

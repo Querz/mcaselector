@@ -2,7 +2,6 @@ package net.querz.mcaselector.headless;
 
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
-
 import java.util.ArrayList;
 import java.util.List;
 

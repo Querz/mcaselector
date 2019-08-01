@@ -1,7 +1,7 @@
 package net.querz.mcaselector.headless;
 
+import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Progress;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConsoleProgress implements Progress {
@@ -46,7 +46,7 @@ public class ConsoleProgress implements Progress {
 
 	@Override
 	public void setMessage(String msg) {
-		System.out.println(msg);
+		Debug.print(msg);
 	}
 
 	public void onDone(Runnable doneAction) {
@@ -54,6 +54,6 @@ public class ConsoleProgress implements Progress {
 	}
 
 	private void printProgress(String msg) {
-		System.out.printf("%.2f%%\t%s\n", ((double) progress.get() / max * 100), msg);
+		Debug.printf("%.2f%%\t%s", ((double) progress.get() / max * 100), msg);
 	}
 }

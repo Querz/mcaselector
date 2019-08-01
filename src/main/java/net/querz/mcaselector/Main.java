@@ -17,7 +17,7 @@ public class Main {
 		Future<Boolean> headless = new ParamExecutor(args).parseAndRun();
 		if (headless != null && headless.get()) {
 			// we already ran headless mode, so we exit here
-			System.out.println("exiting");
+			Debug.print("exiting");
 			System.exit(0);
 		}
 
