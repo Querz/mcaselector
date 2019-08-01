@@ -3,6 +3,34 @@
 #### An external tool to export or delete selected chunks and regions from a world save of Minecraft Java Edition.
 ---
 
+<!--toc-start-->
+* [Usage](#usage)
+  * [Navigation](#navigation)
+  * [Selections](#selections)
+  * [Chunk filter](#chunk-filter)
+  * [NBT Changer](#nbt-changer)
+  * [Caching](#caching)
+  * [Debugging](#debugging)
+* [Supported Versions](#supported-versions)
+* [Headless mode](#headless-mode)
+  * [Mandatory and optional parameters](#mandatory-and-optional-parameters)
+    * [Create selection](#create-selection)
+    * [Export chunks](#export-chunks)
+    * [Import chunks](#import-chunks)
+    * [Delete chunks](#delete-chunks)
+    * [Change NBT](#change-nbt)
+    * [Cache images](#cache-images)
+    * [Configuration parameters](#configuration-parameters)
+  * [Filter query](#filter-query)
+  * [Change values](#change-values)
+* [Checkout and building](#checkout-and-building)
+* [Translation](#translation)
+* [Download and installation](#download-and-installation)
+    * [If you have Java from Oracle installed on your system](#if-you-have-java-from-oracle-installed-on-your-system)
+    * [If you have Minecraft Java Edition installed on your system](#if-you-have-minecraft-java-edition-installed-on-your-system)
+    * [If you are using OpenJDK](#if-you-are-using-openjdk)
+<!--toc-end-->
+
 ## Usage
 ### Navigation
 Executing the tool, it shows an empty window with a chunk and a region grid. To actually show a world, open a folder containing Minecraft Anvil (\*.mca) files. The tool will then render a top-down view of this world that you can zoom into and zoom out of by scrolling up and down and that you can move around using the middle mouse button (`Cmd+LMB` on Mac OS) or using `WASD`.
@@ -76,18 +104,6 @@ The MCA Selector currently supports the following Minecraft versions:
 | Beta 1.3 - 1.12.2 | 100 - 1343  | Yes       |
 | 1.13 - 1.13.2     | 1444 - 1631 | Yes       |
 | 1.14              | 1901 - ?    | Yes       |
-
----
-## Translation
-The UI language of the MCA Selector can be dynamically changed in the settings.
-The following languages are available:
-
-* English (UK)
-* German (Germany)
-* Chinese (China) (thanks to [@LovesAsuna](https://github.com/LovesAsuna) for translating)
-* Czech (Czech Republic) (thanks to [@mkyral](https://github.com/mkyral) for translating)
-
-If you would like to contribute a translation, you can find the language files in [resources/lang/](https://github.com/Querz/mcaselector/tree/master/src/main/resources/lang). The files are automatically detected and shown in the settings drowdown menu once they are placed in this folder.
 
 ---
 ## Headless mode
@@ -205,6 +221,18 @@ gradlew.bat build minifyCss shadowJar
 ```
 
 ---
+## Translation
+The UI language of the MCA Selector can be dynamically changed in the settings.
+The following languages are available:
+
+* English (UK)
+* German (Germany)
+* Chinese (China) (thanks to [@LovesAsuna](https://github.com/LovesAsuna) for translating)
+* Czech (Czech Republic) (thanks to [@mkyral](https://github.com/mkyral) for translating)
+
+If you would like to contribute a translation, you can find the language files in [resources/lang/](https://github.com/Querz/mcaselector/tree/master/src/main/resources/lang). The files are automatically detected and shown in the settings drowdown menu once they are placed in this folder.
+
+---
 
 ## Download and installation
 
@@ -217,15 +245,15 @@ gradlew.bat build minifyCss shadowJar
 * A computer
 * A brain
 
-#### If you have Java from Oracle installed on your system:
+#### If you have Java from Oracle installed on your system
 
 Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.8.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
 
-#### If you have Minecraft Java Edition installed on your system:
+#### If you have Minecraft Java Edition installed on your system
 
 Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.8.jar>`. On Mac OS you should find it in `Applications/Minecraft.app/Contents/runtime/jre-x64/1.8.0_74/bin` where you can execute `./java -jar <path-to-mcaselector-1.8.jar>`.
 
-#### If you are using OpenJDK:
+#### If you are using OpenJDK
 
 If you are using a distribution of OpenJDK, you have to make sure that it comes with JavaFX, as it is needed to run the MCA Selector. Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. On Debian distributions, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of JavaFX is required to run the `.jar`.
 ##
