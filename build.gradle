@@ -12,7 +12,7 @@ apply plugin: 'idea'
 apply plugin: 'css'
 
 group 'net.querz.mcaselector'
-version '1.8'
+version '1.8.1'
 
 sourceCompatibility = 1.8
 
