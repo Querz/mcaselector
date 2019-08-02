@@ -7,12 +7,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
 
 public class GithubVersionChecker {
 
-	private static final String endpointTemplate = "https://api.github.com/repos/%s/%s/releases";
+	private static final String endpointTemplate = "https://api.github.com/repos/%s/%s/releases/latest";
 
 	private ScriptEngine engine;
 
@@ -46,7 +45,7 @@ public class GithubVersionChecker {
 	private VersionData parseJson(String json) throws Exception {
 		String script = "Java.asJSONCompatible(" + json + ")";
 		Object result = engine.eval(script);
-		if (!(result instanceof List)) {
+		if (!(result instanceof Map)) {
 			throw new IOException("could not parse json");
 		}
 
@@ -55,34 +54,14 @@ public class GithubVersionChecker {
 		String latestLink = null;
 
 		@SuppressWarnings("unchecked")
-		List list = (List<Object>) result;
-		release: for (Object i : list) {
-			if (!(i instanceof Map)) {
-				throw new IOException("could not parse release object");
-			}
-
-			int currentID = 0;
-			String currentTag = null;
-			String currentLink = null;
-
-			@SuppressWarnings("unchecked")
-			Map<String, Object> map = (Map<String, Object>) i;
-			for (Map.Entry<String, Object> e : map.entrySet()) {
-				if ("id".equals(e.getKey())) {
-					currentID = (int) e.getValue();
-				} else if ("tag_name".equals(e.getKey())) {
-					currentTag = (String) e.getValue();
-				} else if ("html_url".equals(e.getKey())) {
-					currentLink = (String) e.getValue();
-				} else if ("prerelease".equals(e.getKey()) && (boolean) e.getValue()) {
-					continue release;
-				}
-			}
-
-			if (currentID > latestID) {
-				latestID = currentID;
-				latestLink = currentLink;
-				latestTag = currentTag;
+		Map<String, Object> map = (Map<String, Object>) result;
+		for (Map.Entry<String, Object> e : map.entrySet()) {
+			if ("id".equals(e.getKey())) {
+				latestID = (int) e.getValue();
+			} else if ("tag_name".equals(e.getKey())) {
+				latestTag = (String) e.getValue();
+			} else if ("html_url".equals(e.getKey())) {
+				latestLink = (String) e.getValue();
 			}
 		}
 
