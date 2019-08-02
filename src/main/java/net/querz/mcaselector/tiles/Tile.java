@@ -84,7 +84,7 @@ public class Tile {
 	}
 
 	public boolean isEmpty() {
-		return isLoaded() && (image == null || image == empty);
+		return image == null || image == empty;
 	}
 
 	public boolean isLoaded() {
@@ -261,7 +261,6 @@ public class Tile {
 			callback.run();
 		} catch (IOException ex) {
 			Debug.dump("region " + location + " not cached");
-			//do nothing
 		}
 	}
 

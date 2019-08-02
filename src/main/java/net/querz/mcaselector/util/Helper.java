@@ -412,7 +412,7 @@ public class Helper {
 						Debug.error("could not delete file " + file);
 					}
 				}
-				tileMap.clearTile(Helper.regionToBlock(entry.getKey()));
+				tileMap.clearTile(entry.getKey());
 			}
 		}
 		tileMap.update();

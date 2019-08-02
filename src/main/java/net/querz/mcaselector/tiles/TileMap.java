@@ -262,6 +262,7 @@ public class TileMap extends Canvas {
 			visibleTiles.remove(tile);
 			selectedChunks -= tile.getMarkedChunks().size();
 			selectedChunks -= tile.isMarked() ? Tile.CHUNKS : 0;
+			tile.unload();
 		}
 	}
 
