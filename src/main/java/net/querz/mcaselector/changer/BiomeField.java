@@ -15,6 +15,7 @@ import java.util.Map;
 public class BiomeField extends Field<Integer> {
 
 	private static Map<String, Integer> validNames = new HashMap<>();
+	private String name;
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
@@ -43,10 +44,16 @@ public class BiomeField extends Field<Integer> {
 	}
 
 	@Override
+	public String toString() {
+		return "Biome = " + name;
+	}
+
+	@Override
 	public boolean parseNewValue(String s) {
 		String low = s.toLowerCase();
 		if (validNames.containsKey(low)) {
 			setNewValue(validNames.get(low));
+			name = low;
 			return true;
 		}
 		return super.parseNewValue(s);

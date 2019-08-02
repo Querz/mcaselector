@@ -63,6 +63,8 @@ public abstract class Filter<T> implements Serializable {
 
 	public abstract Comparator getComparator();
 
+	public abstract void setComparator(Comparator comparator);
+
 	public abstract boolean matches(FilterData data);
 
 	public abstract String toString(FilterData data);

@@ -2,10 +2,10 @@ package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.filter.GroupFilter;
-import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.util.Progress;
 import net.querz.mcaselector.util.Timer;
 import net.querz.mcaselector.util.Translation;
 import java.io.File;
@@ -20,7 +20,7 @@ public class ChunkFilterExporter {
 
 	private ChunkFilterExporter() {}
 
-	public static void exportFilter(GroupFilter filter, Map<Point2i, Set<Point2i>> selection, File destination, ProgressTask progressChannel) {
+	public static void exportFilter(GroupFilter filter, Map<Point2i, Set<Point2i>> selection, File destination, Progress progressChannel) {
 		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(Helper.MCA_FILE_PATTERN));
 		if (files == null || files.length == 0) {
 			progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
@@ -41,10 +41,10 @@ public class ChunkFilterExporter {
 
 		private GroupFilter filter;
 		private Map<Point2i, Set<Point2i>> selection;
-		private ProgressTask progressChannel;
+		private Progress progressChannel;
 		private File destination;
 
-		MCAExportFilterLoadJob(File file, GroupFilter filter, Map<Point2i, Set<Point2i>> selection, File destination, ProgressTask progressChannel) {
+		MCAExportFilterLoadJob(File file, GroupFilter filter, Map<Point2i, Set<Point2i>> selection, File destination, Progress progressChannel) {
 			super(file);
 			this.filter = filter;
 			this.selection = selection;
@@ -90,12 +90,12 @@ public class ChunkFilterExporter {
 
 	public static class MCAExportFilterProcessJob extends ProcessDataJob {
 
-		private ProgressTask progressChannel;
+		private Progress progressChannel;
 		private GroupFilter filter;
 		private Set<Point2i> selection;
 		private File destination;
 
-		MCAExportFilterProcessJob(File file, byte[] data, GroupFilter filter, Set<Point2i> selection, File destination, ProgressTask progressChannel) {
+		MCAExportFilterProcessJob(File file, byte[] data, GroupFilter filter, Set<Point2i> selection, File destination, Progress progressChannel) {
 			super(file, data);
 			this.filter = filter;
 			this.selection = selection;
@@ -124,9 +124,9 @@ public class ChunkFilterExporter {
 	public static class MCAExportFilterSaveJob extends SaveDataJob<MCAFile> {
 
 		private File destination;
-		private ProgressTask progressChannel;
+		private Progress progressChannel;
 
-		MCAExportFilterSaveJob(File file, MCAFile data, File destination, ProgressTask progressChannel) {
+		MCAExportFilterSaveJob(File file, MCAFile data, File destination, Progress progressChannel) {
 			super(file, data);
 			this.destination = destination;
 			this.progressChannel = progressChannel;

@@ -28,9 +28,13 @@ public abstract class Field<T> {
 		return newValue;
 	}
 
+	public FieldType getType() {
+		return type;
+	}
+
 	@Override
 	public String toString() {
-		return type.toString();
+		return type.toString() + " = " + newValue;
 	}
 
 	//returns true if the value has been correctly parsed and value is not null

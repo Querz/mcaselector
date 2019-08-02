@@ -1,5 +1,8 @@
+import java.nio.file.Files
+import java.util.function.Consumer
+
 plugins {
-	id 'com.github.johnrengelman.shadow' version '2.0.1'
+	id 'com.github.johnrengelman.shadow' version '5.1.0'
 	id 'com.eriwen.gradle.css' version '2.14.0'
 }
 
@@ -9,7 +12,7 @@ apply plugin: 'idea'
 apply plugin: 'css'
 
 group 'net.querz.mcaselector'
-version '1.7.4'
+version '1.8'
 
 sourceCompatibility = 1.8
 
@@ -48,7 +51,7 @@ minifyCss {
 	dest = "${sourceSets.main.output.resourcesDir}/style.css"
 }
 
-task updateVersion {
+task updateReadme {
 	doLast {
 		ant.replaceregexp(
 				match: '(?:Download Version )\\d+\\.\\d+(?:\\.\\d+)?',
@@ -73,5 +76,44 @@ task updateVersion {
 				byline: true) {
 			fileset(dir: '.', includes: 'README.md')
 		}
+
+		ant.replaceregexp(
+				match: '<!--toc-start-->[\\s\\S]*<!--toc-end-->',
+				replace: createTOC('README.md', '<!--toc-start-->', '<!--toc-end-->', true, true),
+				flags: 'g') {
+			fileset(dir: '.', includes: 'README.md')
+		}
 	}
+}
+
+static String createTOC(String f, String st, String en, boolean it, boolean is) throws IOException {
+	File e = new File(f)
+	if (!e.isFile()) {
+		throw new IllegalArgumentException("file doesn't exist or is not a file")
+	}
+	StringBuilder b = new StringBuilder(st + "\n")
+	int[] s = new int[1]
+	Files.lines(e.toPath()).forEach(new Consumer<String>() {
+		@Override
+		void accept(String n) {
+			String t
+			if ((t = n.trim()).startsWith("#")) {
+				int l = 0
+				while (l < t.length() && t.charAt(l) == '#') {
+					l++
+				}
+				s[0] += l == 4 ? 1 : 0
+				if (t.length() == l || t.charAt(l) != ' ' || it && l == 1 || is && l == 4 && s[0] == 1) {
+					return
+				}
+				String x = t.substring(l + 1)
+				for (int i = it ? 2 : 1; i < l; i++) {
+					b.append("  ")
+				}
+				String k = x.toLowerCase().replaceAll("[^a-z0-9 \\-_]", "").replace(' ', '-')
+				b.append("* [").append(x).append("](#").append(k).append(")\n")
+			}
+		}
+	})
+	return b.append(en).toString()
 }

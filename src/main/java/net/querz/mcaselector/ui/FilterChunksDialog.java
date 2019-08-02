@@ -68,7 +68,9 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 		groupFilterBox.setOnUpdate(f -> {
 			getDialogPane().lookupButton(ButtonType.OK).setDisable(!value.isValid());
-			Debug.dump(value);
+			if (value.isValid()) {
+				Debug.dump(value);
+			}
 		});
 
 		VBox actionBox = new VBox();

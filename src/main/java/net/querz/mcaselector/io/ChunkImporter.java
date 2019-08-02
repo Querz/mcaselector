@@ -1,9 +1,9 @@
 package net.querz.mcaselector.io;
 
-import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.util.Progress;
 import net.querz.mcaselector.util.Timer;
 import net.querz.mcaselector.util.Translation;
 import java.io.File;
@@ -20,7 +20,7 @@ public class ChunkImporter {
 
 	private ChunkImporter() {}
 
-	public static void importChunks(File importDir, ProgressTask progressChannel, boolean overwrite, Point2i offset) {
+	public static void importChunks(File importDir, Progress progressChannel, boolean overwrite, Point2i offset) {
 		try {
 			File[] importFiles = importDir.listFiles((dir, name) -> name.matches(Helper.MCA_FILE_PATTERN));
 			if (importFiles == null || importFiles.length == 0) {
@@ -31,7 +31,7 @@ public class ChunkImporter {
 			MCAFilePipe.clearQueues();
 
 			progressChannel.setMax(importFiles.length * (offset.getX() % 32 != 0 ? 2 : 1) * (offset.getY() % 32 != 0 ? 2 : 1));
-			progressChannel.infoProperty().setValue(Translation.DIALOG_PROGRESS_COLLECTING_DATA.toString());
+			progressChannel.setMessage(Translation.DIALOG_PROGRESS_COLLECTING_DATA.toString());
 
 			Map<Point2i, Set<Point2i>> targetMapping = new HashMap<>();
 
@@ -69,10 +69,10 @@ public class ChunkImporter {
 		private Set<Point2i> sources;
 		private File sourceDir;
 		private Point2i offset;
-		private ProgressTask progressChannel;
+		private Progress progressChannel;
 		private boolean overwrite;
 
-		MCAChunkImporterLoadJob(File targetFile, File sourceDir, Point2i target, Set<Point2i> sources, Point2i offset, ProgressTask progressChannel, boolean overwrite) {
+		MCAChunkImporterLoadJob(File targetFile, File sourceDir, Point2i target, Set<Point2i> sources, Point2i offset, Progress progressChannel, boolean overwrite) {
 			super(targetFile);
 			this.target = target;
 			this.sources = sources;
@@ -146,10 +146,10 @@ public class ChunkImporter {
 		private Point2i target;
 		private Map<Point2i, byte[]> sourceDataMapping;
 		private Point2i offset;
-		private ProgressTask progressChannel;
+		private Progress progressChannel;
 		private boolean overwrite;
 
-		MCAChunkImporterProcessJob(File targetFile, File sourceDir, Point2i target, Map<Point2i, byte[]> sourceDataMapping, byte[] destData, Point2i offset, ProgressTask progressChannel, boolean overwrite) {
+		MCAChunkImporterProcessJob(File targetFile, File sourceDir, Point2i target, Map<Point2i, byte[]> sourceDataMapping, byte[] destData, Point2i offset, Progress progressChannel, boolean overwrite) {
 			super(targetFile, destData);
 			this.sourceDir = sourceDir;
 			this.target = target;
@@ -199,9 +199,9 @@ public class ChunkImporter {
 	public static class MCAChunkImporterSaveJob extends SaveDataJob<MCAFile> {
 
 		private int sourceCount;
-		private ProgressTask progressChannel;
+		private Progress progressChannel;
 
-		MCAChunkImporterSaveJob(File file, MCAFile data, int sourceCount, ProgressTask progressChannel) {
+		MCAChunkImporterSaveJob(File file, MCAFile data, int sourceCount, Progress progressChannel) {
 			super(file, data);
 			this.sourceCount = sourceCount;
 			this.progressChannel = progressChannel;

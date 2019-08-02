@@ -1,5 +1,6 @@
 package net.querz.mcaselector.util;
 
+import javafx.application.Platform;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -223,6 +224,27 @@ public class Helper {
 			result.setY(-(absY - absY % zoomLevel) - zoomLevel);
 		}
 		return result;
+	}
+
+	public static void forceGenerateCache(Integer zoomLevel, Progress progressChannel) {
+		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(Helper.MCA_FILE_PATTERN));
+		if (files == null || files.length == 0) {
+			return;
+		}
+
+		progressChannel.setMax(files.length);
+		progressChannel.updateProgress(files[0].getName(), 0);
+
+		for (File file : files) {
+			Matcher m = REGION_GROUP_PATTERN.matcher(file.getName());
+			if (m.find()) {
+				int x = Integer.parseInt(m.group("regionX"));
+				int z = Integer.parseInt(m.group("regionZ"));
+				boolean scaleOnly = zoomLevel != null;
+				float zoomLevelSupplier = scaleOnly ? zoomLevel : 1;
+				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), () -> {}, () -> zoomLevelSupplier, true, scaleOnly, progressChannel);
+			}
+		}
 	}
 
 	public static Image loadCachedImage(Point2i origin, int zoomLevel) {
@@ -488,7 +510,10 @@ public class Helper {
 			case SELECT:
 				tileMap.clearSelection();
 				new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS, primaryStage)
-					.showProgressBar(t -> ChunkFilterSelector.selectFilter(r.getFilter(), tileMap, t));
+					.showProgressBar(t -> ChunkFilterSelector.selectFilter(r.getFilter(), selection -> Platform.runLater(() -> {
+						tileMap.addMarkedChunks(selection);
+						tileMap.update();
+					}), t));
 				break;
 			default:
 				Debug.dump("i have no idea how you got no selection there...");

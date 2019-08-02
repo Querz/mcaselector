@@ -56,7 +56,6 @@ dialog.export_chunks_confirmation.title;导出区块
 dialog.export_chunks_confirmation.header_short;您将要从这个世界导出未知数量的区块.
 dialog.export_chunks_confirmation.header_verbose;您将要从这个世界导出 %d 个区块.
 dialog.filter_chunks.title;筛选区块
-dialog.filter_chunks.filter.group;组
 dialog.filter_chunks.filter.add.tooltip;在此条件下添加新条件.
 dialog.filter_chunks.filter.delete.tooltip;删除此条件.
 dialog.filter_chunks.filter.type.tooltip;此条件的类型.

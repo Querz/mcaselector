@@ -15,4 +15,13 @@ public enum Operator {
 	public String toString() {
 		return string;
 	}
+
+	public static Operator getByName(String name) {
+		for (Operator o : Operator.values()) {
+			if (o.string.equals(name)) {
+				return o;
+			}
+		}
+		return null;
+	}
 }

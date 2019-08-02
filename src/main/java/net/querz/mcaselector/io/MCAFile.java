@@ -207,7 +207,7 @@ public class MCAFile {
 		return chunks;
 	}
 
-	public void applyFieldChanges(List<Field> fields, boolean force, Set<Point2i> selection) {
+	public void applyFieldChanges(List<Field<?>> fields, boolean force, Set<Point2i> selection) {
 		for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
 			for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
 				int index = cz * Tile.SIZE_IN_CHUNKS + cx;

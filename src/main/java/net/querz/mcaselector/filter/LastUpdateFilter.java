@@ -38,6 +38,11 @@ public class LastUpdateFilter extends IntegerFilter {
 	}
 
 	@Override
+	public String toString() {
+		return "LastUpdate " + getComparator().getQueryString() + " \"" + getRawValue() + "\"";
+	}
+
+	@Override
 	public LastUpdateFilter clone() {
 		return new LastUpdateFilter(getOperator(), getComparator(), value);
 	}

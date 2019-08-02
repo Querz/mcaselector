@@ -68,6 +68,9 @@ public class GroupFilter extends Filter<List<Filter>> {
 	}
 
 	@Override
+	public void setComparator(Comparator comparator) {}
+
+	@Override
 	public boolean matches(FilterData data) {
 		boolean currentResult = true;
 		for (int i = 0; i < children.size(); i++) {

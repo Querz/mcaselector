@@ -2,6 +2,8 @@ package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.version.VersionController;
+import net.querz.nbt.Tag;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 public class PaletteFilter extends TextFilter<List<String>> {
 
@@ -56,7 +59,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 			for (int i = 0; i < rawBlockNames.length; i++) {
 				String name = rawBlockNames[i];
 				if (!validNames.contains(name)) {
-					if (name.startsWith("\"") && name.endsWith("\"") && name.length() >= 2) {
+					if (name.startsWith("'") && name.endsWith("'") && name.length() >= 2 && !name.contains("\"")) {
 						rawBlockNames[i] = name.substring(1, name.length() - 1);
 						continue;
 					}
@@ -78,12 +81,12 @@ public class PaletteFilter extends TextFilter<List<String>> {
 
 	@Override
 	public String toString(FilterData data) {
-		return "PaletteFilter " + getComparator() + " <data>";
+		return "PaletteFilter " + getComparator().getQueryString() + " <data>";
 	}
 
 	@Override
 	public String toString() {
-		return "Palette " + getComparator() + " " + (getFilterValue() != null ? Arrays.toString(getFilterValue().toArray()) : "null");
+		return "Palette " + getComparator().getQueryString() + " \"" + getRawValue() + "\"";
 	}
 
 	@Override

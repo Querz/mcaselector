@@ -2,9 +2,9 @@ package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.changer.Field;
-import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.util.Progress;
 import net.querz.mcaselector.util.Timer;
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -22,7 +22,7 @@ public class FieldChanger {
 
 	private FieldChanger() {}
 
-	public static void changeNBTFields(List<Field> fields, boolean force, Map<Point2i, Set<Point2i>> selection, ProgressTask progressChannel) {
+	public static void changeNBTFields(List<Field<?>> fields, boolean force, Map<Point2i, Set<Point2i>> selection, Progress progressChannel) {
 		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches("^r\\.-?\\d+\\.-?\\d+\\.mca$"));
 		if (files == null || files.length == 0) {
 			return;
@@ -40,12 +40,12 @@ public class FieldChanger {
 
 	public static class MCAFieldChangeLoadJob extends LoadDataJob {
 
-		private ProgressTask progressChannel;
-		private List<Field> fields;
+		private Progress progressChannel;
+		private List<Field<?>> fields;
 		private boolean force;
 		private Map<Point2i, Set<Point2i>> selection;
 
-		MCAFieldChangeLoadJob(File file, List<Field> fields, boolean force, Map<Point2i, Set<Point2i>> selection, ProgressTask progressChannel) {
+		MCAFieldChangeLoadJob(File file, List<Field<?>> fields, boolean force, Map<Point2i, Set<Point2i>> selection, Progress progressChannel) {
 			super(file);
 			this.fields = fields;
 			this.force = force;
@@ -82,12 +82,12 @@ public class FieldChanger {
 
 	public static class MCAFieldChangeProcessJob extends ProcessDataJob {
 
-		private ProgressTask progressChannel;
-		private List<Field> fields;
+		private Progress progressChannel;
+		private List<Field<?>> fields;
 		private boolean force;
 		private Set<Point2i> selection;
 
-		MCAFieldChangeProcessJob(File file, byte[] data, List<Field> fields, boolean force, Set<Point2i> selection, ProgressTask progressChannel) {
+		MCAFieldChangeProcessJob(File file, byte[] data, List<Field<?>> fields, boolean force, Set<Point2i> selection, Progress progressChannel) {
 			super(file, data);
 			this.fields = fields;
 			this.force = force;
@@ -113,9 +113,9 @@ public class FieldChanger {
 
 	public static class MCAFieldChangeSaveJob extends SaveDataJob<MCAFile> {
 
-		private ProgressTask progressChannel;
+		private Progress progressChannel;
 
-		MCAFieldChangeSaveJob(File file, MCAFile data, ProgressTask progressChannel) {
+		MCAFieldChangeSaveJob(File file, MCAFile data, Progress progressChannel) {
 			super(file, data);
 			this.progressChannel = progressChannel;
 		}

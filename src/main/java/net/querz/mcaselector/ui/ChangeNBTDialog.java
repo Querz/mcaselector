@@ -10,13 +10,13 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
+import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Translation;
 import net.querz.mcaselector.util.UIFactory;
 
@@ -28,11 +28,11 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 	 /*
 	 * List of fields that can be changed
 	 * () change () force
-	 * change --> only set if the value existed before
-	 * force --> set value even if it didn't exist.
+	 * change --> only set if the fields existed before
+	 * force --> set fields even if it didn't exist.
 	 * */
 
-	private List<Field> value = new ArrayList<>();
+	private List<Field<?>> fields = new ArrayList<>();
 	private ToggleGroup toggleGroup = new ToggleGroup();
 	private RadioButton change = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_CHANGE);
 	private RadioButton force = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_FORCE);
@@ -47,13 +47,13 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 		setResultConverter(p -> {
 			if (p == ButtonType.OK) {
-				for (int i = 0; i < value.size(); i++) {
-					if (!value.get(i).needsChange()) {
-						value.remove(i);
+				for (int i = 0; i < fields.size(); i++) {
+					if (!fields.get(i).needsChange()) {
+						fields.remove(i);
 						i--;
 					}
 				}
-				return value.isEmpty() ? null : new Result(value, force.isSelected(), selectionOnly.isSelected());
+				return fields.isEmpty() ? null : new Result(fields, force.isSelected(), selectionOnly.isSelected());
 			}
 			return null;
 		});
@@ -67,7 +67,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		for (FieldType ft : FieldType.values()) {
 			Field f = ft.newInstance();
 			fw.addField(f);
-			value.add(f);
+			fields.add(f);
 		}
 
 		toggleGroup.getToggles().addAll(change, force);
@@ -114,16 +114,28 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 			getStyleClass().add("field-cell-" + (index % 2 == 0 ? "even" : "odd"));
 			this.value = value;
 			textField = new TextField();
-			getChildren().addAll(new Label(value.toString()), textField);
+			getChildren().addAll(new Label(value.getType().toString()), textField);
 			textField.textProperty().addListener((a, o, n) -> onInput(n));
 			textField.setAlignment(Pos.CENTER);
 		}
 
 		private void onInput(String newValue) {
-			Boolean result = value.parseNewValue(newValue);
+			boolean result = value.parseNewValue(newValue);
 			if (result) {
 				if (!textField.getStyleClass().contains("field-cell-valid")) {
 					textField.getStyleClass().add("field-cell-valid");
+				}
+
+				StringBuilder sb = new StringBuilder();
+				boolean first = true;
+				for (Field field : fields) {
+					if (field.needsChange()) {
+						sb.append(first ? "" : ", ").append(field);
+						first = false;
+					}
+				}
+				if (sb.length() > 0) {
+					Debug.dump(sb);
 				}
 			} else {
 				textField.getStyleClass().remove("field-cell-valid");
@@ -134,10 +146,10 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 	public class Result {
 
 		private boolean force;
-		private List<Field> fields;
+		private List<Field<?>> fields;
 		private boolean selectionOnly;
 
-		public Result(List<Field> fields, boolean force, boolean selectionOnly) {
+		public Result(List<Field<?>> fields, boolean force, boolean selectionOnly) {
 			this.force = force;
 			this.fields = fields;
 			this.selectionOnly = selectionOnly;
@@ -147,7 +159,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 			return force;
 		}
 
-		public List<Field> getFields() {
+		public List<Field<?>> getFields() {
 			return fields;
 		}
 

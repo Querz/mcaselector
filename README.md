@@ -3,6 +3,34 @@
 #### An external tool to export or delete selected chunks and regions from a world save of Minecraft Java Edition.
 ---
 
+<!--toc-start-->
+* [Usage](#usage)
+  * [Navigation](#navigation)
+  * [Selections](#selections)
+  * [Chunk filter](#chunk-filter)
+  * [NBT Changer](#nbt-changer)
+  * [Caching](#caching)
+  * [Debugging](#debugging)
+* [Supported Versions](#supported-versions)
+* [Headless mode](#headless-mode)
+  * [Mandatory and optional parameters](#mandatory-and-optional-parameters)
+    * [Create selection](#create-selection)
+    * [Export chunks](#export-chunks)
+    * [Import chunks](#import-chunks)
+    * [Delete chunks](#delete-chunks)
+    * [Change NBT](#change-nbt)
+    * [Cache images](#cache-images)
+    * [Configuration parameters](#configuration-parameters)
+  * [Filter query](#filter-query)
+  * [Change values](#change-values)
+* [Checkout and building](#checkout-and-building)
+* [Translation](#translation)
+* [Download and installation](#download-and-installation)
+    * [If you have Java from Oracle installed on your system](#if-you-have-java-from-oracle-installed-on-your-system)
+    * [If you have Minecraft Java Edition installed on your system](#if-you-have-minecraft-java-edition-installed-on-your-system)
+    * [If you are using OpenJDK](#if-you-are-using-openjdk)
+<!--toc-end-->
+
 ## Usage
 ### Navigation
 Executing the tool, it shows an empty window with a chunk and a region grid. To actually show a world, open a folder containing Minecraft Anvil (\*.mca) files. The tool will then render a top-down view of this world that you can zoom into and zoom out of by scrolling up and down and that you can move around using the middle mouse button (`Cmd+LMB` on Mac OS) or using `WASD`.
@@ -33,7 +61,7 @@ Because the conditions use internal values used by Minecraft, the following tabl
 | LastUpdate | int | The time a chunk was last updated in seconds since 1970-01-01. Also accepts a timestamp in the `yyyy-MM-dd HH-mm-ss`-format such as `2018-01-02 15:03:04`. If the time is omitted, it will default to `00:00:00`. |
 | xPos | int | The location of the chunk on the x-axis in chunk coordinates. |
 | zPos | int | The location of the chunk on the z-axis in chunk coordinates. |
-| Palette | String | A list of comma (,) separated 1.13 block names. The block names will be converted to block ids for chunks with DataVersion 1343 or below. The validation of block names can be skipped by writing them in double quotes ("). Example: `sand,"new_block",gravel`.|
+| Palette | String | A list of comma (,) separated 1.13 block names. The block names will be converted to block ids for chunks with DataVersion 1343 or below. The validation of block names can be skipped by writing them in single quotes ('). Example: `sand,'new_block',gravel`.|
 | Status | String | The status of the chunk generation. Only recognized by Minecraft 1.13+ (DataVersion 1444+) |
 | LightPopulated | byte | Whether the light levels for the chunk have been calculated. If this is set to 0, converting a world from 1.12.x to 1.13 will omit that chunk. Allowed values are `0` and `1`. |
 | Biome | String | One or multiple biome names, separated by comma (,). For a reference of biome names, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Biomes). |
@@ -78,15 +106,103 @@ The MCA Selector currently supports the following Minecraft versions:
 | 1.14              | 1901 - ?    | Yes       |
 
 ---
-## Translation
-The UI language of the MCA Selector can be dynamically changed in the settings.
-The following languages are available:
+## Headless mode
 
-* English (UK)
-* German (Germany)
-* Chinese (China) (thanks to [@LovesAsuna](https://github.com/LovesAsuna) for translating)
+The MCA Selector can be run in a headless mode without showing the UI. Use the program parameter `--headless` to do so.
+Headless mode can be run in different modes:
 
-If you would like to contribute a translation, you can find the language files in [resources/lang/](https://github.com/Querz/mcaselector/tree/master/src/main/resources/lang). The files are automatically detected and shown in the settings drowdown menu once they are placed in this folder.
+| Mode | Parameter | Description |
+| ---- | --------- | ----------- |
+| Create selection | `--mode select` | Create a selection from a filter query and save it as a CSV file. |
+| Export chunks | `--mode export` | Export chunks based on a filter query and/or a selection. |
+| Import chunks | `--mode import` | Import chunks with an optional offset. |
+| Delete chunks | `--mode delete` | Delete chunks based on a filter query and/or a selection. |
+| Change NBT | `--mode change` | Changes NBT values in an entire world or only in chunks based on a selection. |
+| Cache images | `--mode cache` | Generates the cache images for an entire world. |
+
+### Mandatory and optional parameters
+
+#### Create selection
+
+| Parameter | Description | Mandatory |
+| --------- | ----------- | :-------: |
+| `--world <directory>` | The world for which to create the selection. | Yes |
+| `--output <csv-file>` | The CSV-file to save the selection to. | Yes |
+| `--query <filter-query>` | The filter query to use to create a selection. | Yes |
+
+#### Export chunks
+
+| Parameter | Description | Mandatory |
+| --------- | ----------- | :-------: |
+| `--world <directory>` | The world to export chunks from. | Yes |
+| `--output <directory>` | The destination of the exported chunks. The directory MUST be empty. | Yes |
+| `--query <filter-query>` | The filter query to use to export the chunks. | Yes (if `--input` is not set) |
+| `--input <csv-file>` | The csv-file to load a selection from. | Yes (if `--query` is not set) |
+
+#### Import chunks
+
+| Parameter | Description | Mandatory |
+| --------- | ----------- | :-------: |
+| `--world <directory>` | The world to import chunks to. | Yes |
+| `--input <directory>` | The world to import the chunks from. | Yes |
+| `--offset-x <number>` | The offset in chunks in x-direction. | No, default `0` |
+| `--offset-z <number>` | The offset in chunks in z-direction. | No, default `0` |
+| `--overwrite` | Whether to overwrite existing chunks. | No, default `false` |
+
+#### Delete chunks
+
+| Parameter | Description | Mandatory |
+| --------- | ----------- | :-------: |
+| `--world <directory>` | The world to delete chunks from. | Yes |
+| `--query <filter-query>` | The filter query to use to delete the chunks. | Yes (if `--input` is not set) |
+| `--input <csv-file>` | The csv-file to load a selection from. | Yes (if `--query` is not set) |
+
+#### Change NBT
+
+| Parameter | Description | Mandatory |
+| --------- | ----------- | :-------: |
+| `--world <directory>` | The world in which NBT values should be changed. | Yes |
+| `--query <values>` | The values to be changed. | Yes |
+| `--input <csv-file>` | The csv-file to load a selection from. | No |
+| `--force` | Whether the value should be created if the key doesn't exist. | No, default `false` |
+
+#### Cache images
+
+| Parameter | Description | Mandatory |
+| --------- | ----------- | :-------: |
+| `--world <directory>` | The world to create cache images from. | Yes |
+| `--output <directory>` | Where the cache files fille be saved. | Yes |
+| `--zoom-level <1\|2\|4>` | The zoom level for which to generate the images. | No, generates images for all zoom levels if not specified |
+
+#### Configuration parameters
+
+| Parameter | Description | Mandatory |
+| --------- | ----------- | :-------: |
+| `--debug` | Enables debug messages. | No |
+| `--read-threads <number>` | The amount of Threads to be used for reading files. | No, default `1` |
+| `--process-threads <number>` | The amounts of Threads to be used for processing data. | No, defaults to the amount of processor cores |
+| `--write-threads <number>` | The amount of Threads to be used for writing data to disk. | No, default `4` |
+| `--max-loaded-files <number>` | The maximum amount of simultaneously loaded files. | No, defaults to 1.5 * amount of processor cores |
+
+
+### Filter query
+
+A filter query is a text representation of the chunk filter that can be created in the UI of the program. When the debug mode is enabled, it will be printed into the console.
+Example:
+```
+--query "xPos >= 10 AND xPos <= 20 AND Palette contains \"sand,water\""
+```
+This will select all chunks that contain sand and water blocks and their x-position ranges from 10 to 20.
+As shown, double quotes (") must be escaped with a backslash.
+
+### Change values
+
+The query for changing NBT values in chunks looks slightly different to the filter query. It is a comma (,) separated list of assignments.
+Example:
+```
+--query "LightPopulated = 1, Status = empty"
+```
+This will set the field "LightPopulated" to "1" and "Status" to "empty". Just like the filter query, the query to change values is printed to the console when using the UI in debug mode.
 
 ---
 ## Checkout and building
@@ -105,10 +221,22 @@ gradlew.bat build minifyCss shadowJar
 ```
 
 ---
+## Translation
+The UI language of the MCA Selector can be dynamically changed in the settings.
+The following languages are available:
+
+* English (UK)
+* German (Germany)
+* Chinese (China) (thanks to [@LovesAsuna](https://github.com/LovesAsuna) for translating)
+* Czech (Czech Republic) (thanks to [@mkyral](https://github.com/mkyral) for translating)
+
+If you would like to contribute a translation, you can find the language files in [resources/lang/](https://github.com/Querz/mcaselector/tree/master/src/main/resources/lang). The files are automatically detected and shown in the settings drowdown menu once they are placed in this folder.
+
+---
 
 ## Download and installation
 
-[**Download Version 1.7.4**](https://github.com/Querz/mcaselector/releases/download/1.7.4/mcaselector-1.7.4.jar)
+[**Download Version 1.8**](https://github.com/Querz/mcaselector/releases/download/1.8/mcaselector-1.8.jar)
 
 "Requirements":
 * Either:
@@ -117,15 +245,15 @@ gradlew.bat build minifyCss shadowJar
 * A computer
 * A brain
 
-#### If you have Java from Oracle installed on your system:
+#### If you have Java from Oracle installed on your system
 
-Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.7.4.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
+Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.8.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
 
-#### If you have Minecraft Java Edition installed on your system:
+#### If you have Minecraft Java Edition installed on your system
 
-Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.7.4.jar>`. On Mac OS you should find it in `Applications/Minecraft.app/Contents/runtime/jre-x64/1.8.0_74/bin` where you can execute `./java -jar <path-to-mcaselector-1.7.4.jar>`.
+Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.8.jar>`. On Mac OS you should find it in `Applications/Minecraft.app/Contents/runtime/jre-x64/1.8.0_74/bin` where you can execute `./java -jar <path-to-mcaselector-1.8.jar>`.
 
-#### If you are using OpenJDK:
+#### If you are using OpenJDK
 
 If you are using a distribution of OpenJDK, you have to make sure that it comes with JavaFX, as it is needed to run the MCA Selector. Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. On Debian distributions, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of JavaFX is required to run the `.jar`.
 ##

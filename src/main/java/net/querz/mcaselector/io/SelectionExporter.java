@@ -1,10 +1,10 @@
 package net.querz.mcaselector.io;
 
-import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.util.Progress;
 import net.querz.mcaselector.util.Timer;
 import java.io.*;
 import java.nio.file.Files;
@@ -17,7 +17,7 @@ public class SelectionExporter {
 
 	private SelectionExporter() {}
 
-	public static void exportSelection(Map<Point2i, Set<Point2i>> chunksToBeExported, File destination, ProgressTask progressChannel) {
+	public static void exportSelection(Map<Point2i, Set<Point2i>> chunksToBeExported, File destination, Progress progressChannel) {
 		if (chunksToBeExported.isEmpty()) {
 			progressChannel.done("no selection");
 			return;
@@ -42,9 +42,9 @@ public class SelectionExporter {
 
 		private Set<Point2i> chunksToBeExported;
 		private File destination;
-		private ProgressTask progressChannel;
+		private Progress progressChannel;
 
-		MCADeleteSelectionLoadJob(File file, Set<Point2i> chunksToBeExported, File destination, ProgressTask progressChannel) {
+		MCADeleteSelectionLoadJob(File file, Set<Point2i> chunksToBeExported, File destination, Progress progressChannel) {
 			super(file);
 			this.chunksToBeExported = chunksToBeExported;
 			this.destination = destination;
@@ -75,11 +75,11 @@ public class SelectionExporter {
 
 	public static class MCADeleteSelectionProcessJob extends ProcessDataJob {
 
-		private ProgressTask progressChannel;
+		private Progress progressChannel;
 		private Set<Point2i> chunksToBeExported;
 		private File destination;
 
-		MCADeleteSelectionProcessJob(File file, byte[] data, Set<Point2i> chunksToBeExported, File destination, ProgressTask progressChannel) {
+		MCADeleteSelectionProcessJob(File file, byte[] data, Set<Point2i> chunksToBeExported, File destination, Progress progressChannel) {
 			super(file, data);
 			this.chunksToBeExported = chunksToBeExported;
 			this.destination = destination;
@@ -119,10 +119,10 @@ public class SelectionExporter {
 
 	public static class MCADeleteSelectionSaveJob extends SaveDataJob<MCAFile> {
 
-		private ProgressTask progressChannel;
+		private Progress progressChannel;
 		private File destination;
 
-		MCADeleteSelectionSaveJob(File file, MCAFile data, File destination, ProgressTask progressChannel) {
+		MCADeleteSelectionSaveJob(File file, MCAFile data, File destination, Progress progressChannel) {
 			super(file, data);
 			this.destination = destination;
 			this.progressChannel = progressChannel;

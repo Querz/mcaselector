@@ -36,6 +36,15 @@ public enum FieldType {
 		return list;
 	}
 
+	public static FieldType getByName(String name) {
+		for (FieldType f : FieldType.values()) {
+			if (f.name.equals(name)) {
+				return f;
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public String toString() {
 		return name;

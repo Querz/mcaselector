@@ -95,7 +95,7 @@ public class MCAChunkData {
 		return rawData.length + 5;
 	}
 
-	public void changeData(List<Field> fields, boolean force) {
+	public void changeData(List<Field<?>> fields, boolean force) {
 		for (Field field : fields) {
 			try {
 				if (force) {

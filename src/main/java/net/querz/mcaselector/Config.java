@@ -50,6 +50,10 @@ public final class Config {
 		return cacheDir;
 	}
 
+	public static void setCacheDir(File cacheDir) {
+		Config.cacheDir = cacheDir;
+	}
+
 	public static File[] getCacheDirs() {
 		int lodLevels = 0;
 		for (int i = Helper.getMaxZoomLevel(); i >= 1; i /= 2) {
