@@ -1,5 +1,7 @@
 # MCA Selector
-[![total downloads](https://img.shields.io/github/downloads/Querz/mcaselector/total.svg)](https://github.com/Querz/mcaselector/releases)
+[![total downloads](https://img.shields.io/github/downloads/Querz/mcaselector/total.svg)](https://github.com/Querz/mcaselector/releases) [![paypal](https://img.shields.io/badge/donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KPHLMZQQ26W3E&source=url)
+
+
 #### An external tool to export or delete selected chunks and regions from a world save of Minecraft Java Edition.
 ---
 
