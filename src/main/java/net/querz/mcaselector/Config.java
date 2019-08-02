@@ -193,7 +193,6 @@ public final class Config {
 	}
 
 	public static void setProcessThreads(int processThreads) {
-		System.out.println("setting process threads to " + processThreads);
 		Config.processThreads = processThreads;
 	}
 

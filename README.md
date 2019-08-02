@@ -61,7 +61,7 @@ Because the conditions use internal values used by Minecraft, the following tabl
 | LastUpdate | int | The time a chunk was last updated in seconds since 1970-01-01. Also accepts a timestamp in the `yyyy-MM-dd HH-mm-ss`-format such as `2018-01-02 15:03:04`. If the time is omitted, it will default to `00:00:00`. |
 | xPos | int | The location of the chunk on the x-axis in chunk coordinates. |
 | zPos | int | The location of the chunk on the z-axis in chunk coordinates. |
-| Palette | String | A list of comma (,) separated 1.13 block names. The block names will be converted to block ids for chunks with DataVersion 1343 or below. The validation of block names can be skipped by writing them in double quotes ("). Example: `sand,"new_block",gravel`.|
+| Palette | String | A list of comma (,) separated 1.13 block names. The block names will be converted to block ids for chunks with DataVersion 1343 or below. The validation of block names can be skipped by writing them in single quotes ('). Example: `sand,'new_block',gravel`.|
 | Status | String | The status of the chunk generation. Only recognized by Minecraft 1.13+ (DataVersion 1444+) |
 | LightPopulated | byte | Whether the light levels for the chunk have been calculated. If this is set to 0, converting a world from 1.12.x to 1.13 will omit that chunk. Allowed values are `0` and `1`. |
 | Biome | String | One or multiple biome names, separated by comma (,). For a reference of biome names, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Biomes). |
@@ -192,7 +192,7 @@ Example:
 ```
 --query "xPos >= 10 AND xPos <= 20 AND Palette contains \"sand,water\""
 ```
-would select all chunks that contain sand and water blocks and their x-position ranges from 10 to 20.
+This will select all chunks that contain sand and water blocks and their x-position ranges from 10 to 20.
 As shown, double quotes (") must be escaped with a backslash.
 
 ### Change values
@@ -202,7 +202,7 @@ Example:
 ```
 --query "LightPopulated = 1, Status = empty"
 ```
-would set the field "LightPopulated" to "1" and "Status" to "empty". Just like the filter query, the query to change values is printed to the console when using the UI in debug mode.
+This will set the field "LightPopulated" to "1" and "Status" to "empty". Just like the filter query, the query to change values is printed to the console when using the UI in debug mode.
 
 ---
 ## Checkout and building
