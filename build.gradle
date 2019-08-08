@@ -1,6 +1,3 @@
-import java.nio.file.Files
-import java.util.function.Consumer
-
 plugins {
 	id 'com.github.johnrengelman.shadow' version '5.1.0'
 	id 'com.eriwen.gradle.css' version '2.14.0'
@@ -86,34 +83,39 @@ task updateReadme {
 	}
 }
 
+import java.nio.file.Files
+
+/**
+ * Creates a Table Of Contents from headings in a markdown file.
+ *
+ * @param f  The file to be checked for headings
+ * @param st The prefix to the TOC
+ * @param en The suffix of the TOC
+ * @param it Whether to ignore the title
+ * @param is Whether to ignore the subtitle: a subtitle is a level 4 heading prefixed by ####
+ * @return   The TOC as a string with prefix and suffix
+ * @throws IOException If the input file could not be read
+ * @throws IllegalArgumentException If the input file is not a file
+ */
 static String createTOC(String f, String st, String en, boolean it, boolean is) throws IOException {
 	File e = new File(f)
-	if (!e.isFile()) {
-		throw new IllegalArgumentException("file doesn't exist or is not a file")
-	}
-	StringBuilder b = new StringBuilder(st + "\n")
-	int[] s = new int[1]
-	Files.lines(e.toPath()).forEach(new Consumer<String>() {
-		@Override
-		void accept(String n) {
-			String t
-			if ((t = n.trim()).startsWith("#")) {
-				int l = 0
-				while (l < t.length() && t.charAt(l) == '#') {
-					l++
-				}
-				s[0] += l == 4 ? 1 : 0
-				if (t.length() == l || t.charAt(l) != ' ' || it && l == 1 || is && l == 4 && s[0] == 1) {
-					return
-				}
-				String x = t.substring(l + 1)
-				for (int i = it ? 2 : 1; i < l; i++) {
-					b.append("  ")
-				}
-				String k = x.toLowerCase().replaceAll("[^a-z0-9 \\-_]", "").replace(' ', '-')
-				b.append("* [").append(x).append("](#").append(k).append(")\n")
-			}
+	if (!e.isFile())
+		throw new IllegalArgumentException('file doesn\'t exist or is not a file')
+	StringBuilder b = new StringBuilder(st + '\n' as String)
+	int l, s = 0
+	for (String n in Files.lines(e.toPath())) {
+		String t
+		if ((t = n.trim()).startsWith('#')) {
+			for (l = 0; l < t.length() && t.charAt(l) == '#' as char; l++) {/**/}
+			s += l == 4 ? 1 : 0
+			if (t.length() == l || t.charAt(l) != ' ' as char || it && l == 1 || is && l == 4 && s == 1)
+				continue
+			for (int i = it ? 2 : 1; i < l; i++)
+				b.append('  ')
+			String x = t.substring(l + 1)
+			String k = x.toLowerCase().replaceAll('[^a-z0-9 \\-_]', '').replace(' ', '-')
+			b.append('* [').append(x).append('](#').append(k).append(')\n')
 		}
-	})
+	}
 	return b.append(en).toString()
 }
