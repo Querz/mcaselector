@@ -4,6 +4,7 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.util.FileHelper;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.mcaselector.util.Progress;
@@ -21,7 +22,7 @@ public class ChunkFilterSelector {
 	private ChunkFilterSelector() {}
 
 	public static void selectFilter(GroupFilter filter, Consumer<Map<Point2i, Set<Point2i>>> callback, Progress progressChannel) {
-		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(Helper.MCA_FILE_PATTERN));
+		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
 		if (files == null || files.length == 0) {
 			progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
 			return;
@@ -52,7 +53,7 @@ public class ChunkFilterSelector {
 
 		@Override
 		public void execute() {
-			Matcher m = Helper.REGION_GROUP_PATTERN.matcher(getFile().getName());
+			Matcher m = FileHelper.REGION_GROUP_PATTERN.matcher(getFile().getName());
 			if (m.find()) {
 				int regionX = Integer.parseInt(m.group("regionX"));
 				int regionZ = Integer.parseInt(m.group("regionZ"));

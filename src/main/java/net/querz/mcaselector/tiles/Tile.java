@@ -1,7 +1,5 @@
 package net.querz.mcaselector.tiles;
 
-import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -13,15 +11,14 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.io.MCAFile;
+import net.querz.mcaselector.util.FileHelper;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2f;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.mcaselector.util.Timer;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class Tile {
@@ -67,10 +64,10 @@ public class Tile {
 	//threshold is measured in tiles
 	public boolean isVisible(TileMap tileMap, int threshold) {
 		Point2i o = tileMap.getOffset().toPoint2i();
-		Point2i min = Helper.regionToBlock(Helper.blockToRegion(o.sub(threshold * SIZE)));
-		Point2i max = Helper.regionToBlock(Helper.blockToRegion(new Point2i(
+		Point2i min = o.sub(threshold * SIZE).blockToRegion().regionToBlock();
+		Point2i max = new Point2i(
 				(int) (o.getX() + tileMap.getWidth() * tileMap.getScale()),
-				(int) (o.getY() + tileMap.getHeight() * tileMap.getScale())).add(threshold * SIZE)));
+				(int) (o.getY() + tileMap.getHeight() * tileMap.getScale())).add(threshold * SIZE).blockToRegion().regionToBlock();
 		return location.getX() * SIZE >= min.getX() && location.getY() * SIZE >= min.getY()
 				&& location.getX() * SIZE <= max.getX() && location.getY() * SIZE <= max.getY();
 	}
@@ -142,7 +139,7 @@ public class Tile {
 
 	public void unMark(Point2i chunkBlock) {
 		if (isMarked()) {
-			Point2i regionChunk = Helper.regionToChunk(location);
+			Point2i regionChunk = location.regionToChunk();
 			for (int x = 0; x < SIZE_IN_CHUNKS; x++) {
 				for (int z = 0; z < SIZE_IN_CHUNKS; z++) {
 					markedChunks.add(regionChunk.add(x, z));
@@ -180,7 +177,7 @@ public class Tile {
 			ctx.drawImage(getImage(), offset.getX(), offset.getY(), size / scale, size / scale);
 			if (marked) {
 				//draw marked region
-				ctx.setFill(Config.getRegionSelectionColor());
+				ctx.setFill(Config.getRegionSelectionColor().makeJavaFXColor());
 				ctx.fillRect(offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 			} else if (markedChunks.size() > 0) {
 
@@ -202,7 +199,7 @@ public class Tile {
 
 		Canvas canvas = new Canvas(SIZE / (float) zoomLevel, SIZE / (float) zoomLevel);
 		GraphicsContext ctx = canvas.getGraphicsContext2D();
-		ctx.setFill(Config.getChunkSelectionColor());
+		ctx.setFill(Config.getChunkSelectionColor().makeJavaFXColor());
 
 		for (Point2i markedChunk : markedChunks) {
 			Point2i regionChunk = markedChunk.mod(SIZE_IN_CHUNKS);
@@ -225,17 +222,11 @@ public class Tile {
 	}
 
 	public File getMCAFile() {
-		return Helper.createMCAFilePath(location);
+		return FileHelper.createMCAFilePath(location);
 	}
 
 	public void setImage(Image image) {
 		this.image = image;
-	}
-
-	public void mergeImage(BufferedImage image, Point2i location) {
-		BufferedImage bufferedImage = SwingFXUtils.fromFXImage(this.image, null);
-		Helper.mergeImages(image, bufferedImage, location);
-		this.image = SwingFXUtils.toFXImage(bufferedImage, null);
 	}
 
 	public void loadFromCache(Runnable callback, Supplier<Float> scaleSupplier) {

@@ -145,4 +145,28 @@ public class Point2i implements Cloneable {
 		}
 		return null;
 	}
+
+	public Point2i blockToRegion() {
+		return shiftRight(9);
+	}
+
+	public Point2i regionToBlock() {
+		return shiftLeft(9);
+	}
+
+	public Point2i regionToChunk() {
+		return shiftLeft(5);
+	}
+
+	public Point2i blockToChunk() {
+		return shiftRight(4);
+	}
+
+	public Point2i chunkToBlock() {
+		return shiftLeft(4);
+	}
+
+	public Point2i chunkToRegion() {
+		return shiftRight(5);
+	}
 }

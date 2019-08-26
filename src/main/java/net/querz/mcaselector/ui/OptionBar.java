@@ -5,6 +5,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.stage.Stage;
 import net.querz.mcaselector.tiles.TileMap;
+import net.querz.mcaselector.util.DialogHelper;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Translation;
 import net.querz.mcaselector.util.UIFactory;
@@ -62,29 +63,29 @@ public class OptionBar extends MenuBar {
 				importSelection, exportSelection, UIFactory.separator(),
 				clearSelectionCache);
 		tools.getItems().addAll(importChunks, filterChunks, changeFields);
-		about.setOnMouseClicked(e -> Helper.showAboutDialog(tileMap, primaryStage));
+		about.setOnMouseClicked(e -> DialogHelper.showAboutDialog(primaryStage));
 		Menu aboutMenu = new Menu();
 		aboutMenu.setGraphic(about);
 
 		getMenus().addAll(file, view, selection, tools, aboutMenu);
 
-		open.setOnAction(e -> Helper.openWorld(tileMap, primaryStage, this));
-		settings.setOnAction(e -> Helper.editSettings(tileMap, primaryStage));
+		open.setOnAction(e -> DialogHelper.openWorld(tileMap, primaryStage, this));
+		settings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage));
 		quit.setOnAction(e -> System.exit(0));
 		chunkGrid.setOnAction(e -> tileMap.setShowChunkGrid(chunkGrid.isSelected()));
 		regionGrid.setOnAction(e -> tileMap.setShowRegionGrid(regionGrid.isSelected()));
-		goTo.setOnAction(e -> Helper.gotoCoordinate(tileMap, primaryStage));
+		goTo.setOnAction(e -> DialogHelper.gotoCoordinate(tileMap, primaryStage));
 		clearAllCache.setOnAction(e -> Helper.clearAllCache(tileMap));
 		clearViewCache.setOnAction(e -> Helper.clearViewCache(tileMap));
 		clear.setOnAction(e -> tileMap.clearSelection());
-		exportChunks.setOnAction(e -> Helper.exportSelectedChunks(tileMap, primaryStage));
-		importChunks.setOnAction(e -> Helper.importChunks(tileMap, primaryStage));
-		delete.setOnAction(e -> Helper.deleteSelection(tileMap, primaryStage));
-		importSelection.setOnAction(e -> Helper.importSelection(tileMap, primaryStage));
-		exportSelection.setOnAction(e -> Helper.exportSelection(tileMap, primaryStage));
+		exportChunks.setOnAction(e -> DialogHelper.exportSelectedChunks(tileMap, primaryStage));
+		importChunks.setOnAction(e -> DialogHelper.importChunks(tileMap, primaryStage));
+		delete.setOnAction(e -> DialogHelper.deleteSelection(tileMap, primaryStage));
+		importSelection.setOnAction(e -> DialogHelper.importSelection(tileMap, primaryStage));
+		exportSelection.setOnAction(e -> DialogHelper.exportSelection(tileMap, primaryStage));
 		clearSelectionCache.setOnAction(e -> Helper.clearSelectionCache(tileMap));
-		filterChunks.setOnAction(e -> Helper.filterChunks(tileMap, primaryStage));
-		changeFields.setOnAction(e -> Helper.changeFields(tileMap, primaryStage));
+		filterChunks.setOnAction(e -> DialogHelper.filterChunks(tileMap, primaryStage));
+		changeFields.setOnAction(e -> DialogHelper.changeFields(tileMap, primaryStage));
 
 		open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN));
 		quit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCodeCombination.SHORTCUT_DOWN));

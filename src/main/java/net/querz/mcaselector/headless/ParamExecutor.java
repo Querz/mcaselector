@@ -14,6 +14,7 @@ import net.querz.mcaselector.io.SelectionExporter;
 import net.querz.mcaselector.io.SelectionUtil;
 import net.querz.mcaselector.util.DataProperty;
 import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.util.FileHelper;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import java.io.File;
@@ -114,8 +115,12 @@ public class ParamExecutor {
 	}
 
 	private static void runModeCache(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
+		if (!hasJavaFX()) {
+			throw new IOException("no JavaFX installation found");
+		}
+
 		File world = parseDirectory(params.get("world"));
-		checkDirectoryForFiles(world, Helper.MCA_FILE_PATTERN);
+		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
 		Config.setWorldDir(world);
 
 		File output = parseDirectory(params.get("output"));
@@ -135,7 +140,7 @@ public class ParamExecutor {
 
 	private static void runModeChange(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
 		File world = parseDirectory(params.get("world"));
-		checkDirectoryForFiles(world, Helper.MCA_FILE_PATTERN);
+		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
 		Config.setWorldDir(world);
 
 		List<Field<?>> fields = new ChangeParser(params.get("query")).parse();
@@ -156,7 +161,7 @@ public class ParamExecutor {
 
 	private static void runModeDelete(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
 		File world = parseDirectory(params.get("world"));
-		checkDirectoryForFiles(world, Helper.MCA_FILE_PATTERN);
+		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
 		Config.setWorldDir(world);
 
 		printHeadlessSettings();
@@ -189,7 +194,7 @@ public class ParamExecutor {
 		// this might be used to just apply an offset to the input without merging anything.
 
 		File input = parseDirectory(params.get("input"));
-		checkDirectoryForFiles(world, Helper.MCA_FILE_PATTERN);
+		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
 
 		Config.setWorldDir(world);
 
@@ -207,7 +212,7 @@ public class ParamExecutor {
 
 	private static void runModeExport(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
 		File world = parseDirectory(params.get("world"));
-		checkDirectoryForFiles(world, Helper.MCA_FILE_PATTERN);
+		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
 		Config.setWorldDir(world);
 
 		File output = parseDirectory(params.get("output"));
@@ -240,7 +245,7 @@ public class ParamExecutor {
 
 	private static void runModeSelect(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
 		File world = parseDirectory(params.get("world"));
-		checkDirectoryForFiles(world, Helper.MCA_FILE_PATTERN);
+		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
 		Config.setWorldDir(world);
 
 		File output = parseFile(params.get("output"), "csv");
@@ -349,6 +354,15 @@ public class ParamExecutor {
 	private static void createParentDirectoryIfNotExists(File file) throws IOException {
 		if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
 			throw new IOException("unable to create directory for \"" + file + "\"");
+		}
+	}
+
+	private static boolean hasJavaFX() {
+		try  {
+			Class.forName("javafx.scene.paint.Color");
+			return true;
+		}  catch (ClassNotFoundException e) {
+			return false;
 		}
 	}
 }

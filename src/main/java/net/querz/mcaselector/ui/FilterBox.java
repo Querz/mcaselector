@@ -3,7 +3,6 @@ package net.querz.mcaselector.ui;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -17,16 +16,15 @@ import net.querz.mcaselector.filter.NumberFilter;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.util.FileHelper;
 import net.querz.mcaselector.util.Translation;
 import net.querz.mcaselector.util.UIFactory;
-
 import java.util.function.Consumer;
 
 public abstract class FilterBox extends BorderPane {
 
-	private static final Image deleteIcon = Helper.getIconFromResources("img/delete");
-	private static final Image addIcon = Helper.getIconFromResources("img/add");
+	private static final Image deleteIcon = FileHelper.getIconFromResources("img/delete");
+	private static final Image addIcon = FileHelper.getIconFromResources("img/add");
 
 	private Filter filter;
 	private FilterBox parent;

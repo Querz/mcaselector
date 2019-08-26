@@ -1,6 +1,6 @@
 package net.querz.mcaselector.filter;
 
-import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.util.TimeHelper;
 
 public class LastUpdateFilter extends IntegerFilter {
 
@@ -22,7 +22,7 @@ public class LastUpdateFilter extends IntegerFilter {
 		super.setFilterValue(raw);
 		if (!isValid()) {
 			try {
-				setFilterNumber(Helper.parseTimestamp(raw));
+				setFilterNumber(TimeHelper.parseTimestamp(raw));
 				setValid(true);
 				setRawValue(raw);
 			} catch (IllegalArgumentException ex) {

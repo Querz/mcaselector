@@ -2,6 +2,7 @@ package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.util.FileHelper;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.mcaselector.util.Progress;
@@ -27,13 +28,13 @@ public class SelectionExporter {
 
 		progressChannel.setMax(chunksToBeExported.size());
 		Point2i first = chunksToBeExported.entrySet().iterator().next().getKey();
-		progressChannel.updateProgress(Helper.createMCAFileName(first), 0);
+		progressChannel.updateProgress(FileHelper.createMCAFileName(first), 0);
 
 		for (Map.Entry<Point2i, Set<Point2i>> entry : chunksToBeExported.entrySet()) {
 			MCAFilePipe.addJob(new MCADeleteSelectionLoadJob(
-					Helper.createMCAFilePath(entry.getKey()),
+					FileHelper.createMCAFilePath(entry.getKey()),
 					entry.getValue(),
-					new File(destination,Helper.createMCAFileName(entry.getKey())),
+					new File(destination, FileHelper.createMCAFileName(entry.getKey())),
 					progressChannel));
 		}
 	}
@@ -95,7 +96,7 @@ public class SelectionExporter {
 				if (mca != null) {
 
 					Set<Point2i> inverted = new HashSet<>(Tile.CHUNKS - chunksToBeExported.size());
-					Point2i origin = Helper.regionToChunk(Helper.chunkToRegion(chunksToBeExported.iterator().next()));
+					Point2i origin = chunksToBeExported.iterator().next().chunkToRegion().regionToChunk();
 					for (int x = origin.getX(); x < origin.getX() + Tile.SIZE_IN_CHUNKS; x++) {
 						for (int z = origin.getY(); z < origin.getY() + Tile.SIZE_IN_CHUNKS; z++) {
 							Point2i cp = new Point2i(x, z);

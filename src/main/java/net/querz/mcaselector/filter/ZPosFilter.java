@@ -1,6 +1,5 @@
 package net.querz.mcaselector.filter;
 
-import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.nbt.CompoundTag;
 
@@ -20,7 +19,7 @@ public class ZPosFilter extends IntegerFilter {
 	}
 
 	public boolean matchesRegion(Point2i region) {
-		Point2i chunk = Helper.regionToChunk(region);
+		Point2i chunk = region.regionToChunk();
 		for (int i = 0; i < 32; i++) {
 			Point2i p = chunk.add(i);
 			if (matches(getFilterNumber(), p.getY())) {

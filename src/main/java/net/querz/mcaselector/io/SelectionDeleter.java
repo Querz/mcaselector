@@ -1,6 +1,7 @@
 package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.util.FileHelper;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.mcaselector.util.Progress;
@@ -26,10 +27,10 @@ public class SelectionDeleter {
 
 		progressChannel.setMax(chunksToBeDeleted.size());
 		Point2i first = chunksToBeDeleted.entrySet().iterator().next().getKey();
-		progressChannel.updateProgress(Helper.createMCAFileName(first), 0);
+		progressChannel.updateProgress(FileHelper.createMCAFileName(first), 0);
 
 		for (Map.Entry<Point2i, Set<Point2i>> entry : chunksToBeDeleted.entrySet()) {
-			MCAFilePipe.addJob(new MCADeleteSelectionLoadJob(Helper.createMCAFilePath(entry.getKey()), entry.getValue(), progressChannel));
+			MCAFilePipe.addJob(new MCADeleteSelectionLoadJob(FileHelper.createMCAFilePath(entry.getKey()), entry.getValue(), progressChannel));
 		}
 	}
 

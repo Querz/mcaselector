@@ -15,7 +15,6 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Translation;
 import net.querz.mcaselector.util.UIFactory;
-
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -47,8 +46,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private Button chunkSelectionColorPreview = new Button();
 	private CheckBox debugCheckBox = new CheckBox();
 
-	private Color regionSelectionColor = Config.getRegionSelectionColor();
-	private Color chunkSelectionColor = Config.getChunkSelectionColor();
+	private Color regionSelectionColor = Config.getRegionSelectionColor().makeJavaFXColor();
+	private Color chunkSelectionColor = Config.getChunkSelectionColor().makeJavaFXColor();
 
 	private ButtonType reset = new ButtonType(Translation.DIALOG_SETTINGS_RESET.toString(), ButtonBar.ButtonData.LEFT);
 
@@ -66,10 +65,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			processThreadsSlider.setValue(Config.DEFAULT_PROCESS_THREADS);
 			writeThreadsSlider.setValue(Config.DEFAULT_WRITE_THREADS);
 			maxLoadedFilesSlider.setValue(Config.DEFAULT_MAX_LOADED_FILES);
-			regionSelectionColor = Config.DEFAULT_REGION_SELECTION_COLOR;
-			regionSelectionColorPreview.setBackground(new Background(new BackgroundFill(Config.DEFAULT_REGION_SELECTION_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
-			chunkSelectionColor = Config.DEFAULT_CHUNK_SELECTION_COLOR;
-			chunkSelectionColorPreview.setBackground(new Background(new BackgroundFill(Config.DEFAULT_CHUNK_SELECTION_COLOR, CornerRadii.EMPTY, Insets.EMPTY)));
+			regionSelectionColor = Config.DEFAULT_REGION_SELECTION_COLOR.makeJavaFXColor();
+			regionSelectionColorPreview.setBackground(new Background(new BackgroundFill(Config.DEFAULT_REGION_SELECTION_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
+			chunkSelectionColor = Config.DEFAULT_CHUNK_SELECTION_COLOR.makeJavaFXColor();
+			chunkSelectionColorPreview.setBackground(new Background(new BackgroundFill(Config.DEFAULT_CHUNK_SELECTION_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
 			debugCheckBox.setSelected(Config.DEFAULT_DEBUG);
 		});
 

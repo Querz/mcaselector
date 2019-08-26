@@ -1,6 +1,6 @@
 package net.querz.mcaselector;
 
-import javafx.scene.paint.Color;
+import net.querz.mcaselector.util.Color;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Translation;
@@ -33,6 +33,9 @@ public final class Config {
 	private static int maxLoadedFiles = DEFAULT_MAX_LOADED_FILES;
 
 	private static boolean debug = DEFAULT_DEBUG;
+
+	public static final float MAX_SCALE = 7.9999f;
+	public static final float MIN_SCALE = 0.2f;
 
 	private Config() {}
 
@@ -125,8 +128,8 @@ public final class Config {
 			String[] localeSplit = localeString.split("_");
 			setLocale(new Locale(localeSplit[0], localeSplit[1]));
 
-			regionSelectionColor = Color.web(config.getOrDefault("RegionSelectionColor", DEFAULT_REGION_SELECTION_COLOR.toString()));
-			chunkSelectionColor = Color.web(config.getOrDefault("ChunkSelectionColor", DEFAULT_CHUNK_SELECTION_COLOR.toString()));
+			regionSelectionColor = new Color(config.getOrDefault("RegionSelectionColor", DEFAULT_REGION_SELECTION_COLOR.toString()));
+			chunkSelectionColor = new Color(config.getOrDefault("ChunkSelectionColor", DEFAULT_CHUNK_SELECTION_COLOR.toString()));
 			loadThreads = Integer.parseInt(config.getOrDefault("LoadThreads", DEFAULT_LOAD_THREADS + ""));
 			processThreads = Integer.parseInt(config.getOrDefault("ProcessThreads", DEFAULT_PROCESS_THREADS + ""));
 			writeThreads = Integer.parseInt(config.getOrDefault("WriteThreads", DEFAULT_WRITE_THREADS + ""));

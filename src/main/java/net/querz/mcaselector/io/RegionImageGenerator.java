@@ -5,6 +5,7 @@ import javafx.scene.image.Image;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.util.FileHelper;
 import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.mcaselector.util.Progress;
@@ -74,7 +75,7 @@ public class RegionImageGenerator {
 			}
 			setLoading(tile, false);
 			if (progressChannel != null) {
-				progressChannel.incrementProgress(Helper.createMCAFileName(tile.getLocation()));
+				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 			}
 		}
 
@@ -108,7 +109,7 @@ public class RegionImageGenerator {
 			} else {
 				setLoading(tile, false);
 				if (progressChannel != null) {
-					progressChannel.incrementProgress(Helper.createMCAFileName(tile.getLocation()));
+					progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 				}
 
 			}
@@ -143,7 +144,7 @@ public class RegionImageGenerator {
 				BufferedImage img = SwingFXUtils.fromFXImage(getData(), null);
 				if (scaleOnly) {
 					int zoomLevel = Helper.getZoomLevel(scaleSupplier.get());
-					File cacheFile = Helper.createPNGFilePath(new File(Config.getCacheDir().getAbsolutePath(), zoomLevel + ""), tile.getLocation());
+					File cacheFile = FileHelper.createPNGFilePath(new File(Config.getCacheDir().getAbsolutePath(), zoomLevel + ""), tile.getLocation());
 					if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
 						Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
 					}
@@ -153,7 +154,7 @@ public class RegionImageGenerator {
 
 				} else {
 					for (int i = Helper.getMinZoomLevel(); i <= Helper.getMaxZoomLevel(); i *= 2) {
-						File cacheFile = Helper.createPNGFilePath(new File(Config.getCacheDir().getAbsolutePath(), i + ""), tile.getLocation());
+						File cacheFile = FileHelper.createPNGFilePath(new File(Config.getCacheDir().getAbsolutePath(), i + ""), tile.getLocation());
 						if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
 							Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
 						}
@@ -168,10 +169,10 @@ public class RegionImageGenerator {
 
 			setLoading(tile, false);
 			if (progressChannel != null) {
-				progressChannel.incrementProgress(Helper.createMCAFileName(tile.getLocation()));
+				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 			}
 
-			Debug.dumpf("took %s to cache image of %s to %s", t, tile.getMCAFile().getName(), Helper.createPNGFileName(tile.getLocation()));
+			Debug.dumpf("took %s to cache image of %s to %s", t, tile.getMCAFile().getName(), FileHelper.createPNGFileName(tile.getLocation()));
 		}
 	}
 }

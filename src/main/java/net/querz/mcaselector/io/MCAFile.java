@@ -8,7 +8,7 @@ import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.filter.FilterData;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.util.FileHelper;
 import net.querz.mcaselector.util.Point2i;
 import java.io.*;
 import java.util.*;
@@ -30,7 +30,7 @@ public class MCAFile {
 
 	public MCAFile(File file) {
 		this.file = file.getAbsoluteFile();
-		location = Helper.parseMCAFileName(file);
+		location = FileHelper.parseMCAFileName(file);
 		if (location == null) {
 			throw new IllegalArgumentException("invalid mca file name: " + file.getName());
 		}
