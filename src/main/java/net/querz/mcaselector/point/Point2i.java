@@ -1,4 +1,4 @@
-package net.querz.mcaselector.util;
+package net.querz.mcaselector.point;
 
 import java.util.Objects;
 

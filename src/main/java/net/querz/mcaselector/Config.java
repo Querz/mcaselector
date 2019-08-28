@@ -1,9 +1,9 @@
 package net.querz.mcaselector;
 
-import net.querz.mcaselector.util.Color;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.ui.Color;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.text.Translation;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
@@ -59,7 +59,7 @@ public final class Config {
 
 	public static File[] getCacheDirs() {
 		int lodLevels = 0;
-		for (int i = Helper.getMaxZoomLevel(); i >= 1; i /= 2) {
+		for (int i = getMaxZoomLevel(); i >= 1; i /= 2) {
 			lodLevels++;
 		}
 		File[] cacheDirs = new File[lodLevels];
@@ -213,5 +213,13 @@ public final class Config {
 
 	public static void setMaxLoadedFiles(int maxLoadedFiles) {
 		Config.maxLoadedFiles = maxLoadedFiles;
+	}
+
+	public static int getMaxZoomLevel() {
+		return Tile.getZoomLevel(MAX_SCALE);
+	}
+
+	public static int getMinZoomLevel() {
+		return Tile.getZoomLevel(MIN_SCALE);
 	}
 }

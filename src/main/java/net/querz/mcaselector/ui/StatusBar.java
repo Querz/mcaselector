@@ -4,9 +4,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
 import net.querz.mcaselector.tiles.TileMap;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.Translation;
-import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.point.Point2i;
 
 public class StatusBar extends BorderPane {
 

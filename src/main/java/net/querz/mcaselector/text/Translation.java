@@ -1,8 +1,8 @@
-package net.querz.mcaselector.util;
+package net.querz.mcaselector.text;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-
+import net.querz.mcaselector.debug.Debug;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;

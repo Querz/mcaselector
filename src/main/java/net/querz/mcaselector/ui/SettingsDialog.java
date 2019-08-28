@@ -12,9 +12,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.Translation;
-import net.querz.mcaselector.util.UIFactory;
+import net.querz.mcaselector.text.Translation;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -151,10 +149,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		grid.add(regionSelectionColorPreview, 1, 5, 2, 1);
 		grid.add(chunkSelectionColorPreview, 1, 6, 2, 1);
 		grid.add(debugCheckBox, 1, 7, 2, 1);
-		grid.add(Helper.attachTextFieldToSlider(readThreadsSlider), 2, 1, 1, 1);
-		grid.add(Helper.attachTextFieldToSlider(processThreadsSlider), 2, 2, 1, 1);
-		grid.add(Helper.attachTextFieldToSlider(writeThreadsSlider), 2, 3, 1, 1);
-		grid.add(Helper.attachTextFieldToSlider(maxLoadedFilesSlider), 2, 4, 1, 1);
+		grid.add(UIFactory.attachTextFieldToSlider(readThreadsSlider), 2, 1, 1, 1);
+		grid.add(UIFactory.attachTextFieldToSlider(processThreadsSlider), 2, 2, 1, 1);
+		grid.add(UIFactory.attachTextFieldToSlider(writeThreadsSlider), 2, 3, 1, 1);
+		grid.add(UIFactory.attachTextFieldToSlider(maxLoadedFilesSlider), 2, 4, 1, 1);
 
 		getDialogPane().setContent(grid);
 	}

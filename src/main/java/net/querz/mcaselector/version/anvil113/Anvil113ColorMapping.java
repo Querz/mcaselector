@@ -1,8 +1,8 @@
 package net.querz.mcaselector.version.anvil113;
 
-import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.text.TextHelper;
+import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.version.ColorMapping;
-import net.querz.mcaselector.util.Helper;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.StringTag;
 import net.querz.nbt.Tag;
@@ -32,7 +32,7 @@ public class Anvil113ColorMapping implements ColorMapping {
 					Debug.dumpf("invalid line in color file: \"%s\"", line);
 					continue;
 				}
-				Integer color = Helper.parseInt(elements[1], 16);
+				Integer color = TextHelper.parseInt(elements[1], 16);
 				if (color == null || color < 0x0 || color > 0xFFFFFF) {
 					Debug.dumpf("Invalid color code in color file: \"%s\"", elements[1]);
 				}

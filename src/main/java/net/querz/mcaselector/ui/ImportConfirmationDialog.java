@@ -6,9 +6,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import net.querz.mcaselector.util.Point2i;
-import net.querz.mcaselector.util.Translation;
-import net.querz.mcaselector.util.UIFactory;
+import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.text.Translation;
 import java.util.function.Consumer;
 
 public class ImportConfirmationDialog extends ConfirmationDialog {

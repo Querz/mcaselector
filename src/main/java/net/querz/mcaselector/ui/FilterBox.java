@@ -15,10 +15,10 @@ import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.filter.NumberFilter;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.filter.TextFilter;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.FileHelper;
-import net.querz.mcaselector.util.Translation;
-import net.querz.mcaselector.util.UIFactory;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.text.Translation;
+
 import java.util.function.Consumer;
 
 public abstract class FilterBox extends BorderPane {

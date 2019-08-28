@@ -1,7 +1,6 @@
 package net.querz.mcaselector.filter;
 
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.TimeHelper;
+import net.querz.mcaselector.text.TextHelper;
 import net.querz.nbt.CompoundTag;
 
 public class InhabitedTimeFilter extends LongFilter {
@@ -25,7 +24,7 @@ public class InhabitedTimeFilter extends LongFilter {
 		if (!isValid()) {
 			try {
 				//InhabitedTime is in ticks, not seconds
-				setFilterNumber(TimeHelper.parseDuration(raw) * 20);
+				setFilterNumber(TextHelper.parseDuration(raw) * 20);
 				setValid(true);
 				setRawValue(raw);
 			} catch (IllegalArgumentException ex) {

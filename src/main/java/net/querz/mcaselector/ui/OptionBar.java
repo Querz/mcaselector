@@ -5,10 +5,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.stage.Stage;
 import net.querz.mcaselector.tiles.TileMap;
-import net.querz.mcaselector.util.DialogHelper;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.Translation;
-import net.querz.mcaselector.util.UIFactory;
+import net.querz.mcaselector.io.CacheHelper;
+import net.querz.mcaselector.text.Translation;
 
 public class OptionBar extends MenuBar {
 	/*
@@ -75,15 +73,15 @@ public class OptionBar extends MenuBar {
 		chunkGrid.setOnAction(e -> tileMap.setShowChunkGrid(chunkGrid.isSelected()));
 		regionGrid.setOnAction(e -> tileMap.setShowRegionGrid(regionGrid.isSelected()));
 		goTo.setOnAction(e -> DialogHelper.gotoCoordinate(tileMap, primaryStage));
-		clearAllCache.setOnAction(e -> Helper.clearAllCache(tileMap));
-		clearViewCache.setOnAction(e -> Helper.clearViewCache(tileMap));
+		clearAllCache.setOnAction(e -> CacheHelper.clearAllCache(tileMap));
+		clearViewCache.setOnAction(e -> CacheHelper.clearViewCache(tileMap));
 		clear.setOnAction(e -> tileMap.clearSelection());
 		exportChunks.setOnAction(e -> DialogHelper.exportSelectedChunks(tileMap, primaryStage));
 		importChunks.setOnAction(e -> DialogHelper.importChunks(tileMap, primaryStage));
 		delete.setOnAction(e -> DialogHelper.deleteSelection(tileMap, primaryStage));
 		importSelection.setOnAction(e -> DialogHelper.importSelection(tileMap, primaryStage));
 		exportSelection.setOnAction(e -> DialogHelper.exportSelection(tileMap, primaryStage));
-		clearSelectionCache.setOnAction(e -> Helper.clearSelectionCache(tileMap));
+		clearSelectionCache.setOnAction(e -> CacheHelper.clearSelectionCache(tileMap));
 		filterChunks.setOnAction(e -> DialogHelper.filterChunks(tileMap, primaryStage));
 		changeFields.setOnAction(e -> DialogHelper.changeFields(tileMap, primaryStage));
 

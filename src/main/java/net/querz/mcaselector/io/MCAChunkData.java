@@ -2,8 +2,8 @@ package net.querz.mcaselector.io;
 
 import javafx.scene.image.PixelWriter;
 import net.querz.mcaselector.changer.Field;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.Tag;

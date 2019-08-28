@@ -1,6 +1,6 @@
 package net.querz.mcaselector.filter;
 
-import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.point.Point2i;
 import net.querz.nbt.CompoundTag;
 
 public class XPosFilter extends IntegerFilter {

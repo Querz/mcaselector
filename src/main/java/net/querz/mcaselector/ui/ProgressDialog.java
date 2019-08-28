@@ -11,9 +11,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.io.MCAFilePipe;
-import net.querz.mcaselector.util.Translation;
-import net.querz.mcaselector.util.UIFactory;
-
+import net.querz.mcaselector.text.Translation;
 import java.util.function.Consumer;
 
 public class ProgressDialog extends Stage {

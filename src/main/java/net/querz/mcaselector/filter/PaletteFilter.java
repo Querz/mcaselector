@@ -1,9 +1,7 @@
 package net.querz.mcaselector.filter;
 
-import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.Tag;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,7 +10,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
 
 public class PaletteFilter extends TextFilter<List<String>> {
 

@@ -1,4 +1,4 @@
-package net.querz.mcaselector.util;
+package net.querz.mcaselector.property;
 
 public class DataProperty<T> {
 

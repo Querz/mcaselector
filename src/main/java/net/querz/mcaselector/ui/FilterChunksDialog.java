@@ -16,9 +16,8 @@ import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.filter.XPosFilter;
 import net.querz.mcaselector.filter.ZPosFilter;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Translation;
-import net.querz.mcaselector.util.UIFactory;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.text.Translation;
 
 public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 

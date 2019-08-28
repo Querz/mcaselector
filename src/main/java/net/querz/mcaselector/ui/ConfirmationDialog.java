@@ -4,7 +4,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.text.Translation;
 
 public class ConfirmationDialog extends Alert {
 

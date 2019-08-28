@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
-import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.debug.Debug;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -113,12 +113,12 @@ public class TileMapBox extends HBox {
 	}
 
 	private void bind() {
-		regionGridColorProperty.addListener((o, r, n) -> Tile.REGION_GRID_COLOR = new net.querz.mcaselector.util.Color(regionGridColorProperty.get()));
-		chunkGridColorProperty.addListener((o, r, n) -> Tile.CHUNK_GRID_COLOR = new net.querz.mcaselector.util.Color(chunkGridColorProperty.get()));
+		regionGridColorProperty.addListener((o, r, n) -> Tile.REGION_GRID_COLOR = new net.querz.mcaselector.ui.Color(regionGridColorProperty.get()));
+		chunkGridColorProperty.addListener((o, r, n) -> Tile.CHUNK_GRID_COLOR = new net.querz.mcaselector.ui.Color(chunkGridColorProperty.get()));
 		gridLineWidthProperty.addListener((o, r, n) -> Tile.GRID_LINE_WIDTH = gridLineWidthProperty.get());
-		emptyChunkBackgroundColorProperty.addListener((o, r, n) -> Tile.EMPTY_CHUNK_BACKGROUND_COLOR = new net.querz.mcaselector.util.Color(emptyChunkBackgroundColorProperty.get()));
+		emptyChunkBackgroundColorProperty.addListener((o, r, n) -> Tile.EMPTY_CHUNK_BACKGROUND_COLOR = new net.querz.mcaselector.ui.Color(emptyChunkBackgroundColorProperty.get()));
 		emptyColorProperty.addListener((o, r, n) -> {
-			Tile.EMPTY_COLOR = new net.querz.mcaselector.util.Color(emptyColorProperty.get());
+			Tile.EMPTY_COLOR = new net.querz.mcaselector.ui.Color(emptyColorProperty.get());
 			Tile.reloadEmpty();
 		});
 	}

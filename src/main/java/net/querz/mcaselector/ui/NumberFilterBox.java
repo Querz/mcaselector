@@ -6,8 +6,7 @@ import javafx.scene.control.TextField;
 import net.querz.mcaselector.filter.Comparator;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.filter.NumberFilter;
-import net.querz.mcaselector.util.Translation;
-import net.querz.mcaselector.util.UIFactory;
+import net.querz.mcaselector.text.Translation;
 
 public class NumberFilterBox extends FilterBox {
 

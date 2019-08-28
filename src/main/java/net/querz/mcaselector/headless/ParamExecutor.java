@@ -12,11 +12,11 @@ import net.querz.mcaselector.io.FieldChanger;
 import net.querz.mcaselector.io.SelectionDeleter;
 import net.querz.mcaselector.io.SelectionExporter;
 import net.querz.mcaselector.io.SelectionUtil;
-import net.querz.mcaselector.util.DataProperty;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.FileHelper;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.io.CacheHelper;
+import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.point.Point2i;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -65,7 +65,7 @@ public class ParamExecutor {
 			pi.registerDependencies("offset-z", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("overwrite", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("zoom-level", null, new ActionKey("mode", "cache"));
-			for (int z = Helper.getMinZoomLevel(); z <= Helper.getMaxZoomLevel(); z *= 2) {
+			for (int z = Config.getMinZoomLevel(); z <= Config.getMaxZoomLevel(); z *= 2) {
 				pi.registerRestrictions("zoom-level", z + "");
 			}
 			pi.registerDependencies("debug", null, new ActionKey("headless", null));
@@ -135,7 +135,7 @@ public class ParamExecutor {
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(future);
 
-		Helper.forceGenerateCache(zoomLevel, progress);
+		CacheHelper.forceGenerateCache(zoomLevel, progress);
 	}
 
 	private static void runModeChange(Map<String, String> params, FutureTask<Boolean> future) throws IOException {

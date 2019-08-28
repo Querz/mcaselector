@@ -4,12 +4,11 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.tiles.Tile;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.FileHelper;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.Point2i;
-import net.querz.mcaselector.util.Progress;
-import net.querz.mcaselector.util.Timer;
+import net.querz.mcaselector.ui.ImageHelper;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.progress.Progress;
+import net.querz.mcaselector.progress.Timer;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -143,23 +142,23 @@ public class RegionImageGenerator {
 			try {
 				BufferedImage img = SwingFXUtils.fromFXImage(getData(), null);
 				if (scaleOnly) {
-					int zoomLevel = Helper.getZoomLevel(scaleSupplier.get());
+					int zoomLevel = Tile.getZoomLevel(scaleSupplier.get());
 					File cacheFile = FileHelper.createPNGFilePath(new File(Config.getCacheDir().getAbsolutePath(), zoomLevel + ""), tile.getLocation());
 					if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
 						Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
 					}
 
-					BufferedImage scaled = Helper.scaleImage(img, (double) Tile.SIZE / (double) zoomLevel);
+					BufferedImage scaled = ImageHelper.scaleImage(img, (double) Tile.SIZE / (double) zoomLevel);
 					ImageIO.write(scaled, "png", cacheFile);
 
 				} else {
-					for (int i = Helper.getMinZoomLevel(); i <= Helper.getMaxZoomLevel(); i *= 2) {
+					for (int i = Config.getMinZoomLevel(); i <= Config.getMaxZoomLevel(); i *= 2) {
 						File cacheFile = FileHelper.createPNGFilePath(new File(Config.getCacheDir().getAbsolutePath(), i + ""), tile.getLocation());
 						if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
 							Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
 						}
 
-						BufferedImage scaled = Helper.scaleImage(img, (double) Tile.SIZE / (double) i);
+						BufferedImage scaled = ImageHelper.scaleImage(img, (double) Tile.SIZE / (double) i);
 						ImageIO.write(scaled, "png", cacheFile);
 					}
 				}

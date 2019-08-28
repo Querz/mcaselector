@@ -1,4 +1,4 @@
-package net.querz.mcaselector.util;
+package net.querz.mcaselector.ui;
 
 import javafx.application.Platform;
 import javafx.scene.control.ButtonType;
@@ -6,27 +6,12 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.io.ChunkFilterDeleter;
-import net.querz.mcaselector.io.ChunkFilterExporter;
-import net.querz.mcaselector.io.ChunkFilterSelector;
-import net.querz.mcaselector.io.ChunkImporter;
-import net.querz.mcaselector.io.FieldChanger;
-import net.querz.mcaselector.io.MCAFilePipe;
-import net.querz.mcaselector.io.SelectionDeleter;
-import net.querz.mcaselector.io.SelectionExporter;
-import net.querz.mcaselector.io.SelectionUtil;
+import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.tiles.TileMap;
-import net.querz.mcaselector.ui.AboutDialog;
-import net.querz.mcaselector.ui.ChangeFieldsConfirmationDialog;
-import net.querz.mcaselector.ui.ChangeNBTDialog;
-import net.querz.mcaselector.ui.DeleteConfirmationDialog;
-import net.querz.mcaselector.ui.ExportConfirmationDialog;
-import net.querz.mcaselector.ui.FilterChunksDialog;
-import net.querz.mcaselector.ui.GotoDialog;
-import net.querz.mcaselector.ui.ImportConfirmationDialog;
-import net.querz.mcaselector.ui.OptionBar;
-import net.querz.mcaselector.ui.ProgressDialog;
-import net.querz.mcaselector.ui.SettingsDialog;
+import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.text.Translation;
 import java.io.File;
 import java.util.Locale;
 import java.util.Map;
@@ -78,7 +63,7 @@ public class DialogHelper {
 											r.isSelectionOnly() ? tileMap.getMarkedChunks() : null,
 											t
 									));
-							Helper.clearAllCache(tileMap);
+							CacheHelper.clearAllCache(tileMap);
 						}
 					});
 					break;
@@ -122,7 +107,7 @@ public class DialogHelper {
 			if (r == ButtonType.OK) {
 				new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_SELECTION, primaryStage)
 						.showProgressBar(t -> SelectionDeleter.deleteSelection(tileMap.getMarkedChunks(), t));
-				Helper.clearSelectionCache(tileMap);
+				CacheHelper.clearSelectionCache(tileMap);
 			}
 		});
 	}
@@ -150,7 +135,7 @@ public class DialogHelper {
 					new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									dir, t, dataProperty.get().overwrite(), dataProperty.get().getOffset()));
-					Helper.clearAllCache(tileMap);
+					CacheHelper.clearAllCache(tileMap);
 				}
 			});
 		}

@@ -13,9 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.Translation;
-import net.querz.mcaselector.util.UIFactory;
+import net.querz.mcaselector.text.Translation;
 import java.util.Optional;
 
 public class ColorPicker extends TransparentStage {
@@ -59,10 +57,10 @@ public class ColorPicker extends TransparentStage {
 		grid.add(green, 1, 1, 1, 1);
 		grid.add(blue, 1, 2, 1, 1);
 		grid.add(opacity, 1, 3, 1, 1);
-		grid.add(Helper.attachTextFieldToSlider(red), 2, 0, 1, 1);
-		grid.add(Helper.attachTextFieldToSlider(green), 2, 1, 1, 1);
-		grid.add(Helper.attachTextFieldToSlider(blue), 2, 2, 1, 1);
-		grid.add(Helper.attachTextFieldToSlider(opacity), 2, 3, 1, 1);
+		grid.add(UIFactory.attachTextFieldToSlider(red), 2, 0, 1, 1);
+		grid.add(UIFactory.attachTextFieldToSlider(green), 2, 1, 1, 1);
+		grid.add(UIFactory.attachTextFieldToSlider(blue), 2, 2, 1, 1);
+		grid.add(UIFactory.attachTextFieldToSlider(opacity), 2, 3, 1, 1);
 
 		HBox buttonBox = new HBox();
 		buttonBox.getChildren().addAll(ok, cancel);

@@ -1,8 +1,8 @@
 package net.querz.mcaselector.changer;
 
 import net.querz.mcaselector.filter.BiomeFilter;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.text.TextHelper;
+import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
 import java.io.BufferedReader;
@@ -26,7 +26,7 @@ public class BiomeField extends Field<Integer> {
 					Debug.dumpf("invalid biome mapping: %s", line);
 					continue;
 				}
-				Integer id = Helper.parseInt(split[1], 10);
+				Integer id = TextHelper.parseInt(split[1], 10);
 				if (id == null) {
 					Debug.dumpf("invalid biome id: %s", line);
 					continue;

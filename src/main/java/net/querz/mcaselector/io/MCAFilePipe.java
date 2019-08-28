@@ -1,7 +1,7 @@
 package net.querz.mcaselector.io;
 
 import javafx.application.Platform;
-import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.debug.Debug;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;

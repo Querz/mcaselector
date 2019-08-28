@@ -8,14 +8,13 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.ByteArrayPointer;
-import net.querz.mcaselector.util.Color;
-import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.ui.Color;
+import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.MCAFile;
-import net.querz.mcaselector.util.FileHelper;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.Point2f;
-import net.querz.mcaselector.util.Point2i;
-import net.querz.mcaselector.util.Timer;
+import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.point.Point2f;
+import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.progress.Timer;
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -53,6 +52,14 @@ public class Tile {
 
 	public Tile(Point2i location) {
 		this.location = location;
+	}
+
+	public static int getZoomLevel(float scale) {
+		int b = 1;
+		while (b <= scale) {
+			b = b << 1;
+		}
+		return (int) Math.ceil(b / 2.0);
 	}
 
 	public boolean isVisible(TileMap tileMap) {
@@ -182,7 +189,7 @@ public class Tile {
 			} else if (markedChunks.size() > 0) {
 
 				if (markedChunksImage == null) {
-					createMarkedChunksImage(Helper.getZoomLevel(scale));
+					createMarkedChunksImage(getZoomLevel(scale));
 				}
 
 				// apply markedChunksImage to ctx
@@ -242,7 +249,7 @@ public class Tile {
 			return;
 		}
 
-		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/" + Helper.getZoomLevel(scaleSupplier.get()) + "/r.%d.%d.png", location.getX(), location.getY());
+		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/" + getZoomLevel(scaleSupplier.get()) + "/r.%d.%d.png", location.getX(), location.getY());
 
 		Debug.dump("loading region " + location + " from cache: " + res);
 

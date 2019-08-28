@@ -7,9 +7,8 @@ import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.filter.FilterData;
 import net.querz.mcaselector.tiles.Tile;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.FileHelper;
-import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.point.Point2i;
 import java.io.*;
 import java.util.*;
 

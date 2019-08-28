@@ -16,10 +16,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Translation;
-import net.querz.mcaselector.util.UIFactory;
-
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.text.Translation;
 import java.util.ArrayList;
 import java.util.List;
 

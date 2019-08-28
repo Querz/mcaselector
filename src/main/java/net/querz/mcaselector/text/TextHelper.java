@@ -1,5 +1,6 @@
-package net.querz.mcaselector.util;
+package net.querz.mcaselector.text;
 
+import net.querz.mcaselector.debug.Debug;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -12,7 +13,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TimeHelper {
+public final class TextHelper {
+
+	private TextHelper() {}
 
 	private static final Map<Pattern, Long> DURATION_REGEXP = new HashMap<>();
 
@@ -60,5 +63,29 @@ public class TimeHelper {
 			Debug.dump(e.getMessage());
 		}
 		throw new IllegalArgumentException("could not parse date time");
+	}
+
+	public static Integer parseInt(String s, int radix) {
+		try {
+			return Integer.parseInt(s, radix);
+		} catch (NumberFormatException ex) {
+			return null;
+		}
+	}
+
+	public static String byteToBinaryString(byte b) {
+		StringBuilder s = new StringBuilder(Integer.toBinaryString(b & 0xFF));
+		for (int i = s.length(); i < 8; i++) {
+			s.insert(0, "0");
+		}
+		return s.toString();
+	}
+
+	public static String intToBinaryString(int n) {
+		StringBuilder s = new StringBuilder(Integer.toBinaryString(n));
+		for (int i = s.length(); i < 32; i++) {
+			s.insert(0, "0");
+		}
+		return s.toString();
 	}
 }

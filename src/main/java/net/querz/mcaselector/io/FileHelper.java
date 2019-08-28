@@ -1,7 +1,8 @@
-package net.querz.mcaselector.util;
+package net.querz.mcaselector.io;
 
 import javafx.scene.image.Image;
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.point.Point2i;
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -17,7 +18,7 @@ public class FileHelper {
 	public static final Pattern REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
 
 	public static Image getIconFromResources(String name) {
-		return new Image(Helper.class.getClassLoader().getResourceAsStream(name + ".png"));
+		return new Image(FileHelper.class.getClassLoader().getResourceAsStream(name + ".png"));
 	}
 
 	public static String getMCDir() {
@@ -76,8 +77,8 @@ public class FileHelper {
 	}
 
 	public static Attributes getManifestAttributes() throws IOException {
-		String className = Helper.class.getSimpleName() + ".class";
-		String classPath = Helper.class.getResource(className).toString();
+		String className = FileHelper.class.getSimpleName() + ".class";
+		String classPath = FileHelper.class.getResource(className).toString();
 		if (!classPath.startsWith("jar")) {
 			throw new IOException("application not running in jar file");
 		}
