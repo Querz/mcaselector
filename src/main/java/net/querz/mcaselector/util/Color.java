@@ -2,6 +2,10 @@ package net.querz.mcaselector.util;
 
 public class Color {
 
+	public static final Color BLACK = new Color(0, 0, 0, 1);
+	public static final Color DARKGRAY = new Color(0.6627451f, 0.6627451f, 0.6627451f, 1);
+	public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
+
 	private javafx.scene.paint.Color handle;
 	private double r, g, b, a;
 	private String web;

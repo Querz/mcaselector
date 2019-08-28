@@ -6,9 +6,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.util.Color;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.io.MCAFile;
 import net.querz.mcaselector.util.FileHelper;
@@ -165,7 +165,7 @@ public class Tile {
 		PixelWriter pWriter = wImage.getPixelWriter();
 		for (int x = 0; x < SIZE; x++) {
 			for (int y = 0; y < SIZE; y++) {
-				pWriter.setColor(x, y, EMPTY_COLOR);
+				pWriter.setColor(x, y, EMPTY_COLOR.makeJavaFXColor());
 			}
 		}
 		empty = wImage;
@@ -214,7 +214,7 @@ public class Tile {
 		}
 
 		SnapshotParameters params = new SnapshotParameters();
-		params.setFill(Color.TRANSPARENT);
+		params.setFill(Color.TRANSPARENT.makeJavaFXColor());
 
 		canvas.snapshot(params, wImage);
 

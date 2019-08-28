@@ -410,7 +410,7 @@ public class TileMap extends Canvas {
 	}
 
 	private void draw(GraphicsContext ctx) {
-		ctx.setFill(Tile.EMPTY_CHUNK_BACKGROUND_COLOR);
+		ctx.setFill(Tile.EMPTY_CHUNK_BACKGROUND_COLOR.makeJavaFXColor());
 		ctx.fillRect(0, 0, getWidth(), getHeight());
 		runOnVisibleRegions(region -> {
 			if (!tiles.containsKey(region)) {
@@ -439,7 +439,7 @@ public class TileMap extends Canvas {
 
 	private void drawRegionGrid(GraphicsContext ctx) {
 		ctx.setLineWidth(Tile.GRID_LINE_WIDTH);
-		ctx.setStroke(Tile.REGION_GRID_COLOR);
+		ctx.setStroke(Tile.REGION_GRID_COLOR.makeJavaFXColor());
 
 		Point2f p = Helper.getRegionGridMin(offset, scale);
 
@@ -454,7 +454,7 @@ public class TileMap extends Canvas {
 
 	private void drawChunkGrid(GraphicsContext ctx) {
 		ctx.setLineWidth(Tile.GRID_LINE_WIDTH);
-		ctx.setStroke(Tile.CHUNK_GRID_COLOR);
+		ctx.setStroke(Tile.CHUNK_GRID_COLOR.makeJavaFXColor());
 
 		Point2f p = Helper.getChunkGridMin(offset, scale);
 		Point2f pReg = Helper.getRegionGridMin(offset, scale);

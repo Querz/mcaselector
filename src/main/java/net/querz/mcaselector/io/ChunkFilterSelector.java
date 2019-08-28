@@ -5,7 +5,6 @@ import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.util.Debug;
 import net.querz.mcaselector.util.FileHelper;
-import net.querz.mcaselector.util.Helper;
 import net.querz.mcaselector.util.Point2i;
 import net.querz.mcaselector.util.Progress;
 import net.querz.mcaselector.util.Timer;
