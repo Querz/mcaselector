@@ -119,7 +119,7 @@ public class TileMapBox extends HBox {
 		emptyChunkBackgroundColorProperty.addListener((o, r, n) -> Tile.EMPTY_CHUNK_BACKGROUND_COLOR = new net.querz.mcaselector.ui.Color(emptyChunkBackgroundColorProperty.get()));
 		emptyColorProperty.addListener((o, r, n) -> {
 			Tile.EMPTY_COLOR = new net.querz.mcaselector.ui.Color(emptyColorProperty.get());
-			Tile.reloadEmpty();
+			ImageHelper.reloadEmpty();
 		});
 	}
 

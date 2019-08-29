@@ -4,7 +4,6 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.ByteArrayPointer;
@@ -15,6 +14,7 @@ import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2f;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.ui.ImageHelper;
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,11 +33,9 @@ public class Tile {
 	public static final int SIZE_IN_CHUNKS = 32;
 	public static final int CHUNKS = 1024;
 
-	private static Image empty;
-
 	private Point2i location;
-	private Image image;
 
+	private Image image;
 	private Image markedChunksImage;
 
 	private boolean loading = false;
@@ -45,10 +43,6 @@ public class Tile {
 	private boolean marked = false;
 	//a set of all marked chunks in the tile in block locations
 	private Set<Point2i> markedChunks = new HashSet<>();
-
-	static {
-		reloadEmpty();
-	}
 
 	public Tile(Point2i location) {
 		this.location = location;
@@ -88,7 +82,7 @@ public class Tile {
 	}
 
 	public boolean isEmpty() {
-		return image == null || image == empty;
+		return image == null || image == ImageHelper.getEmptyTileImage();
 	}
 
 	public boolean isLoaded() {
@@ -167,17 +161,6 @@ public class Tile {
 		return markedChunks;
 	}
 
-	public static void reloadEmpty() {
-		WritableImage wImage = new WritableImage(SIZE, SIZE);
-		PixelWriter pWriter = wImage.getPixelWriter();
-		for (int x = 0; x < SIZE; x++) {
-			for (int y = 0; y < SIZE; y++) {
-				pWriter.setColor(x, y, EMPTY_COLOR.makeJavaFXColor());
-			}
-		}
-		empty = wImage;
-	}
-
 	public void draw(GraphicsContext ctx, float scale, Point2f offset) {
 		if (isLoaded() && image != null) {
 			double size =  getImage().getHeight() * (SIZE / getImage().getWidth());
@@ -197,7 +180,7 @@ public class Tile {
 				ctx.drawImage(markedChunksImage, offset.getX(), offset.getY(), size / scale, size / scale);
 			}
 		} else {
-			ctx.drawImage(empty, offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
+			ctx.drawImage(ImageHelper.getEmptyTileImage(), offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
 		}
 	}
 
