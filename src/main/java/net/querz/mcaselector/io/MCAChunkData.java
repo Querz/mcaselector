@@ -6,6 +6,9 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
+import net.querz.nbt.DoubleTag;
+import net.querz.nbt.IntTag;
+import net.querz.nbt.ListTag;
 import net.querz.nbt.Tag;
 import java.io.*;
 import java.util.List;
@@ -169,5 +172,180 @@ public class MCAChunkData {
 		data.getCompoundTag("Level").putInt("xPos", location.getX());
 		data.getCompoundTag("Level").putInt("zPos", location.getY());
 		return true;
+	}
+
+	// offset is in blocks
+	public boolean applyOffset(Point2i offset) {
+		if (data == null || !data.containsKey("Level")) {
+			return false;
+		}
+
+		CompoundTag level = data.getCompoundTag("Level");
+
+		// adjust chunk position
+		level.putInt("xPos", level.getInt("xPos") + offset.blockToChunk().getX());
+		level.putInt("zPos", level.getInt("zPos") + offset.blockToChunk().getY());
+
+		// adjust entity positions
+
+		ListTag<CompoundTag> entities = level.getListTag("Entities").asCompoundTagList();
+		for (CompoundTag entity : entities) {
+			applyOffsetToEntity(entity, offset);
+		}
+
+		// adjust tile entity positions
+
+		ListTag<CompoundTag> tileEntities = level.getListTag("TileEntities").asCompoundTagList();
+		for (CompoundTag tileEntity : tileEntities) {
+			applyOffsetToTileEntity(tileEntity, offset);
+		}
+		return true;
+	}
+
+	private void applyOffsetToTileEntity(CompoundTag tileEntity, Point2i offset) {
+		tileEntity.putInt("x", tileEntity.getInt("x") + offset.getX());
+		tileEntity.putInt("z", tileEntity.getInt("z") + offset.getY());
+
+		switch (tileEntity.getString("id")) {
+			case "beehive":
+				CompoundTag flowerPos = tileEntity.getCompoundTag("FlowerPos");
+				flowerPos.putInt("X", flowerPos.getInt("X") + offset.getX());
+				flowerPos.putInt("Z", flowerPos.getInt("Z") + offset.getY());
+				break;
+			case "end_gateway":
+				CompoundTag exitPortal = tileEntity.getCompoundTag("ExitPortal");
+				exitPortal.putInt("X", exitPortal.getInt("X") + offset.getX());
+				exitPortal.putInt("Z", exitPortal.getInt("Z") + offset.getY());
+				break;
+
+		}
+	}
+
+	private void applyOffsetToEntity(CompoundTag entity, Point2i offset) {
+		ListTag<DoubleTag> entityPos = entity.getListTag("Pos").asDoubleTagList();
+		entityPos.set(0, new DoubleTag(entityPos.get(0).asDouble() + offset.getX()));
+		entityPos.set(2, new DoubleTag(entityPos.get(2).asDouble() + offset.getY()));
+
+		// leashed entities
+
+		if (entity.containsKey("Leash")) {
+			CompoundTag leash = entity.getCompoundTag("Leash");
+			if (leash.containsKey("X")) {
+				leash.putInt("X", leash.getInt("X") + offset.getX());
+				leash.putInt("Z", leash.getInt("Z") + offset.getY());
+			}
+		}
+
+		// projectiles
+
+		applyIntIfPresent(entity, "xTile", offset.getX());
+		applyIntIfPresent(entity, "zTile", offset.getY());
+
+		// entities that have a sleeping place
+
+		applyIntIfPresent(entity, "SleepingX", offset.getX());
+		applyIntIfPresent(entity, "SleepingZ", offset.getY());
+
+		// positions for specific entity types
+
+		switch (entity.getString("id")) {
+			case "dolphin":
+				if (entity.getBoolean("CanFindTreasure")) {
+					entity.putInt("TreasurePosX", entity.getInt("TreasurePosX") + offset.getX());
+					entity.putInt("TreasurePosZ", entity.getInt("TreasurePosZ") + offset.getY());
+				}
+				break;
+			case "phantom":
+				applyIntIfPresent(entity, "AX", offset.getX());
+				applyIntIfPresent(entity, "AZ", offset.getY());
+				break;
+			case "shulker":
+				applyIntIfPresent(entity, "APX", offset.getX());
+				applyIntIfPresent(entity, "APZ", offset.getY());
+				break;
+			case "turtle":
+				applyIntIfPresent(entity, "HomePosX", offset.getX());
+				applyIntIfPresent(entity, "HomePosZ", offset.getY());
+				applyIntIfPresent(entity, "TravelPosX", offset.getX());
+				applyIntIfPresent(entity, "TravelPosZ", offset.getY());
+				break;
+			case "vex":
+				applyIntIfPresent(entity, "BoundX", offset.getX());
+				applyIntIfPresent(entity, "BoundZ", offset.getY());
+				break;
+			case "wandering_trader":
+				if (entity.containsKey("WanderTarget")) {
+					CompoundTag wanderTarget = entity.getCompoundTag("WanderTarget");
+					wanderTarget.putInt("X", wanderTarget.getInt("X") + offset.getX());
+					wanderTarget.putInt("Z", wanderTarget.getInt("Z") + offset.getY());
+				}
+				break;
+			case "shulker_bullet":
+				CompoundTag owner = entity.getCompoundTag("Owner");
+				owner.putInt("X", owner.getInt("X") + offset.getX());
+				owner.putInt("Z", owner.getInt("Z") + offset.getY());
+				CompoundTag target = entity.getCompoundTag("Target");
+				target.putInt("X", target.getInt("X") + offset.getX());
+				target.putInt("Z", target.getInt("Z") + offset.getY());
+				break;
+			case "end_crystal":
+				CompoundTag beamTarget = entity.getCompoundTag("BeamTarget");
+				beamTarget.putInt("X", beamTarget.getInt("X") + offset.getX());
+				beamTarget.putInt("Z", beamTarget.getInt("Z") + offset.getY());
+				break;
+			case "item_frame":
+			case "painting":
+				applyIntIfPresent(entity, "TileX", offset.getX());
+				applyIntIfPresent(entity, "TileZ", offset.getY());
+				break;
+			case "villager":
+				if (entity.containsKey("Brain") && entity.getCompoundTag("Brain").containsKey("memories")) {
+					CompoundTag memories = entity.getCompoundTag("Brain").getCompoundTag("memories");
+					if (memories.size() > 0) {
+						if (memories.containsKey("minecraft:meeting_point")) {
+							CompoundTag meetingPoint = memories.getCompoundTag("minecraft:meeting_point");
+							applyOffsetToIntListPos(meetingPoint.getListTag("pos").asIntTagList(), offset);
+						}
+						if (memories.containsKey("minecraft:home")) {
+							CompoundTag home = memories.getCompoundTag("minecraft:home");
+							applyOffsetToIntListPos(home.getListTag("pos").asIntTagList(), offset);
+						}
+						if (memories.containsKey("minecraft:job_site")) {
+							CompoundTag jobSite = memories.getCompoundTag("minecraft:job_site");
+							applyOffsetToIntListPos(jobSite.getListTag("pos").asIntTagList(), offset);
+						}
+					}
+				}
+				break;
+			case "pillager":
+			case "witch":
+			case "vindicator":
+			case "ravager":
+			case "illusioner":
+			case "evoker":
+				if (entity.containsKey("PatrolTarget")) {
+					CompoundTag patrolTarget = entity.getCompoundTag("PatrolTarget");
+					patrolTarget.putInt("X", patrolTarget.getInt("X") + offset.getX());
+					patrolTarget.putInt("X", patrolTarget.getInt("X") + offset.getY());
+				}
+				break;
+		}
+
+		// recursively update passengers
+
+		if (entity.containsKey("Passenger")) {
+			applyOffsetToEntity(entity.getCompoundTag("Passenger"), offset);
+		}
+	}
+
+	private void applyIntIfPresent(CompoundTag root, String key, int offset) {
+		if (root.containsKey(key)) {
+			root.putInt(key, root.getInt(key) + offset);
+		}
+	}
+
+	private void applyOffsetToIntListPos(ListTag<IntTag> pos, Point2i offset) {
+		pos.set(0, new IntTag(pos.get(0).asInt() + offset.getX()));
+		pos.set(2, new IntTag(pos.get(2).asInt() + offset.getY()));
 	}
 }
