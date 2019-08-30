@@ -7,11 +7,14 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.DoubleTag;
+import net.querz.nbt.IntArrayTag;
 import net.querz.nbt.IntTag;
 import net.querz.nbt.ListTag;
+import net.querz.nbt.LongArrayTag;
 import net.querz.nbt.Tag;
 import java.io.*;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -189,17 +192,94 @@ public class MCAChunkData {
 		// adjust entity positions
 
 		ListTag<CompoundTag> entities = level.getListTag("Entities").asCompoundTagList();
-		for (CompoundTag entity : entities) {
-			applyOffsetToEntity(entity, offset);
-		}
+		entities.forEach(v -> applyOffsetToEntity(v, offset));
 
 		// adjust tile entity positions
 
 		ListTag<CompoundTag> tileEntities = level.getListTag("TileEntities").asCompoundTagList();
-		for (CompoundTag tileEntity : tileEntities) {
-			applyOffsetToTileEntity(tileEntity, offset);
-		}
+		tileEntities.forEach(v -> applyOffsetToTileEntity(v, offset));
+
+		// adjust tile ticks
+
+		ListTag<CompoundTag> tileTicks = level.getListTag("TileTicks").asCompoundTagList();
+		tileTicks.forEach(v -> applyOffsetToTileTick(v, offset));
+
+		// adjust structures
+
+		CompoundTag structures = level.getCompoundTag("Structures");
+		applyOffsetToStructures(structures, offset);
+
 		return true;
+	}
+
+	private void applyOffsetToStructures(CompoundTag structures, Point2i offset) {
+		Point2i chunkOffset = offset.blockToChunk();
+
+		// update references
+
+		CompoundTag references = structures.getCompoundTag("References");
+		for (Map.Entry<String, Tag<?>> entry : references) {
+			long[] reference = ((LongArrayTag) entry.getValue()).getValue();
+			for (int i = 0; i < reference.length; i++) {
+				int x = (int) (reference[i]);
+				int z = (int) (reference[i] >> 32);
+				reference[i] = (long) (x + chunkOffset.getX()) + ((long) (z + chunkOffset.getY()) << 32);
+			}
+		}
+
+		// update starts
+
+		CompoundTag starts = structures.getCompoundTag("Starts");
+		for (Map.Entry<String, Tag<?>> entry : starts) {
+			CompoundTag structure = (CompoundTag) entry.getValue();
+			if (structure.getString("id").equals("INVALID")) {
+				continue;
+			}
+			structure.putInt("ChunkX", structure.getInt("ChunkX") + chunkOffset.getX());
+			structure.putInt("ChunkZ", structure.getInt("ChunkZ") + chunkOffset.getY());
+
+			applyOffsetToBB(structure.getIntArray("BB"), offset);
+
+			ListTag<CompoundTag> processed = structure.getListTag("Processed").asCompoundTagList();
+			for (CompoundTag chunk : processed) {
+				chunk.putInt("X", chunk.getInt("X") + chunkOffset.getX());
+				chunk.putInt("Z", chunk.getInt("Z") + chunkOffset.getY());
+			}
+
+			ListTag<CompoundTag> children = structure.getListTag("Children").asCompoundTagList();
+			for (CompoundTag child : children) {
+				applyIntIfPresent(child, "TPX", offset.getX());
+				applyIntIfPresent(child, "TPZ", offset.getY());
+				applyIntIfPresent(child, "PosX", offset.getX());
+				applyIntIfPresent(child, "PosZ", offset.getY());
+				applyOffsetToBB(child.getIntArray("BB"), offset);
+
+				if (child.containsKey("Entrances")) {
+					for (IntArrayTag entrance : child.getListTag("Entrances").asIntArrayTagList()) {
+						applyOffsetToBB(entrance.getValue(), offset);
+					}
+				}
+
+				if (child.containsKey("junctions")) {
+					for (CompoundTag junction : child.getListTag("junctions").asCompoundTagList()) {
+						junction.putInt("source_x", junction.getInt("source_x") + offset.getX());
+						junction.putInt("source_z", junction.getInt("source_z") + offset.getY());
+					}
+				}
+			}
+		}
+	}
+
+	private void applyOffsetToBB(int[] bb, Point2i offset) {
+		bb[0] += offset.getX();
+		bb[2] += offset.getY();
+		bb[3] += offset.getX();
+		bb[5] += offset.getY();
+	}
+
+	private void applyOffsetToTileTick(CompoundTag tileTick, Point2i offset) {
+		tileTick.putInt("x", tileTick.getInt("x") + offset.getX());
+		tileTick.putInt("z", tileTick.getInt("z") + offset.getY());
 	}
 
 	private void applyOffsetToTileEntity(CompoundTag tileEntity, Point2i offset) {

@@ -259,7 +259,7 @@ public class MCAFile {
 				}
 
 				if (sourceChunk != null && !sourceChunk.isEmpty()) {
-					if (!sourceChunk.setLocation(location.mul(32).add(destX, destZ))) {
+					if (!sourceChunk.applyOffset(offset.chunkToBlock())) {
 						continue;
 					}
 					destination.chunks[destIndex] = sourceChunk;
