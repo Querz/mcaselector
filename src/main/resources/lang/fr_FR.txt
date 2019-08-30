@@ -1,0 +1,107 @@
+status.region;region
+status.region.tooltip;La région actuellement survolée représente les numéros dans son nom de fichier.
+status.chunk;chunk
+status.chunk.tooltip;Le chunk actuellement survolé.
+status.block;bloque
+status.block.tooltip;Une approximation du bloc actuellement survolé.
+status.selected;Selectionné
+status.selected.tooltip;La quantité de chunks actuellement sélectionnée.
+status.visible;regions visibles
+status.visible.tooltip;La quantité d'images de la région chargée pour le rendu.
+status.total;total regions
+status.total.tooltip;Le nombre total de régions chargées, y compris les régions sélectionnées non visibles
+menu.file;Fichier
+menu.view;Vue
+menu.selection;Selection
+menu.tools;Outils
+menu.about;A propos
+menu.file.open;Ouvrir
+menu.file.settings;Options
+menu.file.quit;Quitter
+menu.view.chunk_grid;Grille chunk
+menu.view.region_grid;Grille Region
+menu.view.goto;Aller à
+menu.view.clear_cache;Vider le cache
+menu.view.clear_all_cache;Nettoyer tout le cache
+menu.selection.clear;Nettoyer
+menu.selection.export_chunks;Exporter les chunks sélectionnés
+menu.selection.delete_chunks;Supprimer les chunks sélectionnés
+menu.selection.import_selection;Importer la selection
+menu.selection.export_selection;Exporter la selection
+menu.selection.clear_cache;Nettoyer le cache
+menu.tools.import_chunks;Importer le chunks
+menu.tools.filter_chunks;Filtrer le chunks
+menu.tools.change_fields;Changer les champs
+dialog.settings.title;Options
+dialog.settings.language;Langage
+dialog.settings.read_threads;Read Threads
+dialog.settings.process_threads;Process Threads
+dialog.settings.write_threads;Write Threads
+dialog.settings.max_files;Max fichier chargé
+dialog.settings.region_color;Region selection color
+dialog.settings.chunk_color;Chunk selection color
+dialog.settings.print_debug;Print debug messages
+dialog.settings.reset;Reset
+dialog.goto.title;Goto location
+dialog.confirmation.question;Êtes-vous sur ?
+dialog.delete_chunks_confirmation.title;Supprimer chunks
+dialog.delete_chunks_confirmation.header_short;You are about to delete an unknown number of chunks from this world.
+dialog.delete_chunks_confirmation.header_verbose;You are about to delete %d chunks from this world.
+dialog.import_chunks_confirmation.title;Import chunks
+dialog.import_chunks_confirmation.header;You are about to import an unknown number of chunks to this world.
+dialog.import_chunks_confirmation.options;Options
+dialog.import_chunks_confirmation.options.offset;Offset
+dialog.import_chunks_confirmation.options.overwrite;Overwrite existing chunks
+dialog.export_chunks_confirmation.title;Export chunks
+dialog.export_chunks_confirmation.header_short;You are about to export an unknown number of chunks from this world.
+dialog.export_chunks_confirmation.header_verbose;You are about to export %d chunks from this world.
+dialog.filter_chunks.title;Filter chunks
+dialog.filter_chunks.filter.add.tooltip;Add a new condition below this one.
+dialog.filter_chunks.filter.delete.tooltip;Delete this condition.
+dialog.filter_chunks.filter.type.tooltip;The type of this condition.
+dialog.filter_chunks.filter.operator.tooltip;The operator to link multiple conditions.
+dialog.filter_chunks.filter.comparator.tooltip;The comparator.
+dialog.filter_chunks.select;Select
+dialog.filter_chunks.select.tooltip;Creates a selection of the affected chunks.
+dialog.filter_chunks.export;Export
+dialog.filter_chunks.export.tooltip;Exports all affected chunks into a new directory.
+dialog.filter_chunks.delete;Delete
+dialog.filter_chunks.delete.tooltip;Deletes all affected chunks from the current world.
+dialog.filter_chunks.selection_only;Apply to selection only
+dialog.filter_chunks.selection_only.tooltip;If this filter should only apply to the current selection.
+dialog.change_nbt.title;Change NBT
+dialog.change_nbt.change;Change
+dialog.change_nbt.change.tooltip;Changer la valeur si seulement elle existe.
+dialog.change_nbt.force;Force
+dialog.change_nbt.force.tooltip;Crée le tag s'il n'existe pas.
+dialog.change_nbt.selection_only;Appliquer à la sélection seulement
+dialog.change_nbt.selection_only.tooltip;Si ce filtre ne devrait s'appliquer qu'à la sélection en cours.
+dialog.change_nbt_confirmation.title;Change NBT
+dialog.change_nbt_confirmation.header_short;Vous êtes sur le point de modifier les données d'un nombre inconnu de chunks dans ce monde.
+dialog.change_nbt_confirmation.header_verbose;Vous êtes sur le point de modifier les données en %d chunks dans ce monde.
+dialog.about.title;A propos
+dialog.about.header;A propos de MCA Selector
+dialog.about.version;Version:
+dialog.about.version.unknown;unknown
+dialog.about.version.check;verifier
+dialog.about.version.checking;Verification...
+dialog.about.version.up_to_date;A jour
+dialog.about.version.error;Erreur
+dialog.about.license;License:
+dialog.about.copyright;Copyright:
+dialog.about.source;Source:
+dialog.progress.title;Progress
+dialog.progress.no_files;no files
+dialog.progress.running;running...
+dialog.progress.cancelling;cancelling...
+dialog.progress.collecting_data;collecting data...
+dialog.progress.done;done.
+dialog.progress.title.deleting_selection;Deleting selection...
+dialog.progress.title.exporting_selection;Exporting selection...
+dialog.progress.title.importing_chunks;Importing chunks...
+dialog.progress.title.deleting_filtered_chunks;Deleting filtered chunks...
+dialog.progress.title.exporting_filtered_chunks;Exporting filtered chunks...
+dialog.progress.title.selecting_filtered_chunks;Selecting filtered chunks...
+dialog.progress.title.changing_nbt_data;Changing NBT data...
+button.cancel;Annulé
+button.ok;OK
