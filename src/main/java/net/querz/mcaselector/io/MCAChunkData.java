@@ -15,6 +15,7 @@ import net.querz.nbt.Tag;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -167,47 +168,51 @@ public class MCAChunkData {
 		return new Point2i(data.getCompoundTag("Level").getInt("xPos"), data.getCompoundTag("Level").getInt("zPos"));
 	}
 
-	public boolean setLocation(Point2i location) {
-		if (data == null || !data.containsKey("Level")) {
-			return false;
-		}
-
-		data.getCompoundTag("Level").putInt("xPos", location.getX());
-		data.getCompoundTag("Level").putInt("zPos", location.getY());
-		return true;
-	}
-
 	// offset is in blocks
-	public boolean applyOffset(Point2i offset) {
+	public boolean relocate(Point2i offset) {
 		if (data == null || !data.containsKey("Level")) {
 			return false;
 		}
 
 		CompoundTag level = data.getCompoundTag("Level");
 
-		// adjust chunk position
+		System.out.print("applying offset to " + getLocation() + ": " + offset + " --> ");
+
+		// adjust or set chunk position
 		level.putInt("xPos", level.getInt("xPos") + offset.blockToChunk().getX());
 		level.putInt("zPos", level.getInt("zPos") + offset.blockToChunk().getY());
 
-		// adjust entity positions
+		System.out.println(getLocation());
 
-		ListTag<CompoundTag> entities = level.getListTag("Entities").asCompoundTagList();
-		entities.forEach(v -> applyOffsetToEntity(v, offset));
+		// adjust entity positions
+		if (level.containsKey("Entities")) {
+			ListTag<CompoundTag> entities = level.getListTag("Entities").asCompoundTagList();
+			entities.forEach(v -> applyOffsetToEntity(v, offset));
+		}
 
 		// adjust tile entity positions
-
-		ListTag<CompoundTag> tileEntities = level.getListTag("TileEntities").asCompoundTagList();
-		tileEntities.forEach(v -> applyOffsetToTileEntity(v, offset));
+		if (level.containsKey("TileEntities")) {
+			ListTag<CompoundTag> tileEntities = level.getListTag("TileEntities").asCompoundTagList();
+			tileEntities.forEach(v -> applyOffsetToTileEntity(v, offset));
+		}
 
 		// adjust tile ticks
+		if (level.containsKey("TileTicks")) {
+			ListTag<CompoundTag> tileTicks = level.getListTag("TileTicks").asCompoundTagList();
+			tileTicks.forEach(v -> applyOffsetToTick(v, offset));
+		}
 
-		ListTag<CompoundTag> tileTicks = level.getListTag("TileTicks").asCompoundTagList();
-		tileTicks.forEach(v -> applyOffsetToTileTick(v, offset));
+		// adjust liquid ticks
+		if (level.containsKey("LiquidTicks")) {
+			ListTag<CompoundTag> liquidTicks = level.getListTag("LiquidTicks").asCompoundTagList();
+			liquidTicks.forEach(v -> applyOffsetToTick(v, offset));
+		}
 
 		// adjust structures
-
-		CompoundTag structures = level.getCompoundTag("Structures");
-		applyOffsetToStructures(structures, offset);
+		if (level.containsKey("Structures")) {
+			CompoundTag structures = level.getCompoundTag("Structures");
+			applyOffsetToStructures(structures, offset);
+		}
 
 		return true;
 	}
@@ -216,54 +221,69 @@ public class MCAChunkData {
 		Point2i chunkOffset = offset.blockToChunk();
 
 		// update references
-
-		CompoundTag references = structures.getCompoundTag("References");
-		for (Map.Entry<String, Tag<?>> entry : references) {
-			long[] reference = ((LongArrayTag) entry.getValue()).getValue();
-			for (int i = 0; i < reference.length; i++) {
-				int x = (int) (reference[i]);
-				int z = (int) (reference[i] >> 32);
-				reference[i] = (long) (x + chunkOffset.getX()) + ((long) (z + chunkOffset.getY()) << 32);
+		if (structures.containsKey("References")) {
+			CompoundTag references = structures.getCompoundTag("References");
+			for (Map.Entry<String, Tag<?>> entry : references) {
+				long[] reference = ((LongArrayTag) entry.getValue()).getValue();
+				for (int i = 0; i < reference.length; i++) {
+					int x = (int) (reference[i]);
+					int z = (int) (reference[i] >> 32);
+					reference[i] = (long) (x + chunkOffset.getX()) | ((long) (z + chunkOffset.getY()) << 32);
+				}
 			}
 		}
 
 		// update starts
+		if (structures.containsKey("Starts")) {
+			CompoundTag starts = structures.getCompoundTag("Starts");
+			for (Map.Entry<String, Tag<?>> entry : starts) {
+				CompoundTag structure = (CompoundTag) entry.getValue();
+				if (structure.getString("id").equals("INVALID")) {
+					continue;
+				}
+				applyIntIfPresent(structure, "ChunkX", chunkOffset.getX());
+				applyIntIfPresent(structure, "ChunkZ", chunkOffset.getY());
+				applyOffsetToBB(structure.getIntArray("BB"), offset);
 
-		CompoundTag starts = structures.getCompoundTag("Starts");
-		for (Map.Entry<String, Tag<?>> entry : starts) {
-			CompoundTag structure = (CompoundTag) entry.getValue();
-			if (structure.getString("id").equals("INVALID")) {
-				continue;
-			}
-			structure.putInt("ChunkX", structure.getInt("ChunkX") + chunkOffset.getX());
-			structure.putInt("ChunkZ", structure.getInt("ChunkZ") + chunkOffset.getY());
-
-			applyOffsetToBB(structure.getIntArray("BB"), offset);
-
-			ListTag<CompoundTag> processed = structure.getListTag("Processed").asCompoundTagList();
-			for (CompoundTag chunk : processed) {
-				chunk.putInt("X", chunk.getInt("X") + chunkOffset.getX());
-				chunk.putInt("Z", chunk.getInt("Z") + chunkOffset.getY());
-			}
-
-			ListTag<CompoundTag> children = structure.getListTag("Children").asCompoundTagList();
-			for (CompoundTag child : children) {
-				applyIntIfPresent(child, "TPX", offset.getX());
-				applyIntIfPresent(child, "TPZ", offset.getY());
-				applyIntIfPresent(child, "PosX", offset.getX());
-				applyIntIfPresent(child, "PosZ", offset.getY());
-				applyOffsetToBB(child.getIntArray("BB"), offset);
-
-				if (child.containsKey("Entrances")) {
-					for (IntArrayTag entrance : child.getListTag("Entrances").asIntArrayTagList()) {
-						applyOffsetToBB(entrance.getValue(), offset);
+				if (structure.containsKey("Processed")) {
+					ListTag<CompoundTag> processed = catchClassCastException(() -> structure.getListTag("Processed").asCompoundTagList());
+					if (processed != null) {
+						for (CompoundTag chunk : processed) {
+							applyIntIfPresent(chunk, "X", chunkOffset.getX());
+							applyIntIfPresent(chunk, "Z", chunkOffset.getY());
+						}
 					}
 				}
 
-				if (child.containsKey("junctions")) {
-					for (CompoundTag junction : child.getListTag("junctions").asCompoundTagList()) {
-						junction.putInt("source_x", junction.getInt("source_x") + offset.getX());
-						junction.putInt("source_z", junction.getInt("source_z") + offset.getY());
+				if (structure.containsKey("Children")) {
+					ListTag<CompoundTag> children = catchClassCastException(() -> structure.getListTag("Children").asCompoundTagList());
+					if (children != null) {
+						for (CompoundTag child : children) {
+							applyIntIfPresent(child, "TPX", offset.getX());
+							applyIntIfPresent(child, "TPZ", offset.getY());
+							applyIntIfPresent(child, "PosX", offset.getX());
+							applyIntIfPresent(child, "PosZ", offset.getY());
+							applyOffsetToBB(child.getIntArray("BB"), offset);
+
+							if (child.containsKey("Entrances")) {
+								ListTag<IntArrayTag> entrances = catchClassCastException(() -> child.getListTag("Entrances").asIntArrayTagList());
+								if (entrances != null) {
+									for (IntArrayTag entrance : entrances) {
+										applyOffsetToBB(entrance.getValue(), offset);
+									}
+								}
+							}
+
+							if (child.containsKey("junctions")) {
+								ListTag<CompoundTag> junctions = catchClassCastException(() -> child.getListTag("junctions").asCompoundTagList());
+								if (junctions != null) {
+									for (CompoundTag junction : junctions) {
+										applyIntIfPresent(junction, "source_x", offset.getX());
+										applyIntIfPresent(junction, "source_z", offset.getY());
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -271,150 +291,161 @@ public class MCAChunkData {
 	}
 
 	private void applyOffsetToBB(int[] bb, Point2i offset) {
+		if (bb == null || bb.length != 6) {
+			return;
+		}
 		bb[0] += offset.getX();
 		bb[2] += offset.getY();
 		bb[3] += offset.getX();
 		bb[5] += offset.getY();
 	}
 
-	private void applyOffsetToTileTick(CompoundTag tileTick, Point2i offset) {
-		tileTick.putInt("x", tileTick.getInt("x") + offset.getX());
-		tileTick.putInt("z", tileTick.getInt("z") + offset.getY());
+	private void applyOffsetToTick(CompoundTag tick, Point2i offset) {
+		applyIntIfPresent(tick, "x", offset.getX());
+		applyIntIfPresent(tick, "z", offset.getY());
 	}
 
 	private void applyOffsetToTileEntity(CompoundTag tileEntity, Point2i offset) {
-		tileEntity.putInt("x", tileEntity.getInt("x") + offset.getX());
-		tileEntity.putInt("z", tileEntity.getInt("z") + offset.getY());
+		applyIntIfPresent(tileEntity, "x", offset.getX());
+		applyIntIfPresent(tileEntity, "z", offset.getY());
 
 		switch (tileEntity.getString("id")) {
 			case "beehive":
 				CompoundTag flowerPos = tileEntity.getCompoundTag("FlowerPos");
-				flowerPos.putInt("X", flowerPos.getInt("X") + offset.getX());
-				flowerPos.putInt("Z", flowerPos.getInt("Z") + offset.getY());
+				applyIntOffsetIfRootPresent(flowerPos, "X", "Z", offset);
 				break;
 			case "end_gateway":
 				CompoundTag exitPortal = tileEntity.getCompoundTag("ExitPortal");
-				exitPortal.putInt("X", exitPortal.getInt("X") + offset.getX());
-				exitPortal.putInt("Z", exitPortal.getInt("Z") + offset.getY());
+				applyIntOffsetIfRootPresent(exitPortal, "X", "Z", offset);
 				break;
-
 		}
 	}
 
 	private void applyOffsetToEntity(CompoundTag entity, Point2i offset) {
-		ListTag<DoubleTag> entityPos = entity.getListTag("Pos").asDoubleTagList();
-		entityPos.set(0, new DoubleTag(entityPos.get(0).asDouble() + offset.getX()));
-		entityPos.set(2, new DoubleTag(entityPos.get(2).asDouble() + offset.getY()));
-
-		// leashed entities
-
-		if (entity.containsKey("Leash")) {
-			CompoundTag leash = entity.getCompoundTag("Leash");
-			if (leash.containsKey("X")) {
-				leash.putInt("X", leash.getInt("X") + offset.getX());
-				leash.putInt("Z", leash.getInt("Z") + offset.getY());
+		if (entity.containsKey("Pos")) {
+			ListTag<DoubleTag> entityPos = catchClassCastException(() -> entity.getListTag("Pos").asDoubleTagList());
+			if (entityPos != null && entityPos.size() == 3) {
+				entityPos.set(0, new DoubleTag(entityPos.get(0).asDouble() + offset.getX()));
+				entityPos.set(2, new DoubleTag(entityPos.get(2).asDouble() + offset.getY()));
 			}
 		}
 
-		// projectiles
+		// leashed entities
+		if (entity.containsKey("Leash")) {
+			CompoundTag leash = catchClassCastException(() -> entity.getCompoundTag("Leash"));
+			applyIntOffsetIfRootPresent(leash, "X", "Z", offset);
+		}
 
+		// projectiles
 		applyIntIfPresent(entity, "xTile", offset.getX());
 		applyIntIfPresent(entity, "zTile", offset.getY());
 
 		// entities that have a sleeping place
-
 		applyIntIfPresent(entity, "SleepingX", offset.getX());
 		applyIntIfPresent(entity, "SleepingZ", offset.getY());
 
 		// positions for specific entity types
-
-		switch (entity.getString("id")) {
-			case "dolphin":
-				if (entity.getBoolean("CanFindTreasure")) {
-					entity.putInt("TreasurePosX", entity.getInt("TreasurePosX") + offset.getX());
-					entity.putInt("TreasurePosZ", entity.getInt("TreasurePosZ") + offset.getY());
-				}
-				break;
-			case "phantom":
-				applyIntIfPresent(entity, "AX", offset.getX());
-				applyIntIfPresent(entity, "AZ", offset.getY());
-				break;
-			case "shulker":
-				applyIntIfPresent(entity, "APX", offset.getX());
-				applyIntIfPresent(entity, "APZ", offset.getY());
-				break;
-			case "turtle":
-				applyIntIfPresent(entity, "HomePosX", offset.getX());
-				applyIntIfPresent(entity, "HomePosZ", offset.getY());
-				applyIntIfPresent(entity, "TravelPosX", offset.getX());
-				applyIntIfPresent(entity, "TravelPosZ", offset.getY());
-				break;
-			case "vex":
-				applyIntIfPresent(entity, "BoundX", offset.getX());
-				applyIntIfPresent(entity, "BoundZ", offset.getY());
-				break;
-			case "wandering_trader":
-				if (entity.containsKey("WanderTarget")) {
-					CompoundTag wanderTarget = entity.getCompoundTag("WanderTarget");
-					wanderTarget.putInt("X", wanderTarget.getInt("X") + offset.getX());
-					wanderTarget.putInt("Z", wanderTarget.getInt("Z") + offset.getY());
-				}
-				break;
-			case "shulker_bullet":
-				CompoundTag owner = entity.getCompoundTag("Owner");
-				owner.putInt("X", owner.getInt("X") + offset.getX());
-				owner.putInt("Z", owner.getInt("Z") + offset.getY());
-				CompoundTag target = entity.getCompoundTag("Target");
-				target.putInt("X", target.getInt("X") + offset.getX());
-				target.putInt("Z", target.getInt("Z") + offset.getY());
-				break;
-			case "end_crystal":
-				CompoundTag beamTarget = entity.getCompoundTag("BeamTarget");
-				beamTarget.putInt("X", beamTarget.getInt("X") + offset.getX());
-				beamTarget.putInt("Z", beamTarget.getInt("Z") + offset.getY());
-				break;
-			case "item_frame":
-			case "painting":
-				applyIntIfPresent(entity, "TileX", offset.getX());
-				applyIntIfPresent(entity, "TileZ", offset.getY());
-				break;
-			case "villager":
-				if (entity.containsKey("Brain") && entity.getCompoundTag("Brain").containsKey("memories")) {
-					CompoundTag memories = entity.getCompoundTag("Brain").getCompoundTag("memories");
-					if (memories.size() > 0) {
-						if (memories.containsKey("minecraft:meeting_point")) {
-							CompoundTag meetingPoint = memories.getCompoundTag("minecraft:meeting_point");
-							applyOffsetToIntListPos(meetingPoint.getListTag("pos").asIntTagList(), offset);
-						}
-						if (memories.containsKey("minecraft:home")) {
-							CompoundTag home = memories.getCompoundTag("minecraft:home");
-							applyOffsetToIntListPos(home.getListTag("pos").asIntTagList(), offset);
-						}
-						if (memories.containsKey("minecraft:job_site")) {
-							CompoundTag jobSite = memories.getCompoundTag("minecraft:job_site");
-							applyOffsetToIntListPos(jobSite.getListTag("pos").asIntTagList(), offset);
+		String id = catchClassCastException(() -> entity.getString("id"));
+		if (id != null) {
+			switch (id) {
+				case "dolphin":
+					if (entity.getBoolean("CanFindTreasure")) {
+						applyIntIfPresent(entity, "TreasurePosX", offset.getX());
+						applyIntIfPresent(entity, "TreasurePosZ", offset.getY());
+					}
+					break;
+				case "phantom":
+					applyIntIfPresent(entity, "AX", offset.getX());
+					applyIntIfPresent(entity, "AZ", offset.getY());
+					break;
+				case "shulker":
+					applyIntIfPresent(entity, "APX", offset.getX());
+					applyIntIfPresent(entity, "APZ", offset.getY());
+					break;
+				case "turtle":
+					applyIntIfPresent(entity, "HomePosX", offset.getX());
+					applyIntIfPresent(entity, "HomePosZ", offset.getY());
+					applyIntIfPresent(entity, "TravelPosX", offset.getX());
+					applyIntIfPresent(entity, "TravelPosZ", offset.getY());
+					break;
+				case "vex":
+					applyIntIfPresent(entity, "BoundX", offset.getX());
+					applyIntIfPresent(entity, "BoundZ", offset.getY());
+					break;
+				case "wandering_trader":
+					if (entity.containsKey("WanderTarget")) {
+						CompoundTag wanderTarget = catchClassCastException(() -> entity.getCompoundTag("WanderTarget"));
+						applyIntOffsetIfRootPresent(wanderTarget, "X", "Z", offset);
+					}
+					break;
+				case "shulker_bullet":
+					CompoundTag owner = catchClassCastException(() -> entity.getCompoundTag("Owner"));
+					applyIntOffsetIfRootPresent(owner, "X", "Z", offset);
+					CompoundTag target = catchClassCastException(() -> entity.getCompoundTag("Target"));
+					applyIntOffsetIfRootPresent(target, "X", "Z", offset);
+					break;
+				case "end_crystal":
+					CompoundTag beamTarget = catchClassCastException(() -> entity.getCompoundTag("BeamTarget"));
+					applyIntOffsetIfRootPresent(beamTarget, "X", "Z", offset);
+					break;
+				case "item_frame":
+				case "painting":
+					applyIntIfPresent(entity, "TileX", offset.getX());
+					applyIntIfPresent(entity, "TileZ", offset.getY());
+					break;
+				case "villager":
+					if (entity.containsKey("Brain")) {
+						CompoundTag brain = catchClassCastException(() -> entity.getCompoundTag("Brain"));
+						if (brain != null && brain.containsKey("memories")) {
+							CompoundTag memories = catchClassCastException(() -> brain.getCompoundTag("memories"));
+							if (memories != null && memories.size() > 0) {
+								if (memories.containsKey("minecraft:meeting_point")) {
+									CompoundTag meetingPoint = catchClassCastException(() -> memories.getCompoundTag("minecraft:meeting_point"));
+									if (meetingPoint != null) {
+										applyOffsetToIntListPos(meetingPoint.getListTag("pos").asIntTagList(), offset);
+									}
+								}
+								if (memories.containsKey("minecraft:home")) {
+									CompoundTag home = catchClassCastException(() -> memories.getCompoundTag("minecraft:home"));
+									if (home != null) {
+										applyOffsetToIntListPos(home.getListTag("pos").asIntTagList(), offset);
+									}
+								}
+								if (memories.containsKey("minecraft:job_site")) {
+									CompoundTag jobSite = catchClassCastException(() -> memories.getCompoundTag("minecraft:job_site"));
+									if (jobSite != null) {
+										applyOffsetToIntListPos(jobSite.getListTag("pos").asIntTagList(), offset);
+									}
+								}
+							}
 						}
 					}
-				}
-				break;
-			case "pillager":
-			case "witch":
-			case "vindicator":
-			case "ravager":
-			case "illusioner":
-			case "evoker":
-				if (entity.containsKey("PatrolTarget")) {
-					CompoundTag patrolTarget = entity.getCompoundTag("PatrolTarget");
-					patrolTarget.putInt("X", patrolTarget.getInt("X") + offset.getX());
-					patrolTarget.putInt("X", patrolTarget.getInt("X") + offset.getY());
-				}
-				break;
+					break;
+				case "pillager":
+				case "witch":
+				case "vindicator":
+				case "ravager":
+				case "illusioner":
+				case "evoker":
+					if (entity.containsKey("PatrolTarget")) {
+						CompoundTag patrolTarget = catchClassCastException(() -> entity.getCompoundTag("PatrolTarget"));
+						applyIntOffsetIfRootPresent(patrolTarget, "X", "Z", offset);
+					}
+					break;
+			}
 		}
 
 		// recursively update passengers
 
 		if (entity.containsKey("Passenger")) {
 			applyOffsetToEntity(entity.getCompoundTag("Passenger"), offset);
+		}
+	}
+
+	private void applyIntOffsetIfRootPresent(CompoundTag root, String xKey, String zKey, Point2i offset) {
+		if (root != null) {
+			applyIntIfPresent(root, xKey, offset.getX());
+			applyIntIfPresent(root, zKey, offset.getY());
 		}
 	}
 
@@ -427,5 +458,13 @@ public class MCAChunkData {
 	private void applyOffsetToIntListPos(ListTag<IntTag> pos, Point2i offset) {
 		pos.set(0, new IntTag(pos.get(0).asInt() + offset.getX()));
 		pos.set(2, new IntTag(pos.get(2).asInt() + offset.getY()));
+	}
+
+	private <T> T catchClassCastException(Supplier<T> s) {
+		try {
+			return s.get();
+		} catch (ClassCastException ex) {
+			return null;
+		}
 	}
 }

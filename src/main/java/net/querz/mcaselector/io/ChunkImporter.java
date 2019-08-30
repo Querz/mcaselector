@@ -181,7 +181,7 @@ public class ChunkImporter {
 
 					Debug.dumpf("merging chunk from  region %s into %s", sourceData.getKey(), target);
 
-					source.mergeChunksInto(destination, getRelativeOffset(sourceData.getKey(), target, offset), overwrite);
+					source.mergeChunksInto(destination, offset, overwrite);
 				}
 
 				MCAFilePipe.executeSaveData(new MCAChunkImporterSaveJob(getFile(), destination, sourceDataMapping.size(), progressChannel));
@@ -240,9 +240,5 @@ public class ChunkImporter {
 		result.add(sourceChunk.add(0, 31).chunkToRegion());
 		result.add(sourceChunk.add(31, 31).chunkToRegion());
 		return result;
-	}
-
-	public static Point2i getRelativeOffset(Point2i source, Point2i target, Point2i offset) {
-		return source.regionToChunk().add(offset).sub(target.regionToChunk());
 	}
 }
