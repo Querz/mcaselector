@@ -9,7 +9,6 @@ cache/
 1.12.2/
 settings.ini
 build/
-test/
 test113/
 /agent.jar
 /manifest.txt
