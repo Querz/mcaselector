@@ -352,7 +352,7 @@ public class ParamExecutor {
 	}
 
 	private static void createParentDirectoryIfNotExists(File file) throws IOException {
-		if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+		if (file.getParentFile() != null && !file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
 			throw new IOException("unable to create directory for \"" + file + "\"");
 		}
 	}

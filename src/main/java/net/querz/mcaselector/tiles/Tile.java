@@ -1,19 +1,11 @@
 package net.querz.mcaselector.tiles;
 
-import javafx.scene.SnapshotParameters;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.io.MCAFile;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.point.Point2f;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.ui.ImageHelper;
 import java.io.*;
 import java.util.HashSet;
@@ -33,16 +25,16 @@ public class Tile {
 	public static final int SIZE_IN_CHUNKS = 32;
 	public static final int CHUNKS = 1024;
 
-	private Point2i location;
+	Point2i location;
 
-	private Image image;
-	private Image markedChunksImage;
+	Image image;
+	Image markedChunksImage;
 
-	private boolean loading = false;
-	private boolean loaded = false;
-	private boolean marked = false;
+	boolean loading = false;
+	boolean loaded = false;
+	boolean marked = false;
 	//a set of all marked chunks in the tile in block locations
-	private Set<Point2i> markedChunks = new HashSet<>();
+	Set<Point2i> markedChunks = new HashSet<>();
 
 	public Tile(Point2i location) {
 		this.location = location;
@@ -161,55 +153,7 @@ public class Tile {
 		return markedChunks;
 	}
 
-	public void draw(GraphicsContext ctx, float scale, Point2f offset) {
-		if (isLoaded() && image != null) {
-			double size =  getImage().getHeight() * (SIZE / getImage().getWidth());
-			ctx.drawImage(getImage(), offset.getX(), offset.getY(), size / scale, size / scale);
-			if (marked) {
-				//draw marked region
-				ctx.setFill(Config.getRegionSelectionColor().makeJavaFXColor());
-				ctx.fillRect(offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
-			} else if (markedChunks.size() > 0) {
 
-				if (markedChunksImage == null) {
-					createMarkedChunksImage(getZoomLevel(scale));
-				}
-
-				// apply markedChunksImage to ctx
-
-				ctx.drawImage(markedChunksImage, offset.getX(), offset.getY(), size / scale, size / scale);
-			}
-		} else {
-			ctx.drawImage(ImageHelper.getEmptyTileImage(), offset.getX(), offset.getY(), SIZE / scale, SIZE / scale);
-		}
-	}
-
-	void createMarkedChunksImage(int zoomLevel) {
-		WritableImage wImage = new WritableImage(SIZE / zoomLevel, SIZE / zoomLevel);
-
-		Canvas canvas = new Canvas(SIZE / (float) zoomLevel, SIZE / (float) zoomLevel);
-		GraphicsContext ctx = canvas.getGraphicsContext2D();
-		ctx.setFill(Config.getChunkSelectionColor().makeJavaFXColor());
-
-		for (Point2i markedChunk : markedChunks) {
-			Point2i regionChunk = markedChunk.mod(SIZE_IN_CHUNKS);
-			if (regionChunk.getX() < 0) {
-				regionChunk.setX(regionChunk.getX() + SIZE_IN_CHUNKS);
-			}
-			if (regionChunk.getY() < 0) {
-				regionChunk.setY(regionChunk.getY() + SIZE_IN_CHUNKS);
-			}
-
-			ctx.fillRect(regionChunk.getX() * CHUNK_SIZE / (float) zoomLevel, regionChunk.getY() * CHUNK_SIZE / (float) zoomLevel, CHUNK_SIZE / (float) zoomLevel, CHUNK_SIZE / (float) zoomLevel);
-		}
-
-		SnapshotParameters params = new SnapshotParameters();
-		params.setFill(Color.TRANSPARENT.makeJavaFXColor());
-
-		canvas.snapshot(params, wImage);
-
-		markedChunksImage = wImage;
-	}
 
 	public File getMCAFile() {
 		return FileHelper.createMCAFilePath(location);
@@ -243,38 +187,5 @@ public class Tile {
 		} catch (IOException ex) {
 			Debug.dump("region " + location + " not cached");
 		}
-	}
-
-	public Image generateImage(Runnable callback, byte[] rawData) {
-		if (loaded) {
-			Debug.dump("region at " + location + " already loaded");
-			return image;
-		}
-
-		Timer t = new Timer();
-
-		File file = getMCAFile();
-
-		ByteArrayPointer ptr = new ByteArrayPointer(rawData);
-
-		MCAFile mcaFile = MCAFile.readHeader(file, ptr);
-		if (mcaFile == null) {
-			Debug.error("error reading mca file " + file);
-			//mark as loaded, we won't try to load this again
-			loaded = true;
-			return image;
-		}
-		Debug.dumpf("took %s to read mca file header of %s", t, file.getName());
-
-		t.reset();
-
-		image = mcaFile.createImage(ptr);
-		loaded = true;
-
-		callback.run();
-
-		Debug.dumpf("took %s to generate image of %s", t, file.getName());
-
-		return image;
 	}
 }

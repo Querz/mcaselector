@@ -4,6 +4,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.tiles.TileImage;
 import net.querz.mcaselector.ui.ImageHelper;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
@@ -102,7 +103,7 @@ public class RegionImageGenerator {
 
 		@Override
 		public void execute() {
-			Image image = tile.generateImage(callback, getData());
+			Image image = TileImage.generateImage(tile, callback, getData());
 			if (image != null) {
 				MCAFilePipe.executeSaveData(new MCAImageSaveCacheJob(getFile(), image, tile, scaleSupplier, scaleOnly, progressChannel));
 			} else {

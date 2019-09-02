@@ -416,7 +416,7 @@ public class TileMap extends Canvas {
 					}
 				}
 			}
-			changedTiles.forEach(tile -> tile.createMarkedChunksImage(getZoomLevel()));
+			changedTiles.forEach(tile -> TileImage.createMarkedChunksImage(tile, getZoomLevel()));
 		}
 	}
 
@@ -436,7 +436,7 @@ public class TileMap extends Canvas {
 				RegionImageGenerator.generate(tile, () -> Platform.runLater(this::update), this::getScale, false, false, null);
 			}
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
-			tile.draw(ctx, scale, p);
+			TileImage.draw(tile, ctx, scale, p);
 		});
 
 		if (showRegionGrid) {

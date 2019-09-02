@@ -47,7 +47,7 @@ public abstract class ProgressTask extends Task<Void> implements Progress {
 
 	@Override
 	public void setMessage(String msg) {
-		infoProperty.setValue(msg);
+		Platform.runLater(() -> infoProperty.setValue(msg));
 	}
 
 	public void setIndeterminate(String info) {

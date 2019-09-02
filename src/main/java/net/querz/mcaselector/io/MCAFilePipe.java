@@ -1,6 +1,5 @@
 package net.querz.mcaselector.io;
 
-import javafx.application.Platform;
 import net.querz.mcaselector.debug.Debug;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -150,7 +149,7 @@ public final class MCAFilePipe {
 					break;
 				}
 			}
-			Platform.runLater(callback);
+			callback.run();
 		});
 		thread.start();
 	}
