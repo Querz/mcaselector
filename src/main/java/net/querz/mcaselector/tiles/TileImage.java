@@ -16,6 +16,7 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.ImageHelper;
+import net.querz.mcaselector.version.VersionController;
 import java.io.File;
 
 public class TileImage {
@@ -31,11 +32,10 @@ public class TileImage {
 			} else if (tile.markedChunks.size() > 0) {
 
 				if (tile.markedChunksImage == null) {
-					createMarkedChunksImage(tile, tile.getZoomLevel(scale));
+					createMarkedChunksImage(tile, Tile.getZoomLevel(scale));
 				}
 
 				// apply markedChunksImage to ctx
-
 				ctx.drawImage(tile.markedChunksImage, offset.getX(), offset.getY(), size / scale, size / scale);
 			}
 		} else {
@@ -122,7 +122,7 @@ public class TileImage {
 						Debug.error(ex);
 					}
 
-					data.drawImage(cx * Tile.CHUNK_SIZE, cz * Tile.CHUNK_SIZE, writer);
+					drawChunkImage(data, cx * Tile.CHUNK_SIZE, cz * Tile.CHUNK_SIZE, writer);
 				}
 			}
 			return finalImage;
@@ -130,5 +130,22 @@ public class TileImage {
 			Debug.error(ex);
 		}
 		return null;
+	}
+
+	private static void drawChunkImage(MCAChunkData chunkData, int x, int z, PixelWriter writer) {
+		if (chunkData.getData() == null) {
+			return;
+		}
+		int dataVersion = chunkData.getData().getInt("DataVersion");
+		try {
+			VersionController.getChunkDataProcessor(dataVersion).drawChunk(
+					chunkData.getData(),
+					VersionController.getColorMapping(dataVersion),
+					x, z,
+					writer
+			);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 }

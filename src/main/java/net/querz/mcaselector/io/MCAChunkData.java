@@ -1,10 +1,8 @@
 package net.querz.mcaselector.io;
 
-import javafx.scene.image.PixelWriter;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.DoubleTag;
 import net.querz.nbt.IntArrayTag;
@@ -113,23 +111,6 @@ public class MCAChunkData {
 			} catch (Exception ex) {
 				Debug.dumpf("error trying to update field: %s", ex.getMessage());
 			}
-		}
-	}
-
-	public void drawImage(int x, int z, PixelWriter writer) {
-		if (data == null) {
-			return;
-		}
-		int dataVersion = data.getInt("DataVersion");
-		try {
-			VersionController.getChunkDataProcessor(dataVersion).drawChunk(
-					data,
-					VersionController.getColorMapping(dataVersion),
-					x, z,
-					writer
-			);
-		} catch (Exception ex) {
-			ex.printStackTrace();
 		}
 	}
 
