@@ -295,6 +295,10 @@ public class MCAChunkData {
 				CompoundTag exitPortal = tileEntity.getCompoundTag("ExitPortal");
 				applyIntOffsetIfRootPresent(exitPortal, "X", "Z", offset);
 				break;
+			case "structure_block":
+				applyIntIfPresent(tileEntity, "posX", offset.getX());
+				applyIntIfPresent(tileEntity, "posX", offset.getY());
+				break;
 		}
 	}
 
