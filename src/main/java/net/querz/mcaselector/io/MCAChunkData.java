@@ -157,13 +157,9 @@ public class MCAChunkData {
 
 		CompoundTag level = data.getCompoundTag("Level");
 
-		System.out.print("applying offset to " + getLocation() + ": " + offset + " --> ");
-
 		// adjust or set chunk position
 		level.putInt("xPos", level.getInt("xPos") + offset.blockToChunk().getX());
 		level.putInt("zPos", level.getInt("zPos") + offset.blockToChunk().getY());
-
-		System.out.println(getLocation());
 
 		// adjust entity positions
 		if (level.containsKey("Entities")) {
