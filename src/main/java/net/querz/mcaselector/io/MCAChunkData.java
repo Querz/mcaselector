@@ -299,6 +299,9 @@ public class MCAChunkData {
 	}
 
 	private void applyOffsetToEntity(CompoundTag entity, Point2i offset) {
+		if (entity == null) {
+			return;
+		}
 		if (entity.containsKey("Pos")) {
 			ListTag<DoubleTag> entityPos = catchClassCastException(() -> entity.getListTag("Pos").asDoubleTagList());
 			if (entityPos != null && entityPos.size() == 3) {
@@ -379,19 +382,22 @@ public class MCAChunkData {
 								if (memories.containsKey("minecraft:meeting_point")) {
 									CompoundTag meetingPoint = catchClassCastException(() -> memories.getCompoundTag("minecraft:meeting_point"));
 									if (meetingPoint != null) {
-										applyOffsetToIntListPos(meetingPoint.getListTag("pos").asIntTagList(), offset);
+										ListTag<IntTag> pos = catchClassCastException(() -> meetingPoint.getListTag("pos").asIntTagList());
+										applyOffsetToIntListPos(pos, offset);
 									}
 								}
 								if (memories.containsKey("minecraft:home")) {
 									CompoundTag home = catchClassCastException(() -> memories.getCompoundTag("minecraft:home"));
 									if (home != null) {
-										applyOffsetToIntListPos(home.getListTag("pos").asIntTagList(), offset);
+										ListTag<IntTag> pos = catchClassCastException(() -> home.getListTag("pos").asIntTagList());
+										applyOffsetToIntListPos(pos, offset);
 									}
 								}
 								if (memories.containsKey("minecraft:job_site")) {
 									CompoundTag jobSite = catchClassCastException(() -> memories.getCompoundTag("minecraft:job_site"));
 									if (jobSite != null) {
-										applyOffsetToIntListPos(jobSite.getListTag("pos").asIntTagList(), offset);
+										ListTag<IntTag> pos = catchClassCastException(() -> jobSite.getListTag("pos").asIntTagList());
+										applyOffsetToIntListPos(pos, offset);
 									}
 								}
 							}
@@ -415,7 +421,8 @@ public class MCAChunkData {
 		// recursively update passengers
 
 		if (entity.containsKey("Passenger")) {
-			applyOffsetToEntity(entity.getCompoundTag("Passenger"), offset);
+			CompoundTag passenger = catchClassCastException(() -> entity.getCompoundTag("Passenger"));
+			applyOffsetToEntity(passenger, offset);
 		}
 	}
 
@@ -433,8 +440,10 @@ public class MCAChunkData {
 	}
 
 	private void applyOffsetToIntListPos(ListTag<IntTag> pos, Point2i offset) {
-		pos.set(0, new IntTag(pos.get(0).asInt() + offset.getX()));
-		pos.set(2, new IntTag(pos.get(2).asInt() + offset.getY()));
+		if (pos != null) {
+			pos.set(0, new IntTag(pos.get(0).asInt() + offset.getX()));
+			pos.set(2, new IntTag(pos.get(2).asInt() + offset.getY()));
+		}
 	}
 
 	private <T> T catchClassCastException(Supplier<T> s) {
