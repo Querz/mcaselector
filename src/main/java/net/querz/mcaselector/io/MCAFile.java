@@ -1,8 +1,5 @@
 package net.querz.mcaselector.io;
 
-import javafx.scene.image.Image;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.filter.FilterData;
@@ -348,35 +345,6 @@ public class MCAFile {
 
 	public File getFile() {
 		return file;
-	}
-
-	public Image createImage(ByteArrayPointer ptr) {
-		try {
-			WritableImage finalImage = new WritableImage(Tile.SIZE, Tile.SIZE);
-			PixelWriter writer = finalImage.getPixelWriter();
-
-			for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
-				for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
-					int index = cz  * Tile.SIZE_IN_CHUNKS + cx;
-
-					MCAChunkData data = getChunkData(index);
-
-					data.readHeader(ptr);
-
-					try {
-						data.loadData(ptr);
-					} catch (Exception ex) {
-						Debug.error(ex);
-					}
-
-					data.drawImage(cx * Tile.CHUNK_SIZE, cz * Tile.CHUNK_SIZE, writer);
-				}
-			}
-			return finalImage;
-		} catch (Exception ex) {
-			Debug.error(ex);
-		}
-		return null;
 	}
 
 	@Override
