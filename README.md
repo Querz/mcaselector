@@ -11,6 +11,7 @@
   * [Selections](#selections)
   * [Chunk filter](#chunk-filter)
   * [NBT Changer](#nbt-changer)
+  * [Chunk import](#chunk-import)
   * [Caching](#caching)
   * [Debugging](#debugging)
 * [Supported Versions](#supported-versions)
@@ -93,6 +94,11 @@ Once the field is highlighted in green, the value is considered valid and will b
 
 For more information about the fields have a look at the chunk format description on [Minecraft Wiki](https://minecraft.gamepedia.com/Chunk_format)
 
+### Chunk import
+Importing chunks can be easily done by opening the target world first using `File --> Open` and then merging the chunks of a second world using `Tools --> Import chunks`. After selecting a folder containing region files, it is possible to import the chunks with a specific offset. Doing so automatically adjusts relevant values to the new location of the chunk.
+
+**Note:** Commands inside of command blocks will not be changed!
+
 ### Caching
 The tool creates an image for each region from the provided mca-files. These images are saved separately inside a `cache`-folder in the working directory of the program for future usage. Experience showed that a Minecraft world with a size of 10GB resulted in cached image files with a total size of 80-100MB. Caching as many regions as possible significantly improves loading times though.
 
@@ -140,8 +146,8 @@ Headless mode can be run in different modes:
 | --------- | ----------- | :-------: |
 | `--world <directory>` | The world to export chunks from. | Yes |
 | `--output <directory>` | The destination of the exported chunks. The directory MUST be empty. | Yes |
-| `--query <filter-query>` | The filter query to use to export the chunks. | Yes (if `--input` is not set) |
-| `--input <csv-file>` | The csv-file to load a selection from. | Yes (if `--query` is not set) |
+| `--query <filter-query>` | The filter query to use to export the chunks. | Yes if `--input` is not set, otherwise No |
+| `--input <csv-file>` | The csv-file to load a selection from. | Yes if `--query` is not set, otherwise No |
 
 #### Import chunks
 
@@ -158,8 +164,8 @@ Headless mode can be run in different modes:
 | Parameter | Description | Mandatory |
 | --------- | ----------- | :-------: |
 | `--world <directory>` | The world to delete chunks from. | Yes |
-| `--query <filter-query>` | The filter query to use to delete the chunks. | Yes (if `--input` is not set) |
-| `--input <csv-file>` | The csv-file to load a selection from. | Yes (if `--query` is not set) |
+| `--query <filter-query>` | The filter query to use to delete the chunks. | Yes if `--input` is not set, otherwise No |
+| `--input <csv-file>` | The csv-file to load a selection from. | Yes if `--query` is not set, otherwise No |
 
 #### Change NBT
 
@@ -184,9 +190,9 @@ Headless mode can be run in different modes:
 | --------- | ----------- | :-------: |
 | `--debug` | Enables debug messages. | No |
 | `--read-threads <number>` | The amount of Threads to be used for reading files. | No, default `1` |
-| `--process-threads <number>` | The amounts of Threads to be used for processing data. | No, defaults to the amount of processor cores |
+| `--process-threads <number>` | The amounts of Threads to be used for processing data. | No, default is the amount of processor cores |
 | `--write-threads <number>` | The amount of Threads to be used for writing data to disk. | No, default `4` |
-| `--max-loaded-files <number>` | The maximum amount of simultaneously loaded files. | No, defaults to 1.5 * amount of processor cores |
+| `--max-loaded-files <number>` | The maximum amount of simultaneously loaded files. | No, default is 1.5 * amount of processor cores |
 
 
 ### Filter query
