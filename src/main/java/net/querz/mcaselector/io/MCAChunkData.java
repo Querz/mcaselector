@@ -155,7 +155,10 @@ public class MCAChunkData {
 			return false;
 		}
 
-		CompoundTag level = data.getCompoundTag("Level");
+		CompoundTag level = catchClassCastException(() -> data.getCompoundTag("Level"));
+		if (level == null) {
+			return true;
+		}
 
 		// adjust or set chunk position
 		level.putInt("xPos", level.getInt("xPos") + offset.blockToChunk().getX());
@@ -230,7 +233,7 @@ public class MCAChunkData {
 			if (starts != null) {
 				for (Map.Entry<String, Tag<?>> entry : starts) {
 					CompoundTag structure = catchClassCastException(() -> (CompoundTag) entry.getValue());
-					if (structure == null || structure.getString("id").equals("INVALID")) {
+					if (structure == null || "INVALID".equals(catchClassCastException(() -> structure.getString("id")))) {
 						continue;
 					}
 					applyIntIfPresent(structure, "ChunkX", chunkOffset.getX());
