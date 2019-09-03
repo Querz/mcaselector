@@ -163,32 +163,42 @@ public class MCAChunkData {
 
 		// adjust entity positions
 		if (level.containsKey("Entities")) {
-			ListTag<CompoundTag> entities = level.getListTag("Entities").asCompoundTagList();
-			entities.forEach(v -> applyOffsetToEntity(v, offset));
+			ListTag<CompoundTag> entities = catchClassCastException(() -> level.getListTag("Entities").asCompoundTagList());
+			if (entities != null) {
+				entities.forEach(v -> applyOffsetToEntity(v, offset));
+			}
 		}
 
 		// adjust tile entity positions
 		if (level.containsKey("TileEntities")) {
-			ListTag<CompoundTag> tileEntities = level.getListTag("TileEntities").asCompoundTagList();
-			tileEntities.forEach(v -> applyOffsetToTileEntity(v, offset));
+			ListTag<CompoundTag> tileEntities = catchClassCastException(() -> level.getListTag("TileEntities").asCompoundTagList());
+			if (tileEntities != null) {
+				tileEntities.forEach(v -> applyOffsetToTileEntity(v, offset));
+			}
 		}
 
 		// adjust tile ticks
 		if (level.containsKey("TileTicks")) {
-			ListTag<CompoundTag> tileTicks = level.getListTag("TileTicks").asCompoundTagList();
-			tileTicks.forEach(v -> applyOffsetToTick(v, offset));
+			ListTag<CompoundTag> tileTicks = catchClassCastException(() -> level.getListTag("TileTicks").asCompoundTagList());
+			if (tileTicks != null) {
+				tileTicks.forEach(v -> applyOffsetToTick(v, offset));
+			}
 		}
 
 		// adjust liquid ticks
 		if (level.containsKey("LiquidTicks")) {
-			ListTag<CompoundTag> liquidTicks = level.getListTag("LiquidTicks").asCompoundTagList();
-			liquidTicks.forEach(v -> applyOffsetToTick(v, offset));
+			ListTag<CompoundTag> liquidTicks = catchClassCastException(() -> level.getListTag("LiquidTicks").asCompoundTagList());
+			if (liquidTicks != null) {
+				liquidTicks.forEach(v -> applyOffsetToTick(v, offset));
+			}
 		}
 
 		// adjust structures
 		if (level.containsKey("Structures")) {
-			CompoundTag structures = level.getCompoundTag("Structures");
-			applyOffsetToStructures(structures, offset);
+			CompoundTag structures = catchClassCastException(() -> level.getCompoundTag("Structures"));
+			if (structures != null) {
+				applyOffsetToStructures(structures, offset);
+			}
 		}
 
 		return true;
@@ -199,64 +209,70 @@ public class MCAChunkData {
 
 		// update references
 		if (structures.containsKey("References")) {
-			CompoundTag references = structures.getCompoundTag("References");
-			for (Map.Entry<String, Tag<?>> entry : references) {
-				long[] reference = ((LongArrayTag) entry.getValue()).getValue();
-				for (int i = 0; i < reference.length; i++) {
-					int x = (int) (reference[i]);
-					int z = (int) (reference[i] >> 32);
-					reference[i] = (long) (x + chunkOffset.getX()) | ((long) (z + chunkOffset.getY()) << 32);
+			CompoundTag references = catchClassCastException(() -> structures.getCompoundTag("References"));
+			if (references != null) {
+				for (Map.Entry<String, Tag<?>> entry : references) {
+					long[] reference = catchClassCastException(() -> ((LongArrayTag) entry.getValue()).getValue());
+					if (reference != null) {
+						for (int i = 0; i < reference.length; i++) {
+							int x = (int) (reference[i]);
+							int z = (int) (reference[i] >> 32);
+							reference[i] = (long) (x + chunkOffset.getX()) | ((long) (z + chunkOffset.getY()) << 32);
+						}
+					}
 				}
 			}
 		}
 
 		// update starts
 		if (structures.containsKey("Starts")) {
-			CompoundTag starts = structures.getCompoundTag("Starts");
-			for (Map.Entry<String, Tag<?>> entry : starts) {
-				CompoundTag structure = (CompoundTag) entry.getValue();
-				if (structure.getString("id").equals("INVALID")) {
-					continue;
-				}
-				applyIntIfPresent(structure, "ChunkX", chunkOffset.getX());
-				applyIntIfPresent(structure, "ChunkZ", chunkOffset.getY());
-				applyOffsetToBB(structure.getIntArray("BB"), offset);
+			CompoundTag starts = catchClassCastException(() -> structures.getCompoundTag("Starts"));
+			if (starts != null) {
+				for (Map.Entry<String, Tag<?>> entry : starts) {
+					CompoundTag structure = catchClassCastException(() -> (CompoundTag) entry.getValue());
+					if (structure == null || structure.getString("id").equals("INVALID")) {
+						continue;
+					}
+					applyIntIfPresent(structure, "ChunkX", chunkOffset.getX());
+					applyIntIfPresent(structure, "ChunkZ", chunkOffset.getY());
+					applyOffsetToBB(catchClassCastException(() -> structure.getIntArray("BB")), offset);
 
-				if (structure.containsKey("Processed")) {
-					ListTag<CompoundTag> processed = catchClassCastException(() -> structure.getListTag("Processed").asCompoundTagList());
-					if (processed != null) {
-						for (CompoundTag chunk : processed) {
-							applyIntIfPresent(chunk, "X", chunkOffset.getX());
-							applyIntIfPresent(chunk, "Z", chunkOffset.getY());
+					if (structure.containsKey("Processed")) {
+						ListTag<CompoundTag> processed = catchClassCastException(() -> structure.getListTag("Processed").asCompoundTagList());
+						if (processed != null) {
+							for (CompoundTag chunk : processed) {
+								applyIntIfPresent(chunk, "X", chunkOffset.getX());
+								applyIntIfPresent(chunk, "Z", chunkOffset.getY());
+							}
 						}
 					}
-				}
 
-				if (structure.containsKey("Children")) {
-					ListTag<CompoundTag> children = catchClassCastException(() -> structure.getListTag("Children").asCompoundTagList());
-					if (children != null) {
-						for (CompoundTag child : children) {
-							applyIntIfPresent(child, "TPX", offset.getX());
-							applyIntIfPresent(child, "TPZ", offset.getY());
-							applyIntIfPresent(child, "PosX", offset.getX());
-							applyIntIfPresent(child, "PosZ", offset.getY());
-							applyOffsetToBB(child.getIntArray("BB"), offset);
+					if (structure.containsKey("Children")) {
+						ListTag<CompoundTag> children = catchClassCastException(() -> structure.getListTag("Children").asCompoundTagList());
+						if (children != null) {
+							for (CompoundTag child : children) {
+								applyIntIfPresent(child, "TPX", offset.getX());
+								applyIntIfPresent(child, "TPZ", offset.getY());
+								applyIntIfPresent(child, "PosX", offset.getX());
+								applyIntIfPresent(child, "PosZ", offset.getY());
+								applyOffsetToBB(catchClassCastException(() -> child.getIntArray("BB")), offset);
 
-							if (child.containsKey("Entrances")) {
-								ListTag<IntArrayTag> entrances = catchClassCastException(() -> child.getListTag("Entrances").asIntArrayTagList());
-								if (entrances != null) {
-									for (IntArrayTag entrance : entrances) {
-										applyOffsetToBB(entrance.getValue(), offset);
+								if (child.containsKey("Entrances")) {
+									ListTag<IntArrayTag> entrances = catchClassCastException(() -> child.getListTag("Entrances").asIntArrayTagList());
+									if (entrances != null) {
+										for (IntArrayTag entrance : entrances) {
+											applyOffsetToBB(entrance.getValue(), offset);
+										}
 									}
 								}
-							}
 
-							if (child.containsKey("junctions")) {
-								ListTag<CompoundTag> junctions = catchClassCastException(() -> child.getListTag("junctions").asCompoundTagList());
-								if (junctions != null) {
-									for (CompoundTag junction : junctions) {
-										applyIntIfPresent(junction, "source_x", offset.getX());
-										applyIntIfPresent(junction, "source_z", offset.getY());
+								if (child.containsKey("junctions")) {
+									ListTag<CompoundTag> junctions = catchClassCastException(() -> child.getListTag("junctions").asCompoundTagList());
+									if (junctions != null) {
+										for (CompoundTag junction : junctions) {
+											applyIntIfPresent(junction, "source_x", offset.getX());
+											applyIntIfPresent(junction, "source_z", offset.getY());
+										}
 									}
 								}
 							}
@@ -288,11 +304,11 @@ public class MCAChunkData {
 
 		switch (tileEntity.getString("id")) {
 			case "beehive":
-				CompoundTag flowerPos = tileEntity.getCompoundTag("FlowerPos");
+				CompoundTag flowerPos = catchClassCastException(() -> tileEntity.getCompoundTag("FlowerPos"));
 				applyIntOffsetIfRootPresent(flowerPos, "X", "Z", offset);
 				break;
 			case "end_gateway":
-				CompoundTag exitPortal = tileEntity.getCompoundTag("ExitPortal");
+				CompoundTag exitPortal = catchClassCastException(() -> tileEntity.getCompoundTag("ExitPortal"));
 				applyIntOffsetIfRootPresent(exitPortal, "X", "Z", offset);
 				break;
 			case "structure_block":
@@ -438,13 +454,14 @@ public class MCAChunkData {
 	}
 
 	private void applyIntIfPresent(CompoundTag root, String key, int offset) {
-		if (root.containsKey(key)) {
-			root.putInt(key, root.getInt(key) + offset);
+		Integer value;
+		if (root.containsKey(key) && (value = catchClassCastException(() -> root.getInt(key))) != null) {
+			root.putInt(key, value + offset);
 		}
 	}
 
 	private void applyOffsetToIntListPos(ListTag<IntTag> pos, Point2i offset) {
-		if (pos != null) {
+		if (pos != null && pos.size() == 3) {
 			pos.set(0, new IntTag(pos.get(0).asInt() + offset.getX()));
 			pos.set(2, new IntTag(pos.get(2).asInt() + offset.getY()));
 		}
@@ -454,6 +471,7 @@ public class MCAChunkData {
 		try {
 			return s.get();
 		} catch (ClassCastException ex) {
+			Debug.dumpf("error parsing value in chunk import: %s", ex.getMessage());
 			return null;
 		}
 	}
