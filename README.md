@@ -97,7 +97,9 @@ For more information about the fields have a look at the chunk format descriptio
 ### Chunk import
 Importing chunks can be easily done by opening the target world first using `File --> Open` and then merging the chunks of a second world using `Tools --> Import chunks`. After selecting a folder containing region files, it is possible to import the chunks with a specific offset. Doing so automatically adjusts relevant values to the new location of the chunk.
 
-**Note:** Commands inside of command blocks will not be changed!
+**Notice**
+Commands inside of command blocks will not be changed.
+Maps will not be updated, because their data is not stored inside region files.
 
 ### Caching
 The tool creates an image for each region from the provided mca-files. These images are saved separately inside a `cache`-folder in the working directory of the program for future usage. Experience showed that a Minecraft world with a size of 10GB resulted in cached image files with a total size of 80-100MB. Caching as many regions as possible significantly improves loading times though.
