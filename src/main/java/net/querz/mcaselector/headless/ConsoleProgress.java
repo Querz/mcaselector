@@ -1,7 +1,7 @@
 package net.querz.mcaselector.headless;
 
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Progress;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.progress.Progress;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConsoleProgress implements Progress {

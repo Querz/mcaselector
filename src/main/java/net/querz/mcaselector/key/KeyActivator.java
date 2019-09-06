@@ -1,4 +1,4 @@
-package net.querz.mcaselector.util;
+package net.querz.mcaselector.key;
 
 import javafx.scene.input.KeyCode;
 import java.util.ArrayList;

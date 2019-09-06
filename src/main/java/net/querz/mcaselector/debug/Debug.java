@@ -1,7 +1,6 @@
-package net.querz.mcaselector.util;
+package net.querz.mcaselector.debug;
 
 import net.querz.mcaselector.Config;
-
 import java.util.Arrays;
 
 public class Debug {

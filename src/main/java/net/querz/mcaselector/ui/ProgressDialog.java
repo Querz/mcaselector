@@ -1,5 +1,6 @@
 package net.querz.mcaselector.ui;
 
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -11,9 +12,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.io.MCAFilePipe;
-import net.querz.mcaselector.util.Translation;
-import net.querz.mcaselector.util.UIFactory;
-
+import net.querz.mcaselector.text.Translation;
 import java.util.function.Consumer;
 
 public class ProgressDialog extends Stage {
@@ -46,10 +45,10 @@ public class ProgressDialog extends Stage {
 		cancel.setOnAction(e -> {
 			currentTask.setLocked(true);
 			currentTask.setIndeterminate(Translation.DIALOG_PROGRESS_CANCELLING.toString());
-			MCAFilePipe.cancelAllJobs(() -> {
+			MCAFilePipe.cancelAllJobs(() -> Platform.runLater(() -> {
 				currentTask.done(Translation.DIALOG_PROGRESS_DONE.toString());
 				close();
-			});
+			}));
 		});
 
 		progressBar.prefWidthProperty().bind(box.widthProperty());

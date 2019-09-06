@@ -15,11 +15,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.GithubVersionChecker;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.Translation;
-import net.querz.mcaselector.util.UIFactory;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.github.VersionChecker;
+import net.querz.mcaselector.text.Translation;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -28,7 +27,7 @@ import java.util.function.Consumer;
 
 public class AboutDialog extends Alert {
 
-	private static final Image githubMark = Helper.getIconFromResources("img/GitHub-Mark-Light-32px");
+	private static final Image githubMark = FileHelper.getIconFromResources("img/GitHub-Mark-Light-32px");
 
 	private static Node persistentVersionCheckResult = new HBox();
 
@@ -48,7 +47,7 @@ public class AboutDialog extends Alert {
 		versionLabel.setAlignment(Pos.CENTER);
 		String applicationVersion = "0";
 		try {
-			applicationVersion = Helper.getManifestAttributes().getValue("Application-Version");
+			applicationVersion = FileHelper.getManifestAttributes().getValue("Application-Version");
 			versionLabel.getChildren().add(new Label(applicationVersion));
 		} catch (IOException ex) {
 			versionLabel.getChildren().add(new Label("unknown"));
@@ -84,9 +83,9 @@ public class AboutDialog extends Alert {
 
 		// needs to run in separate thread so we can see the "checking..." label
 		Thread lookup = new Thread(() -> {
-			GithubVersionChecker checker = new GithubVersionChecker("Querz", "mcaselector");
+			VersionChecker checker = new VersionChecker("Querz", "mcaselector");
 			try {
-				GithubVersionChecker.VersionData version = checker.fetchLatestVersion();
+				VersionChecker.VersionData version = checker.fetchLatestVersion();
 				if (version != null && version.isNewerThan(applicationVersion)) {
 					HBox box = new HBox();
 					Hyperlink download = createHyperlink(version.getTag(), version.getLink(), null);

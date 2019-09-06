@@ -6,9 +6,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import net.querz.mcaselector.util.Point2i;
-import net.querz.mcaselector.util.Translation;
-import net.querz.mcaselector.util.UIFactory;
+import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.text.Translation;
 import java.util.function.Consumer;
 
 public class ImportConfirmationDialog extends ConfirmationDialog {
@@ -23,11 +23,24 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 
 		ChunkImportConfirmationData data = new ChunkImportConfirmationData();
 
+		Label warning = UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_WARNING);
+		warning.getStyleClass().add("import-chunks-warning");
+		warning.getStyleClass().add("import-chunks-warning-invisible");
+		DataProperty<Boolean> warningVisible = new DataProperty<>();
+		warningVisible.set(false);
+
 		LocationInput locationInput = new LocationInput(true);
 		locationInput.setOnValidityCheck(valid -> {
 			getDialogPane().lookupButton(ButtonType.OK).setDisable(!valid);
 			data.offset = locationInput.getValue();
 			dataAction.accept(data);
+			if (data.offset.getX() != 0 || data.offset.getY() != 0 && !warningVisible.get()) {
+				warning.getStyleClass().remove("import-chunks-warning-invisible");
+				warningVisible.set(true);
+			} else {
+				warning.getStyleClass().add("import-chunks-warning-invisible");
+				warningVisible.set(false);
+			}
 		});
 
 		CheckBox overwrite = new CheckBox();
@@ -52,9 +65,13 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		BorderedTitledPane options = new BorderedTitledPane(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS, optionGrid);
 
 		Label contentLabel = UIFactory.label(Translation.DIALOG_CONFIRMATION_QUESTION);
+		contentLabel.getStyleClass().add("import-chunks-confirmation-label");
 		VBox content = new VBox();
 		content.getStyleClass().add("import-confirmation-dialog-content");
-		content.getChildren().addAll(options, contentLabel);
+		VBox confirmationLabels = new VBox();
+		confirmationLabels.getStyleClass().add("v-box");
+		confirmationLabels.getChildren().addAll(contentLabel, warning);
+		content.getChildren().addAll(options, confirmationLabels);
 		getDialogPane().setContent(content);
 
 	}

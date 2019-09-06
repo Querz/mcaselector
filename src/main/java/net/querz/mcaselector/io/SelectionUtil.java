@@ -1,8 +1,8 @@
 package net.querz.mcaselector.io;
 
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.text.TextHelper;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.point.Point2i;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -42,16 +42,16 @@ public class SelectionUtil {
 			while ((line = br.readLine()) != null) {
 				String[] elements = line.split(";");
 				if (elements.length == 2 || elements.length == 4) {
-					Integer x = Helper.parseInt(elements[0], 10);
-					Integer z = Helper.parseInt(elements[1], 10);
+					Integer x = TextHelper.parseInt(elements[0], 10);
+					Integer z = TextHelper.parseInt(elements[1], 10);
 					if (x == null || z == null) {
 						Debug.error("could not read region in selection import: " + line);
 						continue;
 					}
 					Integer cx = null, cz = null;
 					if (elements.length == 4) {
-						cx = Helper.parseInt(elements[2], 10);
-						cz = Helper.parseInt(elements[3], 10);
+						cx = TextHelper.parseInt(elements[2], 10);
+						cz = TextHelper.parseInt(elements[3], 10);
 						if (cx == null || cz == null) {
 							Debug.error("could not read chunk in selection import: " + line);
 							continue;

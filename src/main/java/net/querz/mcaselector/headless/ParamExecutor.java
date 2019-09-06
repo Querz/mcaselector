@@ -12,10 +12,11 @@ import net.querz.mcaselector.io.FieldChanger;
 import net.querz.mcaselector.io.SelectionDeleter;
 import net.querz.mcaselector.io.SelectionExporter;
 import net.querz.mcaselector.io.SelectionUtil;
-import net.querz.mcaselector.util.DataProperty;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.io.CacheHelper;
+import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.point.Point2i;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -64,7 +65,7 @@ public class ParamExecutor {
 			pi.registerDependencies("offset-z", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("overwrite", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("zoom-level", null, new ActionKey("mode", "cache"));
-			for (int z = Helper.getMinZoomLevel(); z <= Helper.getMaxZoomLevel(); z *= 2) {
+			for (int z = Config.getMinZoomLevel(); z <= Config.getMaxZoomLevel(); z *= 2) {
 				pi.registerRestrictions("zoom-level", z + "");
 			}
 			pi.registerDependencies("debug", null, new ActionKey("headless", null));
@@ -114,8 +115,12 @@ public class ParamExecutor {
 	}
 
 	private static void runModeCache(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
+		if (!hasJavaFX()) {
+			throw new IOException("no JavaFX installation found");
+		}
+
 		File world = parseDirectory(params.get("world"));
-		checkDirectoryForFiles(world, Helper.MCA_FILE_PATTERN);
+		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
 		Config.setWorldDir(world);
 
 		File output = parseDirectory(params.get("output"));
@@ -130,12 +135,12 @@ public class ParamExecutor {
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(future);
 
-		Helper.forceGenerateCache(zoomLevel, progress);
+		CacheHelper.forceGenerateCache(zoomLevel, progress);
 	}
 
 	private static void runModeChange(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
 		File world = parseDirectory(params.get("world"));
-		checkDirectoryForFiles(world, Helper.MCA_FILE_PATTERN);
+		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
 		Config.setWorldDir(world);
 
 		List<Field<?>> fields = new ChangeParser(params.get("query")).parse();
@@ -156,7 +161,7 @@ public class ParamExecutor {
 
 	private static void runModeDelete(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
 		File world = parseDirectory(params.get("world"));
-		checkDirectoryForFiles(world, Helper.MCA_FILE_PATTERN);
+		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
 		Config.setWorldDir(world);
 
 		printHeadlessSettings();
@@ -189,7 +194,7 @@ public class ParamExecutor {
 		// this might be used to just apply an offset to the input without merging anything.
 
 		File input = parseDirectory(params.get("input"));
-		checkDirectoryForFiles(world, Helper.MCA_FILE_PATTERN);
+		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
 
 		Config.setWorldDir(world);
 
@@ -207,7 +212,7 @@ public class ParamExecutor {
 
 	private static void runModeExport(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
 		File world = parseDirectory(params.get("world"));
-		checkDirectoryForFiles(world, Helper.MCA_FILE_PATTERN);
+		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
 		Config.setWorldDir(world);
 
 		File output = parseDirectory(params.get("output"));
@@ -240,7 +245,7 @@ public class ParamExecutor {
 
 	private static void runModeSelect(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
 		File world = parseDirectory(params.get("world"));
-		checkDirectoryForFiles(world, Helper.MCA_FILE_PATTERN);
+		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
 		Config.setWorldDir(world);
 
 		File output = parseFile(params.get("output"), "csv");
@@ -347,8 +352,17 @@ public class ParamExecutor {
 	}
 
 	private static void createParentDirectoryIfNotExists(File file) throws IOException {
-		if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+		if (file.getParentFile() != null && !file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
 			throw new IOException("unable to create directory for \"" + file + "\"");
+		}
+	}
+
+	private static boolean hasJavaFX() {
+		try  {
+			Class.forName("javafx.scene.paint.Color");
+			return true;
+		}  catch (ClassNotFoundException e) {
+			return false;
 		}
 	}
 }

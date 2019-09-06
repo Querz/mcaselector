@@ -1,7 +1,7 @@
 package net.querz.mcaselector.io;
 
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Timer;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.progress.Timer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

@@ -2,10 +2,10 @@ package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.changer.Field;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Point2i;
-import net.querz.mcaselector.util.Progress;
-import net.querz.mcaselector.util.Timer;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.progress.Progress;
+import net.querz.mcaselector.progress.Timer;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;

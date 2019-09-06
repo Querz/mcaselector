@@ -4,7 +4,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
-import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.text.Translation;
 
 class BorderedTitledPane extends StackPane {
 

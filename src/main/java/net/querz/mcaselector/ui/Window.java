@@ -6,7 +6,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import net.querz.mcaselector.tiles.TileMap;
-import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.io.FileHelper;
 import java.net.URL;
 import java.util.*;
 
@@ -20,7 +20,7 @@ public class Window extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("MCA Selector");
-		primaryStage.getIcons().add(Helper.getIconFromResources("img/icon"));
+		primaryStage.getIcons().add(FileHelper.getIconFromResources("img/icon"));
 
 		TileMap tileMap = new TileMap(this, width, height);
 

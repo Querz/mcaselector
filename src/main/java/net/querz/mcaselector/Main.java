@@ -2,8 +2,8 @@ package net.querz.mcaselector;
 
 import net.querz.mcaselector.headless.ParamExecutor;
 import net.querz.mcaselector.ui.Window;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.text.Translation;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;

@@ -1,14 +1,12 @@
 package net.querz.mcaselector.filter;
 
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Helper;
+import net.querz.mcaselector.text.TextHelper;
+import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.version.VersionController;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +25,7 @@ public class BiomeFilter extends TextFilter<List<Integer>> {
 					Debug.dumpf("invalid biome mapping: %s", line);
 					continue;
 				}
-				Integer id = Helper.parseInt(split[1], 10);
+				Integer id = TextHelper.parseInt(split[1], 10);
 				if (id == null) {
 					Debug.dumpf("invalid biome id: %s", line);
 					continue;

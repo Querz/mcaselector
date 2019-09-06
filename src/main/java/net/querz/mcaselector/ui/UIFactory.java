@@ -1,4 +1,4 @@
-package net.querz.mcaselector.util;
+package net.querz.mcaselector.ui;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -8,7 +8,10 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import net.querz.mcaselector.text.Translation;
 
 public final class UIFactory {
 
@@ -65,5 +68,31 @@ public final class UIFactory {
 		RadioButton radio = new RadioButton();
 		radio.textProperty().bind(translation.getProperty());
 		return radio;
+	}
+
+	public static TextField attachTextFieldToSlider(Slider slider) {
+		TextField sliderValue = new TextField();
+		sliderValue.getStyleClass().add("slider-value-field");
+		sliderValue.textProperty().addListener((l, o, n) -> {
+			if (!n.matches("\\d*")) {
+				sliderValue.setText(n.replaceAll("[^\\d]", ""));
+			} else if ("".equals(n)) {
+				slider.setValue(slider.getMin());
+			} else {
+				slider.setValue(Integer.parseInt(n));
+			}
+		});
+		sliderValue.focusedProperty().addListener((l, o, n) -> {
+			if (!n) {
+				sliderValue.setText((int) slider.getValue() + "");
+			}
+		});
+		slider.valueProperty().addListener((l, o, n) -> {
+			if (n.intValue() != slider.getMin() || slider.isFocused()) {
+				sliderValue.setText(n.intValue() + "");
+			}
+		});
+		sliderValue.setText((int) slider.getValue() + "");
+		return sliderValue;
 	}
 }

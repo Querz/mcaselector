@@ -1,11 +1,10 @@
 package net.querz.mcaselector.io;
 
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.Point2i;
-import net.querz.mcaselector.util.Progress;
-import net.querz.mcaselector.util.Timer;
-import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.progress.Progress;
+import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.text.Translation;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -22,7 +21,7 @@ public class ChunkImporter {
 
 	public static void importChunks(File importDir, Progress progressChannel, boolean overwrite, Point2i offset) {
 		try {
-			File[] importFiles = importDir.listFiles((dir, name) -> name.matches(Helper.MCA_FILE_PATTERN));
+			File[] importFiles = importDir.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
 			if (importFiles == null || importFiles.length == 0) {
 				progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
 				return;
@@ -38,7 +37,7 @@ public class ChunkImporter {
 
 			// find target files
 			for (File file : importFiles) {
-				Point2i source = Helper.parseMCAFileName(file);
+				Point2i source = FileHelper.parseMCAFileName(file);
 				if (source == null) {
 					Debug.dumpf("could not parse region from mca file name: %s", file.getName());
 					continue;
@@ -55,7 +54,7 @@ public class ChunkImporter {
 			progressChannel.updateProgress(importFiles[0].getName(), 0);
 
 			for (Map.Entry<Point2i, Set<Point2i>> entry : targetMapping.entrySet()) {
-				File targetFile = Helper.createMCAFilePath(entry.getKey());
+				File targetFile = FileHelper.createMCAFilePath(entry.getKey());
 				MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetFile, importDir, entry.getKey(), entry.getValue(), offset, progressChannel, overwrite));
 			}
 		} catch (Exception ex) {
@@ -104,7 +103,7 @@ public class ChunkImporter {
 			Map<Point2i, byte[]> sourceDataMapping = new HashMap<>();
 
 			for (Point2i sourceRegion : sources) {
-				File source = new File(sourceDir, Helper.createMCAFileName(sourceRegion));
+				File source = new File(sourceDir, FileHelper.createMCAFileName(sourceRegion));
 
 				byte[] sourceData = load(source);
 
@@ -178,11 +177,11 @@ public class ChunkImporter {
 				}
 
 				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMapping.entrySet()) {
-					MCAFile source = MCAFile.readAll(new File(sourceDir, Helper.createMCAFileName(sourceData.getKey())), new ByteArrayPointer(sourceData.getValue()));
+					MCAFile source = MCAFile.readAll(new File(sourceDir, FileHelper.createMCAFileName(sourceData.getKey())), new ByteArrayPointer(sourceData.getValue()));
 
 					Debug.dumpf("merging chunk from  region %s into %s", sourceData.getKey(), target);
 
-					source.mergeChunksInto(destination, getRelativeOffset(sourceData.getKey(), target, offset), overwrite);
+					source.mergeChunksInto(destination, offset, overwrite);
 				}
 
 				MCAFilePipe.executeSaveData(new MCAChunkImporterSaveJob(getFile(), destination, sourceDataMapping.size(), progressChannel));
@@ -235,15 +234,11 @@ public class ChunkImporter {
 	// source is a region coordinate, offset is a chunk coordinate
 	public static Set<Point2i> getTargetRegions(Point2i source, Point2i offset) {
 		Set<Point2i> result = new HashSet<>(4);
-		Point2i sourceChunk = Helper.regionToChunk(source).add(offset);
-		result.add(Helper.chunkToRegion(sourceChunk));
-		result.add(Helper.chunkToRegion(sourceChunk.add(31, 0)));
-		result.add(Helper.chunkToRegion(sourceChunk.add(0, 31)));
-		result.add(Helper.chunkToRegion(sourceChunk.add(31, 31)));
+		Point2i sourceChunk = source.regionToChunk().add(offset);
+		result.add(sourceChunk.chunkToRegion());
+		result.add(sourceChunk.add(31, 0).chunkToRegion());
+		result.add(sourceChunk.add(0, 31).chunkToRegion());
+		result.add(sourceChunk.add(31, 31).chunkToRegion());
 		return result;
-	}
-
-	public static Point2i getRelativeOffset(Point2i source, Point2i target, Point2i offset) {
-		return Helper.regionToChunk(source).add(offset).sub(Helper.regionToChunk(target));
 	}
 }

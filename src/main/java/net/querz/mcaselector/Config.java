@@ -1,9 +1,9 @@
 package net.querz.mcaselector;
 
-import javafx.scene.paint.Color;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.ui.Color;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.text.Translation;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
@@ -34,6 +34,9 @@ public final class Config {
 
 	private static boolean debug = DEFAULT_DEBUG;
 
+	public static final float MAX_SCALE = 7.9999f;
+	public static final float MIN_SCALE = 0.2f;
+
 	private Config() {}
 
 	public static File getWorldDir() {
@@ -56,7 +59,7 @@ public final class Config {
 
 	public static File[] getCacheDirs() {
 		int lodLevels = 0;
-		for (int i = Helper.getMaxZoomLevel(); i >= 1; i /= 2) {
+		for (int i = getMaxZoomLevel(); i >= 1; i /= 2) {
 			lodLevels++;
 		}
 		File[] cacheDirs = new File[lodLevels];
@@ -125,8 +128,8 @@ public final class Config {
 			String[] localeSplit = localeString.split("_");
 			setLocale(new Locale(localeSplit[0], localeSplit[1]));
 
-			regionSelectionColor = Color.web(config.getOrDefault("RegionSelectionColor", DEFAULT_REGION_SELECTION_COLOR.toString()));
-			chunkSelectionColor = Color.web(config.getOrDefault("ChunkSelectionColor", DEFAULT_CHUNK_SELECTION_COLOR.toString()));
+			regionSelectionColor = new Color(config.getOrDefault("RegionSelectionColor", DEFAULT_REGION_SELECTION_COLOR.toString()));
+			chunkSelectionColor = new Color(config.getOrDefault("ChunkSelectionColor", DEFAULT_CHUNK_SELECTION_COLOR.toString()));
 			loadThreads = Integer.parseInt(config.getOrDefault("LoadThreads", DEFAULT_LOAD_THREADS + ""));
 			processThreads = Integer.parseInt(config.getOrDefault("ProcessThreads", DEFAULT_PROCESS_THREADS + ""));
 			writeThreads = Integer.parseInt(config.getOrDefault("WriteThreads", DEFAULT_WRITE_THREADS + ""));
@@ -210,5 +213,13 @@ public final class Config {
 
 	public static void setMaxLoadedFiles(int maxLoadedFiles) {
 		Config.maxLoadedFiles = maxLoadedFiles;
+	}
+
+	public static int getMaxZoomLevel() {
+		return Tile.getZoomLevel(MAX_SCALE);
+	}
+
+	public static int getMinZoomLevel() {
+		return Tile.getZoomLevel(MIN_SCALE);
 	}
 }

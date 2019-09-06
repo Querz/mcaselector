@@ -2,7 +2,7 @@ package net.querz.mcaselector.ui;
 
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.point.Point2i;
 import java.util.function.Consumer;
 
 public class LocationInput extends HBox {

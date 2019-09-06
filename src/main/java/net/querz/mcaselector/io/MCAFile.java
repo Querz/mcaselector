@@ -1,15 +1,11 @@
 package net.querz.mcaselector.io;
 
-import javafx.scene.image.Image;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.filter.FilterData;
 import net.querz.mcaselector.tiles.Tile;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.point.Point2i;
 import java.io.*;
 import java.util.*;
 
@@ -30,7 +26,7 @@ public class MCAFile {
 
 	public MCAFile(File file) {
 		this.file = file.getAbsoluteFile();
-		location = Helper.parseMCAFileName(file);
+		location = FileHelper.parseMCAFileName(file);
 		if (location == null) {
 			throw new IllegalArgumentException("invalid mca file name: " + file.getName());
 		}
@@ -240,16 +236,17 @@ public class MCAFile {
 	}
 
 	public void mergeChunksInto(MCAFile destination, Point2i offset, boolean overwrite) {
-		int startX = offset.getX() > 0 ? 0 : Tile.SIZE_IN_CHUNKS - (Tile.SIZE_IN_CHUNKS + offset.getX());
-		int limitX = offset.getX() > 0 ? (Tile.SIZE_IN_CHUNKS - offset.getX()) : Tile.SIZE_IN_CHUNKS;
-		int startZ = offset.getY() > 0 ? 0 : Tile.SIZE_IN_CHUNKS - (Tile.SIZE_IN_CHUNKS + offset.getY());
-		int limitZ = offset.getY() > 0 ? (Tile.SIZE_IN_CHUNKS - offset.getY()) : Tile.SIZE_IN_CHUNKS;
+		Point2i relativeOffset = getRelativeOffset(location, destination.location, offset);
+		int startX = relativeOffset.getX() > 0 ? 0 : Tile.SIZE_IN_CHUNKS - (Tile.SIZE_IN_CHUNKS + relativeOffset.getX());
+		int limitX = relativeOffset.getX() > 0 ? (Tile.SIZE_IN_CHUNKS - relativeOffset.getX()) : Tile.SIZE_IN_CHUNKS;
+		int startZ = relativeOffset.getY() > 0 ? 0 : Tile.SIZE_IN_CHUNKS - (Tile.SIZE_IN_CHUNKS + relativeOffset.getY());
+		int limitZ = relativeOffset.getY() > 0 ? (Tile.SIZE_IN_CHUNKS - relativeOffset.getY()) : Tile.SIZE_IN_CHUNKS;
 
 		for (int x = startX; x < limitX; x++) {
 			for (int z = startZ; z < limitZ; z++) {
 				int sourceIndex = z * Tile.SIZE_IN_CHUNKS + x;
-				int destX = offset.getX() > 0 ? offset.getX() + x : x - startX;
-				int destZ = offset.getY() > 0 ? offset.getY() + z : z - startZ;
+				int destX = relativeOffset.getX() > 0 ? relativeOffset.getX() + x : x - startX;
+				int destZ = relativeOffset.getY() > 0 ? relativeOffset.getY() + z : z - startZ;
 				int destIndex = destZ * Tile.SIZE_IN_CHUNKS + destX;
 
 				MCAChunkData sourceChunk = chunks[sourceIndex];
@@ -260,13 +257,17 @@ public class MCAFile {
 				}
 
 				if (sourceChunk != null && !sourceChunk.isEmpty()) {
-					if (!sourceChunk.setLocation(location.mul(32).add(destX, destZ))) {
+					if (!sourceChunk.relocate(offset.chunkToBlock())) {
 						continue;
 					}
 					destination.chunks[destIndex] = sourceChunk;
 				}
 			}
 		}
+	}
+
+	private static Point2i getRelativeOffset(Point2i source, Point2i target, Point2i offset) {
+		return source.regionToChunk().add(offset).sub(target.regionToChunk());
 	}
 
 	//will rearrange the chunk data in the mca file to take up as few space as possible
@@ -344,35 +345,6 @@ public class MCAFile {
 
 	public File getFile() {
 		return file;
-	}
-
-	public Image createImage(ByteArrayPointer ptr) {
-		try {
-			WritableImage finalImage = new WritableImage(Tile.SIZE, Tile.SIZE);
-			PixelWriter writer = finalImage.getPixelWriter();
-
-			for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
-				for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
-					int index = cz  * Tile.SIZE_IN_CHUNKS + cx;
-
-					MCAChunkData data = getChunkData(index);
-
-					data.readHeader(ptr);
-
-					try {
-						data.loadData(ptr);
-					} catch (Exception ex) {
-						Debug.error(ex);
-					}
-
-					data.drawImage(cx * Tile.CHUNK_SIZE, cz * Tile.CHUNK_SIZE, writer);
-				}
-			}
-			return finalImage;
-		} catch (Exception ex) {
-			Debug.error(ex);
-		}
-		return null;
 	}
 
 	@Override

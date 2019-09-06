@@ -1,4 +1,4 @@
-package net.querz.mcaselector.util;
+package net.querz.mcaselector.github;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -9,7 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 
-public class GithubVersionChecker {
+public class VersionChecker {
 
 	private static final String endpointTemplate = "https://api.github.com/repos/%s/%s/releases/latest";
 
@@ -18,7 +18,7 @@ public class GithubVersionChecker {
 	private String owner;
 	private String repository;
 
-	public GithubVersionChecker(String owner, String repository) {
+	public VersionChecker(String owner, String repository) {
 		this.owner = owner;
 		this.repository = repository;
 		ScriptEngineManager scriptEngineManager = new ScriptEngineManager();

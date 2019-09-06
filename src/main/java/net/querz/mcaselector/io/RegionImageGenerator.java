@@ -4,11 +4,12 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.tiles.Tile;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.Point2i;
-import net.querz.mcaselector.util.Progress;
-import net.querz.mcaselector.util.Timer;
+import net.querz.mcaselector.tiles.TileImage;
+import net.querz.mcaselector.ui.ImageHelper;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.progress.Progress;
+import net.querz.mcaselector.progress.Timer;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -74,7 +75,7 @@ public class RegionImageGenerator {
 			}
 			setLoading(tile, false);
 			if (progressChannel != null) {
-				progressChannel.incrementProgress(Helper.createMCAFileName(tile.getLocation()));
+				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 			}
 		}
 
@@ -102,13 +103,13 @@ public class RegionImageGenerator {
 
 		@Override
 		public void execute() {
-			Image image = tile.generateImage(callback, getData());
+			Image image = TileImage.generateImage(tile, callback, getData());
 			if (image != null) {
 				MCAFilePipe.executeSaveData(new MCAImageSaveCacheJob(getFile(), image, tile, scaleSupplier, scaleOnly, progressChannel));
 			} else {
 				setLoading(tile, false);
 				if (progressChannel != null) {
-					progressChannel.incrementProgress(Helper.createMCAFileName(tile.getLocation()));
+					progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 				}
 
 			}
@@ -142,23 +143,23 @@ public class RegionImageGenerator {
 			try {
 				BufferedImage img = SwingFXUtils.fromFXImage(getData(), null);
 				if (scaleOnly) {
-					int zoomLevel = Helper.getZoomLevel(scaleSupplier.get());
-					File cacheFile = Helper.createPNGFilePath(new File(Config.getCacheDir().getAbsolutePath(), zoomLevel + ""), tile.getLocation());
+					int zoomLevel = Tile.getZoomLevel(scaleSupplier.get());
+					File cacheFile = FileHelper.createPNGFilePath(new File(Config.getCacheDir().getAbsolutePath(), zoomLevel + ""), tile.getLocation());
 					if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
 						Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
 					}
 
-					BufferedImage scaled = Helper.scaleImage(img, (double) Tile.SIZE / (double) zoomLevel);
+					BufferedImage scaled = ImageHelper.scaleImage(img, (double) Tile.SIZE / (double) zoomLevel);
 					ImageIO.write(scaled, "png", cacheFile);
 
 				} else {
-					for (int i = Helper.getMinZoomLevel(); i <= Helper.getMaxZoomLevel(); i *= 2) {
-						File cacheFile = Helper.createPNGFilePath(new File(Config.getCacheDir().getAbsolutePath(), i + ""), tile.getLocation());
+					for (int i = Config.getMinZoomLevel(); i <= Config.getMaxZoomLevel(); i *= 2) {
+						File cacheFile = FileHelper.createPNGFilePath(new File(Config.getCacheDir().getAbsolutePath(), i + ""), tile.getLocation());
 						if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
 							Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
 						}
 
-						BufferedImage scaled = Helper.scaleImage(img, (double) Tile.SIZE / (double) i);
+						BufferedImage scaled = ImageHelper.scaleImage(img, (double) Tile.SIZE / (double) i);
 						ImageIO.write(scaled, "png", cacheFile);
 					}
 				}
@@ -168,10 +169,10 @@ public class RegionImageGenerator {
 
 			setLoading(tile, false);
 			if (progressChannel != null) {
-				progressChannel.incrementProgress(Helper.createMCAFileName(tile.getLocation()));
+				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 			}
 
-			Debug.dumpf("took %s to cache image of %s to %s", t, tile.getMCAFile().getName(), Helper.createPNGFileName(tile.getLocation()));
+			Debug.dumpf("took %s to cache image of %s to %s", t, tile.getMCAFile().getName(), FileHelper.createPNGFileName(tile.getLocation()));
 		}
 	}
 }

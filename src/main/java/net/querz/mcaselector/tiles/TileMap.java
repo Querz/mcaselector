@@ -4,16 +4,15 @@ import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.*;
+import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.RegionImageGenerator;
 import net.querz.mcaselector.ui.Window;
-import net.querz.mcaselector.util.Debug;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.KeyActivator;
-import net.querz.mcaselector.util.Point2f;
-import net.querz.mcaselector.util.Point2i;
-import net.querz.mcaselector.util.Timer;
-
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.key.KeyActivator;
+import net.querz.mcaselector.point.Point2f;
+import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.progress.Timer;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -22,8 +21,6 @@ public class TileMap extends Canvas {
 
 	private float scale = 1;	//higher --> -    lower --> +
 
-	public static final float MAX_SCALE = 7.9999f;
-	public static final float MIN_SCALE = 0.2f;
 	public static final float CHUNK_GRID_SCALE = 1.5f; //show chunk grid if scale is larger than this
 	public static final int TILE_VISIBILITY_THRESHOLD = 2;
 
@@ -73,6 +70,18 @@ public class TileMap extends Canvas {
 		update();
 	}
 
+	public static Point2f getRegionGridMin(Point2f offset, float scale) {
+		Point2i min = offset.toPoint2i().blockToRegion();
+		Point2i regionOffset = min.regionToBlock().sub((int) offset.getX(), (int) offset.getY());
+		return new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
+	}
+
+	public static Point2f getChunkGridMin(Point2f offset, float scale) {
+		Point2i min = offset.toPoint2i().blockToChunk();
+		Point2i chunkOffset = min.chunkToBlock().sub((int) offset.getX(), (int) offset.getY());
+		return new Point2f(chunkOffset.getX() / scale, chunkOffset.getY() / scale);
+	}
+
 	private void onKeyPressed(KeyEvent event) {
 		if (event.getCode() == KeyCode.SHIFT) {
 			keyActivator.pressActionKey(event.getCode());
@@ -102,7 +111,7 @@ public class TileMap extends Canvas {
 	private void onScroll(ScrollEvent event) {
 		float oldScale = scale;
 		scale -= event.getDeltaY() / 100;
-		scale = scale < MAX_SCALE ? (scale > MIN_SCALE ? scale : MIN_SCALE) : MAX_SCALE;
+		scale = scale < Config.MAX_SCALE ? (scale > Config.MIN_SCALE ? scale : Config.MIN_SCALE) : Config.MAX_SCALE;
 		if (oldScale != scale) {
 			//calculate the difference between the old max and the new max point
 			Point2f diff = offset.add((float) getWidth() * oldScale, (float) getHeight() * oldScale)
@@ -110,7 +119,7 @@ public class TileMap extends Canvas {
 
 			offset = offset.add(diff.div(2));
 
-			if (Helper.getZoomLevel(oldScale) != Helper.getZoomLevel(scale)) {
+			if (Tile.getZoomLevel(oldScale) != Tile.getZoomLevel(scale)) {
 				unloadTiles();
 			}
 
@@ -210,7 +219,7 @@ public class TileMap extends Canvas {
 	}
 
 	public int getZoomLevel() {
-		return Helper.getZoomLevel(scale);
+		return Tile.getZoomLevel(scale);
 	}
 
 	public void setShowRegionGrid(boolean showRegionGrid) {
@@ -352,11 +361,11 @@ public class TileMap extends Canvas {
 	}
 
 	private Point2i getMouseRegionBlock(double x, double z) {
-		return Helper.blockToRegion(getMouseBlock(x, z));
+		return getMouseBlock(x, z).blockToRegion();
 	}
 
 	private Point2i getMouseChunkBlock(double x, double z) {
-		return Helper.blockToChunk(getMouseBlock(x, z));
+		return getMouseBlock(x, z).blockToChunk();
 	}
 
 	private void sortPoints(Point2i a, Point2i b) {
@@ -393,7 +402,7 @@ public class TileMap extends Canvas {
 			for (int x = firstChunkBlock.getX(); x <= chunkBlock.getX(); x++) {
 				for (int z = firstChunkBlock.getY(); z <= chunkBlock.getY(); z++) {
 					Point2i chunk = new Point2i(x, z);
-					Tile tile = tiles.get(Helper.chunkToRegion(chunk));
+					Tile tile = tiles.get(chunk.chunkToRegion());
 					if (tile != null) {
 						if (tile.isMarked(chunk) && !marked && !tile.isEmpty()) {
 							selectedChunks--;
@@ -407,12 +416,12 @@ public class TileMap extends Canvas {
 					}
 				}
 			}
-			changedTiles.forEach(tile -> tile.createMarkedChunksImage(getZoomLevel()));
+			changedTiles.forEach(tile -> TileImage.createMarkedChunksImage(tile, getZoomLevel()));
 		}
 	}
 
 	private void draw(GraphicsContext ctx) {
-		ctx.setFill(Tile.EMPTY_CHUNK_BACKGROUND_COLOR);
+		ctx.setFill(Tile.EMPTY_CHUNK_BACKGROUND_COLOR.makeJavaFXColor());
 		ctx.fillRect(0, 0, getWidth(), getHeight());
 		runOnVisibleRegions(region -> {
 			if (!tiles.containsKey(region)) {
@@ -421,13 +430,13 @@ public class TileMap extends Canvas {
 			Tile tile = tiles.get(region);
 			visibleTiles.add(tile);
 
-			Point2i regionOffset = Helper.regionToBlock(region).sub((int) offset.getX(), (int) offset.getY());
+			Point2i regionOffset = region.regionToBlock().sub((int) offset.getX(), (int) offset.getY());
 
 			if (!tile.isLoaded() && !tile.isLoading()) {
 				RegionImageGenerator.generate(tile, () -> Platform.runLater(this::update), this::getScale, false, false, null);
 			}
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
-			tile.draw(ctx, scale, p);
+			TileImage.draw(tile, ctx, scale, p);
 		});
 
 		if (showRegionGrid) {
@@ -441,9 +450,9 @@ public class TileMap extends Canvas {
 
 	private void drawRegionGrid(GraphicsContext ctx) {
 		ctx.setLineWidth(Tile.GRID_LINE_WIDTH);
-		ctx.setStroke(Tile.REGION_GRID_COLOR);
+		ctx.setStroke(Tile.REGION_GRID_COLOR.makeJavaFXColor());
 
-		Point2f p = Helper.getRegionGridMin(offset, scale);
+		Point2f p = getRegionGridMin(offset, scale);
 
 		for (float x = p.getX(); x <= getWidth(); x += Tile.SIZE / scale) {
 			ctx.strokeLine(x, 0, x, getHeight());
@@ -456,10 +465,10 @@ public class TileMap extends Canvas {
 
 	private void drawChunkGrid(GraphicsContext ctx) {
 		ctx.setLineWidth(Tile.GRID_LINE_WIDTH);
-		ctx.setStroke(Tile.CHUNK_GRID_COLOR);
+		ctx.setStroke(Tile.CHUNK_GRID_COLOR.makeJavaFXColor());
 
-		Point2f p = Helper.getChunkGridMin(offset, scale);
-		Point2f pReg = Helper.getRegionGridMin(offset, scale);
+		Point2f p = getChunkGridMin(offset, scale);
+		Point2f pReg = getRegionGridMin(offset, scale);
 
 		for (float x = p.getX() + Tile.CHUNK_SIZE / scale; x <= getWidth(); x += Tile.CHUNK_SIZE / scale) {
 			if (showRegionGrid && (int) (pReg.getX() + Tile.SIZE / scale) == (int) x) {
@@ -481,9 +490,9 @@ public class TileMap extends Canvas {
 
 	//performs an action on regions in a spiral pattern starting from the center of all visible regions in the TileMap.
 	private void runOnVisibleRegions(Consumer<Point2i> consumer) {
-		Point2i min = Helper.blockToRegion(offset.toPoint2i());
-		Point2i max = Helper.blockToRegion(offset.add((float) getWidth() * scale, (float) getHeight() * scale).toPoint2i());
-		Point2i mid = Helper.blockToRegion(Helper.regionToBlock(Helper.blockToRegion(Helper.regionToBlock(min).add(Helper.regionToBlock(max)).div(2))));
+		Point2i min = offset.toPoint2i().blockToRegion();
+		Point2i max = offset.add((float) getWidth() * scale, (float) getHeight() * scale).toPoint2i().blockToRegion();
+		Point2i mid = min.regionToBlock().add(max.regionToBlock()).div(2).blockToRegion().regionToBlock().blockToRegion();
 		int dir = 0; //0 = right, 1 = down, 2 = left, 3 = up
 		int steps = 1;
 		int xSteps = 0;

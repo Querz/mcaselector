@@ -4,9 +4,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
 import net.querz.mcaselector.tiles.TileMap;
-import net.querz.mcaselector.util.Helper;
-import net.querz.mcaselector.util.Translation;
-import net.querz.mcaselector.util.Point2i;
+import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.point.Point2i;
 
 public class StatusBar extends BorderPane {
 
@@ -48,9 +47,9 @@ public class StatusBar extends BorderPane {
 		Point2i b = tileMap.getHoveredBlock();
 		if (b != null) {
 			hoveredBlock.setText(Translation.STATUS_BLOCK + ": " + b.getX() + ", " + b.getY());
-			Point2i c = Helper.blockToChunk(b);
+			Point2i c = b.blockToChunk();
 			hoveredChunk.setText(Translation.STATUS_CHUNK + ": " + c.getX() + ", " + c.getY());
-			Point2i r = Helper.blockToRegion(b);
+			Point2i r = b.blockToRegion();
 			hoveredRegion.setText(Translation.STATUS_REGION + ": " + r.getX() + ", " + r.getY());
 		} else {
 			hoveredBlock.setText(Translation.STATUS_BLOCK + ": -, -");

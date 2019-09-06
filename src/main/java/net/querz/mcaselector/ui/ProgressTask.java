@@ -4,8 +4,8 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
-import net.querz.mcaselector.util.Progress;
-import net.querz.mcaselector.util.Translation;
+import net.querz.mcaselector.progress.Progress;
+import net.querz.mcaselector.text.Translation;
 
 public abstract class ProgressTask extends Task<Void> implements Progress {
 
@@ -47,7 +47,7 @@ public abstract class ProgressTask extends Task<Void> implements Progress {
 
 	@Override
 	public void setMessage(String msg) {
-		infoProperty.setValue(msg);
+		Platform.runLater(() -> infoProperty.setValue(msg));
 	}
 
 	public void setIndeterminate(String info) {

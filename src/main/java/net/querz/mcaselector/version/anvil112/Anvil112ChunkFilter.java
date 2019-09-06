@@ -1,6 +1,6 @@
 package net.querz.mcaselector.version.anvil112;
 
-import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;

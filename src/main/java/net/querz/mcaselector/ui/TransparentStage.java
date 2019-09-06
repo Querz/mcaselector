@@ -10,7 +10,7 @@ import javafx.scene.shape.Shape;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import net.querz.mcaselector.util.Debug;
+import net.querz.mcaselector.debug.Debug;
 
 public class TransparentStage extends Stage {
 
