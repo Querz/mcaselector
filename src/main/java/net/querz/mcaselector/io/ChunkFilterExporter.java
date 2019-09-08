@@ -19,10 +19,14 @@ public class ChunkFilterExporter {
 
 	private ChunkFilterExporter() {}
 
-	public static void exportFilter(GroupFilter filter, Map<Point2i, Set<Point2i>> selection, File destination, Progress progressChannel) {
+	public static void exportFilter(GroupFilter filter, Map<Point2i, Set<Point2i>> selection, File destination, Progress progressChannel, boolean headless) {
 		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
 		if (files == null || files.length == 0) {
-			progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
+			if (headless) {
+				progressChannel.done("no files");
+			} else {
+				progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
+			}
 			return;
 		}
 

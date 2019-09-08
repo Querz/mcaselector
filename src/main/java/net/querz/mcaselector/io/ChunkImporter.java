@@ -19,18 +19,26 @@ public class ChunkImporter {
 
 	private ChunkImporter() {}
 
-	public static void importChunks(File importDir, Progress progressChannel, boolean overwrite, Point2i offset) {
+	public static void importChunks(File importDir, Progress progressChannel, boolean headless, boolean overwrite, Point2i offset) {
 		try {
 			File[] importFiles = importDir.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
 			if (importFiles == null || importFiles.length == 0) {
-				progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
+				if (headless) {
+					progressChannel.done("no files");
+				} else {
+					progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
+				}
 				return;
 			}
 
 			MCAFilePipe.clearQueues();
 
 			progressChannel.setMax(importFiles.length * (offset.getX() % 32 != 0 ? 2 : 1) * (offset.getY() % 32 != 0 ? 2 : 1));
-			progressChannel.setMessage(Translation.DIALOG_PROGRESS_COLLECTING_DATA.toString());
+			if (headless) {
+				progressChannel.setMessage("collecting data...");
+			} else {
+				progressChannel.setMessage(Translation.DIALOG_PROGRESS_COLLECTING_DATA.toString());
+			}
 
 			Map<Point2i, Set<Point2i>> targetMapping = new HashMap<>();
 

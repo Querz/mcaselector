@@ -178,7 +178,7 @@ public class ParamExecutor {
 		progress.onDone(future);
 
 		if (g != null) {
-			ChunkFilterDeleter.deleteFilter(g, selection, progress);
+			ChunkFilterDeleter.deleteFilter(g, selection, progress, true);
 		} else if (selection != null) {
 			SelectionDeleter.deleteSelection(selection, progress);
 		} else {
@@ -207,7 +207,7 @@ public class ParamExecutor {
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(future);
 
-		ChunkImporter.importChunks(input, progress, overwrite, new Point2i(offsetX, offsetZ));
+		ChunkImporter.importChunks(input, progress, true, overwrite, new Point2i(offsetX, offsetZ));
 	}
 
 	private static void runModeExport(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
@@ -235,7 +235,7 @@ public class ParamExecutor {
 		progress.onDone(future);
 
 		if (g != null) {
-			ChunkFilterExporter.exportFilter(g, selection, output, progress);
+			ChunkFilterExporter.exportFilter(g, selection, output, progress, true);
 		} else if (selection != null) {
 			SelectionExporter.exportSelection(selection, output, progress);
 		} else {
@@ -266,7 +266,7 @@ public class ParamExecutor {
 			future.run();
 		});
 
-		ChunkFilterSelector.selectFilter(g, selection::putAll, progress);
+		ChunkFilterSelector.selectFilter(g, selection::putAll, progress, true);
 	}
 
 	private static void printHeadlessSettings() {

@@ -19,10 +19,14 @@ public class ChunkFilterDeleter {
 
 	private ChunkFilterDeleter() {}
 
-	public static void deleteFilter(GroupFilter filter, Map<Point2i, Set<Point2i>> selection, Progress progressChannel) {
+	public static void deleteFilter(GroupFilter filter, Map<Point2i, Set<Point2i>> selection, Progress progressChannel, boolean headless) {
 		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
 		if (files == null || files.length == 0) {
-			progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
+			if (headless) {
+				progressChannel.done("no files");
+			} else {
+				progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
+			}
 			return;
 		}
 
