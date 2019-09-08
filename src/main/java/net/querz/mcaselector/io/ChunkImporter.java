@@ -33,7 +33,6 @@ public class ChunkImporter {
 
 			MCAFilePipe.clearQueues();
 
-			progressChannel.setMax(importFiles.length * (offset.getX() % 32 != 0 ? 2 : 1) * (offset.getY() % 32 != 0 ? 2 : 1));
 			if (headless) {
 				progressChannel.setMessage("collecting data...");
 			} else {
@@ -41,7 +40,6 @@ public class ChunkImporter {
 			}
 
 			Map<Point2i, Set<Point2i>> targetMapping = new HashMap<>();
-
 
 			// find target files
 			for (File file : importFiles) {
@@ -58,6 +56,7 @@ public class ChunkImporter {
 					ex.printStackTrace();
 				}
 			}
+			progressChannel.setMax(targetMapping.size());
 
 			progressChannel.updateProgress(importFiles[0].getName(), 0);
 
