@@ -241,6 +241,7 @@ The following languages are available:
 * German (Germany)
 * Chinese (China) (thanks to [@LovesAsuna](https://github.com/LovesAsuna) for translating)
 * Czech (Czech Republic) (thanks to [@mkyral](https://github.com/mkyral) for translating)
+* Spanish (Spain) (thanks to [@NathanielFreeman](https://github.com/NathanielFreeman) for translating)
 
 If you would like to contribute a translation, you can find the language files in [resources/lang/](https://github.com/Querz/mcaselector/tree/master/src/main/resources/lang). The files are automatically detected and shown in the settings drowdown menu once they are placed in this folder.
 

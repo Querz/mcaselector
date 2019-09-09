@@ -224,7 +224,7 @@ public enum Translation {
 					Debug.dumpf("invalid language mapping: %s", line);
 					continue;
 				}
-				setTranslation(split[0], split[1]);
+				setTranslation(split[0], split[1].replace("\\n", "\n"));
 			}
 		} catch (IOException ex) {
 			Debug.error("error reading " + locale + ".txt: ", ex.getMessage());
@@ -276,6 +276,6 @@ public enum Translation {
 			}
 			return result.toArray(new String[0]);
 		}
-		throw new UnsupportedOperationException("Cannot list files for URL " + dirURL);
+		throw new UnsupportedOperationException("cannot list files for URL " + dirURL);
 	}
 }
