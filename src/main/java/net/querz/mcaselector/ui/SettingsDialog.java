@@ -94,7 +94,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 			@Override
 			public String toString(Locale locale) {
-				String display = locale.getDisplayName();
+				String display = locale.getDisplayName(locale);
 				cache.put(display, locale);
 				return display;
 			}
