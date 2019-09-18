@@ -9,7 +9,7 @@ status.selected.tooltip;Quantidade de chunks atualmente selecionados.
 status.visible;Regiões visíveis
 status.visible.tooltip;Quantidade de imagens de região carregadas para renderizar.
 status.total;Região total
-status.totaltooltip;Quantidade total de regiões carregadas, incluindo as regiões selecionadas não visíveis.
+status.total.tooltip;Quantidade total de regiões carregadas, incluindo as regiões selecionadas não visíveis.
 menu.file;Arquivo
 menu.view;Visão
 menu.selection;Seleção
