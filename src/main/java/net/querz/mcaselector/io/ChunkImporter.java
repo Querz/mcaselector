@@ -19,7 +19,7 @@ public class ChunkImporter {
 
 	private ChunkImporter() {}
 
-	public static void importChunks(File importDir, Progress progressChannel, boolean headless, boolean overwrite, Point2i offset) {
+	public static void importChunks(File importDir, Progress progressChannel, boolean headless, boolean overwrite, Map<Point2i, Set<Point2i>> selection, Point2i offset) {
 		try {
 			File[] importFiles = importDir.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
 			if (importFiles == null || importFiles.length == 0) {
@@ -61,8 +61,13 @@ public class ChunkImporter {
 			progressChannel.updateProgress(importFiles[0].getName(), 0);
 
 			for (Map.Entry<Point2i, Set<Point2i>> entry : targetMapping.entrySet()) {
-				File targetFile = FileHelper.createMCAFilePath(entry.getKey());
-				MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetFile, importDir, entry.getKey(), entry.getValue(), offset, progressChannel, overwrite));
+				if (selection == null || selection.containsKey(entry.getKey())) {
+					File targetFile = FileHelper.createMCAFilePath(entry.getKey());
+					Set<Point2i> targetSelection = selection == null ? null : selection.get(entry.getKey());
+					MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetFile, importDir, entry.getKey(), entry.getValue(), offset, progressChannel, overwrite, targetSelection));
+				} else {
+					progressChannel.incrementProgress(FileHelper.createMCAFileName(entry.getKey()), entry.getValue().size());
+				}
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -77,8 +82,9 @@ public class ChunkImporter {
 		private Point2i offset;
 		private Progress progressChannel;
 		private boolean overwrite;
+		private Set<Point2i> selection;
 
-		MCAChunkImporterLoadJob(File targetFile, File sourceDir, Point2i target, Set<Point2i> sources, Point2i offset, Progress progressChannel, boolean overwrite) {
+		MCAChunkImporterLoadJob(File targetFile, File sourceDir, Point2i target, Set<Point2i> sources, Point2i offset, Progress progressChannel, boolean overwrite, Set<Point2i> selection) {
 			super(targetFile);
 			this.target = target;
 			this.sources = sources;
@@ -86,6 +92,7 @@ public class ChunkImporter {
 			this.offset = offset;
 			this.progressChannel = progressChannel;
 			this.overwrite = overwrite;
+			this.selection = selection;
 		}
 
 		@Override
@@ -142,7 +149,7 @@ public class ChunkImporter {
 				destData = null;
 			}
 
-			MCAFilePipe.executeProcessData(new MCAChunkImporterProcessJob(getFile(), sourceDir, target, sourceDataMapping, destData, offset, progressChannel, overwrite));
+			MCAFilePipe.executeProcessData(new MCAChunkImporterProcessJob(getFile(), sourceDir, target, sourceDataMapping, destData, offset, progressChannel, overwrite, selection));
 		}
 	}
 
@@ -154,8 +161,9 @@ public class ChunkImporter {
 		private Point2i offset;
 		private Progress progressChannel;
 		private boolean overwrite;
+		private Set<Point2i> selection;
 
-		MCAChunkImporterProcessJob(File targetFile, File sourceDir, Point2i target, Map<Point2i, byte[]> sourceDataMapping, byte[] destData, Point2i offset, Progress progressChannel, boolean overwrite) {
+		MCAChunkImporterProcessJob(File targetFile, File sourceDir, Point2i target, Map<Point2i, byte[]> sourceDataMapping, byte[] destData, Point2i offset, Progress progressChannel, boolean overwrite, Set<Point2i> selection) {
 			super(targetFile, destData);
 			this.sourceDir = sourceDir;
 			this.target = target;
@@ -163,6 +171,7 @@ public class ChunkImporter {
 			this.offset = offset;
 			this.progressChannel = progressChannel;
 			this.overwrite = overwrite;
+			this.selection = selection;
 		}
 
 		@Override
@@ -188,7 +197,7 @@ public class ChunkImporter {
 
 					Debug.dumpf("merging chunk from  region %s into %s", sourceData.getKey(), target);
 
-					source.mergeChunksInto(destination, offset, overwrite);
+					source.mergeChunksInto(destination, offset, overwrite, selection);
 				}
 
 				MCAFilePipe.executeSaveData(new MCAChunkImporterSaveJob(getFile(), destination, sourceDataMapping.size(), progressChannel));

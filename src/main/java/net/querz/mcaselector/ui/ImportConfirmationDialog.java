@@ -49,6 +49,12 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 			dataAction.accept(data);
 		});
 
+		CheckBox selectionOnly = new CheckBox();
+		selectionOnly.setOnAction(e -> {
+			data.selectionOnly = selectionOnly.isSelected();
+			dataAction.accept(data);
+		});
+
 		overwrite.setSelected(true);
 
 		data.offset = locationInput.getValue();
@@ -61,6 +67,8 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		optionGrid.add(locationInput, 1, 0);
 		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_OVERWRITE), 0, 1);
 		optionGrid.add(overwrite, 1, 1);
+		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_SELECTION_ONLY), 0, 2);
+		optionGrid.add(selectionOnly, 1, 2);
 
 		BorderedTitledPane options = new BorderedTitledPane(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS, optionGrid);
 
@@ -88,6 +96,7 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 
 		private Point2i offset;
 		private boolean overwrite;
+		private boolean selectionOnly;
 
 		public Point2i getOffset() {
 			return offset;
@@ -95,6 +104,10 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 
 		public boolean overwrite() {
 			return overwrite;
+		}
+
+		public boolean selectionOnly() {
+			return selectionOnly;
 		}
 	}
 }

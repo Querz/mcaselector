@@ -64,6 +64,7 @@ public class ParamExecutor {
 			pi.registerDependencies("offset-x", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("offset-z", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("overwrite", null, new ActionKey("mode", "import"));
+			pi.registerDependencies("selection", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("zoom-level", null, new ActionKey("mode", "cache"));
 			for (int z = Config.getMinZoomLevel(); z <= Config.getMaxZoomLevel(); z *= 2) {
 				pi.registerRestrictions("zoom-level", z + "");
@@ -201,13 +202,18 @@ public class ParamExecutor {
 		int offsetX = parseInt(params.get("offset-x"));
 		int offsetZ = parseInt(params.get("offset-z"));
 		boolean overwrite = params.containsKey("overwrite");
+		File selectionFile = parseFile(params.get("selection"), "csv");
+		Map<Point2i, Set<Point2i>> selection = null;
+		if (selectionFile.exists()) {
+			selection = SelectionUtil.importSelection(selectionFile);
+		}
 
 		printHeadlessSettings();
 
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(future);
 
-		ChunkImporter.importChunks(input, progress, true, overwrite, new Point2i(offsetX, offsetZ));
+		ChunkImporter.importChunks(input, progress, true, overwrite, selection, new Point2i(offsetX, offsetZ));
 	}
 
 	private static void runModeExport(Map<String, String> params, FutureTask<Boolean> future) throws IOException {

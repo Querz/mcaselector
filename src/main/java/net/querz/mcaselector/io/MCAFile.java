@@ -235,7 +235,7 @@ public class MCAFile {
 		}
 	}
 
-	public void mergeChunksInto(MCAFile destination, Point2i offset, boolean overwrite) {
+	public void mergeChunksInto(MCAFile destination, Point2i offset, boolean overwrite, Set<Point2i> selection) {
 		Point2i relativeOffset = getRelativeOffset(location, destination.location, offset);
 		int startX = relativeOffset.getX() > 0 ? 0 : Tile.SIZE_IN_CHUNKS - (Tile.SIZE_IN_CHUNKS + relativeOffset.getX());
 		int limitX = relativeOffset.getX() > 0 ? (Tile.SIZE_IN_CHUNKS - relativeOffset.getX()) : Tile.SIZE_IN_CHUNKS;
@@ -256,11 +256,15 @@ public class MCAFile {
 					continue;
 				}
 
-				if (sourceChunk != null && !sourceChunk.isEmpty()) {
-					if (!sourceChunk.relocate(offset.chunkToBlock())) {
-						continue;
+				Point2i destChunk = destination.location.regionToChunk().add(destX, destZ);
+
+				if (selection == null || selection.contains(destChunk)) {
+					if (sourceChunk != null && !sourceChunk.isEmpty()) {
+						if (!sourceChunk.relocate(offset.chunkToBlock())) {
+							continue;
+						}
+						destination.chunks[destIndex] = sourceChunk;
 					}
-					destination.chunks[destIndex] = sourceChunk;
 				}
 			}
 		}

@@ -136,7 +136,9 @@ public class DialogHelper {
 				if (r == ButtonType.OK) {
 					new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(
-									dir, t, false, dataProperty.get().overwrite(), dataProperty.get().getOffset()));
+									dir, t, false, dataProperty.get().overwrite(),
+									dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null,
+									dataProperty.get().getOffset()));
 					CacheHelper.clearAllCache(tileMap);
 				}
 			});

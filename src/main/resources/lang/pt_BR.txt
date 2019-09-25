@@ -52,6 +52,7 @@ dialog.import_chunks_confirmation.header;Você está prestes a importar um núme
 dialog.import_chunks_confirmation.options;Opções
 dialog.import_chunks_confirmation.options.offset;Offset
 dialog.import_chunks_confirmation.options.overwrite;Sobrescrever chunks existentes
+dialog.import_chunks_confirmation.options.selection_only;Aplicar somente na seleção.
 dialog.import_chunks_confirmation.warning;Advertencia:A importação de chunks deslocados no espaço não atualizará as coordenadas dos blocos de comandos.
 dialog.export_chunks_confirmation.title;Exportar chunks
 dialog.export_chunks_confirmation.header_short;Você está prestes a exportar um número desconhecido de Chunks deste mundo.
