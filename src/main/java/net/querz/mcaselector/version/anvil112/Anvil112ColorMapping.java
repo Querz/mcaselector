@@ -12,6 +12,7 @@ public class Anvil112ColorMapping implements ColorMapping {
 	private Map<Integer, Integer> mapping = new HashMap<>();
 
 	public Anvil112ColorMapping() {
+		// noinspection ConstantConditions
 		try (BufferedReader bis = new BufferedReader(
 				new InputStreamReader(Anvil112ColorMapping.class.getClassLoader().getResourceAsStream("colors112.csv")))) {
 			String line;
@@ -44,6 +45,7 @@ public class Anvil112ColorMapping implements ColorMapping {
 
 	@Override
 	public int getRGB(Object blockID) {
+		//noinspection SuspiciousMethodCalls
 		return mapping.getOrDefault(blockID, 0x000000);
 	}
 }

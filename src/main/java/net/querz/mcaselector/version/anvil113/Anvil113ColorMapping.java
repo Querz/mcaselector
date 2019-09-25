@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class Anvil113ColorMapping implements ColorMapping {
 
@@ -18,6 +19,7 @@ public class Anvil113ColorMapping implements ColorMapping {
 
 	public Anvil113ColorMapping() {
 		// note_block:pitch=1,powered=true,instrument=flute;01ab9f
+		// noinspection ConstantConditions
 		try (BufferedReader bis = new BufferedReader(
 				new InputStreamReader(Anvil113ColorMapping.class.getClassLoader().getResourceAsStream("colors113.csv")))) {
 			String line;
@@ -62,17 +64,17 @@ public class Anvil113ColorMapping implements ColorMapping {
 		if (isWaterlogged((CompoundTag) o)) {
 			return (int) mapping.get("minecraft:water");
 		}
-		Object value = mapping.get(((CompoundTag) o).getString("Name"));
+		Object value = mapping.get(withDefault(() -> ((CompoundTag) o).getString("Name"), ""));
 		if (value instanceof Integer) {
 			return (int) value;
 		} else if (value instanceof BlockStateMapping) {
-			return ((BlockStateMapping) value).getColor(((CompoundTag) o).getCompoundTag("Properties"));
+			return ((BlockStateMapping) value).getColor(withDefault(() -> ((CompoundTag) o).getCompoundTag("Properties"), null));
 		}
 		return 0x000000;
 	}
 
 	private boolean isWaterlogged(CompoundTag data) {
-		return data.get("Properties") != null && "true".equals(data.getCompoundTag("Properties").getString("waterlogged"));
+		return data.get("Properties") != null && "true".equals(withDefault(() -> data.getCompoundTag("Properties").getString("waterlogged"), null));
 	}
 
 	private class BlockStateMapping {
@@ -80,17 +82,19 @@ public class Anvil113ColorMapping implements ColorMapping {
 		private Map<Set<String>, Integer> blockStateMapping = new HashMap<>();
 
 		public int getColor(CompoundTag properties) {
-			for (Map.Entry<String, Tag<?>> property : properties.entrySet()) {
-				Map<Set<String>, Integer> clone = new HashMap<>(blockStateMapping);
-				for (Map.Entry<Set<String>, Integer> blockState : blockStateMapping.entrySet()) {
-					String value = property.getKey() + "=" + ((StringTag) property.getValue()).getValue();
-					if (!blockState.getKey().contains(value)) {
-						clone.remove(blockState.getKey());
+			if (properties != null) {
+				for (Map.Entry<String, Tag<?>> property : properties.entrySet()) {
+					Map<Set<String>, Integer> clone = new HashMap<>(blockStateMapping);
+					for (Map.Entry<Set<String>, Integer> blockState : blockStateMapping.entrySet()) {
+						String value = property.getKey() + "=" + ((StringTag) property.getValue()).getValue();
+						if (!blockState.getKey().contains(value)) {
+							clone.remove(blockState.getKey());
+						}
 					}
-				}
-				Iterator<Map.Entry<Set<String>, Integer>> it = clone.entrySet().iterator();
-				if (it.hasNext()) {
-					return it.next().getValue();
+					Iterator<Map.Entry<Set<String>, Integer>> it = clone.entrySet().iterator();
+					if (it.hasNext()) {
+						return it.next().getValue();
+					}
 				}
 			}
 			return 0x000000;

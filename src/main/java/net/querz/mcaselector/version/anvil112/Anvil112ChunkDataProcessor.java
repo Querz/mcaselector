@@ -6,12 +6,16 @@ import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
+import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, PixelWriter writer) {
-		ListTag<CompoundTag> sections = root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList();
+		ListTag<CompoundTag> sections = withDefault(() -> root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
+		if (sections == null) {
+			return;
+		}
 		sections.sort(this::filterSections);
 
 		//loop over x / z
@@ -19,19 +23,29 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
 
-				byte[] biomes = root.getCompoundTag("Level").getByteArray("Biomes");
+				byte[] biomes = withDefault(() -> root.getCompoundTag("Level").getByteArray("Biomes"), null);
 				int biome = -1;
-				if (biomes.length != 0) {
+				if (biomes != null && biomes.length != 0) {
 					biome = biomes[getBlockIndex(cx, 0, cz)];
 				}
 
 				//loop over sections
 				for (int i = 0; i < sections.size(); i++) {
+					final int si = i;
+					byte[] blocks = withDefault(() -> sections.get(si).getByteArray("Blocks"), null);
+					if (blocks == null) {
+						continue;
+					}
+					byte[] data = withDefault(() -> sections.get(si).getByteArray("Data"), null);
+					if (data == null) {
+						continue;
+					}
 
-					byte[] blocks = sections.get(i).getByteArray("Blocks");
-					byte[] data = sections.get(i).getByteArray("Data");
-
-					int sectionHeight = sections.get(i).getByte("Y") * 16;
+					Byte height = withDefault(() -> sections.get(si).getByte("Y"), null);
+					if (height == null) {
+						continue;
+					}
+					int sectionHeight = height * 16;
 
 					//loop over y value in section from top to bottom
 					for (int cy = Tile.CHUNK_SIZE - 1; cy >= 0; cy--) {
@@ -78,6 +92,6 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 	}
 
 	private int filterSections(CompoundTag sectionA, CompoundTag sectionB) {
-		return sectionA.getByte("Y") > sectionB.getByte("Y") ? -1 : 1;
+		return withDefault(() -> sectionB.getByte("Y"), (byte) -1) - withDefault(() -> sectionA.getByte("Y"), (byte) -1);
 	}
 }

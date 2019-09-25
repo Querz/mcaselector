@@ -13,11 +13,11 @@ import net.querz.nbt.Tag;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.InflaterInputStream;
+import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class MCAChunkData {
 
@@ -467,15 +467,6 @@ public class MCAChunkData {
 		if (pos != null && pos.size() == 3) {
 			pos.set(0, new IntTag(pos.get(0).asInt() + offset.getX()));
 			pos.set(2, new IntTag(pos.get(2).asInt() + offset.getY()));
-		}
-	}
-
-	private <T> T catchClassCastException(Supplier<T> s) {
-		try {
-			return s.get();
-		} catch (ClassCastException ex) {
-			Debug.dumpf("error parsing value in chunk import: %s", ex.getMessage());
-			return null;
 		}
 	}
 }

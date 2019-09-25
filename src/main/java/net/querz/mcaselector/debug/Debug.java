@@ -8,7 +8,11 @@ public class Debug {
 	public static void dump(Object... objects) {
 		if (Config.debug()) {
 			for (Object o : objects) {
-				System.out.println(o);
+				if (o instanceof Exception) {
+					((Exception) o).printStackTrace();
+				} else {
+					System.out.println(o);
+				}
 			}
 		}
 	}

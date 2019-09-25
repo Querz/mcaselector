@@ -6,13 +6,14 @@ import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
+import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, PixelWriter writer) {
-		ListTag<CompoundTag> sections = root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList();
-		if ("empty".equals(((CompoundTag) root.get("Level")).getString("Status"))) {
+		ListTag<CompoundTag> sections = withDefault(() -> root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
+		if ("empty".equals(withDefault(() -> root.getCompoundTag("Level").getString("Status"), null))) {
 			return;
 		}
 		sections.sort(this::filterSections);
@@ -21,23 +22,30 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
 
-				int[] biomes = root.getCompoundTag("Level").getIntArray("Biomes");
+				int[] biomes = withDefault(() -> root.getCompoundTag("Level").getIntArray("Biomes"), null);
 				int biome = -1;
-				if (biomes.length != 0) {
+				if (biomes != null && biomes.length != 0) {
 					biome = biomes[getIndex(cx, 0, cz)];
 				}
 
 				//loop over sections
 				for (int i = 0; i < sections.size(); i++) {
-
-					ListTag<?> genericPalette = sections.get(i).getListTag("Palette");
-					if (genericPalette == null) {
+					final int si = i;
+					ListTag<CompoundTag> palette = withDefault(() -> sections.get(si).getListTag("Palette").asCompoundTagList(), null);
+					if (palette == null) {
 						continue;
 					}
-					ListTag<CompoundTag> palette = genericPalette.asCompoundTagList();
-					long[] blockStates = sections.get(i).getLongArray("BlockStates");
+					long[] blockStates = withDefault(() -> sections.get(si).getLongArray("BlockStates"), null);
+					if (blockStates == null) {
+						continue;
+					}
 
-					int sectionHeight = sections.get(i).getByte("Y") * 16;
+					Byte height = withDefault(() -> sections.get(si).getByte("Y"), null);
+					if (height == null) {
+						continue;
+					}
+
+					int sectionHeight = height * 16;
 
 					int bits = blockStates.length / 64;
 					int clean = ((int) Math.pow(2, bits) - 1);
@@ -63,7 +71,7 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 
 	private boolean isIgnoredInNether(int biome, CompoundTag blockData, int height) {
 		if (biome == 8) {
-			switch (blockData.getString("Name")) {
+			switch (withDefault(() -> blockData.getString("Name"), "")) {
 			case "minecraft:bedrock":
 			case "minecraft:flowing_lava":
 			case "minecraft:lava":
@@ -79,7 +87,7 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 		if (paletteIndex == 0) {
 			return true;
 		}
-		switch (blockData.getString("Name")) {
+		switch (withDefault(() -> blockData.getString("Name"), "")) {
 			case "minecraft:air":
 			case "minecraft:cave_air":
 			case "minecraft:barrier":
@@ -115,6 +123,6 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 	}
 
 	private int filterSections(CompoundTag sectionA, CompoundTag sectionB) {
-		return sectionA.getByte("Y") > sectionB.getByte("Y") ? -1 : 1;
+		return withDefault(() -> sectionB.getByte("Y"), (byte) -1) - withDefault(() -> sectionA.getByte("Y"), (byte) -1);
 	}
 }

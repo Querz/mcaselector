@@ -12,12 +12,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class Anvil112ChunkFilter implements ChunkFilter {
 
 	private Map<String, BlockData[]> mapping = new HashMap<>();
 
 	public Anvil112ChunkFilter() {
+		// noinspection ConstantConditions
 		try (BufferedReader bis = new BufferedReader(
 				new InputStreamReader(Anvil112ChunkFilter.class.getClassLoader().getResourceAsStream("block-id-mapping.csv")))) {
 			String line;
@@ -75,7 +77,10 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchBlockNames(CompoundTag data, String... names) {
-		ListTag<CompoundTag> sections = data.getCompoundTag("Level").getListTag("Sections").asCompoundTagList();
+		ListTag<CompoundTag> sections = withDefault(() -> data.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
+		if (sections == null) {
+			return false;
+		}
 		int c = 0;
 		nameLoop:
 		for (String name : names) {
@@ -85,8 +90,14 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 				continue;
 			}
 			for (CompoundTag t : sections) {
-				byte[] blocks = t.getByteArray("Blocks");
-				byte[] blockData = t.getByteArray("Data");
+				byte[] blocks = withDefault(() -> t.getByteArray("Blocks"), null);
+				if (blocks == null) {
+					continue;
+				}
+				byte[] blockData = withDefault(() -> t.getByteArray("Data"), null);
+				if (blockData == null) {
+					continue;
+				}
 
 				for (int i = 0; i < blocks.length; i++) {
 					short b = (short) (blocks[i] & 0xFF);
@@ -122,7 +133,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchBiomeIDs(CompoundTag data, int... ids) {
-		if (!data.containsKey("Level") || !data.getCompoundTag("Level").containsKey("Biomes")) {
+		if (!data.containsKey("Level") || withDefault(() -> data.getCompoundTag("Level").getByteArray("Biomes"), null) == null) {
 			return false;
 		}
 		filterLoop: for (int filterID : ids) {
@@ -138,11 +149,12 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public void changeBiome(CompoundTag data, int id) {
-		if (!data.containsKey("Level") || !data.getCompoundTag("Level").containsKey("Biomes")) {
+		if (!data.containsKey("Level") || withDefault(() -> data.getCompoundTag("Level").getByteArray("Biomes"), null) == null) {
 			return;
 		}
-		for (int i = 0; i < data.getCompoundTag("Level").getByteArray("Biomes").length; i++) {
-			data.getCompoundTag("Level").getByteArray("Biomes")[i] = (byte) id;
+		byte[] biomes = data.getCompoundTag("Level").getByteArray("Biomes");
+		for (int i = 0; i < biomes.length; i++) {
+			biomes[i] = (byte) id;
 		}
 	}
 }

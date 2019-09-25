@@ -19,7 +19,9 @@ import net.querz.mcaselector.ui.ImageHelper;
 import net.querz.mcaselector.version.VersionController;
 import java.io.File;
 
-public class TileImage {
+public final class TileImage {
+
+	private TileImage() {}
 
 	public static void draw(Tile tile, GraphicsContext ctx, float scale, Point2f offset) {
 		if (tile.isLoaded() && tile.image != null) {
@@ -145,7 +147,7 @@ public class TileImage {
 					writer
 			);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			Debug.dump(ex);
 		}
 	}
 }
