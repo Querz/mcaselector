@@ -383,8 +383,12 @@ public class TileMap extends Canvas {
 			sortPoints(firstRegionBlock, regionBlock);
 			for (int x = firstRegionBlock.getX(); x <= regionBlock.getX(); x++) {
 				for (int z = firstRegionBlock.getY(); z <= regionBlock.getY(); z++) {
-					Tile tile = tiles.get(new Point2i(x, z));
-					if (tile != null && !tile.isEmpty()) {
+					Point2i region = new Point2i(x, z);
+					Tile tile = tiles.get(region);
+					if (tile == null) {
+						tile = tiles.put(region, new Tile(region));
+					}
+					if (tile != null) {
 						if (tile.isMarked() && !marked) {
 							selectedChunks -= Tile.CHUNKS;
 						} else if (!tile.isMarked() && marked) {
@@ -403,12 +407,15 @@ public class TileMap extends Canvas {
 				for (int z = firstChunkBlock.getY(); z <= chunkBlock.getY(); z++) {
 					Point2i chunk = new Point2i(x, z);
 					Tile tile = tiles.get(chunk.chunkToRegion());
+					if (tile == null) {
+						tile = tiles.put(chunk.chunkToRegion(), new Tile(chunk.chunkToRegion()));
+					}
 					if (tile != null) {
-						if (tile.isMarked(chunk) && !marked && !tile.isEmpty()) {
+						if (tile.isMarked(chunk) && !marked) {
 							selectedChunks--;
 							tile.unMark(chunk);
 							changedTiles.add(tile);
-						} else if (!tile.isMarked(chunk) && marked && !tile.isEmpty()) {
+						} else if (!tile.isMarked(chunk) && marked) {
 							selectedChunks++;
 							tile.mark(chunk);
 							changedTiles.add(tile);

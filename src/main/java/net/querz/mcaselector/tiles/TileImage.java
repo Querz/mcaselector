@@ -25,23 +25,23 @@ public final class TileImage {
 
 	public static void draw(Tile tile, GraphicsContext ctx, float scale, Point2f offset) {
 		if (tile.isLoaded() && tile.image != null) {
-			double size =  tile.getImage().getHeight() * (Tile.SIZE / tile.getImage().getWidth());
-			ctx.drawImage(tile.getImage(), offset.getX(), offset.getY(), size / scale, size / scale);
-			if (tile.marked) {
-				//draw marked region
-				ctx.setFill(Config.getRegionSelectionColor().makeJavaFXColor());
-				ctx.fillRect(offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
-			} else if (tile.markedChunks.size() > 0) {
-
-				if (tile.markedChunksImage == null) {
-					createMarkedChunksImage(tile, Tile.getZoomLevel(scale));
-				}
-
-				// apply markedChunksImage to ctx
-				ctx.drawImage(tile.markedChunksImage, offset.getX(), offset.getY(), size / scale, size / scale);
-			}
+			ctx.drawImage(tile.getImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		} else {
 			ctx.drawImage(ImageHelper.getEmptyTileImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
+		}
+
+		if (tile.marked) {
+			//draw marked region
+			ctx.setFill(Config.getRegionSelectionColor().makeJavaFXColor());
+			ctx.fillRect(offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
+		} else if (tile.markedChunks.size() > 0) {
+
+			if (tile.markedChunksImage == null) {
+				createMarkedChunksImage(tile, Tile.getZoomLevel(scale));
+			}
+
+			// apply markedChunksImage to ctx
+			ctx.drawImage(tile.markedChunksImage, offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		}
 	}
 
