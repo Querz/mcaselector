@@ -34,10 +34,10 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 			getDialogPane().lookupButton(ButtonType.OK).setDisable(!valid);
 			data.offset = locationInput.getValue();
 			dataAction.accept(data);
-			if (data.offset.getX() != 0 || data.offset.getY() != 0 && !warningVisible.get()) {
+			if (valid && (data.offset.getX() != 0 || data.offset.getY() != 0)) {
 				warning.getStyleClass().remove("import-chunks-warning-invisible");
 				warningVisible.set(true);
-			} else {
+			} else if (warningVisible.get()) {
 				warning.getStyleClass().add("import-chunks-warning-invisible");
 				warningVisible.set(false);
 			}

@@ -13,3 +13,4 @@ test113/
 /agent.jar
 /manifest.txt
 *.patch
+import_test/

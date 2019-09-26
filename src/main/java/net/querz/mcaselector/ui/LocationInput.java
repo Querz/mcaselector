@@ -63,7 +63,7 @@ public class LocationInput extends HBox {
 	//allow only + / -
 
 	private void onXInput(String o, String n) {
-		if (emptyIsZero && n.isEmpty()) {
+		if (emptyIsZero && (n.isEmpty() || "-".equals(n) || "+".equals(n))) {
 			x = 0;
 			setValue();
 			return;
@@ -80,7 +80,7 @@ public class LocationInput extends HBox {
 	}
 
 	private void onZInput(String o, String n) {
-		if (emptyIsZero && n.isEmpty()) {
+		if (emptyIsZero && (n.isEmpty() || "-".equals(n) || "+".equals(n))) {
 			z = 0;
 			setValue();
 			return;
