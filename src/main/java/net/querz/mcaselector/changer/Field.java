@@ -32,6 +32,8 @@ public abstract class Field<T> {
 		return type;
 	}
 
+	public abstract T getOldValue(CompoundTag root);
+
 	@Override
 	public String toString() {
 		return type.toString() + " = " + newValue;

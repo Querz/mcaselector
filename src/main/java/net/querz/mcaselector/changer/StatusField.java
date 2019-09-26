@@ -1,5 +1,6 @@
 package net.querz.mcaselector.changer;
 
+import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.StringTag;
 
@@ -17,6 +18,11 @@ public class StatusField extends Field<String> {
 
 	public StatusField() {
 		super(FieldType.STATUS);
+	}
+
+	@Override
+	public String getOldValue(CompoundTag root) {
+		return ValidationHelper.withDefault(() -> root.getCompoundTag("Level").getString("Status"), null);
 	}
 
 	@Override

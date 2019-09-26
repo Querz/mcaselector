@@ -45,6 +45,12 @@ public class MCAChunkData {
 		compressionType = CompressionType.fromByte(ptr.readByte());
 	}
 
+	public void readHeader(RandomAccessFile raf) throws IOException {
+		raf.seek(offset);
+		length = raf.readInt();
+		compressionType = CompressionType.fromByte(raf.readByte());
+	}
+
 	public void loadData(ByteArrayPointer ptr) throws Exception {
 		//offset + length of length (4 bytes) + length of compression type (1 byte)
 		ptr.seek(offset + 5);
@@ -67,6 +73,31 @@ public class MCAChunkData {
 			data = (CompoundTag) tag;
 		} else {
 			throw new Exception("Invalid chunk data: tag is not of type CompoundTag");
+		}
+	}
+
+	public void loadData(RandomAccessFile raf) throws IOException {
+		raf.seek(offset + 5);
+		DataInputStream nbtIn = null;
+
+		switch (compressionType) {
+			case GZIP:
+				nbtIn = new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(raf.getFD()))));
+				break;
+			case ZLIB:
+				nbtIn = new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(raf.getFD()))));
+				break;
+			case NONE:
+				data = null;
+				return;
+		}
+
+		Tag tag = Tag.deserialize(nbtIn, Tag.DEFAULT_MAX_DEPTH);
+
+		if (tag instanceof CompoundTag) {
+			data = (CompoundTag) tag;
+		} else {
+			throw new IOException("Invalid chunk data: tag is not of type CompoundTag");
 		}
 	}
 

@@ -1,5 +1,6 @@
 package net.querz.mcaselector.ui;
 
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
@@ -17,9 +18,18 @@ import javafx.stage.StageStyle;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.io.MCAChunkData;
+import net.querz.mcaselector.io.MCAFile;
+import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.tiles.TileMap;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
@@ -36,7 +46,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 	private RadioButton force = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_FORCE);
 	private CheckBox selectionOnly = UIFactory.checkbox(Translation.DIALOG_CHANGE_NBT_SELECTION_ONLY);
 
-	public ChangeNBTDialog(Stage primaryStage) {
+	public ChangeNBTDialog(TileMap tileMap, Stage primaryStage) {
 		titleProperty().bind(Translation.DIALOG_CHANGE_NBT_TITLE.getProperty());
 
 		initStyle(StageStyle.UTILITY);
@@ -61,18 +71,22 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-		FieldView fw = new FieldView();
-		for (FieldType ft : FieldType.values()) {
-			Field f = ft.newInstance();
-			fw.addField(f);
-			fields.add(f);
+		FieldView fieldView = new FieldView();
+		for (FieldType fieldType : FieldType.values()) {
+			Field field = fieldType.newInstance();
+			fieldView.addField(field);
+			fields.add(field);
+		}
+
+		if (tileMap.getSelectedChunks() == 1) {
+			readSingleChunkAsync(tileMap, fieldView);
 		}
 
 		toggleGroup.getToggles().addAll(change, force);
 		change.fire();
 
 		ScrollPane scrollPane = new ScrollPane();
-		scrollPane.setContent(fw);
+		scrollPane.setContent(fieldView);
 
 		VBox actionBox = new VBox();
 		change.setTooltip(UIFactory.tooltip(Translation.DIALOG_CHANGE_NBT_CHANGE_TOOLTIP));
@@ -81,6 +95,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 		VBox optionBox = new VBox();
 		selectionOnly.setTooltip(UIFactory.tooltip(Translation.DIALOG_CHANGE_NBT_SELECTION_ONLY_TOOLTIP));
+		selectionOnly.setSelected(true);
 		optionBox.getChildren().add(selectionOnly);
 
 		HBox selectionBox = new HBox();
@@ -89,6 +104,32 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		VBox box = new VBox();
 		box.getChildren().addAll(scrollPane, new Separator(), selectionBox);
 		getDialogPane().setContent(box);
+	}
+
+	private void readSingleChunkAsync(TileMap tileMap, FieldView fieldView) {
+		new Thread(() -> {
+			Map<Point2i, Set<Point2i>> selection = tileMap.getMarkedChunks();
+			DataProperty<Point2i> region = new DataProperty<>();
+			DataProperty<Point2i> chunk = new DataProperty<>();
+			selection.forEach((k, v) -> {
+				region.set(k);
+				v.forEach(chunk::set);
+			});
+			File file = FileHelper.createMCAFilePath(region.get());
+			Debug.dumpf("attempting to read single chunk from file: %s", chunk.get());
+			if (file.exists()) {
+				MCAChunkData chunkData = MCAFile.readSingleChunk(file, chunk.get());
+				if (chunkData == null) {
+					return;
+				}
+				fieldView.getChildren().forEach(child -> {
+					FieldCell cell = (FieldCell) child;
+					Object oldValue = cell.value.getOldValue(chunkData.getData());
+					String promptText = oldValue == null ? "" : oldValue.toString();
+					Platform.runLater(() -> cell.textField.setPromptText(promptText));
+				});
+			}
+		}).start();
 	}
 
 	private class FieldView extends VBox {

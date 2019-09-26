@@ -26,7 +26,7 @@ public class DialogHelper {
 	}
 
 	public static void changeFields(TileMap tileMap, Stage primaryStage) {
-		Optional<ChangeNBTDialog.Result> result = new ChangeNBTDialog(primaryStage).showAndWait();
+		Optional<ChangeNBTDialog.Result> result = new ChangeNBTDialog(tileMap, primaryStage).showAndWait();
 		result.ifPresent(r -> {
 			Optional<ButtonType> confRes = new ChangeFieldsConfirmationDialog(null, primaryStage).showAndWait();
 			confRes.ifPresent(confR -> {

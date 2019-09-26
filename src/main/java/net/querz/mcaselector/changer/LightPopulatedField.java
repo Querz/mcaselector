@@ -1,5 +1,6 @@
 package net.querz.mcaselector.changer;
 
+import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.nbt.ByteTag;
 import net.querz.nbt.CompoundTag;
 
@@ -7,6 +8,11 @@ public class LightPopulatedField extends Field<Byte> {
 
 	public LightPopulatedField() {
 		super(FieldType.LIGHT_POPULATED);
+	}
+
+	@Override
+	public Byte getOldValue(CompoundTag root) {
+		return ValidationHelper.withDefault(() -> root.getCompoundTag("Level").getByte("LightPopulated"), null);
 	}
 
 	@Override

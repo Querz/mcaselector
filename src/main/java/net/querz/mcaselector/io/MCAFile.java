@@ -97,6 +97,37 @@ public class MCAFile {
 		return m;
 	}
 
+	public static MCAChunkData readSingleChunk(File file, Point2i chunk) {
+		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+			// read offset, sector count and timestamp for specific chunk
+
+			Point2i rel = chunk.mod(32);
+			rel.setX(rel.getX() < 0 ? 32 + rel.getX() : rel.getX());
+			rel.setY(rel.getY() < 0 ? 32 + rel.getY() : rel.getY());
+			int headerIndex = rel.getY() * 32 + rel.getX();
+			int headerOffset = headerIndex * 4;
+
+			raf.seek(headerOffset);
+			int offset = (raf.read()) << 16;
+			offset |= (raf.read() & 0xFF) << 8;
+			offset = offset | raf.read() & 0xFF;
+			byte sectors = raf.readByte();
+
+			raf.seek(headerOffset + 4096);
+			int timestamp = raf.readInt();
+
+			// read chunk data
+			MCAChunkData chunkData = new MCAChunkData(offset, timestamp, sectors);
+			chunkData.readHeader(raf);
+			chunkData.loadData(raf);
+
+			return chunkData;
+		} catch (IOException ex) {
+			Debug.errorf("error reading single chunk from %s: %s", file, ex.getMessage());
+			return null;
+		}
+	}
+
 	public static MCAFile readHeader(File file, ByteArrayPointer ptr) {
 		try {
 			MCAFile mcaFile = new MCAFile(file);

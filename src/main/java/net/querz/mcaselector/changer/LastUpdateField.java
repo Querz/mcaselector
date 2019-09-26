@@ -1,5 +1,6 @@
 package net.querz.mcaselector.changer;
 
+import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.LongTag;
 
@@ -7,6 +8,11 @@ public class LastUpdateField extends Field<Long> {
 
 	public LastUpdateField() {
 		super(FieldType.LAST_UPDATE);
+	}
+
+	@Override
+	public Long getOldValue(CompoundTag root) {
+		return ValidationHelper.withDefault(() -> root.getCompoundTag("Level").getLong("LastUpdate"), null);
 	}
 
 	@Override

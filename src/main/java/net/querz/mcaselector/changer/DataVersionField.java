@@ -1,5 +1,6 @@
 package net.querz.mcaselector.changer;
 
+import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.IntTag;
 
@@ -7,6 +8,11 @@ public class DataVersionField extends Field<Integer> {
 
 	public DataVersionField() {
 		super(FieldType.DATA_VERSION);
+	}
+
+	@Override
+	public Integer getOldValue(CompoundTag root) {
+		return ValidationHelper.withDefault(() -> root.getInt("DataVersion"), null);
 	}
 
 	@Override

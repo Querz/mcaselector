@@ -1,5 +1,6 @@
 package net.querz.mcaselector.changer;
 
+import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.LongTag;
 
@@ -7,6 +8,11 @@ public class InhabitedTimeField extends Field<Long> {
 
 	public InhabitedTimeField() {
 		super(FieldType.INHABITED_TIME);
+	}
+
+	@Override
+	public Long getOldValue(CompoundTag root) {
+		return ValidationHelper.withDefault(() -> root.getCompoundTag("Level").getLong("InhabitedTime"), null);
 	}
 
 	@Override
