@@ -5,8 +5,12 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import net.querz.mcaselector.Config;
+import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.io.FileHelper;
+
+import java.io.File;
 import java.net.URL;
 import java.util.*;
 
@@ -50,7 +54,19 @@ public class Window extends Application {
 
 		primaryStage.setOnCloseRequest(e -> System.exit(0));
 		primaryStage.setScene(scene);
-		primaryStage.show();
+//		primaryStage.show();
+
+		// ---------------------------------------------------------------
+
+		Map<Point2i, Set<Point2i>> marked = new HashMap<>();
+		Set<Point2i> chunk = new HashSet<>();
+		chunk.add(new Point2i(-17, -15));
+		marked.put(new Point2i(-1, -1), chunk);
+
+		Config.setWorldDir(new File("/Users/rb/Library/Application Support/minecraft/saves/test2/region"));
+		tileMap.update();
+		tileMap.setMarkedChunks(marked);
+		DialogHelper.editNBT(tileMap, primaryStage);
 	}
 
 	public boolean isKeyPressed(KeyCode keyCode) {

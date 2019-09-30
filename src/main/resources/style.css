@@ -651,3 +651,32 @@
 	-fx-text-fill: -color-warning-text;
 	-fx-padding: 0 0 -10 0;
 }
+
+/*---------- nbt editor ----------*/
+.nbt-tree-view {
+	-fx-background-color: -color-field-cell-odd;
+	-fx-padding: 0;
+}
+
+.key-value-tree-cell {
+	-fx-background-color: -color-field-cell-odd;
+	-fx-text-fill: -color-text-light;
+	-fx-pref-height: 25px;
+}
+
+.key-value-tree-cell > .tree-disclosure-node > .arrow {
+	-fx-background-color: -color-combo-box-arrow;
+}
+
+.key-value-tree-cell:selected {
+	-fx-background-color: -color-field-cell-even;
+}
+
+.key-value-tree-cell .text-field {
+	-fx-padding: 0 0 0 2;
+}
+
+.key-value-tree-cell .key-value-tree-cell-value {
+	-fx-pref-width: 80px;
+	-fx-max-width: 80px;
+}
