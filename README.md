@@ -71,6 +71,8 @@ Because the conditions use internal values used by Minecraft, the following tabl
 | LightPopulated | byte | Whether the light levels for the chunk have been calculated. If this is set to 0, converting a world from 1.12.x to 1.13 will omit that chunk. Allowed values are `0` and `1`. |
 | Biome | String | One or multiple biome names, separated by comma (,). For a reference of biome names, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Biomes). |
 
+Fields that allow multiple comma separated values act the same as multiple consecutive filters of the same type with single values connected with the `AND` operator.
+
 **Notice**
 Running the query will check the `.mca`-file's name first if the query would even apply to any chunk in this file using the xPos and zPos conditions, as long as the query is built in a way that allows doing this.
 
