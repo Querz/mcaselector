@@ -1,6 +1,11 @@
 package net.querz.mcaselector.ui;
 
+import javafx.application.Platform;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -17,11 +22,14 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.nbt.*;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
@@ -30,21 +38,27 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 	private BiConsumer<TreeItem<NamedTag>, TreeItem<NamedTag>> selectionChangedAction;
 	private static final DataFormat CLIPBOARD_DATAFORMAT = new DataFormat("nbt-editor-item");
 	private TreeItem<NamedTag> dragboardContent = null;
+	private TreeItem<NamedTag> dropTarget = null;
+	private KeyValueTreeCell dropTargetCell = null;
+	private int dropIndex = 0;
+	private ScrollBar scrollBar;
+	private Stage stage;
 
 	static {
 		initIcons();
 	}
 
-	public NBTTreeView() {
-		init();
+	public NBTTreeView(Stage stage) {
+		init(stage);
 	}
 
-	public NBTTreeView(CompoundTag root) {
+	public NBTTreeView(CompoundTag root, Stage stage) {
 		super(toTreeItem(null, root, null));
-		init();
+		init(stage);
 	}
 
-	private void init() {
+	private void init(Stage stage) {
+		this.stage = stage;
 		setMinWidth(300);
 		getStyleClass().add("nbt-tree-view");
 		setEditable(true);
@@ -56,17 +70,30 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		getSelectionModel().selectedItemProperty().addListener((i, o, n) -> c.accept(o, n));
 	}
 
+	private ScrollBar getScrollBar() {
+		if (scrollBar == null) {
+			return scrollBar = (ScrollBar) lookup(".scroll-bar:vertical");
+		}
+		return scrollBar;
+	}
+
 	public void deleteItem(TreeItem<NamedTag> item) {
 		if (item.getValue().parent != null) {
 			// named tag is in compound tag, indexed tag is in list tag
-			if (item.getValue().tag.getID() == 10) {
+			if (item.getValue().parent.getID() == 10) {
 				CompoundTag comp = (CompoundTag) item.getValue().parent;
 				comp.remove(item.getValue().name);
 				item.getParent().getChildren().remove(item);
-			} else if (item.getValue().tag.getID() == 9) {
+			} else if (item.getValue().parent.getID() == 9) {
 				@SuppressWarnings("unchecked")
 				ListTag<Tag<?>> list = (ListTag<Tag<?>>) item.getValue().parent;
-				list.remove(list.indexOf(item.getValue().tag));
+				int index;
+				for (index = 0; index < list.size(); index++) {
+					if (list.get(index) == item.getValue().tag) {
+						list.remove(index);
+						break;
+					}
+				}
 				item.getParent().getChildren().remove(item);
 			}
 		}
@@ -120,7 +147,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			edit(newItem);
 		}
 
-
 		if (selectionChangedAction != null) {
 			selectionChangedAction.accept(getSelectionModel().getSelectedItem(), getSelectionModel().getSelectedItem());
 		}
@@ -167,7 +193,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		return new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 	}
 
-	private String tagToString(NamedTag tag) {
+	private static String tagToString(NamedTag tag) {
 		switch (tag.tag.getID()) {
 			case 1:
 			case 2:
@@ -255,17 +281,17 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		switch (tag.getID()) {
 			case 0:
 				return null;
-			case 10:
-				NBTTreeItem item = new NBTTreeItem(new NamedTag(name, tag, parent));
-				for (Map.Entry<String, Tag<?>> child : (CompoundTag) tag) {
-					item.getChildren().add(toTreeItem(child.getKey(), child.getValue(), tag));
-				}
-				return item;
 			case 9:
-				item = new NBTTreeItem(new NamedTag(name, tag, parent));
+				NBTTreeItem item = new NBTTreeItem(new NamedTag(name, tag, parent));
 				ListTag<?> list = (ListTag<?>) tag;
 				for (int i = 0; i < list.size(); i++) {
 					item.getChildren().add(toTreeItem(null, list.get(i), tag));
+				}
+				return item;
+			case 10:
+				item = new NBTTreeItem(new NamedTag(name, tag, parent));
+				for (Map.Entry<String, Tag<?>> child : (CompoundTag) tag) {
+					item.getChildren().add(toTreeItem(child.getKey(), child.getValue(), tag));
 				}
 				return item;
 			default:
@@ -292,7 +318,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		}
 
 		// removes the item from its previous parent and adds it to this one
-		void moveHere(int index, NBTTreeItem item) {
+		void moveHere(int index, NBTTreeItem item, TreeView<NamedTag> treeView) {
 			// do not move if this is a list tag and the types do not match
 			if (getValue().tag.getID() == 9) {
 				ListTag<?> list = (ListTag<?>) getValue().tag;
@@ -303,9 +329,22 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 			NBTTreeItem oldParent = (NBTTreeItem) item.getParent();
 
-			// do not move if this if item's parent and this are a compoundtag identical
+			// do not move if this is item's parent and this are a compoundtag identical
 			if (oldParent == this && oldParent.getValue().tag.getID() == 10) {
 				return;
+			}
+
+			boolean startEdit = false;
+
+			// set name in NamedTag
+			if (getValue().tag.getID() == 9) {
+				item.getValue().name = null;
+			} else if (getValue().tag.getID() == 10) {
+				CompoundTag comp = (CompoundTag) getValue().tag;
+				if (item.getValue().parent.getID() != 10) {
+					item.getValue().name = findNextPossibleName(comp, "Unknown");
+					startEdit = true;
+				}
 			}
 
 			// remove item from its parent, but remember its index
@@ -353,14 +392,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			// set new parent in NamedTag
 			item.getValue().parent = getValue().tag;
 
-			// set name in NamedTag
-			if (getValue().tag.getID() == 9) {
-				item.getValue().name = null;
-			} else if (getValue().tag.getID() == 10) {
-				CompoundTag comp = (CompoundTag) getValue().tag;
-				item.getValue().name = findNextPossibleName(comp, "Unknown");
-			}
-
 			// add tag to target nbt
 			if (getValue().tag.getID() == 9) {
 				ListTag<?> list = (ListTag<?>) getValue().tag;
@@ -368,6 +399,13 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			} else if (getValue().tag.getID() == 10) {
 				CompoundTag comp = (CompoundTag) getValue().tag;
 				comp.put(item.getValue().name, item.getValue().tag);
+			}
+
+			if (startEdit) {
+				treeView.layout();
+				treeView.scrollTo(treeView.getRow(item));
+				treeView.getSelectionModel().select(item);
+				Platform.runLater(() -> treeView.edit(item));
 			}
 		}
 
@@ -380,10 +418,51 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		}
 	}
 
+	/**
+	 * TODO: get cell from treeitem and set css when dragging over child item of a comp tag to the comp tag
+	 *
+	 * i want the comp tag to be marked instead of its child tags
+	 * */
+
+	public KeyValueTreeCell getTreeCell(TreeItem<NamedTag> treeItem) {
+		return recursiveFindCellByItem(treeItem, this);
+	}
+
+	private KeyValueTreeCell recursiveFindCellByItem(TreeItem treeItem, Node node) {
+		if (node.getStyleClass().contains("key-value-tree-cell")
+				&& KeyValueTreeCell.class.isAssignableFrom(node.getClass())
+				&& ((KeyValueTreeCell) node).getTreeItem() == treeItem) {
+			return (KeyValueTreeCell) node;
+		}
+
+		if (!Parent.class.isAssignableFrom(node.getClass())) {
+			return null;
+		}
+
+		List<Node> nodes = ((Parent) node).getChildrenUnmodifiable();
+		if (nodes == null) {
+			return null;
+		}
+
+		for (Node n : nodes) {
+			KeyValueTreeCell cell = recursiveFindCellByItem(treeItem, n);
+			if (cell != null) {
+				return cell;
+			}
+		}
+		return null;
+	}
+
+	private boolean matchListType(TreeItem<NamedTag> list, TreeItem<NamedTag> item) {
+		ListTag<?> listTag = (ListTag<?>) list.getValue().tag;
+		return listTag.getTypeClass() == EndTag.class || listTag.getTypeClass() == item.getValue().tag.getClass();
+	}
+
 	class KeyValueTreeCell extends TreeCell<NamedTag> {
 		private HBox box;
 		private TextField key;
 		private TextField value;
+		private Button edit;
 
 		KeyValueTreeCell() {
 			getStyleClass().add("key-value-tree-cell");
@@ -391,6 +470,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			setOnDragOver(this::onDragOver);
 			setOnDragDropped(this::onDragDropped);
 			setOnDragDone(this::onDragDone);
+			setOnDragExited(this::setOnDragExited);
 		}
 
 		private void onDragDetected(MouseEvent e) {
@@ -412,8 +492,268 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			if (e.getDragboard().hasContent(CLIPBOARD_DATAFORMAT)) {
 				e.acceptTransferModes(TransferMode.MOVE);
 
+				clearMarkings();
+
+				// if there is no tree item or if we try to insert the item as a child of itself, stop here
+				if (getTreeItem() == null || isInHierarchy(dragboardContent)) {
+					e.consume();
+					return;
+				}
+
+				// if target is a list or a comp
+				NBTTreeItem item = (NBTTreeItem) getTreeItem();
+				// move into list
+				if (item.getValue().tag.getID() == 9) {
+					// insert before
+					if (e.getY() < getHeight() / 4) {
+						// if parent is comp, mark comp or top of treeview
+						if (item.getParent().getValue().tag.getID() == 10) {
+							// if parent is equal to the dragged item's parent
+							if (item.getParent() != dragboardContent.getParent()) {
+								KeyValueTreeCell cell = getTreeCell(item.getParent());
+								if (cell == null) {
+									// mark top of treeview
+									dropTarget = item.getParent();
+									setInsertParentCss(true);
+								} else {
+									// mark comp item
+									cell.setInsertCssClass("drop-target", "into");
+									dropTarget = item.getParent();
+									setDropTargetCell(cell);
+								}
+							}
+						} else if (matchListType(item.getParent(), dragboardContent)) {
+							// if parent is list, get index and mark top of this cell
+							setInsertCssClass("drop-target", "before");
+							dropIndex = findDropIndex(item.getParent().getValue().tag, dragboardContent.getValue().tag);
+							dropTarget = item.getParent();
+						}
+					} else if (e.getY() < getHeight() - getHeight() / 4) {
+						// check if we can insert this tag into this list
+						if (matchListType(item, dragboardContent)) {
+							dropTarget = item;
+							setInsertCssClass("drop-target", "into");
+							dropIndex = ((ListTag<?>) item.getValue().tag).size();
+						}
+					} else {
+						// insert after or at beginning of list
+						// insert at index 0 of list
+						if (item.isExpanded()) {
+							if (matchListType(item, dragboardContent)) {
+								// insert into this list
+								dropTarget = item;
+								dropIndex = 0;
+								setInsertCssClass("drop-target", "after");
+							}
+						} else {
+							// insert after this list in parent
+							// if parent is comp, mark comp or top of treeview
+							if (item.getParent().getValue().tag.getID() == 10) {
+								// if parent is equal to the dragged item's parent
+								if (item.getParent() != dragboardContent.getParent()) {
+									KeyValueTreeCell cell = getTreeCell(item.getParent());
+									if (cell == null) {
+										// mark top of treeview
+										dropTarget = item.getParent();
+										setInsertParentCss(true);
+									} else {
+										// mark comp item
+										cell.setInsertCssClass("drop-target", "into");
+										dropTarget = item.getParent();
+										setDropTargetCell(cell);
+									}
+								}
+							} else if (matchListType(item.getParent(), dragboardContent)) {
+								// if parent is list, get index and mark bottom of this cell
+								setInsertCssClass("drop-target", "after");
+								dropIndex = findDropIndex(item.getParent().getValue().tag, dragboardContent.getValue().tag) + 1;
+								dropTarget = item.getParent();
+							}
+						}
+					}
+				} else if (item.getValue().tag.getID() == 10) {
+					// if this tag is a comp
+					// if target is the root tag
+					if (item.getParent() == null) {
+						if (item != dragboardContent.getParent()) {
+							setInsertCssClass("drop-target", "into");
+							setDropTargetCell(this);
+							dropTarget = item;
+						}
+					} else {
+						// insert before
+						if (e.getY() < getHeight() / 4) {
+							// if parent is comp, mark comp or top of treeview
+							if (item.getParent().getValue().tag.getID() == 10) {
+								// if parent is equal to the dragged item's parent
+								if (item.getParent() != dragboardContent.getParent()) {
+									KeyValueTreeCell cell = getTreeCell(item.getParent());
+									if (cell == null) {
+										// mark top of treeview
+										dropTarget = item.getParent();
+										setInsertParentCss(true);
+									} else {
+										// mark comp item
+										cell.setInsertCssClass("drop-target", "into");
+										setDropTargetCell(cell);
+										dropTarget = item.getParent();
+									}
+								}
+							} else if (matchListType(item.getParent(), dragboardContent)) {
+								// if parent is list, get index and mark top of this cell
+								setInsertCssClass("drop-target", "before");
+								dropIndex = findDropIndex(item.getParent().getValue().tag, dragboardContent.getValue().tag);
+								dropTarget = item.getParent();
+							}
+						} else if (e.getY() < getHeight() - getHeight() / 4) {
+							// insert into
+							// if parent is equal to the dragged item's parent
+							if (item != dragboardContent.getParent()) {
+								dropTarget = item;
+								setInsertCssClass("drop-target", "into");
+								setDropTargetCell(this);
+							}
+						} else {
+							// insert after
+							// if parent is equal to the dragged item's parent
+							if (item != dragboardContent.getParent()) {
+								// if parent is a comp
+								if (item.getParent().getValue().tag.getID() == 10) {
+									// if parent is equal to the dragged item's parent
+									if (item.getParent() != dragboardContent.getParent()) {
+										KeyValueTreeCell cell = getTreeCell(item.getParent());
+										if (cell == null) {
+											// mark top of treeview
+											dropTarget = item.getParent();
+											setInsertParentCss(true);
+										} else {
+											// mark comp item
+											cell.setInsertCssClass("drop-target", "into");
+											dropTarget = item.getParent();
+											setDropTargetCell(cell);
+										}
+									}
+								} else if (matchListType(item.getParent(), dragboardContent)) {
+									// if parent is list, get index and mark bottom of this cell
+									setInsertCssClass("drop-target", "after");
+									dropIndex = findDropIndex(item.getParent().getValue().tag, dragboardContent.getValue().tag) + 1;
+									dropTarget = item.getParent();
+								}
+							}
+						}
+					}
+				} else {
+					// if target is neither a list nor a comp
+					// insert before
+					if (e.getY() < getHeight() / 2) {
+						// if parent is a list
+						if (item.getParent().getValue().tag.getID() == 10) {
+							// if parent is equal to the dragged item's parent
+							if (item.getParent() != dragboardContent.getParent()) {
+								KeyValueTreeCell cell = getTreeCell(item.getParent());
+								if (cell == null) {
+									// mark top of treeview
+									dropTarget = item.getParent();
+									setInsertParentCss(true);
+								} else {
+									// mark comp item
+									cell.setInsertCssClass("drop-target", "into");
+									dropTarget = item.getParent();
+									setDropTargetCell(cell);
+								}
+							}
+						} else if (matchListType(item.getParent(), dragboardContent)){
+							// if parent is a list, get index and mark top of cell
+							setInsertCssClass("drop-target", "before");
+							dropIndex = findDropIndex(item.getParent().getValue().tag, dragboardContent.getValue().tag);
+							dropTarget = item.getParent();
+						}
+					} else {
+						// insert after
+						// if parent is a list
+						if (item.getParent().getValue().tag.getID() == 10) {
+							// if parent is equal to the dragged item's parent
+							if (item.getParent() != dragboardContent.getParent()) {
+								KeyValueTreeCell cell = getTreeCell(item.getParent());
+								if (cell == null) {
+									// mark top of treeview
+									dropTarget = item.getParent();
+									setInsertParentCss(true);
+								} else {
+									// mark comp item
+									cell.setInsertCssClass("drop-target", "into");
+									dropTarget = item.getParent();
+									setDropTargetCell(cell);
+								}
+							}
+						} else if (matchListType(item.getParent(), dragboardContent)){
+							// if parent is a list, get index and mark bottom of cell
+							setInsertCssClass("drop-target", "after");
+							dropIndex = findDropIndex(item.getParent().getValue().tag, dragboardContent.getValue().tag) + 1;
+							dropTarget = item.getParent();
+						}
+					}
+				}
 			}
 			e.consume();
+		}
+
+		private boolean isInHierarchy(TreeItem<NamedTag> source) {
+			TreeItem<NamedTag> current = getTreeItem();
+			while (current != null) {
+				if (source == current) {
+					return true;
+				}
+				current = current.getParent();
+			}
+			return false;
+		}
+
+		private void clearMarkings() {
+			setInsertParentCss(false);
+			setInsertCssClass("drop-target", null);
+			setDropTargetCell(null);
+			dropTarget = null;
+		}
+
+		private void setOnDragExited(DragEvent e) {
+			clearMarkings();
+		}
+
+		private void setDropTargetCell(KeyValueTreeCell cell) {
+			if (dropTargetCell != null && dropTargetCell != cell) {
+				dropTargetCell.setInsertCssClass("drop-target", null);
+			}
+			dropTargetCell = cell;
+		}
+
+		private void setInsertCssClass(String prefix, String name) {
+			String c = prefix + "-" + name;
+			for (int i = 0; i < getStyleClass().size(); i++) {
+				if (getStyleClass().get(i).startsWith(prefix)) {
+					if (name == null) {
+						getStyleClass().remove(i);
+					} else if (!getStyleClass().get(i).equals(c)) {
+						getStyleClass().set(i, c);
+					}
+					setInsertParentCss(false);
+					return;
+				}
+			}
+			getStyleClass().add(c);
+			setInsertParentCss(false);
+		}
+
+		private int findDropIndex(Tag<?> target, Tag<?> tag) {
+			if (target.getID() == 9) {
+				ListTag<?> list = (ListTag<?>) target;
+				for (int index = 0; index < list.size(); index++) {
+					if (list.get(index) == tag) {
+						return index;
+					}
+				}
+			}
+			return 0;
 		}
 
 		private void onDragDropped(DragEvent e) {
@@ -424,64 +764,11 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				// get content and insert into this tag, before this tag or after this tag
 				// and remove dropped tag from old location
 
-				// we also don't want to do anything if the tag is dropped onto itself
-				if (getTreeItem() != null && dragboardContent != getTreeItem()) {
-					// list: we only want to be able to drop compatible tags into the list
-					// if the list is empty (type EndTag) or of the same type as the dragBoard
+				System.out.println("dropping " + dropIndex + " / " + dropTarget + " / " + dragboardContent);
 
-					/*
-					* cases:
-					* - drag item into list tag:
-					*   - if coming from a compound tag, remove name and add index
-					*   - if coming from a list tag, update indices of source list
-					*   - update indices of target list
-					* - drag item into compound tag
-					*   - it is not possible to move a tag inside of the same compound tag
-					*   - if coming from a list tag, update indices of source list
-					*   - before adding to compound tag, check for name duplicates
-					* - move item inside of list tag
-					*   - remove item from list and remember previous index
-					*   - if the new index is > previous index, subtract 1 from new index
-					*   - insert into list and update indices
-					*
-					* TODO: rearrange lists and comps in a list tag
-					*
-					* */
-
-					NBTTreeItem from = (NBTTreeItem) dragboardContent;
-
-					// find the item we will move to
-					int index = 0;
-					NBTTreeItem to;
-					if ((getItem().tag.getID() == 9 || getItem().tag.getID() == 10)) {
-						System.out.println("into");
-						if (e.getY() < getHeight() - getHeight() / 4 && e.getY() > getHeight() / 4) {
-							to = (NBTTreeItem) getTreeItem().getParent();
-						} else {
-							to = (NBTTreeItem) getTreeItem();
-						}
-					} else {
-						System.out.println("same level");
-						to = (NBTTreeItem) getTreeItem().getParent();
-					}
-
-					if (getItem().tag.getID() == 9) {
-						ListTag<?> list = (ListTag<?>) getItem().tag;
-						index = list.size();
-					} else if (getItem().parent != null && getItem().parent.getID() == 9) {
-						ListTag<?> list = (ListTag<?>) getItem().parent;
-						for (index = 0; index < list.size(); index++) {
-							if (list.get(index) == getItem().tag) {
-								break;
-							}
-						}
-
-						if (e.getY() > getHeight() / 2) {
-							index++;
-						}
-					}
-
-					to.moveHere(index, from);
+				// we also don't want to do anything if the tag is dropped onto itself or if the target is invalid
+				if (getTreeItem() != null && dragboardContent != getTreeItem() && dropTarget != null) {
+					((NBTTreeItem) dropTarget).moveHere(dropIndex, (NBTTreeItem) dragboardContent, getTreeView());
 				}
 				dragboardContent = null;
 			}
@@ -492,6 +779,11 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			if (db.hasContent(CLIPBOARD_DATAFORMAT)) {
 				dragboardContent = null;
 			}
+
+			if (dropTargetCell != null) {
+				dropTargetCell.setInsertCssClass("drop-target", null);
+			}
+			setInsertParentCss(false);
 		}
 
 		@Override
@@ -515,33 +807,54 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				}
 				value.setText(tagValueToString(getItem()));
 
+				if (edit == null) {
+					edit = new Button("edit");
+					// TODO: edit button icon
+					edit.getStyleClass().add("key-value-tree-cell-edit");
+				}
+				edit.setOnAction(e -> {
+					Optional<EditArrayDialog.Result> result = new EditArrayDialog<>(((ArrayTag<?>) getItem().tag).getValue(), stage).showAndWait();
+					result.ifPresent(r -> ((ArrayTag<Object>) getItem().tag).setValue(r.getArray()));
+				});
+
 				if (box == null) {
 					box = new HBox();
 					box.setAlignment(Pos.CENTER_LEFT);
 				}
 
-				if (getItem().name == null && value.getText() == null) {
-					return;
-				}
+				TextField focus = null;
 
-				TextField focus;
-				if (getItem().name == null) {
+
+				if (getItem().tag instanceof ArrayTag) {
+					if (getItem().name == null) {
+						box.getChildren().setAll(getGraphic(), edit);
+					} else {
+						box.getChildren().setAll(getGraphic(), focus = key, edit);
+					}
+					edit.requestFocus();
+				} else if (getItem().name == null) {
 					box.getChildren().setAll(getGraphic(), focus = value);
 				} else if (value.getText() == null) {
 					box.getChildren().setAll(getGraphic(), focus = key);
-				} else {
+				} else if (getItem().name != null && value.getText() != null) {
 					box.getChildren().setAll(getGraphic(), key, focus = value);
+				} else {
+					// cancel if it is a comp or list tag inside a list tag
+					return;
 				}
 				setGraphic(box);
 				setText(null);
 
-				focus.requestFocus();
-				focus.selectAll();
+				if (focus != null) {
+					focus.requestFocus();
+					focus.selectAll();
+				}
 			}
 		}
 
 		@Override
 		public void commitEdit(NamedTag tag) {
+//			System.out.println("commit edit");
 			super.commitEdit(tag);
 			if (key.getText() != null && !key.getText().isEmpty()) {
 				CompoundTag parent = (CompoundTag) tag.parent;
@@ -567,6 +880,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 		@Override
 		public void cancelEdit() {
+//			System.out.println("cancel edit");
 			super.cancelEdit();
 			setText(tagToString(getItem()));
 			if (box.getChildren().size() > 0) {
@@ -576,6 +890,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 		@Override
 		public void updateItem(NamedTag tag, boolean empty) {
+//			System.out.println("update item");
 			super.updateItem(tag, empty);
 			if (empty) {
 				setText(null);
@@ -594,6 +909,17 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				commitEdit(getItem());
 				updateItem(getItem(), false);
 			}
+		}
+	}
+
+	private void setInsertParentCss(boolean enabled) {
+		if (enabled) {
+			if (getStyleClass().contains("nbt-tree-view-drop-parent")) {
+				return;
+			}
+			getStyleClass().add("nbt-tree-view-drop-parent");
+		} else {
+			getStyleClass().remove("nbt-tree-view-drop-parent");
 		}
 	}
 

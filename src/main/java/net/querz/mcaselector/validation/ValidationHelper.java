@@ -11,7 +11,7 @@ public class ValidationHelper {
 		try {
 			return s.get();
 		} catch (Exception ex) {
-			Debug.dumpf("validation error: ", ex.getMessage());
+			Debug.dumpf("validation error: ", ex.getMessage() + "(" + ex.getClass() + ")");
 			return def;
 		}
 	}
@@ -20,7 +20,7 @@ public class ValidationHelper {
 		try {
 			return s.get();
 		} catch (ClassCastException ex) {
-			Debug.dumpf("validation error: ", ex.getMessage());
+			Debug.dumpf("validation error: ", ex.getMessage() + "(" + ex.getClass() + ")");
 			return null;
 		}
 	}

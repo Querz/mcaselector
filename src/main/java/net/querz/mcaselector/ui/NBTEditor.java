@@ -1,6 +1,7 @@
 package net.querz.mcaselector.ui;
 
 import javafx.application.Platform;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -10,39 +11,35 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.io.CompressionType;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.MCAChunkData;
 import net.querz.mcaselector.io.MCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.TagFactory;
 import java.io.File;
-import java.util.Arrays;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class NBTEditor extends Dialog<NBTEditor.Result> {
 
-	/*
-	* options:
-	* delete --> only active when a selection is present
-	* add for every tag type --> only active when an item is selected
-	*
-	* drag-drop from list-tag into list-tag changes indices of all tags in this list-tag
-	* drag-drop from comp-tag into list-tag adds index, changes indices of all tags in list-tag and sets name to null
-	* drag-drop from list-tag into comp-tag adds default name, changes indices of all tags in list-tag and sets index to null
-	*
-	* drop on top half of target item: add before
-	* drop on bottom half of target item: add after
-	*
-	* */
-
 	private Map<Integer, Label> addTagLabels = new HashMap<>();
 
 	private CompoundTag data;
+
+	private Point2i regionLocation;
+	private Point2i chunkLocation;
 
 	public NBTEditor(TileMap tileMap, Stage primaryStage) {
 		initStyle(StageStyle.UTILITY);
@@ -50,16 +47,18 @@ public class NBTEditor extends Dialog<NBTEditor.Result> {
 		setResultConverter(p -> p == ButtonType.APPLY ? new Result(data) : null);
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
 		getDialogPane().getButtonTypes().addAll(ButtonType.APPLY, ButtonType.CANCEL);
+		getDialogPane().lookupButton(ButtonType.APPLY).setDisable(true);
+		((Button) getDialogPane().lookupButton(ButtonType.APPLY)).setOnAction(e -> writeSingleChunk());
 
-		NBTTreeView nbtTreeView = new NBTTreeView();
+		NBTTreeView nbtTreeView = new NBTTreeView(primaryStage);
 
 		Label delete = new Label();
 		delete.setGraphic(new ImageView(FileHelper.getIconFromResources("img/delete")));
 		delete.setDisable(true);
 		delete.setFocusTraversable(true);
+		delete.setOnMouseClicked(e -> nbtTreeView.deleteItem(nbtTreeView.getSelectionModel().getSelectedItem()));
 		nbtTreeView.setOnSelectionChanged((o, n) -> {
-			delete.setDisable(n == null);
-			System.out.println("possible tags to add: " + Arrays.toString(nbtTreeView.getPossibleChildTagTypes(n)));
+			delete.setDisable(n == null || n.getParent() == null);
 			enableAddTagLabels(nbtTreeView.getPossibleChildTagTypes(n));
 		});
 
@@ -69,16 +68,13 @@ public class NBTEditor extends Dialog<NBTEditor.Result> {
 		options.getChildren().add(delete);
 		options.getChildren().addAll(addTagLabels.values());
 
-
 		VBox box = new VBox();
 
 		box.getChildren().addAll(nbtTreeView, options);
 
 		getDialogPane().setContent(box);
 
-		nbtTreeView.setRoot(data = new CompoundTag());
-
-//		readSingleChunkAsync(tileMap, nbtTreeView);
+		readSingleChunkAsync(tileMap, nbtTreeView);
 	}
 
 	private void enableAddTagLabels(int[] ids) {
@@ -129,6 +125,8 @@ public class NBTEditor extends Dialog<NBTEditor.Result> {
 				region.set(k);
 				v.forEach(chunk::set);
 			});
+			regionLocation = region.get();
+			chunkLocation = chunk.get();
 			File file = FileHelper.createMCAFilePath(region.get());
 			Debug.dumpf("attempting to read single chunk from file: %s", chunk.get());
 			if (file.exists()) {
@@ -138,9 +136,46 @@ public class NBTEditor extends Dialog<NBTEditor.Result> {
 					return;
 				}
 				data = chunkData.getData();
-				Platform.runLater(() -> treeView.setRoot(chunkData.getData()));
+				Platform.runLater(() -> {
+					treeView.setRoot(chunkData.getData());
+					getDialogPane().lookupButton(ButtonType.APPLY).setDisable(false);
+				});
 			}
 		}).start();
+	}
+
+	private void writeSingleChunk() {
+		File file = FileHelper.createMCAFilePath(regionLocation);
+
+		byte[] data = new byte[(int) file.length()];
+		try (FileInputStream fis = new FileInputStream(file)) {
+			fis.read(data);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			return;
+		}
+
+		MCAFile dest = MCAFile.readAll(file, new ByteArrayPointer(data));
+
+		Point2i rel = chunkLocation.mod(32);
+		rel.setX(rel.getX() < 0 ? 32 + rel.getX() : rel.getX());
+		rel.setY(rel.getY() < 0 ? 32 + rel.getY() : rel.getY());
+		int index = rel.getY() * Tile.SIZE_IN_CHUNKS + rel.getX();
+
+		MCAChunkData chunkData = dest.getChunkData(index);
+		chunkData.setData(this.data);
+		chunkData.setCompressionType(CompressionType.ZLIB);
+		dest.setChunkData(index, chunkData);
+		dest.setTimeStamp(index, (int) (System.currentTimeMillis() / 1000));
+		try {
+			File tmpFile = File.createTempFile(file.getName(), null, null);
+			try (RandomAccessFile raf = new RandomAccessFile(tmpFile, "rw")) {
+				dest.saveAll(raf);
+			}
+			Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		} catch (Exception ex) {
+			Debug.error(ex);
+		}
 	}
 
 	public class Result {

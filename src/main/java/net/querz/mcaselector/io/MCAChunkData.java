@@ -124,7 +124,7 @@ public class MCAChunkData {
 
 		byte[] rawData = baos.toByteArray();
 
-		raf.writeInt(rawData.length);
+		raf.writeInt(rawData.length + 1); // length includes the compression type byte
 		raf.writeByte(compressionType.getByte());
 		raf.write(rawData);
 
@@ -171,6 +171,14 @@ public class MCAChunkData {
 
 	public CompoundTag getData() {
 		return data;
+	}
+
+	public void setData(CompoundTag data) {
+		this.data = data;
+	}
+
+	public void setCompressionType(CompressionType compressionType) {
+		this.compressionType = compressionType;
 	}
 
 	public Point2i getLocation() {

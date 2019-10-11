@@ -55,7 +55,7 @@ public class MCAFile {
 
 				lastWritten = data.saveData(raf);
 
-				int sectors = (lastWritten >> 12) + 1;
+				int sectors = (lastWritten >> 12) + (lastWritten % SECTION_SIZE == 0 ? 0 : 1);
 
 				raf.seek(INDEX_HEADER_LOCATION + index * 4);
 				raf.writeByte(globalOffset >>> 16);
@@ -97,6 +97,7 @@ public class MCAFile {
 		return m;
 	}
 
+	// reads a single chunk from a region file as fast as possible
 	public static MCAChunkData readSingleChunk(File file, Point2i chunk) {
 		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
 			// read offset, sector count and timestamp for specific chunk
@@ -105,6 +106,7 @@ public class MCAFile {
 			rel.setX(rel.getX() < 0 ? 32 + rel.getX() : rel.getX());
 			rel.setY(rel.getY() < 0 ? 32 + rel.getY() : rel.getY());
 			int headerIndex = rel.getY() * 32 + rel.getX();
+			System.out.println("index : " + headerIndex);
 			int headerOffset = headerIndex * 4;
 
 			raf.seek(headerOffset);
@@ -376,6 +378,18 @@ public class MCAFile {
 
 	public MCAChunkData getChunkData(int index) {
 		return new MCAChunkData(offsets[index], timestamps[index], sectors[index]);
+	}
+
+	public void setChunkData(int index, MCAChunkData chunk) {
+		chunks[index] = chunk;
+	}
+
+	public void setTimeStamp(int index, int timestamp) {
+		timestamps[index] = timestamp;
+	}
+
+	public int getTimestamp(int index) {
+		return timestamps[index];
 	}
 
 	public File getFile() {
