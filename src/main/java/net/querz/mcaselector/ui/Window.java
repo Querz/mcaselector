@@ -56,28 +56,6 @@ public class Window extends Application {
 		primaryStage.setOnCloseRequest(e -> System.exit(0));
 		primaryStage.setScene(scene);
 		primaryStage.show();
-
-		// ---------------------------------------------------------------
-
-//		Map<Point2i, Set<Point2i>> marked = new HashMap<>();
-//		Set<Point2i> chunk = new HashSet<>();
-//		chunk.add(new Point2i(-17, -15));
-//		marked.put(new Point2i(-1, -1), chunk);
-//
-//		Config.setWorldDir(new File("/Users/rb/Library/Application Support/minecraft/saves/test2/region"));
-//		tileMap.update();
-//		tileMap.setMarkedChunks(marked);
-//		DialogHelper.editNBT(tileMap, primaryStage);
-
-//		Optional<EditArrayDialog.Result> r = new EditArrayDialog<>(new byte[]{1, 2, 3}, primaryStage).showAndWait();
-//		r.ifPresent(res -> {
-//			System.out.print(Array.getLength(res.getArray()) + "[");
-//			for (int i = 0; i < Array.getLength(res.getArray()); i++) {
-//				System.out.print((i == 0 ? "" : ", ") + Array.get(res.getArray(), i));
-//			}
-//			System.out.println("]");
-//		});
-//		System.exit(0);
 	}
 
 	public boolean isKeyPressed(KeyCode keyCode) {
