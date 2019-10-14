@@ -61,6 +61,11 @@ public class KeyActivator extends TimerTask {
 		pressedButtons.remove(key);
 	}
 
+	public void releaseAllKeys() {
+		pressedButtons.clear();
+		pressedActionKeys.clear();
+	}
+
 	public void registerAction(KeyCode key, Consumer<Set<KeyCode>> action) {
 		List<Consumer<Set<KeyCode>>> actionList = actions.getOrDefault(key, new ArrayList<>());
 		actionList.add(action);

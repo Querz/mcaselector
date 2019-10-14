@@ -98,6 +98,10 @@ public class TileMap extends Canvas {
 		}
 	}
 
+	public void releaseAllKeys() {
+		keyActivator.releaseAllKeys();
+	}
+
 	private void onMouseMoved(MouseEvent event) {
 		hoveredBlock = getMouseBlock(event.getX(), event.getY());
 		runHoverListeners();
