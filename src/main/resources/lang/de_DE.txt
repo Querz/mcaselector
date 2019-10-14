@@ -32,6 +32,7 @@ menu.selection.clear_cache;Cache leeren
 menu.tools.import_chunks;Chunks importieren
 menu.tools.filter_chunks;Chunks filtern
 menu.tools.change_fields;Werte ändern
+menu.tools.edit_nbt;Chunk editieren
 dialog.settings.title;Einstellungen
 dialog.settings.language;Sprache
 dialog.settings.read_threads;Threads (lesen)

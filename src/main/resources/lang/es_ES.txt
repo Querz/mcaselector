@@ -32,6 +32,7 @@ menu.selection.clear_cache;Vaciar la caché
 menu.tools.import_chunks;Importar chunks
 menu.tools.filter_chunks;Filtrar chunks
 menu.tools.change_fields;Cambiar los campos
+menu.tools.edit_nbt;Editar chunk
 dialog.settings.title;Configuración
 dialog.settings.language;Idioma
 dialog.settings.read_threads;Leer hilos

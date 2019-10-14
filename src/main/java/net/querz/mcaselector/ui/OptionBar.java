@@ -42,7 +42,7 @@ public class OptionBar extends MenuBar {
 	private MenuItem clearSelectionCache = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR_CACHE);
 	private MenuItem filterChunks = UIFactory.menuItem(Translation.MENU_TOOLS_FILTER_CHUNKS);
 	private MenuItem changeFields = UIFactory.menuItem(Translation.MENU_TOOLS_CHANGE_FIELDS);
-	private MenuItem editNBT = UIFactory.menuItem(Translation.MENU_TOOLS_CHANGE_FIELDS);
+	private MenuItem editNBT = UIFactory.menuItem(Translation.MENU_TOOLS_EDIT_NBT);
 
 	private int previousSelectedChunks = 0;
 
@@ -103,6 +103,7 @@ public class OptionBar extends MenuBar {
 		clearSelectionCache.setAccelerator(new KeyCodeCombination(KeyCode.J, KeyCodeCombination.SHORTCUT_DOWN));
 		filterChunks.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCodeCombination.SHORTCUT_DOWN));
 		changeFields.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCodeCombination.SHORTCUT_DOWN));
+		editNBT.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCodeCombination.SHORTCUT_DOWN));
 
 		setSelectionDependentMenuItemsEnabled(false);
 		setWorldDependentMenuItemsEnabled(false);
