@@ -6,9 +6,9 @@ status.block;block
 status.block.tooltip;An approximation of the currently hovered block.
 status.selected;selected
 status.selected.tooltip;The currently selected amount of chunks.
-status.visible;visible regions
+status.visible;visible
 status.visible.tooltip;The amount of loaded region images for rendering.
-status.total;total regions
+status.total;total
 status.total.tooltip;The total amount of loaded regions, including not visible selected regions.
 menu.file;File
 menu.view;View
