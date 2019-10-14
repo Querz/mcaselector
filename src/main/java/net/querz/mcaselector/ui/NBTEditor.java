@@ -28,13 +28,13 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class NBTEditor extends Dialog<NBTEditor.Result> {
 
-	private Map<Integer, Label> addTagLabels = new HashMap<>();
+	private Map<Integer, Label> addTagLabels = new LinkedHashMap<>();
 
 	private CompoundTag data;
 
@@ -54,6 +54,7 @@ public class NBTEditor extends Dialog<NBTEditor.Result> {
 
 		Label delete = new Label();
 		delete.setGraphic(new ImageView(FileHelper.getIconFromResources("img/delete")));
+		delete.getStyleClass().add("nbt-editor-delete-tag-label");
 		delete.setDisable(true);
 		delete.setFocusTraversable(true);
 		delete.setOnMouseClicked(e -> nbtTreeView.deleteItem(nbtTreeView.getSelectionModel().getSelectedItem()));
@@ -63,6 +64,7 @@ public class NBTEditor extends Dialog<NBTEditor.Result> {
 		});
 
 		HBox options = new HBox();
+		options.getStyleClass().add("nbt-editor-options");
 
 		initAddTagLabels(nbtTreeView);
 		options.getChildren().add(delete);
@@ -95,13 +97,12 @@ public class NBTEditor extends Dialog<NBTEditor.Result> {
 		addTagLabels.put(4, iconLabel("img/nbt/long", 4, nbtTreeView));
 		addTagLabels.put(5, iconLabel("img/nbt/float", 5, nbtTreeView));
 		addTagLabels.put(6, iconLabel("img/nbt/double", 6, nbtTreeView));
-		addTagLabels.put(7, iconLabel("img/nbt/byte_array", 7, nbtTreeView));
 		addTagLabels.put(8, iconLabel("img/nbt/string", 8, nbtTreeView));
 		addTagLabels.put(9, iconLabel("img/nbt/list", 9, nbtTreeView));
 		addTagLabels.put(10, iconLabel("img/nbt/compound", 10, nbtTreeView));
+		addTagLabels.put(7, iconLabel("img/nbt/byte_array", 7, nbtTreeView));
 		addTagLabels.put(11, iconLabel("img/nbt/int_array", 11, nbtTreeView));
-		// TODO: create long array icon
-		addTagLabels.put(12, iconLabel("img/nbt/int_array", 12, nbtTreeView));
+		addTagLabels.put(12, iconLabel("img/nbt/long_array", 12, nbtTreeView));
 		// disable all add tag labels
 		enableAddTagLabels(null);
 	}
@@ -110,9 +111,8 @@ public class NBTEditor extends Dialog<NBTEditor.Result> {
 		ImageView icon = new ImageView(FileHelper.getIconFromResources(img));
 		Label label = new Label();
 		label.setGraphic(icon);
-		label.setOnMouseClicked(e -> {
-			nbtTreeView.addItem(nbtTreeView.getSelectionModel().getSelectedItem(), "Unknown", TagFactory.fromID(id));
-		});
+		label.getStyleClass().add("nbt-editor-add-tag-label");
+		label.setOnMouseClicked(e -> nbtTreeView.addItem(nbtTreeView.getSelectionModel().getSelectedItem(), "Unknown", TagFactory.fromID(id)));
 		return label;
 	}
 

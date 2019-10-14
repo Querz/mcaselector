@@ -66,7 +66,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 	private void init(Stage stage) {
 		this.stage = stage;
-		setMinWidth(300);
 		getStyleClass().add("nbt-tree-view");
 		setEditable(true);
 		setCellFactory(tv -> new KeyValueTreeCell());
@@ -271,13 +270,12 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		icons.put((byte) 4, FileHelper.getIconFromResources("img/nbt/long"));
 		icons.put((byte) 5, FileHelper.getIconFromResources("img/nbt/float"));
 		icons.put((byte) 6, FileHelper.getIconFromResources("img/nbt/double"));
-		icons.put((byte) 7, FileHelper.getIconFromResources("img/nbt/byte_array"));
 		icons.put((byte) 8, FileHelper.getIconFromResources("img/nbt/string"));
 		icons.put((byte) 9, FileHelper.getIconFromResources("img/nbt/list"));
 		icons.put((byte) 10, FileHelper.getIconFromResources("img/nbt/compound"));
+		icons.put((byte) 7, FileHelper.getIconFromResources("img/nbt/byte_array"));
 		icons.put((byte) 11, FileHelper.getIconFromResources("img/nbt/int_array"));
-		// TODO: create long array icon
-		icons.put((byte) 12, FileHelper.getIconFromResources("img/nbt/int_array"));
+		icons.put((byte) 12, FileHelper.getIconFromResources("img/nbt/long_array"));
 	}
 
 	public void setRoot(CompoundTag root) {

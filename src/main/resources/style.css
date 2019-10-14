@@ -658,6 +658,7 @@
 .nbt-tree-view {
 	-fx-background-color: -color-field-cell-odd;
 	-fx-padding: 0;
+	-fx-min-width: 300px;
 }
 
 .key-value-tree-cell {
@@ -697,6 +698,20 @@
 
 .nbt-tree-view-drop-parent {
 	-fx-background-color: linear-gradient(from 0% 100% to 0% 0%, -color-field-cell-odd, -color-field-cell-odd 95%, -color-treeview-cell-insert);
+}
+
+.nbt-editor-options {
+	-fx-spacing: 3px;
+}
+
+.nbt-editor-add-tag-label {
+	-fx-padding: 3 0 3 0;
+}
+
+.nbt-editor-delete-tag-label {
+	-fx-border-width: 0 2 0 0;
+	-fx-padding: 0 2 0 0;
+	-fx-border-color: -color-dialog-separator;
 }
 
 /*---------- array editor ----------*/
