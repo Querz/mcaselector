@@ -44,6 +44,13 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 	private ScrollBar scrollBar;
 	private Stage stage;
 
+	private static boolean USE_DRAGVIEW_OFFSET;
+
+	static {
+		String osName = System.getProperty("os.name").toLowerCase();
+		USE_DRAGVIEW_OFFSET = osName.contains("windows");
+	}
+
 	static {
 		initIcons();
 	}
@@ -481,6 +488,10 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			WritableImage wi = new WritableImage((int) getWidth(), (int) getHeight());
 			Image dbImg = snapshot(null, wi);
 			db.setDragView(dbImg);
+			if (USE_DRAGVIEW_OFFSET) {
+				db.setDragViewOffsetX(getWidth() / 2);
+				db.setDragViewOffsetY(getHeight() / 2);
+			}
 			ClipboardContent cbc = new ClipboardContent();
 			cbc.put(CLIPBOARD_DATAFORMAT, true);
 			db.setContent(cbc);
