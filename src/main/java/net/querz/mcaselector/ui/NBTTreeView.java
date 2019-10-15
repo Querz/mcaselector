@@ -41,7 +41,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 	private TreeItem<NamedTag> dropTarget = null;
 	private KeyValueTreeCell dropTargetCell = null;
 	private int dropIndex = 0;
-	private ScrollBar scrollBar;
 	private Stage stage;
 
 	private static boolean USE_DRAGVIEW_OFFSET;
@@ -59,11 +58,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		init(stage);
 	}
 
-	public NBTTreeView(CompoundTag root, Stage stage) {
-		super(toTreeItem(null, root, null));
-		init(stage);
-	}
-
 	private void init(Stage stage) {
 		this.stage = stage;
 		getStyleClass().add("nbt-tree-view");
@@ -74,13 +68,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 	public void setOnSelectionChanged(BiConsumer<TreeItem<NamedTag>, TreeItem<NamedTag>> c) {
 		selectionChangedAction = c;
 		getSelectionModel().selectedItemProperty().addListener((i, o, n) -> c.accept(o, n));
-	}
-
-	private ScrollBar getScrollBar() {
-		if (scrollBar == null) {
-			return scrollBar = (ScrollBar) lookup(".scroll-bar:vertical");
-		}
-		return scrollBar;
 	}
 
 	public void deleteItem(TreeItem<NamedTag> item) {
@@ -111,8 +98,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 	 * if the target is not a list or a compound and the parent is a compound, it adds the tag on the same level.
 	 * if the target is a list, it appends the tag as a child at the end of the list.
 	 * if the target is a compound, it adds the tag with a generic name.
-	 * @param target
-	 * @param tag
 	 */
 	public void addItem(TreeItem<NamedTag> target, String name, Tag<?> tag) {
 		TreeItem<NamedTag> newItem = null;
@@ -369,7 +354,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 			// add source item to this item
 			getChildren().add(index, item);
-
 
 			// now we adjust the backing nbt data
 
@@ -766,7 +750,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		}
 
 		private void onDragDropped(DragEvent e) {
-
 			Dragboard db = e.getDragboard();
 			if (db.hasContent(CLIPBOARD_DATAFORMAT)) {
 				// this treecell receives a foreign drop
@@ -864,7 +847,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 		@Override
 		public void commitEdit(NamedTag tag) {
-//			System.out.println("commit edit");
 			super.commitEdit(tag);
 			if (key.getText() != null && !key.getText().isEmpty()) {
 				CompoundTag parent = (CompoundTag) tag.parent;
@@ -890,7 +872,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 		@Override
 		public void cancelEdit() {
-//			System.out.println("cancel edit");
 			super.cancelEdit();
 			setText(tagToString(getItem()));
 			if (box.getChildren().size() > 0) {
@@ -900,7 +881,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 		@Override
 		public void updateItem(NamedTag tag, boolean empty) {
-//			System.out.println("update item");
 			super.updateItem(tag, empty);
 			if (empty) {
 				setText(null);
@@ -930,17 +910,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			getStyleClass().add("nbt-tree-view-drop-parent");
 		} else {
 			getStyleClass().remove("nbt-tree-view-drop-parent");
-		}
-	}
-
-	private void printRoot() {
-		printRoot(getRoot(), "");
-	}
-
-	private void printRoot(TreeItem<NamedTag> root, String depth) {
-		System.out.println(depth + root.getValue().name + " " + tagToString(root.getValue()));
-		for (TreeItem<NamedTag> child : root.getChildren()) {
-			printRoot(child, depth + "  ");
 		}
 	}
 }

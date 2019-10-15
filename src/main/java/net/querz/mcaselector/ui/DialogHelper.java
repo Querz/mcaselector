@@ -177,7 +177,7 @@ public class DialogHelper {
 	}
 
 	public static void editNBT(TileMap tileMap, Stage primaryStage) {
-		Optional<NBTEditor.Result> result = new NBTEditor(tileMap, primaryStage).showAndWait();
+		Optional<NBTEditorDialog.Result> result = new NBTEditorDialog(tileMap, primaryStage).showAndWait();
 		result.ifPresent(r -> System.out.println(r.getData()));
 
 	}

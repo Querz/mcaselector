@@ -33,16 +33,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class NBTEditor extends Dialog<NBTEditor.Result> {
+public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 
 	private Map<Integer, Label> addTagLabels = new LinkedHashMap<>();
-
 	private CompoundTag data;
-
 	private Point2i regionLocation;
 	private Point2i chunkLocation;
 
-	public NBTEditor(TileMap tileMap, Stage primaryStage) {
+	public NBTEditorDialog(TileMap tileMap, Stage primaryStage) {
 		titleProperty().bind(Translation.DIALOG_EDIT_NBT_TITLE.getProperty());
 		initStyle(StageStyle.UTILITY);
 		getDialogPane().getStyleClass().add("nbt-editor-dialog-pane");

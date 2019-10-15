@@ -24,11 +24,8 @@ import java.util.List;
 public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 
 	private TableView<Row> table = new TableView<>();
-
 	private ImageView addBefore, addAfter, add16Before, add16After, delete;
-
 	private boolean addMultiple = false;
-
 	private T array;
 
 	@SuppressWarnings("unchecked")
