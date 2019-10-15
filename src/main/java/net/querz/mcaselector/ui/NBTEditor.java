@@ -18,6 +18,7 @@ import net.querz.mcaselector.io.MCAChunkData;
 import net.querz.mcaselector.io.MCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.nbt.CompoundTag;
@@ -42,6 +43,7 @@ public class NBTEditor extends Dialog<NBTEditor.Result> {
 	private Point2i chunkLocation;
 
 	public NBTEditor(TileMap tileMap, Stage primaryStage) {
+		titleProperty().bind(Translation.DIALOG_EDIT_NBT_TITLE.getProperty());
 		initStyle(StageStyle.UTILITY);
 		getDialogPane().getStyleClass().add("nbt-editor-dialog-pane");
 		setResultConverter(p -> p == ButtonType.APPLY ? new Result(data) : null);

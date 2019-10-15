@@ -82,6 +82,7 @@ dialog.change_nbt.selection_only.tooltip;此筛选器是否只应用于当前所
 dialog.change_nbt_confirmation.title;更改NBT
 dialog.change_nbt_confirmation.header_short;您将要在此世界中更改未知数量的区块的数据.
 dialog.change_nbt_confirmation.header_verbose;您将要在此世界中更改 %d 个区块的数据.
+dialog.edit_nbt.title;编辑块
 dialog.about.title;关于
 dialog.about.header;关于MCA Selector
 dialog.about.version;版本:

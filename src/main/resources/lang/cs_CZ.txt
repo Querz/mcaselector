@@ -82,6 +82,7 @@ dialog.change_nbt.selection_only.tooltip;Zda má být filtr aplikován pouze na 
 dialog.change_nbt_confirmation.title;Změnit NBT
 dialog.change_nbt_confirmation.header_short;Chcete změnit data v neznámém počtu chunků vybraného světa.
 dialog.change_nbt_confirmation.header_verbose;Chcete změnit data v %d chunků vybraného světa.
+dialog.edit_nbt.title;Upravit chunků
 dialog.about.title;O aplikaci
 dialog.about.header;O aplikaci MCA Selector
 dialog.about.version;Verze:

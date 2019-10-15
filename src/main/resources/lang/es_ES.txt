@@ -82,6 +82,7 @@ dialog.change_nbt.selection_only.tooltip;Si este filtro solo se aplica a la sele
 dialog.change_nbt_confirmation.title;Cambiar NBT
 dialog.change_nbt_confirmation.header_short;Se cambiarán datos en un número desconocido de chunks en este mundo.
 dialog.change_nbt_confirmation.header_verbose;Se cambiarán los datos en% d chunks en este mundo.
+dialog.edit_nbt.title;Editar chunk
 dialog.about.title;Acerca de
 dialog.about.header;Acerca de MCA Selector
 dialog.about.version;Versión:

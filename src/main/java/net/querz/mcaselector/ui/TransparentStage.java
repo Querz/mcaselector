@@ -60,7 +60,6 @@ public class TransparentStage extends Stage {
 		content.setOnMouseDragged(e -> {
 			setX(e.getScreenX() - xOffset);
 			setY(e.getScreenY() - yOffset);
-			Debug.dumpf("dragging transparent stage to %d / %d", (int) (e.getScreenX() - xOffset), (int) (e.getScreenY() - yOffset));
 		});
 
 		Scene scene = new Scene(content);

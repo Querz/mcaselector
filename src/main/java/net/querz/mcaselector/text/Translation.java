@@ -100,6 +100,7 @@ public enum Translation {
 	DIALOG_CHANGE_NBT_CONFIRMATION_TITLE("dialog.change_nbt_confirmation.title"),
 	DIALOG_CHANGE_NBT_CONFIRMATION_HEADER_SHORT("dialog.change_nbt_confirmation.header_short"),
 	DIALOG_CHANGE_NBT_CONFIRMATION_HEADER_VERBOSE("dialog.change_nbt_confirmation.header_verbose"),
+	DIALOG_EDIT_NBT_TITLE("dialog.edit_nbt.title"),
 	DIALOG_ABOUT_TITLE("dialog.about.title"),
 	DIALOG_ABOUT_HEADER("dialog.about.header"),
 	DIALOG_ABOUT_VERSION("dialog.about.version"),
