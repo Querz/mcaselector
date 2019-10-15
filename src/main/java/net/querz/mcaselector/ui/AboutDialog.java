@@ -64,7 +64,7 @@ public class AboutDialog extends Alert {
 		grid.add(UIFactory.label(Translation.DIALOG_ABOUT_LICENSE), 0, 1);
 		grid.add(new Label("MIT"), 1, 1);
 		grid.add(UIFactory.label(Translation.DIALOG_ABOUT_COPYRIGHT), 0, 2);
-		grid.add(new Label("\u00A9 2018 Querz"), 1, 2);
+		grid.add(new Label("\u00A9 2018 - 2019 Querz"), 1, 2);
 		grid.add(UIFactory.label(Translation.DIALOG_ABOUT_SOURCE), 0, 3);
 		ImageView imgView = new ImageView(githubMark);
 		imgView.setScaleX(0.5);
