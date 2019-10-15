@@ -52,11 +52,31 @@ public class NBTEditor extends Dialog<NBTEditor.Result> {
 
 		NBTTreeView nbtTreeView = new NBTTreeView(primaryStage);
 
-		Label delete = new Label();
-		delete.setGraphic(new ImageView(FileHelper.getIconFromResources("img/delete")));
+		ImageView deleteIcon = new ImageView(FileHelper.getIconFromResources("img/delete"));
+		Label delete = new Label("", deleteIcon);
 		delete.getStyleClass().add("nbt-editor-delete-tag-label");
 		delete.setDisable(true);
-		delete.setFocusTraversable(true);
+		deleteIcon.setPreserveRatio(true);
+		delete.setOnMouseEntered(e -> {
+			if (!delete.isDisabled()) {
+				deleteIcon.setFitWidth(24);
+			}
+		});
+		delete.setOnMouseExited(e -> {
+			if (!delete.isDisabled()) {
+				deleteIcon.setFitWidth(22);
+			}
+		});
+		delete.disableProperty().addListener((i, o, n) -> {
+			if (o.booleanValue() != n.booleanValue()) {
+				if (n) {
+					delete.getStyleClass().remove("nbt-editor-delete-tag-label-enabled");
+				} else {
+					delete.getStyleClass().add("nbt-editor-delete-tag-label-enabled");
+				}
+			}
+		});
+
 		delete.setOnMouseClicked(e -> nbtTreeView.deleteItem(nbtTreeView.getSelectionModel().getSelectedItem()));
 		nbtTreeView.setOnSelectionChanged((o, n) -> {
 			delete.setDisable(n == null || n.getParent() == null);
@@ -109,8 +129,10 @@ public class NBTEditor extends Dialog<NBTEditor.Result> {
 
 	private Label iconLabel(String img, int id, NBTTreeView nbtTreeView) {
 		ImageView icon = new ImageView(FileHelper.getIconFromResources(img));
-		Label label = new Label();
-		label.setGraphic(icon);
+		Label label = new Label("", icon);
+		icon.setPreserveRatio(true);
+		label.setOnMouseEntered(e -> icon.setFitWidth(18));
+		label.setOnMouseExited(e -> icon.setFitWidth(16));
 		label.getStyleClass().add("nbt-editor-add-tag-label");
 		label.setOnMouseClicked(e -> nbtTreeView.addItem(nbtTreeView.getSelectionModel().getSelectedItem(), "Unknown", TagFactory.fromID(id)));
 		return label;

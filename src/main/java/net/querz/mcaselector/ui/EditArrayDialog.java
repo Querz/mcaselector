@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -15,6 +16,7 @@ import javafx.stage.StageStyle;
 import javafx.util.converter.ByteStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.LongStringConverter;
+import net.querz.mcaselector.io.FileHelper;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,10 @@ import java.util.List;
 public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 
 	private TableView<Row> table = new TableView<>();
+
+	private ImageView addBefore, addAfter, add16Before, add16After, delete;
+
+	private boolean addMultiple = false;
 
 	private T array;
 
@@ -66,36 +72,85 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 		indexColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().index));
 		applyArray();
 
-		// TODO: create icons
-		Label addBefore = new Label("^+");
-		Label addAfter = new Label("v+");
-		Label delete = new Label("del");
+		// load icons
+		this.addBefore = new ImageView(FileHelper.getIconFromResources("img/nbt/add_before"));
+		this.add16Before = new ImageView(FileHelper.getIconFromResources("img/nbt/add_16_before"));
+		this.addAfter = new ImageView(FileHelper.getIconFromResources("img/nbt/add_after"));
+		this.add16After = new ImageView(FileHelper.getIconFromResources("img/nbt/add_16_after"));
+		this.delete = new ImageView(FileHelper.getIconFromResources("img/delete"));
+
+		Label addBefore = createAddRowLabel("array-editor-add-tag-label", this.addBefore, this.add16Before);
+		Label addAfter = createAddRowLabel("array-editor-add-tag-label", this.addAfter, this.add16After);
+
+		Label delete = new Label("", this.delete);
+		delete.setDisable(true);
+		delete.getStyleClass().add("array-editor-delete-tag-label");
+		this.delete.setPreserveRatio(true);
+		delete.setOnMouseEntered(e -> {
+			if (!delete.isDisabled()) {
+				this.delete.setFitWidth(24);
+			}
+		});
+		delete.setOnMouseExited(e -> {
+			if (!delete.isDisabled()) {
+				this.delete.setFitWidth(22);
+			}
+		});
+		delete.disableProperty().addListener((i, o, n) -> {
+			if (o.booleanValue() != n.booleanValue()) {
+				if (n) {
+					delete.getStyleClass().remove("array-editor-delete-tag-label-enabled");
+				} else {
+					delete.getStyleClass().add("array-editor-delete-tag-label-enabled");
+				}
+			}
+		});
+
+		table.getSelectionModel().selectedItemProperty().addListener((i, o, n) -> delete.setDisable(n == null));
 
 		getDialogPane().setOnKeyPressed(e -> {
 			if (e.getCode() == KeyCode.SHIFT) {
-				addBefore.setText("^+16");
-				addAfter.setText("v+16");
+				addBefore.setGraphic(this.add16Before);
+				addAfter.setGraphic(this.add16After);
+				addMultiple = true;
 			}
 		});
 
 		getDialogPane().setOnKeyReleased(e -> {
 			if (e.getCode() == KeyCode.SHIFT) {
-				addBefore.setText("^+");
-				addAfter.setText("v+");
+				addBefore.setGraphic(this.addBefore);
+				addAfter.setGraphic(this.addAfter);
+				addMultiple = false;
 			}
 		});
 
-		addAfter.setOnMouseClicked(e -> add(addAfter.getText().equals("v+") ? 1 : 16, true));
-		addBefore.setOnMouseClicked(e -> add(addBefore.getText().equals("^+") ? 1 : 16, false));
+		addAfter.setOnMouseClicked(e -> add(addMultiple ? 16 : 1, true));
+		addBefore.setOnMouseClicked(e -> add(addMultiple ? 16 : 1, false));
 		delete.setOnMouseClicked(e -> delete());
 
 		HBox options = new HBox();
-		options.getChildren().addAll(addBefore, addAfter, delete);
+		options.getStyleClass().add("array-editor-options");
+		options.getChildren().addAll(delete, addBefore, addAfter);
 
 		VBox content = new VBox();
-		content.getChildren().addAll(options, table);
+		content.getChildren().addAll(table, options);
 
 		getDialogPane().setContent(content);
+	}
+
+	private Label createAddRowLabel(String styleClass, ImageView icon, ImageView altIcon) {
+		Label label = new Label("", icon);
+		label.getStyleClass().add(styleClass);
+		icon.setPreserveRatio(true);
+		label.setOnMouseEntered(e -> {
+			icon.setFitWidth(18);
+			altIcon.setFitWidth(18);
+		});
+		label.setOnMouseExited(e -> {
+			icon.setFitWidth(16);
+			altIcon.setFitWidth(16);
+		});
+		return label;
 	}
 
 	@SuppressWarnings("unchecked")

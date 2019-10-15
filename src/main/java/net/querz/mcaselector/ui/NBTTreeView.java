@@ -823,6 +823,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				}
 				edit.setOnAction(e -> {
 					Optional<EditArrayDialog.Result> result = new EditArrayDialog<>(((ArrayTag<?>) getItem().tag).getValue(), stage).showAndWait();
+					// noinspection unchecked
 					result.ifPresent(r -> ((ArrayTag<Object>) getItem().tag).setValue(r.getArray()));
 				});
 
