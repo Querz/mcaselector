@@ -5,7 +5,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -70,6 +69,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		getSelectionModel().selectedItemProperty().addListener((i, o, n) -> c.accept(o, n));
 	}
 
+	@SuppressWarnings("unchecked")
 	public void deleteItem(TreeItem<NamedTag> item) {
 		if (item.getValue().parent != null) {
 			// named tag is in compound tag, indexed tag is in list tag
@@ -78,7 +78,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				comp.remove(item.getValue().name);
 				item.getParent().getChildren().remove(item);
 			} else if (item.getValue().parent.getID() == 9) {
-				@SuppressWarnings("unchecked")
 				ListTag<Tag<?>> list = (ListTag<Tag<?>>) item.getValue().parent;
 				int index;
 				for (index = 0; index < list.size(); index++) {
@@ -99,6 +98,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 	 * if the target is a list, it appends the tag as a child at the end of the list.
 	 * if the target is a compound, it adds the tag with a generic name.
 	 */
+	@SuppressWarnings("unchecked")
 	public void addItem(TreeItem<NamedTag> target, String name, Tag<?> tag) {
 		TreeItem<NamedTag> newItem = null;
 		if (target.getValue().tag.getID() == 9) {
@@ -113,7 +113,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			target.getChildren().add(newItem = toTreeItem(name, tag, comp));
 			target.setExpanded(true);
 		} else if (target.getValue().parent.getID() == 9) {
-			@SuppressWarnings("unchecked")
 			ListTag<Tag<?>> list = (ListTag<Tag<?>>) target.getValue().parent;
 			int index;
 			for (index = 0; index < list.size(); index++) {
@@ -156,8 +155,8 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		return name;
 	}
 
+	@SuppressWarnings("unchecked")
 	private static void addTagToListTagUnsafe(ListTag<?> list, Tag<?> tag, int index) {
-		@SuppressWarnings("unchecked")
 		ListTag<Tag<?>> tList = (ListTag<Tag<?>>) list;
 		tList.add(index, tag);
 	}
@@ -397,14 +396,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				Platform.runLater(() -> treeView.edit(item));
 			}
 		}
-
-		boolean hasChildWithKey(String key) {
-			if (getValue().tag.getID() == 10) {
-				CompoundTag comp = (CompoundTag) getValue().tag;
-				return comp.containsKey(key);
-			}
-			return false;
-		}
 	}
 
 	/**
@@ -459,7 +450,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			setOnDragOver(this::onDragOver);
 			setOnDragDropped(this::onDragDropped);
 			setOnDragDone(this::onDragDone);
-			setOnDragExited(this::setOnDragExited);
+			setOnDragExited(e -> setOnDragExited());
 		}
 
 		private void onDragDetected(MouseEvent e) {
@@ -709,7 +700,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			dropTarget = null;
 		}
 
-		private void setOnDragExited(DragEvent e) {
+		private void setOnDragExited() {
 			clearMarkings();
 		}
 
@@ -778,6 +769,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			setInsertParentCss(false);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public void startEdit() {
 			if (!isEditable() || !getTreeView().isEditable()) {
@@ -801,12 +793,10 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 				if (edit == null) {
 					edit = new Button("edit");
-					// TODO: edit button icon
 					edit.getStyleClass().add("key-value-tree-cell-edit");
 				}
 				edit.setOnAction(e -> {
 					Optional<EditArrayDialog.Result> result = new EditArrayDialog<>(((ArrayTag<?>) getItem().tag).getValue(), stage).showAndWait();
-					// noinspection unchecked
 					result.ifPresent(r -> ((ArrayTag<Object>) getItem().tag).setValue(r.getArray()));
 				});
 

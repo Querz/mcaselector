@@ -28,11 +28,10 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 	private boolean addMultiple = false;
 	private T array;
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"SuspiciousSystemArraycopy", "unchecked"})
 	public EditArrayDialog(T array, Stage primaryStage) {
 		// we only want to work on a copy of the array
 		this.array = (T) Array.newInstance(array.getClass().getComponentType(), Array.getLength(array));
-		// noinspection SuspiciousSystemArraycopy
 		System.arraycopy(array, 0, this.array, 0, Array.getLength(array));
 
 		initStyle(StageStyle.UTILITY);
@@ -64,7 +63,6 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 		indexColumn.setPrefWidth(50);
 		valueColumn.setPrefWidth(200);
 
-		// noinspection unchecked
 		table.getColumns().addAll(indexColumn, valueColumn);
 		indexColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().index));
 		applyArray();

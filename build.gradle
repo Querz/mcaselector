@@ -43,6 +43,11 @@ shadowJar {
 	configurations = [project.configurations.shadow]
 }
 
+compileJava {
+	options.encoding = 'UTF-8'
+	options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+}
+
 minifyCss {
 	source = "${sourceSets.main.resources.srcDirs[0]}/style.css"
 	dest = "${sourceSets.main.output.resourcesDir}/style.css"
