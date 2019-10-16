@@ -747,8 +747,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				// get content and insert into this tag, before this tag or after this tag
 				// and remove dropped tag from old location
 
-				System.out.println("dropping " + dropIndex + " / " + dropTarget + " / " + dragboardContent);
-
 				// we also don't want to do anything if the tag is dropped onto itself or if the target is invalid
 				if (getTreeItem() != null && dragboardContent != getTreeItem() && dropTarget != null) {
 					((NBTTreeItem) dropTarget).moveHere(dropIndex, (NBTTreeItem) dragboardContent, getTreeView());
@@ -856,8 +854,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 					value.setText(tagValueToString(tag));
 				}
 			}
-
-			System.out.println(getRoot().getValue().tag);
 		}
 
 		@Override

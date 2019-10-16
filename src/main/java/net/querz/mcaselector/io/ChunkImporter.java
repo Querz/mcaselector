@@ -60,8 +60,6 @@ public class ChunkImporter {
 
 			progressChannel.updateProgress(importFiles[0].getName(), 0);
 
-			System.out.println(selection);
-
 			for (Map.Entry<Point2i, Set<Point2i>> entry : targetMapping.entrySet()) {
 				if (selection == null || selection.containsKey(entry.getKey())) {
 					File targetFile = FileHelper.createMCAFilePath(entry.getKey());

@@ -106,7 +106,6 @@ public class MCAFile {
 			rel.setX(rel.getX() < 0 ? 32 + rel.getX() : rel.getX());
 			rel.setY(rel.getY() < 0 ? 32 + rel.getY() : rel.getY());
 			int headerIndex = rel.getY() * 32 + rel.getX();
-			System.out.println("index : " + headerIndex);
 			int headerOffset = headerIndex * 4;
 
 			raf.seek(headerOffset);
