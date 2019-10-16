@@ -177,9 +177,7 @@ public class DialogHelper {
 	}
 
 	public static void editNBT(TileMap tileMap, Stage primaryStage) {
-		Optional<NBTEditorDialog.Result> result = new NBTEditorDialog(tileMap, primaryStage).showAndWait();
-		result.ifPresent(r -> System.out.println(r.getData()));
-
+		new NBTEditorDialog(tileMap, primaryStage).showAndWait();
 	}
 
 	public static void openWorld(TileMap tileMap, Stage primaryStage, OptionBar optionBar) {
@@ -192,6 +190,7 @@ public class DialogHelper {
 				Config.setWorldDir(file);
 				tileMap.clear();
 				tileMap.update();
+				tileMap.disable(false);
 				optionBar.setWorldDependentMenuItemsEnabled(true);
 			}
 		}

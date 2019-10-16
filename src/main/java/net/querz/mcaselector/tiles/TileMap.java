@@ -49,6 +49,8 @@ public class TileMap extends Canvas {
 
 	private long totalUpdates = 0;
 
+	private boolean disabled = true;
+
 	public TileMap(Window window, int width, int height) {
 		super(width, height);
 		this.window = window;
@@ -132,14 +134,16 @@ public class TileMap extends Canvas {
 	}
 
 	private void onMousePressed(MouseEvent event) {
-		firstMouseLocation = new Point2f(event.getX(), event.getY());
+		if (!disabled) {
+			firstMouseLocation = new Point2f(event.getX(), event.getY());
 
-		if (event.getButton() == MouseButton.PRIMARY && !window.isKeyPressed(KeyCode.COMMAND)) {
-			mark(event.getX(), event.getY(), true);
-		} else if (event.getButton() == MouseButton.SECONDARY) {
-			mark(event.getX(), event.getY(), false);
+			if (event.getButton() == MouseButton.PRIMARY && !window.isKeyPressed(KeyCode.COMMAND)) {
+				mark(event.getX(), event.getY(), true);
+			} else if (event.getButton() == MouseButton.SECONDARY) {
+				mark(event.getX(), event.getY(), false);
+			}
+			update();
 		}
-		update();
 	}
 
 	private void onMouseReleased() {
@@ -156,9 +160,9 @@ public class TileMap extends Canvas {
 				offset = offset.add(diff.mul(scale));
 			}
 			previousMouseLocation = mouseLocation;
-		} else if (event.getButton() == MouseButton.PRIMARY) {
+		} else if (!disabled && event.getButton() == MouseButton.PRIMARY) {
 			mark(event.getX(), event.getY(), true);
-		} else if (event.getButton() == MouseButton.SECONDARY) {
+		} else if (!disabled && event.getButton() == MouseButton.SECONDARY) {
 			mark(event.getX(), event.getY(), false);
 		}
 		update();
@@ -196,6 +200,10 @@ public class TileMap extends Canvas {
 		draw(context);
 		totalUpdates++;
 		Debug.dumpf("update took: %s #%d", t, totalUpdates);
+	}
+
+	public void disable(boolean disabled) {
+		this.disabled = disabled;
 	}
 
 	public void setOnUpdate(Consumer<TileMap> listener) {
