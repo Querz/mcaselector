@@ -17,6 +17,8 @@ import javafx.util.converter.ByteStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.LongStringConverter;
 import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.text.Translation;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +52,8 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 		table.getStyleClass().add("array-editor-table-view");
 		table.setEditable(true);
 
-		TableColumn<Row, Integer> indexColumn = new TableColumn<>("Index");
+		TableColumn<Row, Integer> indexColumn = new TableColumn<>();
+		indexColumn.textProperty().bind(Translation.DIALOG_EDIT_ARRAY_INDEX.getProperty());
 		TableColumn<Row, ? extends Number> valueColumn = createValueColumn();
 		if (valueColumn == null) {
 			throw new IllegalArgumentException("invalid array type, could not create column");
@@ -162,7 +165,8 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 				}
 			};
 
-			TableColumn<Row, Byte> column = new TableColumn<>("Value");
+			TableColumn<Row, Byte> column = new TableColumn<>();
+			column.textProperty().bind(Translation.DIALOG_EDIT_ARRAY_VALUE.getProperty());
 			column.setCellFactory(t -> {
 				TextFieldTableCell<Row, Byte> cell = new TextFieldTableCell<Row, Byte>() {
 					@Override
@@ -192,7 +196,8 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 				}
 			};
 
-			TableColumn<Row, Integer> column = new TableColumn<>("Value");
+			TableColumn<Row, Integer> column = new TableColumn<>();
+			column.textProperty().bind(Translation.DIALOG_EDIT_ARRAY_VALUE.getProperty());
 			column.setCellFactory(t -> {
 				TextFieldTableCell<Row, Integer> cell = new TextFieldTableCell<Row, Integer>() {
 					@Override
@@ -221,7 +226,8 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 				}
 			};
 
-			TableColumn<Row, Long> column = new TableColumn<>("Value");
+			TableColumn<Row, Long> column = new TableColumn<>();
+			column.textProperty().bind(Translation.DIALOG_EDIT_ARRAY_VALUE.getProperty());
 			column.setCellFactory(t -> {
 				TextFieldTableCell<Row, Long> cell = new TextFieldTableCell<Row, Long>() {
 					@Override

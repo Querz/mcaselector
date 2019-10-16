@@ -83,6 +83,8 @@ dialog.change_nbt_confirmation.title;Alterar NBT
 dialog.change_nbt_confirmation.header_short;Serão alterados os dados em um número desconhecido de chunks deste mundo.
 dialog.change_nbt_confirmation.header_verbose;Serão alterados os dados em %d chunks deste mundo.
 dialog.edit_nbt.title;Editar chunk
+dialog.edit_array.index;Índice
+dialog.edit_array.value;Valor
 dialog.about.title;Sobre
 dialog.about.header;Sobre o Seletor de MCA 
 dialog.about.version;Versão:
