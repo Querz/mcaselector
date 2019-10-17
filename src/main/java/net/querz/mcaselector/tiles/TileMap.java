@@ -69,6 +69,7 @@ public class TileMap extends Canvas {
 		keyActivator.registerGlobalAction(() -> Platform.runLater(this::update));
 		this.setOnKeyPressed(this::onKeyPressed);
 		this.setOnKeyReleased(this::onKeyReleased);
+		offset = new Point2f(-((double) width / 2 - (double) Tile.SIZE / 2), -((double) height / 2 - (double) Tile.SIZE / 2));
 		update();
 	}
 
