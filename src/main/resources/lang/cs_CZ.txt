@@ -32,6 +32,7 @@ menu.selection.clear_cache;Smazat keš
 menu.tools.import_chunks;Importovat chunky
 menu.tools.filter_chunks;Filtrovat chunky
 menu.tools.change_fields;Změnit pole
+menu.tools.edit_nbt;Upravit chunků
 dialog.settings.title;Nastavení
 dialog.settings.language;Jazyk
 dialog.settings.read_threads;Vláken pro načítání
@@ -81,6 +82,9 @@ dialog.change_nbt.selection_only.tooltip;Zda má být filtr aplikován pouze na 
 dialog.change_nbt_confirmation.title;Změnit NBT
 dialog.change_nbt_confirmation.header_short;Chcete změnit data v neznámém počtu chunků vybraného světa.
 dialog.change_nbt_confirmation.header_verbose;Chcete změnit data v %d chunků vybraného světa.
+dialog.edit_nbt.title;Upravit chunků
+dialog.edit_array.index;Index
+dialog.edit_array.value;Hodnota
 dialog.about.title;O aplikaci
 dialog.about.header;O aplikaci MCA Selector
 dialog.about.version;Verze:

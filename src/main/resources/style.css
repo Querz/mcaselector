@@ -47,6 +47,8 @@
 	-color-field-cell-even: #3c3f41;
 	-color-field-valid-shadow: #00ff40;
 	-color-field-valid-background: #489d5e;
+	-color-treeview-cell-insert: #636769;
+	-color-table-line: #636769;
 	-color-warning-text: #ff6651;
 }
 
@@ -650,4 +652,136 @@
 .import-confirmation-dialog-content >.v-box >.import-chunks-warning {
 	-fx-text-fill: -color-warning-text;
 	-fx-padding: 0 0 -10 0;
+}
+
+/*---------- nbt editor ----------*/
+.nbt-tree-view {
+	-fx-background-color: -color-field-cell-odd;
+	-fx-padding: 0;
+	-fx-min-width: 300px;
+}
+
+.key-value-tree-cell {
+	-fx-background-color: transparent;
+	-fx-text-fill: -color-text-light;
+	-fx-pref-height: 25px;
+}
+
+.key-value-tree-cell > .tree-disclosure-node > .arrow {
+	-fx-background-color: -color-combo-box-arrow;
+}
+
+.key-value-tree-cell:selected {
+	-fx-background-color: -color-field-cell-even;
+}
+
+.key-value-tree-cell .text-field {
+	-fx-padding: 0 0 0 2;
+}
+
+.key-value-tree-cell .key-value-tree-cell-value {
+	-fx-pref-width: 80px;
+	-fx-max-width: 80px;
+}
+
+.drop-target-before {
+	-fx-background-color: linear-gradient(from 0% 100% to 0% 0%, -color-field-cell-odd, -color-field-cell-odd 70%, -color-treeview-cell-insert 90%, -color-treeview-cell-insert);
+}
+
+.drop-target-into {
+	-fx-background-color: linear-gradient(from 0% 100% to 0% 0%, -color-field-cell-odd, -color-field-cell-odd 20%, -color-treeview-cell-insert 40%, -color-treeview-cell-insert 60%, -color-field-cell-odd 80%, -color-field-cell-odd);
+}
+
+.drop-target-after {
+	-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, -color-field-cell-odd, -color-field-cell-odd 70%, -color-treeview-cell-insert 90%, -color-treeview-cell-insert);
+}
+
+.nbt-tree-view-drop-parent {
+	-fx-background-color: linear-gradient(from 0% 100% to 0% 0%, -color-field-cell-odd, -color-field-cell-odd 95%, -color-treeview-cell-insert);
+}
+
+.nbt-editor-options {
+	-fx-spacing: 3px;
+	-fx-padding: 5 0 0 0;
+}
+
+.nbt-editor-add-tag-label {
+	-fx-padding: 3 0 3 0;
+}
+
+.nbt-editor-add-tag-label:hover {
+	-fx-padding: 2 -1 2 -1;
+}
+
+.nbt-editor-delete-tag-label {
+	-fx-border-width: 0 2 0 0;
+	-fx-padding: 0 2 0 0;
+	-fx-border-color: -color-dialog-separator;
+}
+
+.nbt-editor-delete-tag-label-enabled:hover {
+	-fx-padding: -1 1 -1 -1;
+}
+
+/*---------- array editor ----------*/
+.array-editor-table-view {
+	-fx-background-color: -color-field-cell-odd;
+}
+
+.array-editor-table-view .column-header, .array-editor-table-view .column-header .filler, .array-editor-table-view .column-header-background .filler {
+	-fx-background-color: -color-field-cell-odd;
+	-fx-border-width: 0 0 1 0;
+	-fx-border-color: -color-table-line;
+}
+
+.array-editor-table-view .table-cell {
+ 	-fx-text-fill: -color-text-light;
+}
+
+.array-editor-table-view .table-row-cell:even {
+	-fx-background-color: -color-field-cell-even;
+}
+
+.array-editor-table-view .table-row-cell:odd {
+	-fx-background-color: -color-field-cell-odd;
+}
+
+.array-editor-table-view .table-row-cell {
+	-fx-table-cell-border-color: -color-table-line;
+}
+
+.array-editor-table-view .table-row-cell:selected {
+	-fx-background-color: -color-treeview-cell-insert;
+}
+
+.array-editor-table-view .text-field-table-cell {
+	-fx-padding: 1 0 0 4;
+	-fx-alignment: center-left;
+}
+
+.array-editor-table-view .text-field-table-cell .text-field {
+	-fx-padding: 0 0 0 -2;
+}
+
+.array-editor-options {
+	-fx-spacing: 3px;
+	-fx-padding: 5 0 0 0;
+}
+
+.array-editor-add-tag-label {
+	-fx-padding: 3 0 3 0;
+}
+
+.array-editor-add-tag-label:hover {
+	-fx-padding: 2 -1 2 -1;
+}
+
+.array-editor-delete-tag-label {
+	-fx-border-width: 0 2 0 0;
+	-fx-padding: 0 2 0 0;
+	-fx-border-color: -color-dialog-separator;
+}
+
+.array-editor-delete-tag-label-enabled:hover {
+	-fx-padding: -1 1 -1 -1;
 }

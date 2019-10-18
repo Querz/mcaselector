@@ -32,6 +32,7 @@ menu.selection.clear_cache;Vaciar la caché
 menu.tools.import_chunks;Importar chunks
 menu.tools.filter_chunks;Filtrar chunks
 menu.tools.change_fields;Cambiar los campos
+menu.tools.edit_nbt;Editar chunk
 dialog.settings.title;Configuración
 dialog.settings.language;Idioma
 dialog.settings.read_threads;Leer hilos
@@ -81,6 +82,9 @@ dialog.change_nbt.selection_only.tooltip;Si este filtro solo se aplica a la sele
 dialog.change_nbt_confirmation.title;Cambiar NBT
 dialog.change_nbt_confirmation.header_short;Se cambiarán datos en un número desconocido de chunks en este mundo.
 dialog.change_nbt_confirmation.header_verbose;Se cambiarán los datos en% d chunks en este mundo.
+dialog.edit_nbt.title;Editar chunk
+dialog.edit_array.index;Índice
+dialog.edit_array.value;Valor
 dialog.about.title;Acerca de
 dialog.about.header;Acerca de MCA Selector
 dialog.about.version;Versión:

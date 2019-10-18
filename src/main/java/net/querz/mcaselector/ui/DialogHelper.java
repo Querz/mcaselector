@@ -176,6 +176,10 @@ public class DialogHelper {
 		});
 	}
 
+	public static void editNBT(TileMap tileMap, Stage primaryStage) {
+		new NBTEditorDialog(tileMap, primaryStage).showAndWait();
+	}
+
 	public static void openWorld(TileMap tileMap, Stage primaryStage, OptionBar optionBar) {
 		String savesDir = FileHelper.getMCSavesDir();
 		File file = createDirectoryChooser(savesDir).showDialog(primaryStage);
@@ -186,6 +190,7 @@ public class DialogHelper {
 				Config.setWorldDir(file);
 				tileMap.clear();
 				tileMap.update();
+				tileMap.disable(false);
 				optionBar.setWorldDependentMenuItemsEnabled(true);
 			}
 		}

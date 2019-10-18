@@ -32,6 +32,7 @@ menu.selection.clear_cache;清除缓存
 menu.tools.import_chunks;导入区块
 menu.tools.filter_chunks;筛选区块
 menu.tools.change_fields;更改字段
+menu.tools.edit_nbt;编辑块
 dialog.settings.title;设置
 dialog.settings.language;语言
 dialog.settings.read_threads;读取线程
@@ -81,6 +82,9 @@ dialog.change_nbt.selection_only.tooltip;此筛选器是否只应用于当前所
 dialog.change_nbt_confirmation.title;更改NBT
 dialog.change_nbt_confirmation.header_short;您将要在此世界中更改未知数量的区块的数据.
 dialog.change_nbt_confirmation.header_verbose;您将要在此世界中更改 %d 个区块的数据.
+dialog.edit_nbt.title;编辑块
+dialog.edit_array.index;指数
+dialog.edit_array.value;值
 dialog.about.title;关于
 dialog.about.header;关于MCA Selector
 dialog.about.version;版本:
