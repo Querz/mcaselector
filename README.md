@@ -48,7 +48,7 @@ Zooming out far enough disables the selection of single chunks but lets you sele
 ### Selections
 Upon finishing selecting chunks and regions, they can be deleted or exported using the `Selection`-menu. Exported chunks and regions are not deleted from the original world.
 
-![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/a977a7b2b4844123262003268992dcf0b80c337c/mca_selector_selections.png "MCA Selector window showing chunk and region selection export")
+![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/d708eafb98e62a99e26735c166dc8fdcecf17185/mca_selector_selections.png "MCA Selector window showing chunk and region selection export")
 
 A selection (not the chunks and regions themselves) can also be exported or imported and even be applied to different worlds.
 
