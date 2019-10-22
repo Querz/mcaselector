@@ -15,9 +15,9 @@ public class GotoDialog extends Dialog<Point2i> {
 		getDialogPane().getStyleClass().add("goto-dialog-pane");
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
 
-		LocationInput locationInput = new LocationInput(true);
+		LocationInput locationInput = new LocationInput(false);
 
-		setResultConverter(p -> locationInput.getValue());
+		setResultConverter(p -> p == ButtonType.OK ? locationInput.getValue() : null);
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		getDialogPane().lookupButton(ButtonType.OK).setDisable(!locationInput.emptyIsZero());
