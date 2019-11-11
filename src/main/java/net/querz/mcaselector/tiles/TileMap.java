@@ -65,8 +65,8 @@ public class TileMap extends Canvas {
 		this.setOnMouseExited(e -> onMouseExited());
 		this.setOnZoom(this::onZoom);
 		this.setOnScroll(this::onScroll);
-		this.setOnScrollStarted(this::onScrollStarted);
-		this.setOnScrollFinished(this::onScrollFinished);
+		this.setOnScrollStarted(e -> onScrollStarted());
+		this.setOnScrollFinished(e -> onScrollFinished());
 		keyActivator.registerAction(KeyCode.W, c -> offset = offset.sub(0, (c.contains(KeyCode.SHIFT) ? 10 : 5) * scale));
 		keyActivator.registerAction(KeyCode.A, c -> offset = offset.sub((c.contains(KeyCode.SHIFT) ? 10 : 5) * scale, 0));
 		keyActivator.registerAction(KeyCode.S, c -> offset = offset.add(0, (c.contains(KeyCode.SHIFT) ? 10 : 5) * scale));
@@ -138,29 +138,24 @@ public class TileMap extends Canvas {
 
 	private void onScroll(ScrollEvent event) {
 		if (trackpadScrolling || event.isInertia()) {
-			System.out.println("trackpad scrolling");
 			offset = offset.sub(new Point2f(event.getDeltaX(), event.getDeltaY()).mul(scale));
 			update();
 		} else {
-			System.out.println("mouse scrolling");
 			float oldScale = scale;
 			scale -= event.getDeltaY() / 100;
 			updateScale(oldScale);
 		}
 	}
 
-	private void onScrollStarted(ScrollEvent event) {
+	private void onScrollStarted() {
 		trackpadScrolling = true;
-		System.out.println("trackpad scrolling start");
 	}
 
-	private void onScrollFinished(ScrollEvent event) {
+	private void onScrollFinished() {
 		trackpadScrolling = false;
-		System.out.println("trackpad scrolling end");
 	}
 
 	private void onZoom(ZoomEvent event) {
-		System.out.println("zoom:  " + event.getZoomFactor());
 		float oldScale = scale;
 		scale /= event.getZoomFactor();
 		updateScale(oldScale);
