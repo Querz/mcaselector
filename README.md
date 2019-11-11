@@ -253,6 +253,7 @@ The following languages are available:
 * English (UK)
 * German (Germany)
 * Chinese (China) (thanks to [@LovesAsuna](https://github.com/LovesAsuna) for translating)
+* Chinese (Taiwan) (thanks to [@hugoalh](https://github.com/hugoalh) for translating)
 * Czech (Czech Republic) (thanks to [@mkyral](https://github.com/mkyral) for translating)
 * Spanish (Spain) (thanks to [@NathanielFreeman](https://github.com/NathanielFreeman) for translating)
 * Portuguese (Brazil) (thanks to [@cr1st0ph3r](https://github.com/cr1st0ph3r) for translating)
