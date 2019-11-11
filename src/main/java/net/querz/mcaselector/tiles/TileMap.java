@@ -138,8 +138,15 @@ public class TileMap extends Canvas {
 
 	private void onScroll(ScrollEvent event) {
 		if (trackpadScrolling || event.isInertia()) {
-			offset = offset.sub(new Point2f(event.getDeltaX(), event.getDeltaY()).mul(scale));
-			update();
+			if (window.isKeyPressed(KeyCode.COMMAND)) {
+				// zoom
+				float oldScale = scale;
+				scale -= event.getDeltaY() / 100;
+				updateScale(oldScale);
+			} else {
+				offset = offset.sub(new Point2f(event.getDeltaX(), event.getDeltaY()).mul(scale));
+				update();
+			}
 		} else {
 			float oldScale = scale;
 			scale -= event.getDeltaY() / 100;
