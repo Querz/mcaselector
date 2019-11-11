@@ -51,6 +51,8 @@ public class TileMap extends Canvas {
 
 	private boolean disabled = true;
 
+	private boolean trackpadScrolling = false;
+
 	public TileMap(Window window, int width, int height) {
 		super(width, height);
 		this.window = window;
@@ -59,9 +61,12 @@ public class TileMap extends Canvas {
 		this.setOnMousePressed(this::onMousePressed);
 		this.setOnMouseReleased(e -> onMouseReleased());
 		this.setOnMouseDragged(this::onMouseDragged);
-		this.setOnScroll(this::onScroll);
 		this.setOnMouseMoved(this::onMouseMoved);
 		this.setOnMouseExited(e -> onMouseExited());
+		this.setOnZoom(this::onZoom);
+		this.setOnScroll(this::onScroll);
+		this.setOnScrollStarted(this::onScrollStarted);
+		this.setOnScrollFinished(this::onScrollFinished);
 		keyActivator.registerAction(KeyCode.W, c -> offset = offset.sub(0, (c.contains(KeyCode.SHIFT) ? 10 : 5) * scale));
 		keyActivator.registerAction(KeyCode.A, c -> offset = offset.sub((c.contains(KeyCode.SHIFT) ? 10 : 5) * scale, 0));
 		keyActivator.registerAction(KeyCode.S, c -> offset = offset.add(0, (c.contains(KeyCode.SHIFT) ? 10 : 5) * scale));
@@ -71,6 +76,22 @@ public class TileMap extends Canvas {
 		this.setOnKeyReleased(this::onKeyReleased);
 		offset = new Point2f(-((double) width / 2 - (double) Tile.SIZE / 2), -((double) height / 2 - (double) Tile.SIZE / 2));
 		update();
+	}
+
+	private void updateScale(float oldScale) {
+		scale = scale < Config.MAX_SCALE ? Math.max(scale, Config.MIN_SCALE) : Config.MAX_SCALE;
+		if (oldScale != scale) {
+			//calculate the difference between the old max and the new max point
+			Point2f diff = offset.add((float) getWidth() * oldScale, (float) getHeight() * oldScale)
+					.sub(offset.add((float) getWidth() * scale, (float) getHeight() * scale));
+
+			offset = offset.add(diff.div(2));
+
+			if (Tile.getZoomLevel(oldScale) != Tile.getZoomLevel(scale)) {
+				unloadTiles();
+			}
+			update();
+		}
 	}
 
 	public static Point2f getRegionGridMin(Point2f offset, float scale) {
@@ -116,22 +137,33 @@ public class TileMap extends Canvas {
 	}
 
 	private void onScroll(ScrollEvent event) {
-		float oldScale = scale;
-		scale -= event.getDeltaY() / 100;
-		scale = scale < Config.MAX_SCALE ? (scale > Config.MIN_SCALE ? scale : Config.MIN_SCALE) : Config.MAX_SCALE;
-		if (oldScale != scale) {
-			//calculate the difference between the old max and the new max point
-			Point2f diff = offset.add((float) getWidth() * oldScale, (float) getHeight() * oldScale)
-				.sub(offset.add((float) getWidth() * scale, (float) getHeight() * scale));
-
-			offset = offset.add(diff.div(2));
-
-			if (Tile.getZoomLevel(oldScale) != Tile.getZoomLevel(scale)) {
-				unloadTiles();
-			}
-
+		if (trackpadScrolling || event.isInertia()) {
+			System.out.println("trackpad scrolling");
+			offset = offset.sub(new Point2f(event.getDeltaX(), event.getDeltaY()).mul(scale));
 			update();
+		} else {
+			System.out.println("mouse scrolling");
+			float oldScale = scale;
+			scale -= event.getDeltaY() / 100;
+			updateScale(oldScale);
 		}
+	}
+
+	private void onScrollStarted(ScrollEvent event) {
+		trackpadScrolling = true;
+		System.out.println("trackpad scrolling start");
+	}
+
+	private void onScrollFinished(ScrollEvent event) {
+		trackpadScrolling = false;
+		System.out.println("trackpad scrolling end");
+	}
+
+	private void onZoom(ZoomEvent event) {
+		System.out.println("zoom:  " + event.getZoomFactor());
+		float oldScale = scale;
+		scale /= event.getZoomFactor();
+		updateScale(oldScale);
 	}
 
 	private void onMousePressed(MouseEvent event) {
@@ -383,10 +415,10 @@ public class TileMap extends Canvas {
 
 	private void sortPoints(Point2i a, Point2i b) {
 		Point2i aa = a.clone();
-		a.setX(a.getX() < b.getX() ? a.getX() : b.getX());
-		a.setY(a.getY() < b.getY() ? a.getY() : b.getY());
-		b.setX(aa.getX() < b.getX() ? b.getX() : aa.getX());
-		b.setY(aa.getY() < b.getY() ? b.getY() : aa.getY());
+		a.setX(Math.min(a.getX(), b.getX()));
+		a.setY(Math.min(a.getY(), b.getY()));
+		b.setX(Math.max(aa.getX(), b.getX()));
+		b.setY(Math.max(aa.getY(), b.getY()));
 	}
 
 	private void mark(double mouseX, double mouseY, boolean marked) {
