@@ -29,6 +29,8 @@ barrel
 barrier
 beacon
 bedrock
+bee_nest
+beehive
 beetroots
 bell
 birch_button
@@ -274,6 +276,8 @@ green_wool
 grindstone
 hay_block
 heavy_weighted_pressure_plate
+honey_block
+honeycomb_block
 hopper
 horn_coral
 horn_coral_block

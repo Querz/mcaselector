@@ -51,6 +51,8 @@ barrel:facing=west,open=true;5c4322
 barrier;d40000
 beacon;afd5db
 bedrock;555555
+bee_nest;caa04a
+beehive;b4925a
 beetroots:age=0;418929
 beetroots:age=1;428a29
 beetroots:age=2;458227
@@ -393,6 +395,8 @@ green_wool;546d1b
 grindstone;8b8b8b
 hay_block;a58b0c
 heavy_weighted_pressure_plate;dcdcdc
+honey_block;fbb934
+honeycomb_block;e5941d
 hopper;4b4a4b
 horn_coral_block;d8c742
 horn_coral_fan;cdb73d
@@ -408,7 +412,7 @@ infested_stone;7d7d7d
 iron_bars;888b87
 iron_block;dcdcdc
 iron_door;c1c0c0
-iron_ore;86827f
+iron_ore;88827f
 iron_trapdoor;cacaca
 item_frame;74432a
 jack_o_lantern;c67618
