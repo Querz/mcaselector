@@ -345,9 +345,20 @@ public class MCAChunkData {
 		applyIntIfPresent(tileEntity, "z", offset.getY());
 
 		switch (tileEntity.getString("id")) {
+			case "bee_nest":
 			case "beehive":
 				CompoundTag flowerPos = catchClassCastException(() -> tileEntity.getCompoundTag("FlowerPos"));
 				applyIntOffsetIfRootPresent(flowerPos, "X", "Z", offset);
+				if (tileEntity.containsKey("Bees")) {
+					ListTag<CompoundTag> bees = catchClassCastException(() -> tileEntity.getListTag("Bees").asCompoundTagList());
+					if (bees != null) {
+						for (CompoundTag bee : bees) {
+							if (bee.containsKey("EntityData")) {
+								applyOffsetToEntity(catchClassCastException(() -> bee.getCompoundTag("EntityData")), offset);
+							}
+						}
+					}
+				}
 				break;
 			case "end_gateway":
 				CompoundTag exitPortal = catchClassCastException(() -> tileEntity.getCompoundTag("ExitPortal"));
