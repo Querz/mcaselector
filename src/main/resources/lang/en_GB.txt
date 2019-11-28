@@ -83,6 +83,9 @@ dialog.change_nbt_confirmation.title;Change NBT
 dialog.change_nbt_confirmation.header_short;You are about to change data in an unknown number of chunks in this world.
 dialog.change_nbt_confirmation.header_verbose;You are about to change data in %d chunks in this world.
 dialog.edit_nbt.title;Edit chunk
+dialog.edit_nbt.placeholder.loading;loading...
+dialog.edit_nbt.placeholder.no_chunk_data;no chunk data found
+dialog.edit_nbt.placeholder.no_region_file;region file does not exist
 dialog.edit_array.index;Index
 dialog.edit_array.value;Value
 dialog.about.title;About

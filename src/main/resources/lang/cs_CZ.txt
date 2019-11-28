@@ -83,6 +83,9 @@ dialog.change_nbt_confirmation.title;Změnit NBT
 dialog.change_nbt_confirmation.header_short;Chcete změnit data v neznámém počtu chunků vybraného světa.
 dialog.change_nbt_confirmation.header_verbose;Chcete změnit data v %d chunků vybraného světa.
 dialog.edit_nbt.title;Upravit chunků
+dialog.edit_nbt.placeholder.loading;načítání...
+dialog.edit_nbt.placeholder.no_chunk_data;nebyly nalezeny žádné údaje o chunk
+dialog.edit_nbt.placeholder.no_region_file;soubor regionu neexistuje
 dialog.edit_array.index;Index
 dialog.edit_array.value;Hodnota
 dialog.about.title;O aplikaci

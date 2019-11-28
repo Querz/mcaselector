@@ -83,6 +83,9 @@ dialog.change_nbt_confirmation.title;變更NBT
 dialog.change_nbt_confirmation.header_short;你將要在此世界中變更未知數量的區塊的資料。
 dialog.change_nbt_confirmation.header_verbose;你將要在此世界中變更 %d 個區塊的資料。
 dialog.edit_nbt.title;編輯區塊
+dialog.edit_nbt.placeholder.loading;載入中…
+dialog.edit_nbt.placeholder.no_chunk_data;找不到塊數據
+dialog.edit_nbt.placeholder.no_region_file;區域文件不存在
 dialog.edit_array.index;索引
 dialog.edit_array.value;值
 dialog.about.title;關於

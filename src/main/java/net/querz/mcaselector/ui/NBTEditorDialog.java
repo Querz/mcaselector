@@ -6,6 +6,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -39,6 +40,9 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 	private CompoundTag data;
 	private Point2i regionLocation;
 	private Point2i chunkLocation;
+
+	private BorderPane treeViewHolder = new BorderPane();
+	private Label treeViewPlaceHolder = UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_LOADING);
 
 	public NBTEditorDialog(TileMap tileMap, Stage primaryStage) {
 		titleProperty().bind(Translation.DIALOG_EDIT_NBT_TITLE.getProperty());
@@ -86,13 +90,17 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		HBox options = new HBox();
 		options.getStyleClass().add("nbt-editor-options");
 
+		treeViewHolder.getStyleClass().add("nbt-tree-view-holder");
+
 		initAddTagLabels(nbtTreeView);
 		options.getChildren().add(delete);
 		options.getChildren().addAll(addTagLabels.values());
 
 		VBox box = new VBox();
 
-		box.getChildren().addAll(nbtTreeView, options);
+		treeViewHolder.setCenter(treeViewPlaceHolder);
+
+		box.getChildren().addAll(treeViewHolder, options);
 
 		getDialogPane().setContent(box);
 
@@ -153,15 +161,19 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 			Debug.dumpf("attempting to read single chunk from file: %s", chunk.get());
 			if (file.exists()) {
 				MCAChunkData chunkData = MCAFile.readSingleChunk(file, chunk.get());
-				if (chunkData == null) {
+				if (chunkData == null || chunkData.getData() == null) {
 					Debug.dump("no chunk data found for:" + chunk.get());
+					Platform.runLater(() -> treeViewHolder.setCenter(UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_NO_CHUNK_DATA)));
 					return;
 				}
 				data = chunkData.getData();
 				Platform.runLater(() -> {
 					treeView.setRoot(chunkData.getData());
+					treeViewHolder.setCenter(treeView);
 					getDialogPane().lookupButton(ButtonType.APPLY).setDisable(false);
 				});
+			} else {
+				Platform.runLater(() -> treeViewHolder.setCenter(UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_NO_REGION_FILE)));
 			}
 		}).start();
 	}
