@@ -12,7 +12,8 @@ public enum FilterType {
 	BIOME("Biome", BiomeFilter.class, Format.TEXT),
 	STATUS("Status", StatusFilter.class, Format.TEXT),
 	LIGHT_POPULATED("LightPopulated", LightPopulatedFilter.class, Format.NUMBER),
-	ENTITIES("Entities", EntityFilter.class, Format.TEXT);
+	ENTITIES("Entities", EntityFilter.class, Format.TEXT),
+	ENTITY_AMOUNT("# Entities", EntityAmountFilter.class, Format.NUMBER);
 
 	private String string;
 	private Class<? extends Filter> clazz;
