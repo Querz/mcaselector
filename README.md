@@ -71,6 +71,7 @@ Because the conditions use internal values used by Minecraft, the following tabl
 | Status | String | The status of the chunk generation. Only recognized by Minecraft 1.13+ (DataVersion 1444+) |
 | LightPopulated | byte | Whether the light levels for the chunk have been calculated. If this is set to 0, converting a world from 1.12.x to 1.13 will omit that chunk. Allowed values are `0` and `1`. |
 | Biome | String | One or multiple biome names, separated by comma (,). For a reference of biome names, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Biomes). |
+| Entities | String | One or multiple entity names, separated by comma (,). For a reference of entity names, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Entities). |
 
 Fields that allow multiple comma separated values act the same as multiple consecutive filters of the same type with single values connected with the `AND` operator.
 

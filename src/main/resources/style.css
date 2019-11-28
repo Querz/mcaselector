@@ -207,6 +207,7 @@
 	-fx-padding: 0;
 	-fx-border-width: 0 1 1 1;
 	-fx-border-color: -color-combo-box-list-border;
+	-fx-pref-height: 232px;
 }
 
 .combo-box-popup .list-cell:hover {
