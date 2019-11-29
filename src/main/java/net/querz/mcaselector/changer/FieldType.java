@@ -11,7 +11,8 @@ public enum FieldType {
 	INHABITED_TIME("InhabitedTime", InhabitedTimeField.class),
 	LAST_UPDATE("LastUpdate", LastUpdateField.class),
 	STATUS("Status", StatusField.class),
-	BIOME("Biome", BiomeField.class);
+	BIOME("Biome", BiomeField.class),
+	DELETE_ENTITIES("DeleteEntities", DeleteEntitiesField.class);
 
 	private String name;
 	private Class<? extends Field> clazz;

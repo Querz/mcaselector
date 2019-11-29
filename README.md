@@ -72,7 +72,8 @@ Because the conditions use internal values used by Minecraft, the following tabl
 | LightPopulated | byte | Whether the light levels for the chunk have been calculated. If this is set to 0, converting a world from 1.12.x to 1.13 will omit that chunk. Allowed values are `0` and `1`. |
 | Biome | String | One or multiple biome names, separated by comma (,). For a reference of biome names, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Biomes). |
 | Entities | String | One or multiple entity names, separated by comma (,). For a reference of entity names, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Entities). |
-| # Entities | int | The total amount of entities in that chunk. |
+| #Entities | int | The total amount of entities in that chunk. |
+| #TileEntities | int | The total amount of tile entities in that chunk. |
 
 Fields that allow multiple comma separated values act the same as multiple consecutive filters of the same type with single values connected with the `AND` operator.
 
@@ -88,12 +89,13 @@ You can change the following values:
 
 | Field | Type | Description |
 | ----- | ----- | ----------- |
-| LightPopulated | byte | Whether the light levels for the chunk have been calculated. If this is set to 0, converting a world from 1.12.x to 1.13 will omit that chunk. Allowed values are `0` and `1` |
+| LightPopulated | byte | Whether the light levels for the chunk have been calculated. If this is set to `0`, converting a world from 1.12.x to 1.13 will omit that chunk. Allowed values are `0` and `1` |
 | DataVersion | int | Allows to change the DataVersion of the chunks. Should be used with extreme care. |
 | InhabitedTime | long | This field stores the amount of game-ticks players have spent in a chunk. Impacts the local difficulty. |
 | LastUpdate | long | Stores a timestamp when this chunk was last updated in Milliseconds. |
 | Status | String | The status of the chunk generation. Only recognized by Minecraft 1.13+ (DataVersion 1444+) |
 | Biome | String | A biome name. This sets all biomes of this chunk to a single biome. For a reference of biome names, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Biomes). |
+| DeleteEntities | boolean | If set to `1` or `true`, all entities in that chunk will be deleted. |
 
 Once the field is highlighted in green, the value is considered valid and will be changed. A gray field, no matter its content, will be ignored.
 

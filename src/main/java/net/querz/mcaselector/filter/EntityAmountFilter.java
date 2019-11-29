@@ -1,8 +1,5 @@
 package net.querz.mcaselector.filter;
 
-import net.querz.mcaselector.point.Point2i;
-import net.querz.nbt.CompoundTag;
-
 public class EntityAmountFilter extends IntegerFilter {
 
 	public EntityAmountFilter() {
@@ -28,7 +25,7 @@ public class EntityAmountFilter extends IntegerFilter {
 	}
 
 	@Override
-	public XPosFilter clone() {
-		return new XPosFilter(getOperator(), getComparator(), value);
+	public EntityAmountFilter clone() {
+		return new EntityAmountFilter(getOperator(), getComparator(), value);
 	}
 }
