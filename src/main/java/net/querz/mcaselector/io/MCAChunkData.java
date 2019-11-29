@@ -39,7 +39,7 @@ public class MCAChunkData {
 		return offset == 0 && timestamp == 0 && sectors == 0;
 	}
 
-	public void readHeader(ByteArrayPointer ptr) throws Exception {
+	public void readHeader(ByteArrayPointer ptr) {
 		ptr.seek(offset);
 		length = ptr.readInt();
 		compressionType = CompressionType.fromByte(ptr.readByte());
@@ -147,10 +147,6 @@ public class MCAChunkData {
 
 	public long getOffset() {
 		return offset;
-	}
-
-	void setOffset(int sectorOffset) {
-		this.offset = ((long) sectorOffset) * MCAFile.SECTION_SIZE;
 	}
 
 	public int getLength() {

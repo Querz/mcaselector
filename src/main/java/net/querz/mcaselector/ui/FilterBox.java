@@ -19,6 +19,7 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.text.Translation;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public abstract class FilterBox extends BorderPane {
@@ -134,7 +135,7 @@ public abstract class FilterBox extends BorderPane {
 
 			//removes this filter and replaces it by a new filter
 			GroupFilter parent = ((GroupFilter) filter.getParent());
-			parent.addFilterAfter(newFilter, filter);
+			parent.addFilterAfter(Objects.requireNonNull(newFilter), filter);
 			parent.getFilterValue().remove(filter);
 
 			//remove this filter from view and add new filterbox

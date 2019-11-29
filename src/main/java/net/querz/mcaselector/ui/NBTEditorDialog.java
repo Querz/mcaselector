@@ -212,7 +212,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		}
 	}
 
-	public class Result {
+	public static class Result {
 		private CompoundTag data;
 
 		private Result(CompoundTag data) {

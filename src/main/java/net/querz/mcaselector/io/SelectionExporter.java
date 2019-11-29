@@ -37,13 +37,13 @@ public class SelectionExporter {
 		}
 	}
 
-	public static class MCADeleteSelectionLoadJob extends LoadDataJob {
+	private static class MCADeleteSelectionLoadJob extends LoadDataJob {
 
 		private Set<Point2i> chunksToBeExported;
 		private File destination;
 		private Progress progressChannel;
 
-		MCADeleteSelectionLoadJob(File file, Set<Point2i> chunksToBeExported, File destination, Progress progressChannel) {
+		private MCADeleteSelectionLoadJob(File file, Set<Point2i> chunksToBeExported, File destination, Progress progressChannel) {
 			super(file);
 			this.chunksToBeExported = chunksToBeExported;
 			this.destination = destination;
@@ -72,13 +72,13 @@ public class SelectionExporter {
 		}
 	}
 
-	public static class MCADeleteSelectionProcessJob extends ProcessDataJob {
+	private static class MCADeleteSelectionProcessJob extends ProcessDataJob {
 
 		private Progress progressChannel;
 		private Set<Point2i> chunksToBeExported;
 		private File destination;
 
-		MCADeleteSelectionProcessJob(File file, byte[] data, Set<Point2i> chunksToBeExported, File destination, Progress progressChannel) {
+		private MCADeleteSelectionProcessJob(File file, byte[] data, Set<Point2i> chunksToBeExported, File destination, Progress progressChannel) {
 			super(file, data);
 			this.chunksToBeExported = chunksToBeExported;
 			this.destination = destination;
@@ -116,12 +116,12 @@ public class SelectionExporter {
 		}
 	}
 
-	public static class MCADeleteSelectionSaveJob extends SaveDataJob<MCAFile> {
+	private static class MCADeleteSelectionSaveJob extends SaveDataJob<MCAFile> {
 
 		private Progress progressChannel;
 		private File destination;
 
-		MCADeleteSelectionSaveJob(File file, MCAFile data, File destination, Progress progressChannel) {
+		private MCADeleteSelectionSaveJob(File file, MCAFile data, File destination, Progress progressChannel) {
 			super(file, data);
 			this.destination = destination;
 			this.progressChannel = progressChannel;

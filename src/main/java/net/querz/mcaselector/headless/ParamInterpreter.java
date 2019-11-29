@@ -136,8 +136,8 @@ public class ParamInterpreter {
 	}
 
 	public static class ActionKey {
-		String key;
-		String value;
+		private String key;
+		private String value;
 
 		public ActionKey(String key, String value) {
 			this.key = key;

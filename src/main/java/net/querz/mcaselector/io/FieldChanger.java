@@ -14,16 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class FieldChanger {
-
-	private static final Pattern regionGroupPattern = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
 
 	private FieldChanger() {}
 
 	public static void changeNBTFields(List<Field<?>> fields, boolean force, Map<Point2i, Set<Point2i>> selection, Progress progressChannel) {
-		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches("^r\\.-?\\d+\\.-?\\d+\\.mca$"));
+		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
 		if (files == null || files.length == 0) {
 			return;
 		}
@@ -45,7 +42,7 @@ public class FieldChanger {
 		private boolean force;
 		private Map<Point2i, Set<Point2i>> selection;
 
-		MCAFieldChangeLoadJob(File file, List<Field<?>> fields, boolean force, Map<Point2i, Set<Point2i>> selection, Progress progressChannel) {
+		private MCAFieldChangeLoadJob(File file, List<Field<?>> fields, boolean force, Map<Point2i, Set<Point2i>> selection, Progress progressChannel) {
 			super(file);
 			this.fields = fields;
 			this.force = force;
@@ -59,7 +56,7 @@ public class FieldChanger {
 			if (data != null) {
 				Set<Point2i> chunks = null;
 				if (selection != null) {
-					Matcher m = regionGroupPattern.matcher(getFile().getName());
+					Matcher m = FileHelper.REGION_GROUP_PATTERN.matcher(getFile().getName());
 					if (m.find()) {
 						int regionX = Integer.parseInt(m.group("regionX"));
 						int regionZ = Integer.parseInt(m.group("regionZ"));
@@ -87,7 +84,7 @@ public class FieldChanger {
 		private boolean force;
 		private Set<Point2i> selection;
 
-		MCAFieldChangeProcessJob(File file, byte[] data, List<Field<?>> fields, boolean force, Set<Point2i> selection, Progress progressChannel) {
+		private MCAFieldChangeProcessJob(File file, byte[] data, List<Field<?>> fields, boolean force, Set<Point2i> selection, Progress progressChannel) {
 			super(file, data);
 			this.fields = fields;
 			this.force = force;
@@ -115,7 +112,7 @@ public class FieldChanger {
 
 		private Progress progressChannel;
 
-		MCAFieldChangeSaveJob(File file, MCAFile data, Progress progressChannel) {
+		private MCAFieldChangeSaveJob(File file, MCAFile data, Progress progressChannel) {
 			super(file, data);
 			this.progressChannel = progressChannel;
 		}

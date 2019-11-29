@@ -21,7 +21,7 @@ public class StatusFilter extends TextFilter<String> {
 		this(Operator.AND, Comparator.EQ, null);
 	}
 
-	public StatusFilter(Operator operator, Comparator comparator, String value) {
+	private StatusFilter(Operator operator, Comparator comparator, String value) {
 		super(FilterType.STATUS, operator, comparator, value);
 		setRawValue(value);
 	}

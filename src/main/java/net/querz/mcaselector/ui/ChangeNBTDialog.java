@@ -182,7 +182,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		}
 	}
 
-	public class Result {
+	public static class Result {
 
 		private boolean force;
 		private List<Field<?>> fields;

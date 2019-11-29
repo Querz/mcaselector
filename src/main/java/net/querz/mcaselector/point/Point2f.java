@@ -6,9 +6,7 @@ public class Point2f implements Cloneable {
 
 	private float x, y;
 
-	public Point2f() {
-		this.x = this.y = 0;
-	}
+	public Point2f() {}
 
 	public Point2f(double x, double y) {
 		this((float) x, (float) y);

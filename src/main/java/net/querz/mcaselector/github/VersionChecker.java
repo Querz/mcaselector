@@ -72,11 +72,11 @@ public class VersionChecker {
 		return new VersionData(latestID, latestTag, latestLink);
 	}
 
-	public class VersionData {
-		int id;
-		String tag, link;
+	public static class VersionData {
+		private int id;
+		private String tag, link;
 
-		VersionData(int id, String tag, String link) {
+		private VersionData(int id, String tag, String link) {
 			this.id = id;
 			this.tag = tag;
 			this.link = link;

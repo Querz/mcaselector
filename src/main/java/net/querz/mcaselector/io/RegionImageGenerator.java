@@ -50,7 +50,7 @@ public class RegionImageGenerator {
 		private boolean force, scaleOnly;
 		private Progress progressChannel;
 
-		MCAImageLoadJob(File file, Tile tile, Runnable callback, Supplier<Float> scaleSupplier, boolean force, boolean scaleOnly, Progress progressChannel) {
+		private MCAImageLoadJob(File file, Tile tile, Runnable callback, Supplier<Float> scaleSupplier, boolean force, boolean scaleOnly, Progress progressChannel) {
 			super(file);
 			this.tile = tile;
 			this.callback = callback;
@@ -84,7 +84,7 @@ public class RegionImageGenerator {
 		}
 	}
 
-	public static class MCAImageProcessJob extends ProcessDataJob {
+	private static class MCAImageProcessJob extends ProcessDataJob {
 
 		private Tile tile;
 		private Runnable callback;
@@ -92,7 +92,7 @@ public class RegionImageGenerator {
 		private boolean scaleOnly;
 		private Progress progressChannel;
 
-		MCAImageProcessJob(File file, byte[] data, Tile tile, Runnable callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
+		private MCAImageProcessJob(File file, byte[] data, Tile tile, Runnable callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
 			super(file, data);
 			this.tile = tile;
 			this.callback = callback;
@@ -120,14 +120,14 @@ public class RegionImageGenerator {
 		}
 	}
 
-	public static class MCAImageSaveCacheJob extends SaveDataJob<Image> {
+	private static class MCAImageSaveCacheJob extends SaveDataJob<Image> {
 
 		private Tile tile;
 		private Supplier<Float> scaleSupplier;
 		private boolean scaleOnly;
 		private Progress progressChannel;
 
-		MCAImageSaveCacheJob(File file, Image data, Tile tile, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
+		private MCAImageSaveCacheJob(File file, Image data, Tile tile, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
 			super(file, data);
 			this.tile = tile;
 			this.scaleSupplier = scaleSupplier;

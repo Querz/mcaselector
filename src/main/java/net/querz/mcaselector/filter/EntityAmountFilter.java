@@ -6,7 +6,7 @@ public class EntityAmountFilter extends IntegerFilter {
 		this(Operator.AND, Comparator.EQ, 0);
 	}
 
-	public EntityAmountFilter(Operator operator, Comparator comparator, int value) {
+	private EntityAmountFilter(Operator operator, Comparator comparator, int value) {
 		super(FilterType.ENTITY_AMOUNT, operator, comparator, value);
 	}
 

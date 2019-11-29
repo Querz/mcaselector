@@ -78,7 +78,7 @@ public class ChunkImporter {
 		}
 	}
 
-	public static class MCAChunkImporterLoadJob extends LoadDataJob {
+	private static class MCAChunkImporterLoadJob extends LoadDataJob {
 
 		private Point2i target;
 		private Set<Point2i> sources;
@@ -88,7 +88,7 @@ public class ChunkImporter {
 		private boolean overwrite;
 		private Set<Point2i> selection;
 
-		MCAChunkImporterLoadJob(File targetFile, File sourceDir, Point2i target, Set<Point2i> sources, Point2i offset, Progress progressChannel, boolean overwrite, Set<Point2i> selection) {
+		private MCAChunkImporterLoadJob(File targetFile, File sourceDir, Point2i target, Set<Point2i> sources, Point2i offset, Progress progressChannel, boolean overwrite, Set<Point2i> selection) {
 			super(targetFile);
 			this.target = target;
 			this.sources = sources;
@@ -157,7 +157,7 @@ public class ChunkImporter {
 		}
 	}
 
-	public static class MCAChunkImporterProcessJob extends ProcessDataJob {
+	private static class MCAChunkImporterProcessJob extends ProcessDataJob {
 
 		private File sourceDir;
 		private Point2i target;
@@ -167,7 +167,7 @@ public class ChunkImporter {
 		private boolean overwrite;
 		private Set<Point2i> selection;
 
-		MCAChunkImporterProcessJob(File targetFile, File sourceDir, Point2i target, Map<Point2i, byte[]> sourceDataMapping, byte[] destData, Point2i offset, Progress progressChannel, boolean overwrite, Set<Point2i> selection) {
+		private MCAChunkImporterProcessJob(File targetFile, File sourceDir, Point2i target, Map<Point2i, byte[]> sourceDataMapping, byte[] destData, Point2i offset, Progress progressChannel, boolean overwrite, Set<Point2i> selection) {
 			super(targetFile, destData);
 			this.sourceDir = sourceDir;
 			this.target = target;
@@ -215,12 +215,12 @@ public class ChunkImporter {
 		}
 	}
 
-	public static class MCAChunkImporterSaveJob extends SaveDataJob<MCAFile> {
+	private static class MCAChunkImporterSaveJob extends SaveDataJob<MCAFile> {
 
 		private int sourceCount;
 		private Progress progressChannel;
 
-		MCAChunkImporterSaveJob(File file, MCAFile data, int sourceCount, Progress progressChannel) {
+		private MCAChunkImporterSaveJob(File file, MCAFile data, int sourceCount, Progress progressChannel) {
 			super(file, data);
 			this.sourceCount = sourceCount;
 			this.progressChannel = progressChannel;
@@ -243,7 +243,7 @@ public class ChunkImporter {
 		}
 	}
 
-	public static void mapSourceRegionsByTargetRegion(Point2i source, Set<Point2i> targets, Map<Point2i, Set<Point2i>> map) {
+	private static void mapSourceRegionsByTargetRegion(Point2i source, Set<Point2i> targets, Map<Point2i, Set<Point2i>> map) {
 		for (Point2i target : targets) {
 			map.computeIfAbsent(target, key -> new HashSet<>(4));
 			map.get(target).add(source);
@@ -252,7 +252,7 @@ public class ChunkImporter {
 
 
 	// source is a region coordinate, offset is a chunk coordinate
-	public static Set<Point2i> getTargetRegions(Point2i source, Point2i offset) {
+	private static Set<Point2i> getTargetRegions(Point2i source, Point2i offset) {
 		Set<Point2i> result = new HashSet<>(4);
 		Point2i sourceChunk = source.regionToChunk().add(offset);
 		result.add(sourceChunk.chunkToRegion());

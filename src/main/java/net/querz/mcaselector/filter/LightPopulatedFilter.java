@@ -11,7 +11,7 @@ public class LightPopulatedFilter extends ByteFilter {
 		this(Operator.AND, Comparator.EQ, (byte) 0);
 	}
 
-	public LightPopulatedFilter(Operator operator, Comparator comparator, byte value) {
+	private LightPopulatedFilter(Operator operator, Comparator comparator, byte value) {
 		super(FilterType.LIGHT_POPULATED, operator, comparator, value);
 	}
 

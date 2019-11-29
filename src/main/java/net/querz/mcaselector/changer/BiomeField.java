@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class BiomeField extends Field<Integer> {
 
@@ -18,7 +19,7 @@ public class BiomeField extends Field<Integer> {
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
-			new InputStreamReader(BiomeFilter.class.getClassLoader().getResourceAsStream("biomes.csv")))) {
+			new InputStreamReader(Objects.requireNonNull(BiomeFilter.class.getClassLoader().getResourceAsStream("biomes.csv"))))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				String[] split = line.split(";");

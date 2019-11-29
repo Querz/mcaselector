@@ -40,13 +40,13 @@ public class ChunkFilterDeleter {
 		}
 	}
 
-	public static class MCADeleteFilterLoadJob extends LoadDataJob {
+	private static class MCADeleteFilterLoadJob extends LoadDataJob {
 
 		private GroupFilter filter;
 		private Map<Point2i, Set<Point2i>> selection;
 		private Progress progressChannel;
 
-		MCADeleteFilterLoadJob(File file, GroupFilter filter, Map<Point2i, Set<Point2i>> selection, Progress progressChannel) {
+		private MCADeleteFilterLoadJob(File file, GroupFilter filter, Map<Point2i, Set<Point2i>> selection, Progress progressChannel) {
 			super(file);
 			this.filter = filter;
 			this.selection = selection;
@@ -81,13 +81,13 @@ public class ChunkFilterDeleter {
 		}
 	}
 
-	public static class MCADeleteFilterProcessJob extends ProcessDataJob {
+	private static class MCADeleteFilterProcessJob extends ProcessDataJob {
 
 		private Progress progressChannel;
 		private GroupFilter filter;
 		private Set<Point2i> selection;
 
-		MCADeleteFilterProcessJob(File file, byte[] data, GroupFilter filter, Set<Point2i> selection, Progress progressChannel) {
+		private MCADeleteFilterProcessJob(File file, byte[] data, GroupFilter filter, Set<Point2i> selection, Progress progressChannel) {
 			super(file, data);
 			this.filter = filter;
 			this.selection = selection;
@@ -112,11 +112,11 @@ public class ChunkFilterDeleter {
 		}
 	}
 
-	public static class MCADeleteFilterSaveJob extends SaveDataJob<MCAFile> {
+	private static class MCADeleteFilterSaveJob extends SaveDataJob<MCAFile> {
 
 		private Progress progressChannel;
 
-		MCADeleteFilterSaveJob(File file, MCAFile data, Progress progressChannel) {
+		private MCADeleteFilterSaveJob(File file, MCAFile data, Progress progressChannel) {
 			super(file, data);
 			this.progressChannel = progressChannel;
 		}

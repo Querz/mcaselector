@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class BiomeFilter extends TextFilter<List<Integer>> {
 
@@ -17,7 +18,7 @@ public class BiomeFilter extends TextFilter<List<Integer>> {
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(BiomeFilter.class.getClassLoader().getResourceAsStream("biomes.csv")))) {
+				new InputStreamReader(Objects.requireNonNull(BiomeFilter.class.getClassLoader().getResourceAsStream("biomes.csv"))))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				String[] split = line.split(";");
@@ -41,7 +42,7 @@ public class BiomeFilter extends TextFilter<List<Integer>> {
 		this(Operator.AND, Comparator.CONTAINS, null);
 	}
 
-	public BiomeFilter(Operator operator, Comparator comparator, List<Integer> value) {
+	private BiomeFilter(Operator operator, Comparator comparator, List<Integer> value) {
 		super(FilterType.BIOME, operator, comparator, value);
 		if (value == null) {
 			setRawValue("");
@@ -85,8 +86,7 @@ public class BiomeFilter extends TextFilter<List<Integer>> {
 			setValue(null);
 		} else {
 			List<Integer> idList = new ArrayList<>();
-			for (int i = 0; i < rawBiomeNames.length; i++) {
-				String name = rawBiomeNames[i];
+			for (String name : rawBiomeNames) {
 				if (!validNames.containsKey(name)) {
 					setValid(false);
 					setValue(null);

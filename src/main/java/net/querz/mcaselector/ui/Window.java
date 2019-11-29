@@ -5,20 +5,14 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import net.querz.mcaselector.Config;
-import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.io.FileHelper;
-
-import java.io.File;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.*;
 
 public class Window extends Application {
 
 	private int width = 800, height = 600;
-//	private int width = 300, height = 300;
 
 	private Set<KeyCode> pressedKeys = new HashSet<>();
 

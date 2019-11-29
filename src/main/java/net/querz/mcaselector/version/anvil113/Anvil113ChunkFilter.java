@@ -3,6 +3,9 @@ package net.querz.mcaselector.version.anvil113;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
+
+import java.util.Arrays;
+
 import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class Anvil113ChunkFilter implements ChunkFilter {
@@ -54,9 +57,6 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		if (!data.containsKey("Level") || withDefault(() -> data.getCompoundTag("Level").getIntArrayTag("Biomes"), null) == null) {
 			return;
 		}
-		int[] biomes = data.getCompoundTag("Level").getIntArray("Biomes");
-		for (int i = 0; i < biomes.length; i++) {
-			biomes[i] = id;
-		}
+		Arrays.fill(data.getCompoundTag("Level").getIntArray("Biomes"), id);
 	}
 }

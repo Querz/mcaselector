@@ -38,8 +38,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 	private Slider readThreadsSlider = createSlider(1, procCount, 1, 1);
 	private Slider processThreadsSlider = createSlider(1, procCount * 2, 1, procCount);
-	private Slider writeThreadsSlider = createSlider(1, procCount, 1, procCount < 4 ? procCount : 4);
-	private Slider maxLoadedFilesSlider = createSlider(1, (int) Math.ceil(maxMem / 100_000_000L), 1, procCount + procCount / 2);
+	private Slider writeThreadsSlider = createSlider(1, procCount, 1, Math.min(procCount, 4));
+	private Slider maxLoadedFilesSlider = createSlider(1, (int) Math.ceil((double) maxMem / 100_000_000L), 1, procCount + procCount / 2);
 	private Button regionSelectionColorPreview = new Button();
 	private Button chunkSelectionColorPreview = new Button();
 	private CheckBox debugCheckBox = new CheckBox();
@@ -72,15 +72,15 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		setResultConverter(c -> {
 			if (c.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				return new SettingsDialog.Result(
-					languages.getSelectionModel().getSelectedItem(),
-					(int) readThreadsSlider.getValue(),
-					(int) processThreadsSlider.getValue(),
-					(int) writeThreadsSlider.getValue(),
-					(int) maxLoadedFilesSlider.getValue(),
-					regionSelectionColor,
-					chunkSelectionColor,
-					debugCheckBox.isSelected()
+				return new Result(
+						languages.getSelectionModel().getSelectedItem(),
+						(int) readThreadsSlider.getValue(),
+						(int) processThreadsSlider.getValue(),
+						(int) writeThreadsSlider.getValue(),
+						(int) maxLoadedFilesSlider.getValue(),
+						regionSelectionColor,
+						chunkSelectionColor,
+						debugCheckBox.isSelected()
 				);
 			}
 			return null;
@@ -165,7 +165,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		return slider;
 	}
 
-	public class Result {
+	public static class Result {
 
 		private int readThreads, processThreads, writeThreads, maxLoadedFiles;
 		private Color regionColor, chunkColor;

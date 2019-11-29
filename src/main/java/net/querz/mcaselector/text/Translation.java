@@ -224,7 +224,7 @@ public enum Translation {
 		clearTranslations();
 
 		try (BufferedReader bis = new BufferedReader(new InputStreamReader(
-				Translation.class.getClassLoader().getResourceAsStream("lang/" + locale + ".txt"), StandardCharsets.UTF_8))) {
+				Objects.requireNonNull(Translation.class.getClassLoader().getResourceAsStream("lang/" + locale + ".txt")), StandardCharsets.UTF_8))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				String[] split = line.split(";", 2);
@@ -259,7 +259,7 @@ public enum Translation {
 			dirURL = clazz.getClassLoader().getResource(me);
 		}
 
-		if (dirURL.getProtocol().equals("jar")) {
+		if (dirURL != null && dirURL.getProtocol().equals("jar")) {
 			String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!"));
 			JarFile jar;
 			try {

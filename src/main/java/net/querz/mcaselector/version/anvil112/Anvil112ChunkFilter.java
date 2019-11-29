@@ -116,7 +116,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		return names.length == c;
 	}
 
-	private class BlockData {
+	private static class BlockData {
 		int id;
 		Set<Byte> data;
 
@@ -152,9 +152,6 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		if (!data.containsKey("Level") || withDefault(() -> data.getCompoundTag("Level").getByteArray("Biomes"), null) == null) {
 			return;
 		}
-		byte[] biomes = data.getCompoundTag("Level").getByteArray("Biomes");
-		for (int i = 0; i < biomes.length; i++) {
-			biomes[i] = (byte) id;
-		}
+		Arrays.fill(data.getCompoundTag("Level").getByteArray("Biomes"), (byte) id);
 	}
 }

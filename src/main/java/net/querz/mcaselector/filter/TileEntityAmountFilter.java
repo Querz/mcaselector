@@ -6,7 +6,7 @@ public class TileEntityAmountFilter extends IntegerFilter {
 		this(Operator.AND, Comparator.EQ, 0);
 	}
 
-	public TileEntityAmountFilter(Operator operator, Comparator comparator, int value) {
+	private TileEntityAmountFilter(Operator operator, Comparator comparator, int value) {
 		super(FilterType.TILE_ENTITY_AMOUNT, operator, comparator, value);
 	}
 

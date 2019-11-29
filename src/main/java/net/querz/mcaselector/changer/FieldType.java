@@ -31,12 +31,6 @@ public enum FieldType {
 		}
 	}
 
-	public static List<Field<?>> instantiateAll() {
-		List<Field<?>> list = new ArrayList<>(values().length);
-		Arrays.stream(values()).forEach(f -> list.add(f.newInstance()));
-		return list;
-	}
-
 	public static FieldType getByName(String name) {
 		for (FieldType f : FieldType.values()) {
 			if (f.name.equals(name)) {

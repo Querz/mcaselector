@@ -40,13 +40,13 @@ public class ChunkFilterSelector {
 		}
 	}
 
-	public static class MCASelectFilterLoadJob extends LoadDataJob {
+	private static class MCASelectFilterLoadJob extends LoadDataJob {
 
 		private GroupFilter filter;
 		private Progress progressChannel;
 		private Consumer<Map<Point2i, Set<Point2i>>> callback;
 
-		MCASelectFilterLoadJob(File file, GroupFilter filter, Consumer<Map<Point2i, Set<Point2i>>> callback, Progress progressChannel) {
+		private MCASelectFilterLoadJob(File file, GroupFilter filter, Consumer<Map<Point2i, Set<Point2i>>> callback, Progress progressChannel) {
 			super(file);
 			this.filter = filter;
 			this.callback = callback;
@@ -80,14 +80,14 @@ public class ChunkFilterSelector {
 		}
 	}
 
-	public static class MCASelectFilterProcessJob extends ProcessDataJob {
+	private static class MCASelectFilterProcessJob extends ProcessDataJob {
 
 		private Progress progressChannel;
 		private GroupFilter filter;
 		private Consumer<Map<Point2i, Set<Point2i>>> callback;
 		private Point2i location;
 
-		MCASelectFilterProcessJob(File file, byte[] data, GroupFilter filter, Consumer<Map<Point2i, Set<Point2i>>> callback, Point2i location, Progress progressChannel) {
+		private MCASelectFilterProcessJob(File file, byte[] data, GroupFilter filter, Consumer<Map<Point2i, Set<Point2i>>> callback, Point2i location, Progress progressChannel) {
 			super(file, data);
 			this.filter = filter;
 			this.callback = callback;

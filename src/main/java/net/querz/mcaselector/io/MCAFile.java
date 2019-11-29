@@ -140,7 +140,7 @@ public class MCAFile {
 		return null;
 	}
 
-	public void readHeader(ByteArrayPointer ptr) throws IOException {
+	private void readHeader(ByteArrayPointer ptr) throws IOException {
 		ptr.seek(0);
 		for (int i = 0; i < offsets.length; i++) {
 			int offset = (ptr.read()) << 16;

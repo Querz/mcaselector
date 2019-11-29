@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class EntityFilter extends TextFilter<List<String>> {
@@ -18,7 +19,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(EntityFilter.class.getClassLoader().getResourceAsStream("entity-names.csv")))) {
+				new InputStreamReader(Objects.requireNonNull(EntityFilter.class.getClassLoader().getResourceAsStream("entity-names.csv"))))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				validNames.add(line);
@@ -32,7 +33,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 		this(Operator.AND, Comparator.CONTAINS, null);
 	}
 
-	public EntityFilter(Operator operator, Comparator comparator, List<String> value) {
+	private EntityFilter(Operator operator, Comparator comparator, List<String> value) {
 		super(FilterType.ENTITIES, operator, comparator, value);
 		setRawValue(String.join(",", value == null ? new ArrayList<>(0) : value));
 	}

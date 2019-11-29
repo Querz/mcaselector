@@ -84,15 +84,7 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 
 	}
 
-	private void setOverwriteCheckbox(CheckBox checkbox, Consumer<ChunkImportConfirmationData> action, ChunkImportConfirmationData data, boolean status) {
-		// we need to run this after setting overwrite to selected to export the value
-		// for the case when the user didn't interact with the checkbox.
-		checkbox.setSelected(status);
-		data.overwrite = status;
-		action.accept(data);
-	}
-
-	public class ChunkImportConfirmationData {
+	public static class ChunkImportConfirmationData {
 
 		private Point2i offset;
 		private boolean overwrite;

@@ -14,13 +14,9 @@ import java.util.function.Consumer;
 public class KeyActivator extends TimerTask {
 
 	private Timer timer = new Timer();
-
 	private Set<KeyCode> pressedButtons = new HashSet<>();
-
 	private Set<KeyCode> pressedActionKeys = new HashSet<>();
-
 	private Map<KeyCode, List<Consumer<Set<KeyCode>>>> actions = new HashMap<>();
-
 	private Runnable globalAction;
 
 	public KeyActivator() {

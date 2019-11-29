@@ -98,7 +98,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		return null;
 	}
 
-	public class Result {
+	public static class Result {
 
 		private HandleType type;
 		private boolean selectionOnly;

@@ -5,9 +5,9 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.point.Point2i;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.util.Objects;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
@@ -19,10 +19,10 @@ public class FileHelper {
 	public static final Pattern REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
 
 	public static Image getIconFromResources(String name) {
-		return new Image(FileHelper.class.getClassLoader().getResourceAsStream(name + ".png"));
+		return new Image(Objects.requireNonNull(FileHelper.class.getClassLoader().getResourceAsStream(name + ".png")));
 	}
 
-	public static String getMCDir() {
+	private static String getMCDir() {
 		String os = System.getProperty("os.name").toLowerCase();
 		String appdataDir = null;
 		if (os.contains("win")) {
@@ -38,7 +38,7 @@ public class FileHelper {
 		return appdataDir;
 	}
 
-	public static String getHomeDir() {
+	private static String getHomeDir() {
 		return System.getProperty("user.home");
 	}
 

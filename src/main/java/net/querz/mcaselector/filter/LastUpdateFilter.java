@@ -8,7 +8,7 @@ public class LastUpdateFilter extends IntegerFilter {
 		this(Operator.AND, Comparator.EQ, 0);
 	}
 
-	public LastUpdateFilter(Operator operator, Comparator comparator, int value) {
+	private LastUpdateFilter(Operator operator, Comparator comparator, int value) {
 		super(FilterType.LAST_UPDATE, operator, comparator, value);
 	}
 

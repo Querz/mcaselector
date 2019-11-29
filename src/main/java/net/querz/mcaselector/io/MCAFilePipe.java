@@ -108,10 +108,6 @@ public final class MCAFilePipe {
 		}
 	}
 
-	static void executeLoadData(LoadDataJob job) {
-		loadDataExecutor.execute(job);
-	}
-
 	static void executeProcessData(ProcessDataJob job) {
 		processDataExecutor.execute(job);
 	}

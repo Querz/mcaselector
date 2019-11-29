@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class PaletteFilter extends TextFilter<List<String>> {
@@ -17,7 +18,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(PaletteFilter.class.getClassLoader().getResourceAsStream("block-names.csv")))) {
+				new InputStreamReader(Objects.requireNonNull(PaletteFilter.class.getClassLoader().getResourceAsStream("block-names.csv"))))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				validNames.add(line);
@@ -31,7 +32,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 		this(Operator.AND, Comparator.CONTAINS, null);
 	}
 
-	public PaletteFilter(Operator operator, Comparator comparator, List<String> value) {
+	private PaletteFilter(Operator operator, Comparator comparator, List<String> value) {
 		super(FilterType.PALETTE, operator, comparator, value);
 		setRawValue(String.join(",", value == null ? new ArrayList<>(0) : value));
 	}

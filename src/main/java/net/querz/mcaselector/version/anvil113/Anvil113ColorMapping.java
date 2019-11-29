@@ -77,7 +77,7 @@ public class Anvil113ColorMapping implements ColorMapping {
 		return data.get("Properties") != null && "true".equals(withDefault(() -> data.getCompoundTag("Properties").getString("waterlogged"), null));
 	}
 
-	private class BlockStateMapping {
+	private static class BlockStateMapping {
 
 		private Map<Set<String>, Integer> blockStateMapping = new HashMap<>();
 
