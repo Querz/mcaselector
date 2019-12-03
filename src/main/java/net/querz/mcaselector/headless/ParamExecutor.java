@@ -202,9 +202,12 @@ public class ParamExecutor {
 		int offsetX = parseInt(params.get("offset-x"));
 		int offsetZ = parseInt(params.get("offset-z"));
 		boolean overwrite = params.containsKey("overwrite");
-		File selectionFile = parseFile(params.get("selection"), "csv");
+		File selectionFile = null;
+		if (params.containsKey("selection")) {
+			 selectionFile = parseFile(params.get("selection"), "csv");
+		}
 		Map<Point2i, Set<Point2i>> selection = null;
-		if (selectionFile.exists()) {
+		if (selectionFile != null && selectionFile.exists()) {
 			selection = SelectionUtil.importSelection(selectionFile);
 		}
 
