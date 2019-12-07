@@ -34,74 +34,74 @@ menu.tools.filter_chunks;Filtrer le chunks
 menu.tools.change_fields;Changer les champs
 dialog.settings.title;Options
 dialog.settings.language;Langage
-dialog.settings.read_threads;Read Threads
-dialog.settings.process_threads;Process Threads
-dialog.settings.write_threads;Write Threads
-dialog.settings.max_files;Max fichier chargé
-dialog.settings.region_color;Region selection color
-dialog.settings.chunk_color;Chunk selection color
-dialog.settings.print_debug;Print debug messages
-dialog.settings.reset;Reset
-dialog.goto.title;Goto location
+dialog.settings.read_threads;Threads de lecture
+dialog.settings.process_threads;Threads de calcul
+dialog.settings.write_threads;Threads d'écriture
+dialog.settings.max_files;Maximum de fichiers chargés
+dialog.settings.region_color;Couleur de sélection des régions
+dialog.settings.chunk_color;Couleur de sélection des chunks
+dialog.settings.print_debug;Logger des messages de debug
+dialog.settings.reset;Réinitialiser
+dialog.goto.title;Aller à une position
 dialog.confirmation.question;Êtes-vous sur ?
-dialog.delete_chunks_confirmation.title;Supprimer chunks
-dialog.delete_chunks_confirmation.header_short;You are about to delete an unknown number of chunks from this world.
-dialog.delete_chunks_confirmation.header_verbose;You are about to delete %d chunks from this world.
-dialog.import_chunks_confirmation.title;Import chunks
-dialog.import_chunks_confirmation.header;You are about to import an unknown number of chunks to this world.
+dialog.delete_chunks_confirmation.title;Supprimer des chunks
+dialog.delete_chunks_confirmation.header_short;Vous êtes sur le point de supprimer un nombre de chunks inconnu de ce monde.
+dialog.delete_chunks_confirmation.header_verbose;Vous êtes sur le point de supprimer %d chunks de ce monde.
+dialog.import_chunks_confirmation.title;Importer des chunks
+dialog.import_chunks_confirmation.header;Vous êtes sur le point d'importer un nombre de chunks inconnu sur ce monde.
 dialog.import_chunks_confirmation.options;Options
-dialog.import_chunks_confirmation.options.offset;Offset
-dialog.import_chunks_confirmation.options.overwrite;Overwrite existing chunks
-dialog.export_chunks_confirmation.title;Export chunks
-dialog.export_chunks_confirmation.header_short;You are about to export an unknown number of chunks from this world.
-dialog.export_chunks_confirmation.header_verbose;You are about to export %d chunks from this world.
-dialog.filter_chunks.title;Filter chunks
-dialog.filter_chunks.filter.add.tooltip;Add a new condition below this one.
-dialog.filter_chunks.filter.delete.tooltip;Delete this condition.
-dialog.filter_chunks.filter.type.tooltip;The type of this condition.
-dialog.filter_chunks.filter.operator.tooltip;The operator to link multiple conditions.
-dialog.filter_chunks.filter.comparator.tooltip;The comparator.
-dialog.filter_chunks.select;Select
-dialog.filter_chunks.select.tooltip;Creates a selection of the affected chunks.
-dialog.filter_chunks.export;Export
-dialog.filter_chunks.export.tooltip;Exports all affected chunks into a new directory.
-dialog.filter_chunks.delete;Delete
-dialog.filter_chunks.delete.tooltip;Deletes all affected chunks from the current world.
-dialog.filter_chunks.selection_only;Apply to selection only
-dialog.filter_chunks.selection_only.tooltip;If this filter should only apply to the current selection.
-dialog.change_nbt.title;Change NBT
-dialog.change_nbt.change;Change
-dialog.change_nbt.change.tooltip;Changer la valeur si seulement elle existe.
-dialog.change_nbt.force;Force
-dialog.change_nbt.force.tooltip;Crée le tag s'il n'existe pas.
+dialog.import_chunks_confirmation.options.offset;Décalage
+dialog.import_chunks_confirmation.options.overwrite;Écraser les chunks existants
+dialog.export_chunks_confirmation.title;Exporter les chunks
+dialog.export_chunks_confirmation.header_short;Vous êtes sur le point d'exporter un nomnbre de chunks inconnu depuis ce monde.
+dialog.export_chunks_confirmation.header_verbose;Vous êtes sur le point d'exporter %d chunks depuis ce monde.
+dialog.filter_chunks.title;Filtrer les chunks
+dialog.filter_chunks.filter.add.tooltip;Ajouter une nouvelle condition sous celle-ci.
+dialog.filter_chunks.filter.delete.tooltip;Supprimer cette condition.
+dialog.filter_chunks.filter.type.tooltip;Le type de cette condition.
+dialog.filter_chunks.filter.operator.tooltip;L'opérateur pour relier de multiple conditions.
+dialog.filter_chunks.filter.comparator.tooltip;Le comparateur.
+dialog.filter_chunks.select;Sélectionner
+dialog.filter_chunks.select.tooltip;Créé une sélection depuis les chunks sélectionnés.
+dialog.filter_chunks.export;Exporter
+dialog.filter_chunks.export.tooltip;Exporte tous les chunks concernés dans un nouveau répertoire.
+dialog.filter_chunks.delete;Supprimer
+dialog.filter_chunks.delete.tooltip;Supprime tous les chunks concernés de ce monde.
+dialog.filter_chunks.selection_only;Appliquer seulement à la sélection
+dialog.filter_chunks.selection_only.tooltip;Si ce filtre devrait seulement s'appliquer à la sélection actuelle.
+dialog.change_nbt.title;Changer les NBT
+dialog.change_nbt.change;Changer
+dialog.change_nbt.change.tooltip;Changer la valeur seulement si elle existe.
+dialog.change_nbt.force;Forcer
+dialog.change_nbt.force.tooltip;Créé le tag s'il n'existe pas.
 dialog.change_nbt.selection_only;Appliquer à la sélection seulement
 dialog.change_nbt.selection_only.tooltip;Si ce filtre ne devrait s'appliquer qu'à la sélection en cours.
-dialog.change_nbt_confirmation.title;Change NBT
+dialog.change_nbt_confirmation.title;Changer les NBT
 dialog.change_nbt_confirmation.header_short;Vous êtes sur le point de modifier les données d'un nombre inconnu de chunks dans ce monde.
 dialog.change_nbt_confirmation.header_verbose;Vous êtes sur le point de modifier les données en %d chunks dans ce monde.
-dialog.about.title;A propos
-dialog.about.header;A propos de MCA Selector
+dialog.about.title;À propos
+dialog.about.header;À propos de MCA Selector
 dialog.about.version;Version:
-dialog.about.version.unknown;unknown
-dialog.about.version.check;verifier
-dialog.about.version.checking;Verification...
-dialog.about.version.up_to_date;A jour
+dialog.about.version.unknown;inconnu
+dialog.about.version.check;vérifier
+dialog.about.version.checking;Vérification...
+dialog.about.version.up_to_date;À jour
 dialog.about.version.error;Erreur
 dialog.about.license;License:
 dialog.about.copyright;Copyright:
 dialog.about.source;Source:
-dialog.progress.title;Progress
-dialog.progress.no_files;no files
-dialog.progress.running;running...
-dialog.progress.cancelling;cancelling...
-dialog.progress.collecting_data;collecting data...
-dialog.progress.done;done.
-dialog.progress.title.deleting_selection;Deleting selection...
-dialog.progress.title.exporting_selection;Exporting selection...
-dialog.progress.title.importing_chunks;Importing chunks...
-dialog.progress.title.deleting_filtered_chunks;Deleting filtered chunks...
-dialog.progress.title.exporting_filtered_chunks;Exporting filtered chunks...
-dialog.progress.title.selecting_filtered_chunks;Selecting filtered chunks...
-dialog.progress.title.changing_nbt_data;Changing NBT data...
-button.cancel;Annulé
+dialog.progress.title;Progrès
+dialog.progress.no_files;aucun fichier
+dialog.progress.running;en cours...
+dialog.progress.cancelling;annulation...
+dialog.progress.collecting_data;collecte de données...
+dialog.progress.done;terminé.
+dialog.progress.title.deleting_selection;Suppression de la sélection...
+dialog.progress.title.exporting_selection;Export de la sélection...
+dialog.progress.title.importing_chunks;Import des chunks...
+dialog.progress.title.deleting_filtered_chunks;Suppression des chunks filtrés...
+dialog.progress.title.exporting_filtered_chunks;Export des chunks filtrés...
+dialog.progress.title.selecting_filtered_chunks;Sélection des chunks filtrés...
+dialog.progress.title.changing_nbt_data;Modification des données NBT...
+button.cancel;Annuler
 button.ok;OK
