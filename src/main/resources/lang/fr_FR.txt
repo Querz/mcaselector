@@ -32,6 +32,7 @@ menu.selection.clear_cache;Nettoyer le cache
 menu.tools.import_chunks;Importer le chunks
 menu.tools.filter_chunks;Filtrer le chunks
 menu.tools.change_fields;Changer les champs
+menu.tools.edit_nbt;Modifier le chunk
 dialog.settings.title;Options
 dialog.settings.language;Langage
 dialog.settings.read_threads;Threads de lecture
@@ -52,6 +53,8 @@ dialog.import_chunks_confirmation.header;Vous êtes sur le point d'importer un n
 dialog.import_chunks_confirmation.options;Options
 dialog.import_chunks_confirmation.options.offset;Décalage
 dialog.import_chunks_confirmation.options.overwrite;Écraser les chunks existants
+dialog.import_chunks_confirmation.options.selection_only;Appliquer seulement à la sélection
+dialog.import_chunks_confirmation.warning;Attention: Importer des chunks avec un décalage ne mettra pas à jour le contenu des blocs de commande.
 dialog.export_chunks_confirmation.title;Exporter les chunks
 dialog.export_chunks_confirmation.header_short;Vous êtes sur le point d'exporter un nomnbre de chunks inconnu depuis ce monde.
 dialog.export_chunks_confirmation.header_verbose;Vous êtes sur le point d'exporter %d chunks depuis ce monde.
@@ -79,6 +82,12 @@ dialog.change_nbt.selection_only.tooltip;Si ce filtre ne devrait s'appliquer qu'
 dialog.change_nbt_confirmation.title;Changer les NBT
 dialog.change_nbt_confirmation.header_short;Vous êtes sur le point de modifier les données d'un nombre inconnu de chunks dans ce monde.
 dialog.change_nbt_confirmation.header_verbose;Vous êtes sur le point de modifier les données en %d chunks dans ce monde.
+dialog.edit_nbt.title;Modifier le chunk
+dialog.edit_nbt.placeholder.loading;chargement...
+dialog.edit_nbt.placeholder.no_chunk_data;aucune donnée de chunk trouvée
+dialog.edit_nbt.placeholder.no_region_file;le fichier de la région n'existe pas
+dialog.edit_array.index;Index
+dialog.edit_array.value;Valeur
 dialog.about.title;À propos
 dialog.about.header;À propos de MCA Selector
 dialog.about.version;Version:
