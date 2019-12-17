@@ -56,6 +56,7 @@ public class ChunkImporter {
 					ex.printStackTrace();
 				}
 			}
+
 			progressChannel.setMax(targetMapping.size());
 
 			progressChannel.updateProgress(importFiles[0].getName(), 0);
@@ -127,7 +128,6 @@ public class ChunkImporter {
 
 				if (sourceData == null) {
 					Debug.errorf("error loading source mca file %s", source.getName());
-					progressChannel.incrementProgress(getFile().getName());
 					continue;
 				}
 
@@ -136,7 +136,7 @@ public class ChunkImporter {
 
 			if (sourceDataMapping.isEmpty()) {
 				Debug.errorf("could not load any source mca files to merge into %s with offset %s", getFile().getName(), offset);
-				// don't increment progress here, if there were errors loading it has already been incremented
+				progressChannel.incrementProgress(getFile().getName());
 				return;
 			}
 
@@ -204,7 +204,9 @@ public class ChunkImporter {
 					source.mergeChunksInto(destination, offset, overwrite, selection == null ? null : selection.size() == 0 ? null : selection);
 				}
 
-				MCAFilePipe.executeSaveData(new MCAChunkImporterSaveJob(getFile(), destination, sourceDataMapping.size(), progressChannel));
+
+
+				MCAFilePipe.executeSaveData(new MCAChunkImporterSaveJob(getFile(), destination, progressChannel));
 
 			} catch (Exception ex) {
 				Debug.errorf("error merging chunks into %s with offset %s: %s", getFile(), offset, ex.getMessage());
@@ -217,12 +219,10 @@ public class ChunkImporter {
 
 	private static class MCAChunkImporterSaveJob extends SaveDataJob<MCAFile> {
 
-		private int sourceCount;
 		private Progress progressChannel;
 
-		private MCAChunkImporterSaveJob(File file, MCAFile data, int sourceCount, Progress progressChannel) {
+		private MCAChunkImporterSaveJob(File file, MCAFile data, Progress progressChannel) {
 			super(file, data);
-			this.sourceCount = sourceCount;
 			this.progressChannel = progressChannel;
 		}
 
@@ -231,14 +231,19 @@ public class ChunkImporter {
 			Timer t = new Timer();
 			try {
 				File tmpFile = File.createTempFile(getFile().getName(), null, null);
+				boolean wroteChunks;
 				try (RandomAccessFile raf = new RandomAccessFile(tmpFile, "rw")) {
-					getData().saveAll(raf);
+					 wroteChunks = getData().saveAll(raf);
 				}
-				Files.move(tmpFile.toPath(), getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+				if (wroteChunks) {
+					Files.move(tmpFile.toPath(), getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+				} else {
+					Files.deleteIfExists(tmpFile.toPath());
+				}
 			} catch (Exception ex) {
 				Debug.error(ex);
 			}
-			progressChannel.incrementProgress(getFile().getName(), sourceCount);
+			progressChannel.incrementProgress(getFile().getName());
 			Debug.dumpf("took %s to save data to %s", t, getFile().getName());
 		}
 	}
