@@ -263,6 +263,7 @@ The following languages are available:
 * Spanish (Spain) (thanks to [@NathanielFreeman](https://github.com/NathanielFreeman) for translating)
 * Portuguese (Brazil) (thanks to [@cr1st0ph3r](https://github.com/cr1st0ph3r) for translating)
 * French (France) (thanks to [@SkytAsul](https://github.com/SkytAsul) and [@DoctaEnkoda](https://github.com/DoctaEnkoda) for translating)
+* Swedish (Sweden) (thanks to [@TechnicProblem](https://github.com/TechnicProblem) for translating)
 
 If you would like to contribute a translation, you can find the language files in [resources/lang/](https://github.com/Querz/mcaselector/tree/master/src/main/resources/lang). The files are automatically detected and shown as the respective language option in the settings dropdown menu once they are placed in this folder.
 
