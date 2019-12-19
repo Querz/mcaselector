@@ -1,0 +1,115 @@
+status.region;region
+status.region.tooltip;Den nurvarande markerade regionen representerar numrerna i dess filnamn.
+status.chunk;chunk
+status.chunk.tooltip;Den nurvarande markerade chunken.
+status.block;block
+status.block.tooltip;En uppskattning av antalet markerade block.
+status.selected;valda
+status.selected.tooltip;Den nurvarande valda mängden chunks.
+status.visible;synligt
+status.visible.tooltip;Mängden laddade regionsbilder för rendering.
+status.total;totalt
+status.total.tooltip;Den totala mängden laddade regioner, inkluderat ej visade valda regioner.
+menu.file;Fil
+menu.view;Visa
+menu.selection;Markering
+menu.tools;Verktyg
+menu.about;Om
+menu.file.open;Öppna
+menu.file.settings;Inställningar
+menu.file.quit;Avsluta
+menu.view.chunk_grid;Chunkrutnät
+menu.view.region_grid;Regionrutnät
+menu.view.goto;Gå till
+menu.view.clear_cache;Rensa cache
+menu.view.clear_all_cache;Rensa all cache
+menu.selection.clear;Rensa
+menu.selection.export_chunks;Exportera valda chunks
+menu.selection.delete_chunks;Radera valda chunks
+menu.selection.import_selection;Importera markering
+menu.selection.export_selection;Exportera markering
+menu.selection.clear_cache;Rensa cache
+menu.tools.import_chunks;Importera chunks
+menu.tools.filter_chunks;Filtrera chunks
+menu.tools.change_fields;Ändra fält
+menu.tools.edit_nbt;Ändra chunk
+dialog.settings.title;Inställningar
+dialog.settings.language;Språk
+dialog.settings.read_threads;Läs Trådar
+dialog.settings.process_threads;Processera Trådar
+dialog.settings.write_threads;Skriv Trådar
+dialog.settings.max_files;Maximalt laddade filer
+dialog.settings.region_color;Regionmarkeringsfärg
+dialog.settings.chunk_color;Chunkmarkeringsfärg
+dialog.settings.print_debug;Skriv ut avsökningsmeddelanden
+dialog.settings.reset;Återställ
+dialog.goto.title;Gå till plats
+dialog.confirmation.question;Är du säker?
+dialog.delete_chunks_confirmation.title;Radera chunks
+dialog.delete_chunks_confirmation.header_short;Du håller på att radera ett okänt antal chunks från denna värld.
+dialog.delete_chunks_confirmation.header_verbose;Du håller på att radera %d chunks från denna värld.
+dialog.import_chunks_confirmation.title;Importera chunks
+dialog.import_chunks_confirmation.header;Du håller på att importera ett okänt antal chunks till denna värld.
+dialog.import_chunks_confirmation.options;Inställningar
+dialog.import_chunks_confirmation.options.offset;Offset
+dialog.import_chunks_confirmation.options.overwrite;Skriv över existerande chunks
+dialog.import_chunks_confirmation.options.selection_only;Tillämpa endast till markering
+dialog.import_chunks_confirmation.warning;Warning: Att importera chunks med en offset kommer inte att uppdatera kommandoblocks innehåll.
+dialog.export_chunks_confirmation.header_short;Du håller på att exportera ett okänt antal chunks från denna värld.
+dialog.export_chunks_confirmation.header_verbose;Du håller på att exportera %d chunks från denna värld.
+dialog.filter_chunks.title;Filtrera chunks
+dialog.filter_chunks.filter.add.tooltip;Lägg till ett nytt villkor nedanför detta.
+dialog.filter_chunks.filter.delete.tooltip;Radera detta villkor.
+dialog.filter_chunks.filter.type.tooltip;Denna typ av villkor.
+dialog.filter_chunks.filter.operator.tooltip;Formeln för att länka flera villkor.
+dialog.filter_chunks.filter.comparator.tooltip;Jämföraren.
+dialog.filter_chunks.select;Välj
+dialog.filter_chunks.select.tooltip;Skapar en markering av de påverkade chunksen.
+dialog.filter_chunks.export;Exportera
+dialog.filter_chunks.export.tooltip;Exporterar alla påverkade chunks till en ny mapp.
+dialog.filter_chunks.delete;Radera
+dialog.filter_chunks.delete.tooltip;Raderar alla påverkade chunks från världen.
+dialog.filter_chunks.selection_only;Tillämpa endast till markering
+dialog.filter_chunks.selection_only.tooltip;Om detta filter enbart ska appliceras till den nurvarande markeringen.
+dialog.change_nbt.title;Ändra NBT
+dialog.change_nbt.change;Ändra
+dialog.change_nbt.change.tooltip;Ändrar endast värdet om dess nyckel finns.
+dialog.change_nbt.force;Tvinga
+dialog.change_nbt.force.tooltip;Skapar fältet om det inte existerar.
+dialog.change_nbt.selection_only;Tillämpa endast till markering
+dialog.change_nbt.selection_only.tooltip;Om detta filter enbart ska appliceras till den nurvarande markeringen.
+dialog.change_nbt_confirmation.title;Ändra NBT
+dialog.change_nbt_confirmation.header_short;Du håller på att förändra data i ett okänt antal chunks i denna värld.
+dialog.change_nbt_confirmation.header_verbose;Du håller på att förändra data i %d chunks i denna värld.
+dialog.edit_nbt.title;Ändra chunk
+dialog.edit_nbt.placeholder.loading;laddar...
+dialog.edit_nbt.placeholder.no_chunk_data;ingen chunkdata hittades
+dialog.edit_nbt.placeholder.no_region_file;regionfilen existerar inte
+dialog.edit_array.index;Index
+dialog.edit_array.value;Värde
+dialog.about.title;Om
+dialog.about.header;Om MCA Selector
+dialog.about.version;Version:
+dialog.about.version.unknown;okänt
+dialog.about.version.check;kolla
+dialog.about.version.checking;kollar...
+dialog.about.version.up_to_date;Uppdaterad
+dialog.about.version.error;Fel
+dialog.about.license;Licens:
+dialog.about.copyright;Upphovsrätt:
+dialog.about.source;Källa:
+dialog.progress.title;Utveckling
+dialog.progress.no_files;inga filer
+dialog.progress.running;kör...
+dialog.progress.cancelling;avbryter...
+dialog.progress.collecting_data;samlar in data...
+dialog.progress.done;klar.
+dialog.progress.title.deleting_selection;Raderar markering...
+dialog.progress.title.exporting_selection;Exporterar markering...
+dialog.progress.title.importing_chunks;Importerar chunks...
+dialog.progress.title.deleting_filtered_chunks;Raderar filtrerade chunks...
+dialog.progress.title.exporting_filtered_chunks;Exporterar filtrerade chunks...
+dialog.progress.title.selecting_filtered_chunks;Markerar filtrerade chunks...
+dialog.progress.title.changing_nbt_data;Ändrar NBTdata...
+button.cancel;Avbryt
+button.ok;OK
