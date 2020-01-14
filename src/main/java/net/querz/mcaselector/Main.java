@@ -22,9 +22,12 @@ public class Main {
 		}
 
 		Config.loadFromIni();
+		Runtime.getRuntime().addShutdownHook(new Thread(Config::exportConfig));
+		if (Config.debug()) {
+			Debug.initLogWriter();
+		}
 		Translation.load(Config.getLocale());
 		Locale.setDefault(Config.getLocale());
-		Runtime.getRuntime().addShutdownHook(new Thread(Config::exportConfig));
 		Window.launch(Window.class, args);
 	}
 }

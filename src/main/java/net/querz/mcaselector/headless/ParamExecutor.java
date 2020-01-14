@@ -17,7 +17,12 @@ import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.text.TextHelper;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +66,7 @@ public class ParamExecutor {
 			pi.registerSoftDependencies("input", null, new ActionKey("mode", "export"), new ActionKey("mode", "import"), new ActionKey("mode", "delete"), new ActionKey("mode", "change"));
 			pi.registerSoftDependencies("query", null, new ActionKey("mode", "select"), new ActionKey("mode", "export"), new ActionKey("mode", "delete"), new ActionKey("mode", "change"));
 			pi.registerDependencies("force", null, new ActionKey("mode", "change"));
+			pi.registerDependencies("id-map", null, new ActionKey("mode", "change"));
 			pi.registerDependencies("offset-x", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("offset-z", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("overwrite", null, new ActionKey("mode", "import"));
@@ -108,6 +114,10 @@ public class ParamExecutor {
 	}
 
 	private void parseConfig(Map<String, String> params) throws IOException {
+		if (params.containsKey("debug")) {
+			Config.setDebug(true);
+			Debug.initLogWriter();
+		}
 		Config.setDebug(params.containsKey("debug"));
 		Config.setLoadThreads(parsePositiveInt(params.getOrDefault("read-threads", "" + Config.DEFAULT_LOAD_THREADS)));
 		Config.setProcessThreads(parsePositiveInt(params.getOrDefault("process-threads", "" + Config.DEFAULT_PROCESS_THREADS)));
@@ -314,11 +324,75 @@ public class ParamExecutor {
 		if (params.containsKey(key)) {
 			Debug.print("loading selection...");
 
-			File input = parseFile(params.get("input"), "csv");
+			File input = parseFile(params.get(key), "csv");
 			fileMustExist(input);
 			return SelectionUtil.importSelection(input);
 		}
 		return null;
+	}
+
+	private static Map<BlockData, BlockData> loadIDMap(Map<String, String> params, String key) throws ParseException {
+		if (params.containsKey(key)) {
+			Debug.print("loading id map...");
+
+			File idMap = parseFile(params.get(key), "csv");
+			fileMustExist(idMap);
+		}
+		//TODO
+		return null;
+	}
+
+	private static Map<BlockData, BlockData> importIDMap(File file) throws IOException {
+		Map<BlockData, BlockData> idMap = new HashMap<>();
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+			String line;
+			while ((line = br.readLine()) != null) {
+				String[] elements = line.split(";");
+				if (elements.length != 2) {
+					throw new IOException("invalid id mapping: " + line);
+				}
+			}
+		}
+		//TODO
+		return null;
+	}
+
+	private static class BlockData {
+		private int id;
+		private Byte data;
+
+		public BlockData(int id, Byte data) {
+			this.id = id;
+			this.data = data;
+		}
+
+		public static BlockData fromString(String raw) throws ParseException {
+			String[] parts = raw.split(":");
+			if (parts.length > 2 || parts.length == 0) {
+				throw new ParseException("invalid id format " + raw);
+			}
+			if (parts.length == 1) {
+				Integer id = TextHelper.parseInt(parts[0], 10);
+				if (id == null || id > Short.MAX_VALUE || id < 0) {
+					throw new ParseException("id not in range of 0-" + Short.MAX_VALUE);
+				}
+				return new BlockData(id, null);
+			} else {
+				Integer id = TextHelper.parseInt(parts[0], 10);
+				Integer data = TextHelper.parseInt(parts[1], 10);
+				if (id == null || id > Short.MAX_VALUE || id < 0) {
+					throw new ParseException("id not in range of 0-" + Short.MAX_VALUE);
+				}
+				if (data == null || data > 15 || data < 0) {
+					throw new ParseException("data not in range of 0-15");
+				}
+				return new BlockData(id, data.byteValue());
+			}
+		}
+
+		public boolean equals(int id, byte data) {
+			return this.id == id && (this.data == null || this.data == data);
+		}
 	}
 
 	private static File parseFile(String value, String ending) throws ParseException {
