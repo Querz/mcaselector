@@ -51,6 +51,8 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 		table.setPlaceholder(new Label());
 		table.getStyleClass().add("array-editor-table-view");
 		table.setEditable(true);
+		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
 
 		TableColumn<Row, Integer> indexColumn = new TableColumn<>();
 		indexColumn.textProperty().bind(Translation.DIALOG_EDIT_ARRAY_INDEX.getProperty());
@@ -64,7 +66,7 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 		valueColumn.setResizable(false);
 		valueColumn.setEditable(true);
 		indexColumn.setPrefWidth(50);
-		valueColumn.setPrefWidth(200);
+//		valueColumn.setPrefWidth(200);
 
 		table.getColumns().addAll(indexColumn, valueColumn);
 		indexColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().index));
@@ -181,7 +183,7 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 				cell.setConverter(converter);
 				return cell;
 			});
-			column.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>((Byte) c.getValue().value));
+			column.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().value.byteValue()));
 			return column;
 
 		} else if (array instanceof int[]) {
@@ -212,7 +214,7 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 				cell.setConverter(converter);
 				return cell;
 			});
-			column.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>((Integer) c.getValue().value));
+			column.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().value.intValue()));
 			return column;
 		} else if (array instanceof long[]) {
 			LongStringConverter converter = new LongStringConverter() {
@@ -242,7 +244,7 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 				cell.setConverter(converter);
 				return cell;
 			});
-			column.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>((Long) c.getValue().value));
+			column.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().value.longValue()));
 			return column;
 		}
 		return null;
