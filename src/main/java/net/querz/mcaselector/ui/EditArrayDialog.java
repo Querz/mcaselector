@@ -66,7 +66,6 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 		valueColumn.setResizable(false);
 		valueColumn.setEditable(true);
 		indexColumn.setPrefWidth(50);
-//		valueColumn.setPrefWidth(200);
 
 		table.getColumns().addAll(indexColumn, valueColumn);
 		indexColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().index));

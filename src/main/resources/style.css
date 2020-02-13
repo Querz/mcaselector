@@ -260,7 +260,7 @@
 	-fx-background-color: -color-scroll-bar-thumb;
 }
 
-.scroll-bar .increment-button, .scroll-bar .decrement-button, .scroll-bar .increment-arrow, .scroll-bar .decrement-arrow {
+.scroll-bar:horizontal .increment-button, .scroll-bar:horizontal .decrement-button, .scroll-bar:horizontal .increment-arrow, .scroll-bar:horizontal .decrement-arrow {
 	visibility: hidden;
 	-fx-max-height: 0;
 	-fx-pref-height: 0;
@@ -738,6 +738,7 @@
 
 .array-editor-table-view .table-cell {
  	-fx-text-fill: -color-text-light;
+	-fx-width: 100%;
 }
 
 .array-editor-table-view .table-row-cell:even {
