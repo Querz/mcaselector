@@ -101,6 +101,7 @@ public final class Debug {
 
 	private static class LogWriter {
 		BufferedWriter br;
+		Thread shutdownHook;
 
 		LogWriter() {
 			try {
@@ -109,19 +110,44 @@ public final class Debug {
 				ex.printStackTrace();
 				System.exit(0);
 			}
-			Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+			Runtime.getRuntime().addShutdownHook(shutdownHook = new Thread(this::close));
+			new Thread(this::repeatedFlush).start();
 		}
 
 		public synchronized void close() {
-			System.out.println("closing log file");
-			if (br != null) {
-				if (lastException != null) {
-					lastException.flush();
+			try {
+				System.out.println("closing log file");
+				if (br != null) {
+					if (lastException != null) {
+						lastException.flush();
+					}
+					try {
+						br.flush();
+						br.close();
+					} catch (IOException ex) {
+						ex.printStackTrace();
+					}
 				}
 				try {
+					Runtime.getRuntime().removeShutdownHook(shutdownHook);
+				} catch (IllegalStateException ex) {
+					// do nothing, we are already shutting down
+				} catch (Exception ex) {
+					System.out.println("failed to remove shutdown hook for log writer");
+					ex.printStackTrace();
+				}
+			} finally {
+				br = null;
+			}
+		}
+
+		private void repeatedFlush() {
+			while (br != null) {
+				try {
+					Thread.sleep(10000);
 					br.flush();
-					br.close();
-				} catch (IOException ex) {
+				} catch (InterruptedException | IOException ex) {
+					System.out.println("failed to flush debug log file");
 					ex.printStackTrace();
 				}
 			}
@@ -144,6 +170,14 @@ public final class Debug {
 		Debug.dumpf("java.version:                 %s", System.getProperty("java.version"));
 		Debug.dumpf("java.vm.specification.vendor: %s", System.getProperty("java.vm.specification.vendor"));
 		Debug.dumpf("jvm max mem:                  %d", Runtime.getRuntime().maxMemory());
+	}
+
+	public static void flushAndCloseLogWriter() {
+		if (logWriter == null) {
+			return;
+		}
+		logWriter.close();
+		logWriter = null;
 	}
 
 	private static void appendLogFile(String s) {
@@ -204,7 +238,8 @@ public final class Debug {
 					flush();
 					lastException = null;
 				} catch (InterruptedException e) {
-					// do nothing
+					System.out.println("failed to flush exception");
+					e.printStackTrace();
 				}
 			}).start();
 		}
