@@ -105,9 +105,9 @@ public class OptionBar extends MenuBar {
 		changeFields.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCodeCombination.SHORTCUT_DOWN));
 		editNBT.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCodeCombination.SHORTCUT_DOWN));
 
-		setSelectionDependentMenuItemsEnabled(false);
-		setWorldDependentMenuItemsEnabled(false);
-		setSingleSelectionDependentMenuItemsEnabled(false);
+//		setSelectionDependentMenuItemsEnabled(false);
+//		setWorldDependentMenuItemsEnabled(false);
+//		setSingleSelectionDependentMenuItemsEnabled(false);
 	}
 
 	private void onUpdate(TileMap tileMap) {

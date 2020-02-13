@@ -472,6 +472,14 @@
 	-fx-background-color: -color-dialog-background;
 }
 
+.filter-dialog-option-box {
+	-fx-spacing: 20;
+}
+
+.filter-dialog-selection-radius-box {
+	-fx-spacing: 10;
+}
+
 /*---------- NBT Changer ----------*/
 
 .change-nbt-dialog-pane .text-field {

@@ -71,6 +71,7 @@ dialog.filter_chunks.export.tooltip;Exportuje všechny ovlivněné chunky do nov
 dialog.filter_chunks.delete;Smazat
 dialog.filter_chunks.delete.tooltip;Smaže všechny ovlivněné chunky z aktuálního světa.
 dialog.filter_chunks.selection_only;Aplikovat pouze na výběr
+dialog.filter_chunks.selection_radius;Poloměr výběru
 dialog.filter_chunks.selection_only.tooltip;Zda má být filtr aplikován pouze na aktuální výběr.
 dialog.change_nbt.title;Změnit NBT
 dialog.change_nbt.change;změnit

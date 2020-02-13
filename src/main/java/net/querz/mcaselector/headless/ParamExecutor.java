@@ -65,6 +65,7 @@ public class ParamExecutor {
 			pi.registerSoftDependencies("output", null, new ActionKey("mode", "select"), new ActionKey("mode", "export"), new ActionKey("mode", "cache"));
 			pi.registerSoftDependencies("input", null, new ActionKey("mode", "export"), new ActionKey("mode", "import"), new ActionKey("mode", "delete"), new ActionKey("mode", "change"));
 			pi.registerSoftDependencies("query", null, new ActionKey("mode", "select"), new ActionKey("mode", "export"), new ActionKey("mode", "delete"), new ActionKey("mode", "change"));
+			pi.registerSoftDependencies("radius", null, new ActionKey("mode", "select"));
 			pi.registerDependencies("force", null, new ActionKey("mode", "change"));
 			pi.registerDependencies("id-map", null, new ActionKey("mode", "change"));
 			pi.registerDependencies("offset-x", null, new ActionKey("mode", "import"));
@@ -275,6 +276,13 @@ public class ParamExecutor {
 		GroupFilter g = new FilterParser(params.get("query")).parse();
 
 		Debug.print("filter set: " + g);
+
+		int radius = 0;
+		if (params.containsKey("radius")) {
+			radius = parseInt(params.get("radius"));
+			Debug.print("radius set: " + radius);
+		}
+
 		Debug.print("selecting chunks...");
 
 		Map<Point2i, Set<Point2i>> selection = new HashMap<>();
@@ -285,7 +293,7 @@ public class ParamExecutor {
 			future.run();
 		});
 
-		ChunkFilterSelector.selectFilter(g, selection::putAll, progress, true);
+		ChunkFilterSelector.selectFilter(g, radius, selection::putAll, progress, true);
 	}
 
 	private static void printHeadlessSettings() {

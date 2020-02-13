@@ -71,6 +71,7 @@ dialog.filter_chunks.export.tooltip;Exporte tous les chunks concernés dans un n
 dialog.filter_chunks.delete;Supprimer
 dialog.filter_chunks.delete.tooltip;Supprime tous les chunks concernés de ce monde.
 dialog.filter_chunks.selection_only;Appliquer seulement à la sélection
+dialog.filter_chunks.selection_radius;Rayon de sélection
 dialog.filter_chunks.selection_only.tooltip;Si ce filtre devrait seulement s'appliquer à la sélection actuelle.
 dialog.change_nbt.title;Changer les NBT
 dialog.change_nbt.change;Changer

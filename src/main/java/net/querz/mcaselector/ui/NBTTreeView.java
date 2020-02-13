@@ -398,12 +398,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		}
 	}
 
-	/**
-	 * TODO: get cell from treeitem and set css when dragging over child item of a comp tag to the comp tag
-	 *
-	 * i want the comp tag to be marked instead of its child tags
-	 * */
-
 	public KeyValueTreeCell getTreeCell(TreeItem<NamedTag> treeItem) {
 		return recursiveFindCellByItem(treeItem, this);
 	}
