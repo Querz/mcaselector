@@ -158,6 +158,7 @@ Headless mode can be run in different modes:
 | `--world <directory>` | The world for which to create the selection. | Yes |
 | `--output <csv-file>` | The CSV-file to save the selection to. | Yes |
 | `--query <filter-query>` | The filter query to use to create a selection. | Yes |
+| `--radius <positive number>` | The radius for adjacent chunks to be selected | No, default `0` |
 
 #### Export chunks
 

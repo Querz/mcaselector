@@ -15,3 +15,4 @@ test113/
 *.patch
 import_test/
 *.log
+deploy/
