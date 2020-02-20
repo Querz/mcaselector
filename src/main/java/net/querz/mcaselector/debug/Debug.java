@@ -99,6 +99,12 @@ public final class Debug {
 		System.out.printf(format + "\n", objects);
 	}
 
+	public static void dumpfToConsoleOnly(String format, Object... objects) {
+		if (Config.debug()) {
+			System.out.printf(format + "\n", objects);
+		}
+	}
+
 	private static class LogWriter {
 		BufferedWriter br;
 		Thread shutdownHook;

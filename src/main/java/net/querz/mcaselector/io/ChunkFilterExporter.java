@@ -72,7 +72,7 @@ public class ChunkFilterExporter {
 				//copy file to new directory
 				File to = new File(destination, getFile().getName());
 				if (to.exists()) {
-					Debug.dump(to.getAbsolutePath() + " exists, not overwriting");
+					Debug.dumpf("%s exists, not overwriting", to.getAbsolutePath());
 					progressChannel.incrementProgress(getFile().getName());
 					return;
 				}

@@ -238,7 +238,7 @@ public class TileMap extends Canvas {
 		}
 		draw(context);
 		totalUpdates++;
-		Debug.dumpf("update took: %s #%d", t, totalUpdates);
+		Debug.dumpfToConsoleOnly("map update #%d: %s ", totalUpdates, t);
 	}
 
 	public void disable(boolean disabled) {
