@@ -71,6 +71,11 @@ public final class Config {
 	}
 
 	public static void setDebug(boolean debug) {
+		if (debug && !Config.debug) {
+			Debug.initLogWriter();
+		} else if (!debug && Config.debug) {
+			Debug.flushAndCloseLogWriter();
+		}
 		Config.debug = debug;
 	}
 

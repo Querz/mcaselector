@@ -71,6 +71,7 @@ dialog.filter_chunks.export.tooltip;将所有受影响的区块导出到新目�
 dialog.filter_chunks.delete;删除
 dialog.filter_chunks.delete.tooltip;从当前世界中删除所有受影响的区块.
 dialog.filter_chunks.selection_only;仅应用于所选内容
+dialog.filter_chunks.selection_radius;选择半径
 dialog.filter_chunks.selection_only.tooltip;此筛选器是否只应用于当前所选内容.
 dialog.change_nbt.title;更改NBT
 dialog.change_nbt.change;更改

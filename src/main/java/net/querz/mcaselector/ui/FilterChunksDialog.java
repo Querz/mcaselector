@@ -1,13 +1,19 @@
 package net.querz.mcaselector.ui;
 
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -35,7 +41,12 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 	private RadioButton select = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_SELECT);
 	private RadioButton export = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_EXPORT);
 	private RadioButton delete = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_DELETE);
-	private CheckBox selectionOnly = UIFactory.checkbox(Translation.DIALOG_FILTER_CHUNKS_SELECTION_ONLY);
+	private Label selectionOnlyLabel = UIFactory.label(Translation.DIALOG_FILTER_CHUNKS_SELECTION_ONLY);
+	private Label selectionRadiusLabel = UIFactory.label(Translation.DIALOG_FILTER_CHUNKS_SELECTION_RADIUS);
+	private CheckBox selectionOnly = new CheckBox();
+	private TextField selectionRadius = new TextField();
+
+	private int radius;
 
 	public FilterChunksDialog(Stage primaryStage) {
 		titleProperty().bind(Translation.DIALOG_FILTER_CHUNKS_TITLE.getProperty());
@@ -44,7 +55,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 		getDialogPane().getStyleClass().add("filter-dialog-pane");
 
-		setResultConverter(p -> p == ButtonType.OK ? new Result(value, getHandleType(), selectionOnly.isSelected()) : null);
+		setResultConverter(p -> p == ButtonType.OK ? new Result(value, getHandleType(), selectionOnly.isSelected(), radius) : null);
 
 		//apply same stylesheets to this dialog
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
@@ -56,7 +67,12 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		delete.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_DELETE_TOOLTIP));
 
 		toggleGroup.getToggles().addAll(select, export, delete);
-		toggleGroup.selectedToggleProperty().addListener(l -> selectionOnly.setDisable(select.isSelected()));
+		toggleGroup.selectedToggleProperty().addListener(l -> {
+			selectionOnly.setDisable(select.isSelected());
+			selectionOnlyLabel.setDisable(select.isSelected());
+			selectionRadius.setDisable(!select.isSelected());
+			selectionRadiusLabel.setDisable(!select.isSelected());
+		});
 		select.fire();
 
 		setResizable(true);
@@ -72,12 +88,17 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 			}
 		});
 
+		selectionRadius.textProperty().addListener((a, o, n) -> onSelectionRadiusInput(o, n));
+
 		VBox actionBox = new VBox();
 		actionBox.getChildren().addAll(select, export, delete);
 
-		VBox optionBox =  new VBox();
-		selectionOnly.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_SELECTION_ONLY_TOOLTIP));
-		optionBox.getChildren().add(selectionOnly);
+		GridPane optionBox = new GridPane();
+		optionBox.getStyleClass().add("filter-dialog-option-box");
+		optionBox.add(selectionOnlyLabel, 0, 0, 1, 1);
+		optionBox.add(withStackPane(selectionOnly), 1, 0, 1, 1);
+		optionBox.add(selectionRadiusLabel, 0, 1, 1, 1);
+		optionBox.add(withStackPane(selectionRadius), 1, 1, 1, 1);
 
 		HBox selectionBox = new HBox();
 		selectionBox.getChildren().addAll(actionBox, optionBox);
@@ -85,6 +106,26 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		VBox box = new VBox();
 		box.getChildren().addAll(scrollPane, new Separator(), selectionBox);
 		getDialogPane().setContent(box);
+	}
+
+	private StackPane withStackPane(Node n) {
+		StackPane stack = new StackPane();
+		stack.getStyleClass().add("filter-dialog-stack-pane");
+		stack.getChildren().add(n);
+		StackPane.setAlignment(n, Pos.CENTER);
+		return stack;
+	}
+
+	private void onSelectionRadiusInput(String oldValue, String newValue) {
+		if (newValue.isEmpty()) {
+			radius = 0;
+		} else {
+			if (!newValue.matches("[0-9]+")) {
+				selectionRadius.setText(oldValue);
+				return;
+			}
+			radius = Integer.parseInt(newValue);
+		}
 	}
 
 	private HandleType getHandleType() {
@@ -103,11 +144,13 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		private HandleType type;
 		private boolean selectionOnly;
 		private GroupFilter filter;
+		private int radius;
 
-		public Result(GroupFilter filter, HandleType type, boolean selectionOnly) {
+		public Result(GroupFilter filter, HandleType type, boolean selectionOnly, int radius) {
 			this.filter = filter;
 			this.type = type;
 			this.selectionOnly = selectionOnly;
+			this.radius = radius;
 		}
 
 		public HandleType getType() {
@@ -120,6 +163,10 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 		public boolean isSelectionOnly() {
 			return selectionOnly;
+		}
+
+		public int getRadius() {
+			return radius;
 		}
 	}
 

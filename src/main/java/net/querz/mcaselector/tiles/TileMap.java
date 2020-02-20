@@ -71,6 +71,10 @@ public class TileMap extends Canvas {
 		keyActivator.registerAction(KeyCode.A, c -> offset = offset.sub((c.contains(KeyCode.SHIFT) ? 10 : 5) * scale, 0));
 		keyActivator.registerAction(KeyCode.S, c -> offset = offset.add(0, (c.contains(KeyCode.SHIFT) ? 10 : 5) * scale));
 		keyActivator.registerAction(KeyCode.D, c -> offset = offset.add((c.contains(KeyCode.SHIFT) ? 10 : 5) * scale, 0));
+		keyActivator.registerAction(KeyCode.UP, c -> offset = offset.sub(0, (c.contains(KeyCode.SHIFT) ? 10 : 5) * scale));
+		keyActivator.registerAction(KeyCode.LEFT, c -> offset = offset.sub((c.contains(KeyCode.SHIFT) ? 10 : 5) * scale, 0));
+		keyActivator.registerAction(KeyCode.DOWN, c -> offset = offset.add(0, (c.contains(KeyCode.SHIFT) ? 10 : 5) * scale));
+		keyActivator.registerAction(KeyCode.RIGHT, c -> offset = offset.add((c.contains(KeyCode.SHIFT) ? 10 : 5) * scale, 0));
 		keyActivator.registerGlobalAction(() -> Platform.runLater(this::update));
 		this.setOnKeyPressed(this::onKeyPressed);
 		this.setOnKeyReleased(this::onKeyReleased);
@@ -234,7 +238,7 @@ public class TileMap extends Canvas {
 		}
 		draw(context);
 		totalUpdates++;
-		Debug.dumpf("update took: %s #%d", t, totalUpdates);
+		Debug.dumpfToConsoleOnly("map update #%d: %s ", totalUpdates, t);
 	}
 
 	public void disable(boolean disabled) {

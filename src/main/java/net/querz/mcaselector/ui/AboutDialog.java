@@ -88,9 +88,10 @@ public class AboutDialog extends Alert {
 				VersionChecker.VersionData version = checker.fetchLatestVersion();
 				if (version != null && version.isNewerThan(applicationVersion)) {
 					HBox box = new HBox();
-					Hyperlink download = createHyperlink(version.getTag(), version.getLink(), null);
+					String hyperlinkText = version.getTag() + (version.isPrerelease() ? " (pre)" : "");
+					Hyperlink download = createHyperlink(hyperlinkText, version.getLink(), null);
 					download.getStyleClass().add("hyperlink-update");
-					Label arrow = new Label("-->");
+					Label arrow = new Label("\u2192");
 					arrow.getStyleClass().add("label-hint");
 					box.getChildren().addAll(arrow, download);
 					persistentVersionCheckResult = box;

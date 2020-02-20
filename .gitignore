@@ -14,3 +14,5 @@ test113/
 /manifest.txt
 *.patch
 import_test/
+*.log
+deploy/

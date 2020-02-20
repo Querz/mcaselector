@@ -10,6 +10,7 @@ import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.text.Translation;
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -19,7 +20,7 @@ public class ChunkFilterSelector {
 
 	private ChunkFilterSelector() {}
 
-	public static void selectFilter(GroupFilter filter, Consumer<Map<Point2i, Set<Point2i>>> callback, Progress progressChannel, boolean headless) {
+	public static void selectFilter(GroupFilter filter, int radius, Consumer<Map<Point2i, Set<Point2i>>> callback, Progress progressChannel, boolean headless) {
 		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
 		if (files == null || files.length == 0) {
 			if (headless) {
@@ -36,7 +37,7 @@ public class ChunkFilterSelector {
 		progressChannel.updateProgress(files[0].getName(), 0);
 
 		for (File file : files) {
-			MCAFilePipe.addJob(new MCASelectFilterLoadJob(file, filter, callback, progressChannel));
+			MCAFilePipe.addJob(new MCASelectFilterLoadJob(file, filter, radius, callback, progressChannel));
 		}
 	}
 
@@ -45,10 +46,12 @@ public class ChunkFilterSelector {
 		private GroupFilter filter;
 		private Progress progressChannel;
 		private Consumer<Map<Point2i, Set<Point2i>>> callback;
+		private int radius;
 
-		private MCASelectFilterLoadJob(File file, GroupFilter filter, Consumer<Map<Point2i, Set<Point2i>>> callback, Progress progressChannel) {
+		private MCASelectFilterLoadJob(File file, GroupFilter filter, int radius, Consumer<Map<Point2i, Set<Point2i>>> callback, Progress progressChannel) {
 			super(file);
 			this.filter = filter;
+			this.radius = radius;
 			this.callback = callback;
 			this.progressChannel = progressChannel;
 		}
@@ -68,7 +71,7 @@ public class ChunkFilterSelector {
 
 				byte[] data = load();
 				if (data != null) {
-					MCAFilePipe.executeProcessData(new MCASelectFilterProcessJob(getFile(), data, filter, callback, new Point2i(regionX, regionZ), progressChannel));
+					MCAFilePipe.executeProcessData(new MCASelectFilterProcessJob(getFile(), data, filter, callback, new Point2i(regionX, regionZ), radius, progressChannel));
 				} else {
 					Debug.errorf("error loading mca file %s", getFile().getName());
 					progressChannel.incrementProgress(getFile().getName());
@@ -86,13 +89,15 @@ public class ChunkFilterSelector {
 		private GroupFilter filter;
 		private Consumer<Map<Point2i, Set<Point2i>>> callback;
 		private Point2i location;
+		private int radius;
 
-		private MCASelectFilterProcessJob(File file, byte[] data, GroupFilter filter, Consumer<Map<Point2i, Set<Point2i>>> callback, Point2i location, Progress progressChannel) {
+		private MCASelectFilterProcessJob(File file, byte[] data, GroupFilter filter, Consumer<Map<Point2i, Set<Point2i>>> callback, Point2i location, int radius,  Progress progressChannel) {
 			super(file, data);
 			this.filter = filter;
 			this.callback = callback;
 			this.location = location;
 			this.progressChannel = progressChannel;
+			this.radius = radius;
 		}
 
 		@Override
@@ -109,6 +114,8 @@ public class ChunkFilterSelector {
 					Map<Point2i, Set<Point2i>> region = new HashMap<>();
 					region.put(location, chunks);
 
+					region = applyRadius(region);
+
 					callback.accept(region);
 
 					Debug.dumpf("took %s to delete chunk indices in %s", t, getFile().getName());
@@ -117,6 +124,56 @@ public class ChunkFilterSelector {
 				Debug.errorf("error selecting chunks in %s", getFile().getName());
 			}
 			progressChannel.incrementProgress(getFile().getName());
+		}
+
+		private Map<Point2i, Set<Point2i>> applyRadius(Map<Point2i, Set<Point2i>> region) {
+			if (radius <= 0) {
+				return region;
+			}
+
+			Map<Point2i, Set<Point2i>> output = new HashMap<>();
+
+			for (Map.Entry<Point2i, Set<Point2i>> reg : region.entrySet()) {
+				if (reg.getValue() == null) {
+					output.put(reg.getKey(), null);
+					// full region
+					Point2i startChunk = reg.getKey().regionToChunk();
+					Point2i endChunk = startChunk.add(Tile.SIZE_IN_CHUNKS - 1);
+
+					for (int x = startChunk.getX() - radius; x <= endChunk.getX() + radius; x++) {
+						for (int z = startChunk.getY() - radius; z <= endChunk.getY() + radius; z++) {
+							Point2i currentChunk = new Point2i(x, z);
+							Point2i currentRegion = currentChunk.chunkToRegion();
+
+							if (currentRegion.equals(reg.getKey())) {
+								z += Tile.SIZE_IN_CHUNKS - 1;
+								continue;
+							}
+
+							if (!output.containsKey(currentRegion)) {
+								output.put(currentRegion, new HashSet<>());
+							}
+
+							output.get(currentRegion).add(currentChunk);
+						}
+					}
+				} else {
+					output.put(reg.getKey(), new HashSet<>(reg.getValue()));
+					for (Point2i chunk : reg.getValue()) {
+						for (int x = chunk.getX() - radius; x <= chunk.getX() + radius; x++) {
+							for (int z = chunk.getY() - radius; z <= chunk.getY() + radius; z++) {
+								Point2i currentChunk = new Point2i(x, z);
+								Point2i currentRegion = currentChunk.chunkToRegion();
+								if (!output.containsKey(currentRegion)) {
+									output.put(currentRegion, new HashSet<>());
+								}
+								output.get(currentRegion).add(currentChunk);
+							}
+						}
+					}
+				}
+			}
+			return output;
 		}
 	}
 }

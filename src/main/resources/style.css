@@ -260,7 +260,7 @@
 	-fx-background-color: -color-scroll-bar-thumb;
 }
 
-.scroll-bar .increment-button, .scroll-bar .decrement-button, .scroll-bar .increment-arrow, .scroll-bar .decrement-arrow {
+.scroll-bar:horizontal .increment-button, .scroll-bar:horizontal .decrement-button, .scroll-bar:horizontal .increment-arrow, .scroll-bar:horizontal .decrement-arrow {
 	visibility: hidden;
 	-fx-max-height: 0;
 	-fx-pref-height: 0;
@@ -470,6 +470,17 @@
 	-fx-border-width: 2 0 2 2;
 	-fx-border-color: -color-dialog-separator;
 	-fx-background-color: -color-dialog-background;
+}
+
+.filter-dialog-option-box {
+	-fx-hgap: 20;
+	-fx-vgap: 5;
+}
+
+.filter-dialog-option-box .filter-dialog-stack-pane .text-field {
+	-fx-min-width: 40px;
+	-fx-pref-width: 40px;
+	-fx-alignment: center;
 }
 
 /*---------- NBT Changer ----------*/
@@ -738,6 +749,7 @@
 
 .array-editor-table-view .table-cell {
  	-fx-text-fill: -color-text-light;
+	-fx-width: 100%;
 }
 
 .array-editor-table-view .table-row-cell:even {

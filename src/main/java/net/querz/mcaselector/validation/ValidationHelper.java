@@ -11,14 +11,7 @@ public class ValidationHelper {
 		try {
 			return s.get();
 		} catch (Exception ex) {
-			if (ex.getStackTrace().length > 0) {
-				Debug.dumpf("validation error: %s (%s) at L%d in %s#%s",
-						ex.getMessage(),
-						ex.getClass().getName(),
-						ex.getStackTrace()[0].getLineNumber(),
-						ex.getStackTrace()[0].getFileName(),
-						ex.getStackTrace()[0].getMethodName());
-			}
+			Debug.dump(new Exception("validation error", ex));
 			return def;
 		}
 	}
@@ -27,14 +20,7 @@ public class ValidationHelper {
 		try {
 			return s.get();
 		} catch (ClassCastException ex) {
-			if (ex.getStackTrace().length > 0) {
-				Debug.dumpf("validation error: %s (%s) at L%d in %s#%s",
-						ex.getMessage(),
-						ex.getClass().getName(),
-						ex.getStackTrace()[0].getLineNumber(),
-						ex.getStackTrace()[0].getFileName(),
-						ex.getStackTrace()[0].getMethodName());
-			}
+			Debug.dump(new Exception("validation error", ex));
 			return null;
 		}
 	}

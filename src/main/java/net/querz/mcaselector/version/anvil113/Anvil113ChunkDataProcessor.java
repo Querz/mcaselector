@@ -31,8 +31,12 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 				//loop over sections
 				for (int i = 0; i < sections.size(); i++) {
 					final int si = i;
-					ListTag<CompoundTag> palette = withDefault(() -> sections.get(si).getListTag("Palette").asCompoundTagList(), null);
-					if (palette == null) {
+					CompoundTag section;
+					ListTag<?> rawPalette;
+					ListTag<CompoundTag> palette;
+					if ((section = sections.get(si)) == null
+							|| (rawPalette = section.getListTag("Palette")) == null
+							|| (palette = rawPalette.asCompoundTagList()) == null) {
 						continue;
 					}
 					long[] blockStates = withDefault(() -> sections.get(si).getLongArray("BlockStates"), null);
@@ -70,7 +74,7 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 	}
 
 	private boolean isIgnoredInNether(int biome, CompoundTag blockData, int height) {
-		if (biome == 8) {
+		if (biome == 8 || biome == 170 || biome == 171 || biome == 172) {
 			switch (withDefault(() -> blockData.getString("Name"), "")) {
 			case "minecraft:bedrock":
 			case "minecraft:flowing_lava":
