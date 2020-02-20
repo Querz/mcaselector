@@ -132,7 +132,8 @@ The MCA Selector currently supports the following Minecraft versions:
 | Beta 1.3 - 1.12.2 | 100 - 1343  | Yes       |
 | 1.13 - 1.13.2     | 1444 - 1631 | Yes       |
 | 1.14 - 1.14.4     | 1901 - 1976 | Yes       |
-| 1.15              | 2200 - ?    | Yes       |
+| 1.15 - 1.15.2     | 2200 - 2230 | Yes       |
+| 20w07a            | 2506 - ?    | Prerelease |
 
 ---
 ## Headless mode
@@ -264,6 +265,7 @@ The following languages are available:
 * Spanish (Spain) (thanks to [@NathanielFreeman](https://github.com/NathanielFreeman) for translating)
 * Portuguese (Brazil) (thanks to [@cr1st0ph3r](https://github.com/cr1st0ph3r) for translating)
 * French (France) (thanks to [@SkytAsul](https://github.com/SkytAsul) and [@DoctaEnkoda](https://github.com/DoctaEnkoda) for translating)
+* Swedish (Sweden) (thanks to [@TechnicProblem](https://github.com/TechnicProblem) for translating)
 
 If you would like to contribute a translation, you can find the language files in [resources/lang/](https://github.com/Querz/mcaselector/tree/master/src/main/resources/lang). The files are automatically detected and shown as the respective language option in the settings dropdown menu once they are placed in this folder.
 
