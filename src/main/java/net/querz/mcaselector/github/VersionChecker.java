@@ -52,6 +52,7 @@ public class VersionChecker {
 		int latestID = 0;
 		String latestTag = null;
 		String latestLink = null;
+		boolean prerelease = false;
 
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) result;
@@ -62,6 +63,8 @@ public class VersionChecker {
 				latestTag = (String) e.getValue();
 			} else if ("html_url".equals(e.getKey())) {
 				latestLink = (String) e.getValue();
+			} else if ("prerelease".equals(e.getKey())) {
+				prerelease = (boolean) e.getValue();
 			}
 		}
 
@@ -69,17 +72,19 @@ public class VersionChecker {
 			return null;
 		}
 
-		return new VersionData(latestID, latestTag, latestLink);
+		return new VersionData(latestID, latestTag, latestLink, prerelease);
 	}
 
 	public static class VersionData {
 		private int id;
 		private String tag, link;
+		private boolean prerelease;
 
-		private VersionData(int id, String tag, String link) {
+		private VersionData(int id, String tag, String link, boolean prerelease) {
 			this.id = id;
 			this.tag = tag;
 			this.link = link;
+			this.prerelease = prerelease;
 		}
 
 		public boolean isNewerThan(VersionData version) {
@@ -106,9 +111,13 @@ public class VersionChecker {
 			return link;
 		}
 
+		public boolean isPrerelease() {
+			return prerelease;
+		}
+
 		@Override
 		public String toString() {
-			return "id=" + id + ", tag=" + tag + ", link=" + link;
+			return "id=" + id + ", tag=" + tag + ", link=" + link + ", prerelease=" + prerelease;
 		}
 	}
 }
