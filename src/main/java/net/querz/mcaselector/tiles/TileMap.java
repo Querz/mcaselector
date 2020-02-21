@@ -92,6 +92,7 @@ public class TileMap extends Canvas {
 			offset = offset.add(diff.div(2));
 
 			if (Tile.getZoomLevel(oldScale) != Tile.getZoomLevel(scale)) {
+				Debug.dumpf("zoom level changed from %d to %d", Tile.getZoomLevel(oldScale), Tile.getZoomLevel(scale));
 				unloadTiles();
 			}
 			update();

@@ -103,6 +103,7 @@ public class RegionImageGenerator {
 
 		@Override
 		public void execute() {
+			Debug.dumpf("generating image for %s", getFile().getAbsolutePath());
 			Image image = TileImage.generateImage(tile, callback, getData());
 			if (image != null) {
 				MCAFilePipe.executeSaveData(new MCAImageSaveCacheJob(getFile(), image, tile, scaleSupplier, scaleOnly, progressChannel));
@@ -150,6 +151,7 @@ public class RegionImageGenerator {
 					}
 
 					BufferedImage scaled = ImageHelper.scaleImage(img, (double) Tile.SIZE / (double) zoomLevel);
+					Debug.dumpf("writing cache file %s", cacheFile.getAbsolutePath());
 					ImageIO.write(scaled, "png", cacheFile);
 
 				} else {
@@ -160,11 +162,12 @@ public class RegionImageGenerator {
 						}
 
 						BufferedImage scaled = ImageHelper.scaleImage(img, (double) Tile.SIZE / (double) i);
+						Debug.dumpf("writing cache file %s", cacheFile.getAbsolutePath());
 						ImageIO.write(scaled, "png", cacheFile);
 					}
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				Debug.error(e);
 			}
 
 			setLoading(tile, false);

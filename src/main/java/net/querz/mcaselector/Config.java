@@ -119,7 +119,7 @@ public final class Config {
 				config.put(elements[0], elements[1]);
 			});
 		} catch (IOException e) {
-			e.printStackTrace();
+			Debug.error(e);
 		}
 
 		try {

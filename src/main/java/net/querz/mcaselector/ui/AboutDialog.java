@@ -126,7 +126,7 @@ public class AboutDialog extends Alert {
 				try {
 					Desktop.getDesktop().browse(new URL(url).toURI());
 				} catch (IOException | URISyntaxException ex) {
-					ex.printStackTrace();
+					Debug.error(ex);
 				}
 			}
 		});

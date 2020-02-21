@@ -1,5 +1,7 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.debug.Debug;
+
 public enum FilterType {
 
 	GROUP("Group", GroupFilter.class, Format.GROUP),
@@ -34,7 +36,7 @@ public enum FilterType {
 		try {
 			return clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
+			Debug.error(e);
 		}
 		return null;
 	}

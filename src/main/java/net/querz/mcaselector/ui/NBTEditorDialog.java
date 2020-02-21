@@ -185,7 +185,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		try (FileInputStream fis = new FileInputStream(file)) {
 			fis.read(data);
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			Debug.error(ex);
 			return;
 		}
 

@@ -1,5 +1,7 @@
 package net.querz.mcaselector.changer;
 
+import net.querz.mcaselector.debug.Debug;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +28,7 @@ public enum FieldType {
 		try {
 			return clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
+			Debug.error(e);
 			return null;
 		}
 	}

@@ -1,5 +1,6 @@
 package net.querz.mcaselector.version;
 
+import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.version.anvil112.Anvil112ChunkDataProcessor;
 import net.querz.mcaselector.version.anvil112.Anvil112ChunkFilter;
 import net.querz.mcaselector.version.anvil112.Anvil112ColorMapping;
@@ -50,7 +51,7 @@ public class VersionController {
 			try {
 				return cdpInstance == null ? cdpInstance = cdp.newInstance() : cdpInstance;
 			} catch (InstantiationException | IllegalAccessException e) {
-				e.printStackTrace();
+				Debug.error(e);
 			}
 			return null;
 		}
@@ -59,7 +60,7 @@ public class VersionController {
 			try {
 				return cmInstance == null ? cmInstance = cm.newInstance() : cmInstance;
 			} catch (InstantiationException | IllegalAccessException e) {
-				e.printStackTrace();
+				Debug.error(e);
 			}
 			return null;
 		}
@@ -68,7 +69,7 @@ public class VersionController {
 			try {
 				return cfInstance == null ? cfInstance = cf.newInstance() : cfInstance;
 			} catch (InstantiationException | IllegalAccessException e) {
-				e.printStackTrace();
+				Debug.error(e);
 			}
 			return null;
 		}

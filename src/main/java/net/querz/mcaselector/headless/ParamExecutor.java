@@ -102,7 +102,7 @@ public class ParamExecutor {
 		} catch (Exception ex) {
 			Debug.error("Error: " + ex.getMessage());
 			if (params.get() != null && params.get().containsKey("debug")) {
-				ex.printStackTrace();
+				Debug.error(ex);
 			}
 			future.run();
 			return future;

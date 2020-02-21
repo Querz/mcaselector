@@ -90,7 +90,7 @@ public class MCAFile {
 					m.chunks[i].loadData(ptr);
 				} catch (Exception ex) {
 					Debug.errorf("failed to load chunk at index %d: %s", i, ex.getMessage());
-					ex.printStackTrace();
+					Debug.error(ex);
 				}
 			}
 		}

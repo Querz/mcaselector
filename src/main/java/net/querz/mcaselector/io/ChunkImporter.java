@@ -53,7 +53,7 @@ public class ChunkImporter {
 					Set<Point2i> targets = getTargetRegions(source, offset);
 					mapSourceRegionsByTargetRegion(source, targets, targetMapping);
 				} catch (Exception ex) {
-					ex.printStackTrace();
+					Debug.error(ex);
 				}
 			}
 
@@ -75,7 +75,7 @@ public class ChunkImporter {
 				}
 			}
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			Debug.error(ex);
 		}
 	}
 

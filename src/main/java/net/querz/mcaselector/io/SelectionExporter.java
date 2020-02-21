@@ -109,9 +109,10 @@ public class SelectionExporter {
 					MCAFilePipe.executeSaveData(new MCADeleteSelectionSaveJob(getFile(), mca, destination, progressChannel));
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
-				progressChannel.incrementProgress(getFile().getName());
 				Debug.errorf("error deleting chunk indices in %s: %s", getFile().getName(), ex.getMessage());
+				Debug.error(ex);
+				progressChannel.incrementProgress(getFile().getName());
+
 			}
 		}
 	}
