@@ -172,10 +172,12 @@ public final class Debug {
 
 		Debug.dumpf("os.name:                      %s", System.getProperty("os.name"));
 		Debug.dumpf("os.version:                   %s", System.getProperty("os.version"));
+		Debug.dumpf("user.dir:                     %s", System.getProperty("user.dir"));
+		Debug.dumpf("cache.dir:                    %s", Config.DEFAULT_BASE_CACHE_DIR.getAbsolutePath());
 		Debug.dumpf("proc.cores:                   %s", Runtime.getRuntime().availableProcessors());
 		Debug.dumpf("java.version:                 %s", System.getProperty("java.version"));
 		Debug.dumpf("java.vm.specification.vendor: %s", System.getProperty("java.vm.specification.vendor"));
-		Debug.dumpf("jvm max mem:                  %d", Runtime.getRuntime().maxMemory());
+		Debug.dumpf("jvm.max.mem:                  %d", Runtime.getRuntime().maxMemory());
 	}
 
 	public static void flushAndCloseLogWriter() {
