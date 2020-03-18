@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -17,6 +19,10 @@ public class FileHelper {
 
 	public static final String MCA_FILE_PATTERN = "^r\\.-?\\d+\\.-?\\d+\\.mca$";
 	public static final Pattern REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
+
+	private static Map<String, String> lastOpenedDirectoryMap = new HashMap<>();
+
+	private FileHelper() {}
 
 	public static Image getIconFromResources(String name) {
 		return new Image(Objects.requireNonNull(FileHelper.class.getClassLoader().getResourceAsStream(name + ".png")));
@@ -59,6 +65,14 @@ public class FileHelper {
 			return getHomeDir();
 		}
 		return saves.getAbsolutePath();
+	}
+
+	public static String getLastOpenedDirectory(String key) {
+		return lastOpenedDirectoryMap.get(key);
+	}
+
+	public static void setLastOpenedDirectory(String key, String lastOpenedDirectory) {
+		FileHelper.lastOpenedDirectoryMap.put(key, lastOpenedDirectory);
 	}
 
 	public static File createMCAFilePath(Point2i r) {

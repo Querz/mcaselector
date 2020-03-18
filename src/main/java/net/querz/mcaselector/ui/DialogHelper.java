@@ -69,11 +69,12 @@ public class DialogHelper {
 					});
 					break;
 				case EXPORT:
-					File dir = createDirectoryChooser(null).showDialog(primaryStage);
+					File dir = createDirectoryChooser(FileHelper.getLastOpenedDirectory("chunk_import_export")).showDialog(primaryStage);
 					if (dir != null) {
 						confRes = new ExportConfirmationDialog(null, primaryStage).showAndWait();
 						confRes.ifPresent(confR -> {
 							if (confR == ButtonType.OK) {
+								FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
 								Debug.dump("exporting chunks to " + dir);
 								new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_FILTERED_CHUNKS, primaryStage)
 										.showProgressBar(t -> ChunkFilterExporter.exportFilter(
@@ -116,11 +117,12 @@ public class DialogHelper {
 	}
 
 	public static void exportSelectedChunks(TileMap tileMap, Stage primaryStage) {
-		File dir = createDirectoryChooser(null).showDialog(primaryStage);
+		File dir = createDirectoryChooser(FileHelper.getLastOpenedDirectory("chunk_import_export")).showDialog(primaryStage);
 		if (dir != null) {
 			Optional<ButtonType> result = new ExportConfirmationDialog(tileMap, primaryStage).showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
+					FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
 					new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_SELECTION, primaryStage)
 							.showProgressBar(t -> SelectionExporter.exportSelection(tileMap.getMarkedChunks(), dir, t));
 				}
@@ -129,12 +131,13 @@ public class DialogHelper {
 	}
 
 	public static void importChunks(TileMap tileMap, Stage primaryStage) {
-		File dir = createDirectoryChooser(null).showDialog(primaryStage);
+		File dir = createDirectoryChooser(FileHelper.getLastOpenedDirectory("chunk_import_export")).showDialog(primaryStage);
 		DataProperty<ImportConfirmationDialog.ChunkImportConfirmationData> dataProperty = new DataProperty<>();
 		if (dir != null) {
 			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, dataProperty::set).showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
+					FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
 					new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									dir, t, false, dataProperty.get().overwrite(),
@@ -182,12 +185,14 @@ public class DialogHelper {
 	}
 
 	public static void openWorld(TileMap tileMap, Stage primaryStage, OptionBar optionBar) {
-		String savesDir = FileHelper.getMCSavesDir();
+		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world");
+		String savesDir = lastOpenDirectory == null ?  FileHelper.getMCSavesDir() : lastOpenDirectory;
 		File file = createDirectoryChooser(savesDir).showDialog(primaryStage);
 		if (file != null && file.isDirectory()) {
 			File[] files = file.listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.mca$"));
 			if (files != null && files.length > 0) {
 				Debug.dump("setting world dir to " + file.getAbsolutePath());
+				FileHelper.setLastOpenedDirectory("open_world", file.getAbsolutePath());
 				Config.setWorldDir(file);
 				tileMap.clear();
 				tileMap.update();
@@ -198,20 +203,22 @@ public class DialogHelper {
 	}
 
 	public static void importSelection(TileMap tileMap, Stage primaryStage) {
-		File file = createFileChooser(null,
+		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export"),
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showOpenDialog(primaryStage);
 		if (file != null) {
 			Map<Point2i, Set<Point2i>> chunks = SelectionUtil.importSelection(file);
+			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
 			tileMap.setMarkedChunks(chunks);
 			tileMap.update();
 		}
 	}
 
 	public static void exportSelection(TileMap tileMap, Stage primaryStage) {
-		File file = createFileChooser(null,
+		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export"),
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showSaveDialog(primaryStage);
 		if (file != null) {
 			SelectionUtil.exportSelection(tileMap.getMarkedChunks(), file);
+			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
 			tileMap.update();
 		}
 	}

@@ -5,12 +5,33 @@ import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.Translation;
 import java.io.*;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.*;
 
 public final class Config {
 
-	public static final File DEFAULT_BASE_CACHE_DIR = new File(System.getProperty("user.dir") + "/cache");
+	public static final File DEFAULT_BASE_DIR;
+
+	static {
+		// find jar file directory
+		String jarPath;
+		String path = ".";
+		try {
+			jarPath = Config.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+			if (!jarPath.endsWith(".jar")) { // no jar
+				path = jarPath.replaceAll("build/classes/java/main/$", "");
+			} else {
+				path = jarPath.substring(0, jarPath.lastIndexOf(File.separator));
+			}
+		} catch (URISyntaxException ex) {
+			ex.printStackTrace();
+		}
+		DEFAULT_BASE_DIR = new File(path, "cache");
+	}
+
+	public static final File DEFAULT_BASE_CACHE_DIR = DEFAULT_BASE_DIR;
+
 	public static final Color DEFAULT_REGION_SELECTION_COLOR = new Color(1, 0, 0, 0.8);
 	public static final Color DEFAULT_CHUNK_SELECTION_COLOR = new Color(1, 0.45, 0, 0.8);
 	public static final Locale DEFAULT_LOCALE = Locale.UK;
@@ -101,7 +122,7 @@ public final class Config {
 	}
 
 	public static void loadFromIni() {
-		File file = new File(System.getProperty("user.dir"), "settings.ini");
+		File file = new File(DEFAULT_BASE_DIR, "settings.ini");
 		if (!file.exists()) {
 			return;
 		}
@@ -126,7 +147,7 @@ public final class Config {
 			//set values
 			baseCacheDir = new File(config.getOrDefault(
 				"BaseCacheDir",
-				baseCacheDir.getAbsolutePath()).replace("{user.dir}", System.getProperty("user.dir"))
+				baseCacheDir.getAbsolutePath()).replace("{user.dir}", DEFAULT_BASE_CACHE_DIR.getAbsolutePath())
 			);
 
 			String localeString = config.getOrDefault("Locale", DEFAULT_LOCALE.toString());
@@ -146,7 +167,7 @@ public final class Config {
 	}
 
 	public static void exportConfig() {
-		String userDir = System.getProperty("user.dir");
+		String userDir = DEFAULT_BASE_DIR.getAbsolutePath();
 		File file = new File(userDir, "settings.ini");
 		List<String> lines = new ArrayList<>(8);
 		addSettingsLine(

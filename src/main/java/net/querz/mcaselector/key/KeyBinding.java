@@ -51,7 +51,7 @@ public enum KeyBinding {
 
 	public static void matchAndRun(KeyEvent event) {
 		for (KeyBinding keyBinding : values()) {
-			if (keyBinding.keyCodeCombination.match(event)) {
+			if (keyBinding.keyCodeCombination.match(event) && keyBinding.action != null) {
 				keyBinding.action.run();
 			}
 		}
@@ -84,12 +84,28 @@ public enum KeyBinding {
 
 		if (modifier) {
 			// if this is a modifier, recreate the currentCombinations set based on currentKeys
+
+			if (currentKeys.contains(KeyCode.COMMAND)) {
+				meta = KeyCombination.ModifierValue.UP;
+				shortcut = KeyCombination.ModifierValue.UP;
+			}
+
 			currentCombinations.clear();
 			for (KeyCode keyCode : currentKeys) {
+				System.out.printf("3 %s %s %s %s %s %s\n", keyCode, shift, control, alt, meta, shortcut);
 				currentCombinations.add(new KeyCodeCombination(keyCode, shift, control, alt, meta, shortcut));
 			}
 		} else {
 			// if this is a normal key, add it and create a combination
+
+			System.out.println("currentKeys: " + currentKeys);
+
+			if (event.getCode() == KeyCode.COMMAND || currentKeys.contains(KeyCode.COMMAND)) {
+				meta = KeyCombination.ModifierValue.UP;
+				shortcut = KeyCombination.ModifierValue.UP;
+			}
+
+			System.out.printf("4 %s %s %s %s %s %s\n", event.getCode(), shift, control, alt, meta, shortcut);
 			currentKeys.add(event.getCode());
 			currentCombinations.add(new KeyCodeCombination(event.getCode(), shift, control, alt, meta, shortcut));
 		}
@@ -119,11 +135,22 @@ public enum KeyBinding {
 		}
 
 		if (modifier) {
+			if (currentKeys.contains(KeyCode.COMMAND)) {
+				meta = KeyCombination.ModifierValue.UP;
+				shortcut = KeyCombination.ModifierValue.UP;
+			}
 			currentCombinations.clear();
 			for (KeyCode keyCode : currentKeys) {
+				System.out.printf("1 %s %s %s %s %s %s\n", keyCode, shift, control, alt, meta, shortcut);
 				currentCombinations.add(new KeyCodeCombination(keyCode, shift, control, alt, meta, shortcut));
 			}
 		} else {
+
+			if (event.getCode() == KeyCode.COMMAND || currentKeys.contains(KeyCode.COMMAND)) {
+				meta = KeyCombination.ModifierValue.UP;
+				shortcut = KeyCombination.ModifierValue.UP;
+			}
+			System.out.printf("2 %s %s %s %s %s %s\n", event.getCode(), shift, control, alt, meta, shortcut);
 			currentKeys.remove(event.getCode());
 			currentCombinations.remove(new KeyCodeCombination(event.getCode(), shift, control, alt, meta, shortcut));
 		}
