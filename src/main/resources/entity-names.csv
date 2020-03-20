@@ -46,7 +46,6 @@ iron_golem
 item
 item_frame
 leash_knot
-lightning_bolt
 llama
 llama_spit
 magma_cube
@@ -101,3 +100,4 @@ zombie
 zombie_horse
 zombie_pigman
 zombie_villager
+zombified_piglin

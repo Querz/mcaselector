@@ -177,6 +177,7 @@ chorus_flower:age=2;977897
 chorus_flower:age=3;977897
 chorus_flower:age=4;977897
 chorus_flower:age=5;603d5e
+chorus_flower;977897
 chorus_plant;5d395d
 clay;a0a6b3
 coal_block;100f0f
@@ -436,7 +437,7 @@ infested_stone;7d7d7d
 iron_bars;888b87
 iron_block;dcdcdc
 iron_door;c1c0c0
-iron_ore;88827f
+iron_ore;86827f
 iron_trapdoor;cacaca
 item_frame;74432a
 jack_o_lantern;c67618
@@ -542,10 +543,11 @@ nether_brick_slab;2c151a
 nether_brick_stairs;2c151a
 nether_brick_wall;2c151a
 nether_bricks;2c151a
+nether_gold_ore;723326
 nether_portal;570abf
 nether_quartz_ore;75413e
 nether_sprouts;139785
-nether_wart_block;720202
+nether_wart_block;720302
 nether_wart:age=0;751215
 nether_wart:age=1;731112
 nether_wart:age=2;731112
@@ -610,6 +612,7 @@ podzol:snowy=true;939393
 polished_andesite_slab;848685
 polished_andesite_stairs;848685
 polished_andesite;848685
+polished_basalt;636264
 polished_diorite_slab;c0c1c2
 polished_diorite_stairs;c0c1c2
 polished_diorite;c0c1c2
@@ -688,7 +691,7 @@ purple_terracotta;764656
 purple_wall_banner;a2824e
 purple_wool;792aac
 purpur_block;a97da9
-purpur_pillar;ab80ab
+purpur_pillar;aa80aa
 purpur_slab;a97da9
 purpur_stairs;a97da9
 quartz_block;ebe5de
@@ -820,6 +823,11 @@ repeating_command_block:conditional=true,facing=north;7f6dab
 repeating_command_block:conditional=true,facing=south;7f6dab
 repeating_command_block:conditional=true,facing=up;7f6dab
 repeating_command_block:conditional=true,facing=west;7f6dab
+respawn_anchor:charges=0;211534
+respawn_anchor:charges=1;4c1796
+respawn_anchor:charges=2;4c1796
+respawn_anchor:charges=3;4c1796
+respawn_anchor:charges=4;4c1796
 rose_bush:half=lower;615325
 rose_bush:half=upper;834225
 sand;dbcfa3
@@ -917,6 +925,7 @@ tall_grass:half=lower;354b49
 tall_grass:half=upper;3f5756
 tall_seagrass:half=lower;2d7504
 tall_seagrass:half=upper;3b8b0e
+tall_seagrass;327e08
 target;e2aa9d
 terracotta;985e43
 tnt;8e3e35
@@ -940,6 +949,9 @@ turtle_egg:eggs=3,hatch=2;cfcba5
 turtle_egg:eggs=4,hatch=0;e4e2bf
 turtle_egg:eggs=4,hatch=1;e4e2bf
 turtle_egg:eggs=4,hatch=2;e4e2bf
+turtle_egg;e4e2bf
+twisting_vines_plant;14877a
+twisting_vines;148f7c
 vine;0b5600
 wall_torch;8a713f
 warped_button;2b6863

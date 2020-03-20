@@ -415,6 +415,7 @@ nether_brick_slab
 nether_brick_stairs
 nether_brick_wall
 nether_bricks
+nether_gold_ore
 nether_portal
 nether_quartz_ore
 nether_sprouts
@@ -478,6 +479,7 @@ podzol
 polished_andesite
 polished_andesite_slab
 polished_andesite_stairs
+polished_basalt
 polished_diorite
 polished_diorite_slab
 polished_diorite_stairs
@@ -578,6 +580,7 @@ redstone_wall_torch
 redstone_wire
 repeater
 repeating_command_block
+respawn_anchor
 rose_bush
 sand
 sandstone
@@ -677,6 +680,8 @@ tube_coral_block
 tube_coral_fan
 tube_coral_wall_fan
 turtle_egg
+twisting_vines
+twisting_vines_plant
 vine
 wall_torch
 warped_button
