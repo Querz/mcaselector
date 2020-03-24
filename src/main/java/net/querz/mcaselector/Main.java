@@ -1,12 +1,17 @@
 package net.querz.mcaselector;
 
+import com.sun.javafx.application.PlatformImpl;
+import javafx.application.Platform;
 import net.querz.mcaselector.headless.ParamExecutor;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.Translation;
+
+import java.lang.reflect.Field;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 
@@ -23,6 +28,26 @@ public class Main {
 
 		Config.loadFromIni();
 		Runtime.getRuntime().addShutdownHook(new Thread(Config::exportConfig));
+
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+
+			try {
+				Field pendingRunnables = PlatformImpl.class.getDeclaredField("pendingRunnables");
+
+				pendingRunnables.setAccessible(true);
+
+				AtomicInteger i = (AtomicInteger) pendingRunnables.get(null);
+
+				System.out.println("pendingRunnables: " + i.get());
+
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}));
+
+
 		if (Config.debug()) {
 			Debug.initLogWriter();
 		}
