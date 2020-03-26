@@ -57,6 +57,7 @@ public final class Config {
 
 	public static final float MAX_SCALE = 7.9999f;
 	public static final float MIN_SCALE = 0.2f;
+	public static final double IMAGE_POOL_SIZE = 2.5;
 
 	private Config() {}
 

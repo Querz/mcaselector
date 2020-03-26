@@ -3,6 +3,7 @@ package net.querz.mcaselector.tiles;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.RegionImageGenerator;
 import net.querz.mcaselector.point.Point2i;
@@ -35,19 +36,6 @@ public class ImagePool {
 	}
 
 	public void requestImage(Tile tile, int scale) {
-
-		// TODO:
-//		if (!tile.location.equals(new Point2i(0, 0))) {
-//			return;
-//		}
-
-
-		// check if we're allowed to request an image for this tile at this scale
-//		if (tile.location.getX() % scale != 0 || tile.location.getY() % scale != 0) {
-//			System.out.printf("not allowed to request an image for %s at scale %d\n", tile.location, scale);
-//			return;
-//		}
-
 		if (noMCA.contains(tile.location)) {
 			return;
 		}
@@ -57,7 +45,7 @@ public class ImagePool {
 		// check if image exists in pool
 		Image img = pool.get(scale).get(tile.location);
 		if (img != null) {
-			System.out.printf("image was cached: %d/%s\n", scale, tile.location);
+			Debug.dumpf("image was cached in image pool: %d/%s\n", scale, tile.location);
 			tile.setImage(img);
 			tile.setLoaded(true);
 			tile.setLoading(false);
@@ -66,14 +54,15 @@ public class ImagePool {
 
 		// check if image exists in cache
 		File cachedImgFile = FileHelper.createPNGFilePath(Config.getCacheDir(), scale, tile.location);
-//		File cachedImgFile = new File("/Users/rb/IdeaProjects/mcaselector/cache/8ffb5342340f3964a246f3e05f38a7c1/" + scale + "/r.0.0.png");
 		if (cachedImgFile.exists()) {
 			// load cached file
 
 			Image cachedImg = new Image(cachedImgFile.toURI().toString(), true);
 			cachedImg.progressProperty().addListener((v, o, n) -> {
 				if (n.intValue() == 1 && !cachedImg.isError()) {
-					System.out.println("image loaded, updating tile map");
+
+					Debug.dump("image loaded: " + cachedImgFile.getAbsolutePath());
+
 					tile.setImage(cachedImg);
 					tile.setLoaded(true);
 					tile.setLoading(false);
@@ -82,7 +71,7 @@ public class ImagePool {
 				}
 			});
 		} else {
-			System.out.println("cached image does not exist: " + cachedImgFile.getAbsolutePath());
+			Debug.dump("image does not exist: " + cachedImgFile.getAbsolutePath());
 
 			RegionImageGenerator.generate(tile, i -> {
 				if (i == null) {
@@ -91,7 +80,7 @@ public class ImagePool {
 				}
 				push(scale, tile.location, i);
 				Platform.runLater(() -> tileMap.update());
-			}, null, false, false, null);
+			}, () -> (float) scale, false, null);
 		}
 	}
 
