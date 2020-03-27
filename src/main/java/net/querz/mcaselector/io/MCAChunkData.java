@@ -3,6 +3,7 @@ package net.querz.mcaselector.io;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.text.TextHelper;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.DoubleTag;
 import net.querz.nbt.IntArrayTag;
@@ -28,8 +29,11 @@ public class MCAChunkData {
 	private CompressionType compressionType;
 	private CompoundTag data;
 
+	private Point2i absoluteLocation;
+
 	//offset in 4KiB chunks
-	public MCAChunkData(int offset, int timestamp, byte sectors) {
+	public MCAChunkData(Point2i absoluteLocation, int offset, int timestamp, byte sectors) {
+		this.absoluteLocation = absoluteLocation;
 		this.offset = ((long) offset) * MCAFile.SECTION_SIZE;
 		this.timestamp = timestamp;
 		this.sectors = sectors;
@@ -177,11 +181,8 @@ public class MCAChunkData {
 		this.compressionType = compressionType;
 	}
 
-	public Point2i getLocation() {
-		if (data == null || !data.containsKey("Level") || !data.getCompoundTag("Level").containsKey("xPos") || !data.getCompoundTag("Level").containsKey("zPos")) {
-			return null;
-		}
-		return new Point2i(data.getCompoundTag("Level").getInt("xPos"), data.getCompoundTag("Level").getInt("zPos"));
+	public Point2i getAbsoluteLocation() {
+		return absoluteLocation;
 	}
 
 	// offset is in blocks
@@ -255,7 +256,7 @@ public class MCAChunkData {
 						for (int i = 0; i < reference.length; i++) {
 							int x = (int) (reference[i]);
 							int z = (int) (reference[i] >> 32);
-							reference[i] = (long) (x + chunkOffset.getX()) | ((long) (z + chunkOffset.getY()) << 32);
+							reference[i] = ((long) (z + chunkOffset.getY()) & 0xFFFFFFFFL) << 32 | (long) (x + chunkOffset.getX()) & 0xFFFFFFFFL;
 						}
 					}
 				}
@@ -389,9 +390,11 @@ public class MCAChunkData {
 			}
 		}
 
-		ListTag<CompoundTag> items = catchClassCastException(() -> tileEntity.getListTag("Items").asCompoundTagList());
-		if (items != null) {
-			items.forEach(i -> applyOffsetToItem(i, offset));
+		if (tileEntity.containsKey("Items")) {
+			ListTag<CompoundTag> items = catchClassCastException(() -> tileEntity.getListTag("Items").asCompoundTagList());
+			if (items != null) {
+				items.forEach(i -> applyOffsetToItem(i, offset));
+			}
 		}
 	}
 

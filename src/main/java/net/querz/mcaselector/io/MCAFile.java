@@ -102,6 +102,11 @@ public class MCAFile {
 		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
 			// read offset, sector count and timestamp for specific chunk
 
+			Point2i region = FileHelper.parseMCAFileName(file);
+			if (region == null) {
+				throw new IOException("error parsing mca file name: " + file.getName());
+			}
+
 			Point2i rel = chunk.mod(32);
 			rel.setX(rel.getX() < 0 ? 32 + rel.getX() : rel.getX());
 			rel.setY(rel.getY() < 0 ? 32 + rel.getY() : rel.getY());
@@ -117,8 +122,11 @@ public class MCAFile {
 			raf.seek(headerOffset + 4096);
 			int timestamp = raf.readInt();
 
+			// calculate absolute chunk location;
+			Point2i absoluteChunkLocation = region.regionToChunk().add(rel);
+
 			// read chunk data
-			MCAChunkData chunkData = new MCAChunkData(offset, timestamp, sectors);
+			MCAChunkData chunkData = new MCAChunkData(absoluteChunkLocation, offset, timestamp, sectors);
 			chunkData.readHeader(raf);
 			chunkData.loadData(raf);
 
@@ -170,7 +178,7 @@ public class MCAFile {
 
 				MCAChunkData data = chunks[index];
 
-				if (data == null || data.isEmpty() || selection != null && !selection.contains(data.getLocation())) {
+				if (data == null || data.isEmpty() || selection != null && !selection.contains(data.getAbsoluteLocation())) {
 					continue;
 				}
 
@@ -200,7 +208,7 @@ public class MCAFile {
 
 				//keep chunk if filter AND selection applies
 				//ignore selection if it's null
-				if (!filter.matches(filterData) || selection != null && !selection.contains(data.getLocation())) {
+				if (!filter.matches(filterData) || selection != null && !selection.contains(data.getAbsoluteLocation())) {
 					offsets[index] = 0;
 					sectors[index] = 0;
 					timestamps[index] = 0;
@@ -224,7 +232,7 @@ public class MCAFile {
 				FilterData filterData = new FilterData(data.getTimestamp(), data.getData());
 
 				if (filter.matches(filterData)) {
-					Point2i location = data.getLocation();
+					Point2i location = data.getAbsoluteLocation();
 					if (location == null) {
 						continue;
 					}
@@ -240,7 +248,7 @@ public class MCAFile {
 			for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
 				int index = cz * Tile.SIZE_IN_CHUNKS + cx;
 				MCAChunkData chunk = chunks[index];
-				if (selection == null || selection.contains(chunk.getLocation())) {
+				if (selection == null || selection.contains(chunk.getAbsoluteLocation())) {
 					if (chunk != null && !chunk.isEmpty()) {
 						chunk.changeData(fields, force);
 					}
@@ -375,8 +383,14 @@ public class MCAFile {
 				+ (chunkCoordinate.getY() & (Tile.SIZE_IN_CHUNKS - 1)) * Tile.SIZE_IN_CHUNKS;
 	}
 
+	private Point2i getChunkOffsetFromIndex(int index) {
+		int x = index % Tile.SIZE_IN_CHUNKS;
+		int z = index / Tile.SIZE_IN_CHUNKS;
+		return new Point2i(x, z);
+	}
+
 	public MCAChunkData getChunkData(int index) {
-		return new MCAChunkData(offsets[index], timestamps[index], sectors[index]);
+		return new MCAChunkData(location.add(getChunkOffsetFromIndex(index)), offsets[index], timestamps[index], sectors[index]);
 	}
 
 	public void setChunkData(int index, MCAChunkData chunk) {
