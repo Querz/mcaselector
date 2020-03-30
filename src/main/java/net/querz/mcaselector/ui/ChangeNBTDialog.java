@@ -72,7 +72,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
 		FieldView fieldView = new FieldView();
-		for (FieldType fieldType : FieldType.values()) {
+		for (FieldType fieldType : FieldType.uiValues()) {
 			Field field = fieldType.newInstance();
 			fieldView.addField(field);
 			fields.add(field);

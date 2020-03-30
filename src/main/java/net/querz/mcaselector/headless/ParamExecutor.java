@@ -67,7 +67,7 @@ public class ParamExecutor {
 			pi.registerSoftDependencies("query", null, new ActionKey("mode", "select"), new ActionKey("mode", "export"), new ActionKey("mode", "delete"), new ActionKey("mode", "change"));
 			pi.registerSoftDependencies("radius", null, new ActionKey("mode", "select"));
 			pi.registerDependencies("force", null, new ActionKey("mode", "change"));
-			pi.registerDependencies("id-map", null, new ActionKey("mode", "change"));
+//			pi.registerDependencies("id-map", null, new ActionKey("mode", "change"));
 			pi.registerDependencies("offset-x", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("offset-z", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("overwrite", null, new ActionKey("mode", "import"));
