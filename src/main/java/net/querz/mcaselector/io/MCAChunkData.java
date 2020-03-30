@@ -3,6 +3,7 @@ package net.querz.mcaselector.io;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.text.TextHelper;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.DoubleTag;
 import net.querz.nbt.IntArrayTag;
@@ -28,8 +29,11 @@ public class MCAChunkData {
 	private CompressionType compressionType;
 	private CompoundTag data;
 
+	private Point2i absoluteLocation;
+
 	//offset in 4KiB chunks
-	public MCAChunkData(int offset, int timestamp, byte sectors) {
+	public MCAChunkData(Point2i absoluteLocation, int offset, int timestamp, byte sectors) {
+		this.absoluteLocation = absoluteLocation;
 		this.offset = ((long) offset) * MCAFile.SECTION_SIZE;
 		this.timestamp = timestamp;
 		this.sectors = sectors;
@@ -177,11 +181,8 @@ public class MCAChunkData {
 		this.compressionType = compressionType;
 	}
 
-	public Point2i getLocation() {
-		if (data == null || !data.containsKey("Level") || !data.getCompoundTag("Level").containsKey("xPos") || !data.getCompoundTag("Level").containsKey("zPos")) {
-			return null;
-		}
-		return new Point2i(data.getCompoundTag("Level").getInt("xPos"), data.getCompoundTag("Level").getInt("zPos"));
+	public Point2i getAbsoluteLocation() {
+		return absoluteLocation;
 	}
 
 	// offset is in blocks
@@ -255,7 +256,7 @@ public class MCAChunkData {
 						for (int i = 0; i < reference.length; i++) {
 							int x = (int) (reference[i]);
 							int z = (int) (reference[i] >> 32);
-							reference[i] = (long) (x + chunkOffset.getX()) | ((long) (z + chunkOffset.getY()) << 32);
+							reference[i] = ((long) (z + chunkOffset.getY()) & 0xFFFFFFFFL) << 32 | (long) (x + chunkOffset.getX()) & 0xFFFFFFFFL;
 						}
 					}
 				}
@@ -298,9 +299,7 @@ public class MCAChunkData {
 								if (child.containsKey("Entrances")) {
 									ListTag<IntArrayTag> entrances = catchClassCastException(() -> child.getListTag("Entrances").asIntArrayTagList());
 									if (entrances != null) {
-										for (IntArrayTag entrance : entrances) {
-											applyOffsetToBB(entrance.getValue(), offset);
-										}
+										entrances.forEach(e -> applyOffsetToBB(e.getValue(), offset));
 									}
 								}
 
@@ -337,33 +336,65 @@ public class MCAChunkData {
 	}
 
 	private void applyOffsetToTileEntity(CompoundTag tileEntity, Point2i offset) {
+		if (tileEntity == null) {
+			return;
+		}
+
 		applyIntIfPresent(tileEntity, "x", offset.getX());
 		applyIntIfPresent(tileEntity, "z", offset.getY());
 
-		switch (tileEntity.getString("id")) {
-			case "bee_nest":
-			case "beehive":
-				CompoundTag flowerPos = catchClassCastException(() -> tileEntity.getCompoundTag("FlowerPos"));
-				applyIntOffsetIfRootPresent(flowerPos, "X", "Z", offset);
-				if (tileEntity.containsKey("Bees")) {
-					ListTag<CompoundTag> bees = catchClassCastException(() -> tileEntity.getListTag("Bees").asCompoundTagList());
-					if (bees != null) {
-						for (CompoundTag bee : bees) {
-							if (bee.containsKey("EntityData")) {
-								applyOffsetToEntity(catchClassCastException(() -> bee.getCompoundTag("EntityData")), offset);
+		String id = catchClassCastException(() -> tileEntity.getString("id"));
+		if (id != null) {
+			switch (id) {
+				case "minecraft:bee_nest":
+				case "minecraft:beehive":
+					CompoundTag flowerPos = catchClassCastException(() -> tileEntity.getCompoundTag("FlowerPos"));
+					applyIntOffsetIfRootPresent(flowerPos, "X", "Z", offset);
+					if (tileEntity.containsKey("Bees")) {
+						ListTag<CompoundTag> bees = catchClassCastException(() -> tileEntity.getListTag("Bees").asCompoundTagList());
+						if (bees != null) {
+							for (CompoundTag bee : bees) {
+								if (bee.containsKey("EntityData")) {
+									applyOffsetToEntity(catchClassCastException(() -> bee.getCompoundTag("EntityData")), offset);
+								}
 							}
 						}
 					}
-				}
-				break;
-			case "end_gateway":
-				CompoundTag exitPortal = catchClassCastException(() -> tileEntity.getCompoundTag("ExitPortal"));
-				applyIntOffsetIfRootPresent(exitPortal, "X", "Z", offset);
-				break;
-			case "structure_block":
-				applyIntIfPresent(tileEntity, "posX", offset.getX());
-				applyIntIfPresent(tileEntity, "posX", offset.getY());
-				break;
+					break;
+				case "minecraft:end_gateway":
+					CompoundTag exitPortal = catchClassCastException(() -> tileEntity.getCompoundTag("ExitPortal"));
+					applyIntOffsetIfRootPresent(exitPortal, "X", "Z", offset);
+					break;
+				case "minecraft:structure_block":
+					applyIntIfPresent(tileEntity, "posX", offset.getX());
+					applyIntIfPresent(tileEntity, "posX", offset.getY());
+					break;
+				case "minecraft:jukebox":
+					CompoundTag recordItem = catchClassCastException(() -> tileEntity.getCompoundTag("RecordItem"));
+					applyOffsetToItem(recordItem, offset);
+					break;
+				case "minecraft:lectern":
+					CompoundTag book = catchClassCastException(() -> tileEntity.getCompoundTag("Book"));
+					applyOffsetToItem(book, offset);
+					break;
+				case "minecraft:mob_spawner":
+					ListTag<CompoundTag> spawnPotentials = catchClassCastException(() -> tileEntity.getListTag("SpawnPotentials").asCompoundTagList());
+					if (spawnPotentials != null) {
+						for (CompoundTag spawnPotential : spawnPotentials) {
+							CompoundTag entity = catchClassCastException(() -> spawnPotential.getCompoundTag("Entity"));
+							if (entity != null) {
+								applyOffsetToEntity(entity, offset);
+							}
+						}
+					}
+			}
+		}
+
+		if (tileEntity.containsKey("Items")) {
+			ListTag<CompoundTag> items = catchClassCastException(() -> tileEntity.getListTag("Items").asCompoundTagList());
+			if (items != null) {
+				items.forEach(i -> applyOffsetToItem(i, offset));
+			}
 		}
 	}
 
@@ -397,52 +428,52 @@ public class MCAChunkData {
 		String id = catchClassCastException(() -> entity.getString("id"));
 		if (id != null) {
 			switch (id) {
-				case "dolphin":
+				case "minecraft:dolphin":
 					if (entity.getBoolean("CanFindTreasure")) {
 						applyIntIfPresent(entity, "TreasurePosX", offset.getX());
 						applyIntIfPresent(entity, "TreasurePosZ", offset.getY());
 					}
 					break;
-				case "phantom":
+				case "minecraft:phantom":
 					applyIntIfPresent(entity, "AX", offset.getX());
 					applyIntIfPresent(entity, "AZ", offset.getY());
 					break;
-				case "shulker":
+				case "minecraft:shulker":
 					applyIntIfPresent(entity, "APX", offset.getX());
 					applyIntIfPresent(entity, "APZ", offset.getY());
 					break;
-				case "turtle":
+				case "minecraft:turtle":
 					applyIntIfPresent(entity, "HomePosX", offset.getX());
 					applyIntIfPresent(entity, "HomePosZ", offset.getY());
 					applyIntIfPresent(entity, "TravelPosX", offset.getX());
 					applyIntIfPresent(entity, "TravelPosZ", offset.getY());
 					break;
-				case "vex":
+				case "minecraft:vex":
 					applyIntIfPresent(entity, "BoundX", offset.getX());
 					applyIntIfPresent(entity, "BoundZ", offset.getY());
 					break;
-				case "wandering_trader":
+				case "minecraft:wandering_trader":
 					if (entity.containsKey("WanderTarget")) {
 						CompoundTag wanderTarget = catchClassCastException(() -> entity.getCompoundTag("WanderTarget"));
 						applyIntOffsetIfRootPresent(wanderTarget, "X", "Z", offset);
 					}
 					break;
-				case "shulker_bullet":
+				case "minecraft:shulker_bullet":
 					CompoundTag owner = catchClassCastException(() -> entity.getCompoundTag("Owner"));
 					applyIntOffsetIfRootPresent(owner, "X", "Z", offset);
 					CompoundTag target = catchClassCastException(() -> entity.getCompoundTag("Target"));
 					applyIntOffsetIfRootPresent(target, "X", "Z", offset);
 					break;
-				case "end_crystal":
+				case "minecraft:end_crystal":
 					CompoundTag beamTarget = catchClassCastException(() -> entity.getCompoundTag("BeamTarget"));
 					applyIntOffsetIfRootPresent(beamTarget, "X", "Z", offset);
 					break;
-				case "item_frame":
-				case "painting":
+				case "minecraft:item_frame":
+				case "minecraft:painting":
 					applyIntIfPresent(entity, "TileX", offset.getX());
 					applyIntIfPresent(entity, "TileZ", offset.getY());
 					break;
-				case "villager":
+				case "minecraft:villager":
 					if (entity.containsKey("Brain")) {
 						CompoundTag brain = catchClassCastException(() -> entity.getCompoundTag("Brain"));
 						if (brain != null && brain.containsKey("memories")) {
@@ -473,17 +504,20 @@ public class MCAChunkData {
 						}
 					}
 					break;
-				case "pillager":
-				case "witch":
-				case "vindicator":
-				case "ravager":
-				case "illusioner":
-				case "evoker":
-					if (entity.containsKey("PatrolTarget")) {
-						CompoundTag patrolTarget = catchClassCastException(() -> entity.getCompoundTag("PatrolTarget"));
+				case "minecraft:pillager":
+				case "minecraft:witch":
+				case "minecraft:vindicator":
+				case "minecraft:ravager":
+				case "minecraft:illusioner":
+				case "minecraft:evoker":
+					CompoundTag patrolTarget = catchClassCastException(() -> entity.getCompoundTag("PatrolTarget"));
+					if (patrolTarget != null) {
 						applyIntOffsetIfRootPresent(patrolTarget, "X", "Z", offset);
 					}
 					break;
+				case "minecraft:falling_block":
+					CompoundTag tileEntityData = catchClassCastException(() -> entity.getCompoundTag("TileEntityData"));
+					applyOffsetToTileEntity(tileEntityData, offset);
 			}
 		}
 
@@ -492,6 +526,59 @@ public class MCAChunkData {
 		if (entity.containsKey("Passenger")) {
 			CompoundTag passenger = catchClassCastException(() -> entity.getCompoundTag("Passenger"));
 			applyOffsetToEntity(passenger, offset);
+		}
+
+		if (entity.containsKey("Item")) {
+			CompoundTag item = catchClassCastException(() -> entity.getCompoundTag("Item"));
+			applyOffsetToItem(item, offset);
+		}
+
+		if (entity.containsKey("Items")) {
+			ListTag<CompoundTag> items = catchClassCastException(() -> entity.getListTag("Items").asCompoundTagList());
+			if (items != null) {
+				items.forEach(i -> applyOffsetToItem(i, offset));
+			}
+		}
+
+		if (entity.containsKey("HandItems")) {
+			ListTag<CompoundTag> items = catchClassCastException(() -> entity.getListTag("HandItems").asCompoundTagList());
+			if (items != null) {
+				items.forEach(i -> applyOffsetToItem(i, offset));
+			}
+		}
+
+		if (entity.containsKey("ArmorItems")) {
+			ListTag<CompoundTag> items = catchClassCastException(() -> entity.getListTag("ArmorItems").asCompoundTagList());
+			if (items != null) {
+				items.forEach(i -> applyOffsetToItem(i, offset));
+			}
+		}
+	}
+
+	private void applyOffsetToItem(CompoundTag item, Point2i offset) {
+		if (item != null) {
+			String id = catchClassCastException(() -> item.getString("id"));
+			CompoundTag tag = catchClassCastException(() -> item.getCompoundTag("tag"));
+
+			if (id != null && tag != null) {
+				switch (id) {
+					case "minecraft:compass":
+						CompoundTag lodestonePos = catchClassCastException(() -> tag.getCompoundTag("LodestonePos"));
+						applyIntOffsetIfRootPresent(lodestonePos, "X", "Z", offset);
+						break;
+				}
+
+				// recursively update all items in child containers
+
+				CompoundTag blockEntityTag = catchClassCastException(() -> tag.getCompoundTag("BlockEntityTag"));
+				if (blockEntityTag != null) {
+					ListTag<CompoundTag> items = catchClassCastException(() -> blockEntityTag.getListTag("Items").asCompoundTagList());
+					if (items != null) {
+						items.forEach(i -> applyOffsetToItem(i, offset));
+					}
+				}
+			}
+
 		}
 	}
 

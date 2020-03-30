@@ -1,5 +1,6 @@
 package net.querz.mcaselector.tiles;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -17,7 +18,11 @@ import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.ImageHelper;
 import net.querz.mcaselector.version.VersionController;
+
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public final class TileImage {
 
@@ -72,7 +77,7 @@ public final class TileImage {
 		tile.markedChunksImage = wImage;
 	}
 
-	public static Image generateImage(Tile tile, Runnable callback, byte[] rawData) {
+	public static Image generateImage(Tile tile, Consumer<Image> callback, Supplier<Float> scaleSupplier, byte[] rawData) {
 		if (tile.loaded) {
 			Debug.dump("region at " + tile.location + " already loaded");
 			return tile.image;
@@ -95,10 +100,17 @@ public final class TileImage {
 
 		t.reset();
 
-		tile.image = createMCAImage(mcaFile, ptr);
+		Image image = createMCAImage(mcaFile, ptr);
+
+		BufferedImage img = SwingFXUtils.fromFXImage(image, null);
+		int zoomLevel = Tile.getZoomLevel(scaleSupplier.get());
+		BufferedImage scaled = ImageHelper.scaleImage(img, (double) Tile.SIZE / zoomLevel);
+		image = SwingFXUtils.toFXImage(scaled, null);
+
+		tile.image = image;
 		tile.loaded = true;
 
-		callback.run();
+		callback.accept(image);
 
 		Debug.dumpf("took %s to generate image of %s", t, file.getName());
 

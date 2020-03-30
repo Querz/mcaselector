@@ -151,7 +151,9 @@ public final class Debug {
 			while (br != null) {
 				try {
 					Thread.sleep(10000);
-					br.flush();
+					if (br != null) {
+						br.flush();
+					}
 				} catch (InterruptedException | IOException ex) {
 					System.out.println("failed to flush debug log file");
 					ex.printStackTrace();

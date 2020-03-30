@@ -53,6 +53,8 @@ public class TileMap extends Canvas {
 
 	private boolean trackpadScrolling = false;
 
+	private ImagePool imgPool;
+
 	public TileMap(Window window, int width, int height) {
 		super(width, height);
 		this.window = window;
@@ -79,6 +81,9 @@ public class TileMap extends Canvas {
 		this.setOnKeyPressed(this::onKeyPressed);
 		this.setOnKeyReleased(this::onKeyReleased);
 		offset = new Point2f(-((double) width / 2 - (double) Tile.SIZE / 2), -((double) height / 2 - (double) Tile.SIZE / 2));
+
+		imgPool = new ImagePool(this, Config.IMAGE_POOL_SIZE);
+
 		update();
 	}
 
@@ -314,6 +319,7 @@ public class TileMap extends Canvas {
 	public void clear() {
 		tiles.clear();
 		visibleTiles.clear();
+		imgPool.clear();
 		selectedChunks = 0;
 	}
 
@@ -323,6 +329,7 @@ public class TileMap extends Canvas {
 			visibleTiles.remove(tile);
 			selectedChunks -= tile.getMarkedChunks().size();
 			selectedChunks -= tile.isMarked() ? Tile.CHUNKS : 0;
+			imgPool.discardImage(tile.getLocation());
 			tile.unload();
 		}
 	}
@@ -492,9 +499,10 @@ public class TileMap extends Canvas {
 			Point2i regionOffset = region.regionToBlock().sub((int) offset.getX(), (int) offset.getY());
 
 			if (!tile.isLoaded() && !tile.isLoading()) {
-				RegionImageGenerator.generate(tile, () -> Platform.runLater(this::update), this::getScale, false, false, null);
+				imgPool.requestImage(tile, getZoomLevel());
 			}
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
+
 			TileImage.draw(tile, ctx, scale, p);
 		});
 

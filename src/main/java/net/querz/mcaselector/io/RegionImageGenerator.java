@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class RegionImageGenerator {
@@ -24,9 +25,9 @@ public class RegionImageGenerator {
 
 	private RegionImageGenerator() {}
 
-	public static void generate(Tile tile, Runnable callback, Supplier<Float> scaleSupplier, boolean force, boolean scaleOnly, Progress progressChannel) {
+	public static void generate(Tile tile, Consumer<Image> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
 		setLoading(tile, true);
-		MCAFilePipe.addJob(new MCAImageLoadJob(tile.getMCAFile(), tile, callback, scaleSupplier, force, scaleOnly, progressChannel));
+		MCAFilePipe.addJob(new MCAImageLoadJob(tile.getMCAFile(), tile, callback, scaleSupplier, scaleOnly, progressChannel));
 	}
 
 	public static boolean isLoading(Tile tile) {
@@ -45,27 +46,22 @@ public class RegionImageGenerator {
 	public static class MCAImageLoadJob extends LoadDataJob {
 
 		private Tile tile;
-		private Runnable callback;
+		private Consumer<Image> callback;
 		private Supplier<Float> scaleSupplier;
-		private boolean force, scaleOnly;
+		private boolean scaleOnly;
 		private Progress progressChannel;
 
-		private MCAImageLoadJob(File file, Tile tile, Runnable callback, Supplier<Float> scaleSupplier, boolean force, boolean scaleOnly, Progress progressChannel) {
+		private MCAImageLoadJob(File file, Tile tile, Consumer<Image> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
 			super(file);
 			this.tile = tile;
 			this.callback = callback;
 			this.scaleSupplier = scaleSupplier;
-			this.force = force;
 			this.scaleOnly = scaleOnly;
 			this.progressChannel = progressChannel;
 		}
 
 		@Override
 		public void execute() {
-			if (!force) {
-				tile.loadFromCache(callback, scaleSupplier);
-			}
-
 			if (!tile.isLoaded()) {
 				byte[] data = load();
 				if (data != null) {
@@ -74,6 +70,7 @@ public class RegionImageGenerator {
 				}
 			}
 			setLoading(tile, false);
+			callback.accept(null);
 			if (progressChannel != null) {
 				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 			}
@@ -87,12 +84,12 @@ public class RegionImageGenerator {
 	private static class MCAImageProcessJob extends ProcessDataJob {
 
 		private Tile tile;
-		private Runnable callback;
+		private Consumer<Image> callback;
 		private Supplier<Float> scaleSupplier;
 		private boolean scaleOnly;
 		private Progress progressChannel;
 
-		private MCAImageProcessJob(File file, byte[] data, Tile tile, Runnable callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
+		private MCAImageProcessJob(File file, byte[] data, Tile tile, Consumer<Image> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
 			super(file, data);
 			this.tile = tile;
 			this.callback = callback;
@@ -104,7 +101,7 @@ public class RegionImageGenerator {
 		@Override
 		public void execute() {
 			Debug.dumpf("generating image for %s", getFile().getAbsolutePath());
-			Image image = TileImage.generateImage(tile, callback, getData());
+			Image image = TileImage.generateImage(tile, callback, scaleSupplier, getData());
 			if (image != null) {
 				MCAFilePipe.executeSaveData(new MCAImageSaveCacheJob(getFile(), image, tile, scaleSupplier, scaleOnly, progressChannel));
 			} else {

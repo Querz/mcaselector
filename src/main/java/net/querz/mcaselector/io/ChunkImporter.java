@@ -204,12 +204,10 @@ public class ChunkImporter {
 					source.mergeChunksInto(destination, offset, overwrite, selection == null ? null : selection.size() == 0 ? null : selection);
 				}
 
-
-
 				MCAFilePipe.executeSaveData(new MCAChunkImporterSaveJob(getFile(), destination, progressChannel));
 
 			} catch (Exception ex) {
-				Debug.errorf("error merging chunks into %s with offset %s: %s", getFile(), offset, ex.getMessage());
+				Debug.error(ex);
 				progressChannel.incrementProgress(getFile().getName());
 			}
 

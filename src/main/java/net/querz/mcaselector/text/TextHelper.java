@@ -88,4 +88,12 @@ public final class TextHelper {
 		}
 		return s.toString();
 	}
+
+	public static String longToBinaryString(long l) {
+		StringBuilder s = new StringBuilder(Long.toBinaryString(l));
+		for (int i = s.length(); i < 64; i++) {
+			s.insert(0, "0");
+		}
+		return s.toString();
+	}
 }

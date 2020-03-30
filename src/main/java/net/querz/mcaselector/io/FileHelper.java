@@ -83,6 +83,10 @@ public final class FileHelper {
 		return new File(cacheDir, createPNGFileName(r));
 	}
 
+	public static File createPNGFilePath(File cacheDir, int zoomLevel, Point2i r) {
+		return new File(cacheDir, zoomLevel + "/" + createPNGFileName(r));
+	}
+
 	public static String createMCAFileName(Point2i r) {
 		return String.format("r.%d.%d.mca", r.getX(), r.getY());
 	}

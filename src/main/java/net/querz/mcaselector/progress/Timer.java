@@ -18,6 +18,7 @@ public class Timer {
 
 	@Override
 	public String toString() {
-		return getMillis() + "ms";
+		long nano = getNano();
+		return String.format("%d.%06dms", nano / 1_000_000, nano % 1_000_000);
 	}
 }
