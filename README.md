@@ -127,13 +127,13 @@ If something is not working properly or if you want to see the exact query that 
 ## Supported Versions
 The MCA Selector currently supports the following Minecraft versions:
 
-| Minecraft Version | DataVersion | Supported |
-| ----------------- | ----------- | :-------: |
-| Beta 1.3 - 1.12.2 | 100 - 1343  | Yes       |
-| 1.13 - 1.13.2     | 1444 - 1631 | Yes       |
-| 1.14 - 1.14.4     | 1901 - 1976 | Yes       |
-| 1.15 - 1.15.2     | 2200 - 2230 | Yes       |
-| 20w07a            | 2506 - ?    | Prerelease |
+| Minecraft Version | DataVersion |
+| ----------------- | ----------- |
+| Beta 1.3 - 1.12.2 | 100 - 1343  |
+| 1.13 - 1.13.2     | 1444 - 1631 |
+| 1.14 - 1.14.4     | 1901 - 1976 |
+| 1.15 - 1.15.2     | 2200 - 2230 |
+| 20w13b            | 2506 - ?    |
 
 ---
 ## Headless mode
@@ -274,7 +274,7 @@ If you would like to contribute a translation, you can find the language files i
 
 ## Download and installation
 
-[**Download Version 1.9.4**](https://github.com/Querz/mcaselector/releases/download/1.9.4/mcaselector-1.9.4.jar)
+[**Download Version 1.9.5**](https://github.com/Querz/mcaselector/releases/download/1.9.5/mcaselector-1.9.5.jar)
 
 "Requirements":
 * Either:
@@ -285,11 +285,11 @@ If you would like to contribute a translation, you can find the language files i
 
 #### If you have Java from Oracle installed on your system
 
-Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.9.4.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
+Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.9.5.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
 
 #### If you have Minecraft Java Edition installed on your system
 
-Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.9.4.jar>`. On Mac OS you should find it in `Applications/Minecraft.app/Contents/runtime/jre-x64/1.8.0_74/bin` where you can execute `./java -jar <path-to-mcaselector-1.9.4.jar>`.
+Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.9.5.jar>`. On Mac OS you should find it in `Applications/Minecraft.app/Contents/runtime/jre-x64/1.8.0_74/bin` where you can execute `./java -jar <path-to-mcaselector-1.9.5.jar>`.
 
 #### If you are using OpenJDK
 
