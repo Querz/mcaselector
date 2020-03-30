@@ -108,6 +108,13 @@ public class ImagePool {
 		clearNoMCACache();
 	}
 
+	public void discardImage(Point2i region) {
+		for (Map.Entry<Integer, LinkedHashMap<Point2i, Image>> scale : pool.entrySet()) {
+			scale.getValue().remove(region);
+		}
+		noMCA.remove(region);
+	}
+
 	public void clearNoMCACache() {
 		noMCA.clear();
 	}

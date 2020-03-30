@@ -196,7 +196,6 @@ public class TileMap extends Canvas {
 	}
 
 	private void onMouseDragged(MouseEvent event) {
-		System.out.println("dragged");
 		if (event.getButton() == MouseButton.MIDDLE
 				|| event.getButton() == MouseButton.PRIMARY && window.isKeyPressed(KeyCode.COMMAND)) {
 			Point2f mouseLocation = new Point2f(event.getX(), event.getY());
@@ -330,6 +329,7 @@ public class TileMap extends Canvas {
 			visibleTiles.remove(tile);
 			selectedChunks -= tile.getMarkedChunks().size();
 			selectedChunks -= tile.isMarked() ? Tile.CHUNKS : 0;
+			imgPool.discardImage(tile.getLocation());
 			tile.unload();
 		}
 	}
