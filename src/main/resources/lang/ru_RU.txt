@@ -1,0 +1,117 @@
+status.region;область
+status.region.tooltip;Указанная область, показывает числа в имени файла.
+status.chunk;чанк
+status.chunk.tooltip;Указанный чанк.
+status.block;блок
+status.block.tooltip;Приблизительные координаты указанного блока
+status.selected;выбрано
+status.selected.tooltip;Количество выбранных чанков.
+status.visible;отображено
+status.visible.tooltip;Количество прогруженных областей для отображения
+status.total;всего
+status.total.tooltip;Общее количество прогруженных областей, включая не отоброжаемые выбранные области.
+menu.file;Файл
+menu.view;Вид
+menu.selection;Выбор
+menu.tools;Инструменты
+menu.about;О программе
+menu.file.open;Открыть
+menu.file.settings;Настройки
+menu.file.quit;Выход
+menu.view.chunk_grid;Сетка чанков
+menu.view.region_grid;Сетка областей
+menu.view.goto;Перейти по координатам
+menu.view.clear_cache;Отчистить кэш
+menu.view.clear_all_cache;Отчистить весь кэш
+menu.selection.clear;Сбросить
+menu.selection.export_chunks;Экспортировать выбранные чанки
+menu.selection.delete_chunks;Удалить выбранные чанки
+menu.selection.import_selection;Выбрать импорт
+menu.selection.export_selection;Выбрать экспорт
+menu.selection.clear_cache;Отчистить кэш
+menu.tools.import_chunks;Импортировать чанки
+menu.tools.filter_chunks;Отфильтровать чанки
+menu.tools.change_fields;Изменить параметры
+menu.tools.edit_nbt;Редактировать чанк
+dialog.settings.title;Настройки
+dialog.settings.language;Язык
+dialog.settings.read_threads;Чтение потоков
+dialog.settings.process_threads;Обработка потоков
+dialog.settings.write_threads;Написание потоков
+dialog.settings.max_files;Максимум загружаемых файлов
+dialog.settings.region_color;Цвет выделяемых областей
+dialog.settings.chunk_color;Цвет выделяемых чанков
+dialog.settings.print_debug;Отображать системные сообщения
+dialog.settings.reset;Сбросить
+dialog.goto.title;Перейти по координатам
+dialog.confirmation.question;Вы уверены?
+dialog.delete_chunks_confirmation.title;Удалить чанки
+dialog.delete_chunks_confirmation.header_short;Вы удаляете неизвестное число чанков из этого мира.
+dialog.delete_chunks_confirmation.header_verbose;Вы удаляете %d чанков из этого мира.
+dialog.import_chunks_confirmation.title;Импорт чанков
+dialog.import_chunks_confirmation.header;Вы импортируете неизвестное число чанков в этот мир.
+dialog.import_chunks_confirmation.options;Опции
+dialog.import_chunks_confirmation.options.offset;Смещение
+dialog.import_chunks_confirmation.options.overwrite;Заменить существующие чанки
+dialog.import_chunks_confirmation.options.selection_only;Применить только к выбранным
+dialog.import_chunks_confirmation.warning;Внимание: Импорт чанков со смещением не обновит содержимое командных блоков.
+dialog.export_chunks_confirmation.title;Экспорт чанков
+dialog.export_chunks_confirmation.header_short;Вы экспортируете неизвестное число чанков из этого мира.
+dialog.export_chunks_confirmation.header_verbose;Вы экспортируете %d чанков из этого мира.
+dialog.filter_chunks.title;Фильтровать чанки
+dialog.filter_chunks.filter.add.tooltip;Добавьте новое условие ниже этого
+dialog.filter_chunks.filter.delete.tooltip;Удалить условие
+dialog.filter_chunks.filter.type.tooltip;Тип условия
+dialog.filter_chunks.filter.operator.tooltip;Оператор для связи нескольких условий
+dialog.filter_chunks.filter.comparator.tooltip;Компаратор
+dialog.filter_chunks.select;Выбрать
+dialog.filter_chunks.select.tooltip;Создает набор подверженных чанков
+dialog.filter_chunks.export;Экспорт
+dialog.filter_chunks.export.tooltip;Экспортирует все подверженные чанки в новый каталог
+dialog.filter_chunks.delete;Удалить
+dialog.filter_chunks.delete.tooltip;Удаляет все подверженные чанки из этого мира.
+dialog.filter_chunks.selection_only;Применить только к выбранным
+dialog.filter_chunks.selection_radius;Радиус выбора
+dialog.filter_chunks.selection_only.tooltip;Если этот фильтр должен применяться только к выбранным
+dialog.change_nbt.title;Изменить NBT
+dialog.change_nbt.change;Изменить
+dialog.change_nbt.change.tooltip;Изменяет значение только при наличии ключа
+dialog.change_nbt.force;Сила
+dialog.change_nbt.force.tooltip;Создает тег при его отсутствии
+dialog.change_nbt.selection_only;Применить только к выбранным
+dialog.change_nbt.selection_only.tooltip;Если этот фильтр должен применяться только к выбранным
+dialog.change_nbt_confirmation.title;Изменить NBT
+dialog.change_nbt_confirmation.header_short;Вы изменяете параметры у неизвестного числа чанков в этом мире.
+dialog.change_nbt_confirmation.header_verbose;Вы изменяете параметры у %d чанков в этом мире.
+dialog.edit_nbt.title;Редактировать чанк
+dialog.edit_nbt.placeholder.loading;загрузка...
+dialog.edit_nbt.placeholder.no_chunk_data;не найдено информации чанка
+dialog.edit_nbt.placeholder.no_region_file;файл области не существует
+dialog.edit_array.index;Индекс
+dialog.edit_array.value;Значение
+dialog.about.title;О программе
+dialog.about.header;О MCA Selector
+dialog.about.version;Версия:
+dialog.about.version.unknown;неизвестно
+dialog.about.version.check;проверить
+dialog.about.version.checking;проверка...
+dialog.about.version.up_to_date;Последняя версия
+dialog.about.version.error;Ошибка
+dialog.about.license;Лицензия:
+dialog.about.copyright;Авторские права:
+dialog.about.source;Источник:
+dialog.progress.title;Прогресс
+dialog.progress.no_files;нет файлов
+dialog.progress.running;выполнение...
+dialog.progress.cancelling;отмена...
+dialog.progress.collecting_data;сбор информации...
+dialog.progress.done;выполнено.
+dialog.progress.title.deleting_selection;Удаление выбора...
+dialog.progress.title.exporting_selection;Экспорт выбора...
+dialog.progress.title.importing_chunks;Импорт чанков...
+dialog.progress.title.deleting_filtered_chunks;Удаление указаных чанков...
+dialog.progress.title.exporting_filtered_chunks;Экспорт указанных чанков...
+dialog.progress.title.selecting_filtered_chunks;Выбор указанных чанков...
+dialog.progress.title.changing_nbt_data;изменение NBT параметров...
+button.cancel;Отменить
+button.ok;OK
