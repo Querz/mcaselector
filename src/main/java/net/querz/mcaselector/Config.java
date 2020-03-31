@@ -5,7 +5,6 @@ import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.Translation;
 import java.io.*;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.*;
 
@@ -22,9 +21,10 @@ public final class Config {
 			if (!jarPath.endsWith(".jar")) { // no jar
 				path = jarPath.replaceAll("build/classes/java/main/$", "");
 			} else {
-				path = jarPath.substring(0, jarPath.lastIndexOf(File.separator));
+				File jarFile = new File(jarPath);
+				path = jarFile.getParent();
 			}
-		} catch (URISyntaxException ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		DEFAULT_BASE_DIR = new File(path, "cache");
