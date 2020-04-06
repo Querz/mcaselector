@@ -88,6 +88,18 @@ task updateReadme {
 	}
 }
 
+import org.gradle.internal.jvm.Jvm
+
+task printGradleVersion() {
+	def gradleVersion = project.getGradle().getGradleVersion()
+	println "Gradle version: $gradleVersion"
+
+	def currentJvm = Jvm.current()
+	println "JVM: $currentJvm"
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 import java.nio.file.Files
 
 /**
