@@ -3,7 +3,6 @@ package net.querz.mcaselector.io;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.text.TextHelper;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.DoubleTag;
 import net.querz.nbt.IntArrayTag;
@@ -71,7 +70,7 @@ public class MCAChunkData {
 			data = null;
 			return;
 		}
-		Tag tag = Tag.deserialize(nbtIn, Tag.DEFAULT_MAX_DEPTH);
+		Tag<?> tag = Tag.deserialize(nbtIn, Tag.DEFAULT_MAX_DEPTH);
 
 		if (tag instanceof CompoundTag) {
 			data = (CompoundTag) tag;
@@ -96,7 +95,7 @@ public class MCAChunkData {
 				return;
 		}
 
-		Tag tag = Tag.deserialize(nbtIn, Tag.DEFAULT_MAX_DEPTH);
+		Tag<?> tag = Tag.deserialize(nbtIn, Tag.DEFAULT_MAX_DEPTH);
 
 		if (tag instanceof CompoundTag) {
 			data = (CompoundTag) tag;
@@ -136,7 +135,7 @@ public class MCAChunkData {
 	}
 
 	public void changeData(List<Field<?>> fields, boolean force) {
-		for (Field field : fields) {
+		for (Field<?> field : fields) {
 			try {
 				if (force) {
 					field.force(data);

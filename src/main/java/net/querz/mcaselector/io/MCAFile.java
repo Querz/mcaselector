@@ -390,7 +390,7 @@ public class MCAFile {
 	}
 
 	public MCAChunkData getChunkData(int index) {
-		return new MCAChunkData(location.add(getChunkOffsetFromIndex(index)), offsets[index], timestamps[index], sectors[index]);
+		return new MCAChunkData(location.regionToChunk().add(getChunkOffsetFromIndex(index)), offsets[index], timestamps[index], sectors[index]);
 	}
 
 	public void setChunkData(int index, MCAChunkData chunk) {

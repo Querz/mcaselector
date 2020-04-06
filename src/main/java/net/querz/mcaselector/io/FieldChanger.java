@@ -52,23 +52,23 @@ public class FieldChanger {
 
 		@Override
 		public void execute() {
+			Set<Point2i> chunks = null;
+			if (selection != null) {
+				Matcher m = FileHelper.REGION_GROUP_PATTERN.matcher(getFile().getName());
+				if (m.find()) {
+					int regionX = Integer.parseInt(m.group("regionX"));
+					int regionZ = Integer.parseInt(m.group("regionZ"));
+					Point2i location = new Point2i(regionX, regionZ);
+					if (!selection.containsKey(location)) {
+						Debug.dumpf("will not apply nbt changes to %s", getFile().getName());
+						progressChannel.incrementProgress(getFile().getName());
+						return;
+					}
+					chunks = selection.get(location);
+				}
+			}
 			byte[] data = load();
 			if (data != null) {
-				Set<Point2i> chunks = null;
-				if (selection != null) {
-					Matcher m = FileHelper.REGION_GROUP_PATTERN.matcher(getFile().getName());
-					if (m.find()) {
-						int regionX = Integer.parseInt(m.group("regionX"));
-						int regionZ = Integer.parseInt(m.group("regionZ"));
-						Point2i location = new Point2i(regionX, regionZ);
-						if (!selection.containsKey(location)) {
-							Debug.dumpf("will not apply nbt changes to %s", getFile().getName());
-							progressChannel.incrementProgress(getFile().getName());
-							return;
-						}
-						chunks = selection.get(location);
-					}
-				}
 				MCAFilePipe.executeProcessData(new MCAFieldChangeProcessJob(getFile(), data, fields, force, chunks, progressChannel));
 			} else {
 				Debug.errorf("error loading mca file %s", getFile().getName());
