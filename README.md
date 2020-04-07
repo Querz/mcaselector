@@ -7,6 +7,7 @@
 
 <!--toc-start-->
 * [Usage](#usage)
+  * [Videos](#videos)
   * [Navigation](#navigation)
   * [Selections](#selections)
   * [Chunk filter](#chunk-filter)
@@ -38,6 +39,11 @@
 ---
 
 ## Usage
+### Videos
+For people who prefer watching a video to understand how the MCA Selector works, there is a very nice tutorial on Youtube explaining the basics:
+
+* [How To Reset The End Dimension! - The Minecraft Survival Guide](https://www.youtube.com/watch?v=p-2gFkJl_Lo) starting at [8:45](https://www.youtube.com/watch?v=p-2gFkJl_Lo&t=8m45s) by [Pixlriffs](https://www.youtube.com/channel/UCgGjBqZZtAjxfpGSba7d6ww)
+
 ### Navigation
 Executing the tool, it shows an empty window with a chunk and a region grid. To actually show a world, open a folder containing Minecraft Anvil (\*.mca) files. The tool will then render a top-down view of this world that you can zoom into and zoom out of by scrolling up and down and that you can move around using the middle mouse button (`Cmd+LMB` on Mac OS) or using `WASD`.
 
