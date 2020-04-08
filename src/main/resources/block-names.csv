@@ -62,6 +62,10 @@ black_stained_glass_pane
 black_terracotta
 black_wall_banner
 black_wool
+blackstone
+blackstone_slab
+blackstone_stairs
+blackstone_wall
 blast_furnace
 blue_banner
 blue_bed
@@ -117,6 +121,8 @@ cauldron
 chain_command_block
 chest
 chipped_anvil
+chiseled_nether_bricks
+chiseled_polished_blackstone
 chiseled_quartz_block
 chiseled_red_sandstone
 chiseled_sandstone
@@ -138,6 +144,8 @@ comparator
 composter
 conduit
 cornflower
+cracked_nether_bricks
+cracked_polished_blackstone_bricks
 cracked_stone_bricks
 crafting_table
 creeper_head
@@ -255,6 +263,7 @@ fletching_table
 flower_pot
 frosted_ice
 furnace
+gilded_blackstone
 glass
 glass_pane
 glowstone
@@ -481,6 +490,16 @@ polished_andesite
 polished_andesite_slab
 polished_andesite_stairs
 polished_basalt
+polished_blackstone
+polished_blackstone_brick_slab
+polished_blackstone_brick_stairs
+polished_blackstone_brick_wall
+polished_blackstone_bricks
+polished_blackstone_button
+polished_blackstone_pressure_plate
+polished_blackstone_slab
+polished_blackstone_stairs
+polished_blackstone_wall
 polished_diorite
 polished_diorite_slab
 polished_diorite_stairs
@@ -545,6 +564,7 @@ purpur_pillar
 purpur_slab
 purpur_stairs
 quartz_block
+quartz_bricks
 quartz_pillar
 quartz_slab
 quartz_stairs
@@ -612,6 +632,7 @@ smooth_stone
 smooth_stone_slab
 snow
 snow_block
+soul_campfire
 soul_fire
 soul_fire_lantern
 soul_fire_torch

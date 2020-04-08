@@ -87,6 +87,10 @@ black_stained_glass;191919
 black_terracotta;251610
 black_wall_banner;a2824e
 black_wool;141519
+blackstone_slab;2a2429
+blackstone_stairs;2a2429
+blackstone_wall;2a2328
+blackstone;2a2429
 blast_furnace;505051
 blue_banner;a2824e
 blue_bed;a2824e
@@ -167,6 +171,8 @@ chain_command_block:conditional=true,facing=up;81a193
 chain_command_block:conditional=true,facing=west;81a193
 chest;a2824e
 chipped_anvil;484848
+chiseled_nether_bricks;2f171c
+chiseled_polished_blackstone;353038
 chiseled_quartz_block;e7e2d9
 chiseled_red_sandstone;b5611f
 chiseled_sandstone;dfd6aa
@@ -231,6 +237,8 @@ comparator:facing=west,mode=subtract,powered=true;afa19f
 composter;986233
 conduit;9f8b71
 cornflower;4f7992
+cracked_nether_bricks;281417
+cracked_polished_blackstone_bricks;2b252b
 cracked_stone_bricks;767576
 crafting_table;77492a
 creeper_head;513e32
@@ -380,6 +388,7 @@ frosted_ice:age=1;8bb4fc
 frosted_ice:age=2;8ab3fc
 frosted_ice:age=3;87b2fc
 furnace;6e6d6d
+gilded_blackstone;382b26
 glass_pane;d3eff4
 glass;afd5db
 glowstone;ab8354
@@ -614,6 +623,16 @@ polished_andesite_slab;848685
 polished_andesite_stairs;848685
 polished_andesite;848685
 polished_basalt;636264
+polished_blackstone_brick_slab;2e2930
+polished_blackstone_brick_stairs;2e2930
+polished_blackstone_brick_wall;2e2930
+polished_blackstone_bricks;2e2930
+polished_blackstone_button;353038
+polished_blackstone_pressure_plate;353038
+polished_blackstone_slab;353038
+polished_blackstone_stairs;353038
+polished_blackstone_wall;353038
+polished_blackstone;353038
 polished_diorite_slab;c0c1c2
 polished_diorite_stairs;c0c1c2
 polished_diorite;c0c1c2
@@ -696,6 +715,7 @@ purpur_pillar;aa80aa
 purpur_slab;a97da9
 purpur_stairs;a97da9
 quartz_block;ebe5de
+quartz_bricks;eae4dd
 quartz_pillar;ebe5de
 quartz_slab;ebe5de
 quartz_stairs;ebe5de
@@ -860,6 +880,14 @@ smooth_stone_slab;9e9e9e
 smooth_stone;9e9e9e
 snow_block;f9fefe
 snow;f9fefe
+soul_campfire:facing=east,lit=false;4f4a43
+soul_campfire:facing=east,lit=true;456a68
+soul_campfire:facing=north,lit=false;4f4a43
+soul_campfire:facing=north,lit=true;456a68
+soul_campfire:facing=south,lit=false;4f4a43
+soul_campfire:facing=south,lit=true;456a68
+soul_campfire:facing=west,lit=false;4f4a43
+soul_campfire:facing=west,lit=true;456a68
 soul_fire_lantern;476372
 soul_fire_torch;6d7359
 soul_fire_wall_torch;6d7359
