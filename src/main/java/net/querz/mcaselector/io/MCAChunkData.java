@@ -377,12 +377,14 @@ public class MCAChunkData {
 					applyOffsetToItem(book, offset);
 					break;
 				case "minecraft:mob_spawner":
-					ListTag<CompoundTag> spawnPotentials = catchClassCastException(() -> tileEntity.getListTag("SpawnPotentials").asCompoundTagList());
-					if (spawnPotentials != null) {
-						for (CompoundTag spawnPotential : spawnPotentials) {
-							CompoundTag entity = catchClassCastException(() -> spawnPotential.getCompoundTag("Entity"));
-							if (entity != null) {
-								applyOffsetToEntity(entity, offset);
+					if (tileEntity.containsKey("SpawnPotentials")) {
+						ListTag<CompoundTag> spawnPotentials = catchClassCastException(() -> tileEntity.getListTag("SpawnPotentials").asCompoundTagList());
+						if (spawnPotentials != null) {
+							for (CompoundTag spawnPotential : spawnPotentials) {
+								CompoundTag entity = catchClassCastException(() -> spawnPotential.getCompoundTag("Entity"));
+								if (entity != null) {
+									applyOffsetToEntity(entity, offset);
+								}
 							}
 						}
 					}
@@ -480,21 +482,21 @@ public class MCAChunkData {
 							if (memories != null && memories.size() > 0) {
 								if (memories.containsKey("minecraft:meeting_point")) {
 									CompoundTag meetingPoint = catchClassCastException(() -> memories.getCompoundTag("minecraft:meeting_point"));
-									if (meetingPoint != null) {
+									if (meetingPoint != null && meetingPoint.containsKey("pos")) {
 										ListTag<IntTag> pos = catchClassCastException(() -> meetingPoint.getListTag("pos").asIntTagList());
 										applyOffsetToIntListPos(pos, offset);
 									}
 								}
 								if (memories.containsKey("minecraft:home")) {
 									CompoundTag home = catchClassCastException(() -> memories.getCompoundTag("minecraft:home"));
-									if (home != null) {
+									if (home != null && home.containsKey("pos")) {
 										ListTag<IntTag> pos = catchClassCastException(() -> home.getListTag("pos").asIntTagList());
 										applyOffsetToIntListPos(pos, offset);
 									}
 								}
 								if (memories.containsKey("minecraft:job_site")) {
 									CompoundTag jobSite = catchClassCastException(() -> memories.getCompoundTag("minecraft:job_site"));
-									if (jobSite != null) {
+									if (jobSite != null && jobSite.containsKey("pos")) {
 										ListTag<IntTag> pos = catchClassCastException(() -> jobSite.getListTag("pos").asIntTagList());
 										applyOffsetToIntListPos(pos, offset);
 									}
@@ -571,9 +573,11 @@ public class MCAChunkData {
 
 				CompoundTag blockEntityTag = catchClassCastException(() -> tag.getCompoundTag("BlockEntityTag"));
 				if (blockEntityTag != null) {
-					ListTag<CompoundTag> items = catchClassCastException(() -> blockEntityTag.getListTag("Items").asCompoundTagList());
-					if (items != null) {
-						items.forEach(i -> applyOffsetToItem(i, offset));
+					if (blockEntityTag.containsKey("Items")) {
+						ListTag<CompoundTag> items = catchClassCastException(() -> blockEntityTag.getListTag("Items").asCompoundTagList());
+						if (items != null) {
+							items.forEach(i -> applyOffsetToItem(i, offset));
+						}
 					}
 				}
 			}
