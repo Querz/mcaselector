@@ -34,6 +34,7 @@ jar {
 	manifest {
 		attributes 'Main-Class': 'net.querz.mcaselector.Main', 'Application-Version': project.version
 	}
+	from 'LICENSE'
 }
 
 shadowJar {
@@ -41,6 +42,7 @@ shadowJar {
 		attributes 'Main-Class': 'net.querz.mcaselector.Main'
 	}
 	configurations = [project.configurations.shadow]
+	from 'LICENSE'
 }
 
 compileJava {
