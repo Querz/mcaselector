@@ -94,11 +94,12 @@ public final class Config {
 
 	public static void setDebug(boolean debug) {
 		if (debug && !Config.debug) {
+			Config.debug = true;
 			Debug.initLogWriter();
 		} else if (!debug && Config.debug) {
+			Config.debug = false;
 			Debug.flushAndCloseLogWriter();
 		}
-		Config.debug = debug;
 	}
 
 	public static boolean debug() {
