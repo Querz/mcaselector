@@ -45,7 +45,7 @@ public class ImagePool {
 		// check if image exists in pool
 		Image img = pool.get(scale).get(tile.location);
 		if (img != null) {
-			Debug.dumpf("image was cached in image pool: %d/%s\n", scale, tile.location);
+			Debug.dumpf("image was cached in image pool: %d/%s", scale, tile.location);
 			tile.setImage(img);
 			tile.setLoaded(true);
 			tile.setLoading(false);

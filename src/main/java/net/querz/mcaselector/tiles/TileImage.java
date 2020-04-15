@@ -105,16 +105,16 @@ public final class TileImage {
 		BufferedImage img = SwingFXUtils.fromFXImage(image, null);
 		int zoomLevel = Tile.getZoomLevel(scaleSupplier.get());
 		BufferedImage scaled = ImageHelper.scaleImage(img, (double) Tile.SIZE / zoomLevel);
-		image = SwingFXUtils.toFXImage(scaled, null);
+		Image scaledImage = SwingFXUtils.toFXImage(scaled, null);
 
-		tile.image = image;
+		tile.image = scaledImage;
 		tile.loaded = true;
 
-		callback.accept(image);
+		callback.accept(scaledImage);
 
 		Debug.dumpf("took %s to generate image of %s", t, file.getName());
 
-		return tile.image;
+		return image;
 	}
 
 	private static Image createMCAImage(MCAFile mcaFile, ByteArrayPointer ptr) {
