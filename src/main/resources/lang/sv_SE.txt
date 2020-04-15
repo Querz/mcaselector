@@ -33,6 +33,7 @@ menu.tools.import_chunks;Importera chunks
 menu.tools.filter_chunks;Filtrera chunks
 menu.tools.change_fields;Ändra fält
 menu.tools.edit_nbt;Ändra chunk
+menu.tools.swap_chunks;Byta chunks
 dialog.settings.title;Inställningar
 dialog.settings.language;Språk
 dialog.settings.read_threads;Läs Trådar

@@ -36,6 +36,15 @@ public class MCAFile {
 		chunks = new MCAChunkData[Tile.CHUNKS];
 	}
 
+	public boolean save(File file) {
+		try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
+			return saveAll(raf);
+		} catch (Exception ex) {
+			Debug.error(ex);
+		}
+		return false;
+	}
+
 	//returns whether there were any chunks written to file
 	public boolean saveAll(RandomAccessFile raf) throws Exception {
 		int globalOffset = 2;
@@ -53,7 +62,13 @@ public class MCAFile {
 					continue;
 				}
 
-				lastWritten = data.saveData(raf);
+				try {
+					lastWritten = data.saveData(raf);
+				} catch (Exception ex) {
+					System.out.println("failed: " + data.getAbsoluteLocation());
+					System.out.println("data: " + data);
+					throw ex;
+				}
 
 				int sectors = (lastWritten >> 12) + (lastWritten % SECTION_SIZE == 0 ? 0 : 1);
 
@@ -78,6 +93,28 @@ public class MCAFile {
 		}
 
 		return globalOffset != 2;
+	}
+
+	public static MCAFile read(File file) {
+		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+			MCAFile m = readHeader(file, raf);
+			if (m != null) {
+				for (int i = 0; i < m.offsets.length; i++) {
+					m.chunks[i] = m.getChunkData(i);
+					try {
+						m.chunks[i].readHeader(raf);
+						m.chunks[i].loadData(raf);
+					} catch (Exception ex) {
+						Debug.errorf("failed to load chunk at index %d: %s", i, ex.getMessage());
+						Debug.error(ex);
+					}
+				}
+			}
+			return m;
+		} catch (Exception ex) {
+			Debug.error(ex);
+		}
+		return null;
 	}
 
 	public static MCAFile readAll(File file, ByteArrayPointer ptr) {
@@ -146,6 +183,30 @@ public class MCAFile {
 			Debug.error(ex);
 		}
 		return null;
+	}
+
+	public static MCAFile readHeader(File file, RandomAccessFile raf) {
+		try {
+			MCAFile mcaFile = new MCAFile(file);
+			mcaFile.readHeader(raf);
+			return mcaFile;
+		} catch (Exception ex) {
+			Debug.error(ex);
+		}
+		return null;
+	}
+
+	private void readHeader(RandomAccessFile raf) throws IOException {
+		raf.seek(0);
+		for (int i = 0; i < offsets.length; i++) {
+			int offset = (raf.read()) << 16;
+			offset |= (raf.read() & 0xFF) << 8;
+			offsets[i] = offset | raf.read() & 0xFF;
+			sectors[i] = raf.readByte();
+		}
+		for (int i = 0; i < timestamps.length; i++) {
+			timestamps[i] = raf.readInt();
+		}
 	}
 
 	private void readHeader(ByteArrayPointer ptr) throws IOException {
@@ -389,12 +450,24 @@ public class MCAFile {
 		return new Point2i(x, z);
 	}
 
+	public MCAChunkData getChunkData(Point2i location) {
+		return getChunkData(getChunkIndex(location));
+	}
+
 	public MCAChunkData getChunkData(int index) {
 		return new MCAChunkData(location.regionToChunk().add(getChunkOffsetFromIndex(index)), offsets[index], timestamps[index], sectors[index]);
 	}
 
+	public MCAChunkData getLoadedChunkData(Point2i location) {
+		return chunks[getChunkIndex(location)];
+	}
+
 	public void setChunkData(int index, MCAChunkData chunk) {
 		chunks[index] = chunk;
+	}
+
+	public void setChunkData(Point2i location, MCAChunkData chunk) {
+		chunks[getChunkIndex(location)] = chunk;
 	}
 
 	public void setTimeStamp(int index, int timestamp) {

@@ -33,6 +33,7 @@ menu.tools.import_chunks;Import chunks
 menu.tools.filter_chunks;Filter chunks
 menu.tools.change_fields;Change fields
 menu.tools.edit_nbt;Edit chunk
+menu.tools.swap_chunks;Swap chunks
 dialog.settings.title;Settings
 dialog.settings.language;Language
 dialog.settings.read_threads;Read Threads

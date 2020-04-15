@@ -51,6 +51,7 @@ public enum Translation {
 	MENU_TOOLS_FILTER_CHUNKS("menu.tools.filter_chunks"),
 	MENU_TOOLS_CHANGE_FIELDS("menu.tools.change_fields"),
 	MENU_TOOLS_EDIT_NBT("menu.tools.edit_nbt"),
+	MENU_TOOLS_SWAP_CHUNKS("menu.tools.swap_chunks"),
 	DIALOG_SETTINGS_TITLE("dialog.settings.title"),
 	DIALOG_SETTINGS_LANGUAGE("dialog.settings.language"),
 	DIALOG_SETTINGS_READ_THREADS("dialog.settings.read_threads"),

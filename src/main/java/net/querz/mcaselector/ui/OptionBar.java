@@ -43,6 +43,7 @@ public class OptionBar extends MenuBar {
 	private MenuItem filterChunks = UIFactory.menuItem(Translation.MENU_TOOLS_FILTER_CHUNKS);
 	private MenuItem changeFields = UIFactory.menuItem(Translation.MENU_TOOLS_CHANGE_FIELDS);
 	private MenuItem editNBT = UIFactory.menuItem(Translation.MENU_TOOLS_EDIT_NBT);
+	private MenuItem swapChunks = UIFactory.menuItem(Translation.MENU_TOOLS_SWAP_CHUNKS);
 
 	private int previousSelectedChunks = 0;
 
@@ -61,7 +62,7 @@ public class OptionBar extends MenuBar {
 				exportChunks, delete, UIFactory.separator(),
 				importSelection, exportSelection, UIFactory.separator(),
 				clearSelectionCache);
-		tools.getItems().addAll(importChunks, filterChunks, changeFields, editNBT);
+		tools.getItems().addAll(importChunks, filterChunks, changeFields, editNBT, UIFactory.separator(), swapChunks);
 		about.setOnMouseClicked(e -> DialogHelper.showAboutDialog(primaryStage));
 		Menu aboutMenu = new Menu();
 		aboutMenu.setGraphic(about);
@@ -86,6 +87,8 @@ public class OptionBar extends MenuBar {
 		filterChunks.setOnAction(e -> DialogHelper.filterChunks(tileMap, primaryStage));
 		changeFields.setOnAction(e -> DialogHelper.changeFields(tileMap, primaryStage));
 		editNBT.setOnAction(e -> DialogHelper.editNBT(tileMap, primaryStage));
+		swapChunks.setOnAction(e -> DialogHelper.swapChunks(tileMap, primaryStage));
+
 
 		open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN));
 		quit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCodeCombination.SHORTCUT_DOWN));
@@ -104,21 +107,16 @@ public class OptionBar extends MenuBar {
 		filterChunks.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCodeCombination.SHORTCUT_DOWN));
 		changeFields.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCodeCombination.SHORTCUT_DOWN));
 		editNBT.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCodeCombination.SHORTCUT_DOWN));
+		swapChunks.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCodeCombination.SHORTCUT_DOWN));
 
-		setSelectionDependentMenuItemsEnabled(false);
+		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks());
 		setWorldDependentMenuItemsEnabled(false);
-		setSingleSelectionDependentMenuItemsEnabled(false);
 	}
 
 	private void onUpdate(TileMap tileMap) {
 		int selectedChunks = tileMap.getSelectedChunks();
-		if (previousSelectedChunks != 0 && selectedChunks == 0
-				|| previousSelectedChunks == 0 && selectedChunks != 0) {
-			setSelectionDependentMenuItemsEnabled(selectedChunks != 0);
-		}
-		if (previousSelectedChunks != 1 && selectedChunks == 1
-				|| previousSelectedChunks == 1 && selectedChunks != 1) {
-			setSingleSelectionDependentMenuItemsEnabled(selectedChunks == 1);
+		if (previousSelectedChunks != selectedChunks) {
+			setSelectionDependentMenuItemsEnabled(selectedChunks);
 		}
 		previousSelectedChunks = selectedChunks;
 	}
@@ -129,15 +127,13 @@ public class OptionBar extends MenuBar {
 		importChunks.setDisable(!enabled);
 	}
 
-	private void setSelectionDependentMenuItemsEnabled(boolean enabled) {
-		clear.setDisable(!enabled);
-		exportChunks.setDisable(!enabled);
-		exportSelection.setDisable(!enabled);
-		delete.setDisable(!enabled);
-		clearSelectionCache.setDisable(!enabled);
-	}
-
-	private void setSingleSelectionDependentMenuItemsEnabled(boolean enabled) {
-		editNBT.setDisable(!enabled);
+	private void setSelectionDependentMenuItemsEnabled(int selected) {
+		clear.setDisable(selected == 0);
+		exportChunks.setDisable(selected == 0);
+		exportSelection.setDisable(selected == 0);
+		delete.setDisable(selected == 0);
+		clearSelectionCache.setDisable(selected == 0);
+		editNBT.setDisable(selected != 1);
+		swapChunks.setDisable(selected != 2);
 	}
 }

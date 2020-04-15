@@ -33,6 +33,7 @@ menu.tools.import_chunks;Importovat chunky
 menu.tools.filter_chunks;Filtrovat chunky
 menu.tools.change_fields;Změnit pole
 menu.tools.edit_nbt;Upravit chunků
+menu.tools.swap_chunks;Vyměňovat chunky
 dialog.settings.title;Nastavení
 dialog.settings.language;Jazyk
 dialog.settings.read_threads;Vláken pro načítání

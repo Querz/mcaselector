@@ -33,6 +33,7 @@ menu.tools.import_chunks;Импортировать чанки
 menu.tools.filter_chunks;Отфильтровать чанки
 menu.tools.change_fields;Изменить параметры
 menu.tools.edit_nbt;Редактировать чанк
+menu.tools.swap_chunks;поменять чанки
 dialog.settings.title;Настройки
 dialog.settings.language;Язык
 dialog.settings.read_threads;Чтение потоков

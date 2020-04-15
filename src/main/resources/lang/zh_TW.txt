@@ -33,6 +33,7 @@ menu.tools.import_chunks;匯入區塊
 menu.tools.filter_chunks;篩選區塊
 menu.tools.change_fields;變更欄位
 menu.tools.edit_nbt;編輯區塊
+menu.tools.swap_chunks;交換塊
 dialog.settings.title;設置
 dialog.settings.language;語言
 dialog.settings.read_threads;讀取執行緒

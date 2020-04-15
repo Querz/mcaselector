@@ -13,6 +13,10 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -31,7 +35,7 @@ public class DialogHelper {
 			Optional<ButtonType> confRes = new ChangeFieldsConfirmationDialog(null, primaryStage).showAndWait();
 			confRes.ifPresent(confR -> {
 				if (confR == ButtonType.OK) {
-					new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_CHANGING_NBT_DATA, primaryStage)
+					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_CHANGING_NBT_DATA, primaryStage)
 							.showProgressBar(t -> FieldChanger.changeNBTFields(
 									r.getFields(),
 									r.isForce(),
@@ -57,7 +61,7 @@ public class DialogHelper {
 					Optional<ButtonType> confRes = new DeleteConfirmationDialog(null, primaryStage).showAndWait();
 					confRes.ifPresent(confR -> {
 						if (confR == ButtonType.OK) {
-							new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_FILTERED_CHUNKS, primaryStage)
+							new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_FILTERED_CHUNKS, primaryStage)
 									.showProgressBar(t -> ChunkFilterDeleter.deleteFilter(
 											r.getFilter(),
 											r.isSelectionOnly() ? tileMap.getMarkedChunks() : null,
@@ -76,7 +80,7 @@ public class DialogHelper {
 							if (confR == ButtonType.OK) {
 								FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
 								Debug.dump("exporting chunks to " + dir);
-								new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_FILTERED_CHUNKS, primaryStage)
+								new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_FILTERED_CHUNKS, primaryStage)
 										.showProgressBar(t -> ChunkFilterExporter.exportFilter(
 												r.getFilter(),
 												r.isSelectionOnly() ? tileMap.getMarkedChunks() : null,
@@ -92,7 +96,7 @@ public class DialogHelper {
 					break;
 				case SELECT:
 					tileMap.clearSelection();
-					new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS, primaryStage)
+					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS, primaryStage)
 							// TODO: radius UI element
 							.showProgressBar(t -> ChunkFilterSelector.selectFilter(r.getFilter(), r.getRadius(), selection -> Platform.runLater(() -> {
 								tileMap.addMarkedChunks(selection);
@@ -109,7 +113,7 @@ public class DialogHelper {
 		Optional<ButtonType> result = new DeleteConfirmationDialog(tileMap, primaryStage).showAndWait();
 		result.ifPresent(r -> {
 			if (r == ButtonType.OK) {
-				new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_SELECTION, primaryStage)
+				new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_SELECTION, primaryStage)
 						.showProgressBar(t -> SelectionDeleter.deleteSelection(tileMap.getMarkedChunks(), t));
 				CacheHelper.clearSelectionCache(tileMap);
 			}
@@ -123,7 +127,7 @@ public class DialogHelper {
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
 					FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
-					new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_SELECTION, primaryStage)
+					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_SELECTION, primaryStage)
 							.showProgressBar(t -> SelectionExporter.exportSelection(tileMap.getMarkedChunks(), dir, t));
 				}
 			});
@@ -138,7 +142,7 @@ public class DialogHelper {
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
 					FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
-					new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
+					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									dir, t, false, dataProperty.get().overwrite(),
 									dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null,
@@ -182,6 +186,99 @@ public class DialogHelper {
 
 	public static void editNBT(TileMap tileMap, Stage primaryStage) {
 		new NBTEditorDialog(tileMap, primaryStage).showAndWait();
+	}
+
+	public static void swapChunks(TileMap tileMap, Stage primaryStage) {
+		new ProgressDialog(Translation.MENU_TOOLS_SWAP_CHUNKS, primaryStage).showProgressBar(t -> {
+			t.setMax(4);
+			Map<Point2i, Set<Point2i>> markedChunks = tileMap.getMarkedChunks();
+			ArrayList<Point2i> chunks = new ArrayList<>(2);
+			for (Map.Entry<Point2i, Set<Point2i>> entry : markedChunks.entrySet()) {
+				chunks.addAll(entry.getValue());
+			}
+			if (chunks.size() != 2) {
+				throw new IllegalStateException("need 2 chunks to swap");
+			}
+
+			Point2i fromChunk = chunks.get(0);
+			Point2i toChunk = chunks.get(1);
+			Point2i fromRegion = fromChunk.chunkToRegion();
+			Point2i toRegion = toChunk.chunkToRegion();
+
+			t.incrementProgress(FileHelper.createMCAFileName(fromRegion));
+
+			// load from
+			MCAFile fromMCA = loadMCAFileOrCreateEmpty(FileHelper.createMCAFilePath(fromRegion));
+			if (fromMCA == null) {
+				t.done(null);
+				return;
+			}
+
+			// load to
+			MCAFile toMCA;
+			t.incrementProgress(FileHelper.createMCAFileName(toRegion));
+			if (fromRegion.equals(toRegion)) {
+				toMCA = fromMCA;
+			} else {
+				toMCA = loadMCAFileOrCreateEmpty(FileHelper.createMCAFilePath(toRegion));
+				if (toMCA == null) {
+					t.done(null);
+					return;
+				}
+			}
+
+			// from --> to
+			Point2i fromOffset = toChunk.sub(fromChunk);
+			Point2i toOffset = fromChunk.sub(toChunk);
+
+			MCAChunkData fromData = getLoadedMCAChunkDataOrCreateNew(fromMCA, fromChunk);
+			fromData.relocate(fromOffset.chunkToBlock());
+
+			MCAChunkData toData = getLoadedMCAChunkDataOrCreateNew(toMCA, toChunk);
+			toData.relocate(toOffset.chunkToBlock());
+
+			fromMCA.setChunkData(fromChunk, toData.getData() == null ? null : toData);
+			toMCA.setChunkData(toChunk, fromData.getData() == null ? null : fromData);
+
+			t.incrementProgress(FileHelper.createMCAFileName(toRegion));
+			saveMCAFileWithTempFile(toMCA);
+			if (fromMCA != toMCA) {
+				t.incrementProgress(FileHelper.createMCAFileName(fromRegion));
+				saveMCAFileWithTempFile(fromMCA);
+			}
+			t.done(Translation.DIALOG_PROGRESS_DONE.toString());
+		});
+
+		CacheHelper.clearSelectionCache(tileMap);
+	}
+
+	private static MCAFile loadMCAFileOrCreateEmpty(File file) {
+		if (!file.exists()) {
+			return new MCAFile(file);
+		}
+		return MCAFile.read(file);
+	}
+
+	private static MCAChunkData getLoadedMCAChunkDataOrCreateNew(MCAFile mcaFile, Point2i location) {
+		MCAChunkData loaded = mcaFile.getLoadedChunkData(location);
+		if (loaded == null) {
+			return mcaFile.getChunkData(location);
+		}
+		return loaded;
+	}
+
+	private static void saveMCAFileWithTempFile(MCAFile mcaFile) {
+		try {
+			File tmpFrom = File.createTempFile(mcaFile.getFile().getName(), null, null);
+			if (mcaFile.save(tmpFrom)) {
+				Files.move(tmpFrom.toPath(), mcaFile.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+			} else {
+				tmpFrom.delete();
+				mcaFile.getFile().delete();
+			}
+		} catch (IOException ex) {
+			Debug.error(ex);
+		}
 	}
 
 	public static void openWorld(TileMap tileMap, Stage primaryStage, OptionBar optionBar) {

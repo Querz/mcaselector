@@ -33,6 +33,7 @@ menu.tools.import_chunks;导入区块
 menu.tools.filter_chunks;筛选区块
 menu.tools.change_fields;更改字段
 menu.tools.edit_nbt;编辑块
+menu.tools.swap_chunks;交换块
 dialog.settings.title;设置
 dialog.settings.language;语言
 dialog.settings.read_threads;读取线程

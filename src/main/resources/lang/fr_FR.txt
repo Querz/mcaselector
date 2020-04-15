@@ -29,10 +29,11 @@ menu.selection.delete_chunks;Supprimer les chunks sélectionnés
 menu.selection.import_selection;Importer la selection
 menu.selection.export_selection;Exporter la selection
 menu.selection.clear_cache;Nettoyer le cache
-menu.tools.import_chunks;Importer le chunks
-menu.tools.filter_chunks;Filtrer le chunks
+menu.tools.import_chunks;Importer les chunks
+menu.tools.filter_chunks;Filtrer les chunks
 menu.tools.change_fields;Changer les champs
 menu.tools.edit_nbt;Modifier le chunk
+menu.tools.swap_chunks;Échanger les chunks
 dialog.settings.title;Options
 dialog.settings.language;Langage
 dialog.settings.read_threads;Threads de lecture

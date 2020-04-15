@@ -30,6 +30,17 @@ public class MCAChunkData {
 
 	private Point2i absoluteLocation;
 
+	@Override
+	public String toString() {
+		return  "offset=" + offset +
+				"\ntimestamp=" + timestamp +
+				"\nsectors=" + sectors +
+				"\nlength=" + length +
+				"\ncompresstionType=" + compressionType +
+				"\ndata=" + data +
+				"\nabsoluteLocation=" + absoluteLocation;
+	}
+
 	//offset in 4KiB chunks
 	public MCAChunkData(Point2i absoluteLocation, int offset, int timestamp, byte sectors) {
 		this.absoluteLocation = absoluteLocation;

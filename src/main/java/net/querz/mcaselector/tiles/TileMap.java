@@ -324,8 +324,10 @@ public class TileMap extends Canvas {
 	}
 
 	public void clearTile(Point2i p) {
+		System.out.println("clearing tile " + p);
 		Tile tile = tiles.remove(p);
 		if (tile != null) {
+			System.out.println("tile " + p + " is not null");
 			visibleTiles.remove(tile);
 			selectedChunks -= tile.getMarkedChunks().size();
 			selectedChunks -= tile.isMarked() ? Tile.CHUNKS : 0;
