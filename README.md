@@ -14,6 +14,7 @@
   * [NBT Changer](#nbt-changer)
   * [Chunk Editor](#chunk-editor)
   * [Chunk import](#chunk-import)
+  * [Swapping chunks](#swapping-chunks)
   * [Caching](#caching)
   * [Debugging](#debugging)
 * [Supported Versions](#supported-versions)
