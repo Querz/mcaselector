@@ -117,7 +117,7 @@ import java.nio.file.Files
  * @throws IllegalArgumentException If the input file is not a file
  */
 static String createTOC(String f, String st, String en, boolean it, boolean is) throws IOException {
-	File e = new File(f)
+	File e = new File(f).getAbsoluteFile()
 	if (!e.isFile())
 		throw new IllegalArgumentException('file doesn\'t exist or is not a file')
 	StringBuilder b = new StringBuilder(st + '\n' as String)
