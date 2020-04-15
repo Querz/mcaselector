@@ -118,6 +118,7 @@ carrots
 cartography_table
 carved_pumpkin
 cauldron
+chain
 chain_command_block
 chest
 chipped_anvil
@@ -614,6 +615,7 @@ sea_pickle
 seagrass
 shroomlight
 shulker_box
+sign
 skeleton_skull
 skeleton_wall_skull
 slime_block
@@ -705,6 +707,7 @@ turtle_egg
 twisting_vines
 twisting_vines_plant
 vine
+wall_sign
 wall_torch
 warped_button
 warped_door
