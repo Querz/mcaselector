@@ -123,6 +123,9 @@ Importing chunks can be easily done by opening the target world first using `Fil
 Commands inside of command blocks will not be changed.
 Maps will not be updated, because their data is not stored inside region files.
 
+### Swapping chunks
+When exactly two chunks are selected, they can be swapped using `Tools --> Swap chunks`. This is useful for corrupted region files when Minecraft failed to correctly save the region file index, resulting in scrambled chunks.
+
 ### Caching
 The tool creates an image for each region from the provided mca-files. These images are saved separately inside a `cache`-folder in the working directory of the program for future usage. Experience showed that a Minecraft world with a size of 10GB resulted in cached image files with a total size of 80-100MB. Caching as many regions as possible significantly improves loading times though.
 
@@ -139,7 +142,7 @@ The MCA Selector currently supports the following Minecraft versions:
 | 1.13 - 1.13.2     | 1444 - 1631 |
 | 1.14 - 1.14.4     | 1901 - 1976 |
 | 1.15 - 1.15.2     | 2200 - 2230 |
-| 20w13b            | 2506 - ?    |
+| 20w16a - ?        | 2506 - ?    |
 
 ---
 ## Headless mode
