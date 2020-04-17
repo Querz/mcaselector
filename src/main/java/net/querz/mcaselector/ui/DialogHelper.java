@@ -276,7 +276,6 @@ public class DialogHelper {
 		try {
 			File tmpFrom = File.createTempFile(mcaFile.getFile().getName(), null, null);
 			if (mcaFile.save(tmpFrom)) {
-				System.out.println("moving " + tmpFrom + " to " + mcaFile.getFile());
 				Files.move(tmpFrom.toPath(), mcaFile.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
 			} else {
 				tmpFrom.delete();

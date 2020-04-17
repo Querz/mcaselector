@@ -59,4 +59,13 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		}
 		Arrays.fill(data.getCompoundTag("Level").getIntArray("Biomes"), id);
 	}
+
+	@Override
+	public void forceBiome(CompoundTag data, int id) {
+		if (data.containsKey("Level")) {
+			int[] biomes = new int[256];
+			Arrays.fill(biomes, id);
+			data.getCompoundTag("Level").putIntArray("Biomes", biomes);
+		}
+	}
 }

@@ -71,6 +71,6 @@ public class BiomeField extends Field<Integer> {
 
 	@Override
 	public void force(CompoundTag root) {
-		change(root);
+		VersionController.getChunkFilter(root.getInt("DataVersion")).forceBiome(root, getNewValue());
 	}
 }

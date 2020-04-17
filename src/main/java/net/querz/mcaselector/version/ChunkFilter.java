@@ -9,4 +9,6 @@ public interface ChunkFilter {
 	boolean matchBiomeIDs(CompoundTag data, int... ids);
 
 	void changeBiome(CompoundTag data, int id);
+
+	void forceBiome(CompoundTag data, int id);
 }
