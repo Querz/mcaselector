@@ -9,7 +9,7 @@ apply plugin: 'idea'
 apply plugin: 'css'
 
 group 'net.querz.mcaselector'
-version '1.9.8'
+version '1.9.9'
 
 sourceCompatibility = 1.8
 
@@ -102,8 +102,6 @@ task printGradleVersion() {
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-import java.nio.file.Files
-
 /**
  * Creates a Table Of Contents from headings in a markdown file.
  *
@@ -117,24 +115,30 @@ import java.nio.file.Files
  * @throws IllegalArgumentException If the input file is not a file
  */
 static String createTOC(String f, String st, String en, boolean it, boolean is) throws IOException {
-	File e = new File(f)
+	File e = new File(f).getAbsoluteFile()
 	if (!e.isFile())
 		throw new IllegalArgumentException('file doesn\'t exist or is not a file')
 	StringBuilder b = new StringBuilder(st + '\n' as String)
 	int l, s = 0
-	for (String n in Files.lines(e.toPath())) {
-		String t
-		if ((t = n.trim()).startsWith('#')) {
-			for (l = 0; l < t.length() && t.charAt(l) == '#' as char; l++) {/**/}
-			s += l == 4 ? 1 : 0
-			if (t.length() == l || t.charAt(l) != ' ' as char || it && l == 1 || is && l == 4 && s == 1)
-				continue
-			for (int i = it ? 2 : 1; i < l; i++)
-				b.append('  ')
-			String x = t.substring(l + 1)
-			String k = x.toLowerCase().replaceAll('[^a-z0-9 \\-_]', '').replace(' ', '-')
-			b.append('* [').append(x).append('](#').append(k).append(')\n')
+	BufferedReader br = new BufferedReader(new FileReader(e))
+	try {
+		for (String n in br.lines()) {
+			String t
+			if ((t = n.trim()).startsWith('#')) {
+				for (l = 0; l < t.length() && t.charAt(l) == '#' as char; l++) {/**/
+				}
+				s += l == 4 ? 1 : 0
+				if (t.length() == l || t.charAt(l) != ' ' as char || it && l == 1 || is && l == 4 && s == 1)
+					continue
+				for (int i = it ? 2 : 1; i < l; i++)
+					b.append('  ')
+				String x = t.substring(l + 1)
+				String k = x.toLowerCase().replaceAll('[^a-z0-9 \\-_]', '').replace(' ', '-')
+				b.append('* [').append(x).append('](#').append(k).append(')\n')
+			}
 		}
+	} finally {
+		br.close()
 	}
 	return b.append(en).toString()
 }
