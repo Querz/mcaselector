@@ -74,13 +74,15 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 	}
 
 	private boolean isIgnoredInNether(int biome, CompoundTag blockData, int height) {
-		if (biome == 8 || biome == 170 || biome == 171 || biome == 172) {
+		// all nether biomes: nether/neter_wastes, soul_sand_valley, crimson_forest, warped_forest, basalt_deltas
+		if (biome == 8 || biome == 170 || biome == 171 || biome == 172 || biome == 173) {
 			switch (withDefault(() -> blockData.getString("Name"), "")) {
 			case "minecraft:bedrock":
 			case "minecraft:flowing_lava":
 			case "minecraft:lava":
 			case "minecraft:netherrack":
 			case "minecraft:nether_quartz_ore":
+			case "minecraft:basalt":
 				return height > 75;
 			}
 		}
