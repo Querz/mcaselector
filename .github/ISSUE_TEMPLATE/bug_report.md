@@ -31,7 +31,7 @@ To create the 'debug.log' file, follow these steps:
 
 **Environment (please complete the following information):**
 - OS: [e.g. Windows 10]
-- Java version: [e.g. 1.8.0_202]
+- Java version: [e.g. 1.8.0_202 and no, "newest version" is not a version]
 - Version [e.g. 1.9.8]
 
 **Additional context**
