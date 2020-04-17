@@ -95,26 +95,21 @@ public class MCAFile {
 		return globalOffset != 2;
 	}
 
-	public static MCAFile read(File file) {
+	public static MCAFile read(File file) throws IOException {
 		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
 			MCAFile m = readHeader(file, raf);
-			if (m != null) {
-				for (int i = 0; i < m.offsets.length; i++) {
-					m.chunks[i] = m.getChunkData(i);
-					try {
-						m.chunks[i].readHeader(raf);
-						m.chunks[i].loadData(raf);
-					} catch (Exception ex) {
-						Debug.errorf("failed to load chunk at index %d: %s", i, ex.getMessage());
-						Debug.error(ex);
-					}
+			for (int i = 0; i < m.offsets.length; i++) {
+				m.chunks[i] = m.getChunkData(i);
+				try {
+					m.chunks[i].readHeader(raf);
+					m.chunks[i].loadData(raf);
+				} catch (Exception ex) {
+					Debug.errorf("failed to load chunk at index %d: %s", i, ex.getMessage());
+					Debug.error(ex);
 				}
 			}
 			return m;
-		} catch (Exception ex) {
-			Debug.error(ex);
 		}
-		return null;
 	}
 
 	public static MCAFile readAll(File file, ByteArrayPointer ptr) {
@@ -185,15 +180,10 @@ public class MCAFile {
 		return null;
 	}
 
-	public static MCAFile readHeader(File file, RandomAccessFile raf) {
-		try {
-			MCAFile mcaFile = new MCAFile(file);
-			mcaFile.readHeader(raf);
-			return mcaFile;
-		} catch (Exception ex) {
-			Debug.error(ex);
-		}
-		return null;
+	public static MCAFile readHeader(File file, RandomAccessFile raf) throws IOException {
+		MCAFile mcaFile = new MCAFile(file);
+		mcaFile.readHeader(raf);
+		return mcaFile;
 	}
 
 	private void readHeader(RandomAccessFile raf) throws IOException {

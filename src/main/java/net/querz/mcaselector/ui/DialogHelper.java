@@ -247,16 +247,21 @@ public class DialogHelper {
 				saveMCAFileWithTempFile(fromMCA);
 			}
 			t.done(Translation.DIALOG_PROGRESS_DONE.toString());
-		});
 
-		CacheHelper.clearSelectionCache(tileMap);
+			Platform.runLater(() -> CacheHelper.clearSelectionCache(tileMap));
+		});
 	}
 
 	private static MCAFile loadMCAFileOrCreateEmpty(File file) {
 		if (!file.exists()) {
 			return new MCAFile(file);
 		}
-		return MCAFile.read(file);
+		try {
+			return MCAFile.read(file);
+		} catch (IOException ex) {
+			Debug.error(ex);
+		}
+		return null;
 	}
 
 	private static MCAChunkData getLoadedMCAChunkDataOrCreateNew(MCAFile mcaFile, Point2i location) {
@@ -271,6 +276,7 @@ public class DialogHelper {
 		try {
 			File tmpFrom = File.createTempFile(mcaFile.getFile().getName(), null, null);
 			if (mcaFile.save(tmpFrom)) {
+				System.out.println("moving " + tmpFrom + " to " + mcaFile.getFile());
 				Files.move(tmpFrom.toPath(), mcaFile.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
 			} else {
 				tmpFrom.delete();
