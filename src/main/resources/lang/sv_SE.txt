@@ -1,12 +1,12 @@
 status.region;region
-status.region.tooltip;Den nurvarande markerade regionen representerar numrerna i dess filnamn.
+status.region.tooltip;Den nuvarande markerade regionen representerar numrerna i dess filnamn.
 status.chunk;chunk
-status.chunk.tooltip;Den nurvarande markerade chunken.
+status.chunk.tooltip;Den nuvarande markerade chunken.
 status.block;block
 status.block.tooltip;En uppskattning av antalet markerade block.
 status.selected;valda
-status.selected.tooltip;Den nurvarande valda mängden chunks.
-status.visible;synligt
+status.selected.tooltip;Den nuvarande valda mängden chunks.
+status.visible;synliga
 status.visible.tooltip;Mängden laddade regionsbilder för rendering.
 status.total;totalt
 status.total.tooltip;Den totala mängden laddade regioner, inkluderat ej visade valda regioner.
@@ -33,16 +33,16 @@ menu.tools.import_chunks;Importera chunks
 menu.tools.filter_chunks;Filtrera chunks
 menu.tools.change_fields;Ändra fält
 menu.tools.edit_nbt;Ändra chunk
-menu.tools.swap_chunks;Byta chunks
+menu.tools.swap_chunks;Byt chunks
 dialog.settings.title;Inställningar
 dialog.settings.language;Språk
-dialog.settings.read_threads;Läs Trådar
-dialog.settings.process_threads;Processera Trådar
-dialog.settings.write_threads;Skriv Trådar
+dialog.settings.read_threads;Läsningstrådar
+dialog.settings.process_threads;Processeringstrådar
+dialog.settings.write_threads;Skrivningstrådar
 dialog.settings.max_files;Maximalt laddade filer
 dialog.settings.region_color;Regionmarkeringsfärg
 dialog.settings.chunk_color;Chunkmarkeringsfärg
-dialog.settings.print_debug;Skriv ut avsökningsmeddelanden
+dialog.settings.print_debug;Skriv ut felsökningsmeddelanden
 dialog.settings.reset;Återställ
 dialog.goto.title;Gå till plats
 dialog.confirmation.question;Är du säker?
@@ -71,14 +71,14 @@ dialog.filter_chunks.export.tooltip;Exporterar alla påverkade chunks till en ny
 dialog.filter_chunks.delete;Radera
 dialog.filter_chunks.delete.tooltip;Raderar alla påverkade chunks från världen.
 dialog.filter_chunks.selection_only;Tillämpa endast till markering
-dialog.filter_chunks.selection_only.tooltip;Om detta filter enbart ska appliceras till den nurvarande markeringen.
+dialog.filter_chunks.selection_only.tooltip;Om detta filter enbart ska appliceras till den nuvarande markeringen.
 dialog.change_nbt.title;Ändra NBT
 dialog.change_nbt.change;Ändra
 dialog.change_nbt.change.tooltip;Ändrar endast värdet om dess nyckel finns.
 dialog.change_nbt.force;Tvinga
 dialog.change_nbt.force.tooltip;Skapar fältet om det inte existerar.
 dialog.change_nbt.selection_only;Tillämpa endast till markering
-dialog.change_nbt.selection_only.tooltip;Om detta filter enbart ska appliceras till den nurvarande markeringen.
+dialog.change_nbt.selection_only.tooltip;Om detta filter enbart ska appliceras till den nuvarande markeringen.
 dialog.change_nbt_confirmation.title;Ändra NBT
 dialog.change_nbt_confirmation.header_short;Du håller på att förändra data i ett okänt antal chunks i denna värld.
 dialog.change_nbt_confirmation.header_verbose;Du håller på att förändra data i %d chunks i denna värld.
