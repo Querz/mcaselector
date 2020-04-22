@@ -97,7 +97,6 @@ public class DialogHelper {
 				case SELECT:
 					tileMap.clearSelection();
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS, primaryStage)
-							// TODO: radius UI element
 							.showProgressBar(t -> ChunkFilterSelector.selectFilter(r.getFilter(), r.getRadius(), selection -> Platform.runLater(() -> {
 								tileMap.addMarkedChunks(selection);
 								tileMap.update();

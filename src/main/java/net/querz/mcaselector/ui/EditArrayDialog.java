@@ -18,11 +18,11 @@ import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.LongStringConverter;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.text.Translation;
-
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("rawtypes")
 public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 
 	private TableView<Row> table = new TableView<>();

@@ -245,7 +245,7 @@ public enum Translation {
 		return translationProperty.format(values);
 	}
 
-	private static String[] getResourceListing(Class clazz, String path) {
+	private static String[] getResourceListing(Class<?> clazz, String path) {
 		URL dirURL = clazz.getClassLoader().getResource(path);
 		if (dirURL != null && dirURL.getProtocol().equals("file")) {
 			try {

@@ -16,7 +16,7 @@ import net.querz.mcaselector.point.Point2f;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.ui.Color;
-import net.querz.mcaselector.ui.ImageHelper;
+import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.version.VersionController;
 
 import java.awt.image.BufferedImage;

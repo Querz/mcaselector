@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.io;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;

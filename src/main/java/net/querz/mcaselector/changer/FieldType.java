@@ -16,7 +16,7 @@ public enum FieldType {
 	STRUCTURE_REFERENCE("FixStructureReferences", ReferenceField.class, true);
 
 	private String name;
-	private Class<? extends Field> clazz;
+	private Class<? extends Field<?>> clazz;
 	private boolean headlessOnly;
 
 	private static FieldType[] uiValues;
@@ -32,7 +32,7 @@ public enum FieldType {
 	}
 
 
-	FieldType(String name, Class<? extends Field> clazz, boolean headlessOnly) {
+	FieldType(String name, Class<? extends Field<?>> clazz, boolean headlessOnly) {
 		this.name = name;
 		this.clazz = clazz;
 		this.headlessOnly = headlessOnly;

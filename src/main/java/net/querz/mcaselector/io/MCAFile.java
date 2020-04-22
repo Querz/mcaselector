@@ -222,7 +222,7 @@ public class MCAFile {
 		}
 	}
 
-	public void deleteChunkIndices(Filter filter, Set<Point2i> selection) {
+	public void deleteChunkIndices(Filter<?> filter, Set<Point2i> selection) {
 		for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
 			for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
 				int index = cz  * Tile.SIZE_IN_CHUNKS + cx;
@@ -244,7 +244,7 @@ public class MCAFile {
 		}
 	}
 
-	public void keepChunkIndices(Filter filter, Set<Point2i> selection) {
+	public void keepChunkIndices(Filter<?> filter, Set<Point2i> selection) {
 		for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
 			for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
 				int index = cz * Tile.SIZE_IN_CHUNKS + cx;
@@ -268,7 +268,7 @@ public class MCAFile {
 		}
 	}
 
-	public Set<Point2i> getFilteredChunks(Filter filter) {
+	public Set<Point2i> getFilteredChunks(Filter<?> filter) {
 		Set<Point2i> chunks = new HashSet<>();
 		for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
 			for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {

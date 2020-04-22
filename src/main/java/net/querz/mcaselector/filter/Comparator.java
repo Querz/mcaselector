@@ -2,14 +2,14 @@ package net.querz.mcaselector.filter;
 
 public enum Comparator {
 
-	EQ("=="),
-	NEQ("!="),
-	ST("<"),
-	LT(">"),
-	LEQ(">="),
-	SEQ("<="),
-	CONTAINS("\u2287", "contains"),
-	CONTAINS_NOT("!\u2287", "!contains");
+	EQUAL("="),
+	NOT_EQUAL("\u2260", "!="),
+	SMALLER("<"),
+	LARGER(">"),
+	LARGER_EQUAL("\u2266", ">="),
+	SMALLER_EQUAL("\u2264", "<="),
+	CONTAINS("\u2283", "contains"),
+	CONTAINS_NOT("!\u2283", "!contains");
 
 	private String string;
 	private String query;

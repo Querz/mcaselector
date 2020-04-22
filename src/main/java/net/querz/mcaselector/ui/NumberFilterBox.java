@@ -13,7 +13,7 @@ public class NumberFilterBox extends FilterBox {
 	private TextField input = new TextField();
 	private ComboBox<Comparator> comparator = new ComboBox<>();
 
-	public NumberFilterBox(FilterBox parent, NumberFilter filter, boolean root) {
+	public NumberFilterBox(FilterBox parent, NumberFilter<?> filter, boolean root) {
 		super(parent, filter, root);
 		getStyleClass().add("number-filter-box");
 		input.setPromptText(filter.getFormatText());
@@ -38,7 +38,7 @@ public class NumberFilterBox extends FilterBox {
 		input.setText(text);
 	}
 
-	private void onTextInput(Filter filter, String newValue) {
+	private void onTextInput(Filter<?> filter, String newValue) {
 		filter.setFilterValue(newValue);
 		if (!filter.isValid()) {
 			if (!getStyleClass().contains("number-filter-box-invalid")) {
@@ -50,7 +50,7 @@ public class NumberFilterBox extends FilterBox {
 		callUpdateEvent();
 	}
 
-	private void onComparator(NumberFilter filter) {
+	private void onComparator(NumberFilter<?> filter) {
 		filter.setComparator(comparator.getSelectionModel().getSelectedItem());
 		callUpdateEvent();
 	}

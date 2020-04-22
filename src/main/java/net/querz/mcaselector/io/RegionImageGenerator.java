@@ -5,7 +5,6 @@ import javafx.scene.image.Image;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileImage;
-import net.querz.mcaselector.ui.ImageHelper;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;

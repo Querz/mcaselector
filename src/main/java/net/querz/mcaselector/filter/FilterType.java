@@ -19,10 +19,10 @@ public enum FilterType {
 	TILE_ENTITY_AMOUNT("#TileEntities", TileEntityAmountFilter.class, Format.NUMBER);
 
 	private String string;
-	private Class<? extends Filter> clazz;
+	private Class<? extends Filter<?>> clazz;
 	private Format format;
 
-	FilterType(String string, Class<? extends Filter> clazz, Format format) {
+	FilterType(String string, Class<? extends Filter<?>> clazz, Format format) {
 		this.string = string;
 		this.clazz = clazz;
 		this.format = format;
@@ -32,7 +32,7 @@ public enum FilterType {
 		return format;
 	}
 
-	public Filter create() {
+	public Filter<?> create() {
 		try {
 			return clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {

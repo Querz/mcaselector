@@ -3,10 +3,10 @@ package net.querz.mcaselector.filter;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.nbt.CompoundTag;
 
-public class ZPosFilter extends IntegerFilter {
+public class ZPosFilter extends IntFilter {
 
 	public ZPosFilter() {
-		this(Operator.AND, Comparator.EQ, 0);
+		this(Operator.AND, Comparator.EQUAL, 0);
 	}
 
 	public ZPosFilter(Operator operator, Comparator comparator, int value) {

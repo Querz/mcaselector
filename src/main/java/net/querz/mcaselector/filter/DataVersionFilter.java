@@ -1,9 +1,9 @@
 package net.querz.mcaselector.filter;
 
-public class DataVersionFilter extends IntegerFilter {
+public class DataVersionFilter extends IntFilter {
 
 	public DataVersionFilter() {
-		this(Operator.AND, Comparator.EQ, 0);
+		this(Operator.AND, Comparator.EQUAL, 0);
 	}
 
 	public DataVersionFilter(Operator operator, Comparator comparator, int value) {

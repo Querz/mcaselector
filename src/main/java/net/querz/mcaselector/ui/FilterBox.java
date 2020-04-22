@@ -18,7 +18,6 @@ import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.text.Translation;
-
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -27,7 +26,7 @@ public abstract class FilterBox extends BorderPane {
 	private static final Image deleteIcon = FileHelper.getIconFromResources("img/delete");
 	private static final Image addIcon = FileHelper.getIconFromResources("img/add");
 
-	private Filter filter;
+	private Filter<?> filter;
 	private FilterBox parent;
 
 	protected Label delete = new Label("", new ImageView(deleteIcon));
@@ -39,7 +38,7 @@ public abstract class FilterBox extends BorderPane {
 	private Consumer<FilterBox> updateListener;
 	private boolean root;
 
-	public FilterBox(FilterBox parent, Filter filter, boolean root) {
+	public FilterBox(FilterBox parent, Filter<?> filter, boolean root) {
 		this.parent = parent;
 		this.root = root;
 		if (root) {
@@ -94,8 +93,8 @@ public abstract class FilterBox extends BorderPane {
 		updateListener = listener;
 	}
 
-	protected void onAdd(Filter filter) {
-		NumberFilter f = new DataVersionFilter(Operator.AND, Comparator.EQ, 0);
+	protected void onAdd(Filter<?> filter) {
+		NumberFilter<?> f = new DataVersionFilter(Operator.AND, Comparator.EQUAL, 0);
 		int index;
 		if (filter.getParent() == null || filter instanceof GroupFilter) {
 			//root group
@@ -113,7 +112,7 @@ public abstract class FilterBox extends BorderPane {
 		callUpdateEvent();
 	}
 
-	protected void onDelete(Filter filter) {
+	protected void onDelete(Filter<?> filter) {
 		((GroupFilter) filter.getParent()).removeFilter(filter);
 		if (parent instanceof GroupFilterBox) {
 			((GroupFilterBox) parent).filters.getChildren().remove(this);
@@ -131,7 +130,7 @@ public abstract class FilterBox extends BorderPane {
 
 	protected void update(FilterType type) {
 		if (type != filter.getType()) {
-			Filter newFilter = type.create();
+			Filter<?> newFilter = type.create();
 
 			//removes this filter and replaces it by a new filter
 			GroupFilter parent = ((GroupFilter) filter.getParent());
@@ -145,10 +144,10 @@ public abstract class FilterBox extends BorderPane {
 				newBox = new GroupFilterBox(this.parent, (GroupFilter) newFilter, root);
 				break;
 			case TEXT:
-				newBox = new TextFilterBox(this.parent, (TextFilter) newFilter, root);
+				newBox = new TextFilterBox(this.parent, (TextFilter<?>) newFilter, root);
 				break;
 			case NUMBER:
-				newBox = new NumberFilterBox(this.parent, (NumberFilter) newFilter, root);
+				newBox = new NumberFilterBox(this.parent, (NumberFilter<?>) newFilter, root);
 				break;
 			default:
 				Debug.dump("unknown FilterType Format: " + type.getFormat());
@@ -161,7 +160,7 @@ public abstract class FilterBox extends BorderPane {
 		callUpdateEvent();
 	}
 
-	private void onOperator(Filter filter) {
+	private void onOperator(Filter<?> filter) {
 		filter.setOperator(operator.getSelectionModel().getSelectedItem());
 		callUpdateEvent();
 	}

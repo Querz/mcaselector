@@ -1,9 +1,9 @@
 package net.querz.mcaselector.filter;
 
-public class EntityAmountFilter extends IntegerFilter {
+public class EntityAmountFilter extends IntFilter {
 
 	public EntityAmountFilter() {
-		this(Operator.AND, Comparator.EQ, 0);
+		this(Operator.AND, Comparator.EQUAL, 0);
 	}
 
 	private EntityAmountFilter(Operator operator, Comparator comparator, int value) {

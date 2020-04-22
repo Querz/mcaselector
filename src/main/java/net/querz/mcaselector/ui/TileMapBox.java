@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.debug.Debug;

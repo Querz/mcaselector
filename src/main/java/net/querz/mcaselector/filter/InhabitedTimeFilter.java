@@ -6,7 +6,7 @@ import net.querz.nbt.CompoundTag;
 public class InhabitedTimeFilter extends LongFilter {
 
 	public InhabitedTimeFilter() {
-		this(Operator.AND, Comparator.EQ, 0);
+		this(Operator.AND, Comparator.EQUAL, 0);
 	}
 
 	private InhabitedTimeFilter(Operator operator, Comparator comparator, long value) {

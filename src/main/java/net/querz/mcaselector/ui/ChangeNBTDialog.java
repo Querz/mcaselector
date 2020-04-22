@@ -33,13 +33,6 @@ import java.util.Set;
 
 public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
-	 /*
-	 * List of fields that can be changed
-	 * () change () force
-	 * change --> only set if the fields existed before
-	 * force --> set fields even if it didn't exist.
-	 * */
-
 	private List<Field<?>> fields = new ArrayList<>();
 	private ToggleGroup toggleGroup = new ToggleGroup();
 	private RadioButton change = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_CHANGE);

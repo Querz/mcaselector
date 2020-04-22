@@ -14,8 +14,8 @@ public class OptionBar extends MenuBar {
 	* - Open		- Chunk Grid		- Clear selection			- Import chunks
 	* - Settings	- Region Grid		- Export selected chunks	- Filter chunks
 	* - Quit		- Goto				- Delete selected chunks	- Change fields
-	*				- Clear cache		- Import selection
-	*				- Clear all cache	- Export selection
+	*				- Clear cache		- Import selection			- Edit NBT
+	*				- Clear all cache	- Export selection			- Swap chunks
 	*									- Clear cache
 	* */
 

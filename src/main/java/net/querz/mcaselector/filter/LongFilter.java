@@ -69,6 +69,6 @@ public abstract class LongFilter extends NumberFilter<Long> {
 
 	@Override
 	public String getFormatText() {
-		return "+/-long";
+		return "\u00B1long";
 	}
 }

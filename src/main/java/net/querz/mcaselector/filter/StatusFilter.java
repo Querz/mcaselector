@@ -9,8 +9,8 @@ public class StatusFilter extends TextFilter<String> {
 
 	private static final Set<String> validStatus = new HashSet<>();
 	private static final Comparator[] comparators = {
-			Comparator.EQ,
-			Comparator.NEQ
+			Comparator.EQUAL,
+			Comparator.NOT_EQUAL
 	};
 
 	static {
@@ -18,7 +18,7 @@ public class StatusFilter extends TextFilter<String> {
 	}
 
 	public StatusFilter() {
-		this(Operator.AND, Comparator.EQ, null);
+		this(Operator.AND, Comparator.EQUAL, null);
 	}
 
 	private StatusFilter(Operator operator, Comparator comparator, String value) {

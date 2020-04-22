@@ -3,12 +3,12 @@ package net.querz.mcaselector.filter;
 public class LightPopulatedFilter extends ByteFilter {
 
 	private static final Comparator[] comparators = {
-			Comparator.EQ,
-			Comparator.NEQ
+			Comparator.EQUAL,
+			Comparator.NOT_EQUAL
 	};
 
 	public LightPopulatedFilter() {
-		this(Operator.AND, Comparator.EQ, (byte) 0);
+		this(Operator.AND, Comparator.EQUAL, (byte) 0);
 	}
 
 	private LightPopulatedFilter(Operator operator, Comparator comparator, byte value) {

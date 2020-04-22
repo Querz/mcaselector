@@ -7,20 +7,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-/**
- * This will be an abstract version of the QueuedRegionImageGenerator so it can be used
- * for more stuff than just creating images.
- *
- * It has a thread to read files, a threadpool to work with the files and a thread
- * to write the files back to disk.
- *
- * Writing can also be skipped if it is not needed, as we can create our own worker job.
- *
- * */
 public final class MCAFilePipe {
 
 	public static final int DEFAULT_THREAD_COUNT = Runtime.getRuntime().availableProcessors();
-//	public static final int THREAD_COUNT = 2;
 
 	public static final int DEFAULT_MAX_LOADED_FILES = DEFAULT_THREAD_COUNT + (DEFAULT_THREAD_COUNT / 2);
 

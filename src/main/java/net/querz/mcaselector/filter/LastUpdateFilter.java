@@ -2,10 +2,10 @@ package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.text.TextHelper;
 
-public class LastUpdateFilter extends IntegerFilter {
+public class LastUpdateFilter extends IntFilter {
 
 	public LastUpdateFilter() {
-		this(Operator.AND, Comparator.EQ, 0);
+		this(Operator.AND, Comparator.EQUAL, 0);
 	}
 
 	private LastUpdateFilter(Operator operator, Comparator comparator, int value) {

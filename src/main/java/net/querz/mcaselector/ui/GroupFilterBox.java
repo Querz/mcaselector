@@ -30,11 +30,11 @@ public class GroupFilterBox extends FilterBox {
 			type.setDisable(false);
 		}
 
-		for (Filter f : filter.getFilterValue()) {
+		for (Filter<?> f : filter.getFilterValue()) {
 			if (f instanceof NumberFilter) {
-				filters.getChildren().add(new NumberFilterBox(this, (NumberFilter) f, root));
+				filters.getChildren().add(new NumberFilterBox(this, (NumberFilter<?>) f, root));
 			} else if (f instanceof TextFilter) {
-				filters.getChildren().add(new TextFilterBox(this, (TextFilter) f, root));
+				filters.getChildren().add(new TextFilterBox(this, (TextFilter<?>) f, root));
 			} else if (f instanceof GroupFilter) {
 				filters.getChildren().add(new GroupFilterBox(this, (GroupFilter) f, false));
 			} else {

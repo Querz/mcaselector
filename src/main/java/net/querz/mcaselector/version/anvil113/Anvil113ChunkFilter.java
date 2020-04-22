@@ -3,9 +3,7 @@ package net.querz.mcaselector.version.anvil113;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
-
 import java.util.Arrays;
-
 import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class Anvil113ChunkFilter implements ChunkFilter {

@@ -29,10 +29,10 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 	private static GroupFilter gf = new GroupFilter();
 	static {
-		gf.addFilter(new XPosFilter(Operator.AND, Comparator.SEQ, 100));
-		gf.addFilter(new XPosFilter(Operator.AND, Comparator.LEQ, -100));
-		gf.addFilter(new ZPosFilter(Operator.AND, Comparator.SEQ, 100));
-		gf.addFilter(new ZPosFilter(Operator.AND, Comparator.LEQ, -100));
+		gf.addFilter(new XPosFilter(Operator.AND, Comparator.SMALLER_EQUAL, 100));
+		gf.addFilter(new XPosFilter(Operator.AND, Comparator.LARGER_EQUAL, -100));
+		gf.addFilter(new ZPosFilter(Operator.AND, Comparator.SMALLER_EQUAL, 100));
+		gf.addFilter(new ZPosFilter(Operator.AND, Comparator.LARGER_EQUAL, -100));
 	}
 
 	private GroupFilter value = gf;

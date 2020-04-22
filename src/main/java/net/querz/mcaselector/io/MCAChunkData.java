@@ -582,6 +582,7 @@ public class MCAChunkData {
 			CompoundTag tag = catchClassCastException(() -> item.getCompoundTag("tag"));
 
 			if (id != null && tag != null) {
+				// using a switch-case here for the future
 				switch (id) {
 					case "minecraft:compass":
 						CompoundTag lodestonePos = catchClassCastException(() -> tag.getCompoundTag("LodestonePos"));

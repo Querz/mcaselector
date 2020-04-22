@@ -402,7 +402,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		return recursiveFindCellByItem(treeItem, this);
 	}
 
-	private KeyValueTreeCell recursiveFindCellByItem(TreeItem treeItem, Node node) {
+	private KeyValueTreeCell recursiveFindCellByItem(TreeItem<?> treeItem, Node node) {
 		if (node.getStyleClass().contains("key-value-tree-cell")
 				&& KeyValueTreeCell.class.isAssignableFrom(node.getClass())
 				&& ((KeyValueTreeCell) node).getTreeItem() == treeItem) {
@@ -788,6 +788,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 					edit.getStyleClass().add("key-value-tree-cell-edit");
 				}
 				edit.setOnAction(e -> {
+					@SuppressWarnings("rawtypes")
 					Optional<EditArrayDialog.Result> result = new EditArrayDialog<>(((ArrayTag<?>) getItem().tag).getValue(), stage).showAndWait();
 					result.ifPresent(r -> ((ArrayTag<Object>) getItem().tag).setValue(r.getArray()));
 				});

@@ -3,12 +3,12 @@ package net.querz.mcaselector.filter;
 public abstract class NumberFilter<T extends Number> extends Filter<T> {
 
 	private static final Comparator[] comparators = new Comparator[] {
-		Comparator.EQ,
-		Comparator.NEQ,
-		Comparator.LT,
-		Comparator.ST,
-		Comparator.LEQ,
-		Comparator.SEQ
+		Comparator.EQUAL,
+		Comparator.NOT_EQUAL,
+		Comparator.LARGER,
+		Comparator.SMALLER,
+		Comparator.LARGER_EQUAL,
+		Comparator.SMALLER_EQUAL
 	};
 
 	private Comparator comparator;
@@ -39,17 +39,17 @@ public abstract class NumberFilter<T extends Number> extends Filter<T> {
 
 	public boolean matches(T value, T data) {
 		switch (comparator) {
-			case EQ:
+			case EQUAL:
 				return isEqual(data, value);
-			case NEQ:
+			case NOT_EQUAL:
 				return isNotEqual(data, value);
-			case LT:
+			case LARGER:
 				return isLargerThan(data, value);
-			case ST:
+			case SMALLER:
 				return isSmallerThan(data, value);
-			case LEQ:
+			case LARGER_EQUAL:
 				return isLargerEqual(data, value);
-			case SEQ:
+			case SMALLER_EQUAL:
 				return isSmallerEqual(data, value);
 		}
 		return false;

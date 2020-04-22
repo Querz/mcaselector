@@ -1,10 +1,10 @@
 package net.querz.mcaselector.filter;
 
-public abstract class IntegerFilter extends NumberFilter<Integer> {
+public abstract class IntFilter extends NumberFilter<Integer> {
 
 	protected int value;
 
-	public IntegerFilter(FilterType type, Operator operator, Comparator comparator, int value) {
+	public IntFilter(FilterType type, Operator operator, Comparator comparator, int value) {
 		super(type, operator, comparator);
 		this.value = value;
 		setRawValue(value + "");
@@ -69,6 +69,6 @@ public abstract class IntegerFilter extends NumberFilter<Integer> {
 
 	@Override
 	public String getFormatText() {
-		return "+/-int";
+		return "\u00B1int";
 	}
 }

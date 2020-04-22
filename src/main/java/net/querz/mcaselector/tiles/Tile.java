@@ -6,7 +6,7 @@ import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.ui.ImageHelper;
+import net.querz.mcaselector.io.ImageHelper;
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
