@@ -80,7 +80,8 @@ public class TileMap extends Canvas {
 		keyActivator.registerGlobalAction(() -> Platform.runLater(this::update));
 		this.setOnKeyPressed(this::onKeyPressed);
 		this.setOnKeyReleased(this::onKeyReleased);
-		offset = new Point2f(-((double) width / 2 - (double) Tile.SIZE / 2), -((double) height / 2 - (double) Tile.SIZE / 2));
+		this.setOnKeyTyped(this::onKeyTyped);
+		offset = new Point2f(-(double) width / 2, -(double) height / 2);
 
 		imgPool = new ImagePool(this, Config.IMAGE_POOL_SIZE);
 
@@ -124,6 +125,20 @@ public class TileMap extends Canvas {
 		}
 	}
 
+	private void onKeyTyped(KeyEvent event) {
+		if ("+".equals(event.getCharacter())) {
+			zoomFactor(1.05);
+		} else if ("-".equals(event.getCharacter())) {
+			zoomFactor(0.95);
+		}
+	}
+
+	private void zoomFactor(double factor) {
+		float oldScale = scale;
+		scale /= factor;
+		updateScale(oldScale);
+	}
+
 	private void onKeyReleased(KeyEvent event) {
 		if (event.getCode() == KeyCode.SHIFT) {
 			keyActivator.releaseActionKey(event.getCode());
@@ -150,17 +165,24 @@ public class TileMap extends Canvas {
 		if (trackpadScrolling || event.isInertia()) {
 			if (window.isKeyPressed(KeyCode.COMMAND)) {
 				// zoom
-				float oldScale = scale;
-				scale -= event.getDeltaY() / 100;
-				updateScale(oldScale);
+
+				System.out.println("event.getDeltaY " + event.getDeltaY());
+				if (event.getDeltaY() > 0) {
+					zoomFactor(1.03 + event.getDeltaY() / 1000);
+				} else if (event.getDeltaY() < 0) {
+					zoomFactor(0.97 + event.getDeltaY() / 1000);
+				}
+
 			} else {
 				offset = offset.sub(new Point2f(event.getDeltaX(), event.getDeltaY()).mul(scale));
 				update();
 			}
 		} else {
-			float oldScale = scale;
-			scale -= event.getDeltaY() / 100;
-			updateScale(oldScale);
+			if (event.getDeltaY() > 0) {
+				zoomFactor(1.03 + event.getDeltaY() / 1000);
+			} else if (event.getDeltaY() < 0) {
+				zoomFactor(0.97 + event.getDeltaY() / 1000);
+			}
 		}
 	}
 
@@ -173,9 +195,7 @@ public class TileMap extends Canvas {
 	}
 
 	private void onZoom(ZoomEvent event) {
-		float oldScale = scale;
-		scale /= event.getZoomFactor();
-		updateScale(oldScale);
+		zoomFactor(event.getZoomFactor());
 	}
 
 	private void onMousePressed(MouseEvent event) {
