@@ -305,6 +305,21 @@ Minecraft Java Edition comes with a JRE that you can use to start the MCA Select
 
 #### If you are using OpenJDK
 
-If you are using a distribution of OpenJDK, you have to make sure that it comes with JavaFX, as it is needed to run the MCA Selector. Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. On Debian distributions, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of JavaFX is required to run the `.jar`.
+If you are using a distribution of OpenJDK, you have to make sure that it comes with [JavaFX](https://gluonhq.com/products/javafx/), as it is needed to run the MCA Selector. Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. On Debian distributions, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of JavaFX is required to run the `.jar`.
+
+#### If you are using Java 11 or higher
+
+If you are using Java 11 or higher, the JavaFX modules are not included automatically. You will need to include them by specifying the module path for JavaFX. Some examples are included below, but you may need to edit paths if your system stores the JavaFX modules in a different location.
+
+On Windows with Oracle Java 13:
+```
+"C:\Program Files\Java\jdk-13.0.1\bin\java.exe" --module-path "C:\Program Files\Java\javafx-sdk-13.0.1\lib" --add-modules ALL-MODULE-PATH -jar mcaselector-1.9.1.jar
+```
+
+On Debian with OpenJDK 11 and openjfx:
+```
+java --module-path /usr/share/openjfx/lib --add-modules ALL-MODULE-PATH -jar mcaselector-1.9.9.jar
+```
+
 ##
 If none of these instructions work, apply "A brain" that you providently held ready after having read the "Requirements" section carefully.
