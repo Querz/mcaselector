@@ -313,7 +313,7 @@ If you are using Java 11 or higher, the JavaFX modules are not included automati
 
 On Windows with Oracle Java 13:
 ```
-"C:\Program Files\Java\jdk-13.0.1\bin\java.exe" --module-path "C:\Program Files\Java\javafx-sdk-13.0.1\lib" --add-modules ALL-MODULE-PATH -jar mcaselector-1.9.1.jar
+"C:\Program Files\Java\jdk-13.0.1\bin\java.exe" --module-path "C:\Program Files\Java\javafx-sdk-13.0.1\lib" --add-modules ALL-MODULE-PATH -jar mcaselector-1.9.9.jar
 ```
 
 On Debian with OpenJDK 11 and openjfx:
