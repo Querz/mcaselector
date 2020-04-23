@@ -8,6 +8,7 @@ import net.querz.mcaselector.version.anvil113.Anvil113ChunkDataProcessor;
 import net.querz.mcaselector.version.anvil113.Anvil113ChunkFilter;
 import net.querz.mcaselector.version.anvil113.Anvil113ColorMapping;
 import net.querz.mcaselector.version.anvil115.Anvil115ChunkFilter;
+import net.querz.mcaselector.version.anvil116.Anvil116ChunkDataProcessor;
 
 public class VersionController {
 
@@ -31,7 +32,8 @@ public class VersionController {
 
 		ANVIL_1_12(0, 1343, Anvil112ChunkDataProcessor.class, Anvil112ColorMapping.class, Anvil112ChunkFilter.class),
 		ANVIL_1_13(1344, 2201, Anvil113ChunkDataProcessor.class, Anvil113ColorMapping.class, Anvil113ChunkFilter.class),
-		ANVIL_1_15(2202, Integer.MAX_VALUE, Anvil113ChunkDataProcessor.class, Anvil113ColorMapping.class, Anvil115ChunkFilter.class);
+		ANVIL_1_15(2202, 2526, Anvil113ChunkDataProcessor.class, Anvil113ColorMapping.class, Anvil115ChunkFilter.class),
+		ANVIL_1_16(2527, Integer.MAX_VALUE, Anvil116ChunkDataProcessor.class, Anvil113ColorMapping.class, Anvil115ChunkFilter.class);
 
 		private int from, to;
 		private Class<? extends ChunkDataProcessor> cdp;

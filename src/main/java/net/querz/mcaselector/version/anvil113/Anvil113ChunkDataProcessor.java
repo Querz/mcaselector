@@ -73,7 +73,7 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 		}
 	}
 
-	private boolean isIgnoredInNether(int biome, CompoundTag blockData, int height) {
+	protected boolean isIgnoredInNether(int biome, CompoundTag blockData, int height) {
 		// all nether biomes: nether/neter_wastes, soul_sand_valley, crimson_forest, warped_forest, basalt_deltas
 		if (biome == 8 || biome == 170 || biome == 171 || biome == 172 || biome == 173) {
 			switch (withDefault(() -> blockData.getString("Name"), "")) {
@@ -107,7 +107,7 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 		return y * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + z * Tile.CHUNK_SIZE + x;
 	}
 
-	private int getPaletteIndex(int index, long[] blockStates, int bits, int clean) {
+	protected int getPaletteIndex(int index, long[] blockStates, int bits, int clean) {
 		double blockStatesIndex = index / (4096D / blockStates.length);
 
 		int longIndex = (int) blockStatesIndex;
