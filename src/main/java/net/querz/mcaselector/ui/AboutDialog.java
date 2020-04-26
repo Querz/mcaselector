@@ -44,7 +44,7 @@ public class AboutDialog extends Alert {
 
 		grid.add(UIFactory.label(Translation.DIALOG_ABOUT_VERSION), 0, 0);
 		HBox versionLabel = new HBox();
-		versionLabel.setAlignment(Pos.CENTER);
+		versionLabel.setAlignment(Pos.CENTER_LEFT);
 		String applicationVersion = "0";
 		try {
 			applicationVersion = FileHelper.getManifestAttributes().getValue("Application-Version");
