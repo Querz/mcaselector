@@ -1,13 +1,23 @@
 package net.querz.mcaselector.ui;
 
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.RotateTransition;
+import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.util.Duration;
+import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.point.Point2i;
 
-public class StatusBar extends BorderPane {
+public class StatusBar extends StackPane {
 
 	private GridPane grid = new GridPane();
 	private Label selectedChunks = new Label(Translation.STATUS_SELECTED + ": 0");
@@ -17,13 +27,21 @@ public class StatusBar extends BorderPane {
 	private Label visibleRegions = new Label(Translation.STATUS_VISIBLE + ": 0");
 	private Label totalRegions = new Label(Translation.STATUS_TOTAL + ": 0");
 
+	ImageView loadIcon = new ImageView(FileHelper.getIconFromResources("img/load"));
+	BorderPane bp = new BorderPane();
+	RotateTransition rt;
+
 	public StatusBar(TileMap tileMap) {
 		getStyleClass().add("status-bar");
+		grid.getStyleClass().add("status-bar-grid");
 
 		tileMap.setOnUpdate(this::update);
 		tileMap.setOnHover(this::update);
 		for (int i = 0; i < 6; i++) {
-			grid.getColumnConstraints().add(new ColumnConstraints(120, 120, 200));
+			ColumnConstraints constraints = new ColumnConstraints();
+			constraints.setMinWidth(140);
+			constraints.setFillWidth(true);
+			grid.getColumnConstraints().add(constraints);
 		}
 		hoveredRegion.setTooltip(new Tooltip(Translation.STATUS_REGION_TOOLTIP.toString()));
 		hoveredChunk.setTooltip(new Tooltip(Translation.STATUS_CHUNK_TOOLTIP.toString()));
@@ -31,13 +49,53 @@ public class StatusBar extends BorderPane {
 		selectedChunks.setTooltip(new Tooltip(Translation.STATUS_SELECTED_TOOLTIP.toString()));
 		visibleRegions.setTooltip(new Tooltip(Translation.STATUS_VISIBLE_TOOLTIP.toString()));
 		totalRegions.setTooltip(new Tooltip(Translation.STATUS_TOTAL_TOOLTIP.toString()));
-		grid.add(hoveredRegion, 0, 0, 1 ,1);
+		grid.add(hoveredBlock, 0, 0, 1, 1);
 		grid.add(hoveredChunk, 1, 0, 1, 1);
-		grid.add(hoveredBlock, 2, 0, 1, 1);
+		grid.add(hoveredRegion, 2, 0, 1 ,1);
 		grid.add(selectedChunks, 3, 0, 1, 1);
 		grid.add(visibleRegions, 4, 0, 1, 1);
 		grid.add(totalRegions, 5, 0, 1, 1);
-		setLeft(grid);
+
+		StackPane.setAlignment(grid, Pos.CENTER_LEFT);
+		getChildren().add(grid);
+
+		rt = new RotateTransition(Duration.millis(1000), loadIcon);
+		rt.setByAngle(360);
+		rt.setCycleCount(Animation.INDEFINITE);
+		rt.setInterpolator(Interpolator.LINEAR);
+
+		StackPane.setAlignment(bp, Pos.CENTER_LEFT);
+		getChildren().add(bp);
+
+		DataProperty<Boolean> b = new DataProperty<>(true);
+		DataProperty<Integer> before = new DataProperty<>(0);
+		Thread t = new Thread(() -> {
+			while (b.get()) {
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException ex) {
+					return;
+				}
+				int activeJobs = MCAFilePipe.getActiveJobs();
+				if (before.get() == 0 && activeJobs != 0) {
+					Platform.runLater(() -> {
+						rt.play();
+						bp.setRight(loadIcon);
+					});
+				} else if (before.get() != 0 && activeJobs == 0) {
+					Platform.runLater(() -> {
+						rt.stop();
+						bp.setRight(null);
+					});
+				}
+				before.set(activeJobs);
+			}
+		});
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			b.set(false);
+			t.interrupt();
+		}));
+		t.start();
 	}
 
 	private void update(TileMap tileMap) {

@@ -138,4 +138,14 @@ public final class MCAFilePipe {
 		});
 		thread.start();
 	}
+
+	public static int getActiveJobs() {
+		return waitingForLoad.size() +
+			loadDataExecutor.getQueue().size() +
+			loadDataExecutor.getActiveCount() +
+			processDataExecutor.getQueue().size() +
+			processDataExecutor.getActiveCount() +
+			saveDataExecutor.getQueue().size() +
+			saveDataExecutor.getActiveCount();
+	}
 }
