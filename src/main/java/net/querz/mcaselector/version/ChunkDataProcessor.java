@@ -1,7 +1,7 @@
 package net.querz.mcaselector.version;
 
 import javafx.scene.image.PixelWriter;
-import net.querz.nbt.CompoundTag;
+import net.querz.nbt.tag.CompoundTag;
 
 public interface ChunkDataProcessor {
 

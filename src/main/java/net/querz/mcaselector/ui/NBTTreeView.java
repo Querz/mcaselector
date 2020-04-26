@@ -23,7 +23,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.nbt.*;
+import net.querz.nbt.tag.*;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -168,7 +168,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		if (target.getValue().tag.getID() == 9) {
 			// when this is a list tag, we have limited possibilities
 			if (((ListTag<?>) target.getValue().tag).getTypeClass() != EndTag.class) {
-				return new int[]{(int) TagFactory.idFromClass(((ListTag<?>) target.getValue().tag).getTypeClass())};
+				return new int[]{getListTagTypeID((ListTag<?>) target.getValue().tag)};
 			}
 		}
 		// if the tag is a value tag, we lookup the parent
@@ -176,11 +176,43 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			if (target.getParent().getValue().tag.getID() == 9) {
 				// when parent is a list tag, we have limited possibilities
 				if (((ListTag<?>) target.getParent().getValue().tag).getTypeClass() != EndTag.class) {
-					return new int[]{(int) TagFactory.idFromClass(((ListTag<?>) target.getParent().getValue().tag).getTypeClass())};
+					return new int[]{getListTagTypeID((ListTag<?>) target.getParent().getValue().tag)};
 				}
 			}
 		}
 		return new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+	}
+
+	private static int getListTagTypeID(ListTag<?> listTag) {
+		if (listTag.getTypeClass() == EndTag.class) {
+			return 0;
+		} else if (listTag.getTypeClass() == ByteTag.class) {
+			return 1;
+		} else if (listTag.getTypeClass() == ShortTag.class) {
+			return 2;
+		} else if (listTag.getTypeClass() == IntTag.class) {
+			return 3;
+		} else if (listTag.getTypeClass() == LongTag.class) {
+			return 4;
+		} else if (listTag.getTypeClass() == FloatTag.class) {
+			return 5;
+		} else if (listTag.getTypeClass() == DoubleTag.class) {
+			return 6;
+		} else if (listTag.getTypeClass() == ByteArrayTag.class) {
+			return 7;
+		} else if (listTag.getTypeClass() == StringTag.class) {
+			return 8;
+		} else if (listTag.getTypeClass() == ListTag.class) {
+			return 9;
+		} else if (listTag.getTypeClass() == CompoundTag.class) {
+			return 10;
+		} else if (listTag.getTypeClass() == IntArrayTag.class) {
+			return 11;
+		} else if (listTag.getTypeClass() == LongArrayTag.class) {
+			return 12;
+		} else {
+			throw new IllegalArgumentException("invalid list tag type: " + listTag.getTypeClass().getName());
+		}
 	}
 
 	private static String tagToString(NamedTag tag) {

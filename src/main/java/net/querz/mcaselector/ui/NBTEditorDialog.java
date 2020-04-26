@@ -22,8 +22,7 @@ import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.TagFactory;
+import net.querz.nbt.tag.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -33,6 +32,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 
@@ -119,30 +119,30 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 	}
 
 	private void initAddTagLabels(NBTTreeView nbtTreeView) {
-		addTagLabels.put(1, iconLabel("img/nbt/byte", 1, nbtTreeView));
-		addTagLabels.put(2, iconLabel("img/nbt/short", 2, nbtTreeView));
-		addTagLabels.put(3, iconLabel("img/nbt/int", 3, nbtTreeView));
-		addTagLabels.put(4, iconLabel("img/nbt/long", 4, nbtTreeView));
-		addTagLabels.put(5, iconLabel("img/nbt/float", 5, nbtTreeView));
-		addTagLabels.put(6, iconLabel("img/nbt/double", 6, nbtTreeView));
-		addTagLabels.put(8, iconLabel("img/nbt/string", 8, nbtTreeView));
-		addTagLabels.put(9, iconLabel("img/nbt/list", 9, nbtTreeView));
-		addTagLabels.put(10, iconLabel("img/nbt/compound", 10, nbtTreeView));
-		addTagLabels.put(7, iconLabel("img/nbt/byte_array", 7, nbtTreeView));
-		addTagLabels.put(11, iconLabel("img/nbt/int_array", 11, nbtTreeView));
-		addTagLabels.put(12, iconLabel("img/nbt/long_array", 12, nbtTreeView));
+		addTagLabels.put(1, iconLabel("img/nbt/byte", ByteTag::new, nbtTreeView));
+		addTagLabels.put(2, iconLabel("img/nbt/short", ShortTag::new, nbtTreeView));
+		addTagLabels.put(3, iconLabel("img/nbt/int", IntTag::new, nbtTreeView));
+		addTagLabels.put(4, iconLabel("img/nbt/long", LongTag::new, nbtTreeView));
+		addTagLabels.put(5, iconLabel("img/nbt/float", FloatTag::new, nbtTreeView));
+		addTagLabels.put(6, iconLabel("img/nbt/double", DoubleTag::new, nbtTreeView));
+		addTagLabels.put(8, iconLabel("img/nbt/string", StringTag::new, nbtTreeView));
+		addTagLabels.put(9, iconLabel("img/nbt/list", () -> ListTag.createUnchecked(EndTag.class), nbtTreeView));
+		addTagLabels.put(10, iconLabel("img/nbt/compound", CompoundTag::new, nbtTreeView));
+		addTagLabels.put(7, iconLabel("img/nbt/byte_array", ByteArrayTag::new, nbtTreeView));
+		addTagLabels.put(11, iconLabel("img/nbt/int_array", IntArrayTag::new, nbtTreeView));
+		addTagLabels.put(12, iconLabel("img/nbt/long_array", LongArrayTag::new, nbtTreeView));
 		// disable all add tag labels
 		enableAddTagLabels(null);
 	}
 
-	private Label iconLabel(String img, int id, NBTTreeView nbtTreeView) {
+	private Label iconLabel(String img, Supplier<Tag<?>> tagSupplier, NBTTreeView nbtTreeView) {
 		ImageView icon = new ImageView(FileHelper.getIconFromResources(img));
 		Label label = new Label("", icon);
 		icon.setPreserveRatio(true);
 		label.setOnMouseEntered(e -> icon.setFitWidth(18));
 		label.setOnMouseExited(e -> icon.setFitWidth(16));
 		label.getStyleClass().add("nbt-editor-add-tag-label");
-		label.setOnMouseClicked(e -> nbtTreeView.addItem(nbtTreeView.getSelectionModel().getSelectedItem(), "Unknown", TagFactory.fromID(id)));
+		label.setOnMouseClicked(e -> nbtTreeView.addItem(nbtTreeView.getSelectionModel().getSelectedItem(), "Unknown", tagSupplier.get()));
 		return label;
 	}
 

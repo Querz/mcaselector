@@ -3,13 +3,16 @@ package net.querz.mcaselector.io;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.DoubleTag;
-import net.querz.nbt.IntArrayTag;
-import net.querz.nbt.IntTag;
-import net.querz.nbt.ListTag;
-import net.querz.nbt.LongArrayTag;
-import net.querz.nbt.Tag;
+import net.querz.nbt.io.NBTDeserializer;
+import net.querz.nbt.io.NBTSerializer;
+import net.querz.nbt.io.NamedTag;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.DoubleTag;
+import net.querz.nbt.tag.IntArrayTag;
+import net.querz.nbt.tag.IntTag;
+import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.LongArrayTag;
+import net.querz.nbt.tag.Tag;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
@@ -81,10 +84,10 @@ public class MCAChunkData {
 			data = null;
 			return;
 		}
-		Tag<?> tag = Tag.deserialize(nbtIn, Tag.DEFAULT_MAX_DEPTH);
+		NamedTag tag = new NBTDeserializer(false).fromStream(nbtIn);
 
-		if (tag instanceof CompoundTag) {
-			data = (CompoundTag) tag;
+		if (tag.getTag() instanceof CompoundTag) {
+			data = (CompoundTag) tag.getTag();
 		} else {
 			throw new Exception("Invalid chunk data: tag is not of type CompoundTag");
 		}
@@ -106,10 +109,10 @@ public class MCAChunkData {
 				return;
 		}
 
-		Tag<?> tag = Tag.deserialize(nbtIn, Tag.DEFAULT_MAX_DEPTH);
+		NamedTag tag = new NBTDeserializer(false).fromStream(nbtIn);
 
-		if (tag instanceof CompoundTag) {
-			data = (CompoundTag) tag;
+		if (tag.getTag() instanceof CompoundTag) {
+			data = (CompoundTag) tag.getTag();
 		} else {
 			throw new IOException("Invalid chunk data: tag is not of type CompoundTag");
 		}
@@ -133,7 +136,8 @@ public class MCAChunkData {
 			return 0;
 		}
 
-		data.serialize(nbtOut, Tag.DEFAULT_MAX_DEPTH);
+		new NBTSerializer(false).toStream(new NamedTag(null, data), nbtOut);
+
 		nbtOut.close();
 
 		byte[] rawData = baos.toByteArray();
@@ -602,7 +606,6 @@ public class MCAChunkData {
 					}
 				}
 			}
-
 		}
 	}
 

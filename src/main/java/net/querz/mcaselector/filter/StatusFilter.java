@@ -1,6 +1,6 @@
 package net.querz.mcaselector.filter;
 
-import net.querz.nbt.StringTag;
+import net.querz.nbt.tag.StringTag;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;

@@ -1,6 +1,6 @@
 package net.querz.mcaselector.changer;
 
-import net.querz.nbt.CompoundTag;
+import net.querz.nbt.tag.CompoundTag;
 
 public class DeleteEntitiesField extends Field<Boolean> {
 

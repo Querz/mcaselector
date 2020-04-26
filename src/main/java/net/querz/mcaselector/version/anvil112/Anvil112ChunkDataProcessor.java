@@ -4,8 +4,8 @@ import javafx.scene.image.PixelWriter;
 import net.querz.mcaselector.version.ChunkDataProcessor;
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.tiles.Tile;
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.ListTag;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.ListTag;
 import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {

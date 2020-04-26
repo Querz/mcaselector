@@ -1,6 +1,6 @@
 package net.querz.mcaselector.version;
 
-import net.querz.nbt.CompoundTag;
+import net.querz.nbt.tag.CompoundTag;
 
 public interface ChunkFilter {
 

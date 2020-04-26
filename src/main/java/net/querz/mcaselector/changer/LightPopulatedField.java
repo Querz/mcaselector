@@ -1,8 +1,8 @@
 package net.querz.mcaselector.changer;
 
 import net.querz.mcaselector.validation.ValidationHelper;
-import net.querz.nbt.ByteTag;
-import net.querz.nbt.CompoundTag;
+import net.querz.nbt.tag.ByteTag;
+import net.querz.nbt.tag.CompoundTag;
 
 public class LightPopulatedField extends Field<Byte> {
 

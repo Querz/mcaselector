@@ -1,8 +1,8 @@
 package net.querz.mcaselector.changer;
 
 import net.querz.mcaselector.validation.ValidationHelper;
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.StringTag;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.StringTag;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;

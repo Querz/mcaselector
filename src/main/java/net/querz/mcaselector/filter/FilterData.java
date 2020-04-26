@@ -1,6 +1,6 @@
 package net.querz.mcaselector.filter;
 
-import net.querz.nbt.CompoundTag;
+import net.querz.nbt.tag.CompoundTag;
 
 public class FilterData {
 

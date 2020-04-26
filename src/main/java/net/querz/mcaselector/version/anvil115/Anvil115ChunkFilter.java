@@ -1,7 +1,7 @@
 package net.querz.mcaselector.version.anvil115;
 
 import net.querz.mcaselector.version.anvil113.Anvil113ChunkFilter;
-import net.querz.nbt.CompoundTag;
+import net.querz.nbt.tag.CompoundTag;
 import java.util.Arrays;
 
 public class Anvil115ChunkFilter extends Anvil113ChunkFilter {

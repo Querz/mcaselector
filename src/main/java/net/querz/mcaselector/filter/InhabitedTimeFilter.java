@@ -1,7 +1,7 @@
 package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.text.TextHelper;
-import net.querz.nbt.CompoundTag;
+import net.querz.nbt.tag.CompoundTag;
 
 public class InhabitedTimeFilter extends LongFilter {
 

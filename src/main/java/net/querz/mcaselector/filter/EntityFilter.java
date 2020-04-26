@@ -1,8 +1,8 @@
 package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.debug.Debug;
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.ListTag;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.ListTag;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

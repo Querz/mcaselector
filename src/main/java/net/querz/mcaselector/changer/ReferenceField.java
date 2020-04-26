@@ -1,8 +1,8 @@
 package net.querz.mcaselector.changer;
 
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.LongArrayTag;
-import net.querz.nbt.Tag;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.LongArrayTag;
+import net.querz.nbt.tag.Tag;
 import java.util.Map;
 
 public class ReferenceField extends Field<Boolean> {

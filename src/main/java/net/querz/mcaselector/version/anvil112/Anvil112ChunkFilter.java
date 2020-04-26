@@ -2,8 +2,8 @@ package net.querz.mcaselector.version.anvil112;
 
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.ListTag;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.ListTag;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

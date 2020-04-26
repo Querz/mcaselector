@@ -4,7 +4,7 @@ import net.querz.mcaselector.filter.BiomeFilter;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.CompoundTag;
+import net.querz.nbt.tag.CompoundTag;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

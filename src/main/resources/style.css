@@ -670,8 +670,8 @@
 .nbt-tree-view, .nbt-tree-view-holder {
 	-fx-background-color: -color-field-cell-odd;
 	-fx-padding: 0;
-	-fx-min-width: 300px;
-	-fx-min-height: 450px;
+	-fx-min-width: 400px;
+	-fx-min-height: 500px;
 }
 
 .key-value-tree-cell {

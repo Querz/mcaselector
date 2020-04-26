@@ -1,8 +1,8 @@
 package net.querz.mcaselector.changer;
 
 import net.querz.mcaselector.validation.ValidationHelper;
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.LongTag;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.LongTag;
 
 public class LastUpdateField extends Field<Long> {
 
