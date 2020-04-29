@@ -38,11 +38,7 @@ jar {
 }
 
 shadowJar {
-	manifest {
-		attributes 'Main-Class': 'net.querz.mcaselector.Main'
-	}
 	configurations = [project.configurations.shadow]
-	from 'LICENSE'
 }
 
 compileJava {
