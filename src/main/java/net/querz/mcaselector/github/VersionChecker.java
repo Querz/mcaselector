@@ -1,5 +1,7 @@
 package net.querz.mcaselector.github;
 
+import net.querz.mcaselector.validation.ValidationHelper;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.io.BufferedReader;
@@ -96,11 +98,30 @@ public class VersionChecker {
 		}
 
 		public boolean isNewerThan(String tag) {
-			return this.tag.compareTo(tag) > 0;
+			return compare(this.tag, tag) > 0;
+		}
+
+		private int compare(String a, String b) {
+			String[] split = a.split("\\.");
+			String[] splitOther = b.split("\\.");
+			int length = Math.max(split.length, splitOther.length);
+
+			for (int i = 0; i < length; i++) {
+				String me = i < split.length ? split[i] : "0";
+				String you = i < splitOther.length ? splitOther[i] : "0";
+				int meInt = ValidationHelper.withDefault(() -> Integer.parseInt(me), 0);
+				int youInt = ValidationHelper.withDefault(() -> Integer.parseInt(you), 0);
+
+				int comp = Integer.compare(meInt, youInt);
+				if (comp != 0) {
+					return comp;
+				}
+			}
+			return 0;
 		}
 
 		public boolean isOlderThan(String tag) {
-			return this.tag.compareTo(tag) < 0;
+			return compare(this.tag, tag) < 0;
 		}
 
 		public String getTag() {
