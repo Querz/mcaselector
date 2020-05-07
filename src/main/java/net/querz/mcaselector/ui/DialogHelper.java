@@ -295,6 +295,7 @@ public class DialogHelper {
 				Debug.dump("setting world dir to " + file.getAbsolutePath());
 				FileHelper.setLastOpenedDirectory("open_world", file.getAbsolutePath());
 				Config.setWorldDir(file);
+				CacheHelper.validateCacheVersion(tileMap);
 				tileMap.clear();
 				tileMap.update();
 				tileMap.disable(false);

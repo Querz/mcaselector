@@ -27,10 +27,10 @@ public final class Config {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		DEFAULT_BASE_DIR = new File(path, "cache");
+		DEFAULT_BASE_DIR = new File(path);
 	}
 
-	public static final File DEFAULT_BASE_CACHE_DIR = DEFAULT_BASE_DIR;
+	public static final File DEFAULT_BASE_CACHE_DIR = new File(DEFAULT_BASE_DIR, "cache");
 
 	public static final Color DEFAULT_REGION_SELECTION_COLOR = new Color(1, 0, 0, 0.8);
 	public static final Color DEFAULT_CHUNK_SELECTION_COLOR = new Color(1, 0.45, 0, 0.8);

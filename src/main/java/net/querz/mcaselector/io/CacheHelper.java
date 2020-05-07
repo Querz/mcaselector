@@ -1,12 +1,21 @@
 package net.querz.mcaselector.io;
 
+import javafx.scene.control.Label;
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.github.VersionChecker;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.progress.Progress;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -50,6 +59,7 @@ public final class CacheHelper {
 				}
 			}
 		}
+		updateVersionFile();
 		tileMap.clear();
 		tileMap.update();
 	}
@@ -82,5 +92,62 @@ public final class CacheHelper {
 			}
 		}
 		tileMap.update();
+	}
+
+	public static void validateCacheVersion(TileMap tileMap) {
+		String applicationVersion = null;
+		try {
+			applicationVersion = FileHelper.getManifestAttributes().getValue("Application-Version");
+		} catch (IOException ex) {
+			// do nothing
+		}
+
+		// if we are not running from a .jar, we won't touch the cache files
+		if (applicationVersion == null) {
+			Debug.dump("failed to fetch application version");
+			return;
+		}
+
+		File cacheVersionFile = new File(Config.getCacheDir(), "version");
+
+		String version = readVersionFromFile(cacheVersionFile);
+		if (!applicationVersion.equals(version)) {
+			clearAllCache(tileMap);
+		}
+	}
+
+	private static String readVersionFromFile(File file) {
+		String version = null;
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+			version = br.readLine();
+		} catch (IOException e) {
+			Debug.error("failed to read version from file: " + e.getMessage());
+		}
+		return version;
+	}
+
+	private static void updateVersionFile() {
+		String applicationVersion = null;
+		try {
+			applicationVersion = FileHelper.getManifestAttributes().getValue("Application-Version");
+		} catch (IOException ex) {
+			// do nothing
+		}
+
+		if (applicationVersion == null) {
+			Debug.dump("no application version found, not updating cache version");
+			return;
+		}
+
+		File versionFile = new File(Config.getCacheDir(), "version");
+		if (!versionFile.getParentFile().exists()) {
+			versionFile.getParentFile().mkdirs();
+		}
+
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(versionFile))) {
+			bw.write(applicationVersion);
+		} catch (IOException ex) {
+			Debug.error(ex);
+		}
 	}
 }
