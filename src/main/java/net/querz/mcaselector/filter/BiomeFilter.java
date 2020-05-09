@@ -6,15 +6,12 @@ import net.querz.mcaselector.version.VersionController;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class BiomeFilter extends TextFilter<List<Integer>> {
 
 	private static Map<String, Integer> validNames = new HashMap<>();
+	private static Set<Integer> validIDs = new HashSet<>();
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
@@ -32,6 +29,7 @@ public class BiomeFilter extends TextFilter<List<Integer>> {
 					continue;
 				}
 				validNames.put(split[0], id);
+				validIDs.add(id);
 			}
 		} catch (IOException ex) {
 			Debug.error("error reading biomes.csv: ", ex.getMessage());
@@ -87,12 +85,28 @@ public class BiomeFilter extends TextFilter<List<Integer>> {
 		} else {
 			List<Integer> idList = new ArrayList<>();
 			for (String name : rawBiomeNames) {
-				if (!validNames.containsKey(name)) {
-					setValid(false);
-					setValue(null);
-					return;
+				boolean quoted = false;
+				if (name.startsWith("'") && name.endsWith("'") && name.length() > 1) {
+					name = name.substring(1, name.length() - 1);
+					quoted = true;
 				}
-				if (validNames.containsKey(name)) {
+
+				if (name.matches("^[0-9]+$")) {
+					try {
+						int id = Integer.parseInt(name);
+						if (quoted || validIDs.contains(id)) {
+							idList.add(id);
+						} else {
+							setValid(false);
+							setValue(null);
+							return;
+						}
+					} catch (NumberFormatException ex) {
+						setValid(false);
+						setValue(null);
+						return;
+					}
+				} else if (validNames.containsKey(name)) {
 					idList.add(validNames.get(name));
 				} else {
 					setValid(false);

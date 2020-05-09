@@ -8,13 +8,12 @@ import net.querz.nbt.tag.CompoundTag;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class BiomeField extends Field<Integer> {
 
 	private static Map<String, Integer> validNames = new HashMap<>();
+	private static Set<Integer> validIDs = new HashSet<>();
 	private String name;
 
 	static {
@@ -33,6 +32,7 @@ public class BiomeField extends Field<Integer> {
 					continue;
 				}
 				validNames.put(split[0], id);
+				validIDs.add(id);
 			}
 		} catch (IOException ex) {
 			Debug.error("error reading biomes.csv: ", ex.getMessage());
@@ -55,6 +55,25 @@ public class BiomeField extends Field<Integer> {
 			setNewValue(validNames.get(low));
 			name = low;
 			return true;
+		}
+
+		boolean quoted = false;
+		if (low.startsWith("'") && low.endsWith("'") && low.length() > 1) {
+			low = low.substring(1, low.length() - 1);
+			quoted = true;
+		}
+
+		if (low.matches("^[0-9]+$")) {
+			try {
+				int id = Integer.parseInt(low);
+				if (quoted || validIDs.contains(id)) {
+					setNewValue(id);
+					name = s;
+					return true;
+				}
+			} catch (NumberFormatException ex) {
+				// do nothing
+			}
 		}
 		return super.parseNewValue(s);
 	}
