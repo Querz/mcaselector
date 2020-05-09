@@ -144,7 +144,7 @@ The MCA Selector currently supports the following Minecraft versions:
 | 1.13 - 1.13.2     | 1444 - 1631 |
 | 1.14 - 1.14.4     | 1901 - 1976 |
 | 1.15 - 1.15.2     | 2200 - 2230 |
-| 20w16a - ?        | 2506 - ?    |
+| 20w19a - ?        | 2534 - ?    |
 
 ---
 ## Headless mode

@@ -245,7 +245,7 @@ crafting_table;6b472a
 creeper_head;544033
 creeper_wall_head;544033
 crimson_button;653046
-crimson_door;70364d
+crimson_door;72364f
 crimson_fence_gate;653046
 crimson_fence;653046
 crimson_fungus;8d2c1d
@@ -890,12 +890,12 @@ soul_campfire:facing=south,lit=false;4f4a43
 soul_campfire:facing=south,lit=true;456a68
 soul_campfire:facing=west,lit=false;4f4a43
 soul_campfire:facing=west,lit=true;456a68
-soul_fire_lantern;476372
-soul_fire_torch;6d7359
-soul_fire_wall_torch;6d7359
 soul_fire;33c0c5
+soul_lantern;476372
 soul_sand;544033
 soul_soil;4b392e
+soul_torch;6d7359
+soul_wall_torch;6d7359
 spawner;1a2731
 sponge;c2c354
 spruce_button;674d2e
@@ -987,7 +987,7 @@ vine;0a5200
 wall_sign;9c7f4e
 wall_torch;826a3a
 warped_button;2b6863
-warped_door;2d7c76
+warped_door;2c7e78
 warped_fence_gate;2b6863
 warped_fence;2b6863
 warped_fungus;4a6d57

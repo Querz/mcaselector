@@ -636,11 +636,11 @@ snow
 snow_block
 soul_campfire
 soul_fire
-soul_fire_lantern
-soul_fire_torch
-soul_fire_wall_torch
+soul_lantern
 soul_sand
 soul_soil
+soul_torch
+soul_wall_torch
 spawner
 sponge
 spruce_button
