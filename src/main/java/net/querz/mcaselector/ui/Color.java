@@ -37,6 +37,25 @@ public class Color {
 		return handle;
 	}
 
+	public static int shade(int color, int amount) {
+		int a = (color >> 24) & 0xFF;
+		int r = (color >> 16) & 0xFF;
+		int g = (color >> 8) & 0xFF;
+		int b = color & 0xFF;
+
+		int r2 = clampByte(r + amount) << 16;
+		int g2 = clampByte(g + amount) << 8;
+		int b2 = clampByte(b + amount);
+		return a << 24 | r2 | g2 | b2;
+	}
+
+	private static int clampByte(int b) {
+		if (b < 0) {
+			return 0;
+		}
+		return Math.min(b, 255);
+	}
+
 	@Override
 	public String toString() {
 		if (handle == null) {

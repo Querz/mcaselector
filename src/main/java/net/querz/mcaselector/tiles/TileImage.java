@@ -123,6 +123,7 @@ public final class TileImage {
 			WritableImage finalImage = new WritableImage(Tile.SIZE, Tile.SIZE);
 			PixelWriter writer = finalImage.getPixelWriter();
 			int[] pixelBuffer = new int[Tile.SIZE * Tile.SIZE];
+			short[] heights = new short[Tile.SIZE * Tile.SIZE];
 
 			for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
 				for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
@@ -138,9 +139,11 @@ public final class TileImage {
 						Debug.error(ex);
 					}
 
-					drawChunkImage(data, cx * Tile.CHUNK_SIZE, cz * Tile.CHUNK_SIZE, pixelBuffer);
+					drawChunkImage(data, cx * Tile.CHUNK_SIZE, cz * Tile.CHUNK_SIZE, pixelBuffer, heights);
 				}
 			}
+
+			shade(pixelBuffer, heights);
 
 			writer.setPixels(0, 0, Tile.SIZE, Tile.SIZE, PixelFormat.getIntArgbPreInstance(), pixelBuffer,  0, Tile.SIZE);
 
@@ -151,7 +154,7 @@ public final class TileImage {
 		return null;
 	}
 
-	private static void drawChunkImage(MCAChunkData chunkData, int x, int z, int[] pixelBuffer) {
+	private static void drawChunkImage(MCAChunkData chunkData, int x, int z, int[] pixelBuffer, short[] heights) {
 		if (chunkData.getData() == null) {
 			return;
 		}
@@ -161,10 +164,60 @@ public final class TileImage {
 					chunkData.getData(),
 					VersionController.getColorMapping(dataVersion),
 					x, z,
-					pixelBuffer
+					pixelBuffer,
+					heights
 			);
 		} catch (Exception ex) {
 			Debug.dump(ex);
+		}
+	}
+
+	private static void shade(int[] pixelBuffer, short[] heights) {
+		int index = 0;
+		for (int z = 0; z < Tile.SIZE; z++) {
+			for (int x = 0; x < Tile.SIZE; x++, index++) {
+				float xShade, zShade;
+
+				if (pixelBuffer[index] == 0) {
+					continue;
+				}
+
+				if(z == 0) {
+					zShade = heights[index + Tile.SIZE] - heights[index];
+				} else if (z == Tile.SIZE - 1) {
+					zShade = heights[index] - heights[index - Tile.SIZE];
+				} else {
+					zShade = (heights[index + Tile.SIZE] - heights[index - Tile.SIZE]) * 2;
+				}
+
+				if (x == 0) {
+					xShade = heights[index + 1] - heights[index];
+				} else if (x == Tile.SIZE - 1) {
+					xShade = heights[index] - heights[index - 1];
+				} else {
+					xShade = (heights[index + 1] - heights[index - 1]) * 2;
+				}
+
+				float shade = xShade + zShade;
+				if (shade > 5) {
+					shade = 5;
+				}
+				if (shade < -5) {
+					shade = -5;
+				}
+
+				int altitudeShade = 32 * (heights[index] - 64) / 255;
+				if (altitudeShade < -25) {
+					altitudeShade = -25;
+				}
+				if (altitudeShade > 25) {
+					altitudeShade = 25;
+				}
+
+				shade += altitudeShade;
+
+				pixelBuffer[index] = Color.shade(pixelBuffer[index], (int) (shade * 8));
+			}
 		}
 	}
 }

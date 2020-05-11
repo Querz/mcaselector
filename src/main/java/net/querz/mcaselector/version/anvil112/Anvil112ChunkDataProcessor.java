@@ -10,7 +10,7 @@ import static net.querz.mcaselector.validation.ValidationHelper.*;
 public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
 	@Override
-	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer) {
+	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, short[] heights) {
 		ListTag<CompoundTag> sections = withDefault(() -> root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
 		if (sections == null) {
 			return;
@@ -59,7 +59,9 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 						byte blockData = (byte) (index % 2 == 0 ? data[index / 2] & 0x0F : (data[index / 2] >> 4) & 0x0F);
 
 						if (!isEmpty(block)) {
-							pixelBuffer[(z + cz) * Tile.SIZE + (x + cx)] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
+							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
+							pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
+							heights[regionIndex] = (short) (sectionHeight + cy);
 							continue zLoop;
 						}
 					}
