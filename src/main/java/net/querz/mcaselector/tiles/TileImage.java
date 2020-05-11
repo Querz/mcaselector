@@ -5,6 +5,7 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.Config;
@@ -121,6 +122,7 @@ public final class TileImage {
 		try {
 			WritableImage finalImage = new WritableImage(Tile.SIZE, Tile.SIZE);
 			PixelWriter writer = finalImage.getPixelWriter();
+			int[] pixelBuffer = new int[Tile.SIZE * Tile.SIZE];
 
 			for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
 				for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
@@ -136,9 +138,12 @@ public final class TileImage {
 						Debug.error(ex);
 					}
 
-					drawChunkImage(data, cx * Tile.CHUNK_SIZE, cz * Tile.CHUNK_SIZE, writer);
+					drawChunkImage(data, cx * Tile.CHUNK_SIZE, cz * Tile.CHUNK_SIZE, pixelBuffer);
 				}
 			}
+
+			writer.setPixels(0, 0, Tile.SIZE, Tile.SIZE, PixelFormat.getIntArgbPreInstance(), pixelBuffer,  0, Tile.SIZE);
+
 			return finalImage;
 		} catch (Exception ex) {
 			Debug.error(ex);
@@ -146,7 +151,7 @@ public final class TileImage {
 		return null;
 	}
 
-	private static void drawChunkImage(MCAChunkData chunkData, int x, int z, PixelWriter writer) {
+	private static void drawChunkImage(MCAChunkData chunkData, int x, int z, int[] pixelBuffer) {
 		if (chunkData.getData() == null) {
 			return;
 		}
@@ -156,7 +161,7 @@ public final class TileImage {
 					chunkData.getData(),
 					VersionController.getColorMapping(dataVersion),
 					x, z,
-					writer
+					pixelBuffer
 			);
 		} catch (Exception ex) {
 			Debug.dump(ex);

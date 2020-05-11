@@ -1,6 +1,5 @@
 package net.querz.mcaselector.version.anvil112;
 
-import javafx.scene.image.PixelWriter;
 import net.querz.mcaselector.version.ChunkDataProcessor;
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.tiles.Tile;
@@ -11,7 +10,7 @@ import static net.querz.mcaselector.validation.ValidationHelper.*;
 public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
 	@Override
-	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, PixelWriter writer) {
+	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer) {
 		ListTag<CompoundTag> sections = withDefault(() -> root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
 		if (sections == null) {
 			return;
@@ -60,7 +59,7 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 						byte blockData = (byte) (index % 2 == 0 ? data[index / 2] & 0x0F : (data[index / 2] >> 4) & 0x0F);
 
 						if (!isEmpty(block)) {
-							writer.setArgb(x + cx, z + cz, colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000);
+							pixelBuffer[(z + cz) * Tile.SIZE + (x + cx)] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
 							continue zLoop;
 						}
 					}

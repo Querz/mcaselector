@@ -5,5 +5,5 @@ import net.querz.nbt.tag.CompoundTag;
 
 public interface ChunkDataProcessor {
 
-	void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, PixelWriter writer);
+	void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer);
 }
