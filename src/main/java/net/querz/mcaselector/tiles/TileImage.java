@@ -206,9 +206,9 @@ public final class TileImage {
 					shade = 8;
 				}
 
-				int altitudeShade = 32 * (heights[index] - 64) / 255;
-				if (altitudeShade < -24) {
-					altitudeShade = -24;
+				int altitudeShade = 16 * (heights[index] - 64) / 255;
+				if (altitudeShade < -4) {
+					altitudeShade = -4;
 				}
 				if (altitudeShade > 24) {
 					altitudeShade = 24;

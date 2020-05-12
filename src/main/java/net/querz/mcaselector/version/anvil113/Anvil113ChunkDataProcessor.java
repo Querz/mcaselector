@@ -28,7 +28,8 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 				}
 
 				//loop over sections
-				for (int i = 0; i < sections.size(); i++) {
+				boolean water = false;
+				sLoop: for (int i = 0; i < sections.size(); i++) {
 					final int si = i;
 					CompoundTag section;
 					ListTag<?> rawPalette;
@@ -64,7 +65,13 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 
 						if (!isEmpty(paletteIndex, blockData)) {
 							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
-							pixelBuffer[regionIndex] = colorMapping.getRGB(blockData) | 0xFF000000;
+							if (!water) {
+								pixelBuffer[regionIndex] = colorMapping.getRGB(blockData) | 0xFF000000;
+							}
+							if (isWater(blockData)) {
+								water = true;
+								continue sLoop;
+							}
 							heights[regionIndex] = (short) (sectionHeight + cy);
 							continue zLoop;
 						}
@@ -72,6 +79,19 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 				}
 			}
 		}
+	}
+
+	private boolean isWater(CompoundTag blockData) {
+		switch (blockData.getString("Name")) {
+			case "minecraft:seagrass":
+			case "minecraft:tall_seagrass":
+			case "minecraft:kelp":
+			case "minecraft:kelp_plant":
+			case "minecraft:water":
+			case "minecraft:bubble_column":
+				return true;
+		}
+		return false;
 	}
 
 	protected boolean isIgnoredInNether(int biome, CompoundTag blockData, int height) {

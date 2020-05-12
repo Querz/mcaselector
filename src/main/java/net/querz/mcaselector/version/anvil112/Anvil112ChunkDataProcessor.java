@@ -28,8 +28,9 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 					biome = biomes[getBlockIndex(cx, 0, cz)];
 				}
 
+				boolean water = false;
 				//loop over sections
-				for (int i = 0; i < sections.size(); i++) {
+				sLoop: for (int i = 0; i < sections.size(); i++) {
 					final int si = i;
 					byte[] blocks = withDefault(() -> sections.get(si).getByteArray("Blocks"), null);
 					if (blocks == null) {
@@ -60,7 +61,13 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
 						if (!isEmpty(block)) {
 							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
-							pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
+							if (!water) {
+								pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
+							}
+							if (isWater(block)) {
+								water = true;
+								continue sLoop;
+							}
 							heights[regionIndex] = (short) (sectionHeight + cy);
 							continue zLoop;
 						}
@@ -68,6 +75,15 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 				}
 			}
 		}
+	}
+
+	private boolean isWater(short block) {
+		switch (block) {
+		case 8:
+		case 9:
+			return true;
+		}
+		return false;
 	}
 
 	private boolean isIgnoredInNether(int biome, short block, int height) {
