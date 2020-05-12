@@ -10,7 +10,7 @@ import static net.querz.mcaselector.validation.ValidationHelper.*;
 public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 
 	@Override
-	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, short[] heights) {
+	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, short[] heights, boolean water) {
 		ListTag<CompoundTag> sections = withDefault(() -> root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
 		if ("empty".equals(withDefault(() -> root.getCompoundTag("Level").getString("Status"), null))) {
 			return;
@@ -28,7 +28,7 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 				}
 
 				//loop over sections
-				boolean water = false;
+				boolean waterDepth = false;
 				sLoop: for (int i = 0; i < sections.size(); i++) {
 					final int si = i;
 					CompoundTag section;
@@ -65,12 +65,16 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 
 						if (!isEmpty(paletteIndex, blockData)) {
 							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
-							if (!water) {
+							if (water) {
+								if (!waterDepth) {
+									pixelBuffer[regionIndex] = colorMapping.getRGB(blockData) | 0xFF000000;
+								}
+								if (isWater(blockData)) {
+									waterDepth = true;
+									continue sLoop;
+								}
+							} else {
 								pixelBuffer[regionIndex] = colorMapping.getRGB(blockData) | 0xFF000000;
-							}
-							if (isWater(blockData)) {
-								water = true;
-								continue sLoop;
 							}
 							heights[regionIndex] = (short) (sectionHeight + cy);
 							continue zLoop;

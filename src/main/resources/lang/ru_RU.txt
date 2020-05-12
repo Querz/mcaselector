@@ -42,6 +42,7 @@ dialog.settings.write_threads;Написание потоков
 dialog.settings.max_files;Максимум загружаемых файлов
 dialog.settings.region_color;Цвет выделяемых областей
 dialog.settings.chunk_color;Цвет выделяемых чанков
+dialog.settings.shade;тень
 dialog.settings.print_debug;Отображать системные сообщения
 dialog.settings.reset;Сбросить
 dialog.goto.title;Перейти по координатам

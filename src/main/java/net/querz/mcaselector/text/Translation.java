@@ -60,6 +60,7 @@ public enum Translation {
 	DIALOG_SETTINGS_MAX_FILES("dialog.settings.max_files"),
 	DIALOG_SETTINGS_REGION_COLOR("dialog.settings.region_color"),
 	DIALOG_SETTINGS_CHUNK_COLOR("dialog.settings.chunk_color"),
+	DIALOG_SETTINGS_SHADE("dialog.settings.shade"),
 	DIALOG_SETTINGS_PRINT_DEBUG("dialog.settings.print_debug"),
 	DIALOG_SETTINGS_RESET("dialog.settings.reset"),
 	DIALOG_GOTO_TITLE("dialog.goto.title"),

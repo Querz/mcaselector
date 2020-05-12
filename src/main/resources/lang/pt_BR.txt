@@ -42,6 +42,7 @@ dialog.settings.write_threads;Escrever threads
 dialog.settings.max_files;Carga máxima de arquivos
 dialog.settings.region_color;Cor das regiões
 dialog.settings.chunk_color;Cor dos chunks
+dialog.settings.shade;Sombra
 dialog.settings.print_debug;Mostrar mensagens de desenvolvedor
 dialog.settings.reset;Resetar
 dialog.goto.title;Ir para coordenadas

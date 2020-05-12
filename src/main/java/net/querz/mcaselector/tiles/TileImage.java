@@ -19,7 +19,6 @@ import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.version.VersionController;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.function.Consumer;
@@ -143,7 +142,9 @@ public final class TileImage {
 				}
 			}
 
-			shade(pixelBuffer, heights);
+			if (Config.shade()) {
+				shade(pixelBuffer, heights);
+			}
 
 			writer.setPixels(0, 0, Tile.SIZE, Tile.SIZE, PixelFormat.getIntArgbPreInstance(), pixelBuffer,  0, Tile.SIZE);
 
@@ -165,7 +166,8 @@ public final class TileImage {
 					VersionController.getColorMapping(dataVersion),
 					x, z,
 					pixelBuffer,
-					heights
+					heights,
+					Config.shade()
 			);
 		} catch (Exception ex) {
 			Debug.dump(ex);

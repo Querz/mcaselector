@@ -28,6 +28,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	* - Number of threads for processing
 	* - Number of threads for writing
 	* - Maximum amount of loaded files
+	* toggle shading
 	* toggle debug
 	* */
 
@@ -42,6 +43,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private Slider maxLoadedFilesSlider = createSlider(1, (int) Math.ceil((double) maxMem / 100_000_000L), 1, procCount + procCount / 2);
 	private Button regionSelectionColorPreview = new Button();
 	private Button chunkSelectionColorPreview = new Button();
+	private CheckBox shadeCheckBox = new CheckBox();
 	private CheckBox debugCheckBox = new CheckBox();
 
 	private Color regionSelectionColor = Config.getRegionSelectionColor().makeJavaFXColor();
@@ -67,6 +69,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			regionSelectionColorPreview.setBackground(new Background(new BackgroundFill(Config.DEFAULT_REGION_SELECTION_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
 			chunkSelectionColor = Config.DEFAULT_CHUNK_SELECTION_COLOR.makeJavaFXColor();
 			chunkSelectionColorPreview.setBackground(new Background(new BackgroundFill(Config.DEFAULT_CHUNK_SELECTION_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
+			shadeCheckBox.setSelected(Config.DEFAULT_SHADE);
 			debugCheckBox.setSelected(Config.DEFAULT_DEBUG);
 		});
 
@@ -80,6 +83,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 						(int) maxLoadedFilesSlider.getValue(),
 						regionSelectionColor,
 						chunkSelectionColor,
+						shadeCheckBox.isSelected(),
 						debugCheckBox.isSelected()
 				);
 			}
@@ -117,6 +121,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		chunkSelectionColorPreview.getStyleClass().add("color-preview-button");
 		regionSelectionColorPreview.setBackground(new Background(new BackgroundFill(regionSelectionColor, CornerRadii.EMPTY, Insets.EMPTY)));
 		chunkSelectionColorPreview.setBackground(new Background(new BackgroundFill(chunkSelectionColor, CornerRadii.EMPTY, Insets.EMPTY)));
+		shadeCheckBox.setSelected(Config.shade());
 		debugCheckBox.setSelected(Config.debug());
 
 		regionSelectionColorPreview.setOnMousePressed(e -> {
@@ -140,7 +145,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_MAX_FILES), 0, 4, 1, 1);
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_REGION_COLOR), 0, 5, 1, 1);
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_CHUNK_COLOR), 0, 6, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_PRINT_DEBUG), 0, 7, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SHADE), 0, 7, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_PRINT_DEBUG), 0, 8, 1, 1);
 		grid.add(languages, 1, 0, 2, 1);
 		grid.add(readThreadsSlider, 1, 1, 1, 1);
 		grid.add(processThreadsSlider, 1, 2, 1, 1);
@@ -148,7 +154,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		grid.add(maxLoadedFilesSlider, 1, 4, 1, 1);
 		grid.add(regionSelectionColorPreview, 1, 5, 2, 1);
 		grid.add(chunkSelectionColorPreview, 1, 6, 2, 1);
-		grid.add(debugCheckBox, 1, 7, 2, 1);
+		grid.add(shadeCheckBox, 1, 7, 2, 1);
+		grid.add(debugCheckBox, 1, 8, 2, 1);
 		grid.add(UIFactory.attachTextFieldToSlider(readThreadsSlider), 2, 1, 1, 1);
 		grid.add(UIFactory.attachTextFieldToSlider(processThreadsSlider), 2, 2, 1, 1);
 		grid.add(UIFactory.attachTextFieldToSlider(writeThreadsSlider), 2, 3, 1, 1);
@@ -169,10 +176,11 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		private int readThreads, processThreads, writeThreads, maxLoadedFiles;
 		private Color regionColor, chunkColor;
+		private boolean shade;
 		private boolean debug;
 		private Locale locale;
 
-		public Result(Locale locale, int readThreads, int processThreads, int writeThreads, int maxLoadedFiles, Color regionColor, Color chunkColor, boolean debug) {
+		public Result(Locale locale, int readThreads, int processThreads, int writeThreads, int maxLoadedFiles, Color regionColor, Color chunkColor, boolean shade, boolean debug) {
 			this.locale = locale;
 			this.readThreads = readThreads;
 			this.processThreads = processThreads;
@@ -180,6 +188,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			this.maxLoadedFiles = maxLoadedFiles;
 			this.regionColor = regionColor;
 			this.chunkColor = chunkColor;
+			this.shade = shade;
 			this.debug = debug;
 		}
 
@@ -209,6 +218,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		public Color getChunkColor() {
 			return chunkColor;
+		}
+
+		public boolean getShade() {
+			return shade;
 		}
 
 		public boolean getDebug() {
