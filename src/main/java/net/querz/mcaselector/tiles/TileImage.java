@@ -199,19 +199,19 @@ public final class TileImage {
 				}
 
 				float shade = xShade + zShade;
-				if (shade > 5) {
-					shade = 5;
+				if (shade < -8) {
+					shade = -8;
 				}
-				if (shade < -5) {
-					shade = -5;
+				if (shade > 8) {
+					shade = 8;
 				}
 
 				int altitudeShade = 32 * (heights[index] - 64) / 255;
-				if (altitudeShade < -25) {
-					altitudeShade = -25;
+				if (altitudeShade < -24) {
+					altitudeShade = -24;
 				}
-				if (altitudeShade > 25) {
-					altitudeShade = 25;
+				if (altitudeShade > 24) {
+					altitudeShade = 24;
 				}
 
 				shade += altitudeShade;
