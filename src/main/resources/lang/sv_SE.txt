@@ -42,6 +42,8 @@ dialog.settings.write_threads;Skrivningstrådar
 dialog.settings.max_files;Maximalt laddade filer
 dialog.settings.region_color;Regionmarkeringsfärg
 dialog.settings.chunk_color;Chunkmarkeringsfärg
+dialog.settings.shade;Skugga
+dialog.settings.shade_water;Vattendjup
 dialog.settings.print_debug;Skriv ut felsökningsmeddelanden
 dialog.settings.reset;Återställ
 dialog.goto.title;Gå till plats

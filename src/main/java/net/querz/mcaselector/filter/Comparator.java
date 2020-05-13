@@ -6,7 +6,7 @@ public enum Comparator {
 	NOT_EQUAL("\u2260", "!="),
 	SMALLER("<"),
 	LARGER(">"),
-	LARGER_EQUAL("\u2266", ">="),
+	LARGER_EQUAL("\u2265", ">="),
 	SMALLER_EQUAL("\u2264", "<="),
 	CONTAINS("\u2283", "contains"),
 	CONTAINS_NOT("!\u2283", "!contains");

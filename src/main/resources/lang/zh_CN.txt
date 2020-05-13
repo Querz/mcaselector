@@ -42,6 +42,8 @@ dialog.settings.write_threads;写入线程
 dialog.settings.max_files;最大加载文件数
 dialog.settings.region_color;区域选择颜色
 dialog.settings.chunk_color;区块选择颜色
+dialog.settings.shade;阴影
+dialog.settings.shade_water;水深
 dialog.settings.print_debug;打印调试消息
 dialog.settings.reset;重置
 dialog.goto.title;转到位置

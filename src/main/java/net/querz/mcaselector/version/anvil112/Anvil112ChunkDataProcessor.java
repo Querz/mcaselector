@@ -10,7 +10,7 @@ import static net.querz.mcaselector.validation.ValidationHelper.*;
 public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
 	@Override
-	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, short[] heights) {
+	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, short[] heights, boolean water) {
 		ListTag<CompoundTag> sections = withDefault(() -> root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
 		if (sections == null) {
 			return;
@@ -28,8 +28,9 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 					biome = biomes[getBlockIndex(cx, 0, cz)];
 				}
 
+				boolean waterDepth = false;
 				//loop over sections
-				for (int i = 0; i < sections.size(); i++) {
+				sLoop: for (int i = 0; i < sections.size(); i++) {
 					final int si = i;
 					byte[] blocks = withDefault(() -> sections.get(si).getByteArray("Blocks"), null);
 					if (blocks == null) {
@@ -60,7 +61,17 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
 						if (!isEmpty(block)) {
 							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
-							pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
+							if (water) {
+								if (!waterDepth) {
+									pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
+								}
+								if (isWater(block)) {
+									waterDepth = true;
+									continue sLoop;
+								}
+							} else {
+								pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
+							}
 							heights[regionIndex] = (short) (sectionHeight + cy);
 							continue zLoop;
 						}
@@ -68,6 +79,15 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 				}
 			}
 		}
+	}
+
+	private boolean isWater(short block) {
+		switch (block) {
+		case 8:
+		case 9:
+			return true;
+		}
+		return false;
 	}
 
 	private boolean isIgnoredInNether(int biome, short block, int height) {

@@ -42,6 +42,8 @@ dialog.settings.write_threads;Escribir hilos
 dialog.settings.max_files;Carga máxima de archivos
 dialog.settings.region_color;Color de las Regiones
 dialog.settings.chunk_color;Color de los Chunks
+dialog.settings.shade;Sombra
+dialog.settings.shade_water;Profundidad del agua
 dialog.settings.print_debug;Mostrar mensajes de desarrolador
 dialog.settings.reset;Resetear
 dialog.goto.title;Ir a coordenadas

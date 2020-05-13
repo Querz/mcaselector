@@ -39,6 +39,8 @@ public final class Config {
 	public static final int DEFAULT_PROCESS_THREADS = Runtime.getRuntime().availableProcessors();
 	public static final int DEFAULT_WRITE_THREADS = 4;
 	public static final int DEFAULT_MAX_LOADED_FILES = DEFAULT_PROCESS_THREADS + (DEFAULT_PROCESS_THREADS / 2);
+	public static final boolean DEFAULT_SHADE = true;
+	public static final boolean DEFAULT_SHADE_WATER = true;
 	public static final boolean DEFAULT_DEBUG = false;
 
 	private static File worldDir = null;
@@ -52,6 +54,8 @@ public final class Config {
 	private static int processThreads = DEFAULT_PROCESS_THREADS;
 	private static int writeThreads = DEFAULT_WRITE_THREADS;
 	private static int maxLoadedFiles = DEFAULT_MAX_LOADED_FILES;
+	private static boolean shade = DEFAULT_SHADE;
+	private static boolean shadeWater = DEFAULT_SHADE_WATER;
 
 	private static boolean debug = DEFAULT_DEBUG;
 
@@ -90,6 +94,22 @@ public final class Config {
 			cacheDirs[i] = new File(getCacheDir(), zoomLevel + "");
 		}
 		return cacheDirs;
+	}
+
+	public static void setShade(boolean shade) {
+		Config.shade = shade;
+	}
+
+	public static boolean shade() {
+		return Config.shade;
+	}
+
+	public static void setShadeWater(boolean shadeWater) {
+		Config.shadeWater = shadeWater;
+	}
+
+	public static boolean shadeWater() {
+		return Config.shadeWater;
 	}
 
 	public static void setDebug(boolean debug) {
@@ -162,6 +182,8 @@ public final class Config {
 			processThreads = Integer.parseInt(config.getOrDefault("ProcessThreads", DEFAULT_PROCESS_THREADS + ""));
 			writeThreads = Integer.parseInt(config.getOrDefault("WriteThreads", DEFAULT_WRITE_THREADS + ""));
 			maxLoadedFiles = Integer.parseInt(config.getOrDefault("MaxLoadedFiles", DEFAULT_MAX_LOADED_FILES + ""));
+			shade = Boolean.parseBoolean(config.getOrDefault("Shade", DEFAULT_SHADE + ""));
+			shadeWater = Boolean.parseBoolean(config.getOrDefault("ShadeWater", DEFAULT_SHADE_WATER + ""));
 			debug = Boolean.parseBoolean(config.getOrDefault("Debug", DEFAULT_DEBUG + ""));
 		} catch (Exception ex) {
 			Debug.errorf("error loading settings.ini: %s", ex.getMessage());
@@ -183,6 +205,8 @@ public final class Config {
 		addSettingsLine("ProcessThreads", processThreads, DEFAULT_PROCESS_THREADS, lines);
 		addSettingsLine("WriteThreads", writeThreads, DEFAULT_WRITE_THREADS, lines);
 		addSettingsLine("MaxLoadedFiles", maxLoadedFiles, DEFAULT_MAX_LOADED_FILES, lines);
+		addSettingsLine("Shade", shade, DEFAULT_SHADE, lines);
+		addSettingsLine("ShadeWater", shadeWater, DEFAULT_SHADE_WATER, lines);
 		addSettingsLine("Debug", debug, DEFAULT_DEBUG, lines);
 		if (lines.size() == 0) {
 			if (file.exists() && !file.delete()) {

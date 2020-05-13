@@ -42,6 +42,8 @@ dialog.settings.write_threads;Threads (schreiben)
 dialog.settings.max_files;Max. geladene Dateien
 dialog.settings.region_color;Farbe selektierte Region
 dialog.settings.chunk_color;Farbe selektierter Chunk
+dialog.settings.shade;Schatten
+dialog.settings.shade_water;Wassertiefe
 dialog.settings.print_debug;Debug
 dialog.settings.reset;Zurücksetzen
 dialog.goto.title;Gehe zu Koordinaten
