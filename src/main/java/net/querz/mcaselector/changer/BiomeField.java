@@ -74,6 +74,10 @@ public class BiomeField extends Field<Integer> {
 			} catch (NumberFormatException ex) {
 				// do nothing
 			}
+		} else if (low.equals("-1")) {
+			setNewValue(-1);
+			name = s;
+			return true;
 		}
 		return super.parseNewValue(s);
 	}

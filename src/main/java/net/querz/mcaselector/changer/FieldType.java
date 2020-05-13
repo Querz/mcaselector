@@ -13,6 +13,7 @@ public enum FieldType {
 	STATUS("Status", StatusField.class, false),
 	BIOME("Biome", BiomeField.class, false),
 	DELETE_ENTITIES("DeleteEntities", DeleteEntitiesField.class, false),
+	DELETE_SECTIONS("DeleteSections", DeleteSectionsField.class, false),
 	STRUCTURE_REFERENCE("FixStructureReferences", ReferenceField.class, true);
 
 	private String name;

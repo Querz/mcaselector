@@ -12,7 +12,7 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, short[] heights) {
 		ListTag<CompoundTag> sections = withDefault(() -> root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
-		if ("empty".equals(withDefault(() -> root.getCompoundTag("Level").getString("Status"), null))) {
+		if ("empty".equals(withDefault(() -> root.getCompoundTag("Level").getString("Status"), null)) || sections == null) {
 			return;
 		}
 		sections.sort(this::filterSections);
@@ -75,7 +75,7 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 	}
 
 	protected boolean isIgnoredInNether(int biome, CompoundTag blockData, int height) {
-		// all nether biomes: nether/neter_wastes, soul_sand_valley, crimson_forest, warped_forest, basalt_deltas
+		// all nether biomes: nether/nether_wastes, soul_sand_valley, crimson_forest, warped_forest, basalt_deltas
 		if (biome == 8 || biome == 170 || biome == 171 || biome == 172 || biome == 173) {
 			switch (withDefault(() -> blockData.getString("Name"), "")) {
 			case "minecraft:bedrock":
