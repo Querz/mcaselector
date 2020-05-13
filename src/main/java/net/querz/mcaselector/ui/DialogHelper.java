@@ -179,6 +179,7 @@ public class DialogHelper {
 			Config.setRegionSelectionColor(new Color(r.getRegionColor()));
 			Config.setChunkSelectionColor(new Color(r.getChunkColor()));
 			Config.setShade(r.getShade());
+			Config.setShadeWater(r.getShadeWater());
 			Config.setDebug(r.getDebug());
 			tileMap.update();
 		});

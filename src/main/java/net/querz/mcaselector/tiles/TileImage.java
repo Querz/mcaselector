@@ -167,7 +167,7 @@ public final class TileImage {
 					x, z,
 					pixelBuffer,
 					heights,
-					Config.shade()
+					Config.shade() && Config.shadeWater()
 			);
 		} catch (Exception ex) {
 			Debug.dump(ex);

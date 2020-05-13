@@ -43,6 +43,7 @@ dialog.settings.max_files;Max loaded files
 dialog.settings.region_color;Region selection color
 dialog.settings.chunk_color;Chunk selection color
 dialog.settings.shade;Shade
+dialog.settings.shade_water;Shade water
 dialog.settings.print_debug;Print debug messages
 dialog.settings.reset;Reset
 dialog.goto.title;Goto location

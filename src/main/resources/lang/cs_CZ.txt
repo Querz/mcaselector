@@ -43,6 +43,7 @@ dialog.settings.max_files;Max nahraných souborů
 dialog.settings.region_color;Barva vybraného regionu
 dialog.settings.chunk_color;Barva vybraného chunku
 dialog.settings.shade;Odstín
+dialog.settings.shade_water;Hloubka vody
 dialog.settings.print_debug;Vypisovat ladící zprávy
 dialog.settings.reset;Obnovit
 dialog.goto.title;Přejít na pozici

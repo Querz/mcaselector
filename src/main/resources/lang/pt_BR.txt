@@ -43,6 +43,7 @@ dialog.settings.max_files;Carga máxima de arquivos
 dialog.settings.region_color;Cor das regiões
 dialog.settings.chunk_color;Cor dos chunks
 dialog.settings.shade;Sombra
+dialog.settings.shade_water;Profundidade da água
 dialog.settings.print_debug;Mostrar mensagens de desenvolvedor
 dialog.settings.reset;Resetar
 dialog.goto.title;Ir para coordenadas

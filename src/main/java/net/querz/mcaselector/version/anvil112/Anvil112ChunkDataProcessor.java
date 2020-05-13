@@ -70,8 +70,9 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 									continue sLoop;
 								}
 							} else {
-								heights[regionIndex] = (short) (sectionHeight + cy);
+								pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
 							}
+							heights[regionIndex] = (short) (sectionHeight + cy);
 							continue zLoop;
 						}
 					}

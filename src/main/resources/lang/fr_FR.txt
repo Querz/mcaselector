@@ -43,6 +43,7 @@ dialog.settings.max_files;Maximum de fichiers chargés
 dialog.settings.region_color;Couleur de sélection des régions
 dialog.settings.chunk_color;Couleur de sélection des chunks
 dialog.settings.shade;Ombre
+dialog.settings.shade_water;Profondeur d'eau
 dialog.settings.print_debug;Logger des messages de debug
 dialog.settings.reset;Réinitialiser
 dialog.goto.title;Aller à une position
