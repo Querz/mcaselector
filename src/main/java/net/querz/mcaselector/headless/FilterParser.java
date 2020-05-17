@@ -120,4 +120,18 @@ public class FilterParser {
 				|| c == '+'
 				|| c == ':';
 	}
+
+	public static GroupFilter unwrap(GroupFilter filter) {
+		GroupFilter current = filter;
+		while (current.getFilterValue().size() == 1 && current.getFilterValue().get(0).getType() == FilterType.GROUP) {
+			current = (GroupFilter) current.getFilterValue().get(0);
+		}
+
+		for (int i = 0; i < current.getFilterValue().size(); i++) {
+			if (current.getFilterValue().get(i).getType() == FilterType.GROUP) {
+				current.getFilterValue().set(i, unwrap((GroupFilter) current.getFilterValue().get(i)));
+			}
+		}
+		return current;
+	}
 }

@@ -106,24 +106,17 @@ public class GroupFilter extends Filter<List<Filter>> {
 	}
 
 	@Override
-	public String toString(FilterData data) {
-		StringBuilder s = new StringBuilder("(");
-		for (int i = 0; i < children.size(); i++) {
-			s.append(i != 0 ? " " + children.get(i).getOperator() + " " : "");
-			s.append(children.get(i).toString(data));
-		}
-		s.append(")");
-		return s.toString();
+	public String toString() {
+		return toString(0);
 	}
 
-	@Override
-	public String toString() {
-		StringBuilder s = new StringBuilder("(");
+	private String toString(int depth) {
+		StringBuilder s = new StringBuilder(depth == 0 ? "" : "(");
 		for (int i = 0; i < children.size(); i++) {
 			s.append(i != 0 ? " " + children.get(i).getOperator() + " " : "");
-			s.append(children.get(i));
+			s.append(children.get(i).getType() == FilterType.GROUP ? ((GroupFilter) children.get(i)).toString(depth + 1) : children.get(i));
 		}
-		s.append(")");
+		s.append(depth == 0 ? "" : ")");
 		return s.toString();
 	}
 

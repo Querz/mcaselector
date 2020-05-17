@@ -78,11 +78,6 @@ public class PaletteFilter extends TextFilter<List<String>> {
 	}
 
 	@Override
-	public String toString(FilterData data) {
-		return "PaletteFilter " + getComparator().getQueryString() + " <data>";
-	}
-
-	@Override
 	public String toString() {
 		return "Palette " + getComparator().getQueryString() + " \"" + getRawValue() + "\"";
 	}

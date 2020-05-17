@@ -121,11 +121,6 @@ public class BiomeFilter extends TextFilter<List<Integer>> {
 	}
 
 	@Override
-	public String toString(FilterData data) {
-		return "BiomeFilter " + getComparator().getQueryString() + " <data>";
-	}
-
-	@Override
 	public String toString() {
 		return "Biome " + getComparator().getQueryString() + " \"" + getRawValue() + "\"";
 	}

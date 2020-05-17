@@ -17,12 +17,14 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.filter.Comparator;
 import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.filter.XPosFilter;
 import net.querz.mcaselector.filter.ZPosFilter;
-import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.headless.FilterParser;
+import net.querz.mcaselector.headless.ParseException;
 import net.querz.mcaselector.text.Translation;
 
 public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
@@ -36,6 +38,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 	}
 
 	private GroupFilter value = gf;
+	private TextField filterQuery = new TextField();
 	private GroupFilterBox groupFilterBox = new GroupFilterBox(null, value, true);
 	private ToggleGroup toggleGroup = new ToggleGroup();
 	private RadioButton select = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_SELECT);
@@ -84,7 +87,22 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		groupFilterBox.setOnUpdate(f -> {
 			getDialogPane().lookupButton(ButtonType.OK).setDisable(!value.isValid());
 			if (value.isValid()) {
-				Debug.dump(value);
+				filterQuery.setText(value.toString());
+			}
+		});
+
+		filterQuery.setText(gf.toString());
+
+		filterQuery.setOnAction(e -> {
+			FilterParser fp = new FilterParser(filterQuery.getText());
+			try {
+				gf = fp.parse();
+				gf = FilterParser.unwrap(gf);
+				Debug.dumpf("parsed filter query from: %s, to: ", filterQuery.getText(), gf);
+				value = gf;
+				groupFilterBox.setFilter(gf);
+			} catch (ParseException ex) {
+				Debug.dumpf("failed to parse filter query from: %s, error: %s", filterQuery.getText(), ex.getMessage());
 			}
 		});
 
@@ -104,7 +122,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		selectionBox.getChildren().addAll(actionBox, optionBox);
 
 		VBox box = new VBox();
-		box.getChildren().addAll(scrollPane, new Separator(), selectionBox);
+		box.getChildren().addAll(scrollPane, new Separator(), filterQuery, new Separator(), selectionBox);
 		getDialogPane().setContent(box);
 	}
 

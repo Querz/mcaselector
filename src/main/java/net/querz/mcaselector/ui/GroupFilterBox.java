@@ -1,10 +1,7 @@
 package net.querz.mcaselector.ui;
 
 import javafx.scene.layout.VBox;
-import net.querz.mcaselector.filter.Filter;
-import net.querz.mcaselector.filter.GroupFilter;
-import net.querz.mcaselector.filter.NumberFilter;
-import net.querz.mcaselector.filter.TextFilter;
+import net.querz.mcaselector.filter.*;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.Translation;
 
@@ -15,6 +12,15 @@ public class GroupFilterBox extends FilterBox {
 
 	public GroupFilterBox(FilterBox parent, GroupFilter filter, boolean root) {
 		super(parent, filter, root);
+		setFilter(parent, filter, root);
+	}
+
+	public void setFilter(GroupFilter filter) {
+		setFilter(null, filter, true);
+	}
+
+	private void setFilter(FilterBox parent, GroupFilter filter, boolean root) {
+		filters.getChildren().clear();
 		add.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_ADD_TOOLTIP));
 		delete.setVisible(!root);
 

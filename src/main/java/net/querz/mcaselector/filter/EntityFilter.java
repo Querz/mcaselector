@@ -94,11 +94,6 @@ public class EntityFilter extends TextFilter<List<String>> {
 	}
 
 	@Override
-	public String toString(FilterData data) {
-		return "EntityFilter " + getComparator().getQueryString() + " <data>";
-	}
-
-	@Override
 	public String toString() {
 		return "Entities " + getComparator().getQueryString() + " \"" + getRawValue() + "\"";
 	}
