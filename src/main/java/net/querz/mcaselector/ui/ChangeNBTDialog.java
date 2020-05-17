@@ -66,7 +66,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 		FieldView fieldView = new FieldView();
 		for (FieldType fieldType : FieldType.uiValues()) {
-			Field field = fieldType.newInstance();
+			Field<?> field = fieldType.newInstance();
 			fieldView.addField(field);
 			fields.add(field);
 		}
@@ -138,10 +138,10 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 	private class FieldCell extends HBox {
 
-		private Field value;
+		private Field<?> value;
 		private TextField textField;
 
-		public FieldCell(Field value, int index) {
+		public FieldCell(Field<?> value, int index) {
 			getStyleClass().add("field-cell");
 			getStyleClass().add("field-cell-" + (index % 2 == 0 ? "even" : "odd"));
 			this.value = value;
@@ -160,7 +160,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 				StringBuilder sb = new StringBuilder();
 				boolean first = true;
-				for (Field field : fields) {
+				for (Field<?> field : fields) {
 					if (field.needsChange()) {
 						sb.append(first ? "" : ", ").append(field);
 						first = false;
@@ -197,6 +197,15 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 		public boolean isSelectionOnly() {
 			return selectionOnly;
+		}
+
+		public boolean requiresClearCache() {
+			for (Field<?> field : fields) {
+				if (field.getType().requiresClearCache()) {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }

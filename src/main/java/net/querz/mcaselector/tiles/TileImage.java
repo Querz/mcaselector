@@ -29,7 +29,7 @@ public final class TileImage {
 	private TileImage() {}
 
 	public static void draw(Tile tile, GraphicsContext ctx, float scale, Point2f offset) {
-		if (tile.isLoaded() && tile.image != null) {
+		if (tile.image != null) {
 			ctx.drawImage(tile.getImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		} else {
 			ctx.drawImage(ImageHelper.getEmptyTileImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);

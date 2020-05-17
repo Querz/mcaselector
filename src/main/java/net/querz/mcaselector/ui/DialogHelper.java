@@ -42,6 +42,13 @@ public class DialogHelper {
 									r.isSelectionOnly() ? tileMap.getMarkedChunks() : null,
 									t
 							));
+					if (r.requiresClearCache()) {
+						if (r.isSelectionOnly()) {
+							CacheHelper.clearSelectionCache(tileMap);
+						} else {
+							CacheHelper.clearAllCache(tileMap);
+						}
+					}
 				}
 			});
 		});
@@ -68,7 +75,11 @@ public class DialogHelper {
 											t,
 											false
 									));
-							CacheHelper.clearAllCache(tileMap);
+							if (r.isSelectionOnly()) {
+								CacheHelper.clearSelectionCache(tileMap);
+							} else {
+								CacheHelper.clearAllCache(tileMap);
+							}
 						}
 					});
 					break;

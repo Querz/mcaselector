@@ -96,7 +96,6 @@ public class Tile {
 	public void unload() {
 		if (image != null) {
 			image.cancel();
-			image = null;
 		}
 		if (markedChunksImage != null) {
 			markedChunksImage.cancel();
