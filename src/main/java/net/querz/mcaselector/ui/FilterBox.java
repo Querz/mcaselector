@@ -62,26 +62,26 @@ public abstract class FilterBox extends BorderPane {
 		setRight(controls);
 
 		filterOperators.getStyleClass().add("filter-operators-grid");
+		
+		type.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_TYPE_TOOLTIP));
+		type.getItems().addAll(FilterType.values());
+		type.getSelectionModel().select(filter.getType());
+		type.setOnAction(e -> update(type.getSelectionModel().getSelectedItem()));
+		type.getStyleClass().add("filter-type-combo-box");
+		filterOperators.add(type, 1, 0, 1, 1);
 
 		operator.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_OPERATOR_TOOLTIP));
 		operator.getItems().addAll(Operator.values());
 		operator.getSelectionModel().select(filter.getOperator());
 		operator.setOnAction(e -> onOperator(filter));
 		operator.getStyleClass().add("filter-operator-combo-box");
-		filterOperators.add(operator, 1, 0, 1, 1);
+		filterOperators.add(operator, 0, 0, 1, 1);
 
 		if (filter.getParent() == null || ((GroupFilter) filter.getParent()).getFilterValue().get(0) == filter) {
 			operator.setVisible(false);
 		}
 
-		type.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_TYPE_TOOLTIP));
-		type.getItems().addAll(FilterType.values());
-		type.getSelectionModel().select(filter.getType());
-		type.setOnAction(e -> update(type.getSelectionModel().getSelectedItem()));
-		type.getStyleClass().add("filter-type-combo-box");
-
 		filterOperators.setAlignment(Pos.TOP_LEFT);
-		filterOperators.add(type, 0, 0, 1, 1);
 
 		setLeft(filterOperators);
 
@@ -141,13 +141,13 @@ public abstract class FilterBox extends BorderPane {
 			FilterBox newBox = null;
 			switch (type.getFormat()) {
 			case GROUP:
-				newBox = new GroupFilterBox(this.parent, (GroupFilter) newFilter, root);
+				newBox = new GroupFilterBox(this.parent, (GroupFilter) newFilter, false);
 				break;
 			case TEXT:
-				newBox = new TextFilterBox(this.parent, (TextFilter<?>) newFilter, root);
+				newBox = new TextFilterBox(this.parent, (TextFilter<?>) newFilter, false);
 				break;
 			case NUMBER:
-				newBox = new NumberFilterBox(this.parent, (NumberFilter<?>) newFilter, root);
+				newBox = new NumberFilterBox(this.parent, (NumberFilter<?>) newFilter, false);
 				break;
 			default:
 				Debug.dump("unknown FilterType Format: " + type.getFormat());

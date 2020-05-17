@@ -448,7 +448,7 @@
 .filter-box {
 	-fx-padding: 6 0 3 10;
 	-fx-background-color: -color-dialog-background;
-	-fx-border-width: 1 0 0 0;
+	-fx-border-width: 1 0 0 1;
 	-fx-border-insets: 3 0 0 0;
 	-fx-border-color: -color-dialog-separator;
 }
@@ -467,14 +467,6 @@
 	-fx-padding: 0;
 	-fx-border-width: 0;
 	-fx-border-insets: 0;
-}
-
-.group-filter-box {
-	-fx-padding: 1 0 1 1;
-	-fx-border-insets: 0 0 0 8;
-	-fx-border-width: 2 0 2 2;
-	-fx-border-color: -color-dialog-separator;
-	-fx-background-color: -color-dialog-background;
 }
 
 .filter-dialog-option-box {
