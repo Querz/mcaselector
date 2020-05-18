@@ -446,10 +446,10 @@
 }
 
 .filter-box {
-	-fx-padding: 6 0 3 10;
+	-fx-padding: 6 0 6 10;
 	-fx-background-color: -color-dialog-background;
 	-fx-border-width: 1 0 0 1;
-	-fx-border-insets: 3 0 0 0;
+	-fx-border-insets: 0 0 0 0;
 	-fx-border-color: -color-dialog-separator;
 }
 
@@ -478,6 +478,27 @@
 	-fx-min-width: 40px;
 	-fx-pref-width: 40px;
 	-fx-alignment: center;
+}
+
+.filter-dialog-pane .scroll-pane {
+	-fx-pref-height: 1000px;
+	-fx-max-height: 1000px;
+}
+
+.filter-dialog-pane {
+    -fx-pref-height: 500px;
+}
+
+.filter-drop-target-before {
+	-fx-background-color: linear-gradient(from 0% 100% to 0% 0%, -color-dialog-background, -color-dialog-background 70%, -color-treeview-cell-insert 90%, -color-treeview-cell-insert);
+}
+
+.filter-drop-target-into {
+	-fx-background-color: linear-gradient(from 0% 100% to 0% 0%, -color-dialog-background, -color-dialog-background 20%, -color-treeview-cell-insert 40%, -color-treeview-cell-insert 60%, -color-dialog-background 80%, -color-dialog-background);
+}
+
+.filter-drop-target-after {
+	-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, -color-dialog-background, -color-dialog-background 70%, -color-treeview-cell-insert 90%, -color-treeview-cell-insert);
 }
 
 /*---------- NBT Changer ----------*/

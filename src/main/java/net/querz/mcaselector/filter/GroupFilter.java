@@ -4,9 +4,9 @@ import net.querz.mcaselector.point.Point2i;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroupFilter extends Filter<List<Filter>> {
+public class GroupFilter extends Filter<List<Filter<?>>> {
 
-	private List<Filter> children = new ArrayList<>();
+	private List<Filter<?>> children = new ArrayList<>();
 	private boolean inverted = false;
 
 	public GroupFilter() {
@@ -21,7 +21,7 @@ public class GroupFilter extends Filter<List<Filter>> {
 		return children.isEmpty();
 	}
 
-	public int addFilter(Filter filter) {
+	public int addFilter(Filter<?> filter) {
 		filter.setParent(this);
 		children.add(filter);
 		return children.size() - 1;
@@ -32,7 +32,7 @@ public class GroupFilter extends Filter<List<Filter>> {
 	}
 
 	//returns index of where this filter was added
-	public int addFilterAfter(Filter filter, Filter after) {
+	public int addFilterAfter(Filter<?> filter, Filter<?> after) {
 		filter.setParent(this);
 		int i = children.indexOf(after);
 		if (i >= 0) {
@@ -43,12 +43,12 @@ public class GroupFilter extends Filter<List<Filter>> {
 		return i + 1;
 	}
 
-	public boolean removeFilter(Filter filter) {
+	public boolean removeFilter(Filter<?> filter) {
 		return children.remove(filter);
 	}
 
 	@Override
-	public List<Filter> getFilterValue() {
+	public List<Filter<?>> getFilterValue() {
 		return children;
 	}
 
@@ -132,7 +132,7 @@ public class GroupFilter extends Filter<List<Filter>> {
 
 	@Override
 	public GroupFilter clone() {
-		List<Filter> cloneChildren = new ArrayList<>(children.size());
+		List<Filter<?>> cloneChildren = new ArrayList<>(children.size());
 		children.forEach(c -> cloneChildren.add(c.clone()));
 		GroupFilter clone = new GroupFilter(getOperator());
 		clone.inverted = inverted;

@@ -1,10 +1,14 @@
 package net.querz.mcaselector.ui;
 
+import javafx.event.EventTarget;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import net.querz.mcaselector.filter.Comparator;
@@ -25,18 +29,25 @@ public abstract class FilterBox extends BorderPane {
 
 	private static final Image deleteIcon = FileHelper.getIconFromResources("img/delete");
 	private static final Image addIcon = FileHelper.getIconFromResources("img/add");
+	private static final Image burgerIcon = FileHelper.getIconFromResources("img/burger");
+
+	private static final DataFormat filterBoxDataFormat = new DataFormat("filterbox-dataformat");
 
 	private Filter<?> filter;
 	private FilterBox parent;
 
 	protected Label delete = new Label("", new ImageView(deleteIcon));
 	protected Label add = new Label("", new ImageView(addIcon));
+	protected Label move = new Label("", new ImageView(burgerIcon));
 	protected ComboBox<FilterType> type = new ComboBox<>();
 	protected ComboBox<Operator> operator = new ComboBox<>();
 	protected GridPane filterOperators = new GridPane();
 
 	private Consumer<FilterBox> updateListener;
 	private boolean root;
+
+	private static Filter<?> dragDropFilter;
+	private static FilterBox dragDropFilterBox;
 
 	public FilterBox(FilterBox parent, Filter<?> filter, boolean root) {
 		this.parent = parent;
@@ -58,6 +69,13 @@ public abstract class FilterBox extends BorderPane {
 		controls.setAlignment(Pos.TOP_RIGHT);
 		controls.add(add, 0, 0, 1, 1);
 		controls.add(delete, 1, 0, 1, 1);
+		controls.add(move, 2, 0, 1, 1);
+
+		setOnDragDetected(this::onDragDetected);
+		setOnDragOver(this::onDragOver);
+		setOnDragDone(this::onDragDone);
+		setOnDragDropped(this::onDragDropped);
+		setOnDragExited(this::onDragExited);
 
 		setRight(controls);
 
@@ -87,6 +105,119 @@ public abstract class FilterBox extends BorderPane {
 
 		add.setOnMouseReleased(e -> onAdd(filter));
 		delete.setOnMouseReleased(e -> onDelete(filter));
+	}
+
+	private void onDragDetected(MouseEvent e) {
+		if (e.getTarget() == move) {
+			Dragboard db = startDragAndDrop(TransferMode.MOVE);
+			WritableImage wi = new WritableImage((int) getWidth(), (int) getHeight());
+			Image dbImg = snapshot(null, wi);
+			db.setDragView(dbImg);
+			db.setDragViewOffsetX(e.getX());
+			db.setDragViewOffsetY(e.getY());
+			ClipboardContent content = new ClipboardContent();
+			content.put(filterBoxDataFormat, filter);
+			db.setContent(content);
+			dragDropFilter = filter;
+			dragDropFilterBox = this;
+			e.consume();
+		}
+	}
+
+	private void onDragOver(DragEvent e) {
+		if (e.getDragboard().hasContent(filterBoxDataFormat)) {
+			if (this != dragDropFilterBox) {
+				e.acceptTransferModes(TransferMode.MOVE);
+
+				double height = getHeight();
+
+				if (this instanceof GroupFilterBox) {
+
+				} else if (e.getY() < height / 2) {
+
+					System.out.println("before");
+					// insert before
+					setInsertCssClass("filter-drop-target", "before");
+				} else {
+					System.out.println("after");
+					// insert after
+					setInsertCssClass("filter-drop-target", "after");
+				}
+			}
+		}
+		e.consume();
+	}
+
+	private void onDragExited(DragEvent e) {
+		setInsertCssClass("filter-drop-target", null);
+	}
+
+	private FilterBox getFilterBoxFromTarget(EventTarget t) {
+		if (t instanceof Node) {
+			Node n = (Node) t;
+			while (!(n instanceof FilterBox) && n != null) {
+				n = n.getParent();
+			}
+			return (FilterBox) n;
+		}
+		return null;
+	}
+
+	private void onDragDone(DragEvent e) {
+		Dragboard db = e.getDragboard();
+		if (db.hasContent(filterBoxDataFormat)) {
+			dragDropFilter = null;
+			dragDropFilterBox = null;
+		}
+		e.consume();
+	}
+
+	private void onDragDropped(DragEvent e) {
+		Dragboard db = e.getDragboard();
+		if (db.hasContent(filterBoxDataFormat)) {
+			// ignore if it is dropped on itself
+			if (dragDropFilter != filter) {
+				// remove from old parent handle
+				GroupFilter oldParent = (GroupFilter) dragDropFilter.getParent();
+				int oldIndex = oldParent.getFilterValue().indexOf(dragDropFilter);
+				oldParent.getFilterValue().remove(oldIndex);
+
+				// remove from old parent box
+				GroupFilterBox oldParentBox = (GroupFilterBox) dragDropFilterBox.parent;
+				oldParentBox.filters.getChildren().remove(dragDropFilterBox);
+
+				// fix parents
+				dragDropFilterBox.parent = parent;
+				dragDropFilter.setParent(filter.getParent());
+
+				// add to new parent handle
+				GroupFilter newParent = (GroupFilter) parent.filter;
+				int currentIndex = newParent.getFilterValue().indexOf(filter);
+
+				newParent.getFilterValue().add(currentIndex + 1, dragDropFilter);
+
+				// add to new parent box
+				GroupFilterBox newParentBox = (GroupFilterBox) parent;
+				newParentBox.filters.getChildren().add(currentIndex + 1, dragDropFilterBox);
+
+			}
+		}
+		e.consume();
+	}
+
+	private void setInsertCssClass(String prefix, String name) {
+		String c = prefix + "-" + name;
+		for (int i = 0; i < getStyleClass().size(); i++) {
+			if (getStyleClass().get(i).startsWith(prefix)) {
+				if (name == null) {
+					getStyleClass().remove(i);
+				} else if (!getStyleClass().get(i).equals(c)) {
+					getStyleClass().set(i, c);
+				}
+				return;
+			}
+		}
+		getStyleClass().add(c);
 	}
 
 	public void setOnUpdate(Consumer<FilterBox> listener) {

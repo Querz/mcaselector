@@ -8,7 +8,7 @@ public abstract class Filter<T> implements Serializable {
 	private boolean valid = true;
 	private FilterType type;
 	private Operator operator;
-	private Filter parent;
+	private Filter<?> parent;
 
 	public Filter(FilterType type) {
 		this(type, Operator.AND);
@@ -47,11 +47,11 @@ public abstract class Filter<T> implements Serializable {
 		return type;
 	}
 
-	public void setParent(Filter parent) {
+	public void setParent(Filter<?> parent) {
 		this.parent = parent;
 	}
 
-	public Filter getParent() {
+	public Filter<?> getParent() {
 		return parent;
 	}
 
