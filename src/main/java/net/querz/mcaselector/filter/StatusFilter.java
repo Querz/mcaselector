@@ -58,7 +58,7 @@ public class StatusFilter extends TextFilter<String> {
 
 	@Override
 	public String getFormatText() {
-		return "empty,base,...";
+		return "empty,...";
 	}
 
 	@Override
