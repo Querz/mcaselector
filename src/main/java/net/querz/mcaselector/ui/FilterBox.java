@@ -49,6 +49,18 @@ public abstract class FilterBox extends BorderPane {
 	private static Filter<?> dragDropFilter;
 	private static FilterBox dragDropFilterBox;
 
+	private static GroupFilterBox lastFocusedGroupFilterBox;
+
+	private static FilterBox currentDragDropTarget;
+	private static int currentDragDropTargetDirection;
+
+	private static boolean USE_DRAGVIEW_OFFSET;
+
+	static {
+		String osName = System.getProperty("os.name").toLowerCase();
+		USE_DRAGVIEW_OFFSET = osName.contains("windows");
+	}
+
 	public FilterBox(FilterBox parent, Filter<?> filter, boolean root) {
 		this.parent = parent;
 		this.root = root;
@@ -76,6 +88,7 @@ public abstract class FilterBox extends BorderPane {
 		setOnDragDone(this::onDragDone);
 		setOnDragDropped(this::onDragDropped);
 		setOnDragExited(this::onDragExited);
+		setOnDragEntered(this::onDragEntered);
 
 		setRight(controls);
 
@@ -113,8 +126,11 @@ public abstract class FilterBox extends BorderPane {
 			WritableImage wi = new WritableImage((int) getWidth(), (int) getHeight());
 			Image dbImg = snapshot(null, wi);
 			db.setDragView(dbImg);
-			db.setDragViewOffsetX(e.getX());
-			db.setDragViewOffsetY(e.getY());
+			System.out.println(e.getX() + " / " + e.getY());
+			if (USE_DRAGVIEW_OFFSET) {
+				db.setDragViewOffsetX(e.getX());
+				db.setDragViewOffsetY(e.getY());
+			}
 			ClipboardContent content = new ClipboardContent();
 			content.put(filterBoxDataFormat, filter);
 			db.setContent(content);
@@ -126,30 +142,48 @@ public abstract class FilterBox extends BorderPane {
 
 	private void onDragOver(DragEvent e) {
 		if (e.getDragboard().hasContent(filterBoxDataFormat)) {
-			if (this != dragDropFilterBox) {
+			// test if this is not a child of dragDropFilterBox
+			if (!isChildOf(dragDropFilterBox) && this != dragDropFilterBox && filter.getParent() != null) {
 				e.acceptTransferModes(TransferMode.MOVE);
 
-				double height = getHeight();
+				currentDragDropTarget = this;
 
 				if (this instanceof GroupFilterBox) {
-
-				} else if (e.getY() < height / 2) {
-
-					System.out.println("before");
-					// insert before
+					lastFocusedGroupFilterBox = (GroupFilterBox) this;
+					lastFocusedGroupFilterBox.setInsertCssClass("filter-drop-target", null);
+					double dropCheckHeight = ((GroupFilterBox) this).filters.getChildren().size() == 0 ? 12 : 18;
+					if (e.getY() < dropCheckHeight) {
+						currentDragDropTargetDirection = -1;
+						setInsertCssClass("filter-drop-target", "before");
+					} else if (e.getY() >= getHeight() - dropCheckHeight) {
+						currentDragDropTargetDirection = 1;
+						setInsertCssClass("filter-drop-target", "after");
+					} else {
+						setInsertCssClass("filter-drop-target", "into");
+						currentDragDropTargetDirection = 0;
+					}
+				} else if (e.getY() < getHeight() / 2) {
 					setInsertCssClass("filter-drop-target", "before");
+					currentDragDropTargetDirection = -1;
 				} else {
-					System.out.println("after");
-					// insert after
 					setInsertCssClass("filter-drop-target", "after");
+					currentDragDropTargetDirection = 1;
 				}
 			}
 		}
 		e.consume();
 	}
 
+	private void onDragEntered(DragEvent e) {
+		if (lastFocusedGroupFilterBox != null && this != lastFocusedGroupFilterBox) {
+			lastFocusedGroupFilterBox.setInsertCssClass("filter-drop-target", null);
+			lastFocusedGroupFilterBox = null;
+		}
+	}
+
 	private void onDragExited(DragEvent e) {
 		setInsertCssClass("filter-drop-target", null);
+		currentDragDropTarget = null;
 	}
 
 	private FilterBox getFilterBoxFromTarget(EventTarget t) {
@@ -168,6 +202,8 @@ public abstract class FilterBox extends BorderPane {
 		if (db.hasContent(filterBoxDataFormat)) {
 			dragDropFilter = null;
 			dragDropFilterBox = null;
+			currentDragDropTarget = null;
+			currentDragDropTargetDirection = 0;
 		}
 		e.consume();
 	}
@@ -175,37 +211,84 @@ public abstract class FilterBox extends BorderPane {
 	private void onDragDropped(DragEvent e) {
 		Dragboard db = e.getDragboard();
 		if (db.hasContent(filterBoxDataFormat)) {
+
+			// if we have an invalid target
+			if (currentDragDropTarget == null) {
+				e.consume();
+				return;
+			}
+
 			// ignore if it is dropped on itself
 			if (dragDropFilter != filter) {
 				// remove from old parent handle
 				GroupFilter oldParent = (GroupFilter) dragDropFilter.getParent();
-				int oldIndex = oldParent.getFilterValue().indexOf(dragDropFilter);
-				oldParent.getFilterValue().remove(oldIndex);
+				oldParent.removeFilter(dragDropFilter);
 
 				// remove from old parent box
 				GroupFilterBox oldParentBox = (GroupFilterBox) dragDropFilterBox.parent;
 				oldParentBox.filters.getChildren().remove(dragDropFilterBox);
 
 				// fix parents
-				dragDropFilterBox.parent = parent;
-				dragDropFilter.setParent(filter.getParent());
+				if (currentDragDropTargetDirection == 0) { // into
+					dragDropFilterBox.parent = currentDragDropTarget;
+					dragDropFilter.setParent(currentDragDropTarget.filter);
+				} else { // after or before
+					dragDropFilterBox.parent = parent;
+					dragDropFilter.setParent(filter.getParent());
+				}
 
-				// add to new parent handle
-				GroupFilter newParent = (GroupFilter) parent.filter;
-				int currentIndex = newParent.getFilterValue().indexOf(filter);
+				// make operator visible
+				dragDropFilterBox.operator.setVisible(true);
+				currentDragDropTarget.operator.setVisible(true);
 
-				newParent.getFilterValue().add(currentIndex + 1, dragDropFilter);
+				// add to parents
+				if (currentDragDropTargetDirection == 0) { // into
+					((GroupFilterBox) currentDragDropTarget).filters.getChildren().add(dragDropFilterBox);
+					((GroupFilter) currentDragDropTarget.filter).addFilter(dragDropFilter);
 
-				// add to new parent box
-				GroupFilterBox newParentBox = (GroupFilterBox) parent;
-				newParentBox.filters.getChildren().add(currentIndex + 1, dragDropFilterBox);
+					// make first operator in target group invisible
+					((FilterBox) ((GroupFilterBox) currentDragDropTarget).filters.getChildren().get(0)).operator.setVisible(false);
 
+				} else {
+					int targetIndex = ((GroupFilterBox) currentDragDropTarget.parent).filters.getChildren().indexOf(currentDragDropTarget);;
+					if (currentDragDropTargetDirection == 1) {
+						targetIndex++;
+					}
+
+					// add at index in view
+					((GroupFilterBox) currentDragDropTarget.parent).filters.getChildren().add(targetIndex, dragDropFilterBox);
+
+					// add at index in handle
+					((GroupFilter) currentDragDropTarget.filter.getParent()).getFilterValue().add(targetIndex, dragDropFilter);
+
+					// make first operator in target group invisible
+					((FilterBox) ((GroupFilterBox) currentDragDropTarget.parent).filters.getChildren().get(0)).operator.setVisible(false);
+				}
+
+				// make first operator on source group invisible
+				if (oldParentBox.filters.getChildren().size() > 0) {
+					((FilterBox) oldParentBox.filters.getChildren().get(0)).operator.setVisible(false);
+				}
+
+				// update external stuff
+				callUpdateEvent();
 			}
 		}
 		e.consume();
 	}
 
-	private void setInsertCssClass(String prefix, String name) {
+	private boolean isChildOf(Node node) {
+		Node parent = getParent();
+		while (parent != null) {
+			parent = parent.getParent();
+			if (parent == node) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected void setInsertCssClass(String prefix, String name) {
 		String c = prefix + "-" + name;
 		for (int i = 0; i < getStyleClass().size(); i++) {
 			if (getStyleClass().get(i).startsWith(prefix)) {
