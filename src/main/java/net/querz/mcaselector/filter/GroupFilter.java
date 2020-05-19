@@ -78,7 +78,7 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 			if ((children.get(i).getOperator() == Operator.AND || i == 0) && currentResult) {
 				currentResult = children.get(i).matches(data);
 			} else if (children.get(i).getOperator() == Operator.OR) {
-				//don't check other conditions if everything before OR is  already true
+				//don't check other conditions if everything before OR is already true
 				if (currentResult) {
 					return !inverted;
 				}
@@ -90,19 +90,31 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 	}
 
 	public boolean appliesToRegion(Point2i region) {
-		for (Filter child : children) {
-			if (child.getOperator() == Operator.OR) {
+		// if we have anything else than xPos and zPos filters, we apply to this region
+		boolean currentResult = true;
+		for (int i = 0; i < children.size(); i++) {
+			Filter<?> child = children.get(i);
+			if (child instanceof GroupFilter && ((GroupFilter) child).appliesToRegion(region)) {
+				return true;
+			} else if (child instanceof RegionMatcher) {
+				RegionMatcher regionMatcher = (RegionMatcher) child;
+
+				if ((child.getOperator() == Operator.AND || i == 0) && currentResult) {
+					currentResult = regionMatcher.matchesRegion(region);
+				} else if (child.getOperator() == Operator.OR) {
+					//don't check other conditions if everything before OR is already true
+					if (currentResult) {
+						return true;
+					}
+					//otherwise, reset currentResult
+					currentResult = regionMatcher.matchesRegion(region);
+				}
+			} else {
 				return true;
 			}
 		}
 
-		for (Filter child : children) {
-			if (child instanceof XPosFilter && !((XPosFilter) child).matchesRegion(region)
-				|| child instanceof ZPosFilter && !((ZPosFilter) child).matchesRegion(region)) {
-				return false;
-			}
-		}
-		return true;
+		return currentResult;
 	}
 
 	@Override

@@ -3,7 +3,7 @@ package net.querz.mcaselector.filter;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.nbt.tag.CompoundTag;
 
-public class ZPosFilter extends IntFilter {
+public class ZPosFilter extends IntFilter implements RegionMatcher {
 
 	public ZPosFilter() {
 		this(Operator.AND, Comparator.EQUAL, 0);
@@ -18,6 +18,7 @@ public class ZPosFilter extends IntFilter {
 		return ((CompoundTag) data.getChunk().get("Level")).getInt("zPos");
 	}
 
+	@Override
 	public boolean matchesRegion(Point2i region) {
 		Point2i chunk = region.regionToChunk();
 		for (int i = 0; i < 32; i++) {
