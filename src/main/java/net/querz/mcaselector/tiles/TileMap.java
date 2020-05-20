@@ -166,7 +166,6 @@ public class TileMap extends Canvas {
 			if (window.isKeyPressed(KeyCode.COMMAND)) {
 				// zoom
 
-				System.out.println("event.getDeltaY " + event.getDeltaY());
 				if (event.getDeltaY() > 0) {
 					zoomFactor(1.03 + event.getDeltaY() / 1000);
 				} else if (event.getDeltaY() < 0) {
@@ -344,10 +343,8 @@ public class TileMap extends Canvas {
 	}
 
 	public void clearTile(Point2i p) {
-		System.out.println("clearing tile " + p);
 		Tile tile = tiles.remove(p);
 		if (tile != null) {
-			System.out.println("tile " + p + " is not null");
 			visibleTiles.remove(tile);
 			selectedChunks -= tile.getMarkedChunks().size();
 			selectedChunks -= tile.isMarked() ? Tile.CHUNKS : 0;

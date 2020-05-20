@@ -65,8 +65,6 @@ public class MCAFile {
 				try {
 					lastWritten = data.saveData(raf);
 				} catch (Exception ex) {
-					System.out.println("failed: " + data.getAbsoluteLocation());
-					System.out.println("data: " + data);
 					throw ex;
 				}
 

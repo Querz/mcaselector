@@ -126,7 +126,6 @@ public abstract class FilterBox extends BorderPane {
 			WritableImage wi = new WritableImage((int) getWidth(), (int) getHeight());
 			Image dbImg = snapshot(null, wi);
 			db.setDragView(dbImg);
-			System.out.println(e.getX() + " / " + e.getY());
 			if (USE_DRAGVIEW_OFFSET) {
 				db.setDragViewOffsetX(e.getX());
 				db.setDragViewOffsetY(e.getY());
