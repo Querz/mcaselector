@@ -12,7 +12,32 @@ public class StatusField extends Field<String> {
 	private final static Set<String> validStatus = new HashSet<>();
 
 	static {
-		validStatus.addAll(Arrays.asList("empty", "base", "carved", "liquid_carved", "decorated", "lighted", "mobs_spawned", "finalized", "fullchunk", "postprocessed"));
+		validStatus.addAll(Arrays.asList(
+			"empty",
+
+			"base",
+			"carved",
+			"liquid_carved",
+			"decorated",
+			"lighted",
+			"mobs_spawned",
+			"finalized",
+			"fullchunk",
+			"postprocessed",
+
+			"structure_starts",
+			"structure_references",
+			"biomes",
+			"noise",
+			"surface",
+			"carvers",
+			"liquid_carvers",
+			"features",
+			"light",
+			"spawn",
+			"heightmaps",
+			"full"
+		));
 	}
 
 	public StatusField() {
