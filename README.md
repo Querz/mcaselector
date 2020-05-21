@@ -236,7 +236,11 @@ Example:
 --query "xPos >= 10 AND xPos <= 20 AND Palette contains \"sand,water\""
 ```
 This will select all chunks that contain sand and water blocks and their x-position ranges from 10 to 20.
-As shown, double quotes (") must be escaped with a backslash.
+As shown, double quotes (") must be escaped with a backslash, in a way specificed by your command-line shell.
+
+Groups are represented with a pair of parentheses (`(...)`). As with the chunk filter, logical operators are evaluated from left to right, and `AND` has a higher precedence than `OR`. In other words, `a AND b OR c AND d AND e` is the same as `(a AND b) OR (c AND d AND e)`. It differs from `c AND d AND e OR a AND b` not by the result, but by the sequence of tests performed due to [short-circuiting][].
+
+  [short-circuiting]: https://en.wikipedia.org/wiki/Short-circuit_evaluation
 
 ### Change values
 
