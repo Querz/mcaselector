@@ -238,7 +238,9 @@ Example:
 This will select all chunks that contain sand and water blocks and their x-position ranges from 10 to 20.
 As shown, double quotes (") must be escaped with a backslash, in a way specificed by your command-line shell.
 
-Groups are represented with a pair of parentheses (`(...)`). As with the chunk filter, logical operators are evaluated from left to right, so that `a AND b OR c AND d` is the same as `(((a AND b) OR c) AND d)`.
+Groups are represented with a pair of parentheses (`(...)`). As with the chunk filter, logical operators are evaluated from left to right, and `AND` takes precedence over `OR` by [short-circuiting][]: `AND` only proceeds if the result before it is `true`, while `OR` only proceeds if the result is `false`. In other words, `a AND b OR c AND d` is the same as `(a AND b) OR (c AND d)`. It differs from `(c AND d) or (a AND b)` not by the result, but by the sequence of tests performed.
+
+  [short-circuiting]: https://en.wikipedia.org/wiki/Short-circuit_evaluation
 
 ### Change values
 
