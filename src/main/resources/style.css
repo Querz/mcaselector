@@ -20,6 +20,7 @@
 	-color-filter-box-invalid-background: #9e494a;
 	-color-filter-box-invalid-shadow: #ff4000;
 	-color-filter-box-control-hover-background: #494d50;
+	-color-filter-box-insert: #636769;
 	-color-radio-button-background: #43494a;
 	-color-radio-button-circle: #6a6a6a;
 	-color-radio-button-dot: #bbbbbb;
@@ -446,10 +447,9 @@
 }
 
 .filter-box {
-	-fx-padding: 6 0 3 10;
+	-fx-padding: 6 0 6 10;
 	-fx-background-color: -color-dialog-background;
 	-fx-border-width: 1 0 0 1;
-	-fx-border-insets: 3 0 0 0;
 	-fx-border-color: -color-dialog-separator;
 }
 
@@ -478,6 +478,27 @@
 	-fx-min-width: 40px;
 	-fx-pref-width: 40px;
 	-fx-alignment: center;
+}
+
+.filter-dialog-pane .scroll-pane {
+	-fx-pref-height: 1000px;
+	-fx-max-height: 1000px;
+}
+
+.filter-dialog-pane {
+    -fx-pref-height: 500px;
+}
+
+.filter-drop-target-before {
+	-fx-background-color: linear-gradient(from 0% 100% to 0% 0%, -color-dialog-background, -color-dialog-background 70%, -color-filter-box-insert 90%, -color-filter-box-insert);
+}
+
+.filter-drop-target-into {
+	-fx-background-color: -color-filter-box-insert;
+}
+
+.filter-drop-target-after {
+	-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, -color-dialog-background, -color-dialog-background 70%, -color-filter-box-insert 90%, -color-filter-box-insert);
 }
 
 /*---------- NBT Changer ----------*/

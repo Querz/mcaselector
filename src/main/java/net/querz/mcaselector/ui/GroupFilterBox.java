@@ -23,6 +23,7 @@ public class GroupFilterBox extends FilterBox {
 		filters.getChildren().clear();
 		add.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_ADD_TOOLTIP));
 		delete.setVisible(!root);
+		move.setVisible(!root);
 
 		if (root) {
 			getStyleClass().add("group-filter-box-root");

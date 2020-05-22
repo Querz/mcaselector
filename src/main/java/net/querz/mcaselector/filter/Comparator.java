@@ -9,7 +9,7 @@ public enum Comparator {
 	LARGER_EQUAL("\u2265", ">="),
 	SMALLER_EQUAL("\u2264", "<="),
 	CONTAINS("\u2283", "contains"),
-	CONTAINS_NOT("!\u2283", "!contains");
+	CONTAINS_NOT("\u2285", "!contains");
 
 	private String string;
 	private String query;
