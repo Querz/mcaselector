@@ -38,6 +38,7 @@ jar {
 }
 
 shadowJar {
+	minimize()
 	configurations = [project.configurations.shadow]
 }
 
