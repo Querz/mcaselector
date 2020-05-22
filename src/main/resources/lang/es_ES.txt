@@ -26,7 +26,7 @@ menu.view.clear_all_cache;Limpiar toda la caché
 menu.selection.clear;Deseleccionar todo
 menu.selection.export_chunks;Exportar chunks seleccionados
 menu.selection.delete_chunks;Borrar chunks seleccionados
-menu.selection.import_selection;Importar selección
+menu.selection.import_selection;Importar una selección
 menu.selection.export_selection;Exportar selección
 menu.selection.clear_cache;Vaciar la caché
 menu.tools.import_chunks;Importar chunks
@@ -42,7 +42,7 @@ dialog.settings.write_threads;Escribir hilos
 dialog.settings.max_files;Carga máxima de archivos
 dialog.settings.region_color;Color de las Regiones
 dialog.settings.chunk_color;Color de los Chunks
-dialog.settings.shade;Sombra
+dialog.settings.shade;Volumen 3D
 dialog.settings.shade_water;Profundidad del agua
 dialog.settings.print_debug;Mostrar mensajes de desarrolador
 dialog.settings.reset;Resetear
@@ -54,9 +54,9 @@ dialog.delete_chunks_confirmation.header_verbose;Se borrarán %d chunks de este 
 dialog.import_chunks_confirmation.title;Importar chunks
 dialog.import_chunks_confirmation.header;Está a punto de importar un número desconocido de Chunks a este mundo.
 dialog.import_chunks_confirmation.options;Opciones
-dialog.import_chunks_confirmation.options.offset;Contrarrestar
+dialog.import_chunks_confirmation.options.offset;Desplazamiento
 dialog.import_chunks_confirmation.options.overwrite;Sobrescribir chunks existentes
-dialog.import_chunks_confirmation.options.selection_only;Aplicar solo a la selección.
+dialog.import_chunks_confirmation.options.selection_only;Aplicar solo en la selección.
 dialog.import_chunks_confirmation.warning;Advertencia: La importación de Chunks desplazados en el espacio no actualizará las coordenadas de los bloques de comandos.
 dialog.export_chunks_confirmation.title;Exportar chunks
 dialog.export_chunks_confirmation.header_short;Está a punto de exportar un número desconocido de Chunks de este mundo.
@@ -65,10 +65,10 @@ dialog.filter_chunks.title;Filtrar chunks
 dialog.filter_chunks.filter.add.tooltip;Agregar una nueva condición bajo esta.
 dialog.filter_chunks.filter.delete.tooltip;Borrar esta condición.
 dialog.filter_chunks.filter.type.tooltip;El tipo de esta condición.
-dialog.filter_chunks.filter.operator.tooltip;El operador para vincular múltiples condiciones.
-dialog.filter_chunks.filter.comparator.tooltip;El comparador.
+dialog.filter_chunks.filter.operator.tooltip;Operador para vincular múltiples condiciones.
+dialog.filter_chunks.filter.comparator.tooltip;Comparador.
 dialog.filter_chunks.select;Selección
-dialog.filter_chunks.select.tooltip;Crea una selección de los chunks afectados.
+dialog.filter_chunks.select.tooltip;Crea una selección con los chunks afectados.
 dialog.filter_chunks.export;Exportar
 dialog.filter_chunks.export.tooltip;Exporta todos los chunks afectados a una nueva carpeta.
 dialog.filter_chunks.delete;Borrar
