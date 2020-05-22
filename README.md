@@ -49,21 +49,21 @@ For people who prefer watching a video to understand how the MCA Selector works,
 ### Navigation
 Executing the tool, it shows an empty window with a chunk and a region grid. To actually show a world, open a folder containing Minecraft Anvil (\*.mca) files. The tool will then render a top-down view of this world that you can zoom into and zoom out of by scrolling up and down and that you can move around using the middle mouse button (`Cmd+LMB` on Mac OS) or using `WASD`.
 
-![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/302f2ec9ea76913c1fdd217415d623bb776e4e77/mca_selector_default.png "MCA Selector window showing chunk and region grid")
+![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/4642ef43ea752b980a506789636182aa683a6f2d/default.png "MCA Selector window showing chunk and region grid")
 
 Zooming out far enough disables the selection of single chunks but lets you select entire regions.
 
 ### Selections
 Upon finishing selecting chunks and regions, they can be deleted or exported using the `Selection`-menu. Exported chunks and regions are not deleted from the original world.
 
-![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/d708eafb98e62a99e26735c166dc8fdcecf17185/mca_selector_selections.png "MCA Selector window showing chunk and region selection export")
+![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/4642ef43ea752b980a506789636182aa683a6f2d/selections.png "MCA Selector window showing chunk and region selection export")
 
 A selection (not the chunks and regions themselves) can also be exported or imported and even be applied to different worlds.
 
 ### Chunk filter
 The MCA Selector also contains a powerful tool to delete or export chunks and regions by conditions like the data version, the time it was last updated, how much time players have spent in this chunk and some more. Multiple of these conditions can be used to create a very specific query describing what chunks and regions should be deleted or exported.
 
-![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/a977a7b2b4844123262003268992dcf0b80c337c/mca_selector_filter_chunks.png "MCA Selector window showing the chunk filter")
+![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/4642ef43ea752b980a506789636182aa683a6f2d/filter_chunks.png "MCA Selector window showing the chunk filter")
 
 Because the conditions use internal values used by Minecraft, the following table gives a brief explanation on what they do:
 
@@ -91,7 +91,7 @@ Running the query will check the `.mca`-file's name first if the query would eve
 ### NBT Changer
 The NBT Changer modifies the world files directly by changing specific values.
 
-![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/a977a7b2b4844123262003268992dcf0b80c337c/mca_selector_change_nbt.png "MCA Selector window showing the nbt changer")
+![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/4642ef43ea752b980a506789636182aa683a6f2d/change_nbt.png "MCA Selector window showing the nbt changer")
 
 You can change the following values:
 
@@ -104,6 +104,7 @@ You can change the following values:
 | Status | String | The status of the chunk generation. Only recognized by Minecraft 1.13+ (DataVersion 1444+) |
 | Biome | String/int | A biome name or ID. This sets all biomes of this chunk to a single biome. For a reference of biome names and IDs, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Biomes). Custom biomes can be specified by using single quotes (') around a biome ID. |
 | DeleteEntities | boolean | If set to `1` or `true`, all entities in that chunk will be deleted. |
+| DeleteSections | boolean | If set to `1` or `true`, all sections in that chunk will be deleted. |
 
 Once the field is highlighted in green, the value is considered valid and will be changed. A gray field, no matter its content, will be ignored.
 
@@ -112,14 +113,14 @@ For more information about the fields have a look at the chunk format descriptio
 ### Chunk Editor
 When selecting a single chunk, the menu "Edit chunks" becomes available. It allows precise editing of the entire NBT structure of that chunk. Names and values can be changed, added, deleted or moved (drag & drop).
 
-![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/a977a7b2b4844123262003268992dcf0b80c337c/mca_selector_edit_chunk.png "MCA Selector window showing the NBT editor")
+![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/4642ef43ea752b980a506789636182aa683a6f2d/edit_chunk.png "MCA Selector window showing the NBT editor")
 
 **Notice** When the NBT editor does not show any data, the cached top-down view might be outdated and the chunk might not exist anymore in the mca files. In that case, clearing the cache will rerender the regions from scratch and show the up-to-date top-down view.
 
 ### Chunk import
 Importing chunks can be easily done by opening the target world first using `File --> Open` and then merging the chunks of a second world using `Tools --> Import chunks`. After selecting a folder containing region files, it is possible to import the chunks with a specific offset. Doing so automatically adjusts relevant values to the new location of the chunk.
 
-![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/a977a7b2b4844123262003268992dcf0b80c337c/mca_selector_import_chunks.png "MCA Selector window showing the chunk import")
+![alt text](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/4642ef43ea752b980a506789636182aa683a6f2d/import_chunks.png "MCA Selector window showing the chunk import")
 
 **Notice**
 Commands inside of command blocks will not be changed.
@@ -145,6 +146,8 @@ The MCA Selector currently supports the following Minecraft versions:
 | 1.14 - 1.14.4     | 1901 - 1976 |
 | 1.15 - 1.15.2     | 2200 - 2230 |
 | 20w19a - ?        | 2534 - ?    |
+
+There is no guarantee for worlds generated in a Snapshot version to work, even if it is specified in the table above. This only represents the current development status towards the next Minecraft release. Old Snapshots of past Minecraft releases are not supported.
 
 ---
 ## Headless mode
@@ -287,7 +290,7 @@ If you would like to contribute a translation, you can find the language files i
 
 ## Download and installation
 
-[**Download Version 1.9.11**](https://github.com/Querz/mcaselector/releases/download/1.9.11/mcaselector-1.9.11.jar)
+[**Download Version 1.10**](https://github.com/Querz/mcaselector/releases/download/1.10/mcaselector-1.10.jar)
 
 "Requirements":
 * Either:
@@ -298,11 +301,11 @@ If you would like to contribute a translation, you can find the language files i
 
 #### If you have Java from Oracle installed on your system
 
-Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.9.11.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
+Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.10.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
 
 #### If you have Minecraft Java Edition installed on your system
 
-Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.9.11.jar>`. On Mac OS you should find it in `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/` where you can execute `./java -jar <path-to-mcaselector-1.9.11.jar>`.
+Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.10.jar>`. On Mac OS you should find it in `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/` where you can execute `./java -jar <path-to-mcaselector-1.10.jar>`.
 
 **WARNING:** For macOS 10.14+ (Mojave) It is NOT recommended to use the JRE provided by Minecraft (1.8.0_74), because it contains a severe bug that causes JavaFX applications to crash when they lose focus while a dialog window (such as the save-file-dialog) is open (see the bug report [here](https://bugs.openjdk.java.net/browse/JDK-8211304)). This bug has been fixed in Java 1.8.0_201 and above.
 
@@ -316,12 +319,12 @@ If you are using Java 11 or higher, the JavaFX modules are not included automati
 
 On Windows with Oracle Java 13:
 ```
-"C:\Program Files\Java\jdk-13.0.1\bin\java.exe" --module-path "C:\Program Files\Java\javafx-sdk-13.0.1\lib" --add-modules ALL-MODULE-PATH -jar mcaselector-1.9.11.jar
+"C:\Program Files\Java\jdk-13.0.1\bin\java.exe" --module-path "C:\Program Files\Java\javafx-sdk-13.0.1\lib" --add-modules ALL-MODULE-PATH -jar mcaselector-1.10.jar
 ```
 
 On Debian with OpenJDK 11 and openjfx:
 ```
-java --module-path /usr/share/openjfx/lib --add-modules ALL-MODULE-PATH -jar mcaselector-1.9.11.jar
+java --module-path /usr/share/openjfx/lib --add-modules ALL-MODULE-PATH -jar mcaselector-1.10.jar
 ```
 
 ##

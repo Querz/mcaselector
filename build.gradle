@@ -9,7 +9,7 @@ apply plugin: 'idea'
 apply plugin: 'css'
 
 group 'net.querz.mcaselector'
-version '1.9.11'
+version '1.10'
 
 sourceCompatibility = 1.8
 
@@ -40,6 +40,7 @@ jar {
 shadowJar {
 	minimize()
 	configurations = [project.configurations.shadow]
+	from 'LICENSE'
 }
 
 compileJava {
