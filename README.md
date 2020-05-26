@@ -153,7 +153,7 @@ The MCA Selector currently supports the following Minecraft versions:
 
 | Minecraft Version | DataVersion |
 | ----------------- | ----------- |
-| Beta 1.3 - 1.12.2 | 100 - 1343  |
+| 1.2.1 - 1.12.2    | None - 1343  |
 | 1.13 - 1.13.2     | 1444 - 1631 |
 | 1.14 - 1.14.4     | 1901 - 1976 |
 | 1.15 - 1.15.2     | 2200 - 2230 |
