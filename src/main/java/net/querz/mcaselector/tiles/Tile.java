@@ -24,6 +24,7 @@ public class Tile {
 	public static final int CHUNK_SIZE = 16;
 	public static final int SIZE_IN_CHUNKS = 32;
 	public static final int CHUNKS = 1024;
+	public static final int PIXELS = SIZE * SIZE;
 
 	Point2i location;
 

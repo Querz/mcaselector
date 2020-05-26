@@ -10,7 +10,7 @@ import static net.querz.mcaselector.validation.ValidationHelper.*;
 public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
 	@Override
-	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, short[] heights, boolean water) {
+	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, int[] waterPixels, byte[] terrainHeights, byte[] waterHeights, boolean water) {
 		ListTag<CompoundTag> sections = withDefault(() -> root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
 		if (sections == null) {
 			return;
@@ -64,15 +64,18 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 							if (water) {
 								if (!waterDepth) {
 									pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
+									waterHeights[regionIndex] = (byte) (sectionHeight + cy);
 								}
 								if (isWater(block)) {
 									waterDepth = true;
-									continue sLoop;
+									continue;
+								} else {
+									waterPixels[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
 								}
 							} else {
 								pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
 							}
-							heights[regionIndex] = (short) (sectionHeight + cy);
+							terrainHeights[regionIndex] = (byte) (sectionHeight + cy);
 							continue zLoop;
 						}
 					}

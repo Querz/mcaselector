@@ -56,6 +56,33 @@ public class Color {
 		return Math.min(b, 255);
 	}
 
+	public static int blend(int color, int other, float ratio) {
+		if (ratio > 1) {
+			ratio = 1;
+		} else if (ratio < 0) {
+			ratio = 0;
+		}
+
+		float iRatio = 1.0f - ratio;
+
+		int aA = color >> 24 & 0xFF;
+		int aR = color >> 16 & 0xFF;
+		int aG = color >> 8 & 0xFF;
+		int aB = color & 0xFF;
+
+		int bA = other >> 24 & 0xFF;
+		int bR = other >> 16 & 0xFF;
+		int bG = other >> 8 & 0xFF;
+		int bB = other & 0xFF;
+
+		int a = (int) (aA * iRatio + bA * ratio);
+		int r = (int) (aR * iRatio + bR * ratio);
+		int g = (int) (aG * iRatio + bG * ratio);
+		int b = (int) (aB * iRatio + bB * ratio);
+
+		return a << 24 | r << 16 | g << 8 | b;
+	}
+
 	@Override
 	public String toString() {
 		if (handle == null) {

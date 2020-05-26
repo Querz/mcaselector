@@ -10,7 +10,7 @@ import static net.querz.mcaselector.validation.ValidationHelper.*;
 public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 
 	@Override
-	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, short[] heights, boolean water) {
+	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, int[] waterPixels, byte[] terrainHeights, byte[] waterHeights, boolean water) {
 		ListTag<CompoundTag> sections = withDefault(() -> root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
 		if ("empty".equals(withDefault(() -> root.getCompoundTag("Level").getString("Status"), null)) || sections == null) {
 			return;
@@ -67,16 +67,19 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
 							if (water) {
 								if (!waterDepth) {
-									pixelBuffer[regionIndex] = colorMapping.getRGB(blockData) | 0xFF000000;
+									pixelBuffer[regionIndex] = colorMapping.getRGB(blockData) | 0xFF000000; // water color
+									waterHeights[regionIndex] = (byte) (sectionHeight + cy); // height of highest water or terrain block
 								}
 								if (isWater(blockData)) {
 									waterDepth = true;
-									continue sLoop;
+									continue;
+								} else {
+									waterPixels[regionIndex] = colorMapping.getRGB(blockData) | 0xFF000000; // color of block at bottom of water
 								}
 							} else {
 								pixelBuffer[regionIndex] = colorMapping.getRGB(blockData) | 0xFF000000;
 							}
-							heights[regionIndex] = (short) (sectionHeight + cy);
+							terrainHeights[regionIndex] = (byte) (sectionHeight + cy); // height of bottom of water
 							continue zLoop;
 						}
 					}
@@ -87,10 +90,10 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 
 	private boolean isWater(CompoundTag blockData) {
 		switch (blockData.getString("Name")) {
-			case "minecraft:seagrass":
-			case "minecraft:tall_seagrass":
-			case "minecraft:kelp":
-			case "minecraft:kelp_plant":
+//			case "minecraft:seagrass":
+//			case "minecraft:tall_seagrass":
+//			case "minecraft:kelp":
+//			case "minecraft:kelp_plant":
 			case "minecraft:water":
 			case "minecraft:bubble_column":
 				return true;
