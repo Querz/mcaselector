@@ -12,17 +12,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EntityFilter extends TextFilter<List<String>> {
 
 	private static Set<String> validNames = new HashSet<>();
+
+	private static final Pattern entityNamePattern = Pattern.compile("^(?<space>[a-z_]*)(?::?)(?<id>[a-z_]*)$");
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
 				new InputStreamReader(Objects.requireNonNull(EntityFilter.class.getClassLoader().getResourceAsStream("entity-names.csv"))))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
-				validNames.add(line);
+				validNames.add("minecraft:" + line);
 			}
 		} catch (IOException ex) {
 			Debug.error("error reading entity-names.csv: ", ex.getMessage());
@@ -48,8 +52,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 		nameLoop: for (String name : getFilterValue()) {
 			for (CompoundTag entity : entities) {
 				String id = entity.getString("id");
-				// cut away the minecraft: part
-				if (id.length() > 10 && name.equals(id.substring(10))) {
+				if (name.equals(id)) {
 					continue nameLoop;
 				}
 			}
@@ -72,6 +75,14 @@ public class EntityFilter extends TextFilter<List<String>> {
 		} else {
 			for (int i = 0; i < rawBlockNames.length; i++) {
 				String name = rawBlockNames[i];
+				Matcher m = entityNamePattern.matcher(name);
+				if (m.matches()) {
+					if (m.group("id").isEmpty()) {
+						name = "minecraft:" + m.group("space");
+						rawBlockNames[i] = name;
+					}
+				}
+
 				if (!validNames.contains(name)) {
 					if (name.startsWith("'") && name.endsWith("'") && name.length() >= 2 && !name.contains("\"")) {
 						rawBlockNames[i] = name.substring(1, name.length() - 1);
