@@ -1,4 +1,4 @@
-package net.querz.mcaselector.changer;
+package net.querz.mcaselector.range;
 
 public class Range {
 

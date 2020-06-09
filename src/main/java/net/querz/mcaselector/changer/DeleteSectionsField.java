@@ -1,5 +1,7 @@
 package net.querz.mcaselector.changer;
 
+import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.range.RangeParser;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 
@@ -28,49 +30,8 @@ public class DeleteSectionsField extends Field<List<Range>> {
 			getNewValue().clear();
 		}
 
-		if ("true".equals(s.trim())) {
-			if (getNewValue() == null) {
-				setNewValue(new ArrayList<>());
-			}
-			getNewValue().add(new Range(Integer.MIN_VALUE, Integer.MAX_VALUE));
-			return true;
-		}
-
-		// 1 --> single value range
-		// :1 --> from negative infinity to 1
-		// 1: --> from 1 to positive infinity
-		// 1:4 --> from 1 to 4
-		// : --> from negative infinity to positive infinity
-
-		String[] split = s.split(",");
-		for (String stringRange : split) {
-			String trimmed = stringRange.trim();
-			if (trimmed.isEmpty()) {
-				return super.parseNewValue(s);
-			}
-			Matcher m = rangePattern.matcher(trimmed);
-			if (m.find()) {
-				String fromString = m.group("from");
-				boolean divider = m.group("divider").isEmpty();
-				String toString = m.group("to");
-
-				int from = fromString.isEmpty() ? Integer.MIN_VALUE : Integer.parseInt(fromString);
-				int to = toString.isEmpty() ? Integer.MAX_VALUE : Integer.parseInt(toString);
-
-				if (getNewValue() == null) {
-					setNewValue(new ArrayList<>());
-				}
-
-				if (divider) {
-					getNewValue().add(new Range(from, from));
-				} else {
-					getNewValue().add(new Range(from, to));
-				}
-			} else {
-				return super.parseNewValue(s);
-			}
-		}
-		if (getNewValue() == null || getNewValue().size() != 0) {
+		setNewValue(RangeParser.parseRanges(s, ","));
+		if (getNewValue() != null && getNewValue().size() != 0) {
 			return true;
 		}
 		return super.parseNewValue(s);
