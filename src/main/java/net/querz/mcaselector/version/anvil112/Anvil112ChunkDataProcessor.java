@@ -1,10 +1,17 @@
 package net.querz.mcaselector.version.anvil112;
 
+import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.version.ChunkDataProcessor;
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.Tag;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
@@ -30,7 +37,7 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
 				boolean waterDepth = false;
 				//loop over sections
-				sLoop: for (int i = 0; i < sections.size(); i++) {
+				for (int i = 0; i < sections.size(); i++) {
 					final int si = i;
 					byte[] blocks = withDefault(() -> sections.get(si).getByteArray("Blocks"), null);
 					if (blocks == null) {
@@ -117,5 +124,151 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
 	private int filterSections(CompoundTag sectionA, CompoundTag sectionB) {
 		return withDefault(() -> sectionB.getByte("Y"), (byte) -1) - withDefault(() -> sectionA.getByte("Y"), (byte) -1);
+	}
+
+	public void mergeChunks(CompoundTag source, CompoundTag destination, List<Range> ranges) {
+
+		System.out.println("merging chunks");
+
+		mergeCompoundTagLists(source, destination, ranges, "Sections", c -> (int) c.getByte("Y"));
+		mergeCompoundTagLists(source, destination, ranges, "Entities", c -> c.getListTag("Pos").asDoubleTagList().get(1).asInt() >> 4);
+		mergeCompoundTagLists(source, destination, ranges, "TileEntities", c -> c.getInt("y") >> 4);
+		mergeCompoundTagLists(source, destination, ranges, "TileTicks", c -> c.getInt("y") >> 4);
+		mergeCompoundTagLists(source, destination, ranges, "LiquidTicks", c -> c.getInt("y") >> 4);
+
+		// do not merge biomes here, we will overwrite this function in a future version
+
+		System.out.println(source);
+		System.out.println(destination);
+
+		try {
+			// merge structures
+			mergeStructures(source, destination, ranges);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+	}
+
+	private void mergeStructures(CompoundTag source, CompoundTag destination, List<Range> ranges) {
+		CompoundTag sourceStarts = withDefault(() -> source.getCompoundTag("Level").getCompoundTag("Structures").getCompoundTag("Starts"), new CompoundTag());
+		CompoundTag destinationStarts = withDefault(() -> destination.getCompoundTag("Level").getCompoundTag("Structures").getCompoundTag("Starts"), new CompoundTag());
+
+		if (destinationStarts.size() != 0) {
+			// remove BBs from destination
+			for (Map.Entry<String, Tag<?>> start : destinationStarts) {
+				ListTag<CompoundTag> children = withDefault(() -> ((CompoundTag) start.getValue()).getListTag("Children").asCompoundTagList(), null);
+				if (children != null) {
+					child: for (int i = 0; i < children.size(); i++) {
+						int[] bb = children.get(i).getIntArray("BB");
+						for (Range range : ranges) {
+							if (range.contains(bb[1] >> 4) && range.contains(bb[4] >> 4)) {
+								children.remove(i);
+								i--;
+								continue child;
+							}
+						}
+					}
+				}
+
+				// if we removed all children, we check the start BB
+				if (children == null || children.size() == 0) {
+					int[] bb = ((CompoundTag) start.getValue()).getIntArray("BB");
+					for (Range range : ranges) {
+						if (range.contains(bb[1] >> 4) && range.contains(bb[4] >> 4)) {
+							CompoundTag emptyStart = new CompoundTag();
+							emptyStart.putString("id", "INVALID");
+							destinationStarts.put(start.getKey(), emptyStart);
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		// add BBs from source to destination
+		// if child BB doesn't exist in destination, we copy start over to destination
+		for (Map.Entry<String, Tag<?>> start : sourceStarts) {
+			ListTag<CompoundTag> children = withDefault(() -> ((CompoundTag) start.getValue()).getListTag("Children").asCompoundTagList(), null);
+			if (children != null) {
+				child: for (int i = 0; i < children.size(); i++) {
+					int[] bb = children.get(i).getIntArray("BB");
+					for (Range range : ranges) {
+						if (range.contains(bb[1] >> 4) || range.contains(bb[4] >> 4)) {
+							CompoundTag destinationStart = (CompoundTag) destinationStarts.get(start.getKey());
+							if (destinationStart == null || "INVALID".equals(destinationStart.getString("id"))) {
+								destinationStart = ((CompoundTag) start.getValue()).clone();
+								// we need to remove the children, we don't want all of them
+								final CompoundTag finalDestinationStart = destinationStart;
+								ListTag<CompoundTag> clonedDestinationChildren = withDefault(() -> finalDestinationStart.getListTag("Children").asCompoundTagList(), null);
+								if (clonedDestinationChildren != null) {
+									clonedDestinationChildren.clear();
+								}
+								destinationStarts.put(start.getKey(), destinationStart);
+							}
+
+							ListTag<CompoundTag> destinationChildren = withDefault(() -> ((CompoundTag) destinationStarts.get(start.getKey())).getListTag("Children").asCompoundTagList(), null);
+							if (destinationChildren == null) {
+								destinationChildren = new ListTag<>(CompoundTag.class);
+								destinationStart.put("Children", destinationChildren);
+							}
+
+							destinationChildren.add(children.get(i));
+							continue child;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void mergeCompoundTagLists(CompoundTag source, CompoundTag destination, List<Range> ranges, String name, Function<CompoundTag, Integer> ySupplier) {
+		ListTag<CompoundTag> sourceElements = withDefault(() -> source.getCompoundTag("Level").getListTag(name).asCompoundTagList(), new ListTag<>(CompoundTag.class));
+		ListTag<CompoundTag> destinationElements = withDefault(() -> destination.getCompoundTag("Level").getListTag(name).asCompoundTagList(), null);
+
+		// initialize destination if it doesn't exist
+		if (destinationElements == null) {
+			destinationElements = new ListTag<>(CompoundTag.class);
+		}
+		initLevel(destination).put(name, mergeLists(sourceElements, destinationElements, ranges, ySupplier));
+	}
+
+	private <T extends Tag<?>> ListTag<T> mergeLists(ListTag<T> source, ListTag<T> destination, List<Range> ranges, Function<T, Integer> ySupplier) {
+		@SuppressWarnings("unchecked")
+		ListTag<T> resultList = (ListTag<T>) ListTag.createUnchecked(null);
+
+		Set<T> resultSet = new HashSet<>();
+		for (T dest : destination) {
+			resultSet.add(dest);
+		}
+
+		elem: for (T destinationElement : destination) {
+			for (Range range : ranges) {
+				if (range.contains(ySupplier.apply(destinationElement))) {
+					resultSet.remove(destinationElement);
+					continue elem;
+				}
+			}
+		}
+
+		elem: for (T sourceElement : source) {
+			for (Range range : ranges) {
+				if (range.contains(ySupplier.apply(sourceElement))) {
+					resultSet.add(sourceElement);
+					continue elem;
+				}
+			}
+		}
+
+		resultList.addAll(resultSet);
+		return resultList;
+	}
+
+	private CompoundTag initLevel(CompoundTag c) {
+		CompoundTag level = c.getCompoundTag("Level");
+		if (level == null) {
+			c.put("Level", level = new CompoundTag());
+		}
+		return level;
 	}
 }

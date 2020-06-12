@@ -1,13 +1,13 @@
 package net.querz.mcaselector.version.anvil113;
 
-import net.querz.mcaselector.version.ChunkDataProcessor;
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.version.anvil112.Anvil112ChunkDataProcessor;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import static net.querz.mcaselector.validation.ValidationHelper.*;
 
-public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
+public class Anvil113ChunkDataProcessor extends Anvil112ChunkDataProcessor {
 
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, int[] waterPixels, byte[] terrainHeights, byte[] waterHeights, boolean water) {
@@ -29,7 +29,7 @@ public class Anvil113ChunkDataProcessor implements ChunkDataProcessor {
 
 				//loop over sections
 				boolean waterDepth = false;
-				sLoop: for (int i = 0; i < sections.size(); i++) {
+				for (int i = 0; i < sections.size(); i++) {
 					final int si = i;
 					CompoundTag section;
 					ListTag<?> rawPalette;

@@ -3,9 +3,12 @@ package net.querz.mcaselector.io;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.filter.FilterData;
+import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.version.VersionController;
+
 import java.io.*;
 import java.util.*;
 
@@ -324,7 +327,7 @@ public class MCAFile {
 		}
 	}
 
-	public void mergeChunksInto(MCAFile destination, Point2i offset, boolean overwrite, Set<Point2i> selection) {
+	public void mergeChunksInto(MCAFile destination, Point2i offset, boolean overwrite, Set<Point2i> selection, List<Range> ranges) {
 		Point2i relativeOffset = getRelativeOffset(location, destination.location, offset);
 		int startX = relativeOffset.getX() > 0 ? 0 : Tile.SIZE_IN_CHUNKS - (Tile.SIZE_IN_CHUNKS + relativeOffset.getX());
 		int limitX = relativeOffset.getX() > 0 ? (Tile.SIZE_IN_CHUNKS - relativeOffset.getX()) : Tile.SIZE_IN_CHUNKS;
@@ -352,7 +355,17 @@ public class MCAFile {
 						if (!sourceChunk.relocate(offset.chunkToBlock())) {
 							continue;
 						}
-						destination.chunks[destIndex] = sourceChunk;
+
+						if (ranges != null) {
+							int sourceVersion = sourceChunk.getData().getInt("DataVersion");
+							if (sourceVersion == 0) {
+								continue;
+							}
+							VersionController.getChunkDataProcessor(sourceChunk.getData().getInt("DataVersion")).mergeChunks(sourceChunk.getData(), destination.chunks[destIndex].getData(), ranges);
+						} else {
+							destination.chunks[destIndex] = sourceChunk;
+						}
+
 					}
 				}
 			}

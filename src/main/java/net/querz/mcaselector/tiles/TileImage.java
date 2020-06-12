@@ -139,6 +139,7 @@ public final class TileImage {
 					try {
 						data.loadData(ptr);
 					} catch (Exception ex) {
+						System.out.println("here 1");
 						Debug.error(ex);
 					}
 
@@ -154,6 +155,7 @@ public final class TileImage {
 
 			return finalImage;
 		} catch (Exception ex) {
+			System.out.println("here 2");
 			Debug.error(ex);
 		}
 		return null;

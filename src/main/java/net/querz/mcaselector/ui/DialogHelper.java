@@ -156,6 +156,7 @@ public class DialogHelper {
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									dir, t, false, dataProperty.get().overwrite(),
 									dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null,
+									dataProperty.get().getRanges(),
 									dataProperty.get().getOffset()));
 					CacheHelper.clearAllCache(tileMap);
 				}
