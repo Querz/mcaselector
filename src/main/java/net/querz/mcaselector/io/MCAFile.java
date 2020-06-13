@@ -8,6 +8,7 @@ import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.version.VersionController;
+import net.querz.nbt.tag.CompoundTag;
 
 import java.io.*;
 import java.util.*;
@@ -358,10 +359,15 @@ public class MCAFile {
 
 						if (ranges != null) {
 							int sourceVersion = sourceChunk.getData().getInt("DataVersion");
-							if (sourceVersion == 0) {
-								continue;
+							if (sourceVersion != 0) {
+								if (destinationChunk == null || destinationChunk.isEmpty()) {
+									System.out.println("creating new empty chunk");
+									destinationChunk = MCAChunkData.newEmptyLevelMCAChunkData(destChunk, sourceVersion);
+									destination.chunks[destIndex] = destinationChunk;
+								}
+								VersionController.getChunkDataProcessor(sourceChunk.getData().getInt("DataVersion"))
+									.mergeChunks(sourceChunk.getData(), destinationChunk.getData(), ranges);
 							}
-							VersionController.getChunkDataProcessor(sourceChunk.getData().getInt("DataVersion")).mergeChunks(sourceChunk.getData(), destination.chunks[destIndex].getData(), ranges);
 						} else {
 							destination.chunks[destIndex] = sourceChunk;
 						}

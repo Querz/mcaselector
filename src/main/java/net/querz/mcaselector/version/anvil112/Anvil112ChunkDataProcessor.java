@@ -130,6 +130,10 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
 		System.out.println("merging chunks");
 
+
+		System.out.println(source);
+		System.out.println(destination);
+
 		mergeCompoundTagLists(source, destination, ranges, "Sections", c -> (int) c.getByte("Y"));
 		mergeCompoundTagLists(source, destination, ranges, "Entities", c -> c.getListTag("Pos").asDoubleTagList().get(1).asInt() >> 4);
 		mergeCompoundTagLists(source, destination, ranges, "TileEntities", c -> c.getInt("y") >> 4);
@@ -138,8 +142,6 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
 		// do not merge biomes here, we will overwrite this function in a future version
 
-		System.out.println(source);
-		System.out.println(destination);
 
 		try {
 			// merge structures
@@ -161,11 +163,13 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 				if (children != null) {
 					child: for (int i = 0; i < children.size(); i++) {
 						int[] bb = children.get(i).getIntArray("BB");
-						for (Range range : ranges) {
-							if (range.contains(bb[1] >> 4) && range.contains(bb[4] >> 4)) {
-								children.remove(i);
-								i--;
-								continue child;
+						if (bb != null && bb.length == 6) {
+							for (Range range : ranges) {
+								if (range.contains(bb[1] >> 4) && range.contains(bb[4] >> 4)) {
+									children.remove(i);
+									i--;
+									continue child;
+								}
 							}
 						}
 					}
@@ -174,12 +178,14 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 				// if we removed all children, we check the start BB
 				if (children == null || children.size() == 0) {
 					int[] bb = ((CompoundTag) start.getValue()).getIntArray("BB");
-					for (Range range : ranges) {
-						if (range.contains(bb[1] >> 4) && range.contains(bb[4] >> 4)) {
-							CompoundTag emptyStart = new CompoundTag();
-							emptyStart.putString("id", "INVALID");
-							destinationStarts.put(start.getKey(), emptyStart);
-							break;
+					if (bb != null && bb.length == 6) {
+						for (Range range : ranges) {
+							if (range.contains(bb[1] >> 4) && range.contains(bb[4] >> 4)) {
+								CompoundTag emptyStart = new CompoundTag();
+								emptyStart.putString("id", "INVALID");
+								destinationStarts.put(start.getKey(), emptyStart);
+								break;
+							}
 						}
 					}
 				}
