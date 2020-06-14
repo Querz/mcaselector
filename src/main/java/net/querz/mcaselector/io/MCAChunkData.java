@@ -39,7 +39,7 @@ public class MCAChunkData {
 				"\ntimestamp=" + timestamp +
 				"\nsectors=" + sectors +
 				"\nlength=" + length +
-				"\ncompresstionType=" + compressionType +
+				"\ncompressionType=" + compressionType +
 				"\ndata=" + data +
 				"\nabsoluteLocation=" + absoluteLocation;
 	}
@@ -562,9 +562,11 @@ public class MCAChunkData {
 
 		// recursively update passengers
 
-		if (entity.containsKey("Passenger")) {
-			CompoundTag passenger = catchClassCastException(() -> entity.getCompoundTag("Passenger"));
-			applyOffsetToEntity(passenger, offset);
+		if (entity.containsKey("Passengers")) {
+			ListTag<CompoundTag> passengers = catchClassCastException(() -> entity.getListTag("Passengers").asCompoundTagList());
+			if (passengers != null) {
+				passengers.forEach(p -> applyOffsetToEntity(p, offset));
+			}
 		}
 
 		if (entity.containsKey("Item")) {

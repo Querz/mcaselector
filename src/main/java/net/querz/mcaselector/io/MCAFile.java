@@ -7,6 +7,7 @@ import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.version.ChunkDataProcessor;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.CompoundTag;
 
@@ -360,13 +361,18 @@ public class MCAFile {
 						if (ranges != null) {
 							int sourceVersion = sourceChunk.getData().getInt("DataVersion");
 							if (sourceVersion != 0) {
+								int destinationVersion;
 								if (destinationChunk == null || destinationChunk.isEmpty()) {
-									System.out.println("creating new empty chunk");
 									destinationChunk = MCAChunkData.newEmptyLevelMCAChunkData(destChunk, sourceVersion);
 									destination.chunks[destIndex] = destinationChunk;
+								} else if (sourceVersion != (destinationVersion = destinationChunk.getData().getInt("DataVersion"))) {
+									Point2i srcChunk = location.regionToChunk().add(x, z);
+									Debug.errorf("can't merge chunk at %s into chunk at %s because their DataVersion does not match (%d != %d)",
+										srcChunk, destChunk, sourceVersion, destinationVersion);
 								}
-								VersionController.getChunkDataProcessor(sourceChunk.getData().getInt("DataVersion"))
-									.mergeChunks(sourceChunk.getData(), destinationChunk.getData(), ranges);
+
+								ChunkDataProcessor p = VersionController.getChunkDataProcessor(sourceChunk.getData().getInt("DataVersion"));
+								p.mergeChunks(sourceChunk.getData(), destinationChunk.getData(), ranges);
 							}
 						} else {
 							destination.chunks[destIndex] = sourceChunk;

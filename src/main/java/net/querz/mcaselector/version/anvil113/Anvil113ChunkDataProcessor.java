@@ -24,7 +24,7 @@ public class Anvil113ChunkDataProcessor extends Anvil112ChunkDataProcessor {
 				int[] biomes = withDefault(() -> root.getCompoundTag("Level").getIntArray("Biomes"), null);
 				int biome = -1;
 				if (biomes != null && biomes.length != 0) {
-					biome = biomes[getIndex(cx, 0, cz)];
+					biome = biomes[getBiomeIndex(cx / 4, 63, cz / 4)];
 				}
 
 				//loop over sections
@@ -133,6 +133,10 @@ public class Anvil113ChunkDataProcessor extends Anvil112ChunkDataProcessor {
 
 	private int getIndex(int x, int y, int z) {
 		return y * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + z * Tile.CHUNK_SIZE + x;
+	}
+
+	protected int getBiomeIndex(int x, int y, int z) {
+		return y * 16 + z * 4 + x;
 	}
 
 	protected int getPaletteIndex(int index, long[] blockStates, int bits, int clean) {

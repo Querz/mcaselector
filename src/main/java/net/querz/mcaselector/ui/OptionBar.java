@@ -110,7 +110,7 @@ public class OptionBar extends MenuBar {
 		swapChunks.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCodeCombination.SHORTCUT_DOWN));
 
 		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks());
-//		setWorldDependentMenuItemsEnabled(false);
+		setWorldDependentMenuItemsEnabled(false);
 	}
 
 	private void onUpdate(TileMap tileMap) {
