@@ -57,6 +57,7 @@ dialog.import_chunks_confirmation.options;Inställningar
 dialog.import_chunks_confirmation.options.offset;Offset
 dialog.import_chunks_confirmation.options.overwrite;Skriv över existerande chunks
 dialog.import_chunks_confirmation.options.selection_only;Tillämpa endast till markering
+dialog.import_chunks_confirmation.options.sections;Sektioner
 dialog.import_chunks_confirmation.warning;Warning: Att importera chunks med en offset kommer inte att uppdatera kommandoblocks innehåll.
 dialog.export_chunks_confirmation.header_short;Du håller på att exportera ett okänt antal chunks från denna värld.
 dialog.export_chunks_confirmation.header_verbose;Du håller på att exportera %d chunks från denna värld.

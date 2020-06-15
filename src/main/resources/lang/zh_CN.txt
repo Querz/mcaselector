@@ -57,6 +57,7 @@ dialog.import_chunks_confirmation.options;选项
 dialog.import_chunks_confirmation.options.offset;抵消
 dialog.import_chunks_confirmation.options.overwrite;覆盖现有区块
 dialog.import_chunks_confirmation.options.selection_only;仅应用于所选内容
+dialog.import_chunks_confirmation.options.sections;部分
 dialog.import_chunks_confirmation.warning;警告: 使用偏移量导入块不会更新命令块的内容.
 dialog.export_chunks_confirmation.title;导出区块
 dialog.export_chunks_confirmation.header_short;您将要从这个世界导出未知数量的区块.

@@ -57,6 +57,7 @@ dialog.import_chunks_confirmation.options;選項
 dialog.import_chunks_confirmation.options.offset;偏移
 dialog.import_chunks_confirmation.options.overwrite;覆蓋現有區塊
 dialog.import_chunks_confirmation.options.selection_only;僅適用於已選擇的內容
+dialog.import_chunks_confirmation.options.sections;部分
 dialog.import_chunks_confirmation.warning;警告：匯入區塊時使用偏移並不會更新指令方塊的內容。
 dialog.export_chunks_confirmation.title;匯出區塊
 dialog.export_chunks_confirmation.header_short;你將要從這個世界匯出未知數量的區塊。

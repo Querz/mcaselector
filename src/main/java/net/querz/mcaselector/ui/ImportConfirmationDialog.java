@@ -87,7 +87,7 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		optionGrid.add(overwrite, 1, 1);
 		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_SELECTION_ONLY), 0, 2);
 		optionGrid.add(selectionOnly, 1, 2);
-		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_RANGE), 0, 3);
+		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_SECTIONS), 0, 3);
 		optionGrid.add(range, 1, 3);
 
 		BorderedTitledPane options = new BorderedTitledPane(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS, optionGrid);
