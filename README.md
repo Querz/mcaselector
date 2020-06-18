@@ -213,8 +213,8 @@ Headless mode can be run in different modes:
 | `--offset-x <number>` | The offset in chunks in x-direction. | No, default `0` |
 | `--offset-z <number>` | The offset in chunks in z-direction. | No, default `0` |
 | `--overwrite` | Whether to overwrite existing chunks. | No, default `false` |
-| `--selection` | A specific selection where to import chunks to. | No |
-| `--sections` | One or a range of section indices. A range has the format `<from>:<to>`, inclusive. Omitting `<from>` sets the lowest possible value, omitting `<to>` sets the highest possible value. `:` or `true` means _all_ sections. Multiple ranges or single indices can be defined by separating them with a comma. | No, default empty |
+| `--selection <csv-file>` | A specific selection where to import chunks to. | No |
+| `--sections <range\|number[,...]>` | One or a range of section indices. A range has the format `<from>:<to>`, inclusive. Omitting `<from>` sets the lowest possible value, omitting `<to>` sets the highest possible value. `:` or `true` means _all_ sections. Multiple ranges or single indices can be defined by separating them with a comma. | No, default empty |
 
 #### Delete chunks
 
