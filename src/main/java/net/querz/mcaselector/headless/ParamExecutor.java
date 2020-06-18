@@ -68,7 +68,7 @@ public class ParamExecutor {
 			pi.registerDependencies("offset-x", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("offset-z", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("overwrite", null, new ActionKey("mode", "import"));
-			pi.registerDependencies("ranges", null, new ActionKey("mode", "import"));
+			pi.registerDependencies("sections", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("selection", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("zoom-level", null, new ActionKey("mode", "cache"));
 			for (int z = Config.getMinZoomLevel(); z <= Config.getMaxZoomLevel(); z *= 2) {
@@ -221,8 +221,8 @@ public class ParamExecutor {
 		}
 
 		List<Range> ranges = null;
-		if (params.containsKey("ranges")) {
-			ranges = RangeParser.parseRanges(params.get("ranges"), ",");
+		if (params.containsKey("sections")) {
+			ranges = RangeParser.parseRanges(params.get("sections"), ",");
 		}
 
 		printHeadlessSettings();
