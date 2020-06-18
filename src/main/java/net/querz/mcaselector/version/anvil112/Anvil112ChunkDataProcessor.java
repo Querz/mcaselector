@@ -167,7 +167,7 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 		CompoundTag sourceStarts = withDefault(() -> source.getCompoundTag("Level").getCompoundTag("Structures").getCompoundTag("Starts"), new CompoundTag());
 		CompoundTag destinationStarts = withDefault(() -> destination.getCompoundTag("Level").getCompoundTag("Structures").getCompoundTag("Starts"), new CompoundTag());
 
-		if (destinationStarts.size() != 0) {
+		if (destinationStarts != null && destinationStarts.size() != 0) {
 			// remove BBs from destination
 			for (Map.Entry<String, Tag<?>> start : destinationStarts) {
 				ListTag<CompoundTag> children = withDefault(() -> ((CompoundTag) start.getValue()).getListTag("Children").asCompoundTagList(), null);
@@ -203,35 +203,38 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 			}
 		}
 
-		// add BBs from source to destination
-		// if child BB doesn't exist in destination, we copy start over to destination
-		for (Map.Entry<String, Tag<?>> start : sourceStarts) {
-			ListTag<CompoundTag> children = withDefault(() -> ((CompoundTag) start.getValue()).getListTag("Children").asCompoundTagList(), null);
-			if (children != null) {
-				child: for (int i = 0; i < children.size(); i++) {
-					int[] bb = children.get(i).getIntArray("BB");
-					for (Range range : ranges) {
-						if (range.contains(bb[1] >> 4) || range.contains(bb[4] >> 4)) {
-							CompoundTag destinationStart = (CompoundTag) destinationStarts.get(start.getKey());
-							if (destinationStart == null || "INVALID".equals(destinationStart.getString("id"))) {
-								destinationStart = ((CompoundTag) start.getValue()).clone();
-								// we need to remove the children, we don't want all of them
-								final CompoundTag finalDestinationStart = destinationStart;
-								ListTag<CompoundTag> clonedDestinationChildren = withDefault(() -> finalDestinationStart.getListTag("Children").asCompoundTagList(), null);
-								if (clonedDestinationChildren != null) {
-									clonedDestinationChildren.clear();
+		if (sourceStarts != null) {
+			// add BBs from source to destination
+			// if child BB doesn't exist in destination, we copy start over to destination
+			for (Map.Entry<String, Tag<?>> start : sourceStarts) {
+				ListTag<CompoundTag> children = withDefault(() -> ((CompoundTag) start.getValue()).getListTag("Children").asCompoundTagList(), null);
+				if (children != null) {
+					child:
+					for (int i = 0; i < children.size(); i++) {
+						int[] bb = children.get(i).getIntArray("BB");
+						for (Range range : ranges) {
+							if (range.contains(bb[1] >> 4) || range.contains(bb[4] >> 4)) {
+								CompoundTag destinationStart = (CompoundTag) destinationStarts.get(start.getKey());
+								if (destinationStart == null || "INVALID".equals(destinationStart.getString("id"))) {
+									destinationStart = ((CompoundTag) start.getValue()).clone();
+									// we need to remove the children, we don't want all of them
+									final CompoundTag finalDestinationStart = destinationStart;
+									ListTag<CompoundTag> clonedDestinationChildren = withDefault(() -> finalDestinationStart.getListTag("Children").asCompoundTagList(), null);
+									if (clonedDestinationChildren != null) {
+										clonedDestinationChildren.clear();
+									}
+									destinationStarts.put(start.getKey(), destinationStart);
 								}
-								destinationStarts.put(start.getKey(), destinationStart);
-							}
 
-							ListTag<CompoundTag> destinationChildren = withDefault(() -> ((CompoundTag) destinationStarts.get(start.getKey())).getListTag("Children").asCompoundTagList(), null);
-							if (destinationChildren == null) {
-								destinationChildren = new ListTag<>(CompoundTag.class);
-								destinationStart.put("Children", destinationChildren);
-							}
+								ListTag<CompoundTag> destinationChildren = withDefault(() -> ((CompoundTag) destinationStarts.get(start.getKey())).getListTag("Children").asCompoundTagList(), null);
+								if (destinationChildren == null) {
+									destinationChildren = new ListTag<>(CompoundTag.class);
+									destinationStart.put("Children", destinationChildren);
+								}
 
-							destinationChildren.add(children.get(i));
-							continue child;
+								destinationChildren.add(children.get(i));
+								continue child;
+							}
 						}
 					}
 				}

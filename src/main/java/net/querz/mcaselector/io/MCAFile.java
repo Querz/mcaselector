@@ -9,8 +9,6 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.version.ChunkDataProcessor;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.tag.CompoundTag;
-
 import java.io.*;
 import java.util.*;
 
@@ -372,7 +370,12 @@ public class MCAFile {
 								}
 
 								ChunkDataProcessor p = VersionController.getChunkDataProcessor(sourceChunk.getData().getInt("DataVersion"));
-								p.mergeChunks(sourceChunk.getData(), destinationChunk.getData(), ranges);
+								try {
+									p.mergeChunks(sourceChunk.getData(), destinationChunk.getData(), ranges);
+								} catch (Exception ex) {
+									Point2i srcChunk = location.regionToChunk().add(x, z);
+									Debug.dump(new Exception("failed to merge chunk " + srcChunk + " into " + destChunk, ex));
+								}
 							}
 						} else {
 							destination.chunks[destIndex] = sourceChunk;
