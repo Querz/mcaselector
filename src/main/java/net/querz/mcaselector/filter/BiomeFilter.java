@@ -32,7 +32,7 @@ public class BiomeFilter extends TextFilter<List<Integer>> {
 				validIDs.add(id);
 			}
 		} catch (IOException ex) {
-			Debug.error("error reading biomes.csv: ", ex.getMessage());
+			Debug.dumpException("error reading biomes.csv for BiomeFilter", ex);
 		}
 	}
 

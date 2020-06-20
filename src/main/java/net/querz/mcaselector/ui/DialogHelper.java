@@ -272,7 +272,7 @@ public class DialogHelper {
 		try {
 			return MCAFile.read(file);
 		} catch (IOException ex) {
-			Debug.error(ex);
+			Debug.dumpException("failed to read MCAFile " + file, ex);
 		}
 		return null;
 	}
@@ -295,7 +295,7 @@ public class DialogHelper {
 				mcaFile.getFile().delete();
 			}
 		} catch (IOException ex) {
-			Debug.error(ex);
+			Debug.dumpException(String.format("failed to save MCAFile %s using a temp file", mcaFile.getFile()), ex);
 		}
 	}
 

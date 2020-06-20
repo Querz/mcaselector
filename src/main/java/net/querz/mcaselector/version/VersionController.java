@@ -55,8 +55,8 @@ public class VersionController {
 		ChunkDataProcessor getChunkDataProcessor() {
 			try {
 				return cdpInstance == null ? cdpInstance = cdp.newInstance() : cdpInstance;
-			} catch (InstantiationException | IllegalAccessException e) {
-				Debug.error(e);
+			} catch (InstantiationException | IllegalAccessException ex) {
+				Debug.dumpException(String.format("failed to create new instance of ChunkDataProcessor for %d-%d", from, to), ex);
 			}
 			return null;
 		}
@@ -64,8 +64,8 @@ public class VersionController {
 		ColorMapping getColorMapping() {
 			try {
 				return cmInstance == null ? cmInstance = cm.newInstance() : cmInstance;
-			} catch (InstantiationException | IllegalAccessException e) {
-				Debug.error(e);
+			} catch (InstantiationException | IllegalAccessException ex) {
+				Debug.dumpException(String.format("failed to create new instance of ColorMapping for %d-%d", from, to), ex);
 			}
 			return null;
 		}
@@ -73,8 +73,8 @@ public class VersionController {
 		ChunkFilter getChunkFilter() {
 			try {
 				return cfInstance == null ? cfInstance = cf.newInstance() : cfInstance;
-			} catch (InstantiationException | IllegalAccessException e) {
-				Debug.error(e);
+			} catch (InstantiationException | IllegalAccessException ex) {
+				Debug.dumpException(String.format("faield to create new instance of ChunkFilter for %d-%d", from, to), ex);
 			}
 			return null;
 		}

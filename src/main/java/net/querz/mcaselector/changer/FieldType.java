@@ -44,8 +44,8 @@ public enum FieldType {
 	public Field<?> newInstance() {
 		try {
 			return clazz.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			Debug.error(e);
+		} catch (InstantiationException | IllegalAccessException ex) {
+			Debug.dumpException("failed to create new change field instance", ex);
 			return null;
 		}
 	}

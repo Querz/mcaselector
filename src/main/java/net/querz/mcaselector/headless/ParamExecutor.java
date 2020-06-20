@@ -100,7 +100,7 @@ public class ParamExecutor {
 		} catch (Exception ex) {
 			Debug.error("Error: " + ex.getMessage());
 			if (params.get() != null && params.get().containsKey("debug")) {
-				Debug.error(ex);
+				Debug.dumpException("Error executing in headless mode", ex);
 			}
 			future.run();
 			return future;

@@ -161,8 +161,8 @@ public final class Config {
 				}
 				config.put(elements[0], elements[1]);
 			});
-		} catch (IOException e) {
-			Debug.error(e);
+		} catch (IOException ex) {
+			Debug.dumpException("failed to read settings.ini", ex);
 		}
 
 		try {
@@ -186,7 +186,7 @@ public final class Config {
 			shadeWater = Boolean.parseBoolean(config.getOrDefault("ShadeWater", DEFAULT_SHADE_WATER + ""));
 			debug = Boolean.parseBoolean(config.getOrDefault("Debug", DEFAULT_DEBUG + ""));
 		} catch (Exception ex) {
-			Debug.errorf("error loading settings.ini: %s", ex.getMessage());
+			Debug.dumpException("error loading settings.ini", ex);
 		}
 	}
 
@@ -217,7 +217,7 @@ public final class Config {
 		try {
 			Files.write(file.toPath(), lines);
 		} catch (IOException ex) {
-			Debug.errorf("error writing settings.ini: %s", ex.getMessage());
+			Debug.dumpException("error writing settings.ini", ex);
 		}
 	}
 

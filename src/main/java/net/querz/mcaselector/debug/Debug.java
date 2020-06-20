@@ -78,6 +78,10 @@ public final class Debug {
 		}
 	}
 
+	public static void dumpException(String msg, Exception ex) {
+		error(new Exception(msg), ex);
+	}
+
 	public static void errorf(String format, Object... objects) {
 		if (logWriter != null) {
 			appendLogFile(String.format(format, objects));

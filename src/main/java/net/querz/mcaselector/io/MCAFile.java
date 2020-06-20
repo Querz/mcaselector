@@ -43,7 +43,7 @@ public class MCAFile {
 		try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
 			return saveAll(raf);
 		} catch (Exception ex) {
-			Debug.error(ex);
+			Debug.dumpException("failed to save MCAFile in " + file, ex);
 		}
 		return false;
 	}
@@ -105,8 +105,7 @@ public class MCAFile {
 					m.chunks[i].readHeader(raf);
 					m.chunks[i].loadData(raf);
 				} catch (Exception ex) {
-					Debug.errorf("failed to load chunk at index %d: %s", i, ex.getMessage());
-					Debug.error(ex);
+					Debug.dumpException("failed to load chunk at index " + i, ex);
 				}
 			}
 			return m;
@@ -122,8 +121,7 @@ public class MCAFile {
 					m.chunks[i].readHeader(ptr);
 					m.chunks[i].loadData(ptr);
 				} catch (Exception ex) {
-					Debug.errorf("failed to load chunk at index %d: %s", i, ex.getMessage());
-					Debug.error(ex);
+					Debug.dumpException("failed to load chunk at index " + i, ex);
 				}
 			}
 		}
@@ -165,7 +163,7 @@ public class MCAFile {
 
 			return chunkData;
 		} catch (IOException ex) {
-			Debug.errorf("error reading single chunk from %s: %s", file, ex.getMessage());
+			Debug.dumpException("error reading single chunk from" + file, ex);
 			return null;
 		}
 	}
@@ -176,7 +174,7 @@ public class MCAFile {
 			mcaFile.readHeader(ptr);
 			return mcaFile;
 		} catch (Exception ex) {
-			Debug.error(ex);
+			Debug.dumpException("failed to read header of MCAFile from " + file, ex);
 		}
 		return null;
 	}

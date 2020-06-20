@@ -139,7 +139,7 @@ public final class TileImage {
 					try {
 						data.loadData(ptr);
 					} catch (Exception ex) {
-						Debug.error(ex);
+						Debug.dumpException(String.format("failed to load chunk %s from raw data in %s", new Point2i(cx, cz), mcaFile.getFile().getName()), ex);
 					}
 
 					drawChunkImage(data, cx * Tile.CHUNK_SIZE, cz * Tile.CHUNK_SIZE, pixelBuffer, waterPixels, terrainHeights, waterHeights);
@@ -154,7 +154,7 @@ public final class TileImage {
 
 			return finalImage;
 		} catch (Exception ex) {
-			Debug.error(ex);
+			Debug.dumpException("failed to create image for MCAFile " + mcaFile.getFile().getName(), ex);
 		}
 		return null;
 	}

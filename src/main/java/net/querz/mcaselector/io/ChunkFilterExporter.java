@@ -148,7 +148,7 @@ public class ChunkFilterExporter {
 					Files.move(tmpFile.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
 				}
 			} catch (Exception ex) {
-				Debug.error(ex);
+				Debug.dumpException("failed to save exported filtered chunks in " + getFile().getName(), ex);
 			}
 			progressChannel.incrementProgress(getFile().getName());
 			Debug.dumpf("took %s to save data to %s", t, getFile().getName());

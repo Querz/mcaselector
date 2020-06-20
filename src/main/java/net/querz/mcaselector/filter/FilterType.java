@@ -35,8 +35,8 @@ public enum FilterType {
 	public Filter<?> create() {
 		try {
 			return clazz.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			Debug.error(e);
+		} catch (InstantiationException | IllegalAccessException ex) {
+			Debug.dumpException("failed to create new filter instance", ex);
 		}
 		return null;
 	}

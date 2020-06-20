@@ -55,7 +55,7 @@ public class ChunkImporter {
 					Set<Point2i> targets = getTargetRegions(source, offset);
 					mapSourceRegionsByTargetRegion(source, targets, targetMapping);
 				} catch (Exception ex) {
-					Debug.error(ex);
+					Debug.dumpException("failed to map source to target regions", ex);
 				}
 			}
 
@@ -77,7 +77,7 @@ public class ChunkImporter {
 				}
 			}
 		} catch (Exception ex) {
-			Debug.error(ex);
+			Debug.dumpException("failed creating jobs to import chunks", ex);
 		}
 	}
 
@@ -115,7 +115,7 @@ public class ChunkImporter {
 
 					Files.copy(source.toPath(), getFile().toPath());
 				} catch (IOException ex) {
-					Debug.errorf("failed to copy file %s to %s: %s", source, getFile(), ex.getMessage());
+					Debug.dumpException(String.format("failed to copy file %s to %s", source, getFile()), ex);
 				}
 				progressChannel.incrementProgress(getFile().getName(), sources.size());
 				return;
@@ -213,7 +213,7 @@ public class ChunkImporter {
 				MCAFilePipe.executeSaveData(new MCAChunkImporterSaveJob(getFile(), destination, progressChannel));
 
 			} catch (Exception ex) {
-				Debug.error(ex);
+				Debug.dumpException("failed to process chunk import for " + getFile().getName(), ex);
 				progressChannel.incrementProgress(getFile().getName());
 			}
 
@@ -245,7 +245,7 @@ public class ChunkImporter {
 					Files.deleteIfExists(tmpFile.toPath());
 				}
 			} catch (Exception ex) {
-				Debug.error(ex);
+				Debug.dumpException("failed to save imported chunks to " + getFile(), ex);
 			}
 			progressChannel.incrementProgress(getFile().getName());
 			Debug.dumpf("took %s to save data to %s", t, getFile().getName());

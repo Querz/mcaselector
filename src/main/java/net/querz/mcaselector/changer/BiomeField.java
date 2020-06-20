@@ -35,7 +35,7 @@ public class BiomeField extends Field<Integer> {
 				validIDs.add(id);
 			}
 		} catch (IOException ex) {
-			Debug.error("error reading biomes.csv: ", ex.getMessage());
+			Debug.dumpException("error reading biomes.csv for BiomeField", ex);
 		}
 	}
 

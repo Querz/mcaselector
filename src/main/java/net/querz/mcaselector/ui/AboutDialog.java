@@ -103,7 +103,7 @@ public class AboutDialog extends Alert {
 					Platform.runLater(() -> resultUIHandler.accept(upToDate));
 				}
 			} catch (Exception ex) {
-				Debug.error(ex.getMessage());
+				Debug.dumpException("failed to check for latest version", ex);
 				Label error = UIFactory.label(Translation.DIALOG_ABOUT_VERSION_ERROR);
 				error.getStyleClass().add("label-hint");
 				Platform.runLater(() -> resultUIHandler.accept(error));
@@ -126,7 +126,7 @@ public class AboutDialog extends Alert {
 				try {
 					Desktop.getDesktop().browse(new URL(url).toURI());
 				} catch (IOException | URISyntaxException ex) {
-					Debug.error(ex);
+					Debug.dumpException("cannot open url using a default browser", ex);
 				}
 			}
 		});

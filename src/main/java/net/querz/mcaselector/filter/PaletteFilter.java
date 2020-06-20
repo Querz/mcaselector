@@ -24,7 +24,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 				validNames.add(line);
 			}
 		} catch (IOException ex) {
-			Debug.error("error reading block-names.csv: ", ex.getMessage());
+			Debug.dumpException("error reading block-names.csv", ex);
 		}
 	}
 

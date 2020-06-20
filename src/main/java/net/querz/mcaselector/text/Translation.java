@@ -240,7 +240,7 @@ public enum Translation {
 				setTranslation(split[0], split[1].replace("\\n", "\n"));
 			}
 		} catch (IOException ex) {
-			Debug.error("error reading " + locale + ".txt: ", ex.getMessage());
+			Debug.dumpException(String.format("error reading %s.txt", locale), ex);
 		}
 	}
 
@@ -254,7 +254,7 @@ public enum Translation {
 			try {
 				return new File(dirURL.toURI()).list();
 			} catch (URISyntaxException ex) {
-				Debug.error(ex.getMessage());
+				Debug.dumpException("failed to list resources", ex);
 				return null;
 			}
 		}
@@ -270,7 +270,7 @@ public enum Translation {
 			try {
 				jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
 			} catch (IOException ex) {
-				Debug.error(ex.getMessage());
+				Debug.dumpException("failed to decode jar file", ex);
 				return null;
 			}
 			Enumeration<JarEntry> entries = jar.entries();
