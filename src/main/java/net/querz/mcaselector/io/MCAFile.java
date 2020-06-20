@@ -61,7 +61,7 @@ public class MCAFile {
 				raf.seek(globalOffset * SECTION_SIZE);
 				MCAChunkData data = chunks[index];
 
-				if (data == null || data.isEmpty()) {
+				if (data.isEmpty()) {
 					continue;
 				}
 
@@ -228,7 +228,7 @@ public class MCAFile {
 
 				MCAChunkData data = chunks[index];
 
-				if (data == null || data.isEmpty() || selection != null && !selection.contains(data.getAbsoluteLocation())) {
+				if (data.isEmpty() || selection != null && !selection.contains(data.getAbsoluteLocation())) {
 					continue;
 				}
 
@@ -250,7 +250,7 @@ public class MCAFile {
 
 				MCAChunkData data = chunks[index];
 
-				if (data == null || data.isEmpty()) {
+				if (data.isEmpty()) {
 					continue;
 				}
 
@@ -275,18 +275,22 @@ public class MCAFile {
 
 				MCAChunkData data = this.chunks[index];
 
-				if (data == null || data.isEmpty()) {
+				if (data.isEmpty()) {
 					continue;
 				}
 
 				FilterData filterData = new FilterData(data.getTimestamp(), data.getData());
 
-				if (filter.matches(filterData)) {
-					Point2i location = data.getAbsoluteLocation();
-					if (location == null) {
-						continue;
+				try {
+					if (filter.matches(filterData)) {
+						Point2i location = data.getAbsoluteLocation();
+						if (location == null) {
+							continue;
+						}
+						chunks.add(location);
 					}
-					chunks.add(location);
+				} catch (Exception ex) {
+					Debug.dumpException(String.format("failed to select chunk %s in %s", new Point2i(cx, cz), getFile().getName()), ex);
 				}
 			}
 		}

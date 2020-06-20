@@ -270,8 +270,9 @@ public final class Debug {
 
 		void flush() {
 			if (count > 0) {
-				appendLogFile(" ... " + count + " more of " + lastException.getOneLine());
-				System.out.println(lastException.getOneLine());
+				String line = " ... " + count + " more of " + lastException.getOneLine();
+				appendLogFile(line);
+				System.out.println(line);
 			}
 		}
 

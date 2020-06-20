@@ -23,7 +23,7 @@ public class Anvil113ChunkDataProcessor extends Anvil112ChunkDataProcessor {
 
 				int[] biomes = withDefault(() -> root.getCompoundTag("Level").getIntArray("Biomes"), null);
 				int biome = -1;
-				if (biomes != null && biomes.length != 0) {
+				if (biomes != null && biomes.length == 1024) {
 					biome = biomes[getBiomeIndex(cx / 4, 63, cz / 4)];
 				}
 

@@ -67,7 +67,7 @@ public class MCAChunkData {
 	}
 
 	public boolean isEmpty() {
-		return offset == 0 && timestamp == 0 && sectors == 0;
+		return offset == 0 && timestamp == 0 && sectors == 0 || data == null;
 	}
 
 	public void readHeader(ByteArrayPointer ptr) {
