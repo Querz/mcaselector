@@ -7,7 +7,7 @@
 
 <!--toc-start-->
 * [Usage](#usage)
-  * [Videos](#videos)
+  * [Video Tutorials](#video-tutorials)
   * [Navigation](#navigation)
   * [Selections](#selections)
   * [Chunk filter](#chunk-filter)
@@ -41,9 +41,10 @@
 ---
 
 ## Usage
-### Videos
+### Video Tutorials
 For people who prefer watching a video to understand how the MCA Selector works, there is a very nice tutorial on Youtube explaining the basics:
 
+* [How To Clear Unwanted Chunks In Minecraft 1.16 | MCASelector Tutorial](https://www.youtube.com/watch?v=ADDTXGRJo20) by [Muriako](https://www.youtube.com/channel/UCpt-MjKkc5X4W7bUFV3Dwrw)
 * [How To Reset The End Dimension! - The Minecraft Survival Guide](https://www.youtube.com/watch?v=p-2gFkJl_Lo) starting at [8:45](https://www.youtube.com/watch?v=p-2gFkJl_Lo&t=8m45s) by [Pixlriffs](https://www.youtube.com/channel/UCgGjBqZZtAjxfpGSba7d6ww)
 
 ### Navigation
