@@ -173,7 +173,8 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 				ListTag<CompoundTag> children = withDefault(() -> ((CompoundTag) start.getValue()).getListTag("Children").asCompoundTagList(), null);
 				if (children != null) {
 					child: for (int i = 0; i < children.size(); i++) {
-						int[] bb = children.get(i).getIntArray("BB");
+						CompoundTag child = children.get(i);
+						int[] bb = catchClassCastException(() -> child.getIntArray("BB"));
 						if (bb != null && bb.length == 6) {
 							for (Range range : ranges) {
 								if (range.contains(bb[1] >> 4) && range.contains(bb[4] >> 4)) {
@@ -188,7 +189,7 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 
 				// if we removed all children, we check the start BB
 				if (children == null || children.size() == 0) {
-					int[] bb = ((CompoundTag) start.getValue()).getIntArray("BB");
+					int[] bb = catchClassCastException(() -> ((CompoundTag) start.getValue()).getIntArray("BB"));
 					if (bb != null && bb.length == 6) {
 						for (Range range : ranges) {
 							if (range.contains(bb[1] >> 4) && range.contains(bb[4] >> 4)) {
@@ -211,7 +212,11 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 				if (children != null) {
 					child:
 					for (int i = 0; i < children.size(); i++) {
-						int[] bb = children.get(i).getIntArray("BB");
+						CompoundTag child = children.get(i);
+						int[] bb = catchClassCastException(() -> child.getIntArray("BB"));
+						if (bb == null) {
+							continue;
+						}
 						for (Range range : ranges) {
 							if (range.contains(bb[1] >> 4) || range.contains(bb[4] >> 4)) {
 								CompoundTag destinationStart = (CompoundTag) destinationStarts.get(start.getKey());

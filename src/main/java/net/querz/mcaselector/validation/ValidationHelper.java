@@ -11,7 +11,7 @@ public class ValidationHelper {
 		try {
 			return s.get();
 		} catch (Exception ex) {
-			Debug.dump(new Exception("validation error", ex));
+			Debug.dumpException("validation error", ex);
 			return def;
 		}
 	}
@@ -20,7 +20,7 @@ public class ValidationHelper {
 		try {
 			return s.get();
 		} catch (ClassCastException ex) {
-			Debug.dump(new Exception("validation error", ex));
+			Debug.dumpException("validation error", ex);
 			return null;
 		}
 	}
