@@ -5,7 +5,7 @@
 #### An external tool to export or delete selected chunks and regions from a world save of Minecraft Java Edition.
 ---
 
-**Update 1.11 adds new features that can be useful when migrating a world to 1.16. Here is a document with some tips and tricks regarding 1.16.**
+**Update 1.11 adds new features that can be useful when migrating a world to 1.16. [Here](https://gist.github.com/Querz/008111195cc7bc012bb291849d2eb9c7) is a document with some tips and tricks regarding 1.16.**
 
 ---
 
