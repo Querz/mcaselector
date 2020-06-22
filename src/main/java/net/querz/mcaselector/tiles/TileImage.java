@@ -176,7 +176,7 @@ public final class TileImage {
 					Config.shade() && Config.shadeWater()
 			);
 		} catch (Exception ex) {
-			Debug.dump(ex);
+			Debug.dumpException("failed to draw chunk " + new Point2i(x, z), ex);
 		}
 	}
 

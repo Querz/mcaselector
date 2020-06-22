@@ -5,23 +5,40 @@ import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.anvil112.Anvil112ChunkDataProcessor;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.Tag;
 import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class Anvil113ChunkDataProcessor extends Anvil112ChunkDataProcessor {
 
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, int[] waterPixels, byte[] terrainHeights, byte[] waterHeights, boolean water) {
-		ListTag<CompoundTag> sections = withDefault(() -> root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
-		if ("empty".equals(withDefault(() -> root.getCompoundTag("Level").getString("Status"), null)) || sections == null) {
+		CompoundTag level = withDefault(() -> root.getCompoundTag("Level"), null);
+		if (level == null) {
 			return;
 		}
+
+		String status = withDefault(() -> level.getString("Status"), null);
+		if (status == null || "empty".equals(status)) {
+			return;
+		}
+
+		Tag<?> rawSections = level.get("Sections");
+		if (rawSections == null || rawSections.getID() != ListTag.ID) {
+			return;
+		}
+
+		ListTag<CompoundTag> sections = catchClassCastException(((ListTag<?>) rawSections)::asCompoundTagList);
+		if (sections == null) {
+			return;
+		}
+
 		sections.sort(this::filterSections);
 
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
 
-				int[] biomes = withDefault(() -> root.getCompoundTag("Level").getIntArray("Biomes"), null);
+				int[] biomes = withDefault(() -> level.getIntArray("Biomes"), null);
 				int biome = -1;
 				if (biomes != null && biomes.length == 1024) {
 					biome = biomes[getBiomeIndex(cx / 4, 63, cz / 4)];
