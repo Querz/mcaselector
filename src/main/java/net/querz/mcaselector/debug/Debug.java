@@ -8,30 +8,31 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class Debug {
 
 	private Debug() {}
 
-	private static ExceptionInfo lastException = null;
+	private static final Map<ExceptionInfo, ExceptionInfo> lastExceptions = new ConcurrentHashMap<>();
 
 	public static void dump(Object... objects) {
 		if (Config.debug()) {
 			for (Object o : objects) {
 				if (o instanceof Exception) {
-					if (lastException == null) {
-						lastException = new ExceptionInfo((Exception) o);
+					ExceptionInfo info = new ExceptionInfo((Exception) o);
+					if (!lastExceptions.containsKey(info)) {
+						lastExceptions.put(info, info);
 						if (logWriter != null) {
 							appendLogFile(getStacktraceAsString((Exception) o));
 						}
 						((Exception) o).printStackTrace();
-					} else if (!lastException.equals((Exception) o)) {
-						lastException.flush();
-						lastException = new ExceptionInfo((Exception) o);
-						System.out.println(lastException.getOneLine());
 					} else {
-						lastException.poke();
+						// poke original instance
+						lastExceptions.get(info).poke();
 					}
 				} else {
 					if (logWriter != null) {
@@ -55,19 +56,16 @@ public final class Debug {
 	public static void error(Object... objects) {
 		for (Object o : objects) {
 			if (o instanceof Exception) {
-				if (lastException == null) {
-					lastException = new ExceptionInfo((Exception) o);
+				ExceptionInfo info = new ExceptionInfo((Exception) o);
+				if (!lastExceptions.containsKey(info)) {
+					lastExceptions.put(info, info);
 					if (logWriter != null) {
 						appendLogFile(getStacktraceAsString((Exception) o));
 					}
 					((Exception) o).printStackTrace();
-				} else if (!lastException.equals((Exception) o)) {
-					lastException.flush();
-					lastException = new ExceptionInfo((Exception) o);
-					System.out.println(lastException.getOneLine());
 				} else {
-					System.out.println(lastException.getOneLine());
-					lastException.poke();
+					// poke original instance
+					lastExceptions.get(info).poke();
 				}
 			} else {
 				if (logWriter != null) {
@@ -128,8 +126,11 @@ public final class Debug {
 			try {
 				System.out.println("closing log file");
 				if (br != null) {
-					if (lastException != null) {
-						lastException.flush();
+					if (!lastExceptions.isEmpty()) {
+						for (ExceptionInfo info : lastExceptions.keySet()) {
+							info.flush();
+						}
+						lastExceptions.clear();
 					}
 					try {
 						br.flush();
@@ -155,6 +156,17 @@ public final class Debug {
 			while (br != null) {
 				try {
 					Thread.sleep(10000);
+
+					long now = System.currentTimeMillis();
+
+					lastExceptions.entrySet().removeIf(e -> {
+						if (now - e.getValue().timestamp > 10000) {
+							e.getValue().flush();
+							return true;
+						}
+						return false;
+					});
+
 					if (br != null) {
 						br.flush();
 					}
@@ -230,6 +242,7 @@ public final class Debug {
 		long timestamp;
 		String oneLine;
 		int count = 0;
+		int hashCode;
 
 		ExceptionInfo(Exception ex) {
 			exception = ex.getClass();
@@ -242,35 +255,29 @@ public final class Debug {
 			timestamp = System.currentTimeMillis();
 			oneLine = getExceptionOneLine(ex);
 
-			new Thread(() -> {
-				try {
-					Thread.sleep(10000);
-					long remainingTime;
-					while ((remainingTime = System.currentTimeMillis() - timestamp) < 10000) {
-						Thread.sleep(remainingTime);
-					}
-					flush();
-					lastException = null;
-				} catch (InterruptedException e) {
-					System.out.println("failed to flush exception");
-					e.printStackTrace();
-				}
-			}).start();
+			hashCode = Objects.hash(exception, line, file);
 		}
 
-		boolean equals(Exception ex) {
-			return exception == ex.getClass()
-					&& (line > 0
-					&& ex.getStackTrace().length > 0
-					&& line == ex.getStackTrace()[0].getLineNumber()
-					&& file.equals(ex.getStackTrace()[0].getFileName())
-					|| line == -1
-					&& ex.getStackTrace().length == 0);
+		@Override
+		public boolean equals(Object ex) {
+			return exception == ((ExceptionInfo) ex).exception
+					&& line == ((ExceptionInfo) ex).line
+					&& file.equals(((ExceptionInfo) ex).file);
+		}
+
+		@Override
+		public String toString() {
+			return "ExceptionInfo: " + exception.getSimpleName() + " at " + file + "L" + line + " #" + hashCode;
+		}
+
+		@Override
+		public int hashCode() {
+			return hashCode;
 		}
 
 		void flush() {
 			if (count > 0) {
-				String line = " ... " + count + " more of " + lastException.getOneLine();
+				String line = " ... " + count + " more of " + oneLine;
 				appendLogFile(line);
 				System.out.println(line);
 			}
@@ -279,10 +286,6 @@ public final class Debug {
 		void poke() {
 			timestamp = System.currentTimeMillis();
 			count++;
-		}
-
-		String getOneLine() {
-			return oneLine;
 		}
 	}
 }
