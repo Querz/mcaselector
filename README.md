@@ -166,7 +166,7 @@ The MCA Selector currently supports the following Minecraft versions:
 | 1.13 - 1.13.2     | 1444 - 1631 |
 | 1.14 - 1.14.4     | 1901 - 1976 |
 | 1.15 - 1.15.2     | 2200 - 2230 |
-| 1.16-pre8 - ?     | 2564 - ?    |
+| 1.16-rc1 - ?      | 2564 - ?    |
 
 There is no guarantee for worlds generated in a Snapshot version to work, even if it is specified in the table above. This only represents the current development status towards the next Minecraft release. Old Snapshots of past Minecraft releases are not supported.
 
