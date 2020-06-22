@@ -57,6 +57,7 @@ dialog.import_chunks_confirmation.options;Optionen
 dialog.import_chunks_confirmation.options.offset;Offset
 dialog.import_chunks_confirmation.options.overwrite;Existierende Chunks überschreiben
 dialog.import_chunks_confirmation.options.selection_only;Nur auf Selektion anwenden
+dialog.import_chunks_confirmation.options.sections;Sektionen
 dialog.import_chunks_confirmation.warning;Warnung: Der Import von Chunks ändert nicht den Inhalt von Kommandoblöcken.
 dialog.export_chunks_confirmation.title;Chunks exportieren
 dialog.export_chunks_confirmation.header_short;Diese Aktion exportiern eine unbekannte Anzahl von Chunks aus dieser Welt.

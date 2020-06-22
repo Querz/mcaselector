@@ -3,12 +3,16 @@ package net.querz.mcaselector.ui;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.range.RangeParser;
 import net.querz.mcaselector.text.Translation;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class ImportConfirmationDialog extends ConfirmationDialog {
@@ -55,6 +59,20 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 			dataAction.accept(data);
 		});
 
+		TextField range = new TextField();
+		range.textProperty().addListener((obs, o, n) -> {
+			if (n.isEmpty()) {
+				data.ranges = null;
+			} else {
+				List<Range> ranges = RangeParser.parseRanges(n, ",");
+				if (ranges == null) {
+					range.setText(o);
+				} else {
+					data.ranges = ranges;
+				}
+			}
+		});
+
 		overwrite.setSelected(true);
 
 		data.offset = locationInput.getValue();
@@ -69,6 +87,8 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		optionGrid.add(overwrite, 1, 1);
 		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_SELECTION_ONLY), 0, 2);
 		optionGrid.add(selectionOnly, 1, 2);
+		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_SECTIONS), 0, 3);
+		optionGrid.add(range, 1, 3);
 
 		BorderedTitledPane options = new BorderedTitledPane(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS, optionGrid);
 
@@ -89,6 +109,7 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		private Point2i offset;
 		private boolean overwrite;
 		private boolean selectionOnly;
+		private List<Range> ranges;
 
 		public Point2i getOffset() {
 			return offset;
@@ -100,6 +121,10 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 
 		public boolean selectionOnly() {
 			return selectionOnly;
+		}
+
+		public List<Range> getRanges() {
+			return ranges;
 		}
 	}
 }

@@ -57,7 +57,7 @@ public class SelectionExporter {
 					Files.copy(getFile().toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
 					Debug.dumpf("moved file %s", getFile().getName());
 				} catch (Exception ex) {
-					Debug.errorf("error moving file: ", getFile().getName());
+					Debug.dumpException("error moving file " + getFile().getName(), ex);
 				}
 				progressChannel.incrementProgress(getFile().getName());
 				return;
@@ -109,8 +109,7 @@ public class SelectionExporter {
 					MCAFilePipe.executeSaveData(new MCADeleteSelectionSaveJob(getFile(), mca, destination, progressChannel));
 				}
 			} catch (Exception ex) {
-				Debug.errorf("error deleting chunk indices in %s: %s", getFile().getName(), ex.getMessage());
-				Debug.error(ex);
+				Debug.dumpException("error deleting chunk indices in " + getFile().getName(), ex);
 				progressChannel.incrementProgress(getFile().getName());
 
 			}
@@ -141,7 +140,7 @@ public class SelectionExporter {
 					Files.move(tmpFile.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
 				}
 			} catch (Exception ex) {
-				Debug.error(ex);
+				Debug.dumpException("failed to export chunks for " + getFile().getName(), ex);
 			}
 			progressChannel.incrementProgress(getFile().getName());
 			Debug.dumpf("took %s to save data to %s", t, getFile().getName());

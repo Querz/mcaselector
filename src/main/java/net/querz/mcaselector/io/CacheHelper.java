@@ -120,8 +120,8 @@ public final class CacheHelper {
 		String version = null;
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			version = br.readLine();
-		} catch (IOException e) {
-			Debug.error("failed to read version from file: " + e.getMessage());
+		} catch (IOException ex) {
+			Debug.dumpException("failed to read version from file " + file, ex);
 		}
 		return version;
 	}
@@ -147,7 +147,7 @@ public final class CacheHelper {
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(versionFile))) {
 			bw.write(applicationVersion);
 		} catch (IOException ex) {
-			Debug.error(ex);
+			Debug.dumpException("failed to write cache version file", ex);
 		}
 	}
 }

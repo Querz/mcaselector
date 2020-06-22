@@ -17,6 +17,9 @@ import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.range.RangeParser;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -65,6 +68,7 @@ public class ParamExecutor {
 			pi.registerDependencies("offset-x", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("offset-z", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("overwrite", null, new ActionKey("mode", "import"));
+			pi.registerDependencies("sections", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("selection", null, new ActionKey("mode", "import"));
 			pi.registerDependencies("zoom-level", null, new ActionKey("mode", "cache"));
 			for (int z = Config.getMinZoomLevel(); z <= Config.getMaxZoomLevel(); z *= 2) {
@@ -96,7 +100,7 @@ public class ParamExecutor {
 		} catch (Exception ex) {
 			Debug.error("Error: " + ex.getMessage());
 			if (params.get() != null && params.get().containsKey("debug")) {
-				Debug.error(ex);
+				Debug.dumpException("Error executing in headless mode", ex);
 			}
 			future.run();
 			return future;
@@ -216,12 +220,17 @@ public class ParamExecutor {
 			selection = SelectionUtil.importSelection(selectionFile);
 		}
 
+		List<Range> ranges = null;
+		if (params.containsKey("sections")) {
+			ranges = RangeParser.parseRanges(params.get("sections"), ",");
+		}
+
 		printHeadlessSettings();
 
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(future);
 
-		ChunkImporter.importChunks(input, progress, true, overwrite, selection, new Point2i(offsetX, offsetZ));
+		ChunkImporter.importChunks(input, progress, true, overwrite, selection, ranges, new Point2i(offsetX, offsetZ));
 	}
 
 	private static void runModeExport(Map<String, String> params, FutureTask<Boolean> future) throws IOException {

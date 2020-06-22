@@ -57,6 +57,7 @@ dialog.import_chunks_confirmation.options;Опции
 dialog.import_chunks_confirmation.options.offset;Смещение
 dialog.import_chunks_confirmation.options.overwrite;Заменить существующие чанки
 dialog.import_chunks_confirmation.options.selection_only;Применить только к выбранным
+dialog.import_chunks_confirmation.options.sections;разделы
 dialog.import_chunks_confirmation.warning;Внимание: Импорт чанков со смещением не обновит содержимое командных блоков.
 dialog.export_chunks_confirmation.title;Экспорт чанков
 dialog.export_chunks_confirmation.header_short;Вы экспортируете неизвестное число чанков из этого мира.

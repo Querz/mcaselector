@@ -39,7 +39,7 @@ public class MCAChunkData {
 				"\ntimestamp=" + timestamp +
 				"\nsectors=" + sectors +
 				"\nlength=" + length +
-				"\ncompresstionType=" + compressionType +
+				"\ncompressionType=" + compressionType +
 				"\ndata=" + data +
 				"\nabsoluteLocation=" + absoluteLocation;
 	}
@@ -52,8 +52,22 @@ public class MCAChunkData {
 		this.sectors = sectors;
 	}
 
+	static MCAChunkData newEmptyLevelMCAChunkData(Point2i absoluteLocation, int dataVersion) {
+		MCAChunkData mcaChunkData = new MCAChunkData(absoluteLocation, 0, 0, (byte) 1);
+		CompoundTag root = new CompoundTag();
+		CompoundTag level = new CompoundTag();
+		level.putInt("xPos", absoluteLocation.getX());
+		level.putInt("zPos", absoluteLocation.getY());
+		level.putString("Status", "full");
+		root.put("Level", level);
+		root.putInt("DataVersion", dataVersion);
+		mcaChunkData.data = root;
+		mcaChunkData.compressionType = CompressionType.ZLIB;
+		return mcaChunkData;
+	}
+
 	public boolean isEmpty() {
-		return offset == 0 && timestamp == 0 && sectors == 0;
+		return offset == 0 && timestamp == 0 && sectors == 0 || data == null;
 	}
 
 	public void readHeader(ByteArrayPointer ptr) {
@@ -548,9 +562,11 @@ public class MCAChunkData {
 
 		// recursively update passengers
 
-		if (entity.containsKey("Passenger")) {
-			CompoundTag passenger = catchClassCastException(() -> entity.getCompoundTag("Passenger"));
-			applyOffsetToEntity(passenger, offset);
+		if (entity.containsKey("Passengers")) {
+			ListTag<CompoundTag> passengers = catchClassCastException(() -> entity.getListTag("Passengers").asCompoundTagList());
+			if (passengers != null) {
+				passengers.forEach(p -> applyOffsetToEntity(p, offset));
+			}
 		}
 
 		if (entity.containsKey("Item")) {

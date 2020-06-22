@@ -121,7 +121,7 @@ public class ChunkFilterSelector {
 					Debug.dumpf("took %s to delete chunk indices in %s", t, getFile().getName());
 				}
 			} catch (Exception ex) {
-				Debug.errorf("error selecting chunks in %s", getFile().getName());
+				Debug.dumpException("error selecting chunks in " + getFile().getName(), ex);
 			}
 			progressChannel.incrementProgress(getFile().getName());
 		}

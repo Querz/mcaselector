@@ -1,5 +1,5 @@
 # MCA Selector
-[![total downloads](https://img.shields.io/github/downloads/Querz/mcaselector/total.svg)](https://github.com/Querz/mcaselector/releases) [![paypal](https://img.shields.io/badge/donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3PV2GDWZL8HCA)
+[![total downloads](https://img.shields.io/github/downloads/Querz/mcaselector/total.svg)](https://github.com/Querz/mcaselector/releases) [![paypal](https://img.shields.io/badge/donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3PV2GDWZL8HCA) [![chat](https://img.shields.io/discord/722924391805223113?logo=discord)](https://discord.gg/h942U8U)
 
 
 #### An external tool to export or delete selected chunks and regions from a world save of Minecraft Java Edition.
@@ -7,7 +7,7 @@
 
 <!--toc-start-->
 * [Usage](#usage)
-  * [Videos](#videos)
+  * [Video Tutorials](#video-tutorials)
   * [Navigation](#navigation)
   * [Selections](#selections)
   * [Chunk filter](#chunk-filter)
@@ -41,16 +41,17 @@
 ---
 
 ## Usage
-### Videos
+### Video Tutorials
 For people who prefer watching a video to understand how the MCA Selector works, there is a very nice tutorial on Youtube explaining the basics:
 
+* [How To Clear Unwanted Chunks In Minecraft 1.16 | MCASelector Tutorial](https://www.youtube.com/watch?v=ADDTXGRJo20) by [Muriako](https://www.youtube.com/channel/UCpt-MjKkc5X4W7bUFV3Dwrw)
 * [How To Reset The End Dimension! - The Minecraft Survival Guide](https://www.youtube.com/watch?v=p-2gFkJl_Lo) starting at [8:45](https://www.youtube.com/watch?v=p-2gFkJl_Lo&t=8m45s) by [Pixlriffs](https://www.youtube.com/channel/UCgGjBqZZtAjxfpGSba7d6ww)
 
 ### Navigation
 Executing the tool, it shows an empty window with a chunk and a region grid. To actually show a world, open a folder containing Minecraft Anvil (\*.mca) files. The tool will then render a top-down view of this world that you can zoom into and zoom out of by scrolling up and down and that you can move around using the middle mouse button (`Cmd+LMB` on Mac OS) or using `WASD`.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/4642ef43ea752b980a506789636182aa683a6f2d/default.png" alt="MCA Selector window showing chunk and region grid">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/306b90aa139a9c029705570393178266d7117b6b/default.png" alt="MCA Selector window showing chunk and region grid">
 </p>
 
 Zooming out far enough disables the selection of single chunks but lets you select entire regions.
@@ -59,7 +60,7 @@ Zooming out far enough disables the selection of single chunks but lets you sele
 Upon finishing selecting chunks and regions, they can be deleted or exported using the `Selection`-menu. Exported chunks and regions are not deleted from the original world.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/4642ef43ea752b980a506789636182aa683a6f2d/selections.png" alt="MCA Selector window showing chunk and region selection export">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/306b90aa139a9c029705570393178266d7117b6b/selections.png" alt="MCA Selector window showing chunk and region selection export">
 </p>
 
 A selection (not the chunks and regions themselves) can also be exported or imported and even be applied to different worlds.
@@ -68,7 +69,7 @@ A selection (not the chunks and regions themselves) can also be exported or impo
 The MCA Selector also contains a powerful tool to delete or export chunks and regions by conditions like the data version, the time it was last updated, how much time players have spent in this chunk and some more. Multiple of these conditions can be used to create a very specific query describing what chunks and regions should be deleted or exported.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/4642ef43ea752b980a506789636182aa683a6f2d/filter_chunks.png" alt="MCA Selector window showing the chunk filter">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/306b90aa139a9c029705570393178266d7117b6b/filter_chunks.png" alt="MCA Selector window showing the chunk filter">
 </p>
 
 Because the conditions use internal values used by Minecraft, the following table gives a brief explanation on what they do:
@@ -85,11 +86,13 @@ Because the conditions use internal values used by Minecraft, the following tabl
 | Status | String | The status of the chunk generation. Only recognized by Minecraft 1.13+ (DataVersion 1444+) |
 | LightPopulated | byte | Whether the light levels for the chunk have been calculated. If this is set to 0, converting a world from 1.12.x to 1.13 will omit that chunk. Allowed values are `0` and `1`. |
 | Biome | String/int | One or multiple biome names and IDs, separated by comma (,). For a reference of biome names and IDs, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Biomes). Custom biomes can be specified by using single quotes (') around a biome ID. |
-| Entities | String | One or multiple entity names, separated by comma (,). For a reference of entity names, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Entities). |
+| Entities | String | One or multiple entity names, separated by comma (,). For a reference of entity names, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Entities). Custom entities are supported, though they must be declared in single quotes (') and with their namespace id. |
 | #Entities | int | The total amount of entities in that chunk. |
 | #TileEntities | int | The total amount of tile entities in that chunk. |
 
 Fields that allow multiple comma separated values act the same as multiple consecutive filters of the same type with single values connected with the `AND` operator.
+
+A string representation of the query is printed in a text field below the query editor. When entering a query into this field directly, press `Enter` to parse it into the query editor.
 
 **Notice**
 Running the query will check the `.mca`-file's name first if the query would even apply to any chunk in this file using the xPos and zPos conditions, as long as the query is built in a way that allows doing this.
@@ -98,7 +101,7 @@ Running the query will check the `.mca`-file's name first if the query would eve
 The NBT Changer modifies the world files directly by changing specific values.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/4642ef43ea752b980a506789636182aa683a6f2d/change_nbt.png" alt="MCA Selector window showing the nbt changer">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/306b90aa139a9c029705570393178266d7117b6b/change_nbt.png" alt="MCA Selector window showing the nbt changer">
 </p>
 
 You can change the following values:
@@ -112,7 +115,7 @@ You can change the following values:
 | Status | String | The status of the chunk generation. Only recognized by Minecraft 1.13+ (DataVersion 1444+) |
 | Biome | String/int | A biome name or ID. This sets all biomes of this chunk to a single biome. For a reference of biome names and IDs, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Biomes). Custom biomes can be specified by using single quotes (') around a biome ID. |
 | DeleteEntities | boolean | If set to `1` or `true`, all entities in that chunk will be deleted. |
-| DeleteSections | boolean | If set to `1` or `true`, all sections in that chunk will be deleted. |
+| DeleteSections | boolean | One or a range of section indices. A range has the format `<from>:<to>`, inclusive. Omitting `<from>` sets the lowest possible value, omitting `<to>` sets the highest possible value. `:` or `true` means _all_ sections. Multiple ranges or single indices can be defined by separating them with a comma. |
 
 Once the field is highlighted in green, the value is considered valid and will be changed. A gray field, no matter its content, will be ignored.
 
@@ -122,17 +125,23 @@ For more information about the fields have a look at the chunk format descriptio
 When selecting a single chunk, the menu "Edit chunks" becomes available. It allows precise editing of the entire NBT structure of that chunk. Names and values can be changed, added, deleted or moved (drag & drop).
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/4642ef43ea752b980a506789636182aa683a6f2d/edit_chunk.png" alt="MCA Selector window showing the NBT editor">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/306b90aa139a9c029705570393178266d7117b6b/edit_chunk.png" alt="MCA Selector window showing the NBT editor">
 </p>
 
-**Notice** When the NBT editor does not show any data, the cached top-down view might be outdated and the chunk might not exist anymore in the mca files. In that case, clearing the cache will rerender the regions from scratch and show the up-to-date top-down view.
+**Notice** When the NBT editor does not show any data, the cached top-down view might be outdated, and the chunk might not exist anymore in the mca files. In that case, clearing the cache will re-render the regions from scratch and show the up-to-date top-down view.
 
 ### Chunk import
-Importing chunks can be easily done by opening the target world first using `File --> Open` and then merging the chunks of a second world using `Tools --> Import chunks`. After selecting a folder containing region files, it is possible to import the chunks with a specific offset. Doing so automatically adjusts relevant values to the new location of the chunk.
+Importing chunks can be easily done by opening the target world first using `File --> Open` and then merging the chunks of a second world using `Tools --> Import chunks`. After selecting a folder containing region files, it is possible to import the chunks with a bunch of additional options.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/4642ef43ea752b980a506789636182aa683a6f2d/import_chunks.png" alt="MCA Selector window showing the chunk import">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/306b90aa139a9c029705570393178266d7117b6b/import_chunks.png" alt="MCA Selector window showing the chunk import">
 </p>
+
+Options:
+* **Offset** imports chunks with an offset in chunk coordinates. To convert block coordinates to chunk coordinates, divide them by 16.
+* **Overwrite existing chunks** deletes existing chunks and overwrites them with the imported ones.
+* **Apply to selection only** imports chunks into the current selection.
+* **Sections** defines one, or a range of sections to be imported. A range has the format `<from>:<to>`, inclusive. Omitting `<from>` sets the lowest possible value, omitting `<to>` sets the highest possible value. `:`, `true` or empty means _all_ sections. Multiple ranges or single indices can be defined by separating them with a comma. If a chunk does not already exist at the location, it will be created containing only the specified sections of the imported chunk.
 
 **Notice**
 Commands inside of command blocks will not be changed.
@@ -153,11 +162,11 @@ The MCA Selector currently supports the following Minecraft versions:
 
 | Minecraft Version | DataVersion |
 | ----------------- | ----------- |
-| 1.2.1 - 1.12.2    | None - 1343  |
+| 1.2.1 - 1.12.2    | None - 1343 |
 | 1.13 - 1.13.2     | 1444 - 1631 |
 | 1.14 - 1.14.4     | 1901 - 1976 |
 | 1.15 - 1.15.2     | 2200 - 2230 |
-| 20w19a - ?        | 2534 - ?    |
+| 1.16-pre8 - ?     | 2564 - ?    |
 
 There is no guarantee for worlds generated in a Snapshot version to work, even if it is specified in the table above. This only represents the current development status towards the next Minecraft release. Old Snapshots of past Minecraft releases are not supported.
 
@@ -205,7 +214,8 @@ Headless mode can be run in different modes:
 | `--offset-x <number>` | The offset in chunks in x-direction. | No, default `0` |
 | `--offset-z <number>` | The offset in chunks in z-direction. | No, default `0` |
 | `--overwrite` | Whether to overwrite existing chunks. | No, default `false` |
-| `--selection` | A specific selection where to import chunks to. | No |
+| `--selection <csv-file>` | A specific selection where to import chunks to. | No |
+| `--sections <range\|number[,...]>` | One or a range of section indices. A range has the format `<from>:<to>`, inclusive. Omitting `<from>` sets the lowest possible value, omitting `<to>` sets the highest possible value. `:` or `true` means _all_ sections. Multiple ranges or single indices can be defined by separating them with a comma. | No, default empty |
 
 #### Delete chunks
 
@@ -245,7 +255,7 @@ Headless mode can be run in different modes:
 
 ### Filter query
 
-A filter query is a text representation of the chunk filter that can be created in the UI of the program. When the debug mode is enabled, it will be printed into the console.
+A filter query is a text representation of the chunk filter that can be created in the UI of the program. It is shown in the text field below the query editor of the Chunk filter tool.
 Example:
 ```
 --query "xPos >= 10 AND xPos <= 20 AND Palette contains \"sand,water\""
@@ -302,7 +312,7 @@ If you would like to contribute a translation, you can find the language files i
 
 ## Download and installation
 
-[**Download Version 1.10**](https://github.com/Querz/mcaselector/releases/download/1.10/mcaselector-1.10.jar)
+[**Download Version 1.11**](https://github.com/Querz/mcaselector/releases/download/1.11/mcaselector-1.11.jar)
 
 "Requirements":
 * Either:
@@ -313,11 +323,11 @@ If you would like to contribute a translation, you can find the language files i
 
 #### If you have Java from Oracle installed on your system
 
-Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.10.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
+Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.11.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
 
 #### If you have Minecraft Java Edition installed on your system
 
-Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.10.jar>`. On Mac OS you should find it in `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/` where you can execute `./java -jar <path-to-mcaselector-1.10.jar>`.
+Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.11.jar>`. On Mac OS you should find it in `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/` where you can execute `./java -jar <path-to-mcaselector-1.11.jar>`.
 
 **WARNING:** For macOS 10.14+ (Mojave) It is NOT recommended to use the JRE provided by Minecraft (1.8.0_74), because it contains a severe bug that causes JavaFX applications to crash when they lose focus while a dialog window (such as the save-file-dialog) is open (see the bug report [here](https://bugs.openjdk.java.net/browse/JDK-8211304)). This bug has been fixed in Java 1.8.0_201 and above.
 
@@ -331,12 +341,12 @@ If you are using Java 11 or higher, the JavaFX modules are not included automati
 
 On Windows with Oracle Java 13:
 ```
-"C:\Program Files\Java\jdk-13.0.1\bin\java.exe" --module-path "C:\Program Files\Java\javafx-sdk-13.0.1\lib" --add-modules ALL-MODULE-PATH -jar mcaselector-1.10.jar
+"C:\Program Files\Java\jdk-13.0.1\bin\java.exe" --module-path "C:\Program Files\Java\javafx-sdk-13.0.1\lib" --add-modules ALL-MODULE-PATH -jar mcaselector-1.11.jar
 ```
 
 On Debian with OpenJDK 11 and openjfx:
 ```
-java --module-path /usr/share/openjfx/lib --add-modules ALL-MODULE-PATH -jar mcaselector-1.10.jar
+java --module-path /usr/share/openjfx/lib --add-modules ALL-MODULE-PATH -jar mcaselector-1.11.jar
 ```
 
 ##

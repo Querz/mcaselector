@@ -49,7 +49,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 						}
 					}
 				} catch (NumberFormatException ex) {
-					Debug.error("unable to parse block id or data in block id mapping file: \"" + line + "\"");
+					Debug.dumpException(String.format("unable to parse block id or data in block id mapping file: \"%s\"", line), ex);
 					continue;
 				}
 

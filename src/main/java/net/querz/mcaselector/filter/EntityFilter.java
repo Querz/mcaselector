@@ -29,7 +29,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 				validNames.add("minecraft:" + line);
 			}
 		} catch (IOException ex) {
-			Debug.error("error reading entity-names.csv: ", ex.getMessage());
+			Debug.dumpException("error reading entity-names.csv", ex);
 		}
 	}
 

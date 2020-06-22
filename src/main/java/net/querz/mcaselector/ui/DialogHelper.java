@@ -156,6 +156,7 @@ public class DialogHelper {
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									dir, t, false, dataProperty.get().overwrite(),
 									dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null,
+									dataProperty.get().getRanges(),
 									dataProperty.get().getOffset()));
 					CacheHelper.clearAllCache(tileMap);
 				}
@@ -271,7 +272,7 @@ public class DialogHelper {
 		try {
 			return MCAFile.read(file);
 		} catch (IOException ex) {
-			Debug.error(ex);
+			Debug.dumpException("failed to read MCAFile " + file, ex);
 		}
 		return null;
 	}
@@ -294,7 +295,7 @@ public class DialogHelper {
 				mcaFile.getFile().delete();
 			}
 		} catch (IOException ex) {
-			Debug.error(ex);
+			Debug.dumpException(String.format("failed to save MCAFile %s using a temp file", mcaFile.getFile()), ex);
 		}
 	}
 

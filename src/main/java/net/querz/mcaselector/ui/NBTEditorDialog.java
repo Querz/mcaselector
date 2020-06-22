@@ -185,7 +185,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		try (FileInputStream fis = new FileInputStream(file)) {
 			fis.read(data);
 		} catch (IOException ex) {
-			Debug.error(ex);
+			Debug.dumpException(String.format("failed to read MCAFile %s to write single chunk", file), ex);
 			return;
 		}
 
@@ -208,7 +208,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 			}
 			Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		} catch (Exception ex) {
-			Debug.error(ex);
+			Debug.dumpException(String.format("failed to write single chunk to MCAFile %s after editing", file), ex);
 		}
 	}
 

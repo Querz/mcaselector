@@ -139,7 +139,7 @@ public class FieldChanger {
 					Files.move(tmpFile.toPath(), getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
 				}
 			} catch (Exception ex) {
-				Debug.error(ex);
+				Debug.dumpException("failed to save changed chunks in " + getFile().getName(), ex);
 			}
 			progressChannel.incrementProgress(getFile().getName());
 			Debug.dumpf("took %s to save data to %s", t, getFile().getName());

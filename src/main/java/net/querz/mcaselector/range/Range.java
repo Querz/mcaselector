@@ -1,5 +1,7 @@
 package net.querz.mcaselector.range;
 
+import java.util.function.Consumer;
+
 public class Range {
 
 	private int from;
@@ -32,6 +34,13 @@ public class Range {
 
 	public boolean isMaxRange() {
 		return from == Integer.MIN_VALUE && to == Integer.MAX_VALUE;
+	}
+
+	public void forEach(Consumer<Integer> iteration, int min, int max) {
+		int m = Math.min(to, max);
+		for (int i = Math.max(from, min); i < m; i++) {
+			iteration.accept(i);
+		}
 	}
 
 	@Override

@@ -57,6 +57,7 @@ dialog.import_chunks_confirmation.options;Volby
 dialog.import_chunks_confirmation.options.offset;Posun
 dialog.import_chunks_confirmation.options.overwrite;Přepsat existující chunky
 dialog.import_chunks_confirmation.options.selection_only;Aplikovat pouze na výběr
+dialog.import_chunks_confirmation.options.sections;Sekce
 dialog.import_chunks_confirmation.warning;Upozornění: Při importování bloků s posunem se neaktualizuje obsah příkazových bloků.
 dialog.export_chunks_confirmation.title;Exportovat chunky
 dialog.export_chunks_confirmation.header_short;Chcete exportovat neznámý počet chunků vybraného světa.

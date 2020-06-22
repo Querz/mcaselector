@@ -57,6 +57,7 @@ dialog.import_chunks_confirmation.options;Options
 dialog.import_chunks_confirmation.options.offset;Décalage
 dialog.import_chunks_confirmation.options.overwrite;Écraser les chunks existants
 dialog.import_chunks_confirmation.options.selection_only;Appliquer seulement à la sélection
+dialog.import_chunks_confirmation.options.sections;Sections
 dialog.import_chunks_confirmation.warning;Attention: Importer des chunks avec un décalage ne mettra pas à jour le contenu des blocs de commande.
 dialog.export_chunks_confirmation.title;Exporter les chunks
 dialog.export_chunks_confirmation.header_short;Vous êtes sur le point d'exporter un nomnbre de chunks inconnu depuis ce monde.

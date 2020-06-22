@@ -3,9 +3,12 @@ package net.querz.mcaselector.io;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.filter.FilterData;
+import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.version.ChunkDataProcessor;
+import net.querz.mcaselector.version.VersionController;
 import java.io.*;
 import java.util.*;
 
@@ -40,7 +43,7 @@ public class MCAFile {
 		try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
 			return saveAll(raf);
 		} catch (Exception ex) {
-			Debug.error(ex);
+			Debug.dumpException("failed to save MCAFile in " + file, ex);
 		}
 		return false;
 	}
@@ -58,7 +61,7 @@ public class MCAFile {
 				raf.seek(globalOffset * SECTION_SIZE);
 				MCAChunkData data = chunks[index];
 
-				if (data == null || data.isEmpty()) {
+				if (data.isEmpty()) {
 					continue;
 				}
 
@@ -102,8 +105,7 @@ public class MCAFile {
 					m.chunks[i].readHeader(raf);
 					m.chunks[i].loadData(raf);
 				} catch (Exception ex) {
-					Debug.errorf("failed to load chunk at index %d: %s", i, ex.getMessage());
-					Debug.error(ex);
+					Debug.dumpException("failed to load chunk at index " + i, ex);
 				}
 			}
 			return m;
@@ -119,8 +121,7 @@ public class MCAFile {
 					m.chunks[i].readHeader(ptr);
 					m.chunks[i].loadData(ptr);
 				} catch (Exception ex) {
-					Debug.errorf("failed to load chunk at index %d: %s", i, ex.getMessage());
-					Debug.error(ex);
+					Debug.dumpException("failed to load chunk at index " + i, ex);
 				}
 			}
 		}
@@ -162,7 +163,7 @@ public class MCAFile {
 
 			return chunkData;
 		} catch (IOException ex) {
-			Debug.errorf("error reading single chunk from %s: %s", file, ex.getMessage());
+			Debug.dumpException("error reading single chunk from" + file, ex);
 			return null;
 		}
 	}
@@ -173,7 +174,7 @@ public class MCAFile {
 			mcaFile.readHeader(ptr);
 			return mcaFile;
 		} catch (Exception ex) {
-			Debug.error(ex);
+			Debug.dumpException("failed to read header of MCAFile from " + file, ex);
 		}
 		return null;
 	}
@@ -227,7 +228,7 @@ public class MCAFile {
 
 				MCAChunkData data = chunks[index];
 
-				if (data == null || data.isEmpty() || selection != null && !selection.contains(data.getAbsoluteLocation())) {
+				if (data.isEmpty() || selection != null && !selection.contains(data.getAbsoluteLocation())) {
 					continue;
 				}
 
@@ -249,7 +250,7 @@ public class MCAFile {
 
 				MCAChunkData data = chunks[index];
 
-				if (data == null || data.isEmpty()) {
+				if (data.isEmpty()) {
 					continue;
 				}
 
@@ -274,18 +275,22 @@ public class MCAFile {
 
 				MCAChunkData data = this.chunks[index];
 
-				if (data == null || data.isEmpty()) {
+				if (data.isEmpty()) {
 					continue;
 				}
 
 				FilterData filterData = new FilterData(data.getTimestamp(), data.getData());
 
-				if (filter.matches(filterData)) {
-					Point2i location = data.getAbsoluteLocation();
-					if (location == null) {
-						continue;
+				try {
+					if (filter.matches(filterData)) {
+						Point2i location = data.getAbsoluteLocation();
+						if (location == null) {
+							continue;
+						}
+						chunks.add(location);
 					}
-					chunks.add(location);
+				} catch (Exception ex) {
+					Debug.dumpException(String.format("failed to select chunk %s in %s", new Point2i(cx, cz), getFile().getName()), ex);
 				}
 			}
 		}
@@ -324,7 +329,7 @@ public class MCAFile {
 		}
 	}
 
-	public void mergeChunksInto(MCAFile destination, Point2i offset, boolean overwrite, Set<Point2i> selection) {
+	public void mergeChunksInto(MCAFile destination, Point2i offset, boolean overwrite, Set<Point2i> selection, List<Range> ranges) {
 		Point2i relativeOffset = getRelativeOffset(location, destination.location, offset);
 		int startX = relativeOffset.getX() > 0 ? 0 : Tile.SIZE_IN_CHUNKS - (Tile.SIZE_IN_CHUNKS + relativeOffset.getX());
 		int limitX = relativeOffset.getX() > 0 ? (Tile.SIZE_IN_CHUNKS - relativeOffset.getX()) : Tile.SIZE_IN_CHUNKS;
@@ -352,7 +357,32 @@ public class MCAFile {
 						if (!sourceChunk.relocate(offset.chunkToBlock())) {
 							continue;
 						}
-						destination.chunks[destIndex] = sourceChunk;
+
+						if (ranges != null) {
+							int sourceVersion = sourceChunk.getData().getInt("DataVersion");
+							if (sourceVersion != 0) {
+								int destinationVersion;
+								if (destinationChunk == null || destinationChunk.isEmpty()) {
+									destinationChunk = MCAChunkData.newEmptyLevelMCAChunkData(destChunk, sourceVersion);
+									destination.chunks[destIndex] = destinationChunk;
+								} else if (sourceVersion != (destinationVersion = destinationChunk.getData().getInt("DataVersion"))) {
+									Point2i srcChunk = location.regionToChunk().add(x, z);
+									Debug.errorf("can't merge chunk at %s into chunk at %s because their DataVersion does not match (%d != %d)",
+										srcChunk, destChunk, sourceVersion, destinationVersion);
+								}
+
+								ChunkDataProcessor p = VersionController.getChunkDataProcessor(sourceChunk.getData().getInt("DataVersion"));
+								try {
+									p.mergeChunks(sourceChunk.getData(), destinationChunk.getData(), ranges);
+								} catch (Exception ex) {
+									Point2i srcChunk = location.regionToChunk().add(x, z);
+									Debug.dump(new Exception("failed to merge chunk " + srcChunk + " into " + destChunk, ex));
+								}
+							}
+						} else {
+							destination.chunks[destIndex] = sourceChunk;
+						}
+
 					}
 				}
 			}

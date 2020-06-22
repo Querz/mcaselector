@@ -162,8 +162,8 @@ public class RegionImageGenerator {
 						ImageIO.write(scaled, "png", cacheFile);
 					}
 				}
-			} catch (IOException e) {
-				Debug.error(e);
+			} catch (IOException ex) {
+				Debug.dumpException("failed to save images to cache for " + tile.getLocation(), ex);
 			}
 
 			setLoading(tile, false);

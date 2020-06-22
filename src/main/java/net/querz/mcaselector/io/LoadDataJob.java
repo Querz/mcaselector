@@ -35,7 +35,7 @@ public abstract class LoadDataJob extends Job {
 		try (FileInputStream fis = new FileInputStream(file)) {
 			read = fis.read(data);
 		} catch (IOException ex) {
-			Debug.error(ex);
+			Debug.dumpException("failed to read data from " + file, ex);
 			return null;
 		}
 		Debug.dumpf("read %d bytes from %s in %s", read, file.getAbsolutePath(), t);

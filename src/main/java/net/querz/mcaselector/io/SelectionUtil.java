@@ -31,7 +31,7 @@ public class SelectionUtil {
 				}
 			}
 		} catch (IOException ex) {
-			Debug.error(ex);
+			Debug.dumpException("failed to export selection", ex);
 		}
 	}
 
@@ -70,7 +70,7 @@ public class SelectionUtil {
 				}
 			}
 		} catch (IOException ex) {
-			Debug.error(ex);
+			Debug.dumpException("failed to import selection", ex);
 		}
 		return chunks;
 	}

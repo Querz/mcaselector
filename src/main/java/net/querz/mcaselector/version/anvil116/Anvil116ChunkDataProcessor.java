@@ -1,8 +1,8 @@
 package net.querz.mcaselector.version.anvil116;
 
-import net.querz.mcaselector.version.anvil113.Anvil113ChunkDataProcessor;
+import net.querz.mcaselector.version.anvil115.Anvil115ChunkDataProcessor;
 
-public class Anvil116ChunkDataProcessor extends Anvil113ChunkDataProcessor {
+public class Anvil116ChunkDataProcessor extends Anvil115ChunkDataProcessor {
 
 	@Override
 	protected int getPaletteIndex(int index, long[] blockStates, int bits, int clean) {
