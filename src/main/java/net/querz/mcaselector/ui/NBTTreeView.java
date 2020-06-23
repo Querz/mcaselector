@@ -33,7 +33,7 @@ import java.util.function.BiConsumer;
 
 public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
-	private static Map<Byte, Image> icons = new HashMap<>();
+	private static final Map<Byte, Image> icons = new HashMap<>();
 	private BiConsumer<TreeItem<NamedTag>, TreeItem<NamedTag>> selectionChangedAction;
 	private static final DataFormat CLIPBOARD_DATAFORMAT = new DataFormat("nbt-editor-item");
 	private TreeItem<NamedTag> dragboardContent = null;
@@ -42,7 +42,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 	private int dropIndex = 0;
 	private Stage stage;
 
-	private static boolean USE_DRAGVIEW_OFFSET;
+	private static final boolean USE_DRAGVIEW_OFFSET;
 
 	static {
 		String osName = System.getProperty("os.name").toLowerCase();

@@ -28,13 +28,9 @@ public final class MCAFilePipe {
 	//saving the cache files may take relatively long, so we do this separately but still single threaded because it's a hdd access
 	private static ThreadPoolExecutor saveDataExecutor;
 
-	private static Queue<LoadDataJob> waitingForLoad = new LinkedBlockingQueue<>();
+	private static final Queue<LoadDataJob> waitingForLoad = new LinkedBlockingQueue<>();
 
 	static {
-		new MCAFilePipe();
-	}
-
-	private MCAFilePipe() {
 		init(DEFAULT_MAX_READ_THREADS, DEFAULT_THREAD_COUNT, DEFAULT_MAX_WRITE_THREADS, DEFAULT_MAX_LOADED_FILES);
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> loadDataExecutor.shutdownNow()));
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> processDataExecutor.shutdownNow()));
@@ -110,9 +106,7 @@ public final class MCAFilePipe {
 	}
 
 	public static void clearQueues() {
-		if (waitingForLoad != null) {
-			waitingForLoad.clear();
-		}
+		waitingForLoad.clear();
 		if (loadDataExecutor != null) {
 			loadDataExecutor.getQueue().clear();
 		}

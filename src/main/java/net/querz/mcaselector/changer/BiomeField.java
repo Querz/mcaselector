@@ -12,8 +12,8 @@ import java.util.*;
 
 public class BiomeField extends Field<Integer> {
 
-	private static Map<String, Integer> validNames = new HashMap<>();
-	private static Set<Integer> validIDs = new HashSet<>();
+	private static final Map<String, Integer> validNames = new HashMap<>();
+	private static final Set<Integer> validIDs = new HashSet<>();
 	private String name;
 
 	static {

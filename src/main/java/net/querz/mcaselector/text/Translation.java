@@ -138,7 +138,7 @@ public enum Translation {
 	BUTTON_CANCEL("button.cancel"),
 	BUTTON_OK("button.ok");
 
-	private static Set<Locale> availableLanguages = new HashSet<>();
+	private static final Set<Locale> availableLanguages = new HashSet<>();
 
 	private static final Pattern languangeFilePattern = Pattern.compile("^(?<locale>-?(?<language>-?[a-z]{2})_(?<country>-?[A-Z]{2}))\\.txt$");
 
@@ -158,7 +158,7 @@ public enum Translation {
 		}
 	}
 
-	private TranslationStringProperty translationProperty;
+	private final TranslationStringProperty translationProperty;
 
 	Translation(String key) {
 		translationProperty = new TranslationStringProperty(key, null);
@@ -171,7 +171,7 @@ public enum Translation {
 
 	static class TranslationStringProperty extends SimpleStringProperty {
 
-		private String key;
+		private final String key;
 
 		public TranslationStringProperty(String key, String value) {
 			super(value);

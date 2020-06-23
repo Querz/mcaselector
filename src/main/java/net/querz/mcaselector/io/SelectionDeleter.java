@@ -34,8 +34,8 @@ public class SelectionDeleter {
 
 	private static class MCADeleteSelectionLoadJob extends LoadDataJob {
 
-		private Set<Point2i> chunksToBeDeleted;
-		private Progress progressChannel;
+		private final Set<Point2i> chunksToBeDeleted;
+		private final Progress progressChannel;
 
 		private MCADeleteSelectionLoadJob(File file, Set<Point2i> chunksToBeDeleted, Progress progressChannel) {
 			super(file);
@@ -66,8 +66,8 @@ public class SelectionDeleter {
 
 	private static class MCADeleteSelectionProcessJob extends ProcessDataJob {
 
-		private Progress progressChannel;
-		private Set<Point2i> chunksToBeDeleted;
+		private final Progress progressChannel;
+		private final Set<Point2i> chunksToBeDeleted;
 
 		private MCADeleteSelectionProcessJob(File file, byte[] data, Set<Point2i> chunksToBeDeleted, Progress progressChannel) {
 			super(file, data);
@@ -95,7 +95,7 @@ public class SelectionDeleter {
 
 	private static class MCADeleteSelectionSaveJob extends SaveDataJob<MCAFile> {
 
-		private Progress progressChannel;
+		private final Progress progressChannel;
 
 		private MCADeleteSelectionSaveJob(File file, MCAFile data, Progress progressChannel) {
 			super(file, data);

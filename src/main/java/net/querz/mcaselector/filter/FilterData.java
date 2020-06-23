@@ -4,8 +4,8 @@ import net.querz.nbt.tag.CompoundTag;
 
 public class FilterData {
 
-	private int lastUpdated;
-	private CompoundTag chunk;
+	private final int lastUpdated;
+	private final CompoundTag chunk;
 
 	public FilterData(int lastUpdated, CompoundTag chunk) {
 		this.lastUpdated = lastUpdated;

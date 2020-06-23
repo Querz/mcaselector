@@ -4,7 +4,7 @@ import net.querz.nbt.tag.CompoundTag;
 
 public abstract class Field<T> {
 
-	private FieldType type;
+	private final FieldType type;
 	private T newValue;
 
 	public Field(FieldType type) {

@@ -43,10 +43,10 @@ public class ChunkFilterSelector {
 
 	private static class MCASelectFilterLoadJob extends LoadDataJob {
 
-		private GroupFilter filter;
-		private Progress progressChannel;
-		private Consumer<Map<Point2i, Set<Point2i>>> callback;
-		private int radius;
+		private final GroupFilter filter;
+		private final Progress progressChannel;
+		private final Consumer<Map<Point2i, Set<Point2i>>> callback;
+		private final int radius;
 
 		private MCASelectFilterLoadJob(File file, GroupFilter filter, int radius, Consumer<Map<Point2i, Set<Point2i>>> callback, Progress progressChannel) {
 			super(file);
@@ -85,11 +85,11 @@ public class ChunkFilterSelector {
 
 	private static class MCASelectFilterProcessJob extends ProcessDataJob {
 
-		private Progress progressChannel;
-		private GroupFilter filter;
-		private Consumer<Map<Point2i, Set<Point2i>>> callback;
-		private Point2i location;
-		private int radius;
+		private final Progress progressChannel;
+		private final GroupFilter filter;
+		private final Consumer<Map<Point2i, Set<Point2i>>> callback;
+		private final Point2i location;
+		private final int radius;
 
 		private MCASelectFilterProcessJob(File file, byte[] data, GroupFilter filter, Consumer<Map<Point2i, Set<Point2i>>> callback, Point2i location, int radius,  Progress progressChannel) {
 			super(file, data);

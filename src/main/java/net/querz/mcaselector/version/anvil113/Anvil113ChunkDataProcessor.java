@@ -107,10 +107,6 @@ public class Anvil113ChunkDataProcessor extends Anvil112ChunkDataProcessor {
 
 	private boolean isWater(CompoundTag blockData) {
 		switch (blockData.getString("Name")) {
-//			case "minecraft:seagrass":
-//			case "minecraft:tall_seagrass":
-//			case "minecraft:kelp":
-//			case "minecraft:kelp_plant":
 			case "minecraft:water":
 			case "minecraft:bubble_column":
 				return true;

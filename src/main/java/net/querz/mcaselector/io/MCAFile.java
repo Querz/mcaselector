@@ -18,14 +18,14 @@ public class MCAFile {
 	public static final int TIMESTAMP_HEADER_LOCATION = 4096;
 	public static final int SECTION_SIZE = 4096;
 
-	private Point2i location;
+	private final Point2i location;
 
-	private File file;
-	private int[] offsets;
-	private byte[] sectors;
-	private int[] timestamps;
+	private final File file;
+	private final int[] offsets;
+	private final byte[] sectors;
+	private final int[] timestamps;
 
-	private MCAChunkData[] chunks;
+	private final MCAChunkData[] chunks;
 
 	public MCAFile(File file) {
 		this.file = file.getAbsoluteFile();
@@ -65,11 +65,7 @@ public class MCAFile {
 					continue;
 				}
 
-				try {
-					lastWritten = data.saveData(raf);
-				} catch (Exception ex) {
-					throw ex;
-				}
+				lastWritten = data.saveData(raf);
 
 				int sectors = (lastWritten >> 12) + (lastWritten % SECTION_SIZE == 0 ? 0 : 1);
 

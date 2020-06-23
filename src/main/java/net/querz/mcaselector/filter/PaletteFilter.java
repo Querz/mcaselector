@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class PaletteFilter extends TextFilter<List<String>> {
 
-	private static Set<String> validNames = new HashSet<>();
+	private static final Set<String> validNames = new HashSet<>();
 
 	static {
 		try (BufferedReader bis = new BufferedReader(

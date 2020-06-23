@@ -38,16 +38,16 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 	}
 
 	private GroupFilter value = gf;
-	private TextField filterQuery = new TextField();
-	private GroupFilterBox groupFilterBox = new GroupFilterBox(null, value, true);
-	private ToggleGroup toggleGroup = new ToggleGroup();
-	private RadioButton select = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_SELECT);
-	private RadioButton export = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_EXPORT);
-	private RadioButton delete = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_DELETE);
-	private Label selectionOnlyLabel = UIFactory.label(Translation.DIALOG_FILTER_CHUNKS_SELECTION_ONLY);
-	private Label selectionRadiusLabel = UIFactory.label(Translation.DIALOG_FILTER_CHUNKS_SELECTION_RADIUS);
-	private CheckBox selectionOnly = new CheckBox();
-	private TextField selectionRadius = new TextField();
+	private final TextField filterQuery = new TextField();
+	private final GroupFilterBox groupFilterBox = new GroupFilterBox(null, value, true);
+	private final ToggleGroup toggleGroup = new ToggleGroup();
+	private final RadioButton select = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_SELECT);
+	private final RadioButton export = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_EXPORT);
+	private final RadioButton delete = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_DELETE);
+	private final Label selectionOnlyLabel = UIFactory.label(Translation.DIALOG_FILTER_CHUNKS_SELECTION_ONLY);
+	private final Label selectionRadiusLabel = UIFactory.label(Translation.DIALOG_FILTER_CHUNKS_SELECTION_RADIUS);
+	private final CheckBox selectionOnly = new CheckBox();
+	private final TextField selectionRadius = new TextField();
 
 	private int radius;
 
@@ -159,10 +159,10 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 	public static class Result {
 
-		private HandleType type;
-		private boolean selectionOnly;
-		private GroupFilter filter;
-		private int radius;
+		private final HandleType type;
+		private final boolean selectionOnly;
+		private final GroupFilter filter;
+		private final int radius;
 
 		public Result(GroupFilter filter, HandleType type, boolean selectionOnly, int radius) {
 			this.filter = filter;

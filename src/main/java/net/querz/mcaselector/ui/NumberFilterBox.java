@@ -10,8 +10,8 @@ import net.querz.mcaselector.text.Translation;
 
 public class NumberFilterBox extends FilterBox {
 
-	private TextField input = new TextField();
-	private ComboBox<Comparator> comparator = new ComboBox<>();
+	private final TextField input = new TextField();
+	private final ComboBox<Comparator> comparator = new ComboBox<>();
 
 	public NumberFilterBox(FilterBox parent, NumberFilter<?> filter, boolean root) {
 		super(parent, filter, root);

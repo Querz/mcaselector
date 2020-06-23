@@ -4,7 +4,7 @@ import java.io.File;
 
 public abstract class ProcessDataJob extends Job {
 
-	private byte[] data;
+	private final byte[] data;
 
 	public ProcessDataJob(File file, byte[] data) {
 		super(file);

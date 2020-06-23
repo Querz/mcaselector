@@ -36,13 +36,13 @@ import java.util.function.Supplier;
 
 public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 
-	private Map<Integer, Label> addTagLabels = new LinkedHashMap<>();
+	private final Map<Integer, Label> addTagLabels = new LinkedHashMap<>();
 	private CompoundTag data;
 	private Point2i regionLocation;
 	private Point2i chunkLocation;
 
-	private BorderPane treeViewHolder = new BorderPane();
-	private Label treeViewPlaceHolder = UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_LOADING);
+	private final BorderPane treeViewHolder = new BorderPane();
+	private final Label treeViewPlaceHolder = UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_LOADING);
 
 	public NBTEditorDialog(TileMap tileMap, Stage primaryStage) {
 		titleProperty().bind(Translation.DIALOG_EDIT_NBT_TITLE.getProperty());
@@ -213,7 +213,8 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 	}
 
 	public static class Result {
-		private CompoundTag data;
+
+		private final CompoundTag data;
 
 		private Result(CompoundTag data) {
 			this.data = data;

@@ -10,12 +10,12 @@ import java.util.Set;
 
 public class ParamInterpreter {
 
-	private Map<String, String> params;
-	private Set<String> knownParams = new HashSet<>();
-	private Map<ActionKey, ExceptionConsumer<String, ? extends IOException>> actions = new HashMap<>();
-	private Map<ActionKey, Set<ActionKey>> dependencies = new HashMap<>();
-	private Map<ActionKey, Set<ActionKey>> softDependencies = new HashMap<>();
-	private Map<String, Set<String>> restrictions = new HashMap<>();
+	private final Map<String, String> params;
+	private final Set<String> knownParams = new HashSet<>();
+	private final Map<ActionKey, ExceptionConsumer<String, ? extends IOException>> actions = new HashMap<>();
+	private final Map<ActionKey, Set<ActionKey>> dependencies = new HashMap<>();
+	private final Map<ActionKey, Set<ActionKey>> softDependencies = new HashMap<>();
+	private final Map<String, Set<String>> restrictions = new HashMap<>();
 
 	public ParamInterpreter(Map<String, String> params) {
 		this.params = params;
@@ -136,20 +136,21 @@ public class ParamInterpreter {
 	}
 
 	public static class ActionKey {
-		private String key;
-		private String value;
+		private final String key;
+		private final String value;
+
+		private final int hashCode;
 
 		public ActionKey(String key, String value) {
 			this.key = key;
 			this.value = value;
+
+			hashCode = key == null ? 0 : Objects.hash(key, value);
 		}
 
 		@Override
 		public int hashCode() {
-			if (key == null) {
-				return 0;
-			}
-			return Objects.hash(key, value);
+			return hashCode;
 		}
 
 		@Override

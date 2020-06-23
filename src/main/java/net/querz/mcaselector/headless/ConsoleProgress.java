@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ConsoleProgress implements Progress {
 
 	private int max;
-	private AtomicInteger progress = new AtomicInteger(0);
+	private final AtomicInteger progress = new AtomicInteger(0);
 	private Runnable doneAction;
 
 	@Override

@@ -16,10 +16,10 @@ public enum FieldType {
 	DELETE_SECTIONS("DeleteSections", DeleteSectionsField.class, false, true),
 	STRUCTURE_REFERENCE("FixStructureReferences", ReferenceField.class, true, false);
 
-	private String name;
-	private Class<? extends Field<?>> clazz;
-	private boolean headlessOnly;
-	private boolean clearCache;
+	private final String name;
+	private final Class<? extends Field<?>> clazz;
+	private final boolean headlessOnly;
+	private final boolean clearCache;
 
 	private static FieldType[] uiValues;
 

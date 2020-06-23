@@ -37,10 +37,10 @@ public class FieldChanger {
 
 	public static class MCAFieldChangeLoadJob extends LoadDataJob {
 
-		private Progress progressChannel;
-		private List<Field<?>> fields;
-		private boolean force;
-		private Map<Point2i, Set<Point2i>> selection;
+		private final Progress progressChannel;
+		private final List<Field<?>> fields;
+		private final boolean force;
+		private final Map<Point2i, Set<Point2i>> selection;
 
 		private MCAFieldChangeLoadJob(File file, List<Field<?>> fields, boolean force, Map<Point2i, Set<Point2i>> selection, Progress progressChannel) {
 			super(file);
@@ -79,10 +79,10 @@ public class FieldChanger {
 
 	public static class MCAFieldChangeProcessJob extends ProcessDataJob {
 
-		private Progress progressChannel;
-		private List<Field<?>> fields;
-		private boolean force;
-		private Set<Point2i> selection;
+		private final Progress progressChannel;
+		private final List<Field<?>> fields;
+		private final boolean force;
+		private final Set<Point2i> selection;
 
 		private MCAFieldChangeProcessJob(File file, byte[] data, List<Field<?>> fields, boolean force, Set<Point2i> selection, Progress progressChannel) {
 			super(file, data);
@@ -110,7 +110,7 @@ public class FieldChanger {
 
 	public static class MCAFieldChangeSaveJob extends SaveDataJob<MCAFile> {
 
-		private Progress progressChannel;
+		private final Progress progressChannel;
 
 		private MCAFieldChangeSaveJob(File file, MCAFile data, Progress progressChannel) {
 			super(file, data);

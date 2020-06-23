@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class ParamParser {
 
-	private String[] args;
+	private final String[] args;
 
 	public ParamParser(String[] args) {
 		this.args = args;

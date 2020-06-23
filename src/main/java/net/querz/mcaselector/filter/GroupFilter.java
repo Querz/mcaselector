@@ -134,7 +134,7 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 
 	@Override
 	public boolean isValid() {
-		for (Filter c : children) {
+		for (Filter<?> c : children) {
 			if (!c.isValid()) {
 				return false;
 			}

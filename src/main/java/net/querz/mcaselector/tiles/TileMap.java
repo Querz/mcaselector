@@ -24,17 +24,17 @@ public class TileMap extends Canvas {
 	public static final float CHUNK_GRID_SCALE = 1.5f; //show chunk grid if scale is larger than this
 	public static final int TILE_VISIBILITY_THRESHOLD = 2;
 
-	private Window window;
+	private final Window window;
 
-	private GraphicsContext context;
+	private final GraphicsContext context;
 
 	private Point2f offset = new Point2f();
 
 	private Point2f previousMouseLocation = null;
 	private Point2f firstMouseLocation = null;
 
-	private Map<Point2i, Tile> tiles = new HashMap<>();
-	private Set<Tile> visibleTiles = ConcurrentHashMap.newKeySet();
+	private final Map<Point2i, Tile> tiles = new HashMap<>();
+	private final Set<Tile> visibleTiles = ConcurrentHashMap.newKeySet();
 
 	private int selectedChunks = 0;
 	private Point2i hoveredBlock = null;
@@ -42,10 +42,10 @@ public class TileMap extends Canvas {
 	private boolean showChunkGrid = true;
 	private boolean showRegionGrid = true;
 
-	private List<Consumer<TileMap>> updateListener = new ArrayList<>(1);
-	private List<Consumer<TileMap>> hoverListener = new ArrayList<>(1);
+	private final List<Consumer<TileMap>> updateListener = new ArrayList<>(1);
+	private final List<Consumer<TileMap>> hoverListener = new ArrayList<>(1);
 
-	private KeyActivator keyActivator = new KeyActivator();
+	private final KeyActivator keyActivator = new KeyActivator();
 
 	private long totalUpdates = 0;
 
@@ -53,7 +53,7 @@ public class TileMap extends Canvas {
 
 	private boolean trackpadScrolling = false;
 
-	private ImagePool imgPool;
+	private final ImagePool imgPool;
 
 	public TileMap(Window window, int width, int height) {
 		super(width, height);

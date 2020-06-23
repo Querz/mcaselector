@@ -24,7 +24,6 @@ import java.util.Set;
 
 public class DialogHelper {
 
-
 	public static void showAboutDialog(Stage primaryStage) {
 		new AboutDialog(primaryStage).showAndWait();
 	}
@@ -304,7 +303,7 @@ public class DialogHelper {
 		String savesDir = lastOpenDirectory == null ?  FileHelper.getMCSavesDir() : lastOpenDirectory;
 		File file = createDirectoryChooser(savesDir).showDialog(primaryStage);
 		if (file != null && file.isDirectory()) {
-			File[] files = file.listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.mca$"));
+			File[] files = file.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
 			if (files != null && files.length > 0) {
 				Debug.dump("setting world dir to " + file.getAbsolutePath());
 				FileHelper.setLastOpenedDirectory("open_world", file.getAbsolutePath());
@@ -322,7 +321,7 @@ public class DialogHelper {
 		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export"),
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showOpenDialog(primaryStage);
 		if (file != null) {
-			Map<Point2i, Set<Point2i>> chunks = SelectionUtil.importSelection(file);
+			Map<Point2i, Set<Point2i>> chunks = SelectionHelper.importSelection(file);
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
 			tileMap.setMarkedChunks(chunks);
 			tileMap.update();
@@ -333,7 +332,7 @@ public class DialogHelper {
 		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export"),
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showSaveDialog(primaryStage);
 		if (file != null) {
-			SelectionUtil.exportSelection(tileMap.getMarkedChunks(), file);
+			SelectionHelper.exportSelection(tileMap.getMarkedChunks(), file);
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
 			tileMap.update();
 		}

@@ -19,31 +19,31 @@ public class OptionBar extends MenuBar {
 	*									- Clear cache
 	* */
 
-	private Menu file = UIFactory.menu(Translation.MENU_FILE);
-	private Menu view = UIFactory.menu(Translation.MENU_VIEW);
-	private Menu selection = UIFactory.menu(Translation.MENU_SELECTION);
-	private Menu tools = UIFactory.menu(Translation.MENU_TOOLS);
-	private Label about = UIFactory.label(Translation.MENU_ABOUT);
+	private final Menu file = UIFactory.menu(Translation.MENU_FILE);
+	private final Menu view = UIFactory.menu(Translation.MENU_VIEW);
+	private final Menu selection = UIFactory.menu(Translation.MENU_SELECTION);
+	private final Menu tools = UIFactory.menu(Translation.MENU_TOOLS);
+	private final Label about = UIFactory.label(Translation.MENU_ABOUT);
 
-	private MenuItem open = UIFactory.menuItem(Translation.MENU_FILE_OPEN);
-	private MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
-	private MenuItem quit = UIFactory.menuItem(Translation.MENU_FILE_QUIT);
-	private CheckMenuItem chunkGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_CHUNK_GRID, true);
-	private CheckMenuItem regionGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_REGION_GRID, true);
-	private MenuItem goTo = UIFactory.menuItem(Translation.MENU_VIEW_GOTO);
-	private MenuItem clearViewCache = UIFactory.menuItem(Translation.MENU_VIEW_CLEAR_CACHE);
-	private MenuItem clearAllCache = UIFactory.menuItem(Translation.MENU_VIEW_CLEAR_ALL_CACHE);
-	private MenuItem clear = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR);
-	private MenuItem exportChunks = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_CHUNKS);
-	private MenuItem importChunks = UIFactory.menuItem(Translation.MENU_TOOLS_IMPORT_CHUNKS);
-	private MenuItem delete = UIFactory.menuItem(Translation.MENU_SELECTION_DELETE_CHUNKS);
-	private MenuItem importSelection = UIFactory.menuItem(Translation.MENU_SELECTION_IMPORT_SELECTION);
-	private MenuItem exportSelection = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_SELECTION);
-	private MenuItem clearSelectionCache = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR_CACHE);
-	private MenuItem filterChunks = UIFactory.menuItem(Translation.MENU_TOOLS_FILTER_CHUNKS);
-	private MenuItem changeFields = UIFactory.menuItem(Translation.MENU_TOOLS_CHANGE_FIELDS);
-	private MenuItem editNBT = UIFactory.menuItem(Translation.MENU_TOOLS_EDIT_NBT);
-	private MenuItem swapChunks = UIFactory.menuItem(Translation.MENU_TOOLS_SWAP_CHUNKS);
+	private final MenuItem open = UIFactory.menuItem(Translation.MENU_FILE_OPEN);
+	private final MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
+	private final MenuItem quit = UIFactory.menuItem(Translation.MENU_FILE_QUIT);
+	private final CheckMenuItem chunkGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_CHUNK_GRID, true);
+	private final CheckMenuItem regionGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_REGION_GRID, true);
+	private final MenuItem goTo = UIFactory.menuItem(Translation.MENU_VIEW_GOTO);
+	private final MenuItem clearViewCache = UIFactory.menuItem(Translation.MENU_VIEW_CLEAR_CACHE);
+	private final MenuItem clearAllCache = UIFactory.menuItem(Translation.MENU_VIEW_CLEAR_ALL_CACHE);
+	private final MenuItem clear = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR);
+	private final MenuItem exportChunks = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_CHUNKS);
+	private final MenuItem importChunks = UIFactory.menuItem(Translation.MENU_TOOLS_IMPORT_CHUNKS);
+	private final MenuItem delete = UIFactory.menuItem(Translation.MENU_SELECTION_DELETE_CHUNKS);
+	private final MenuItem importSelection = UIFactory.menuItem(Translation.MENU_SELECTION_IMPORT_SELECTION);
+	private final MenuItem exportSelection = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_SELECTION);
+	private final MenuItem clearSelectionCache = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR_CACHE);
+	private final MenuItem filterChunks = UIFactory.menuItem(Translation.MENU_TOOLS_FILTER_CHUNKS);
+	private final MenuItem changeFields = UIFactory.menuItem(Translation.MENU_TOOLS_CHANGE_FIELDS);
+	private final MenuItem editNBT = UIFactory.menuItem(Translation.MENU_TOOLS_EDIT_NBT);
+	private final MenuItem swapChunks = UIFactory.menuItem(Translation.MENU_TOOLS_SWAP_CHUNKS);
 
 	private int previousSelectedChunks = 0;
 

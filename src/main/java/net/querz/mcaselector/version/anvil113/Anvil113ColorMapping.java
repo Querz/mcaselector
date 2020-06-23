@@ -15,7 +15,7 @@ import static net.querz.mcaselector.validation.ValidationHelper.*;
 public class Anvil113ColorMapping implements ColorMapping {
 
 	//value can either be an Integer (color) or a BlockStateMapping
-	private Map<String, Object> mapping = new TreeMap<>();
+	private final Map<String, Object> mapping = new TreeMap<>();
 
 	public Anvil113ColorMapping() {
 		// note_block:pitch=1,powered=true,instrument=flute;01ab9f
@@ -79,7 +79,7 @@ public class Anvil113ColorMapping implements ColorMapping {
 
 	private static class BlockStateMapping {
 
-		private Map<Set<String>, Integer> blockStateMapping = new HashMap<>();
+		private final Map<Set<String>, Integer> blockStateMapping = new HashMap<>();
 
 		public int getColor(CompoundTag properties) {
 			if (properties != null) {

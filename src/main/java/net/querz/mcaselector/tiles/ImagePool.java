@@ -17,11 +17,11 @@ import java.util.Set;
 
 public class ImagePool {
 
-	private Map<Integer, LinkedHashMap<Point2i, Image>> pool = new HashMap<>();
-	private Set<Point2i> noMCA = new HashSet<>();
-	private TileMap tileMap;
+	private final Map<Integer, LinkedHashMap<Point2i, Image>> pool = new HashMap<>();
+	private final Set<Point2i> noMCA = new HashSet<>();
+	private final TileMap tileMap;
 
-	private double poolSize;
+	private final double poolSize;
 
 	// poolSize is a percentage indicating the amount of images cached in relation to the visible region
 	public ImagePool(TileMap tileMap, double poolSize) {
@@ -81,7 +81,7 @@ public class ImagePool {
 				synchronized (Config.getWorldUUID()) {
 					if (u.equals(Config.getWorldUUID())) {
 						push(scale, tile.location, i);
-						Platform.runLater(() -> tileMap.update());
+						Platform.runLater(tileMap::update);
 					}
 				}
 			}, () -> (float) scale, false, null);

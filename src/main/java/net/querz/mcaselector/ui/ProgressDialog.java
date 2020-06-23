@@ -13,13 +13,13 @@ import java.util.function.Consumer;
 
 public class ProgressDialog extends Stage {
 
-	private Label title = new Label();
-	private ProgressBar progressBar = new ProgressBar(-1);
-	private Label label = UIFactory.label(Translation.DIALOG_PROGRESS_RUNNING);
+	private final Label title = new Label();
+	private final ProgressBar progressBar = new ProgressBar(-1);
+	private final Label label = UIFactory.label(Translation.DIALOG_PROGRESS_RUNNING);
 
 	private ProgressTask currentTask;
 
-	private VBox box = new VBox();
+	private final VBox box = new VBox();
 
 	public ProgressDialog(Translation title, Stage primaryStage) {
 		initStyle(StageStyle.TRANSPARENT);

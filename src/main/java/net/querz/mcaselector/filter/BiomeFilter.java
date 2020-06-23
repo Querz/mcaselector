@@ -10,8 +10,8 @@ import java.util.*;
 
 public class BiomeFilter extends TextFilter<List<Integer>> {
 
-	private static Map<String, Integer> validNames = new HashMap<>();
-	private static Set<Integer> validIDs = new HashSet<>();
+	private static final Map<String, Integer> validNames = new HashMap<>();
+	private static final Set<Integer> validIDs = new HashSet<>();
 
 	static {
 		try (BufferedReader bis = new BufferedReader(

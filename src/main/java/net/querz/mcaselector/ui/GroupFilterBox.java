@@ -31,11 +31,7 @@ public class GroupFilterBox extends FilterBox {
 			getStyleClass().add("group-filter-box");
 		}
 
-		if (!filter.getFilterValue().isEmpty() || root && parent == null) {
-			type.setDisable(true);
-		} else {
-			type.setDisable(false);
-		}
+		type.setDisable(!filter.getFilterValue().isEmpty() || root && parent == null);
 
 		for (Filter<?> f : filter.getFilterValue()) {
 			if (f instanceof NumberFilter) {

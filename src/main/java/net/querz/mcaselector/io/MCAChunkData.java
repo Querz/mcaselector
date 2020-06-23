@@ -24,14 +24,14 @@ import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class MCAChunkData {
 
-	private long offset; //in actual bytes
-	private int timestamp;
-	private byte sectors;
+	private final long offset; //in actual bytes
+	private final int timestamp;
+	private final byte sectors;
 	private int length; //length without padding
 	private CompressionType compressionType;
 	private CompoundTag data;
 
-	private Point2i absoluteLocation;
+	private final Point2i absoluteLocation;
 
 	@Override
 	public String toString() {
@@ -603,6 +603,7 @@ public class MCAChunkData {
 
 			if (id != null && tag != null) {
 				// using a switch-case here for the future
+				// noinspection SwitchStatementWithTooFewBranches
 				switch (id) {
 					case "minecraft:compass":
 						CompoundTag lodestonePos = catchClassCastException(() -> tag.getCompoundTag("LodestonePos"));

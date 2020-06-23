@@ -36,45 +36,45 @@ public class VersionController {
 		ANVIL_1_15(2202, 2526, Anvil115ChunkDataProcessor.class, Anvil113ColorMapping.class, Anvil115ChunkFilter.class),
 		ANVIL_1_16(2527, Integer.MAX_VALUE, Anvil116ChunkDataProcessor.class, Anvil113ColorMapping.class, Anvil115ChunkFilter.class);
 
-		private int from, to;
-		private Class<? extends ChunkDataProcessor> cdp;
-		private Class<? extends ColorMapping> cm;
-		private Class<? extends ChunkFilter> cf;
+		private final int minVersion, maxVersion;
+		private final Class<? extends ChunkDataProcessor> chunkDataProcessor;
+		private final Class<? extends ColorMapping> colorMapping;
+		private final Class<? extends ChunkFilter> chunkFilter;
 		private ChunkDataProcessor cdpInstance;
 		private ColorMapping cmInstance;
 		private ChunkFilter cfInstance;
 
-		Mapping(int from, int to, Class<? extends ChunkDataProcessor> cdp, Class<? extends ColorMapping> cm, Class<? extends ChunkFilter> cf) {
-			this.from = from;
-			this.to = to;
-			this.cdp = cdp;
-			this.cm = cm;
-			this.cf = cf;
+		Mapping(int minVersion, int maxVersion, Class<? extends ChunkDataProcessor> chunkDataProcessor, Class<? extends ColorMapping> colorMapping, Class<? extends ChunkFilter> chunkFilter) {
+			this.minVersion = minVersion;
+			this.maxVersion = maxVersion;
+			this.chunkDataProcessor = chunkDataProcessor;
+			this.colorMapping = colorMapping;
+			this.chunkFilter = chunkFilter;
 		}
 
 		ChunkDataProcessor getChunkDataProcessor() {
 			try {
-				return cdpInstance == null ? cdpInstance = cdp.newInstance() : cdpInstance;
+				return cdpInstance == null ? cdpInstance = chunkDataProcessor.newInstance() : cdpInstance;
 			} catch (InstantiationException | IllegalAccessException ex) {
-				Debug.dumpException(String.format("failed to create new instance of ChunkDataProcessor for %d-%d", from, to), ex);
+				Debug.dumpException(String.format("failed to create new instance of ChunkDataProcessor for %d-%d", minVersion, maxVersion), ex);
 			}
 			return null;
 		}
 
 		ColorMapping getColorMapping() {
 			try {
-				return cmInstance == null ? cmInstance = cm.newInstance() : cmInstance;
+				return cmInstance == null ? cmInstance = colorMapping.newInstance() : cmInstance;
 			} catch (InstantiationException | IllegalAccessException ex) {
-				Debug.dumpException(String.format("failed to create new instance of ColorMapping for %d-%d", from, to), ex);
+				Debug.dumpException(String.format("failed to create new instance of ColorMapping for %d-%d", minVersion, maxVersion), ex);
 			}
 			return null;
 		}
 
 		ChunkFilter getChunkFilter() {
 			try {
-				return cfInstance == null ? cfInstance = cf.newInstance() : cfInstance;
+				return cfInstance == null ? cfInstance = chunkFilter.newInstance() : cfInstance;
 			} catch (InstantiationException | IllegalAccessException ex) {
-				Debug.dumpException(String.format("faield to create new instance of ChunkFilter for %d-%d", from, to), ex);
+				Debug.dumpException(String.format("faield to create new instance of ChunkFilter for %d-%d", minVersion, maxVersion), ex);
 			}
 			return null;
 		}
@@ -82,7 +82,7 @@ public class VersionController {
 		//wohooo! Runtime optimization!
 		static Mapping match(int dataVersion) {
 			for (Mapping m : Mapping.values()) {
-				if (m.from <= dataVersion && m.to >= dataVersion) {
+				if (m.minVersion <= dataVersion && m.maxVersion >= dataVersion) {
 					return m;
 				}
 			}

@@ -17,8 +17,7 @@ import java.util.regex.Pattern;
 
 public class EntityFilter extends TextFilter<List<String>> {
 
-	private static Set<String> validNames = new HashSet<>();
-
+	private static final Set<String> validNames = new HashSet<>();
 	private static final Pattern entityNamePattern = Pattern.compile("^(?<space>[a-z_]*)(?::?)(?<id>[a-z_]*)$");
 
 	static {

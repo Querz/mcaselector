@@ -13,8 +13,8 @@ import javafx.stage.StageStyle;
 
 public class TransparentStage extends Stage {
 
-	private StackPane content;
-	private int shadowSize = 10;
+	private final StackPane content;
+	private final int shadowSize = 10;
 
 	private double xOffset = 0;
 	private double yOffset = 0;

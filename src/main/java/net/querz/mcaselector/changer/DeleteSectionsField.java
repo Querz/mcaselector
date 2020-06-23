@@ -4,11 +4,8 @@ import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DeleteSectionsField extends Field<List<Range>> {

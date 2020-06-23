@@ -39,9 +39,9 @@ public class SelectionExporter {
 
 	private static class MCADeleteSelectionLoadJob extends LoadDataJob {
 
-		private Set<Point2i> chunksToBeExported;
-		private File destination;
-		private Progress progressChannel;
+		private final Set<Point2i> chunksToBeExported;
+		private final File destination;
+		private final Progress progressChannel;
 
 		private MCADeleteSelectionLoadJob(File file, Set<Point2i> chunksToBeExported, File destination, Progress progressChannel) {
 			super(file);
@@ -74,9 +74,9 @@ public class SelectionExporter {
 
 	private static class MCADeleteSelectionProcessJob extends ProcessDataJob {
 
-		private Progress progressChannel;
-		private Set<Point2i> chunksToBeExported;
-		private File destination;
+		private final Progress progressChannel;
+		private final Set<Point2i> chunksToBeExported;
+		private final File destination;
 
 		private MCADeleteSelectionProcessJob(File file, byte[] data, Set<Point2i> chunksToBeExported, File destination, Progress progressChannel) {
 			super(file, data);
@@ -118,8 +118,8 @@ public class SelectionExporter {
 
 	private static class MCADeleteSelectionSaveJob extends SaveDataJob<MCAFile> {
 
-		private Progress progressChannel;
-		private File destination;
+		private final Progress progressChannel;
+		private final File destination;
 
 		private MCADeleteSelectionSaveJob(File file, MCAFile data, File destination, Progress progressChannel) {
 			super(file, data);

@@ -11,8 +11,8 @@ public enum Comparator {
 	CONTAINS("\u2283", "contains"),
 	CONTAINS_NOT("\u2285", "!contains");
 
-	private String string;
-	private String query;
+	private final String string;
+	private final String query;
 
 	Comparator(String string) {
 		this.string = this.query = string;

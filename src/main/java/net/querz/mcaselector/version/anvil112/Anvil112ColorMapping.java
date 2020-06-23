@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class Anvil112ColorMapping implements ColorMapping {
 
-	private Map<Integer, Integer> mapping = new HashMap<>();
+	private final Map<Integer, Integer> mapping = new HashMap<>();
 
 	public Anvil112ColorMapping() {
 		// noinspection ConstantConditions

@@ -42,9 +42,9 @@ public class ChunkFilterDeleter {
 
 	private static class MCADeleteFilterLoadJob extends LoadDataJob {
 
-		private GroupFilter filter;
-		private Map<Point2i, Set<Point2i>> selection;
-		private Progress progressChannel;
+		private final GroupFilter filter;
+		private final Map<Point2i, Set<Point2i>> selection;
+		private final Progress progressChannel;
 
 		private MCADeleteFilterLoadJob(File file, GroupFilter filter, Map<Point2i, Set<Point2i>> selection, Progress progressChannel) {
 			super(file);
@@ -83,9 +83,9 @@ public class ChunkFilterDeleter {
 
 	private static class MCADeleteFilterProcessJob extends ProcessDataJob {
 
-		private Progress progressChannel;
-		private GroupFilter filter;
-		private Set<Point2i> selection;
+		private final Progress progressChannel;
+		private final GroupFilter filter;
+		private final Set<Point2i> selection;
 
 		private MCADeleteFilterProcessJob(File file, byte[] data, GroupFilter filter, Set<Point2i> selection, Progress progressChannel) {
 			super(file, data);
@@ -114,7 +114,7 @@ public class ChunkFilterDeleter {
 
 	private static class MCADeleteFilterSaveJob extends SaveDataJob<MCAFile> {
 
-		private Progress progressChannel;
+		private final Progress progressChannel;
 
 		private MCADeleteFilterSaveJob(File file, MCAFile data, Progress progressChannel) {
 			super(file, data);

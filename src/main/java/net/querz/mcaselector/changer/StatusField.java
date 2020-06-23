@@ -9,12 +9,13 @@ import java.util.Set;
 
 public class StatusField extends Field<String> {
 
-	private final static Set<String> validStatus = new HashSet<>();
+	private static final Set<String> validStatus = new HashSet<>();
 
 	static {
 		validStatus.addAll(Arrays.asList(
 			"empty",
 
+			// old status
 			"base",
 			"carved",
 			"liquid_carved",
@@ -25,6 +26,7 @@ public class StatusField extends Field<String> {
 			"fullchunk",
 			"postprocessed",
 
+			// new status
 			"structure_starts",
 			"structure_references",
 			"biomes",

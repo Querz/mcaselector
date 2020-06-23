@@ -11,7 +11,7 @@ public abstract class ProgressTask extends Task<Void> implements Progress {
 
 	public int max;
 	private int current = 0;
-	private StringProperty infoProperty = new SimpleStringProperty(Translation.DIALOG_PROGRESS_RUNNING.toString());
+	private final StringProperty infoProperty = new SimpleStringProperty(Translation.DIALOG_PROGRESS_RUNNING.toString());
 	private Runnable onFinish;
 	private boolean locked = false;
 

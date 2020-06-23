@@ -4,7 +4,7 @@ import java.io.File;
 
 public abstract class SaveDataJob<T> extends Job {
 
-	private T data;
+	private final T data;
 
 	public SaveDataJob(File file, T data) {
 		super(file);

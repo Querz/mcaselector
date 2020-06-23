@@ -12,9 +12,9 @@ import java.util.*;
 
 public class Window extends Application {
 
-	private int width = 800, height = 600;
+	private final int width = 800, height = 600;
 
-	private Set<KeyCode> pressedKeys = new HashSet<>();
+	private final Set<KeyCode> pressedKeys = new HashSet<>();
 
 	@Override
 	public void start(Stage primaryStage) {

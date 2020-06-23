@@ -25,8 +25,8 @@ import java.util.List;
 @SuppressWarnings("rawtypes")
 public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 
-	private TableView<Row> table = new TableView<>();
-	private ImageView addBefore, addAfter, add16Before, add16After, delete;
+	private final TableView<Row> table = new TableView<>();
+	private final ImageView addBefore, addAfter, add16Before, add16After, delete;
 	private boolean addMultiple = false;
 	private T array;
 
@@ -322,7 +322,7 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 	}
 
 	public class Result {
-		private T array;
+		private final T array;
 
 		Result(T array) {
 			this.array = array;

@@ -9,11 +9,11 @@ public class LocationInput extends HBox {
 
 	private Point2i value;
 	private Integer x, z;
-	private TextField xValue, zValue;
+	private final TextField xValue, zValue;
 
 	private Consumer<Boolean> validityCheckAction;
 
-	private boolean emptyIsZero;
+	private final boolean emptyIsZero;
 
 	public LocationInput(boolean emptyIsZero) {
 		this.emptyIsZero = emptyIsZero;

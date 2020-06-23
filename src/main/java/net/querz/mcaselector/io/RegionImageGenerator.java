@@ -17,12 +17,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class RegionImageGenerator {
 
-	private static Set<Point2i> loading = ConcurrentHashMap.newKeySet();
+	private static final Set<Point2i> loading = ConcurrentHashMap.newKeySet();
 
 	private RegionImageGenerator() {}
 
@@ -46,12 +45,12 @@ public class RegionImageGenerator {
 
 	public static class MCAImageLoadJob extends LoadDataJob {
 
-		private Tile tile;
-		private UUID world;
-		private BiConsumer<Image, UUID> callback;
-		private Supplier<Float> scaleSupplier;
-		private boolean scaleOnly;
-		private Progress progressChannel;
+		private final Tile tile;
+		private final UUID world;
+		private final BiConsumer<Image, UUID> callback;
+		private final Supplier<Float> scaleSupplier;
+		private final boolean scaleOnly;
+		private final Progress progressChannel;
 
 		private MCAImageLoadJob(File file, Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
 			super(file);
@@ -86,12 +85,12 @@ public class RegionImageGenerator {
 
 	private static class MCAImageProcessJob extends ProcessDataJob {
 
-		private Tile tile;
-		private UUID world;
-		private BiConsumer<Image, UUID> callback;
-		private Supplier<Float> scaleSupplier;
-		private boolean scaleOnly;
-		private Progress progressChannel;
+		private final Tile tile;
+		private final UUID world;
+		private final BiConsumer<Image, UUID> callback;
+		private final Supplier<Float> scaleSupplier;
+		private final boolean scaleOnly;
+		private final Progress progressChannel;
 
 		private MCAImageProcessJob(File file, byte[] data, Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
 			super(file, data);
@@ -125,11 +124,11 @@ public class RegionImageGenerator {
 
 	private static class MCAImageSaveCacheJob extends SaveDataJob<Image> {
 
-		private Tile tile;
-		private UUID world;
-		private Supplier<Float> scaleSupplier;
-		private boolean scaleOnly;
-		private Progress progressChannel;
+		private final Tile tile;
+		private final UUID world;
+		private final Supplier<Float> scaleSupplier;
+		private final boolean scaleOnly;
+		private final Progress progressChannel;
 
 		private MCAImageSaveCacheJob(File file, Image data, Tile tile, UUID world, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
 			super(file, data);

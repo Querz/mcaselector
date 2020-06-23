@@ -16,7 +16,7 @@ import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class Anvil112ChunkFilter implements ChunkFilter {
 
-	private Map<String, BlockData[]> mapping = new HashMap<>();
+	private final Map<String, BlockData[]> mapping = new HashMap<>();
 
 	public Anvil112ChunkFilter() {
 		// noinspection ConstantConditions

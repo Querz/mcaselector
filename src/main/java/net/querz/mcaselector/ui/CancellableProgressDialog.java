@@ -9,7 +9,7 @@ import net.querz.mcaselector.text.Translation;
 
 public class CancellableProgressDialog extends ProgressDialog {
 
-	private Button cancel = UIFactory.button(Translation.BUTTON_CANCEL);
+	private final Button cancel = UIFactory.button(Translation.BUTTON_CANCEL);
 
 	public CancellableProgressDialog(Translation title, Stage primaryStage) {
 		super(title, primaryStage);

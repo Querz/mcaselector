@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 public class StringPointer {
 
-	private String value;
+	private final String value;
 	private int index;
 
 	public StringPointer(String value) {

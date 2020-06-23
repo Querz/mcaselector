@@ -19,13 +19,13 @@ import net.querz.mcaselector.point.Point2i;
 
 public class StatusBar extends StackPane {
 
-	private GridPane grid = new GridPane();
-	private Label selectedChunks = new Label(Translation.STATUS_SELECTED + ": 0");
-	private Label hoveredRegion = new Label(Translation.STATUS_REGION + ": -, -");
-	private Label hoveredChunk = new Label(Translation.STATUS_CHUNK + ": -, -");
-	private Label hoveredBlock = new Label(Translation.STATUS_BLOCK + ": -, -");
-	private Label visibleRegions = new Label(Translation.STATUS_VISIBLE + ": 0");
-	private Label totalRegions = new Label(Translation.STATUS_TOTAL + ": 0");
+	private final GridPane grid = new GridPane();
+	private final Label selectedChunks = new Label(Translation.STATUS_SELECTED + ": 0");
+	private final Label hoveredRegion = new Label(Translation.STATUS_REGION + ": -, -");
+	private final Label hoveredChunk = new Label(Translation.STATUS_CHUNK + ": -, -");
+	private final Label hoveredBlock = new Label(Translation.STATUS_BLOCK + ": -, -");
+	private final Label visibleRegions = new Label(Translation.STATUS_VISIBLE + ": 0");
+	private final Label totalRegions = new Label(Translation.STATUS_TOTAL + ": 0");
 
 	ImageView loadIcon = new ImageView(FileHelper.getIconFromResources("img/load"));
 	BorderPane bp = new BorderPane();

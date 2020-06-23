@@ -6,7 +6,7 @@ public enum CompressionType {
 	GZIP(1),
 	ZLIB(2);
 
-	private byte type;
+	private final byte type;
 
 	CompressionType(int type) {
 		this.type = (byte) type;

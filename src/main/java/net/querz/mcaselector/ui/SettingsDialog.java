@@ -33,25 +33,25 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	* toggle debug
 	* */
 
-	private static final int procCount = Runtime.getRuntime().availableProcessors();
-	private static final long maxMem = Runtime.getRuntime().maxMemory();
+	private static final int processorCount = Runtime.getRuntime().availableProcessors();
+	private static final long maxMemory = Runtime.getRuntime().maxMemory();
 
-	private ComboBox<Locale> languages = new ComboBox<>();
+	private final ComboBox<Locale> languages = new ComboBox<>();
 
-	private Slider readThreadsSlider = createSlider(1, procCount, 1, 1);
-	private Slider processThreadsSlider = createSlider(1, procCount * 2, 1, procCount);
-	private Slider writeThreadsSlider = createSlider(1, procCount, 1, Math.min(procCount, 4));
-	private Slider maxLoadedFilesSlider = createSlider(1, (int) Math.ceil((double) maxMem / 100_000_000L), 1, procCount + procCount / 2);
-	private Button regionSelectionColorPreview = new Button();
-	private Button chunkSelectionColorPreview = new Button();
-	private CheckBox shadeCheckBox = new CheckBox();
-	private CheckBox shadeWaterCheckBox = new CheckBox();
-	private CheckBox debugCheckBox = new CheckBox();
+	private final Slider readThreadsSlider = createSlider(1, processorCount, 1, 1);
+	private final Slider processThreadsSlider = createSlider(1, processorCount * 2, 1, processorCount);
+	private final Slider writeThreadsSlider = createSlider(1, processorCount, 1, Math.min(processorCount, 4));
+	private final Slider maxLoadedFilesSlider = createSlider(1, (int) Math.ceil((double) maxMemory / 100_000_000L), 1, processorCount + processorCount / 2);
+	private final Button regionSelectionColorPreview = new Button();
+	private final Button chunkSelectionColorPreview = new Button();
+	private final CheckBox shadeCheckBox = new CheckBox();
+	private final CheckBox shadeWaterCheckBox = new CheckBox();
+	private final CheckBox debugCheckBox = new CheckBox();
 
 	private Color regionSelectionColor = Config.getRegionSelectionColor().makeJavaFXColor();
 	private Color chunkSelectionColor = Config.getChunkSelectionColor().makeJavaFXColor();
 
-	private ButtonType reset = new ButtonType(Translation.DIALOG_SETTINGS_RESET.toString(), ButtonBar.ButtonData.LEFT);
+	private final ButtonType reset = new ButtonType(Translation.DIALOG_SETTINGS_RESET.toString(), ButtonBar.ButtonData.LEFT);
 
 	public SettingsDialog(Stage primaryStage) {
 		titleProperty().bind(Translation.DIALOG_SETTINGS_TITLE.getProperty());
@@ -98,7 +98,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		languages.setValue(Config.getLocale());
 		languages.setConverter(new StringConverter<Locale>() {
 
-			Map<String, Locale> cache = new HashMap<>();
+			final Map<String, Locale> cache = new HashMap<>();
 
 			@Override
 			public String toString(Locale locale) {
@@ -184,12 +184,12 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 	public static class Result {
 
-		private int readThreads, processThreads, writeThreads, maxLoadedFiles;
-		private Color regionColor, chunkColor;
-		private boolean shadeWater;
-		private boolean shade;
-		private boolean debug;
-		private Locale locale;
+		private final int readThreads, processThreads, writeThreads, maxLoadedFiles;
+		private final Color regionColor, chunkColor;
+		private final boolean shadeWater;
+		private final boolean shade;
+		private final boolean debug;
+		private final Locale locale;
 
 		public Result(Locale locale, int readThreads, int processThreads, int writeThreads, int maxLoadedFiles, Color regionColor, Color chunkColor, boolean shade, boolean shadeWater, boolean debug) {
 			this.locale = locale;

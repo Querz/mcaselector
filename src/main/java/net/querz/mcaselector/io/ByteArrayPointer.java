@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 public class ByteArrayPointer extends InputStream {
 
-	private byte[] data;
+	private final byte[] data;
 	private int pointer = 0;
 
 	public ByteArrayPointer(byte[] data) {

@@ -83,14 +83,14 @@ public class ChunkImporter {
 
 	private static class MCAChunkImporterLoadJob extends LoadDataJob {
 
-		private Point2i target;
-		private Set<Point2i> sources;
-		private File sourceDir;
-		private Point2i offset;
-		private Progress progressChannel;
-		private boolean overwrite;
-		private Set<Point2i> selection;
-		private List<Range> ranges;
+		private final Point2i target;
+		private final Set<Point2i> sources;
+		private final File sourceDir;
+		private final Point2i offset;
+		private final Progress progressChannel;
+		private final boolean overwrite;
+		private final Set<Point2i> selection;
+		private final List<Range> ranges;
 
 		private MCAChunkImporterLoadJob(File targetFile, File sourceDir, Point2i target, Set<Point2i> sources, Point2i offset, Progress progressChannel, boolean overwrite, Set<Point2i> selection, List<Range> ranges) {
 			super(targetFile);
@@ -163,14 +163,14 @@ public class ChunkImporter {
 
 	private static class MCAChunkImporterProcessJob extends ProcessDataJob {
 
-		private File sourceDir;
-		private Point2i target;
-		private Map<Point2i, byte[]> sourceDataMapping;
-		private Point2i offset;
-		private Progress progressChannel;
-		private boolean overwrite;
-		private Set<Point2i> selection;
-		private List<Range> ranges;
+		private final File sourceDir;
+		private final Point2i target;
+		private final Map<Point2i, byte[]> sourceDataMapping;
+		private final Point2i offset;
+		private final Progress progressChannel;
+		private final boolean overwrite;
+		private final Set<Point2i> selection;
+		private final List<Range> ranges;
 
 		private MCAChunkImporterProcessJob(File targetFile, File sourceDir, Point2i target, Map<Point2i, byte[]> sourceDataMapping, byte[] destData, Point2i offset, Progress progressChannel, boolean overwrite, Set<Point2i> selection, List<Range> ranges) {
 			super(targetFile, destData);
@@ -223,7 +223,7 @@ public class ChunkImporter {
 
 	private static class MCAChunkImporterSaveJob extends SaveDataJob<MCAFile> {
 
-		private Progress progressChannel;
+		private final Progress progressChannel;
 
 		private MCAChunkImporterSaveJob(File file, MCAFile data, Progress progressChannel) {
 			super(file, data);

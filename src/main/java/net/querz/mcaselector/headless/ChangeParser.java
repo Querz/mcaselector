@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ChangeParser {
 
-	private StringPointer ptr;
+	private final StringPointer ptr;
 
 	public ChangeParser(String change) {
 		ptr = new StringPointer(change);

@@ -3,7 +3,7 @@ package net.querz.mcaselector.ui;
 public class Color {
 
 	public static final Color BLACK = new Color(0, 0, 0, 1);
-	public static final Color DARKGRAY = new Color(0.6627451f, 0.6627451f, 0.6627451f, 1);
+	public static final Color DARK_GRAY = new Color(0.6627451f, 0.6627451f, 0.6627451f, 1);
 	public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
 	private javafx.scene.paint.Color handle;
@@ -89,10 +89,10 @@ public class Color {
 			if (web != null) {
 				return web;
 			} else {
-				int r = (int)Math.round(this.r * 255.0);
-				int g = (int)Math.round(this.g * 255.0);
-				int b = (int)Math.round(this.b * 255.0);
-				int a = (int)Math.round(this.a * 255.0);
+				int r = (int) Math.round(this.r * 255.0);
+				int g = (int) Math.round(this.g * 255.0);
+				int b = (int) Math.round(this.b * 255.0);
+				int a = (int) Math.round(this.a * 255.0);
 				return String.format("0x%02x%02x%02x%02x" , r, g, b, a);
 			}
 		}

@@ -4,7 +4,7 @@ import java.io.File;
 
 public abstract class Job implements Runnable {
 
-	private File file;
+	private final File file;
 
 	public Job(File file) {
 		this.file = file;

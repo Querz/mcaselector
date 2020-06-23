@@ -15,9 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class Debug {
 
-	private Debug() {}
-
 	private static final Map<ExceptionInfo, ExceptionInfo> lastExceptions = new ConcurrentHashMap<>();
+
+	private Debug() {}
 
 	public static void dump(Object... objects) {
 		if (Config.debug()) {
@@ -260,7 +260,8 @@ public final class Debug {
 
 		@Override
 		public boolean equals(Object ex) {
-			return exception == ((ExceptionInfo) ex).exception
+			return ex instanceof ExceptionInfo
+					&& exception == ((ExceptionInfo) ex).exception
 					&& line == ((ExceptionInfo) ex).line
 					&& file.equals(((ExceptionInfo) ex).file);
 		}

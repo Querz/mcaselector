@@ -1,7 +1,6 @@
 package net.querz.mcaselector.github;
 
 import net.querz.mcaselector.validation.ValidationHelper;
-
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.io.BufferedReader;
@@ -15,10 +14,10 @@ public class VersionChecker {
 
 	private static final String endpointTemplate = "https://api.github.com/repos/%s/%s/releases/latest";
 
-	private ScriptEngine engine;
+	private final ScriptEngine engine;
 
-	private String owner;
-	private String repository;
+	private final String owner;
+	private final String repository;
 
 	public VersionChecker(String owner, String repository) {
 		this.owner = owner;
@@ -78,9 +77,9 @@ public class VersionChecker {
 	}
 
 	public static class VersionData {
-		private int id;
-		private String tag, link;
-		private boolean prerelease;
+		private final int id;
+		private final String tag, link;
+		private final boolean prerelease;
 
 		private VersionData(int id, String tag, String link, boolean prerelease) {
 			this.id = id;

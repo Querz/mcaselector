@@ -14,9 +14,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class SelectionUtil {
+public class SelectionHelper {
 
-	private SelectionUtil() {}
+	private SelectionHelper() {}
 
 	public static void exportSelection(Map<Point2i, Set<Point2i>> chunks, File file) {
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {

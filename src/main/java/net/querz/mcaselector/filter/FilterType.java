@@ -18,9 +18,9 @@ public enum FilterType {
 	ENTITY_AMOUNT("#Entities", EntityAmountFilter.class, Format.NUMBER),
 	TILE_ENTITY_AMOUNT("#TileEntities", TileEntityAmountFilter.class, Format.NUMBER);
 
-	private String string;
-	private Class<? extends Filter<?>> clazz;
-	private Format format;
+	private final String string;
+	private final Class<? extends Filter<?>> clazz;
+	private final Format format;
 
 	FilterType(String string, Class<? extends Filter<?>> clazz, Format format) {
 		this.string = string;

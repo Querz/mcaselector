@@ -5,7 +5,7 @@ public enum Operator {
 	AND("AND"),
 	OR("OR");
 
-	private String string;
+	private final String string;
 
 	Operator(String string) {
 		this.string = string;

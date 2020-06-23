@@ -11,7 +11,7 @@ import net.querz.mcaselector.io.ChunkImporter;
 import net.querz.mcaselector.io.FieldChanger;
 import net.querz.mcaselector.io.SelectionDeleter;
 import net.querz.mcaselector.io.SelectionExporter;
-import net.querz.mcaselector.io.SelectionUtil;
+import net.querz.mcaselector.io.SelectionHelper;
 import net.querz.mcaselector.io.CacheHelper;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.debug.Debug;
@@ -19,7 +19,6 @@ import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -33,7 +32,7 @@ import java.util.regex.Pattern;
 
 public class ParamExecutor {
 
-	private String[] args;
+	private final String[] args;
 
 	public ParamExecutor(String[] args) {
 		this.args = args;
@@ -217,7 +216,7 @@ public class ParamExecutor {
 		}
 		Map<Point2i, Set<Point2i>> selection = null;
 		if (selectionFile != null && selectionFile.exists()) {
-			selection = SelectionUtil.importSelection(selectionFile);
+			selection = SelectionHelper.importSelection(selectionFile);
 		}
 
 		List<Range> ranges = null;
@@ -292,7 +291,7 @@ public class ParamExecutor {
 
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(() -> {
-			SelectionUtil.exportSelection(selection, output);
+			SelectionHelper.exportSelection(selection, output);
 			future.run();
 		});
 
@@ -337,7 +336,7 @@ public class ParamExecutor {
 
 			File input = parseFile(params.get(key), "csv");
 			fileMustExist(input);
-			return SelectionUtil.importSelection(input);
+			return SelectionHelper.importSelection(input);
 		}
 		return null;
 	}

@@ -18,13 +18,13 @@ import java.util.Optional;
 
 public class ColorPicker extends TransparentStage {
 
-	private Slider red = createSlider(0, 255, 1, 0);
-	private Slider green = createSlider(0, 255, 1, 0);
-	private Slider blue = createSlider(0, 255, 1, 0);
-	private Slider opacity = createSlider(0, 255, 1, 0);
-	private StackPane preview = new StackPane();
-	private Button ok = UIFactory.button(Translation.BUTTON_OK);
-	private Button cancel = UIFactory.button(Translation.BUTTON_CANCEL);
+	private final Slider red = createSlider(0, 255, 1, 0);
+	private final Slider green = createSlider(0, 255, 1, 0);
+	private final Slider blue = createSlider(0, 255, 1, 0);
+	private final Slider opacity = createSlider(0, 255, 1, 0);
+	private final StackPane preview = new StackPane();
+	private final Button ok = UIFactory.button(Translation.BUTTON_OK);
+	private final Button cancel = UIFactory.button(Translation.BUTTON_CANCEL);
 	private Color result;
 
 	public ColorPicker(javafx.stage.Window stage, Color color) {

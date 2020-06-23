@@ -20,7 +20,7 @@ public final class FileHelper {
 	public static final String MCA_FILE_PATTERN = "^r\\.-?\\d+\\.-?\\d+\\.mca$";
 	public static final Pattern REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
 
-	private static Map<String, String> lastOpenedDirectoryMap = new HashMap<>();
+	private static final Map<String, String> lastOpenedDirectoryMap = new HashMap<>();
 
 	private FileHelper() {}
 

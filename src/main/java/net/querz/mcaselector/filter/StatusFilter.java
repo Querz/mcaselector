@@ -17,6 +17,7 @@ public class StatusFilter extends TextFilter<String> {
 		validStatus.addAll(Arrays.asList(
 			"empty",
 
+			// old status
 			"base",
 			"carved",
 			"liquid_carved",
@@ -27,6 +28,7 @@ public class StatusFilter extends TextFilter<String> {
 			"fullchunk",
 			"postprocessed",
 
+			// new status
 			"structure_starts",
 			"structure_references",
 			"biomes",

@@ -42,10 +42,10 @@ public class ChunkFilterExporter {
 
 	private static class MCAExportFilterLoadJob extends LoadDataJob {
 
-		private GroupFilter filter;
-		private Map<Point2i, Set<Point2i>> selection;
-		private Progress progressChannel;
-		private File destination;
+		private final GroupFilter filter;
+		private final Map<Point2i, Set<Point2i>> selection;
+		private final Progress progressChannel;
+		private final File destination;
 
 		private MCAExportFilterLoadJob(File file, GroupFilter filter, Map<Point2i, Set<Point2i>> selection, File destination, Progress progressChannel) {
 			super(file);
@@ -93,10 +93,10 @@ public class ChunkFilterExporter {
 
 	private static class MCAExportFilterProcessJob extends ProcessDataJob {
 
-		private Progress progressChannel;
-		private GroupFilter filter;
-		private Set<Point2i> selection;
-		private File destination;
+		private final Progress progressChannel;
+		private final GroupFilter filter;
+		private final Set<Point2i> selection;
+		private final File destination;
 
 		private MCAExportFilterProcessJob(File file, byte[] data, GroupFilter filter, Set<Point2i> selection, File destination, Progress progressChannel) {
 			super(file, data);
@@ -126,8 +126,8 @@ public class ChunkFilterExporter {
 
 	private static class MCAExportFilterSaveJob extends SaveDataJob<MCAFile> {
 
-		private File destination;
-		private Progress progressChannel;
+		private final File destination;
+		private final Progress progressChannel;
 
 		private MCAExportFilterSaveJob(File file, MCAFile data, File destination, Progress progressChannel) {
 			super(file, data);

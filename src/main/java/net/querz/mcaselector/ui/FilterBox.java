@@ -1,6 +1,5 @@
 package net.querz.mcaselector.ui;
 
-import javafx.event.EventTarget;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
@@ -33,7 +32,7 @@ public abstract class FilterBox extends BorderPane {
 
 	private static final DataFormat filterBoxDataFormat = new DataFormat("filterbox-dataformat");
 
-	private Filter<?> filter;
+	private final Filter<?> filter;
 	private FilterBox parent;
 
 	protected Label delete = new Label("", new ImageView(deleteIcon));
@@ -44,7 +43,7 @@ public abstract class FilterBox extends BorderPane {
 	protected GridPane filterOperators = new GridPane();
 
 	private Consumer<FilterBox> updateListener;
-	private boolean root;
+	private final boolean root;
 
 	private static Filter<?> dragDropFilter;
 	private static FilterBox dragDropFilterBox;
@@ -54,7 +53,7 @@ public abstract class FilterBox extends BorderPane {
 	private static FilterBox currentDragDropTarget;
 	private static int currentDragDropTargetDirection;
 
-	private static boolean USE_DRAGVIEW_OFFSET;
+	private static final boolean USE_DRAGVIEW_OFFSET;
 
 	static {
 		String osName = System.getProperty("os.name").toLowerCase();
@@ -185,17 +184,6 @@ public abstract class FilterBox extends BorderPane {
 		currentDragDropTarget = null;
 	}
 
-	private FilterBox getFilterBoxFromTarget(EventTarget t) {
-		if (t instanceof Node) {
-			Node n = (Node) t;
-			while (!(n instanceof FilterBox) && n != null) {
-				n = n.getParent();
-			}
-			return (FilterBox) n;
-		}
-		return null;
-	}
-
 	private void onDragDone(DragEvent e) {
 		Dragboard db = e.getDragboard();
 		if (db.hasContent(filterBoxDataFormat)) {
@@ -249,7 +237,7 @@ public abstract class FilterBox extends BorderPane {
 					((FilterBox) ((GroupFilterBox) currentDragDropTarget).filters.getChildren().get(0)).operator.setVisible(false);
 
 				} else {
-					int targetIndex = ((GroupFilterBox) currentDragDropTarget.parent).filters.getChildren().indexOf(currentDragDropTarget);;
+					int targetIndex = ((GroupFilterBox) currentDragDropTarget.parent).filters.getChildren().indexOf(currentDragDropTarget);
 					if (currentDragDropTargetDirection == 1) {
 						targetIndex++;
 					}

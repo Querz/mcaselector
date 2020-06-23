@@ -33,11 +33,11 @@ import java.util.Set;
 
 public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
-	private List<Field<?>> fields = new ArrayList<>();
-	private ToggleGroup toggleGroup = new ToggleGroup();
-	private RadioButton change = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_CHANGE);
-	private RadioButton force = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_FORCE);
-	private CheckBox selectionOnly = UIFactory.checkbox(Translation.DIALOG_CHANGE_NBT_SELECTION_ONLY);
+	private final List<Field<?>> fields = new ArrayList<>();
+	private final ToggleGroup toggleGroup = new ToggleGroup();
+	private final RadioButton change = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_CHANGE);
+	private final RadioButton force = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_FORCE);
+	private final CheckBox selectionOnly = UIFactory.checkbox(Translation.DIALOG_CHANGE_NBT_SELECTION_ONLY);
 
 	public ChangeNBTDialog(TileMap tileMap, Stage primaryStage) {
 		titleProperty().bind(Translation.DIALOG_CHANGE_NBT_TITLE.getProperty());
@@ -131,15 +131,15 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 			getStyleClass().add("field-view");
 		}
 
-		public void addField(Field field) {
+		public void addField(Field<?> field) {
 			getChildren().add(new FieldCell(field, getChildren().size()));
 		}
 	}
 
 	private class FieldCell extends HBox {
 
-		private Field<?> value;
-		private TextField textField;
+		private final Field<?> value;
+		private final TextField textField;
 
 		public FieldCell(Field<?> value, int index) {
 			getStyleClass().add("field-cell");
@@ -177,9 +177,9 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 	public static class Result {
 
-		private boolean force;
-		private List<Field<?>> fields;
-		private boolean selectionOnly;
+		private final boolean force;
+		private final List<Field<?>> fields;
+		private final boolean selectionOnly;
 
 		public Result(List<Field<?>> fields, boolean force, boolean selectionOnly) {
 			this.force = force;
