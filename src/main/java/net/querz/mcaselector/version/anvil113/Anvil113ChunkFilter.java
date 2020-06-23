@@ -3,6 +3,7 @@ package net.querz.mcaselector.version.anvil113;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.Tag;
 import java.util.Arrays;
 import static net.querz.mcaselector.validation.ValidationHelper.*;
 
@@ -10,7 +11,15 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchBlockNames(CompoundTag data, String... names) {
-		ListTag<CompoundTag> sections = withDefault(() -> data.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
+		CompoundTag level = withDefault(() -> data.getCompoundTag("Level"), null);
+		if (level == null) {
+			return false;
+		}
+		Tag<?> rawSections = level.get("Sections");
+		if (rawSections == null) {
+			return false;
+		}
+		ListTag<CompoundTag> sections = catchClassCastException(((ListTag<?>) rawSections)::asCompoundTagList);
 		if (sections == null) {
 			return false;
 		}
@@ -18,7 +27,11 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		nameLoop:
 		for (String name : names) {
 			for (CompoundTag t : sections) {
-				ListTag<CompoundTag> palette = withDefault(() -> t.getListTag("Palette").asCompoundTagList(), null);
+				ListTag<?> rawPalette = withDefault(() -> t.getListTag("Palette"), null);
+				if (rawPalette == null) {
+					continue;
+				}
+				ListTag<CompoundTag> palette = catchClassCastException(rawPalette::asCompoundTagList);
 				if (palette == null) {
 					continue;
 				}
