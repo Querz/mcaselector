@@ -73,13 +73,17 @@ public class ImagePool {
 		} else {
 			Debug.dump("image does not exist: " + cachedImgFile.getAbsolutePath());
 
-			RegionImageGenerator.generate(tile, i -> {
+			RegionImageGenerator.generate(tile, Config.getWorldUUID(), (i, u) -> {
 				if (i == null) {
 					noMCA.add(tile.location);
 					return;
 				}
-				push(scale, tile.location, i);
-				Platform.runLater(() -> tileMap.update());
+				synchronized (Config.getWorldUUID()) {
+					if (u.equals(Config.getWorldUUID())) {
+						push(scale, tile.location, i);
+						Platform.runLater(() -> tileMap.update());
+					}
+				}
 			}, () -> (float) scale, false, null);
 		}
 	}

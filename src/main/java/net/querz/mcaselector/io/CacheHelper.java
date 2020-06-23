@@ -1,18 +1,14 @@
 package net.querz.mcaselector.io;
 
-import javafx.scene.control.Label;
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.github.VersionChecker;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.progress.Progress;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -40,7 +36,7 @@ public final class CacheHelper {
 				int z = Integer.parseInt(m.group("regionZ"));
 				boolean scaleOnly = zoomLevel != null;
 				float zoomLevelSupplier = scaleOnly ? zoomLevel : 1;
-				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), i -> {}, () -> zoomLevelSupplier, scaleOnly, progressChannel);
+				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), null, (i, u) -> {}, () -> zoomLevelSupplier, scaleOnly, progressChannel);
 			}
 		}
 	}

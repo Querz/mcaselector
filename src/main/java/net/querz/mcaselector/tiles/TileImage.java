@@ -21,6 +21,8 @@ import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.version.VersionController;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -77,7 +79,7 @@ public final class TileImage {
 		tile.markedChunksImage = wImage;
 	}
 
-	public static Image generateImage(Tile tile, Consumer<Image> callback, Supplier<Float> scaleSupplier, byte[] rawData) {
+	public static Image generateImage(Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, byte[] rawData) {
 		if (tile.loaded) {
 			Debug.dump("region at " + tile.location + " already loaded");
 			return tile.image;
@@ -111,7 +113,7 @@ public final class TileImage {
 			tile.image = scaledImage;
 			tile.loaded = true;
 
-			callback.accept(scaledImage);
+			callback.accept(scaledImage, world);
 
 			Debug.dumpf("took %s to generate image of %s", t, file.getName());
 		}

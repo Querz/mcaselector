@@ -44,6 +44,7 @@ public final class Config {
 	public static final boolean DEFAULT_DEBUG = false;
 
 	private static File worldDir = null;
+	private static UUID worldUUID = null;
 	private static File baseCacheDir = DEFAULT_BASE_CACHE_DIR;
 	private static File cacheDir = null;
 
@@ -71,8 +72,16 @@ public final class Config {
 
 	public static void setWorldDir(File worldDir) {
 		Config.worldDir = worldDir;
-		UUID uuid = UUID.nameUUIDFromBytes(worldDir.getAbsolutePath().getBytes());
-		cacheDir = new File(baseCacheDir, uuid.toString().replace("-", ""));
+		worldUUID = UUID.nameUUIDFromBytes(worldDir.getAbsolutePath().getBytes());
+		cacheDir = new File(baseCacheDir, worldUUID.toString().replace("-", ""));
+	}
+
+	public static File getCacheDirForWorldUUID(UUID world, int zoomLevel) {
+		return new File(baseCacheDir, world.toString().replace("-", "") + "/" + zoomLevel);
+	}
+
+	public static UUID getWorldUUID() {
+		return worldUUID;
 	}
 
 	public static File getCacheDir() {

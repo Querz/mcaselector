@@ -14,7 +14,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -24,9 +26,9 @@ public class RegionImageGenerator {
 
 	private RegionImageGenerator() {}
 
-	public static void generate(Tile tile, Consumer<Image> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
+	public static void generate(Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
 		setLoading(tile, true);
-		MCAFilePipe.addJob(new MCAImageLoadJob(tile.getMCAFile(), tile, callback, scaleSupplier, scaleOnly, progressChannel));
+		MCAFilePipe.addJob(new MCAImageLoadJob(tile.getMCAFile(), tile, world, callback, scaleSupplier, scaleOnly, progressChannel));
 	}
 
 	public static boolean isLoading(Tile tile) {
@@ -45,14 +47,16 @@ public class RegionImageGenerator {
 	public static class MCAImageLoadJob extends LoadDataJob {
 
 		private Tile tile;
-		private Consumer<Image> callback;
+		private UUID world;
+		private BiConsumer<Image, UUID> callback;
 		private Supplier<Float> scaleSupplier;
 		private boolean scaleOnly;
 		private Progress progressChannel;
 
-		private MCAImageLoadJob(File file, Tile tile, Consumer<Image> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
+		private MCAImageLoadJob(File file, Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
 			super(file);
 			this.tile = tile;
+			this.world = world;
 			this.callback = callback;
 			this.scaleSupplier = scaleSupplier;
 			this.scaleOnly = scaleOnly;
@@ -64,12 +68,12 @@ public class RegionImageGenerator {
 			if (!tile.isLoaded()) {
 				byte[] data = load();
 				if (data != null) {
-					MCAFilePipe.executeProcessData(new MCAImageProcessJob(getFile(), data, tile, callback, scaleSupplier, scaleOnly, progressChannel));
+					MCAFilePipe.executeProcessData(new MCAImageProcessJob(getFile(), data, tile, world, callback, scaleSupplier, scaleOnly, progressChannel));
 					return;
 				}
 			}
 			setLoading(tile, false);
-			callback.accept(null);
+			callback.accept(null, world);
 			if (progressChannel != null) {
 				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 			}
@@ -83,14 +87,16 @@ public class RegionImageGenerator {
 	private static class MCAImageProcessJob extends ProcessDataJob {
 
 		private Tile tile;
-		private Consumer<Image> callback;
+		private UUID world;
+		private BiConsumer<Image, UUID> callback;
 		private Supplier<Float> scaleSupplier;
 		private boolean scaleOnly;
 		private Progress progressChannel;
 
-		private MCAImageProcessJob(File file, byte[] data, Tile tile, Consumer<Image> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
+		private MCAImageProcessJob(File file, byte[] data, Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
 			super(file, data);
 			this.tile = tile;
+			this.world = world;
 			this.callback = callback;
 			this.scaleSupplier = scaleSupplier;
 			this.scaleOnly = scaleOnly;
@@ -100,9 +106,9 @@ public class RegionImageGenerator {
 		@Override
 		public void execute() {
 			Debug.dumpf("generating image for %s", getFile().getAbsolutePath());
-			Image image = TileImage.generateImage(tile, callback, scaleSupplier, getData());
+			Image image = TileImage.generateImage(tile, world, callback, scaleSupplier, getData());
 			if (image != null) {
-				MCAFilePipe.executeSaveData(new MCAImageSaveCacheJob(getFile(), image, tile, scaleSupplier, scaleOnly, progressChannel));
+				MCAFilePipe.executeSaveData(new MCAImageSaveCacheJob(getFile(), image, tile, world, scaleSupplier, scaleOnly, progressChannel));
 			} else {
 				setLoading(tile, false);
 				if (progressChannel != null) {
@@ -120,13 +126,15 @@ public class RegionImageGenerator {
 	private static class MCAImageSaveCacheJob extends SaveDataJob<Image> {
 
 		private Tile tile;
+		private UUID world;
 		private Supplier<Float> scaleSupplier;
 		private boolean scaleOnly;
 		private Progress progressChannel;
 
-		private MCAImageSaveCacheJob(File file, Image data, Tile tile, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
+		private MCAImageSaveCacheJob(File file, Image data, Tile tile, UUID world, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
 			super(file, data);
 			this.tile = tile;
+			this.world = world;
 			this.scaleSupplier = scaleSupplier;
 			this.scaleOnly = scaleOnly;
 			this.progressChannel = progressChannel;
@@ -141,7 +149,7 @@ public class RegionImageGenerator {
 				BufferedImage img = SwingFXUtils.fromFXImage(getData(), null);
 				if (scaleOnly) {
 					int zoomLevel = Tile.getZoomLevel(scaleSupplier.get());
-					File cacheFile = FileHelper.createPNGFilePath(new File(Config.getCacheDir().getAbsolutePath(), zoomLevel + ""), tile.getLocation());
+					File cacheFile = FileHelper.createPNGFilePath(Config.getCacheDirForWorldUUID(world, zoomLevel), tile.getLocation());
 					if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
 						Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
 					}
@@ -152,7 +160,7 @@ public class RegionImageGenerator {
 
 				} else {
 					for (int i = Config.getMinZoomLevel(); i <= Config.getMaxZoomLevel(); i *= 2) {
-						File cacheFile = FileHelper.createPNGFilePath(new File(Config.getCacheDir().getAbsolutePath(), i + ""), tile.getLocation());
+						File cacheFile = FileHelper.createPNGFilePath(Config.getCacheDirForWorldUUID(world, i), tile.getLocation());
 						if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
 							Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
 						}
