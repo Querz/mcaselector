@@ -47,10 +47,10 @@ public class Anvil115ChunkDataProcessor extends Anvil113ChunkDataProcessor {
 	}
 
 	private void copySectionBiomes(int[] sourceBiomes, int[] destinationBiomes, int sectionY) {
-		for (int x = 0; x < 4; x++) {
-			for (int y = 0; y < 4; y++) {
+		for (int y = 0; y < 4; y++) {
+			int biomeY = sectionY * 4 + y;
+			for (int x = 0; x < 4; x++) {
 				for (int z = 0; z < 4; z++) {
-					int biomeY = sectionY * 4 + y;
 					setBiomeAt(destinationBiomes, x, biomeY, z, getBiomeAt(sourceBiomes, x, biomeY, z));
 				}
 			}
@@ -75,12 +75,24 @@ public class Anvil115ChunkDataProcessor extends Anvil113ChunkDataProcessor {
 		return biomes[getBiomeIndex(biomeX, biomeY, biomeZ)];
 	}
 
+	@Override
+	protected int getBiomeAtBlock(int[] biomes, int biomeX, int biomeY, int biomeZ) {
+		if (biomes == null || biomes.length != 1024) {
+			return -1;
+		}
+		return biomes[getBiomeIndex(biomeX / 4, biomeY / 4, biomeZ / 4)];
+	}
+
 	private void setBiomeAt(int[] biomes, int biomeX, int biomeY, int biomeZ, int biomeID) {
 		if (biomes == null || biomes.length != 1024) {
 			biomes = new int[1024];
 			Arrays.fill(biomes, -1);
 		}
 		biomes[getBiomeIndex(biomeX, biomeY, biomeZ)] = biomeID;
+	}
+
+	private int getBiomeIndex(int x, int y, int z) {
+		return y * 16 + z * 4 + x;
 	}
 
 	@Override

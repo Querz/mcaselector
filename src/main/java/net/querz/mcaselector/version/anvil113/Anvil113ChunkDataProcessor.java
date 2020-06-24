@@ -34,15 +34,13 @@ public class Anvil113ChunkDataProcessor extends Anvil112ChunkDataProcessor {
 
 		sections.sort(this::filterSections);
 
+		int[] biomes = withDefault(() -> level.getIntArray("Biomes"), null);
+
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
 
-				int[] biomes = withDefault(() -> level.getIntArray("Biomes"), null);
-				int biome = -1;
-				if (biomes != null && biomes.length == 1024) {
-					biome = biomes[getBiomeIndex(cx / 4, 63, cz / 4)];
-				}
+				int biome = getBiomeAtBlock(biomes, cx, 255, cz);
 
 				//loop over sections
 				boolean waterDepth = false;
@@ -115,15 +113,13 @@ public class Anvil113ChunkDataProcessor extends Anvil112ChunkDataProcessor {
 	}
 
 	protected boolean isIgnoredInNether(int biome, CompoundTag blockData, int height) {
-		// all nether biomes: nether/nether_wastes, soul_sand_valley, crimson_forest, warped_forest, basalt_deltas
-		if (biome == 8 || biome == 170 || biome == 171 || biome == 172 || biome == 173) {
+		if (biome == 8) {
 			switch (withDefault(() -> blockData.getString("Name"), "")) {
 			case "minecraft:bedrock":
 			case "minecraft:flowing_lava":
 			case "minecraft:lava":
 			case "minecraft:netherrack":
 			case "minecraft:nether_quartz_ore":
-			case "minecraft:basalt":
 				return height > 75;
 			}
 		}
@@ -148,8 +144,15 @@ public class Anvil113ChunkDataProcessor extends Anvil112ChunkDataProcessor {
 		return y * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + z * Tile.CHUNK_SIZE + x;
 	}
 
-	protected int getBiomeIndex(int x, int y, int z) {
-		return y * 16 + z * 4 + x;
+	private int getBiomeIndex(int x, int z) {
+		return z * Tile.CHUNK_SIZE + x;
+	}
+
+	protected int getBiomeAtBlock(int[] biomes, int biomeX, int biomeY, int biomeZ) {
+		if (biomes == null || biomes.length != 256) {
+			return -1;
+		}
+		return biomes[getBiomeIndex(biomeX, biomeZ)];
 	}
 
 	protected int getPaletteIndex(int index, long[] blockStates, int bits, int clean) {
