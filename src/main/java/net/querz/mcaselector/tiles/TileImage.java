@@ -6,11 +6,13 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
+import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.MCAChunkData;
 import net.querz.mcaselector.io.MCAFile;
 import net.querz.mcaselector.point.Point2f;
@@ -26,6 +28,14 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public final class TileImage {
+
+	private static final int[] corruptedChunkOverlay = new int[256];
+
+	static {
+		Image corrupted = FileHelper.getIconFromResources("img/corrupted");
+		PixelReader pr = corrupted.getPixelReader();
+		pr.getPixels(0, 0, 16, 16, PixelFormat.getIntArgbPreInstance(), corruptedChunkOverlay, 0, 16);
+	}
 
 	private TileImage() {}
 
@@ -177,7 +187,17 @@ public final class TileImage {
 					Config.shade() && Config.shadeWater()
 			);
 		} catch (Exception ex) {
-			Debug.dumpException("failed to draw chunk " + new Point2i(x, z), ex);
+			Debug.dumpException("failed to draw chunk " + chunkData.getAbsoluteLocation(), ex);
+
+			for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
+				for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+					int srcIndex = cz * Tile.CHUNK_SIZE + cx;
+					int dstIndex = (z + cz) * Tile.SIZE + (x + cx);
+					pixelBuffer[dstIndex] = corruptedChunkOverlay[srcIndex];
+					terrainHeights[dstIndex] = 64;
+					waterHeights[dstIndex] = 64;
+				}
+			}
 		}
 	}
 
