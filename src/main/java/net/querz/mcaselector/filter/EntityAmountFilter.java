@@ -1,5 +1,9 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.LongArrayTag;
+import net.querz.nbt.tag.Tag;
+
 public class EntityAmountFilter extends IntFilter {
 
 	public EntityAmountFilter() {
@@ -12,7 +16,11 @@ public class EntityAmountFilter extends IntFilter {
 
 	@Override
 	protected Integer getNumber(FilterData data) {
-		return data.getChunk().getCompoundTag("Level").getListTag("Entities").size();
+		Tag<?> rawEntities = data.getChunk().getCompoundTag("Level").get("Entities");
+		if (rawEntities == null || rawEntities.getID() == LongArrayTag.ID) {
+			return 0;
+		}
+		return ((ListTag<?>) rawEntities).asCompoundTagList().size();
 	}
 
 	@Override

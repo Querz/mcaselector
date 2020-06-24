@@ -4,6 +4,9 @@ import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.LongArrayTag;
+import net.querz.nbt.tag.Tag;
+
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
@@ -36,7 +39,11 @@ public class DeleteSectionsField extends Field<List<Range>> {
 
 	@Override
 	public void change(CompoundTag root) {
-		ListTag<CompoundTag> sections = root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList();
+		Tag<?> rawSections = root.getCompoundTag("Level").get("Sections");
+		if (rawSections == null || rawSections.getID() == LongArrayTag.ID) {
+			return;
+		}
+		ListTag<CompoundTag> sections = ((ListTag<?>) rawSections).asCompoundTagList();
 		for (int i = 0; i < sections.size(); i++) {
 			CompoundTag section = sections.get(i);
 			for (Range range : getNewValue()) {

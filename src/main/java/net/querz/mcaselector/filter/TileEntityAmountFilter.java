@@ -1,5 +1,9 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.LongArrayTag;
+import net.querz.nbt.tag.Tag;
+
 public class TileEntityAmountFilter extends IntFilter {
 
 	public TileEntityAmountFilter() {
@@ -12,7 +16,11 @@ public class TileEntityAmountFilter extends IntFilter {
 
 	@Override
 	protected Integer getNumber(FilterData data) {
-		return data.getChunk().getCompoundTag("Level").getListTag("TileEntities").size();
+		Tag<?> rawTileEntities = data.getChunk().getCompoundTag("Level").get("TileEntities");
+		if (rawTileEntities == null || rawTileEntities.getID() == LongArrayTag.ID) {
+			return 0;
+		}
+		return ((ListTag<?>) rawTileEntities).asCompoundTagList().size();
 	}
 
 	@Override

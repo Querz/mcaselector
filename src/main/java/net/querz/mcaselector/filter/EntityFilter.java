@@ -3,6 +3,8 @@ package net.querz.mcaselector.filter;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.LongArrayTag;
+import net.querz.nbt.tag.Tag;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,6 +16,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class EntityFilter extends TextFilter<List<String>> {
 
@@ -43,11 +46,11 @@ public class EntityFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean contains(List<String> value, FilterData data) {
-		ListTag<CompoundTag> entities = data
-				.getChunk()
-				.getCompoundTag("Level")
-				.getListTag("Entities")
-				.asCompoundTagList();
+		Tag<?> rawEntities = data.getChunk().getCompoundTag("Level").get("Entities");
+		if (rawEntities == null || rawEntities.getID() == LongArrayTag.ID) {
+			return false;
+		}
+		ListTag<CompoundTag> entities = ((ListTag<?>) rawEntities).asCompoundTagList();
 		nameLoop: for (String name : getFilterValue()) {
 			for (CompoundTag entity : entities) {
 				String id = entity.getString("id");

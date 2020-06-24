@@ -1,6 +1,9 @@
 package net.querz.mcaselector.changer;
 
 import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.LongArrayTag;
+import net.querz.nbt.tag.Tag;
 
 public class DeleteEntitiesField extends Field<Boolean> {
 
@@ -24,7 +27,11 @@ public class DeleteEntitiesField extends Field<Boolean> {
 
 	@Override
 	public void change(CompoundTag root) {
-		root.getCompoundTag("Level").getListTag("Entities").clear();
+		Tag<?> rawEntities = root.getCompoundTag("Level").get("Entities");
+		if (rawEntities == null || rawEntities.getID() == LongArrayTag.ID) {
+			return;
+		}
+		((ListTag<?>) rawEntities).asCompoundTagList().clear();
 	}
 
 	@Override
