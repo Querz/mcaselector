@@ -39,12 +39,12 @@ public abstract class LongFilter extends NumberFilter<Long> {
 
 	@Override
 	boolean isEqual(Long a, Long b) {
-		return a.intValue() == b.intValue();
+		return a.longValue() == b.longValue();
 	}
 
 	@Override
 	boolean isNotEqual(Long a, Long b) {
-		return a.intValue() != b.intValue();
+		return a.longValue() != b.longValue();
 	}
 
 	@Override

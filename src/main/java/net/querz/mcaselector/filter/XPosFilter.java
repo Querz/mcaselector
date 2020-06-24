@@ -1,7 +1,6 @@
 package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.point.Point2i;
-import net.querz.nbt.tag.CompoundTag;
 
 public class XPosFilter extends IntFilter implements RegionMatcher {
 
@@ -15,7 +14,7 @@ public class XPosFilter extends IntFilter implements RegionMatcher {
 
 	@Override
 	protected Integer getNumber(FilterData data) {
-		return ((CompoundTag) data.getChunk().get("Level")).getInt("xPos");
+		return data.getChunk().getCompoundTag("Level").getInt("xPos");
 	}
 
 	@Override

@@ -172,7 +172,7 @@ public class MCAChunkData {
 					field.change(data);
 				}
 			} catch (Exception ex) {
-				Debug.dumpf("error trying to update field: %s", ex.getMessage());
+				Debug.dumpf("failed to change field %s in chunk %s: %s", field.getType(), absoluteLocation, ex);
 			}
 		}
 	}

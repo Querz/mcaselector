@@ -5,6 +5,7 @@ import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.anvil112.Anvil112ChunkDataProcessor;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.LongArrayTag;
 import net.querz.nbt.tag.Tag;
 import static net.querz.mcaselector.validation.ValidationHelper.*;
 
@@ -23,7 +24,7 @@ public class Anvil113ChunkDataProcessor extends Anvil112ChunkDataProcessor {
 		}
 
 		Tag<?> rawSections = level.get("Sections");
-		if (rawSections == null || rawSections.getID() != ListTag.ID) {
+		if (rawSections == null || rawSections.getID() == LongArrayTag.ID) {
 			return;
 		}
 

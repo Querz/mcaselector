@@ -3,6 +3,7 @@ package net.querz.mcaselector.version.anvil113;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.LongArrayTag;
 import net.querz.nbt.tag.Tag;
 import java.util.Arrays;
 import static net.querz.mcaselector.validation.ValidationHelper.*;
@@ -16,7 +17,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 			return false;
 		}
 		Tag<?> rawSections = level.get("Sections");
-		if (rawSections == null) {
+		if (rawSections == null || rawSections.getID() == LongArrayTag.ID) {
 			return false;
 		}
 		ListTag<CompoundTag> sections = catchClassCastException(((ListTag<?>) rawSections)::asCompoundTagList);
