@@ -391,7 +391,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			if (markedChunks.size() == 0) {
 				continue;
 			}
-			chunks.put(entry.getKey(), markedChunks);
+			// cloning marked chunks for clipboard copy-pasting in the same instance
+			chunks.put(entry.getKey(), new HashSet<>(markedChunks));
 		}
 		return chunks;
 	}

@@ -8,8 +8,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 
 public class TileMapSelection implements Transferable, ClipboardOwner {
 
-	public static final DataFlavor selectionDataFlavor = new DataFlavor(Selection.class, "MCA Selector selection");
-	private Selection selection;
+	public static final DataFlavor SELECTION_DATA_FLAVOR = new DataFlavor(Selection.class, "MCA Selector selection");
+	private final Selection selection;
 
 	public TileMapSelection(Selection selection) {
 		this.selection = selection;
@@ -17,12 +17,12 @@ public class TileMapSelection implements Transferable, ClipboardOwner {
 
 	@Override
 	public DataFlavor[] getTransferDataFlavors() {
-		return new DataFlavor[] {selectionDataFlavor};
+		return new DataFlavor[] {SELECTION_DATA_FLAVOR};
 	}
 
 	@Override
 	public boolean isDataFlavorSupported(DataFlavor flavor) {
-		return selectionDataFlavor.equals(flavor);
+		return SELECTION_DATA_FLAVOR.equals(flavor);
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class TileMapSelection implements Transferable, ClipboardOwner {
 		if (isDataFlavorSupported(flavor)) {
 			return selection;
 		}
-		throw new UnsupportedFlavorException(selectionDataFlavor);
+		throw new UnsupportedFlavorException(SELECTION_DATA_FLAVOR);
 	}
 
 	@Override

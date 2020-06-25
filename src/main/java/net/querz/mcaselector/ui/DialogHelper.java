@@ -290,7 +290,7 @@ public class DialogHelper {
 
 		Arrays.stream(flavors).forEach(System.out::println);
 
-		if (flavors.length == 1 && flavors[0].equals(TileMapSelection.selectionDataFlavor)) {
+		if (flavors.length == 1 && flavors[0].equals(TileMapSelection.SELECTION_DATA_FLAVOR)) {
 			try {
 				Object data = content.getTransferData(flavors[0]);
 
