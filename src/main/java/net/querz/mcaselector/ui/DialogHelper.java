@@ -7,16 +7,25 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.*;
+import net.querz.mcaselector.tiles.Selection;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.tiles.TileMapSelection;
+
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -262,6 +271,40 @@ public class DialogHelper {
 
 			Platform.runLater(() -> CacheHelper.clearSelectionCache(tileMap));
 		});
+	}
+
+	public static void copySelectedChunks(TileMap tileMap) {
+		System.out.println("COPY");
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		Selection selection = new Selection(tileMap.getMarkedChunks(), Config.getWorldDir());
+		TileMapSelection tileMapSelection = new TileMapSelection(selection);
+		clipboard.setContents(tileMapSelection, tileMap);
+
+		System.out.println(tileMap.getMarkedChunks());
+	}
+
+	public static void pasteSelectedChunks(TileMap tileMap) {
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		Transferable content = clipboard.getContents(tileMap);
+		DataFlavor[] flavors = content.getTransferDataFlavors();
+
+		Arrays.stream(flavors).forEach(System.out::println);
+
+		if (flavors.length == 1 && flavors[0].equals(TileMapSelection.selectionDataFlavor)) {
+			try {
+				Object data = content.getTransferData(flavors[0]);
+
+				Selection selection = (Selection) data;
+
+				System.out.println(selection.getSelectionData());
+
+				tileMap.setMarkedChunks(selection.getSelectionData());
+				tileMap.update();
+
+			} catch (UnsupportedFlavorException | IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private static MCAFile loadMCAFileOrCreateEmpty(File file) {

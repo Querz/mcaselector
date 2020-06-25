@@ -13,15 +13,10 @@ import net.querz.mcaselector.key.KeyActivator;
 import net.querz.mcaselector.point.Point2f;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
-import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -135,39 +130,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			keyActivator.pressActionKey(event.getCode());
 		} else {
 			keyActivator.pressKey(event.getCode());
-
-			if (event.isShortcutDown() && event.getCode() == KeyCode.C) {
-				System.out.println("COPY");
-				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-				Selection selection = new Selection(getMarkedChunks(), Config.getWorldDir());
-				TileMapSelection tileMapSelection = new TileMapSelection(selection);
-				clipboard.setContents(tileMapSelection, this);
-
-				System.out.println(getMarkedChunks());
-
-			} else if (event.isShortcutDown() && event.getCode() == KeyCode.V) {
-				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-				Transferable content = clipboard.getContents(this);
-				DataFlavor[] flavors = content.getTransferDataFlavors();
-
-				Arrays.stream(flavors).forEach(System.out::println);
-
-				if (flavors.length == 1 && flavors[0].equals(TileMapSelection.selectionDataFlavor)) {
-					try {
-						Object data = content.getTransferData(flavors[0]);
-
-						Selection selection = (Selection) data;
-
-						System.out.println(selection.getSelectionData());
-
-						setMarkedChunks(selection.getSelectionData());
-						update();
-
-					} catch (UnsupportedFlavorException | IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
 		}
 	}
 

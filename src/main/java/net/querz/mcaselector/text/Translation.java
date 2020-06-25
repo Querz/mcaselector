@@ -42,6 +42,8 @@ public enum Translation {
 	MENU_VIEW_CLEAR_CACHE("menu.view.clear_cache"),
 	MENU_VIEW_CLEAR_ALL_CACHE("menu.view.clear_all_cache"),
 	MENU_SELECTION_CLEAR("menu.selection.clear"),
+	MENU_SELECTION_COPY_CHUNKS("menu.selection.copy_chunks"),
+	MENU_SELECTION_PASTE_CHUNKS("menu.selection.paste_chunks"),
 	MENU_SELECTION_EXPORT_CHUNKS("menu.selection.export_chunks"),
 	MENU_SELECTION_DELETE_CHUNKS("menu.selection.delete_chunks"),
 	MENU_SELECTION_IMPORT_SELECTION("menu.selection.import_selection"),
