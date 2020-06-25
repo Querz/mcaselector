@@ -1,8 +1,9 @@
 package net.querz.mcaselector.point;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Point2i implements Cloneable {
+public class Point2i implements Cloneable, Serializable {
 
 	private int x, z;
 
