@@ -1,12 +1,16 @@
 package net.querz.mcaselector.tiles;
 
 import javafx.application.Platform;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.RegionImageGenerator;
+import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.key.KeyActivator;
@@ -63,6 +67,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private final ImagePool imgPool;
 
+	private Map<Point2i, Set<Point2i>> pastedChunks;
+	private Map<Point2i, Image> pastedChunksCache;
+
 	public TileMap(Window window, int width, int height) {
 		super(width, height);
 		this.window = window;
@@ -108,6 +115,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			if (Tile.getZoomLevel(oldScale) != Tile.getZoomLevel(scale)) {
 				Debug.dumpf("zoom level changed from %d to %d", Tile.getZoomLevel(oldScale), Tile.getZoomLevel(scale));
 				unloadTiles();
+				if (pastedChunksCache != null) {
+					pastedChunksCache.clear();
+				}
 			}
 			update();
 		}
@@ -138,6 +148,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			zoomFactor(1.05);
 		} else if ("-".equals(event.getCharacter())) {
 			zoomFactor(0.95);
+		} else if (event.getCode() == KeyCode.ESCAPE) {
+			pastedChunks = null;
+			update();
 		}
 	}
 
@@ -267,8 +280,14 @@ public class TileMap extends Canvas implements ClipboardOwner {
 						tiles.remove(tile.getLocation());
 					}
 				}
+
+				// also remove from pastedChunksCache
+				if (pastedChunksCache != null) {
+					pastedChunksCache.remove(tile.location);
+				}
 			}
 		}
+
 		draw(context);
 		totalUpdates++;
 		Debug.dumpfToConsoleOnly("map update #%d: %s ", totalUpdates, t);
@@ -441,6 +460,15 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 	}
 
+	public void setPastedChunks(Map<Point2i, Set<Point2i>> chunks) {
+		pastedChunks = chunks;
+		if (chunks == null) {
+			pastedChunksCache = null;
+		} else {
+			pastedChunksCache = new HashMap<>();
+		}
+	}
+
 	private Point2i getMouseBlock(double x, double z) {
 		int blockX = (int) (offset.getX() + x * scale);
 		int blockZ = (int) (offset.getY() + z * scale);
@@ -532,6 +560,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
 
 			TileImage.draw(tile, ctx, scale, p);
+
+			if (pastedChunks != null) {
+				drawPastedChunks(ctx, region, p);
+			}
 		});
 
 		if (showRegionGrid) {
@@ -541,6 +573,44 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		if (showChunkGrid && scale <= CHUNK_GRID_SCALE) {
 			drawChunkGrid(ctx);
 		}
+	}
+
+	private void drawPastedChunks(GraphicsContext ctx, Point2i region, Point2f pos) {
+		if (!pastedChunks.containsKey(region)) {
+			return;
+		}
+
+		Image image;
+
+		if (!pastedChunksCache.containsKey(region)) {
+			int zoomLevel = getZoomLevel();
+			WritableImage wImage = new WritableImage(Tile.SIZE / zoomLevel, Tile.SIZE / zoomLevel);
+
+			Canvas canvas = new Canvas(Tile.SIZE / (float) zoomLevel, Tile.SIZE / (float) zoomLevel);
+			GraphicsContext ctx2 = canvas.getGraphicsContext2D();
+			ctx2.setFill(Config.getPasteChunksColor().makeJavaFXColor());
+
+			Set<Point2i> chunks = pastedChunks.get(region);
+			if (chunks == null) {
+				ctx2.fillRect(0, 0, (float) Tile.SIZE / zoomLevel, (float) Tile.SIZE / zoomLevel);
+			} else {
+				for (Point2i chunk : chunks) {
+					Point2i regionChunk = chunk.and(0x1F);
+					ctx2.fillRect(regionChunk.getX() * Tile.CHUNK_SIZE / (float) zoomLevel, regionChunk.getY() * Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel);
+				}
+			}
+
+			SnapshotParameters params = new SnapshotParameters();
+			params.setFill(Color.TRANSPARENT.makeJavaFXColor());
+
+			canvas.snapshot(params, wImage);
+
+			image = wImage;
+		} else {
+			image = pastedChunksCache.get(region);
+		}
+
+		ctx.drawImage(image, pos.getX(), pos.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 	}
 
 	private void drawRegionGrid(GraphicsContext ctx) {

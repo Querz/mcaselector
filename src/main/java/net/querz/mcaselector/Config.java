@@ -34,6 +34,7 @@ public final class Config {
 
 	public static final Color DEFAULT_REGION_SELECTION_COLOR = new Color(1, 0, 0, 0.8);
 	public static final Color DEFAULT_CHUNK_SELECTION_COLOR = new Color(1, 0.45, 0, 0.8);
+	public static final Color DEFAULT_PASTE_CHUNKS_COLOR = new Color(0, 1, 0, 0.8);
 	public static final Locale DEFAULT_LOCALE = Locale.UK;
 	public static final int DEFAULT_LOAD_THREADS = 1;
 	public static final int DEFAULT_PROCESS_THREADS = Runtime.getRuntime().availableProcessors();
@@ -51,6 +52,7 @@ public final class Config {
 	private static Locale locale = DEFAULT_LOCALE;
 	private static Color regionSelectionColor = DEFAULT_REGION_SELECTION_COLOR;
 	private static Color chunkSelectionColor = DEFAULT_CHUNK_SELECTION_COLOR;
+	private static Color pasteChunksColor = DEFAULT_PASTE_CHUNKS_COLOR;
 	private static int loadThreads = DEFAULT_LOAD_THREADS;
 	private static int processThreads = DEFAULT_PROCESS_THREADS;
 	private static int writeThreads = DEFAULT_WRITE_THREADS;
@@ -242,6 +244,14 @@ public final class Config {
 
 	public static void setChunkSelectionColor(Color chunkSelectionColor) {
 		Config.chunkSelectionColor = chunkSelectionColor;
+	}
+
+	public static Color getPasteChunksColor() {
+		return pasteChunksColor;
+	}
+
+	public static void setPasteChunksColor(Color pasteChunksColor) {
+		Config.pasteChunksColor = pasteChunksColor;
 	}
 
 	public static int getLoadThreads() {

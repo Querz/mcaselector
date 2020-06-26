@@ -108,6 +108,10 @@ public class Point2i implements Cloneable, Serializable {
 		return mod(f, f);
 	}
 
+	public Point2i and(int i) {
+		return new Point2i(x & i, z & i);
+	}
+
 	public Point2i abs() {
 		return new Point2i(x < 0 ? x * -1 : x, z < 0 ? z * -1 : z);
 	}

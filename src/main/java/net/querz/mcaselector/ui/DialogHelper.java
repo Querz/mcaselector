@@ -298,11 +298,11 @@ public class DialogHelper {
 
 				System.out.println(selection.getSelectionData());
 
-				tileMap.setMarkedChunks(selection.getSelectionData());
+				tileMap.setPastedChunks(selection.getSelectionData());
 				tileMap.update();
 
-			} catch (UnsupportedFlavorException | IOException e) {
-				e.printStackTrace();
+			} catch (UnsupportedFlavorException | IOException ex) {
+				Debug.dumpException("failed to paste chunks", ex);
 			}
 		}
 	}
