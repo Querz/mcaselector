@@ -69,6 +69,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private Map<Point2i, Set<Point2i>> pastedChunks;
 	private Map<Point2i, Image> pastedChunksCache;
+	private Point2i pastedChunksOffset;
 
 	public TileMap(Window window, int width, int height) {
 		super(width, height);
@@ -141,6 +142,14 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		} else {
 			keyActivator.pressKey(event.getCode());
 		}
+
+		if (event.getCode() == KeyCode.ESCAPE) {
+			Debug.dumpf("cancelling chunk pasting");
+			pastedChunks = null;
+			pastedChunksCache = null;
+			pastedChunksOffset = null;
+			update();
+		}
 	}
 
 	private void onKeyTyped(KeyEvent event) {
@@ -148,9 +157,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			zoomFactor(1.05);
 		} else if ("-".equals(event.getCharacter())) {
 			zoomFactor(0.95);
-		} else if (event.getCode() == KeyCode.ESCAPE) {
-			pastedChunks = null;
-			update();
 		}
 	}
 
@@ -350,7 +356,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	public List<Point2i> getVisibleRegions() {
 		List<Point2i> regions = new ArrayList<>();
-		runOnVisibleRegions(regions::add);
+		runOnVisibleRegions(regions::add, new Point2f());
 		return regions;
 	}
 
@@ -464,8 +470,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		pastedChunks = chunks;
 		if (chunks == null) {
 			pastedChunksCache = null;
+			pastedChunksOffset = null;
 		} else {
 			pastedChunksCache = new HashMap<>();
+			pastedChunksOffset = new Point2i(1, 1);
 		}
 	}
 
@@ -561,10 +569,16 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 			TileImage.draw(tile, ctx, scale, p);
 
-			if (pastedChunks != null) {
+		}, new Point2f());
+
+		if (pastedChunks != null) {
+			runOnVisibleRegions(region -> {
+				Point2i regionOffset = region.regionToBlock().sub((int) offset.getX(), (int) offset.getY());
+				Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
+				p = p.add(pastedChunksOffset.mul(16).div(scale).toPoint2f());
 				drawPastedChunks(ctx, region, p);
-			}
-		});
+			}, pastedChunksOffset.mul(16).toPoint2f());
+		}
 
 		if (showRegionGrid) {
 			drawRegionGrid(ctx);
@@ -580,11 +594,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			return;
 		}
 
-		Image image;
-
 		if (!pastedChunksCache.containsKey(region)) {
 			int zoomLevel = getZoomLevel();
-			WritableImage wImage = new WritableImage(Tile.SIZE / zoomLevel, Tile.SIZE / zoomLevel);
+			WritableImage image = new WritableImage(Tile.SIZE / zoomLevel, Tile.SIZE / zoomLevel);
 
 			Canvas canvas = new Canvas(Tile.SIZE / (float) zoomLevel, Tile.SIZE / (float) zoomLevel);
 			GraphicsContext ctx2 = canvas.getGraphicsContext2D();
@@ -596,21 +608,24 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			} else {
 				for (Point2i chunk : chunks) {
 					Point2i regionChunk = chunk.and(0x1F);
-					ctx2.fillRect(regionChunk.getX() * Tile.CHUNK_SIZE / (float) zoomLevel, regionChunk.getY() * Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel);
+					ctx2.fillRect(
+							regionChunk.getX() * Tile.CHUNK_SIZE / (float) zoomLevel,
+							regionChunk.getY() * Tile.CHUNK_SIZE / (float) zoomLevel,
+							Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel);
 				}
 			}
 
 			SnapshotParameters params = new SnapshotParameters();
 			params.setFill(Color.TRANSPARENT.makeJavaFXColor());
 
-			canvas.snapshot(params, wImage);
+			canvas.snapshot(params, image);
 
-			image = wImage;
+			pastedChunksCache.put(region, image);
+
+			ctx.drawImage(image, pos.getX(), pos.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		} else {
-			image = pastedChunksCache.get(region);
+			ctx.drawImage(pastedChunksCache.get(region), pos.getX(), pos.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		}
-
-		ctx.drawImage(image, pos.getX(), pos.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 	}
 
 	private void drawRegionGrid(GraphicsContext ctx) {
@@ -654,9 +669,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	//performs an action on regions in a spiral pattern starting from the center of all visible regions in the TileMap.
-	private void runOnVisibleRegions(Consumer<Point2i> consumer) {
-		Point2i min = offset.toPoint2i().blockToRegion();
-		Point2i max = offset.add((float) getWidth() * scale, (float) getHeight() * scale).toPoint2i().blockToRegion();
+	private void runOnVisibleRegions(Consumer<Point2i> consumer, Point2f additionalOffset) {
+		Point2i min = offset.add(additionalOffset).toPoint2i().blockToRegion();
+		Point2i max = offset.add(additionalOffset).add((float) getWidth() * scale, (float) getHeight() * scale).toPoint2i().blockToRegion();
 		Point2i mid = min.regionToBlock().add(max.regionToBlock()).div(2).blockToRegion().regionToBlock().blockToRegion();
 		int dir = 0; //0 = right, 1 = down, 2 = left, 3 = up
 		int steps = 1;

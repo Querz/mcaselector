@@ -124,6 +124,10 @@ public class Point2i implements Cloneable, Serializable {
 		return new Point2i(x << i, z << i);
 	}
 
+	public Point2f toPoint2f() {
+		return new Point2f((float) x, (float) z);
+	}
+
 	@Override
 	public boolean equals(Object other) {
 		return other instanceof Point2i
