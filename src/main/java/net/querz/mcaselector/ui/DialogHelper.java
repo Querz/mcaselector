@@ -274,13 +274,10 @@ public class DialogHelper {
 	}
 
 	public static void copySelectedChunks(TileMap tileMap) {
-		System.out.println("COPY");
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 		Selection selection = new Selection(tileMap.getMarkedChunks(), Config.getWorldDir());
 		TileMapSelection tileMapSelection = new TileMapSelection(selection);
 		clipboard.setContents(tileMapSelection, tileMap);
-
-		System.out.println(tileMap.getMarkedChunks());
 	}
 
 	public static void pasteSelectedChunks(TileMap tileMap) {
@@ -288,17 +285,13 @@ public class DialogHelper {
 		Transferable content = clipboard.getContents(tileMap);
 		DataFlavor[] flavors = content.getTransferDataFlavors();
 
-		Arrays.stream(flavors).forEach(System.out::println);
-
 		if (flavors.length == 1 && flavors[0].equals(TileMapSelection.SELECTION_DATA_FLAVOR)) {
 			try {
 				Object data = content.getTransferData(flavors[0]);
 
 				Selection selection = (Selection) data;
 
-				System.out.println(selection.getSelectionData());
-
-				tileMap.setPastedChunks(selection.getSelectionData());
+				tileMap.setPastedChunks(selection.getSelectionData(), selection.getMin(), selection.getMax());
 				tileMap.update();
 
 			} catch (UnsupportedFlavorException | IOException ex) {

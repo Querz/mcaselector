@@ -70,6 +70,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private Map<Point2i, Set<Point2i>> pastedChunks;
 	private Map<Point2i, Image> pastedChunksCache;
 	private Point2i pastedChunksOffset;
+	private Point2i firstPastedChunksOffset;
 
 	public TileMap(Window window, int width, int height) {
 		super(width, height);
@@ -227,8 +228,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private void onMousePressed(MouseEvent event) {
 		if (!disabled) {
 			firstMouseLocation = new Point2f(event.getX(), event.getY());
+			firstPastedChunksOffset = pastedChunksOffset;
 
-			if (event.getButton() == MouseButton.PRIMARY && !window.isKeyPressed(KeyCode.COMMAND)) {
+			if (event.getButton() == MouseButton.PRIMARY && !window.isKeyPressed(KeyCode.COMMAND) && pastedChunks == null) {
 				mark(event.getX(), event.getY(), true);
 			} else if (event.getButton() == MouseButton.SECONDARY) {
 				mark(event.getX(), event.getY(), false);
@@ -239,6 +241,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private void onMouseReleased() {
 		previousMouseLocation = null;
+		firstPastedChunksOffset = null;
 	}
 
 	private void onMouseDragged(MouseEvent event) {
@@ -252,7 +255,13 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			}
 			previousMouseLocation = mouseLocation;
 		} else if (!disabled && event.getButton() == MouseButton.PRIMARY) {
-			mark(event.getX(), event.getY(), true);
+			if (pastedChunks != null) {
+				Point2f mouseLocation = new Point2f(event.getX(), event.getY());
+				Point2f diff = mouseLocation.sub(firstMouseLocation).mul(scale);
+				pastedChunksOffset = firstPastedChunksOffset.add(diff.toPoint2i().div(16));
+			} else {
+				mark(event.getX(), event.getY(), true);
+			}
 		} else if (!disabled && event.getButton() == MouseButton.SECONDARY) {
 			mark(event.getX(), event.getY(), false);
 		}
@@ -286,12 +295,22 @@ public class TileMap extends Canvas implements ClipboardOwner {
 						tiles.remove(tile.getLocation());
 					}
 				}
-
-				// also remove from pastedChunksCache
-				if (pastedChunksCache != null) {
-					pastedChunksCache.remove(tile.location);
-				}
 			}
+		}
+
+		if (pastedChunksCache != null) {
+			pastedChunksCache.keySet().removeIf(img -> {
+				Point2i o = offset.toPoint2i();
+				Point2i min = o.sub(TILE_VISIBILITY_THRESHOLD * Tile.SIZE).blockToRegion().regionToBlock();
+				Point2i max = new Point2i(
+						(int) (o.getX() + getWidth() * scale),
+						(int) (o.getY() + getHeight() * scale)).add(TILE_VISIBILITY_THRESHOLD * Tile.SIZE).blockToRegion().regionToBlock();
+
+				Point2i location = img.regionToBlock().add(pastedChunksOffset.chunkToBlock());
+
+				return location.getX() < min.getX() || location.getY() < min.getY()
+						|| location.getX() > max.getX() || location.getY() > max.getY();
+			});
 		}
 
 		draw(context);
@@ -466,14 +485,18 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 	}
 
-	public void setPastedChunks(Map<Point2i, Set<Point2i>> chunks) {
+	public void setPastedChunks(Map<Point2i, Set<Point2i>> chunks, Point2i min, Point2i max) {
 		pastedChunks = chunks;
 		if (chunks == null) {
 			pastedChunksCache = null;
 			pastedChunksOffset = null;
 		} else {
 			pastedChunksCache = new HashMap<>();
-			pastedChunksOffset = new Point2i(1, 1);
+
+			// paste into the middle of the screen
+			Point2i pastedMid = new Point2i((max.getX() - min.getX()) / 2, (max.getY() - min.getY()) / 2);
+			Point2f middle = offset.add((float) getWidth() * scale / 2, (float) getHeight() * scale / 2);
+			pastedChunksOffset = middle.toPoint2i().blockToChunk().add(pastedMid);
 		}
 	}
 
@@ -670,8 +693,12 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	//performs an action on regions in a spiral pattern starting from the center of all visible regions in the TileMap.
 	private void runOnVisibleRegions(Consumer<Point2i> consumer, Point2f additionalOffset) {
-		Point2i min = offset.add(additionalOffset).toPoint2i().blockToRegion();
-		Point2i max = offset.add(additionalOffset).add((float) getWidth() * scale, (float) getHeight() * scale).toPoint2i().blockToRegion();
+		Point2i min = offset.sub(additionalOffset).toPoint2i().blockToRegion();
+		Point2i max = offset.sub(additionalOffset).add((float) getWidth() * scale, (float) getHeight() * scale).toPoint2i().blockToRegion();
+
+//		System.out.println("min: " + min);
+//		System.out.println("max: " + max);
+
 		Point2i mid = min.regionToBlock().add(max.regionToBlock()).div(2).blockToRegion().regionToBlock().blockToRegion();
 		int dir = 0; //0 = right, 1 = down, 2 = left, 3 = up
 		int steps = 1;
