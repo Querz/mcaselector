@@ -229,7 +229,8 @@ public class ParamExecutor {
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(future);
 
-		ChunkImporter.importChunks(input, progress, true, overwrite, selection, ranges, new Point2i(offsetX, offsetZ));
+		// TODO: add support for source chunk selection
+		ChunkImporter.importChunks(input, progress, true, overwrite, null, selection, ranges, new Point2i(offsetX, offsetZ));
 	}
 
 	private static void runModeExport(Map<String, String> params, FutureTask<Boolean> future) throws IOException {

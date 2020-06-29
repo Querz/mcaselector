@@ -14,7 +14,6 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.TileMapSelection;
-
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -25,11 +24,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import static net.querz.mcaselector.ui.ImportConfirmationDialog.ChunkImportConfirmationData;
 
 public class DialogHelper {
 
@@ -154,15 +153,16 @@ public class DialogHelper {
 
 	public static void importChunks(TileMap tileMap, Stage primaryStage) {
 		File dir = createDirectoryChooser(FileHelper.getLastOpenedDirectory("chunk_import_export")).showDialog(primaryStage);
-		DataProperty<ImportConfirmationDialog.ChunkImportConfirmationData> dataProperty = new DataProperty<>();
+		DataProperty<ChunkImportConfirmationData> dataProperty = new DataProperty<>();
 		if (dir != null) {
-			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, dataProperty::set).showAndWait();
+			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, null, dataProperty::set).showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
 					FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									dir, t, false, dataProperty.get().overwrite(),
+									null,
 									dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null,
 									dataProperty.get().getRanges(),
 									dataProperty.get().getOffset()));
@@ -280,22 +280,40 @@ public class DialogHelper {
 		clipboard.setContents(tileMapSelection, tileMap);
 	}
 
-	public static void pasteSelectedChunks(TileMap tileMap) {
-		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		Transferable content = clipboard.getContents(tileMap);
-		DataFlavor[] flavors = content.getTransferDataFlavors();
+	public static void pasteSelectedChunks(TileMap tileMap, Stage primaryStage) {
+		if (tileMap.isInPastingMode()) {
+			DataProperty<ImportConfirmationDialog.ChunkImportConfirmationData> dataProperty = new DataProperty<>();
+			ChunkImportConfirmationData preFill = new ChunkImportConfirmationData(tileMap.getPastedChunksOffset(), true, false, null);
+			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, preFill, dataProperty::set).showAndWait();
+			result.ifPresent(r -> {
+				if (r == ButtonType.OK) {
+					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
+							.showProgressBar(t -> ChunkImporter.importChunks(
+									tileMap.getPastedWorld(), t, false, dataProperty.get().overwrite(),
+									tileMap.getPastedChunks(),
+									dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null,
+									dataProperty.get().getRanges(),
+									dataProperty.get().getOffset()));
+					CacheHelper.clearAllCache(tileMap);
+				}
+			});
+		} else {
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			Transferable content = clipboard.getContents(tileMap);
+			DataFlavor[] flavors = content.getTransferDataFlavors();
 
-		if (flavors.length == 1 && flavors[0].equals(TileMapSelection.SELECTION_DATA_FLAVOR)) {
-			try {
-				Object data = content.getTransferData(flavors[0]);
+			if (flavors.length == 1 && flavors[0].equals(TileMapSelection.SELECTION_DATA_FLAVOR)) {
+				try {
+					Object data = content.getTransferData(flavors[0]);
 
-				Selection selection = (Selection) data;
+					Selection selection = (Selection) data;
 
-				tileMap.setPastedChunks(selection.getSelectionData(), selection.getMin(), selection.getMax());
-				tileMap.update();
+					tileMap.setPastedChunks(selection.getSelectionData(), selection.getMin(), selection.getMax(), selection.getWorld());
+					tileMap.update();
 
-			} catch (UnsupportedFlavorException | IOException ex) {
-				Debug.dumpException("failed to paste chunks", ex);
+				} catch (UnsupportedFlavorException | IOException ex) {
+					Debug.dumpException("failed to paste chunks", ex);
+				}
 			}
 		}
 	}

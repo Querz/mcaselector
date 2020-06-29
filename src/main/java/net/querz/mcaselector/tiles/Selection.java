@@ -103,7 +103,7 @@ public class Selection implements Serializable {
 		} else {
 			for (Point2i chunk : maxRegionZChunks) {
 				if (chunk.getY() > max.getY()) {
-					max.setX(chunk.getY());
+					max.setY(chunk.getY());
 				}
 			}
 		}

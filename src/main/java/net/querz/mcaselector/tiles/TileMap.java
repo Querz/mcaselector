@@ -20,6 +20,7 @@ import net.querz.mcaselector.progress.Timer;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -68,6 +69,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private final ImagePool imgPool;
 
 	private Map<Point2i, Set<Point2i>> pastedChunks;
+	private File pastedWorld;
 	private Map<Point2i, Image> pastedChunksCache;
 	private Point2i pastedChunksOffset;
 	private Point2i firstPastedChunksOffset;
@@ -147,6 +149,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		if (event.getCode() == KeyCode.ESCAPE) {
 			Debug.dumpf("cancelling chunk pasting");
 			pastedChunks = null;
+			pastedWorld = null;
 			pastedChunksCache = null;
 			pastedChunksOffset = null;
 			update();
@@ -485,8 +488,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 	}
 
-	public void setPastedChunks(Map<Point2i, Set<Point2i>> chunks, Point2i min, Point2i max) {
+	public void setPastedChunks(Map<Point2i, Set<Point2i>> chunks, Point2i min, Point2i max, File pastedWorld) {
 		pastedChunks = chunks;
+		this.pastedWorld = pastedWorld;
 		if (chunks == null) {
 			pastedChunksCache = null;
 			pastedChunksOffset = null;
@@ -498,6 +502,22 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			Point2f middle = offset.add((float) getWidth() * scale / 2, (float) getHeight() * scale / 2);
 			pastedChunksOffset = middle.toPoint2i().blockToChunk().add(pastedMid);
 		}
+	}
+
+	public Map<Point2i, Set<Point2i>> getPastedChunks() {
+		return pastedChunks;
+	}
+
+	public boolean isInPastingMode() {
+		return pastedChunks != null;
+	}
+
+	public File getPastedWorld() {
+		return pastedWorld;
+	}
+
+	public Point2i getPastedChunksOffset() {
+		return pastedChunksOffset;
 	}
 
 	private Point2i getMouseBlock(double x, double z) {

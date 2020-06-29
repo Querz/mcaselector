@@ -82,7 +82,7 @@ public class OptionBar extends MenuBar {
 		clearViewCache.setOnAction(e -> CacheHelper.clearViewCache(tileMap));
 		clear.setOnAction(e -> tileMap.clearSelection());
 		copy.setOnAction(e -> DialogHelper.copySelectedChunks(tileMap));
-		paste.setOnAction(e -> DialogHelper.pasteSelectedChunks(tileMap));
+		paste.setOnAction(e -> DialogHelper.pasteSelectedChunks(tileMap, primaryStage));
 		exportChunks.setOnAction(e -> DialogHelper.exportSelectedChunks(tileMap, primaryStage));
 		importChunks.setOnAction(e -> DialogHelper.importChunks(tileMap, primaryStage));
 		delete.setOnAction(e -> DialogHelper.deleteSelection(tileMap, primaryStage));

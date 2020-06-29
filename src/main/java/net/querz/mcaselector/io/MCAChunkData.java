@@ -229,7 +229,7 @@ public class MCAChunkData {
 		level.putInt("zPos", level.getInt("zPos") + offset.blockToChunk().getY());
 
 		// adjust entity positions
-		if (level.containsKey("Entities")) {
+		if (level.containsKey("Entities") && level.get("Entities").getID() != CompoundTag.ID) {
 			ListTag<CompoundTag> entities = catchClassCastException(() -> level.getListTag("Entities").asCompoundTagList());
 			if (entities != null) {
 				entities.forEach(v -> applyOffsetToEntity(v, offset));
@@ -237,7 +237,7 @@ public class MCAChunkData {
 		}
 
 		// adjust tile entity positions
-		if (level.containsKey("TileEntities")) {
+		if (level.containsKey("TileEntities") && level.get("TileEntities").getID() == CompoundTag.ID) {
 			ListTag<CompoundTag> tileEntities = catchClassCastException(() -> level.getListTag("TileEntities").asCompoundTagList());
 			if (tileEntities != null) {
 				tileEntities.forEach(v -> applyOffsetToTileEntity(v, offset));
