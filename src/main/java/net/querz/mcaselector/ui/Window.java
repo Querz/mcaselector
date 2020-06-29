@@ -51,6 +51,11 @@ public class Window extends Application {
 
 		scene.setOnKeyPressed(e -> pressedKeys.add(e.getCode()));
 		scene.setOnKeyReleased(e -> pressedKeys.remove(e.getCode()));
+		primaryStage.focusedProperty().addListener((obs, o, n) -> {
+			if (!n) {
+				pressedKeys.clear();
+			}
+		});
 
 		primaryStage.setOnCloseRequest(e -> System.exit(0));
 		primaryStage.setScene(scene);
