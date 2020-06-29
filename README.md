@@ -322,7 +322,7 @@ If you would like to contribute a translation, you can find the language files i
 
 "Requirements":
 * Either:
-  * JRE 8+, you can get it from [HERE](https://www.java.com/en/download/)
+  * JRE 8+, you can get it from [HERE](https://www.java.com/en/download/windows-64bit.jsp)
   * A Minecraft Java Edition installation
 * A computer
 * A brain
