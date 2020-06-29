@@ -308,6 +308,11 @@ public class DialogHelper {
 
 					Selection selection = (Selection) data;
 
+					if (selection.getWorld().equals(Config.getWorldDir())) {
+						Debug.dump("cannot paste if source and target worlds are the same: " + Config.getWorldDir());
+						return;
+					}
+
 					tileMap.setPastedChunks(selection.getSelectionData(), selection.getMin(), selection.getMax(), selection.getWorld());
 					tileMap.update();
 

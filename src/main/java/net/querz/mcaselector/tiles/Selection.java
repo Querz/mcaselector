@@ -81,7 +81,7 @@ public class Selection implements Serializable {
 		} else {
 			for (Point2i chunk : minRegionZChunks) {
 				if (chunk.getY() < min.getY()) {
-					min.setX(chunk.getY());
+					min.setY(chunk.getY());
 				}
 			}
 		}
