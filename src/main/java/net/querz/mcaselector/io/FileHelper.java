@@ -49,7 +49,11 @@ public final class FileHelper {
 	}
 
 	public static Point2i parseMCAFileName(File file) {
-		Matcher m = FileHelper.REGION_GROUP_PATTERN.matcher(file.getName());
+		return parseMCAFileName(file.getName());
+	}
+
+	public static Point2i parseMCAFileName(String name) {
+		Matcher m = FileHelper.REGION_GROUP_PATTERN.matcher(name);
 		if (m.find()) {
 			int x = Integer.parseInt(m.group("regionX"));
 			int z = Integer.parseInt(m.group("regionZ"));

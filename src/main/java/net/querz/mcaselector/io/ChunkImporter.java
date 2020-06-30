@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 
 public class ChunkImporter {
 
@@ -29,11 +28,9 @@ public class ChunkImporter {
 				importFiles = importDir.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
 			} else {
 				importFiles = importDir.listFiles((dir, name) -> {
-					Matcher m = FileHelper.REGION_GROUP_PATTERN.matcher(name);
-					if (m.find()) {
-						int x = Integer.parseInt(m.group("regionX"));
-						int z = Integer.parseInt(m.group("regionZ"));
-						return sourceSelection.containsKey(new Point2i(x, z));
+					Point2i p = FileHelper.parseMCAFileName(name);
+					if (p != null) {
+						return sourceSelection.containsKey(p);
 					}
 					return false;
 				});
@@ -79,36 +76,41 @@ public class ChunkImporter {
 			progressChannel.updateProgress(importFiles[0].getName(), 0);
 
 			for (Map.Entry<Point2i, Set<Point2i>> entry : targetMapping.entrySet()) {
-				if (selection == null || selection.containsKey(entry.getKey())) {
-					File targetFile = FileHelper.createMCAFilePath(entry.getKey());
-					Set<Point2i> targetSelection = selection == null ? null : selection.get(entry.getKey());
-					if (targetSelection == null) {
+				Point2i targetRegion = entry.getKey();
+				Set<Point2i> sourceRegions = entry.getValue();
+
+				if (selection == null || selection.containsKey(targetRegion)) {
+					File targetFile = FileHelper.createMCAFilePath(targetRegion);
+					Set<Point2i> localTargetSelection = selection == null ? null : selection.get(targetRegion);
+					if (localTargetSelection == null) {
 						// null --> no selection, 0 --> all chunks in this region are selected
-						targetSelection = new HashSet<>(0);
+						localTargetSelection = new HashSet<>(0);
 					}
 
-					Set<Point2i> sources;
-					Map<Point2i, Set<Point2i>> sourceChunks = null;
+					Set<Point2i> actualSourceRegions;
+					Map<Point2i, Set<Point2i>> localSourceSelection = null;
 					if (sourceSelection == null) {
-						sources = entry.getValue();
+						actualSourceRegions = sourceRegions;
 					} else {
-						sources = new HashSet<>(0);
-						sourceChunks = new HashMap<>();
-						for (Point2i sourceRegion : entry.getValue()) {
+						actualSourceRegions = new HashSet<>(0);
+						localSourceSelection = new HashMap<>();
+						for (Point2i sourceRegion : sourceRegions) {
 							if (sourceSelection.containsKey(sourceRegion)) {
-								sources.add(sourceRegion);
-								sourceChunks.put(sourceRegion, sourceSelection.get(sourceRegion));
+								actualSourceRegions.add(sourceRegion);
+								localSourceSelection.put(sourceRegion, sourceSelection.get(sourceRegion));
 							}
 						}
-						if (sources.size() == 0) {
-							progressChannel.incrementProgress(FileHelper.createMCAFileName(entry.getKey()), entry.getValue().size());
+						if (actualSourceRegions.size() == 0) {
+							progressChannel.incrementProgress(FileHelper.createMCAFileName(targetRegion));
 							continue;
 						}
 					}
 
-					MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetFile, importDir, entry.getKey(), sources, offset, progressChannel, overwrite, sourceChunks, targetSelection, ranges));
+					if (actualSourceRegions.size() != 0) {
+						MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetFile, importDir, targetRegion, actualSourceRegions, offset, progressChannel, overwrite, localSourceSelection, localTargetSelection, ranges));
+					}
 				} else {
-					progressChannel.incrementProgress(FileHelper.createMCAFileName(entry.getKey()), entry.getValue().size());
+					progressChannel.incrementProgress(FileHelper.createMCAFileName(targetRegion));
 				}
 			}
 		} catch (Exception ex) {
@@ -244,7 +246,7 @@ public class ChunkImporter {
 				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMapping.entrySet()) {
 					MCAFile source = MCAFile.readAll(new File(sourceDir, FileHelper.createMCAFileName(sourceData.getKey())), new ByteArrayPointer(sourceData.getValue()));
 
-					Debug.dumpf("merging chunk from  region %s into %s", sourceData.getKey(), target);
+					Debug.dumpf("merging chunk from region %s into %s", sourceData.getKey(), target);
 
 					source.mergeChunksInto(destination, offset, overwrite, sourceChunks.get(sourceData.getKey()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
 				}
