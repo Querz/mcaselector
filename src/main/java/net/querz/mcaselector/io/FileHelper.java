@@ -20,8 +20,6 @@ import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.nio.file.FileVisitResult.CONTINUE;
-
 public final class FileHelper {
 
 	public static final String MCA_FILE_PATTERN = "^r\\.-?\\d+\\.-?\\d+\\.mca$";
@@ -123,14 +121,14 @@ public final class FileHelper {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 				Files.deleteIfExists(file);
-				return CONTINUE;
+				return FileVisitResult.CONTINUE;
 			}
 
 			@Override
 			public FileVisitResult postVisitDirectory(Path dir, IOException ex) throws IOException {
 				if (ex == null) {
 					Files.deleteIfExists(dir);
-					return CONTINUE;
+					return FileVisitResult.CONTINUE;
 				}
 				throw ex;
 			}
