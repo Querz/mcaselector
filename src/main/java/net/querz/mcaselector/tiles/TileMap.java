@@ -496,11 +496,11 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			pastedChunksOffset = null;
 		} else {
 			pastedChunksCache = new HashMap<>();
-
-			// paste into the middle of the screen
+			Point2i offsetInChunks = offset.toPoint2i().blockToChunk(); // 0|0
 			Point2i pastedMid = new Point2i((max.getX() - min.getX()) / 2, (max.getY() - min.getY()) / 2);
-			Point2f middle = offset.add((float) getWidth() * scale / 2, (float) getHeight() * scale / 2);
-			pastedChunksOffset = middle.toPoint2i().blockToChunk().add(pastedMid);
+			Point2i originOffset = offsetInChunks.sub(min).sub(pastedMid);
+			Point2f screenSizeInChunks = new Point2f(getWidth(), getHeight()).mul(scale).div(16);
+			pastedChunksOffset = originOffset.add(screenSizeInChunks.div(2).toPoint2i());
 		}
 	}
 
@@ -716,9 +716,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		Point2i min = offset.sub(additionalOffset).toPoint2i().blockToRegion();
 		Point2i max = offset.sub(additionalOffset).add((float) getWidth() * scale, (float) getHeight() * scale).toPoint2i().blockToRegion();
 
-//		System.out.println("min: " + min);
-//		System.out.println("max: " + max);
-
 		Point2i mid = min.regionToBlock().add(max.regionToBlock()).div(2).blockToRegion().regionToBlock().blockToRegion();
 		int dir = 0; //0 = right, 1 = down, 2 = left, 3 = up
 		int steps = 1;
@@ -793,7 +790,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	@Override
-	public void lostOwnership(Clipboard clipboard, Transferable transferable){
-		System.out.println("TileMap lost ownership");
+	public void lostOwnership(Clipboard clipboard, Transferable transferable) {
+		Debug.dump("TileMap lost ownership");
 	}
 }
