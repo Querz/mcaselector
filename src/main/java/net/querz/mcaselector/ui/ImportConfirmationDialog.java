@@ -105,12 +105,16 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 
 		if (preFill != null) {
 			if (preFill.offset != null) {
+				data.offset = preFill.offset;
 				locationInput.setX(preFill.offset.getX());
 				locationInput.setZ(preFill.offset.getY());
 			}
+			data.overwrite = preFill.overwrite;
 			overwrite.setSelected(preFill.overwrite);
+			data.selectionOnly = preFill.selectionOnly;
 			selectionOnly.setSelected(preFill.selectionOnly);
 			if (preFill.ranges != null) {
+				data.ranges = preFill.ranges;
 				range.setText(preFill.ranges.stream().map(Range::toString).collect(Collectors.joining(",")));
 			}
 		}
