@@ -159,13 +159,22 @@ public class DialogHelper {
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
 					FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
+					DataProperty<File> actualImportDir = new DataProperty<>();
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									dir, t, false, dataProperty.get().overwrite(),
 									null,
 									dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null,
 									dataProperty.get().getRanges(),
-									dataProperty.get().getOffset()));
+									dataProperty.get().getOffset(),
+									actualImportDir));
+					if (actualImportDir.get() != Config.getWorldDir()) {
+						try {
+							FileHelper.clearFolder(actualImportDir.get());
+						} catch (IOException ex) {
+							Debug.dumpException("failed to delete temp folder " + actualImportDir.get(), ex);
+						}
+					}
 					CacheHelper.clearAllCache(tileMap);
 				}
 			});
@@ -287,13 +296,22 @@ public class DialogHelper {
 			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, preFill, dataProperty::set).showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
+					DataProperty<File> actualImportDir = new DataProperty<>();
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									tileMap.getPastedWorld(), t, false, dataProperty.get().overwrite(),
 									tileMap.getPastedChunks(),
 									dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null,
 									dataProperty.get().getRanges(),
-									dataProperty.get().getOffset()));
+									dataProperty.get().getOffset(),
+									actualImportDir));
+					if (actualImportDir.get() != Config.getWorldDir()) {
+						try {
+							FileHelper.clearFolder(actualImportDir.get());
+						} catch (IOException ex) {
+							Debug.dumpException("failed to delete temp folder " + actualImportDir.get(), ex);
+						}
+					}
 					CacheHelper.clearAllCache(tileMap);
 				}
 			});
@@ -307,11 +325,6 @@ public class DialogHelper {
 					Object data = content.getTransferData(flavors[0]);
 
 					Selection selection = (Selection) data;
-
-					if (selection.getWorld().equals(Config.getWorldDir())) {
-						Debug.dump("cannot paste if source and target worlds are the same: " + Config.getWorldDir());
-						return;
-					}
 
 					tileMap.setPastedChunks(selection.getSelectionData(), selection.getMin(), selection.getMax(), selection.getWorld());
 					tileMap.update();

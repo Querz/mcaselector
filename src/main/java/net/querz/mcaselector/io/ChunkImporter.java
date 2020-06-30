@@ -1,9 +1,11 @@
 package net.querz.mcaselector.io;
 
+import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.text.Translation;
 import java.io.File;
@@ -21,7 +23,8 @@ public class ChunkImporter {
 
 	private ChunkImporter() {}
 
-	public static void importChunks(File importDir, Progress progressChannel, boolean headless, boolean overwrite, Map<Point2i, Set<Point2i>> sourceSelection, Map<Point2i, Set<Point2i>> selection, List<Range> ranges, Point2i offset) {
+	public static void importChunks(File importDir, Progress progressChannel, boolean headless, boolean overwrite, Map<Point2i, Set<Point2i>> sourceSelection, Map<Point2i, Set<Point2i>> selection, List<Range> ranges, Point2i offset, DataProperty<File> actualImportDir) {
+		actualImportDir.set(importDir);
 		try {
 			File[] importFiles;
 			if (sourceSelection == null) {
@@ -51,6 +54,19 @@ public class ChunkImporter {
 				progressChannel.setMessage("collecting data...");
 			} else {
 				progressChannel.setMessage(Translation.DIALOG_PROGRESS_COLLECTING_DATA.toString());
+			}
+
+			// if source world and target world is the same, we need to create temp files of all source files
+			if (importDir.equals(Config.getWorldDir())) {
+				actualImportDir.set(new File(Config.getWorldDir(), "tmp-" + System.currentTimeMillis()));
+				if (!actualImportDir.get().mkdirs()) {
+					Debug.errorf("failed to create temp dir %s", actualImportDir);
+					return;
+				}
+				for (File importFile : importFiles) {
+					File tempFile = new File(actualImportDir.get(), importFile.getName());
+					Files.copy(importFile.toPath(), tempFile.toPath());
+				}
 			}
 
 			Map<Point2i, Set<Point2i>> targetMapping = new HashMap<>();
@@ -107,7 +123,7 @@ public class ChunkImporter {
 					}
 
 					if (actualSourceRegions.size() != 0) {
-						MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetFile, importDir, targetRegion, actualSourceRegions, offset, progressChannel, overwrite, localSourceSelection, localTargetSelection, ranges));
+						MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetFile, actualImportDir.get(), targetRegion, actualSourceRegions, offset, progressChannel, overwrite, localSourceSelection, localTargetSelection, ranges));
 					}
 				} else {
 					progressChannel.incrementProgress(FileHelper.createMCAFileName(targetRegion));

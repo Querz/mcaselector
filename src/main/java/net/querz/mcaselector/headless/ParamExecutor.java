@@ -230,7 +230,11 @@ public class ParamExecutor {
 		progress.onDone(future);
 
 		// TODO: add support for source chunk selection
-		ChunkImporter.importChunks(input, progress, true, overwrite, null, selection, ranges, new Point2i(offsetX, offsetZ));
+		DataProperty<File> actualImportDir = new DataProperty<>();
+		ChunkImporter.importChunks(input, progress, true, overwrite, null, selection, ranges, new Point2i(offsetX, offsetZ), actualImportDir);
+		if (actualImportDir.get() != input) {
+			FileHelper.clearFolder(actualImportDir.get());
+		}
 	}
 
 	private static void runModeExport(Map<String, String> params, FutureTask<Boolean> future) throws IOException {

@@ -7,6 +7,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -14,6 +19,8 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.nio.file.FileVisitResult.CONTINUE;
 
 public final class FileHelper {
 
@@ -109,5 +116,24 @@ public final class FileHelper {
 		JarURLConnection jarConnection = (JarURLConnection) url.openConnection();
 		Manifest manifest = jarConnection.getManifest();
 		return manifest.getMainAttributes();
+	}
+
+	public static void clearFolder(File dir) throws IOException {
+		Files.walkFileTree(dir.toPath(), new SimpleFileVisitor<Path>() {
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				Files.deleteIfExists(file);
+				return CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult postVisitDirectory(Path dir, IOException ex) throws IOException {
+				if (ex == null) {
+					Files.deleteIfExists(dir);
+					return CONTINUE;
+				}
+				throw ex;
+			}
+		});
 	}
 }
