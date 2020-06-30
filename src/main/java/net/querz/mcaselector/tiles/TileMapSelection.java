@@ -1,5 +1,6 @@
 package net.querz.mcaselector.tiles;
 
+import net.querz.mcaselector.debug.Debug;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
@@ -35,6 +36,6 @@ public class TileMapSelection implements Transferable, ClipboardOwner {
 
 	@Override
 	public void lostOwnership(Clipboard clipboard, Transferable contents) {
-		System.out.println("Selection lost ownership");
+		Debug.dump("Selection lost ownership");
 	}
 }

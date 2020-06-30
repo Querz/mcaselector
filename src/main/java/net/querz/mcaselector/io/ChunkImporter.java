@@ -23,8 +23,7 @@ public class ChunkImporter {
 
 	private ChunkImporter() {}
 
-	public static void importChunks(File importDir, Progress progressChannel, boolean headless, boolean overwrite, Map<Point2i, Set<Point2i>> sourceSelection, Map<Point2i, Set<Point2i>> selection, List<Range> ranges, Point2i offset, DataProperty<File> actualImportDir) {
-		actualImportDir.set(importDir);
+	public static void importChunks(File importDir, Progress progressChannel, boolean headless, boolean overwrite, Map<Point2i, Set<Point2i>> sourceSelection, Map<Point2i, Set<Point2i>> selection, List<Range> ranges, Point2i offset, DataProperty<Map<Point2i, File>> tempFiles) {
 		try {
 			File[] importFiles;
 			if (sourceSelection == null) {
@@ -57,17 +56,11 @@ public class ChunkImporter {
 			}
 
 			// if source world and target world is the same, we need to create temp files of all source files
+			Map<Point2i, File> tempFilesMap = null;
 			if (importDir.equals(Config.getWorldDir())) {
-				actualImportDir.set(new File(Config.getWorldDir(), "tmp-" + System.currentTimeMillis()));
-				if (!actualImportDir.get().mkdirs()) {
-					Debug.errorf("failed to create temp dir %s", actualImportDir);
-					return;
-				}
-				for (File importFile : importFiles) {
-					File tempFile = new File(actualImportDir.get(), importFile.getName());
-					Files.copy(importFile.toPath(), tempFile.toPath());
-				}
+				tempFilesMap = new HashMap<>();
 			}
+			tempFiles.set(tempFilesMap);
 
 			Map<Point2i, Set<Point2i>> targetMapping = new HashMap<>();
 
@@ -123,7 +116,21 @@ public class ChunkImporter {
 					}
 
 					if (actualSourceRegions.size() != 0) {
-						MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetFile, actualImportDir.get(), targetRegion, actualSourceRegions, offset, progressChannel, overwrite, localSourceSelection, localTargetSelection, ranges));
+						if (tempFilesMap != null) {
+							for (Point2i sourceRegion : actualSourceRegions) {
+								if (!tempFilesMap.containsKey(sourceRegion)) {
+									try {
+										File tempFile = File.createTempFile(FileHelper.createMCAFileName(sourceRegion), null, null);
+										Files.copy(FileHelper.createMCAFilePath(sourceRegion).toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+										tempFilesMap.put(sourceRegion, tempFile);
+									} catch (Exception ex) {
+										Debug.dumpException("failed to create temp file of " + FileHelper.createMCAFilePath(sourceRegion), ex);
+									}
+								}
+							}
+						}
+
+						MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetFile, importDir, targetRegion, actualSourceRegions, offset, progressChannel, overwrite, localSourceSelection, localTargetSelection, ranges, tempFilesMap));
 					}
 				} else {
 					progressChannel.incrementProgress(FileHelper.createMCAFileName(targetRegion));
@@ -145,8 +152,9 @@ public class ChunkImporter {
 		private final Map<Point2i, Set<Point2i>> sourceChunks;
 		private final Set<Point2i> selection;
 		private final List<Range> ranges;
+		private final Map<Point2i, File> tempFilesMap;
 
-		private MCAChunkImporterLoadJob(File targetFile, File sourceDir, Point2i target, Set<Point2i> sources, Point2i offset, Progress progressChannel, boolean overwrite, Map<Point2i, Set<Point2i>> sourceChunks, Set<Point2i> selection, List<Range> ranges) {
+		private MCAChunkImporterLoadJob(File targetFile, File sourceDir, Point2i target, Set<Point2i> sources, Point2i offset, Progress progressChannel, boolean overwrite, Map<Point2i, Set<Point2i>> sourceChunks, Set<Point2i> selection, List<Range> ranges, Map<Point2i, File> tempFilesMap) {
 			super(targetFile);
 			this.target = target;
 			this.sources = sources;
@@ -157,6 +165,7 @@ public class ChunkImporter {
 			this.sourceChunks = sourceChunks;
 			this.selection = selection;
 			this.ranges = ranges;
+			this.tempFilesMap = tempFilesMap;
 		}
 
 		@Override
@@ -167,7 +176,6 @@ public class ChunkImporter {
 				//if the entire mca file doesn't exist, just copy it over
 				File source = new File(sourceDir, getFile().getName());
 				try {
-
 					Files.copy(source.toPath(), getFile().toPath());
 				} catch (IOException ex) {
 					Debug.dumpException(String.format("failed to copy file %s to %s", source, getFile()), ex);
@@ -181,7 +189,12 @@ public class ChunkImporter {
 			Map<Point2i, byte[]> sourceDataMapping = new HashMap<>();
 
 			for (Point2i sourceRegion : sources) {
-				File source = new File(sourceDir, FileHelper.createMCAFileName(sourceRegion));
+				File source;
+				if (tempFilesMap != null && tempFilesMap.containsKey(sourceRegion)) {
+					source = tempFilesMap.get(sourceRegion);
+				} else {
+					source = new File(sourceDir, FileHelper.createMCAFileName(sourceRegion));
+				}
 
 				byte[] sourceData = load(source);
 

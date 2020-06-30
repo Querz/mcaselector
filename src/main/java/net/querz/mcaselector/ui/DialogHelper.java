@@ -159,7 +159,7 @@ public class DialogHelper {
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
 					FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
-					DataProperty<File> actualImportDir = new DataProperty<>();
+					DataProperty<Map<Point2i, File>> tempFiles = new DataProperty<>();
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									dir, t, false, dataProperty.get().overwrite(),
@@ -167,14 +167,8 @@ public class DialogHelper {
 									dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null,
 									dataProperty.get().getRanges(),
 									dataProperty.get().getOffset(),
-									actualImportDir));
-					if (actualImportDir.get() != Config.getWorldDir()) {
-						try {
-							FileHelper.clearFolder(actualImportDir.get());
-						} catch (IOException ex) {
-							Debug.dumpException("failed to delete temp folder " + actualImportDir.get(), ex);
-						}
-					}
+									tempFiles));
+					deleteTempFiles(tempFiles.get());
 					CacheHelper.clearAllCache(tileMap);
 				}
 			});
@@ -296,7 +290,7 @@ public class DialogHelper {
 			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, preFill, dataProperty::set).showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
-					DataProperty<File> actualImportDir = new DataProperty<>();
+					DataProperty<Map<Point2i, File>> tempFiles = new DataProperty<>();
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									tileMap.getPastedWorld(), t, false, dataProperty.get().overwrite(),
@@ -304,14 +298,8 @@ public class DialogHelper {
 									dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null,
 									dataProperty.get().getRanges(),
 									dataProperty.get().getOffset(),
-									actualImportDir));
-					if (actualImportDir.get() != Config.getWorldDir()) {
-						try {
-							FileHelper.clearFolder(actualImportDir.get());
-						} catch (IOException ex) {
-							Debug.dumpException("failed to delete temp folder " + actualImportDir.get(), ex);
-						}
-					}
+									tempFiles));
+					deleteTempFiles(tempFiles.get());
 					CacheHelper.clearAllCache(tileMap);
 				}
 			});
@@ -331,6 +319,16 @@ public class DialogHelper {
 
 				} catch (UnsupportedFlavorException | IOException ex) {
 					Debug.dumpException("failed to paste chunks", ex);
+				}
+			}
+		}
+	}
+
+	private static void deleteTempFiles(Map<Point2i, File> tempFiles) {
+		if (tempFiles != null) {
+			for (File tempFile : tempFiles.values()) {
+				if (!tempFile.delete()) {
+					Debug.errorf("failed to delete temp file %s", tempFile);
 				}
 			}
 		}

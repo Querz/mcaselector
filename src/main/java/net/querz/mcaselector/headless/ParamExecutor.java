@@ -229,11 +229,14 @@ public class ParamExecutor {
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(future);
 
-		// TODO: add support for source chunk selection
-		DataProperty<File> actualImportDir = new DataProperty<>();
-		ChunkImporter.importChunks(input, progress, true, overwrite, null, selection, ranges, new Point2i(offsetX, offsetZ), actualImportDir);
-		if (actualImportDir.get() != input) {
-			FileHelper.clearFolder(actualImportDir.get());
+		DataProperty<Map<Point2i, File>> tempFiles = new DataProperty<>();
+		ChunkImporter.importChunks(input, progress, true, overwrite, null, selection, ranges, new Point2i(offsetX, offsetZ), tempFiles);
+		if (tempFiles.get() != null) {
+			for (File tempFile : tempFiles.get().values()) {
+				if (!tempFile.delete()) {
+					Debug.errorf("failed to delete temp file %s", tempFile);
+				}
+			}
 		}
 	}
 
