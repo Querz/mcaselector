@@ -148,7 +148,7 @@ public class OptionBar extends MenuBar {
 		changeFields.setDisable(!enabled);
 		importChunks.setDisable(!enabled);
 		copy.setDisable(!enabled);
-		paste.setDisable(!enabled || hasValidClipboardContent(tileMap));
+		paste.setDisable(!enabled || !hasValidClipboardContent(tileMap));
 	}
 
 	private void setSelectionDependentMenuItemsEnabled(int selected) {
