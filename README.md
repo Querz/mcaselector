@@ -332,9 +332,10 @@ If you would like to contribute a translation, you can find the language files i
 
 "Requirements":
 * Either:
-  * JRE 8+, you can get it from [HERE](https://www.java.com/en/download/windows-64bit.jsp)
+  * 64bit JRE 8+, you can get it from [HERE](https://www.java.com/en/download/windows-64bit.jsp)
   * A Minecraft Java Edition installation
 * A computer
+  * At least 6 GB of RAM. If lower, more RAM has to manually be assigned to the JVM using the `-Xmx` argument. Assigning 4 GB is recommended.
 * A brain
 
 #### If you have Java from Oracle installed on your system
