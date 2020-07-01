@@ -7,6 +7,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -49,7 +54,11 @@ public final class FileHelper {
 	}
 
 	public static Point2i parseMCAFileName(File file) {
-		Matcher m = FileHelper.REGION_GROUP_PATTERN.matcher(file.getName());
+		return parseMCAFileName(file.getName());
+	}
+
+	public static Point2i parseMCAFileName(String name) {
+		Matcher m = FileHelper.REGION_GROUP_PATTERN.matcher(name);
 		if (m.find()) {
 			int x = Integer.parseInt(m.group("regionX"));
 			int z = Integer.parseInt(m.group("regionZ"));
@@ -105,5 +114,24 @@ public final class FileHelper {
 		JarURLConnection jarConnection = (JarURLConnection) url.openConnection();
 		Manifest manifest = jarConnection.getManifest();
 		return manifest.getMainAttributes();
+	}
+
+	public static void clearFolder(File dir) throws IOException {
+		Files.walkFileTree(dir.toPath(), new SimpleFileVisitor<Path>() {
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				Files.deleteIfExists(file);
+				return FileVisitResult.CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult postVisitDirectory(Path dir, IOException ex) throws IOException {
+				if (ex == null) {
+					Files.deleteIfExists(dir);
+					return FileVisitResult.CONTINUE;
+				}
+				throw ex;
+			}
+		});
 	}
 }

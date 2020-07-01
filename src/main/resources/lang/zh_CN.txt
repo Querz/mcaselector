@@ -24,6 +24,8 @@ menu.view.goto;转到
 menu.view.clear_cache;清除缓存
 menu.view.clear_all_cache;清除所有缓存
 menu.selection.clear;清除
+menu.selection.copy_chunks;复制块
+menu.selection.paste_chunks;粘贴大块
 menu.selection.export_chunks;导出选定的区块
 menu.selection.delete_chunks;删除选定的区块
 menu.selection.import_selection;导入所选内容

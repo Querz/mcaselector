@@ -61,7 +61,7 @@ public class MCAFile {
 				raf.seek(globalOffset * SECTION_SIZE);
 				MCAChunkData data = chunks[index];
 
-				if (data.isEmpty()) {
+				if (data == null || data.isEmpty()) {
 					continue;
 				}
 
@@ -325,7 +325,7 @@ public class MCAFile {
 		}
 	}
 
-	public void mergeChunksInto(MCAFile destination, Point2i offset, boolean overwrite, Set<Point2i> selection, List<Range> ranges) {
+	public void mergeChunksInto(MCAFile destination, Point2i offset, boolean overwrite, Set<Point2i> sourceChunks, Set<Point2i> selection, List<Range> ranges) {
 		Point2i relativeOffset = getRelativeOffset(location, destination.location, offset);
 		int startX = relativeOffset.getX() > 0 ? 0 : Tile.SIZE_IN_CHUNKS - (Tile.SIZE_IN_CHUNKS + relativeOffset.getX());
 		int limitX = relativeOffset.getX() > 0 ? (Tile.SIZE_IN_CHUNKS - relativeOffset.getX()) : Tile.SIZE_IN_CHUNKS;
@@ -346,40 +346,42 @@ public class MCAFile {
 					continue;
 				}
 
+				if (sourceChunk == null || sourceChunk.isEmpty() || sourceChunks != null && !sourceChunks.contains(sourceChunk.getAbsoluteLocation())) {
+					continue;
+				}
+
 				Point2i destChunk = destination.location.regionToChunk().add(destX, destZ);
 
 				if (selection == null || selection.contains(destChunk)) {
-					if (sourceChunk != null && !sourceChunk.isEmpty()) {
-						if (!sourceChunk.relocate(offset.chunkToBlock())) {
-							continue;
-						}
-
-						if (ranges != null) {
-							int sourceVersion = sourceChunk.getData().getInt("DataVersion");
-							if (sourceVersion != 0) {
-								int destinationVersion;
-								if (destinationChunk == null || destinationChunk.isEmpty()) {
-									destinationChunk = MCAChunkData.newEmptyLevelMCAChunkData(destChunk, sourceVersion);
-									destination.chunks[destIndex] = destinationChunk;
-								} else if (sourceVersion != (destinationVersion = destinationChunk.getData().getInt("DataVersion"))) {
-									Point2i srcChunk = location.regionToChunk().add(x, z);
-									Debug.errorf("can't merge chunk at %s into chunk at %s because their DataVersion does not match (%d != %d)",
-										srcChunk, destChunk, sourceVersion, destinationVersion);
-								}
-
-								ChunkDataProcessor p = VersionController.getChunkDataProcessor(sourceChunk.getData().getInt("DataVersion"));
-								try {
-									p.mergeChunks(sourceChunk.getData(), destinationChunk.getData(), ranges);
-								} catch (Exception ex) {
-									Point2i srcChunk = location.regionToChunk().add(x, z);
-									Debug.dump(new Exception("failed to merge chunk " + srcChunk + " into " + destChunk, ex));
-								}
-							}
-						} else {
-							destination.chunks[destIndex] = sourceChunk;
-						}
-
+					if (!sourceChunk.relocate(offset.chunkToBlock())) {
+						continue;
 					}
+
+					if (ranges != null) {
+						int sourceVersion = sourceChunk.getData().getInt("DataVersion");
+						if (sourceVersion != 0) {
+							int destinationVersion;
+							if (destinationChunk == null || destinationChunk.isEmpty()) {
+								destinationChunk = MCAChunkData.newEmptyLevelMCAChunkData(destChunk, sourceVersion);
+								destination.chunks[destIndex] = destinationChunk;
+							} else if (sourceVersion != (destinationVersion = destinationChunk.getData().getInt("DataVersion"))) {
+								Point2i srcChunk = location.regionToChunk().add(x, z);
+								Debug.errorf("can't merge chunk at %s into chunk at %s because their DataVersion does not match (%d != %d)",
+									srcChunk, destChunk, sourceVersion, destinationVersion);
+							}
+
+							ChunkDataProcessor p = VersionController.getChunkDataProcessor(sourceChunk.getData().getInt("DataVersion"));
+							try {
+								p.mergeChunks(sourceChunk.getData(), destinationChunk.getData(), ranges);
+							} catch (Exception ex) {
+								Point2i srcChunk = location.regionToChunk().add(x, z);
+								Debug.dump(new Exception("failed to merge chunk " + srcChunk + " into " + destChunk, ex));
+							}
+						}
+					} else {
+						destination.chunks[destIndex] = sourceChunk;
+					}
+
 				}
 			}
 		}

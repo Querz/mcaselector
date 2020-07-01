@@ -81,6 +81,10 @@ public class Point2f implements Cloneable {
 		return div(i, i);
 	}
 
+	public Point2f abs() {
+		return new Point2f(x < 0 ? x * -1 : x, y < 0 ? y * -1 : y);
+	}
+
 	public Point2i toPoint2i() {
 		return new Point2i((int) x, (int) y);
 	}

@@ -26,6 +26,7 @@ public final class UIFactory {
 	public static MenuItem menuItem(Translation translation) {
 		MenuItem item = new MenuItem();
 		item.textProperty().bind(translation.getProperty());
+		item.setMnemonicParsing(false);
 		return item;
 	}
 

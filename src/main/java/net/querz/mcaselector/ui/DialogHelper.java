@@ -7,11 +7,18 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.*;
+import net.querz.mcaselector.tiles.Selection;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.tiles.TileMapSelection;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,6 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import static net.querz.mcaselector.ui.ImportConfirmationDialog.ChunkImportConfirmationData;
 
 public class DialogHelper {
 
@@ -145,18 +153,22 @@ public class DialogHelper {
 
 	public static void importChunks(TileMap tileMap, Stage primaryStage) {
 		File dir = createDirectoryChooser(FileHelper.getLastOpenedDirectory("chunk_import_export")).showDialog(primaryStage);
-		DataProperty<ImportConfirmationDialog.ChunkImportConfirmationData> dataProperty = new DataProperty<>();
+		DataProperty<ChunkImportConfirmationData> dataProperty = new DataProperty<>();
 		if (dir != null) {
-			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, dataProperty::set).showAndWait();
+			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, null, dataProperty::set).showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
 					FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
+					DataProperty<Map<Point2i, File>> tempFiles = new DataProperty<>();
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									dir, t, false, dataProperty.get().overwrite(),
+									null,
 									dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null,
 									dataProperty.get().getRanges(),
-									dataProperty.get().getOffset()));
+									dataProperty.get().getOffset(),
+									tempFiles));
+					deleteTempFiles(tempFiles.get());
 					CacheHelper.clearAllCache(tileMap);
 				}
 			});
@@ -175,7 +187,11 @@ public class DialogHelper {
 					|| Config.getProcessThreads() != r.getProcessThreads()
 					|| Config.getWriteThreads() != r.getWriteThreads()
 					|| Config.getMaxLoadedFiles() != r.getMaxLoadedFiles()) {
-				MCAFilePipe.init(r.getReadThreads(), r.getProcessThreads(), r.getWriteThreads(), r.getMaxLoadedFiles());
+				Config.setLoadThreads(r.getReadThreads());
+				Config.setProcessThreads(r.getProcessThreads());
+				Config.setWriteThreads(r.getWriteThreads());
+				Config.setMaxLoadedFiles(r.getMaxLoadedFiles());
+				MCAFilePipe.init();
 			}
 
 			if (!Config.getLocale().equals(r.getLocale())) {
@@ -183,15 +199,13 @@ public class DialogHelper {
 				Locale.setDefault(Config.getLocale());
 				Translation.load(Config.getLocale());
 			}
-			Config.setLoadThreads(r.getReadThreads());
-			Config.setProcessThreads(r.getProcessThreads());
-			Config.setWriteThreads(r.getWriteThreads());
-			Config.setMaxLoadedFiles(r.getMaxLoadedFiles());
 			Config.setRegionSelectionColor(new Color(r.getRegionColor()));
 			Config.setChunkSelectionColor(new Color(r.getChunkColor()));
+			Config.setPasteChunksColor(new Color(r.getPasteColor()));
 			Config.setShade(r.getShade());
 			Config.setShadeWater(r.getShadeWater());
 			Config.setDebug(r.getDebug());
+			tileMap.redrawOverlays();
 			tileMap.update();
 		});
 	}
@@ -264,6 +278,64 @@ public class DialogHelper {
 		});
 	}
 
+	public static void copySelectedChunks(TileMap tileMap) {
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		Selection selection = new Selection(tileMap.getMarkedChunks(), Config.getWorldDir());
+		TileMapSelection tileMapSelection = new TileMapSelection(selection);
+		clipboard.setContents(tileMapSelection, tileMap);
+	}
+
+	public static void pasteSelectedChunks(TileMap tileMap, Stage primaryStage) {
+		if (tileMap.isInPastingMode()) {
+			DataProperty<ImportConfirmationDialog.ChunkImportConfirmationData> dataProperty = new DataProperty<>();
+			ChunkImportConfirmationData preFill = new ChunkImportConfirmationData(tileMap.getPastedChunksOffset(), true, false, null);
+			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, preFill, dataProperty::set).showAndWait();
+			result.ifPresent(r -> {
+				if (r == ButtonType.OK) {
+					DataProperty<Map<Point2i, File>> tempFiles = new DataProperty<>();
+					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
+							.showProgressBar(t -> ChunkImporter.importChunks(
+									tileMap.getPastedWorld(), t, false, dataProperty.get().overwrite(),
+									tileMap.getPastedChunks(),
+									dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null,
+									dataProperty.get().getRanges(),
+									dataProperty.get().getOffset(),
+									tempFiles));
+					deleteTempFiles(tempFiles.get());
+					CacheHelper.clearAllCache(tileMap);
+				}
+			});
+		} else {
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			Transferable content = clipboard.getContents(tileMap);
+			DataFlavor[] flavors = content.getTransferDataFlavors();
+
+			if (flavors.length == 1 && flavors[0].equals(TileMapSelection.SELECTION_DATA_FLAVOR)) {
+				try {
+					Object data = content.getTransferData(flavors[0]);
+
+					Selection selection = (Selection) data;
+
+					tileMap.setPastedChunks(selection.getSelectionData(), selection.getMin(), selection.getMax(), selection.getWorld());
+					tileMap.update();
+
+				} catch (UnsupportedFlavorException | IOException ex) {
+					Debug.dumpException("failed to paste chunks", ex);
+				}
+			}
+		}
+	}
+
+	private static void deleteTempFiles(Map<Point2i, File> tempFiles) {
+		if (tempFiles != null) {
+			for (File tempFile : tempFiles.values()) {
+				if (!tempFile.delete()) {
+					Debug.errorf("failed to delete temp file %s", tempFile);
+				}
+			}
+		}
+	}
+
 	private static MCAFile loadMCAFileOrCreateEmpty(File file) {
 		if (!file.exists()) {
 			return new MCAFile(file);
@@ -312,7 +384,7 @@ public class DialogHelper {
 				tileMap.clear();
 				tileMap.update();
 				tileMap.disable(false);
-				optionBar.setWorldDependentMenuItemsEnabled(true);
+				optionBar.setWorldDependentMenuItemsEnabled(true, tileMap);
 			}
 		}
 	}

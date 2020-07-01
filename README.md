@@ -5,7 +5,7 @@
 #### An external tool to export or delete selected chunks and regions from a world save of Minecraft Java Edition.
 ---
 
-**Update 1.11 adds new features that can be useful when migrating a world to 1.16. [Here](https://gist.github.com/Querz/008111195cc7bc012bb291849d2eb9c7) is a document with some tips and tricks regarding 1.16.**
+**Update 1.11 added new features that can be useful when migrating a world to 1.16. [Here](https://gist.github.com/Querz/008111195cc7bc012bb291849d2eb9c7) is a document with some tips and tricks regarding 1.16.**
 
 ---
 
@@ -18,6 +18,7 @@
   * [NBT Changer](#nbt-changer)
   * [Chunk Editor](#chunk-editor)
   * [Chunk import](#chunk-import)
+  * [Copy and Paste](#copy-and-paste)
   * [Swapping chunks](#swapping-chunks)
   * [Caching](#caching)
   * [Debugging](#debugging)
@@ -65,7 +66,7 @@ Zooming out far enough disables the selection of single chunks but lets you sele
 Upon finishing selecting chunks and regions, they can be deleted or exported using the `Selection`-menu. Exported chunks and regions are not deleted from the original world.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/306b90aa139a9c029705570393178266d7117b6b/selections.png" alt="MCA Selector window showing chunk and region selection export">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/f17333764e8b3ab281c707587db7c73b23b589b1/selections.png" alt="MCA Selector window showing chunk and region selection export">
 </p>
 
 A selection (not the chunks and regions themselves) can also be exported or imported and even be applied to different worlds.
@@ -151,6 +152,15 @@ Options:
 **Notice**
 Commands inside of command blocks will not be changed.
 Maps will not be updated, because their data is not stored inside region files.
+
+### Copy and Paste
+It is possible to copy a selection to the system clipboard and pasting it to a different location in the same world or into an entirely different world.
+After making a selection, use `Selection --> Copy chunks` or press `Ctrl+C` (`Cmd+C` on Mac). After navigating to the location in the world where the copied chunks need to be pasted, use `Selection --> Paste chunks` or press `Ctrl+V` (`Cmd+V`on Mac) to display an overlay showing where the clipboard will be imported to. The overlay can be moved around by pressing and holding the left mouse button. Press `Ctrl+V` again to import the chunks at the selected location. This will open the [Import chunks](#chunk-import) dialog with prefilled values depending on where the overlay has been placed.
+Copying can be cancelled by pressing `Esc`.
+
+<p align="center">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/f17333764e8b3ab281c707587db7c73b23b589b1/copy_paste.png" alt="MCA Selector window showing copy-paste overlay">
+</p>
 
 ### Swapping chunks
 When exactly two chunks are selected, they can be swapped using `Tools --> Swap chunks`. This is useful for corrupted region files when Minecraft failed to correctly save the region file index, resulting in scrambled chunks.
@@ -318,22 +328,23 @@ If you would like to contribute a translation, you can find the language files i
 
 ## Download and installation
 
-[**Download Version 1.11.1**](https://github.com/Querz/mcaselector/releases/download/1.11.1/mcaselector-1.11.1.jar)
+[**Download Version 1.12**](https://github.com/Querz/mcaselector/releases/download/1.12/mcaselector-1.12.jar)
 
 "Requirements":
 * Either:
-  * JRE 8+, you can get it from [HERE](https://www.java.com/en/download/windows-64bit.jsp)
+  * 64bit JRE 8+, you can get it from [HERE](https://www.java.com/en/download/windows-64bit.jsp)
   * A Minecraft Java Edition installation
 * A computer
+  * At least 6 GB of RAM. If lower, more RAM has to manually be assigned to the JVM using the `-Xmx` argument. Assigning 4 GB is recommended.
 * A brain
 
 #### If you have Java from Oracle installed on your system
 
-Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.11.1.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
+Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.12.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
 
 #### If you have Minecraft Java Edition installed on your system
 
-Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.11.1.jar>`. On Mac OS you should find it in `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/` where you can execute `./java -jar <path-to-mcaselector-1.11.1.jar>`.
+Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.12.jar>`. On Mac OS you should find it in `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/` where you can execute `./java -jar <path-to-mcaselector-1.12.jar>`.
 
 **WARNING:** For macOS 10.14+ (Mojave) It is NOT recommended to use the JRE provided by Minecraft (1.8.0_74), because it contains a severe bug that causes JavaFX applications to crash when they lose focus while a dialog window (such as the save-file-dialog) is open (see the bug report [here](https://bugs.openjdk.java.net/browse/JDK-8211304)). This bug has been fixed in Java 1.8.0_201 and above.
 
@@ -347,12 +358,12 @@ If you are using Java 11 or higher, the JavaFX modules are not included automati
 
 On Windows with Oracle Java 13:
 ```
-"C:\Program Files\Java\jdk-13.0.1\bin\java.exe" --module-path "C:\Program Files\Java\javafx-sdk-13.0.1\lib" --add-modules ALL-MODULE-PATH -jar mcaselector-1.11.1.jar
+"C:\Program Files\Java\jdk-13.0.1\bin\java.exe" --module-path "C:\Program Files\Java\javafx-sdk-13.0.1\lib" --add-modules ALL-MODULE-PATH -jar mcaselector-1.12.jar
 ```
 
 On Debian with OpenJDK 11 and openjfx:
 ```
-java --module-path /usr/share/openjfx/lib --add-modules ALL-MODULE-PATH -jar mcaselector-1.11.1.jar
+java --module-path /usr/share/openjfx/lib --add-modules ALL-MODULE-PATH -jar mcaselector-1.12.jar
 ```
 
 ##

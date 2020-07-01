@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io;
 
+import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -8,16 +9,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 public final class MCAFilePipe {
-
-	public static final int DEFAULT_THREAD_COUNT = Runtime.getRuntime().availableProcessors();
-
-	public static final int DEFAULT_MAX_LOADED_FILES = DEFAULT_THREAD_COUNT + (DEFAULT_THREAD_COUNT / 2);
-
-	public static final int DEFAULT_MAX_WRITE_THREADS = 4;
-
-	public static final int DEFAULT_MAX_READ_THREADS = 1;
-
-	private static int maxLoadedFiles = DEFAULT_MAX_READ_THREADS;
 
 	//loading mca files into memory should occur single threaded
 	private static ThreadPoolExecutor loadDataExecutor;
@@ -31,13 +22,13 @@ public final class MCAFilePipe {
 	private static final Queue<LoadDataJob> waitingForLoad = new LinkedBlockingQueue<>();
 
 	static {
-		init(DEFAULT_MAX_READ_THREADS, DEFAULT_THREAD_COUNT, DEFAULT_MAX_WRITE_THREADS, DEFAULT_MAX_LOADED_FILES);
+		init();
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> loadDataExecutor.shutdownNow()));
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> processDataExecutor.shutdownNow()));
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> saveDataExecutor.shutdownNow()));
 	}
 
-	public static void init(int readThreads, int processThreads, int writeThreads, int maxLoadedFiles) {
+	public static void init() {
 		//first shutdown everything if there were Threads initialized already
 		clearQueues();
 		if (loadDataExecutor != null) {
@@ -50,21 +41,20 @@ public final class MCAFilePipe {
 			saveDataExecutor.shutdownNow();
 		}
 		loadDataExecutor = new ThreadPoolExecutor(
-				readThreads, readThreads,
+				Config.getLoadThreads(), Config.getLoadThreads(),
 				0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<>());
-		Debug.dumpf("created data load ThreadPoolExecutor with %d threads", readThreads);
+		Debug.dumpf("created data load ThreadPoolExecutor with %d threads", Config.getLoadThreads());
 		processDataExecutor = new ThreadPoolExecutor(
-				processThreads, processThreads,
+				Config.getProcessThreads(), Config.getProcessThreads(),
 				0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<>());
-		Debug.dumpf("created data processor ThreadPoolExecutor with %d threads", processThreads);
+		Debug.dumpf("created data processor ThreadPoolExecutor with %d threads", Config.getProcessThreads());
 		saveDataExecutor = new ThreadPoolExecutor(
-				writeThreads, writeThreads,
+				Config.getWriteThreads(), Config.getWriteThreads(),
 				0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<>());
-		Debug.dumpf("created data save ThreadPoolExecutor with %d threads", writeThreads);
-		MCAFilePipe.maxLoadedFiles = maxLoadedFiles;
+		Debug.dumpf("created data save ThreadPoolExecutor with %d threads", Config.getWriteThreads());
 	}
 
 	static void refillDataLoadExecutorQueue() {
@@ -72,8 +62,8 @@ public final class MCAFilePipe {
 		//should only refill if saveDataExecutor is not jamming the other executors
 		//--> loadDataExecutor waits for processDataExecutor AND saveDataExecutor
 		while (!waitingForLoad.isEmpty()
-				&& processDataExecutor.getQueue().size() + loadDataExecutor.getQueue().size() < maxLoadedFiles
-				&& saveDataExecutor.getQueue().size() < maxLoadedFiles) {
+				&& processDataExecutor.getQueue().size() + loadDataExecutor.getQueue().size() < Config.getMaxLoadedFiles()
+				&& saveDataExecutor.getQueue().size() < Config.getMaxLoadedFiles()) {
 			LoadDataJob job = waitingForLoad.poll();
 			if (job != null) {
 				Debug.dumpf("refilling data load executor queue with %s", job.getFile().getAbsolutePath());
@@ -83,8 +73,8 @@ public final class MCAFilePipe {
 	}
 
 	public static void addJob(LoadDataJob job) {
-		if (processDataExecutor.getQueue().size() + loadDataExecutor.getQueue().size() > maxLoadedFiles
-				|| saveDataExecutor.getQueue().size() > maxLoadedFiles) {
+		if (processDataExecutor.getQueue().size() + loadDataExecutor.getQueue().size() > Config.getMaxLoadedFiles()
+				|| saveDataExecutor.getQueue().size() > Config.getMaxLoadedFiles()) {
 			Debug.dumpf("adding LoadDataJob %s for %s to wait queue", job.getClass().getSimpleName(), job.getFile().getName());
 			waitingForLoad.offer(job);
 		} else {

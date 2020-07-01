@@ -24,6 +24,8 @@ menu.view.goto;Ir para
 menu.view.clear_cache;Limpar cache
 menu.view.clear_all_cache;Limpar todo o cache
 menu.selection.clear;Deselecionar tudo
+menu.selection.copy_chunks;Copiar chunks
+menu.selection.paste_chunks;Colar chunks
 menu.selection.export_chunks;Exportar chunks selecionados
 menu.selection.delete_chunks;Apagar chunks selecionados
 menu.selection.import_selection;Importar seleção

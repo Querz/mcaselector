@@ -1,6 +1,9 @@
 package net.querz.mcaselector.text;
 
 import net.querz.mcaselector.debug.Debug;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -95,5 +98,13 @@ public final class TextHelper {
 			s.insert(0, "0");
 		}
 		return s.toString();
+	}
+
+	public static String getStacktraceAsString(Exception ex) {
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		ex.printStackTrace(pw);
+		pw.flush();
+		return sw.toString();
 	}
 }

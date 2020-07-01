@@ -24,6 +24,8 @@ menu.view.goto;Перейти по координатам
 menu.view.clear_cache;Отчистить кэш
 menu.view.clear_all_cache;Отчистить весь кэш
 menu.selection.clear;Сбросить
+menu.selection.copy_chunks;Копировать чанки
+menu.selection.paste_chunks;Вставить чанки
 menu.selection.export_chunks;Экспортировать выбранные чанки
 menu.selection.delete_chunks;Удалить выбранные чанки
 menu.selection.import_selection;Выбрать импорт

@@ -24,6 +24,8 @@ menu.view.goto;Přejít
 menu.view.clear_cache;Smazat keš
 menu.view.clear_all_cache;Smazat všechny keše
 menu.selection.clear;Vyčistit
+menu.selection.copy_chunks;Kopírovat chunky
+menu.selection.paste_chunks;Vložit chunky
 menu.selection.export_chunks;Exportovat vybrané chunky
 menu.selection.delete_chunks;Smazat vybrané chunky
 menu.selection.import_selection;Importovat výběr

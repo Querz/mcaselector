@@ -1,9 +1,11 @@
 package net.querz.mcaselector.io;
 
+import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.text.Translation;
 import java.io.File;
@@ -21,9 +23,21 @@ public class ChunkImporter {
 
 	private ChunkImporter() {}
 
-	public static void importChunks(File importDir, Progress progressChannel, boolean headless, boolean overwrite, Map<Point2i, Set<Point2i>> selection, List<Range> ranges, Point2i offset) {
+	public static void importChunks(File importDir, Progress progressChannel, boolean headless, boolean overwrite, Map<Point2i, Set<Point2i>> sourceSelection, Map<Point2i, Set<Point2i>> selection, List<Range> ranges, Point2i offset, DataProperty<Map<Point2i, File>> tempFiles) {
 		try {
-			File[] importFiles = importDir.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
+			File[] importFiles;
+			if (sourceSelection == null) {
+				importFiles = importDir.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
+			} else {
+				importFiles = importDir.listFiles((dir, name) -> {
+					Point2i p = FileHelper.parseMCAFileName(name);
+					if (p != null) {
+						return sourceSelection.containsKey(p);
+					}
+					return false;
+				});
+			}
+
 			if (importFiles == null || importFiles.length == 0) {
 				if (headless) {
 					progressChannel.done("no files");
@@ -40,6 +54,13 @@ public class ChunkImporter {
 			} else {
 				progressChannel.setMessage(Translation.DIALOG_PROGRESS_COLLECTING_DATA.toString());
 			}
+
+			// if source world and target world is the same, we need to create temp files of all source files
+			Map<Point2i, File> tempFilesMap = null;
+			if (importDir.equals(Config.getWorldDir())) {
+				tempFilesMap = new HashMap<>();
+			}
+			tempFiles.set(tempFilesMap);
 
 			Map<Point2i, Set<Point2i>> targetMapping = new HashMap<>();
 
@@ -64,16 +85,55 @@ public class ChunkImporter {
 			progressChannel.updateProgress(importFiles[0].getName(), 0);
 
 			for (Map.Entry<Point2i, Set<Point2i>> entry : targetMapping.entrySet()) {
-				if (selection == null || selection.containsKey(entry.getKey())) {
-					File targetFile = FileHelper.createMCAFilePath(entry.getKey());
-					Set<Point2i> targetSelection = selection == null ? null : selection.get(entry.getKey());
-					if (targetSelection == null) {
+				Point2i targetRegion = entry.getKey();
+				Set<Point2i> sourceRegions = entry.getValue();
+
+				if (selection == null || selection.containsKey(targetRegion)) {
+					File targetFile = FileHelper.createMCAFilePath(targetRegion);
+					Set<Point2i> localTargetSelection = selection == null ? null : selection.get(targetRegion);
+					if (localTargetSelection == null) {
 						// null --> no selection, 0 --> all chunks in this region are selected
-						targetSelection = new HashSet<>(0);
+						localTargetSelection = new HashSet<>(0);
 					}
-					MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetFile, importDir, entry.getKey(), entry.getValue(), offset, progressChannel, overwrite, targetSelection, ranges));
+
+					Set<Point2i> actualSourceRegions;
+					Map<Point2i, Set<Point2i>> localSourceSelection = null;
+					if (sourceSelection == null) {
+						actualSourceRegions = sourceRegions;
+					} else {
+						actualSourceRegions = new HashSet<>(0);
+						localSourceSelection = new HashMap<>();
+						for (Point2i sourceRegion : sourceRegions) {
+							if (sourceSelection.containsKey(sourceRegion)) {
+								actualSourceRegions.add(sourceRegion);
+								localSourceSelection.put(sourceRegion, sourceSelection.get(sourceRegion));
+							}
+						}
+						if (actualSourceRegions.size() == 0) {
+							progressChannel.incrementProgress(FileHelper.createMCAFileName(targetRegion));
+							continue;
+						}
+					}
+
+					if (actualSourceRegions.size() != 0) {
+						if (tempFilesMap != null) {
+							for (Point2i sourceRegion : actualSourceRegions) {
+								if (!tempFilesMap.containsKey(sourceRegion)) {
+									try {
+										File tempFile = File.createTempFile(FileHelper.createMCAFileName(sourceRegion), null, null);
+										Files.copy(FileHelper.createMCAFilePath(sourceRegion).toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+										tempFilesMap.put(sourceRegion, tempFile);
+									} catch (Exception ex) {
+										Debug.dumpException("failed to create temp file of " + FileHelper.createMCAFilePath(sourceRegion), ex);
+									}
+								}
+							}
+						}
+
+						MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetFile, importDir, targetRegion, actualSourceRegions, offset, progressChannel, overwrite, localSourceSelection, localTargetSelection, ranges, tempFilesMap));
+					}
 				} else {
-					progressChannel.incrementProgress(FileHelper.createMCAFileName(entry.getKey()), entry.getValue().size());
+					progressChannel.incrementProgress(FileHelper.createMCAFileName(targetRegion));
 				}
 			}
 		} catch (Exception ex) {
@@ -89,10 +149,12 @@ public class ChunkImporter {
 		private final Point2i offset;
 		private final Progress progressChannel;
 		private final boolean overwrite;
+		private final Map<Point2i, Set<Point2i>> sourceChunks;
 		private final Set<Point2i> selection;
 		private final List<Range> ranges;
+		private final Map<Point2i, File> tempFilesMap;
 
-		private MCAChunkImporterLoadJob(File targetFile, File sourceDir, Point2i target, Set<Point2i> sources, Point2i offset, Progress progressChannel, boolean overwrite, Set<Point2i> selection, List<Range> ranges) {
+		private MCAChunkImporterLoadJob(File targetFile, File sourceDir, Point2i target, Set<Point2i> sources, Point2i offset, Progress progressChannel, boolean overwrite, Map<Point2i, Set<Point2i>> sourceChunks, Set<Point2i> selection, List<Range> ranges, Map<Point2i, File> tempFilesMap) {
 			super(targetFile);
 			this.target = target;
 			this.sources = sources;
@@ -100,8 +162,10 @@ public class ChunkImporter {
 			this.offset = offset;
 			this.progressChannel = progressChannel;
 			this.overwrite = overwrite;
+			this.sourceChunks = sourceChunks;
 			this.selection = selection;
 			this.ranges = ranges;
+			this.tempFilesMap = tempFilesMap;
 		}
 
 		@Override
@@ -112,7 +176,6 @@ public class ChunkImporter {
 				//if the entire mca file doesn't exist, just copy it over
 				File source = new File(sourceDir, getFile().getName());
 				try {
-
 					Files.copy(source.toPath(), getFile().toPath());
 				} catch (IOException ex) {
 					Debug.dumpException(String.format("failed to copy file %s to %s", source, getFile()), ex);
@@ -126,7 +189,12 @@ public class ChunkImporter {
 			Map<Point2i, byte[]> sourceDataMapping = new HashMap<>();
 
 			for (Point2i sourceRegion : sources) {
-				File source = new File(sourceDir, FileHelper.createMCAFileName(sourceRegion));
+				File source;
+				if (tempFilesMap != null && tempFilesMap.containsKey(sourceRegion)) {
+					source = tempFilesMap.get(sourceRegion);
+				} else {
+					source = new File(sourceDir, FileHelper.createMCAFileName(sourceRegion));
+				}
 
 				byte[] sourceData = load(source);
 
@@ -157,7 +225,7 @@ public class ChunkImporter {
 				destData = null;
 			}
 
-			MCAFilePipe.executeProcessData(new MCAChunkImporterProcessJob(getFile(), sourceDir, target, sourceDataMapping, destData, offset, progressChannel, overwrite, selection, ranges));
+			MCAFilePipe.executeProcessData(new MCAChunkImporterProcessJob(getFile(), sourceDir, target, sourceDataMapping, destData, offset, progressChannel, overwrite, sourceChunks, selection, ranges));
 		}
 	}
 
@@ -169,10 +237,11 @@ public class ChunkImporter {
 		private final Point2i offset;
 		private final Progress progressChannel;
 		private final boolean overwrite;
+		private final Map<Point2i, Set<Point2i>> sourceChunks;
 		private final Set<Point2i> selection;
 		private final List<Range> ranges;
 
-		private MCAChunkImporterProcessJob(File targetFile, File sourceDir, Point2i target, Map<Point2i, byte[]> sourceDataMapping, byte[] destData, Point2i offset, Progress progressChannel, boolean overwrite, Set<Point2i> selection, List<Range> ranges) {
+		private MCAChunkImporterProcessJob(File targetFile, File sourceDir, Point2i target, Map<Point2i, byte[]> sourceDataMapping, byte[] destData, Point2i offset, Progress progressChannel, boolean overwrite, Map<Point2i, Set<Point2i>> sourceChunks, Set<Point2i> selection, List<Range> ranges) {
 			super(targetFile, destData);
 			this.sourceDir = sourceDir;
 			this.target = target;
@@ -180,6 +249,7 @@ public class ChunkImporter {
 			this.offset = offset;
 			this.progressChannel = progressChannel;
 			this.overwrite = overwrite;
+			this.sourceChunks = sourceChunks;
 			this.selection = selection;
 			this.ranges = ranges;
 		}
@@ -205,9 +275,9 @@ public class ChunkImporter {
 				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMapping.entrySet()) {
 					MCAFile source = MCAFile.readAll(new File(sourceDir, FileHelper.createMCAFileName(sourceData.getKey())), new ByteArrayPointer(sourceData.getValue()));
 
-					Debug.dumpf("merging chunk from  region %s into %s", sourceData.getKey(), target);
+					Debug.dumpf("merging chunk from region %s into %s", sourceData.getKey(), target);
 
-					source.mergeChunksInto(destination, offset, overwrite, selection == null ? null : selection.size() == 0 ? null : selection, ranges);
+					source.mergeChunksInto(destination, offset, overwrite, sourceChunks.get(sourceData.getKey()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
 				}
 
 				MCAFilePipe.executeSaveData(new MCAChunkImporterSaveJob(getFile(), destination, progressChannel));

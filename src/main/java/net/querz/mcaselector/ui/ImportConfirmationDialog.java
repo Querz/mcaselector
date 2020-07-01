@@ -14,10 +14,11 @@ import net.querz.mcaselector.range.RangeParser;
 import net.querz.mcaselector.text.Translation;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class ImportConfirmationDialog extends ConfirmationDialog {
 
-	public ImportConfirmationDialog(Stage primaryStage, Consumer<ChunkImportConfirmationData> dataAction) {
+	public ImportConfirmationDialog(Stage primaryStage, ChunkImportConfirmationData preFill, Consumer<ChunkImportConfirmationData> dataAction) {
 		super(
 				primaryStage,
 				Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_TITLE,
@@ -102,6 +103,21 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		content.getChildren().addAll(options, confirmationLabels);
 		getDialogPane().setContent(content);
 
+		if (preFill != null) {
+			if (preFill.offset != null) {
+				data.offset = preFill.offset;
+				locationInput.setX(preFill.offset.getX());
+				locationInput.setZ(preFill.offset.getY());
+			}
+			data.overwrite = preFill.overwrite;
+			overwrite.setSelected(preFill.overwrite);
+			data.selectionOnly = preFill.selectionOnly;
+			selectionOnly.setSelected(preFill.selectionOnly);
+			if (preFill.ranges != null) {
+				data.ranges = preFill.ranges;
+				range.setText(preFill.ranges.stream().map(Range::toString).collect(Collectors.joining(",")));
+			}
+		}
 	}
 
 	public static class ChunkImportConfirmationData {
@@ -110,6 +126,15 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		private boolean overwrite;
 		private boolean selectionOnly;
 		private List<Range> ranges;
+
+		private ChunkImportConfirmationData() {}
+
+		public ChunkImportConfirmationData(Point2i offset, boolean overwrite, boolean selectionOnly, List<Range> ranges) {
+			this.offset = offset;
+			this.overwrite = overwrite;
+			this.selectionOnly = selectionOnly;
+			this.ranges = ranges;
+		}
 
 		public Point2i getOffset() {
 			return offset;

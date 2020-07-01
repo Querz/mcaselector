@@ -24,6 +24,8 @@ menu.view.goto;Goto
 menu.view.clear_cache;Clear cache
 menu.view.clear_all_cache;Clear all cache
 menu.selection.clear;Clear
+menu.selection.copy_chunks;Copy chunks
+menu.selection.paste_chunks;Paste chunks
 menu.selection.export_chunks;Export selected chunks
 menu.selection.delete_chunks;Delete selected chunks
 menu.selection.import_selection;Import selection

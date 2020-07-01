@@ -1,21 +1,32 @@
 package net.querz.mcaselector.ui;
 
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.stage.Stage;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.io.CacheHelper;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.tiles.TileMapSelection;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 
 public class OptionBar extends MenuBar {
 	/*
 	* File			View				Selection					Tools				About
 	* - Open		- Chunk Grid		- Clear selection			- Import chunks
-	* - Settings	- Region Grid		- Export selected chunks	- Filter chunks
-	* - Quit		- Goto				- Delete selected chunks	- Change fields
-	*				- Clear cache		- Import selection			- Edit NBT
-	*				- Clear all cache	- Export selection			- Swap chunks
+	* - Settings	- Region Grid		- Copy chunks				- Filter chunks
+	* - Quit		- Goto				- Paste chunks				- Change fields
+	*				- Clear cache		- Export selected chunks	- Edit NBT
+	*				- Clear all cache	- Delete selected chunks	- Swap chunks
+	*									- Import selection		
+	*									- Export selection		
 	*									- Clear cache
 	* */
 
@@ -34,6 +45,8 @@ public class OptionBar extends MenuBar {
 	private final MenuItem clearViewCache = UIFactory.menuItem(Translation.MENU_VIEW_CLEAR_CACHE);
 	private final MenuItem clearAllCache = UIFactory.menuItem(Translation.MENU_VIEW_CLEAR_ALL_CACHE);
 	private final MenuItem clear = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR);
+	private final MenuItem copy = UIFactory.menuItem(Translation.MENU_SELECTION_COPY_CHUNKS);
+	private final MenuItem paste = UIFactory.menuItem(Translation.MENU_SELECTION_PASTE_CHUNKS);
 	private final MenuItem exportChunks = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_CHUNKS);
 	private final MenuItem importChunks = UIFactory.menuItem(Translation.MENU_TOOLS_IMPORT_CHUNKS);
 	private final MenuItem delete = UIFactory.menuItem(Translation.MENU_SELECTION_DELETE_CHUNKS);
@@ -59,6 +72,7 @@ public class OptionBar extends MenuBar {
 				clearViewCache, clearAllCache);
 		selection.getItems().addAll(
 				clear, UIFactory.separator(),
+				copy, paste, UIFactory.separator(),
 				exportChunks, delete, UIFactory.separator(),
 				importSelection, exportSelection, UIFactory.separator(),
 				clearSelectionCache);
@@ -78,6 +92,8 @@ public class OptionBar extends MenuBar {
 		clearAllCache.setOnAction(e -> CacheHelper.clearAllCache(tileMap));
 		clearViewCache.setOnAction(e -> CacheHelper.clearViewCache(tileMap));
 		clear.setOnAction(e -> tileMap.clearSelection());
+		copy.setOnAction(e -> DialogHelper.copySelectedChunks(tileMap));
+		paste.setOnAction(e -> DialogHelper.pasteSelectedChunks(tileMap, primaryStage));
 		exportChunks.setOnAction(e -> DialogHelper.exportSelectedChunks(tileMap, primaryStage));
 		importChunks.setOnAction(e -> DialogHelper.importChunks(tileMap, primaryStage));
 		delete.setOnAction(e -> DialogHelper.deleteSelection(tileMap, primaryStage));
@@ -98,6 +114,8 @@ public class OptionBar extends MenuBar {
 		clearAllCache.setAccelerator(new KeyCodeCombination(KeyCode.K, KeyCodeCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
 		clearViewCache.setAccelerator(new KeyCodeCombination(KeyCode.K, KeyCodeCombination.SHORTCUT_DOWN));
 		clear.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCodeCombination.SHORTCUT_DOWN));
+		copy.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCodeCombination.SHORTCUT_DOWN));
+		paste.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCodeCombination.SHORTCUT_DOWN));
 		exportChunks.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCodeCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
 		importChunks.setAccelerator(new KeyCodeCombination(KeyCode.I, KeyCodeCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
 		delete.setAccelerator(new KeyCodeCombination(KeyCode.D, KeyCodeCombination.SHORTCUT_DOWN));
@@ -110,7 +128,9 @@ public class OptionBar extends MenuBar {
 		swapChunks.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCodeCombination.SHORTCUT_DOWN));
 
 		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks());
-		setWorldDependentMenuItemsEnabled(false);
+		setWorldDependentMenuItemsEnabled(false, tileMap);
+
+		Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> paste.setDisable(!hasValidClipboardContent(tileMap) || tileMap.getDisabled()));
 	}
 
 	private void onUpdate(TileMap tileMap) {
@@ -121,10 +141,12 @@ public class OptionBar extends MenuBar {
 		previousSelectedChunks = selectedChunks;
 	}
 
-	public void setWorldDependentMenuItemsEnabled(boolean enabled) {
+	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap) {
 		filterChunks.setDisable(!enabled);
 		changeFields.setDisable(!enabled);
 		importChunks.setDisable(!enabled);
+		copy.setDisable(!enabled);
+		paste.setDisable(!enabled || !hasValidClipboardContent(tileMap));
 	}
 
 	private void setSelectionDependentMenuItemsEnabled(int selected) {
@@ -135,5 +157,13 @@ public class OptionBar extends MenuBar {
 		clearSelectionCache.setDisable(selected == 0);
 		editNBT.setDisable(selected != 1);
 		swapChunks.setDisable(selected != 2);
+		copy.setDisable(selected == 0);
+	}
+
+	private boolean hasValidClipboardContent(TileMap tileMap) {
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		Transferable content = clipboard.getContents(tileMap);
+		DataFlavor[] flavors = content.getTransferDataFlavors();
+		return flavors.length == 1 && flavors[0].equals(TileMapSelection.SELECTION_DATA_FLAVOR);
 	}
 }
