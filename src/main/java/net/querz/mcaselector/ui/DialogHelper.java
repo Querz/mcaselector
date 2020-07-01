@@ -288,7 +288,7 @@ public class DialogHelper {
 	public static void pasteSelectedChunks(TileMap tileMap, Stage primaryStage) {
 		if (tileMap.isInPastingMode()) {
 			DataProperty<ImportConfirmationDialog.ChunkImportConfirmationData> dataProperty = new DataProperty<>();
-			ChunkImportConfirmationData preFill = new ChunkImportConfirmationData(tileMap.getPastedChunksOffset(), true, tileMap.getSelectedChunks() > 0, null);
+			ChunkImportConfirmationData preFill = new ChunkImportConfirmationData(tileMap.getPastedChunksOffset(), true, false, null);
 			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, preFill, dataProperty::set).showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {

@@ -130,9 +130,7 @@ public class OptionBar extends MenuBar {
 		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks());
 		setWorldDependentMenuItemsEnabled(false, tileMap);
 
-		Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> {
-			paste.setDisable(!hasValidClipboardContent(tileMap) || tileMap.getDisabled());
-		});
+		Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> paste.setDisable(!hasValidClipboardContent(tileMap) || tileMap.getDisabled()));
 	}
 
 	private void onUpdate(TileMap tileMap) {
@@ -159,6 +157,7 @@ public class OptionBar extends MenuBar {
 		clearSelectionCache.setDisable(selected == 0);
 		editNBT.setDisable(selected != 1);
 		swapChunks.setDisable(selected != 2);
+		copy.setDisable(selected == 0);
 	}
 
 	private boolean hasValidClipboardContent(TileMap tileMap) {
