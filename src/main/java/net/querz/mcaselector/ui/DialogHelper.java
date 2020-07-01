@@ -382,7 +382,7 @@ public class DialogHelper {
 				tileMap.clear();
 				tileMap.update();
 				tileMap.disable(false);
-				optionBar.setWorldDependentMenuItemsEnabled(true);
+				optionBar.setWorldDependentMenuItemsEnabled(true, tileMap);
 			}
 		}
 	}

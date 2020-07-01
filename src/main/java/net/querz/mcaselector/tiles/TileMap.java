@@ -325,6 +325,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		this.disabled = disabled;
 	}
 
+	public boolean getDisabled() {
+		return disabled;
+	}
+
 	public void setOnUpdate(Consumer<TileMap> listener) {
 		updateListener.add(listener);
 	}

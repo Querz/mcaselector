@@ -1,12 +1,21 @@
 package net.querz.mcaselector.ui;
 
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.stage.Stage;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.io.CacheHelper;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.tiles.TileMapSelection;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 
 public class OptionBar extends MenuBar {
 	/*
@@ -117,7 +126,11 @@ public class OptionBar extends MenuBar {
 		swapChunks.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCodeCombination.SHORTCUT_DOWN));
 
 		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks());
-		setWorldDependentMenuItemsEnabled(false);
+		setWorldDependentMenuItemsEnabled(false, tileMap);
+
+		Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> {
+			paste.setDisable(!hasValidClipboardContent(tileMap) || tileMap.getDisabled());
+		});
 	}
 
 	private void onUpdate(TileMap tileMap) {
@@ -128,10 +141,12 @@ public class OptionBar extends MenuBar {
 		previousSelectedChunks = selectedChunks;
 	}
 
-	public void setWorldDependentMenuItemsEnabled(boolean enabled) {
+	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap) {
 		filterChunks.setDisable(!enabled);
 		changeFields.setDisable(!enabled);
 		importChunks.setDisable(!enabled);
+		copy.setDisable(!enabled);
+		paste.setDisable(!enabled || hasValidClipboardContent(tileMap));
 	}
 
 	private void setSelectionDependentMenuItemsEnabled(int selected) {
@@ -142,5 +157,12 @@ public class OptionBar extends MenuBar {
 		clearSelectionCache.setDisable(selected == 0);
 		editNBT.setDisable(selected != 1);
 		swapChunks.setDisable(selected != 2);
+	}
+
+	private boolean hasValidClipboardContent(TileMap tileMap) {
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		Transferable content = clipboard.getContents(tileMap);
+		DataFlavor[] flavors = content.getTransferDataFlavors();
+		return flavors.length == 1 && flavors[0].equals(TileMapSelection.SELECTION_DATA_FLAVOR);
 	}
 }
