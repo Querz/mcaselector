@@ -5,7 +5,7 @@
 #### An external tool to export or delete selected chunks and regions from a world save of Minecraft Java Edition.
 ---
 
-**Update 1.11 adds new features that can be useful when migrating a world to 1.16. [Here](https://gist.github.com/Querz/008111195cc7bc012bb291849d2eb9c7) is a document with some tips and tricks regarding 1.16.**
+**Update 1.11 added new features that can be useful when migrating a world to 1.16. [Here](https://gist.github.com/Querz/008111195cc7bc012bb291849d2eb9c7) is a document with some tips and tricks regarding 1.16.**
 
 ---
 
@@ -317,7 +317,7 @@ If you would like to contribute a translation, you can find the language files i
 
 ## Download and installation
 
-[**Download Version 1.11.1**](https://github.com/Querz/mcaselector/releases/download/1.11.1/mcaselector-1.11.1.jar)
+[**Download Version 1.12**](https://github.com/Querz/mcaselector/releases/download/1.12/mcaselector-1.12.jar)
 
 "Requirements":
 * Either:
@@ -328,11 +328,11 @@ If you would like to contribute a translation, you can find the language files i
 
 #### If you have Java from Oracle installed on your system
 
-Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.11.1.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
+Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.12.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
 
 #### If you have Minecraft Java Edition installed on your system
 
-Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.11.1.jar>`. On Mac OS you should find it in `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/` where you can execute `./java -jar <path-to-mcaselector-1.11.1.jar>`.
+Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.12.jar>`. On Mac OS you should find it in `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/` where you can execute `./java -jar <path-to-mcaselector-1.12.jar>`.
 
 **WARNING:** For macOS 10.14+ (Mojave) It is NOT recommended to use the JRE provided by Minecraft (1.8.0_74), because it contains a severe bug that causes JavaFX applications to crash when they lose focus while a dialog window (such as the save-file-dialog) is open (see the bug report [here](https://bugs.openjdk.java.net/browse/JDK-8211304)). This bug has been fixed in Java 1.8.0_201 and above.
 
@@ -346,12 +346,12 @@ If you are using Java 11 or higher, the JavaFX modules are not included automati
 
 On Windows with Oracle Java 13:
 ```
-"C:\Program Files\Java\jdk-13.0.1\bin\java.exe" --module-path "C:\Program Files\Java\javafx-sdk-13.0.1\lib" --add-modules ALL-MODULE-PATH -jar mcaselector-1.11.1.jar
+"C:\Program Files\Java\jdk-13.0.1\bin\java.exe" --module-path "C:\Program Files\Java\javafx-sdk-13.0.1\lib" --add-modules ALL-MODULE-PATH -jar mcaselector-1.12.jar
 ```
 
 On Debian with OpenJDK 11 and openjfx:
 ```
-java --module-path /usr/share/openjfx/lib --add-modules ALL-MODULE-PATH -jar mcaselector-1.11.1.jar
+java --module-path /usr/share/openjfx/lib --add-modules ALL-MODULE-PATH -jar mcaselector-1.12.jar
 ```
 
 ##
