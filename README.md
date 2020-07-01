@@ -152,6 +152,11 @@ Options:
 Commands inside of command blocks will not be changed.
 Maps will not be updated, because their data is not stored inside region files.
 
+### Copy-Paste
+It is possible to copy a selection to the system clipboard and pasting it to a different location in the same world or into an entirely different world.
+After making a selection, use `Selection --> Copy chunks` or press `Ctrl+C` (`Cmd+C` on Mac). After navigating to the location in the world where the copied chunks need to be pasted, use `Selection --> Paste chunks` or press `Ctrl+V` (`Cmd+V`on Mac) to display an overlay showing where the clipboard will be imported to. The overlay can be moved around by pressing and holding the left mouse button. Press `Ctrl+V` again to import the chunks at the selected location. This will open the [Import chunks](#chunk-import) dialog with prefilled values depending on where the overlay has been placed.
+Copying can be cancelled by pressing `Esc`.
+
 ### Swapping chunks
 When exactly two chunks are selected, they can be swapped using `Tools --> Swap chunks`. This is useful for corrupted region files when Minecraft failed to correctly save the region file index, resulting in scrambled chunks.
 
