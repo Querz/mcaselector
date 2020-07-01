@@ -65,7 +65,7 @@ Zooming out far enough disables the selection of single chunks but lets you sele
 Upon finishing selecting chunks and regions, they can be deleted or exported using the `Selection`-menu. Exported chunks and regions are not deleted from the original world.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/306b90aa139a9c029705570393178266d7117b6b/selections.png" alt="MCA Selector window showing chunk and region selection export">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/f17333764e8b3ab281c707587db7c73b23b589b1/selections.png" alt="MCA Selector window showing chunk and region selection export">
 </p>
 
 A selection (not the chunks and regions themselves) can also be exported or imported and even be applied to different worlds.
@@ -152,10 +152,14 @@ Options:
 Commands inside of command blocks will not be changed.
 Maps will not be updated, because their data is not stored inside region files.
 
-### Copy-Paste
+### Copy and Paste
 It is possible to copy a selection to the system clipboard and pasting it to a different location in the same world or into an entirely different world.
 After making a selection, use `Selection --> Copy chunks` or press `Ctrl+C` (`Cmd+C` on Mac). After navigating to the location in the world where the copied chunks need to be pasted, use `Selection --> Paste chunks` or press `Ctrl+V` (`Cmd+V`on Mac) to display an overlay showing where the clipboard will be imported to. The overlay can be moved around by pressing and holding the left mouse button. Press `Ctrl+V` again to import the chunks at the selected location. This will open the [Import chunks](#chunk-import) dialog with prefilled values depending on where the overlay has been placed.
 Copying can be cancelled by pressing `Esc`.
+
+<p align="center">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/f17333764e8b3ab281c707587db7c73b23b589b1/copy_paste.png" alt="MCA Selector window showing copy-paste overlay">
+</p>
 
 ### Swapping chunks
 When exactly two chunks are selected, they can be swapped using `Tools --> Swap chunks`. This is useful for corrupted region files when Minecraft failed to correctly save the region file index, resulting in scrambled chunks.
