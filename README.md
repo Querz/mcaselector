@@ -18,6 +18,7 @@
   * [NBT Changer](#nbt-changer)
   * [Chunk Editor](#chunk-editor)
   * [Chunk import](#chunk-import)
+  * [Copy and Paste](#copy-and-paste)
   * [Swapping chunks](#swapping-chunks)
   * [Caching](#caching)
   * [Debugging](#debugging)
