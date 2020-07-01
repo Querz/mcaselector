@@ -38,10 +38,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 	private final ComboBox<Locale> languages = new ComboBox<>();
 
-	private final Slider readThreadsSlider = createSlider(1, processorCount, 1, 1);
-	private final Slider processThreadsSlider = createSlider(1, processorCount * 2, 1, processorCount);
-	private final Slider writeThreadsSlider = createSlider(1, processorCount, 1, Math.min(processorCount, 4));
-	private final Slider maxLoadedFilesSlider = createSlider(1, (int) Math.ceil((double) maxMemory / 100_000_000L), 1, processorCount + processorCount / 2);
+	private final Slider readThreadsSlider = createSlider(1, processorCount, 1, Config.getLoadThreads());
+	private final Slider processThreadsSlider = createSlider(1, processorCount * 2, 1, Config.getProcessThreads());
+	private final Slider writeThreadsSlider = createSlider(1, processorCount, 1, Config.getWriteThreads());
+	private final Slider maxLoadedFilesSlider = createSlider(1, (int) Math.max(Math.ceil(maxMemory / 1_000_000_000D) * 6, 4), 1, Config.getMaxLoadedFiles());
 	private final Button regionSelectionColorPreview = new Button();
 	private final Button chunkSelectionColorPreview = new Button();
 	private final Button pasteChunksColorPreview = new Button();
@@ -119,10 +119,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		});
 		languages.getStyleClass().add("languages-combo-box");
 
-		readThreadsSlider.setValue(Config.getLoadThreads());
-		processThreadsSlider.setValue(Config.getProcessThreads());
-		writeThreadsSlider.setValue(Config.getWriteThreads());
-		maxLoadedFilesSlider.setValue(Config.getMaxLoadedFiles());
+//		readThreadsSlider.setValue(Config.getLoadThreads());
+//		processThreadsSlider.setValue(Config.getProcessThreads());
+//		writeThreadsSlider.setValue(Config.getWriteThreads());
+//		maxLoadedFilesSlider.setValue(Config.getMaxLoadedFiles());
 
 		regionSelectionColorPreview.getStyleClass().clear();
 		chunkSelectionColorPreview.getStyleClass().clear();

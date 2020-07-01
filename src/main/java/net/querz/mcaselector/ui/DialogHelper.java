@@ -187,7 +187,11 @@ public class DialogHelper {
 					|| Config.getProcessThreads() != r.getProcessThreads()
 					|| Config.getWriteThreads() != r.getWriteThreads()
 					|| Config.getMaxLoadedFiles() != r.getMaxLoadedFiles()) {
-				MCAFilePipe.init(r.getReadThreads(), r.getProcessThreads(), r.getWriteThreads(), r.getMaxLoadedFiles());
+				Config.setLoadThreads(r.getReadThreads());
+				Config.setProcessThreads(r.getProcessThreads());
+				Config.setWriteThreads(r.getWriteThreads());
+				Config.setMaxLoadedFiles(r.getMaxLoadedFiles());
+				MCAFilePipe.init();
 			}
 
 			if (!Config.getLocale().equals(r.getLocale())) {
@@ -195,10 +199,6 @@ public class DialogHelper {
 				Locale.setDefault(Config.getLocale());
 				Translation.load(Config.getLocale());
 			}
-			Config.setLoadThreads(r.getReadThreads());
-			Config.setProcessThreads(r.getProcessThreads());
-			Config.setWriteThreads(r.getWriteThreads());
-			Config.setMaxLoadedFiles(r.getMaxLoadedFiles());
 			Config.setRegionSelectionColor(new Color(r.getRegionColor()));
 			Config.setChunkSelectionColor(new Color(r.getChunkColor()));
 			Config.setPasteChunksColor(new Color(r.getPasteColor()));

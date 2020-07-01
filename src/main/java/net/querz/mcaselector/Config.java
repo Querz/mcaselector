@@ -37,9 +37,9 @@ public final class Config {
 	public static final Color DEFAULT_PASTE_CHUNKS_COLOR = new Color(0, 1, 0, 0.8);
 	public static final Locale DEFAULT_LOCALE = Locale.UK;
 	public static final int DEFAULT_LOAD_THREADS = 1;
-	public static final int DEFAULT_PROCESS_THREADS = Runtime.getRuntime().availableProcessors();
-	public static final int DEFAULT_WRITE_THREADS = 4;
-	public static final int DEFAULT_MAX_LOADED_FILES = DEFAULT_PROCESS_THREADS + (DEFAULT_PROCESS_THREADS / 2);
+	public static final int DEFAULT_PROCESS_THREADS = Math.max(Runtime.getRuntime().availableProcessors() - 2, 1);
+	public static final int DEFAULT_WRITE_THREADS = Math.min(Runtime.getRuntime().availableProcessors(), 4);
+	public static final int DEFAULT_MAX_LOADED_FILES = (int) Math.max(Math.ceil(Runtime.getRuntime().maxMemory() / 1_000_000_000D) * 2, 1);
 	public static final boolean DEFAULT_SHADE = true;
 	public static final boolean DEFAULT_SHADE_WATER = true;
 	public static final boolean DEFAULT_DEBUG = false;
