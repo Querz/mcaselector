@@ -317,6 +317,7 @@ The following languages are available:
 * Czech (Czech Republic) (thanks to [@mkyral](https://github.com/mkyral) for translating)
 * Spanish (Spain) (thanks to [@NathanielFreeman](https://github.com/NathanielFreeman) for translating)
 * Portuguese (Brazil) (thanks to [@cr1st0ph3r](https://github.com/cr1st0ph3r) for translating)
+* Portuguese (Portugal) (thanks to [@D3W10](https://github.com/D3W10) for translating)
 * French (France) (thanks to [@SkytAsul](https://github.com/SkytAsul) and [@DoctaEnkoda](https://github.com/DoctaEnkoda) for translating)
 * Swedish (Sweden) (thanks to [@TechnicProblem](https://github.com/TechnicProblem) for translating)
 * Russian (Russia) (thanks to [@Quarktal](https://github.com/Quarktal) for translating)
@@ -331,7 +332,7 @@ If you would like to contribute a translation, you can find the language files i
 
 "Requirements":
 * Either:
-  * JRE 8+, you can get it from [HERE](https://www.java.com/en/download/)
+  * JRE 8+, you can get it from [HERE](https://www.java.com/en/download/windows-64bit.jsp)
   * A Minecraft Java Edition installation
 * A computer
 * A brain
