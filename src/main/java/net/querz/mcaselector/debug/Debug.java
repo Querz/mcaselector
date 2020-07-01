@@ -1,12 +1,11 @@
 package net.querz.mcaselector.debug;
 
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.text.TextHelper;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
@@ -27,7 +26,7 @@ public final class Debug {
 					if (!lastExceptions.containsKey(info)) {
 						lastExceptions.put(info, info);
 						if (logWriter != null) {
-							appendLogFile(getStacktraceAsString((Exception) o));
+							appendLogFile(TextHelper.getStacktraceAsString((Exception) o));
 						}
 						((Exception) o).printStackTrace();
 					} else {
@@ -60,7 +59,7 @@ public final class Debug {
 				if (!lastExceptions.containsKey(info)) {
 					lastExceptions.put(info, info);
 					if (logWriter != null) {
-						appendLogFile(getStacktraceAsString((Exception) o));
+						appendLogFile(TextHelper.getStacktraceAsString((Exception) o));
 					}
 					((Exception) o).printStackTrace();
 				} else {
@@ -213,14 +212,6 @@ public final class Debug {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private static String getStacktraceAsString(Exception ex) {
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		ex.printStackTrace(pw);
-		pw.flush();
-		return sw.toString();
 	}
 
 	private static String getExceptionOneLine(Exception ex) {

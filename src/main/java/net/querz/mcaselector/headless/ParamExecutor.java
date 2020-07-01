@@ -124,7 +124,7 @@ public class ParamExecutor {
 	}
 
 	private static void runModeCache(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
-		if (!hasJavaFX()) {
+		if (!HeadlessHelper.hasJavaFX()) {
 			throw new IOException("no JavaFX installation found");
 		}
 
@@ -391,15 +391,6 @@ public class ParamExecutor {
 	private static void createParentDirectoryIfNotExists(File file) throws IOException {
 		if (file.getParentFile() != null && !file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
 			throw new IOException("unable to create directory for \"" + file + "\"");
-		}
-	}
-
-	private static boolean hasJavaFX() {
-		try  {
-			Class.forName("javafx.scene.paint.Color");
-			return true;
-		}  catch (ClassNotFoundException e) {
-			return false;
 		}
 	}
 }
