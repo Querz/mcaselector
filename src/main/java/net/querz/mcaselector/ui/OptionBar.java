@@ -21,10 +21,12 @@ public class OptionBar extends MenuBar {
 	/*
 	* File			View				Selection					Tools				About
 	* - Open		- Chunk Grid		- Clear selection			- Import chunks
-	* - Settings	- Region Grid		- Export selected chunks	- Filter chunks
-	* - Quit		- Goto				- Delete selected chunks	- Change fields
-	*				- Clear cache		- Import selection			- Edit NBT
-	*				- Clear all cache	- Export selection			- Swap chunks
+	* - Settings	- Region Grid		- Copy chunks				- Filter chunks
+	* - Quit		- Goto				- Paste chunks				- Change fields
+	*				- Clear cache		- Export selected chunks	- Edit NBT
+	*				- Clear all cache	- Delete selected chunks	- Swap chunks
+	*									- Import selection		
+	*									- Export selection		
 	*									- Clear cache
 	* */
 
