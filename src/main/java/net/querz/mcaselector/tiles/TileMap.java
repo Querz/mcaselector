@@ -271,6 +271,17 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		update();
 	}
 
+	public void redrawOverlays() {
+		for (Map.Entry<Point2i, Tile> entry : tiles.entrySet()) {
+			if (entry.getValue().markedChunksImage != null) {
+				TileImage.createMarkedChunksImage(entry.getValue(), getZoomLevel());
+			}
+		}
+		if (pastedChunksCache != null) {
+			pastedChunksCache.clear();
+		}
+	}
+
 	public void update() {
 		Timer t = new Timer();
 		runUpdateListeners();

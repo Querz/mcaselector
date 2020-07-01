@@ -201,9 +201,11 @@ public class DialogHelper {
 			Config.setMaxLoadedFiles(r.getMaxLoadedFiles());
 			Config.setRegionSelectionColor(new Color(r.getRegionColor()));
 			Config.setChunkSelectionColor(new Color(r.getChunkColor()));
+			Config.setPasteChunksColor(new Color(r.getPasteColor()));
 			Config.setShade(r.getShade());
 			Config.setShadeWater(r.getShadeWater());
 			Config.setDebug(r.getDebug());
+			tileMap.redrawOverlays();
 			tileMap.update();
 		});
 	}

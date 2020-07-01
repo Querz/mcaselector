@@ -32,7 +32,7 @@ public final class Config {
 
 	public static final File DEFAULT_BASE_CACHE_DIR = new File(DEFAULT_BASE_DIR, "cache");
 
-	public static final Color DEFAULT_REGION_SELECTION_COLOR = new Color(1, 0, 0, 0.8);
+	public static final Color DEFAULT_REGION_SELECTION_COLOR = new Color(1, 0.45, 0, 0.8);
 	public static final Color DEFAULT_CHUNK_SELECTION_COLOR = new Color(1, 0.45, 0, 0.8);
 	public static final Color DEFAULT_PASTE_CHUNKS_COLOR = new Color(0, 1, 0, 0.8);
 	public static final Locale DEFAULT_LOCALE = Locale.UK;
@@ -189,6 +189,7 @@ public final class Config {
 
 			regionSelectionColor = new Color(config.getOrDefault("RegionSelectionColor", DEFAULT_REGION_SELECTION_COLOR.toString()));
 			chunkSelectionColor = new Color(config.getOrDefault("ChunkSelectionColor", DEFAULT_CHUNK_SELECTION_COLOR.toString()));
+			pasteChunksColor = new Color(config.getOrDefault("PasteChunksColor", DEFAULT_PASTE_CHUNKS_COLOR.toString()));
 			loadThreads = Integer.parseInt(config.getOrDefault("LoadThreads", DEFAULT_LOAD_THREADS + ""));
 			processThreads = Integer.parseInt(config.getOrDefault("ProcessThreads", DEFAULT_PROCESS_THREADS + ""));
 			writeThreads = Integer.parseInt(config.getOrDefault("WriteThreads", DEFAULT_WRITE_THREADS + ""));
@@ -212,6 +213,7 @@ public final class Config {
 		addSettingsLine("Locale", locale.toString(), DEFAULT_LOCALE.toString(), lines);
 		addSettingsLine("RegionSelectionColor", regionSelectionColor.toString(), DEFAULT_REGION_SELECTION_COLOR.toString(), lines);
 		addSettingsLine("ChunkSelectionColor", chunkSelectionColor.toString(), DEFAULT_CHUNK_SELECTION_COLOR.toString(), lines);
+		addSettingsLine("PasteChunksColor", pasteChunksColor.toString(), DEFAULT_PASTE_CHUNKS_COLOR.toString(), lines);
 		addSettingsLine("LoadThreads", loadThreads, DEFAULT_LOAD_THREADS, lines);
 		addSettingsLine("ProcessThreads", processThreads, DEFAULT_PROCESS_THREADS, lines);
 		addSettingsLine("WriteThreads", writeThreads, DEFAULT_WRITE_THREADS, lines);
