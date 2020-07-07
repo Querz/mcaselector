@@ -30,7 +30,40 @@ public final class Config {
 		DEFAULT_BASE_DIR = new File(path);
 	}
 
-	public static final File DEFAULT_BASE_CACHE_DIR = new File(DEFAULT_BASE_DIR, "cache");
+	public static final File DEFAULT_BASE_CACHE_DIR;
+	public static final File DEFAULT_BASE_LOG_FILE;
+	public static final File DEFAULT_BASE_CONFIG_FILE;
+
+	static {
+		String osName = System.getProperty("os.name").toLowerCase();
+		if (osName.contains("mac")) {
+			DEFAULT_BASE_CACHE_DIR = new File(System.getProperty("user.home"), "/Library/Caches/mcaselector");
+			DEFAULT_BASE_LOG_FILE = new File("/var/log/mcaselector.debug.log");
+			DEFAULT_BASE_CONFIG_FILE = new File(System.getProperty("user.home"), "/Library/Application Support/mcaselector/settings.ini");
+		} else if (osName.contains("windows")) {
+			DEFAULT_BASE_CACHE_DIR = new File("%LOCALAPPDATA%/mcaselector");
+			DEFAULT_BASE_LOG_FILE = new File("%LOCALAPPDATA%/mcaselector/mcaslector.debug.log");
+			DEFAULT_BASE_CONFIG_FILE = new File("%LOCALAPPDATA%/mcaselector/settings.ini");
+		} else {
+			String linuxCacheDir = System.getenv("XDG_CACHE_DIR");
+			if (linuxCacheDir == null || linuxCacheDir.isEmpty()) {
+				linuxCacheDir = System.getProperty("user.home") + "/.cache/mcaselector";
+			}
+			DEFAULT_BASE_CACHE_DIR = new File(linuxCacheDir);
+			DEFAULT_BASE_LOG_FILE = new File("/var/log/mcaselector.debug.log");
+			DEFAULT_BASE_CONFIG_FILE = new File(System.getProperty("user.home"), "/.mcaselector");
+		}
+
+		if (!DEFAULT_BASE_CACHE_DIR.exists()) {
+			DEFAULT_BASE_CACHE_DIR.mkdirs();
+		}
+		if (!DEFAULT_BASE_LOG_FILE.getParentFile().exists()) {
+			DEFAULT_BASE_LOG_FILE.getParentFile().mkdirs();
+		}
+		if (!DEFAULT_BASE_CONFIG_FILE.getParentFile().exists()) {
+			DEFAULT_BASE_CONFIG_FILE.getParentFile().mkdirs();
+		}
+	}
 
 	public static final Color DEFAULT_REGION_SELECTION_COLOR = new Color(1, 0.45, 0, 0.8);
 	public static final Color DEFAULT_CHUNK_SELECTION_COLOR = new Color(1, 0.45, 0, 0.8);
@@ -155,13 +188,12 @@ public final class Config {
 	}
 
 	public static void loadFromIni() {
-		File file = new File(DEFAULT_BASE_DIR, "settings.ini");
-		if (!file.exists()) {
+		if (!DEFAULT_BASE_CONFIG_FILE.exists()) {
 			return;
 		}
 		Map<String, String> config = new HashMap<>();
 		try {
-			Files.lines(file.toPath()).forEach(l -> {
+			Files.lines(DEFAULT_BASE_CONFIG_FILE.toPath()).forEach(l -> {
 				if (l.charAt(0) == ';') {
 					return;
 				}
@@ -204,7 +236,6 @@ public final class Config {
 
 	public static void exportConfig() {
 		String userDir = DEFAULT_BASE_DIR.getAbsolutePath();
-		File file = new File(userDir, "settings.ini");
 		List<String> lines = new ArrayList<>(8);
 		addSettingsLine(
 			"BaseCacheDir",
@@ -222,13 +253,13 @@ public final class Config {
 		addSettingsLine("ShadeWater", shadeWater, DEFAULT_SHADE_WATER, lines);
 		addSettingsLine("Debug", debug, DEFAULT_DEBUG, lines);
 		if (lines.size() == 0) {
-			if (file.exists() && !file.delete()) {
-				Debug.errorf("could not delete %s", file.getAbsolutePath());
+			if (DEFAULT_BASE_CONFIG_FILE.exists() && !DEFAULT_BASE_CONFIG_FILE.delete()) {
+				Debug.errorf("could not delete %s", DEFAULT_BASE_CONFIG_FILE.getAbsolutePath());
 			}
 			return;
 		}
 		try {
-			Files.write(file.toPath(), lines);
+			Files.write(DEFAULT_BASE_CONFIG_FILE.toPath(), lines);
 		} catch (IOException ex) {
 			Debug.dumpException("error writing settings.ini", ex);
 		}
