@@ -261,15 +261,15 @@ public final class Config {
 		List<String> lines = new ArrayList<>(8);
 		addSettingsLine(
 				"BaseCacheDir",
-				baseCacheDir.getAbsolutePath().replace(userDir, "{user.dir}"),
+				baseCacheDir.getAbsolutePath().startsWith(userDir) ? baseCacheDir.getAbsolutePath().replace(userDir, "{user.dir}") : baseCacheDir.getAbsolutePath(),
 				DEFAULT_BASE_CACHE_DIR.getAbsolutePath().replace(userDir, "{user.dir}"), lines);
 		addSettingsLine(
 				"LogFile",
-				logFile.getAbsolutePath().replace(userDir, "{user.dir}"),
+				logFile.getAbsolutePath().startsWith(userDir) ? logFile.getAbsolutePath().replace(userDir, "{user.dir}") : logFile.getAbsolutePath(),
 				DEFAULT_BASE_LOG_FILE.getAbsolutePath().replace(userDir, "{user.dir}"), lines);
 		addSettingsLine(
 				"ConfigFile",
-				configFile.getAbsolutePath().replace(userDir, "{user.dir}"),
+				configFile.getAbsolutePath().startsWith(userDir) ? configFile.getAbsolutePath().replace(userDir, "{user.dir}") : configFile.getAbsolutePath(),
 				DEFAULT_BASE_CONFIG_FILE.getAbsolutePath().replace(userDir, "{user.dir}"), lines);
 		addSettingsLine("Locale", locale.toString(), DEFAULT_LOCALE.toString(), lines);
 		addSettingsLine("RegionSelectionColor", regionSelectionColor.toString(), DEFAULT_REGION_SELECTION_COLOR.toString(), lines);
