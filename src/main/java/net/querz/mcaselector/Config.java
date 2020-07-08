@@ -38,7 +38,7 @@ public final class Config {
 		String osName = System.getProperty("os.name").toLowerCase();
 		if (osName.contains("mac")) {
 			DEFAULT_BASE_CACHE_DIR = new File(System.getProperty("user.home"), "/Library/Caches/mcaselector");
-			DEFAULT_BASE_LOG_FILE = new File("/var/log/mcaselector.debug.log");
+			DEFAULT_BASE_LOG_FILE = new File(System.getProperty("user.home"), "/.log/mcaselector/mcaselector.debug.log");
 			DEFAULT_BASE_CONFIG_FILE = new File(System.getProperty("user.home"), "/Library/Application Support/mcaselector/settings.ini");
 		} else if (osName.contains("windows")) {
 			DEFAULT_BASE_CACHE_DIR = new File("%LOCALAPPDATA%/mcaselector");
@@ -50,7 +50,7 @@ public final class Config {
 				linuxCacheDir = System.getProperty("user.home") + "/.cache/mcaselector";
 			}
 			DEFAULT_BASE_CACHE_DIR = new File(linuxCacheDir);
-			DEFAULT_BASE_LOG_FILE = new File("/var/log/mcaselector.debug.log");
+			DEFAULT_BASE_LOG_FILE = new File(System.getProperty("user.homte"), "/.log/mcaselector/mcaselector.debug.log");
 			DEFAULT_BASE_CONFIG_FILE = new File(System.getProperty("user.home"), "/.mcaselector");
 		}
 
@@ -80,6 +80,8 @@ public final class Config {
 	private static File worldDir = null;
 	private static UUID worldUUID = null;
 	private static File baseCacheDir = DEFAULT_BASE_CACHE_DIR;
+	private static File logFile = DEFAULT_BASE_LOG_FILE;
+	private static File configFile = DEFAULT_BASE_CONFIG_FILE;
 	private static File cacheDir = null;
 
 	private static Locale locale = DEFAULT_LOCALE;
@@ -140,6 +142,18 @@ public final class Config {
 		return cacheDirs;
 	}
 
+	public static File getBaseCacheDir() {
+		return baseCacheDir;
+	}
+
+	public static File getLogFile() {
+		return logFile;
+	}
+
+	public static File getConfigFile() {
+		return configFile;
+	}
+
 	public static void setShade(boolean shade) {
 		Config.shade = shade;
 	}
@@ -188,12 +202,12 @@ public final class Config {
 	}
 
 	public static void loadFromIni() {
-		if (!DEFAULT_BASE_CONFIG_FILE.exists()) {
+		if (!configFile.exists()) {
 			return;
 		}
 		Map<String, String> config = new HashMap<>();
 		try {
-			Files.lines(DEFAULT_BASE_CONFIG_FILE.toPath()).forEach(l -> {
+			Files.lines(configFile.toPath()).forEach(l -> {
 				if (l.charAt(0) == ';') {
 					return;
 				}
@@ -211,8 +225,16 @@ public final class Config {
 		try {
 			//set values
 			baseCacheDir = new File(config.getOrDefault(
-				"BaseCacheDir",
-				baseCacheDir.getAbsolutePath()).replace("{user.dir}", DEFAULT_BASE_CACHE_DIR.getAbsolutePath())
+					"BaseCacheDir",
+					baseCacheDir.getAbsolutePath()).replace("{user.dir}", DEFAULT_BASE_CACHE_DIR.getAbsolutePath())
+			);
+			logFile = new File(config.getOrDefault(
+					"LogFile",
+					logFile.getAbsolutePath()).replace("{user.dir}", DEFAULT_BASE_LOG_FILE.getAbsolutePath())
+			);
+			configFile = new File(config.getOrDefault(
+					"ConfigFile",
+					configFile.getAbsolutePath()).replace("{user.dir}", DEFAULT_BASE_CONFIG_FILE.getAbsolutePath())
 			);
 
 			String localeString = config.getOrDefault("Locale", DEFAULT_LOCALE.toString());
@@ -238,9 +260,17 @@ public final class Config {
 		String userDir = DEFAULT_BASE_DIR.getAbsolutePath();
 		List<String> lines = new ArrayList<>(8);
 		addSettingsLine(
-			"BaseCacheDir",
-			baseCacheDir.getAbsolutePath().replace(userDir, "{user.dir}"),
-			DEFAULT_BASE_CACHE_DIR.getAbsolutePath().replace(userDir, "{user.dir}"), lines);
+				"BaseCacheDir",
+				baseCacheDir.getAbsolutePath().replace(userDir, "{user.dir}"),
+				DEFAULT_BASE_CACHE_DIR.getAbsolutePath().replace(userDir, "{user.dir}"), lines);
+		addSettingsLine(
+				"LogFile",
+				logFile.getAbsolutePath().replace(userDir, "{user.dir}"),
+				DEFAULT_BASE_LOG_FILE.getAbsolutePath().replace(userDir, "{user.dir}"), lines);
+		addSettingsLine(
+				"ConfigFile",
+				configFile.getAbsolutePath().replace(userDir, "{user.dir}"),
+				DEFAULT_BASE_CONFIG_FILE.getAbsolutePath().replace(userDir, "{user.dir}"), lines);
 		addSettingsLine("Locale", locale.toString(), DEFAULT_LOCALE.toString(), lines);
 		addSettingsLine("RegionSelectionColor", regionSelectionColor.toString(), DEFAULT_REGION_SELECTION_COLOR.toString(), lines);
 		addSettingsLine("ChunkSelectionColor", chunkSelectionColor.toString(), DEFAULT_CHUNK_SELECTION_COLOR.toString(), lines);
@@ -259,7 +289,7 @@ public final class Config {
 			return;
 		}
 		try {
-			Files.write(DEFAULT_BASE_CONFIG_FILE.toPath(), lines);
+			Files.write(configFile.toPath(), lines);
 		} catch (IOException ex) {
 			Debug.dumpException("error writing settings.ini", ex);
 		}

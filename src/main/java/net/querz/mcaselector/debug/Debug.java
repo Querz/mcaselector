@@ -112,7 +112,7 @@ public final class Debug {
 
 		LogWriter() {
 			try {
-				br = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("debug.log")));
+				br = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Config.getLogFile())));
 			} catch (IOException ex) {
 				ex.printStackTrace();
 				System.exit(0);
@@ -186,11 +186,16 @@ public final class Debug {
 
 		Properties sysProps = System.getProperties();
 		sysProps.list(System.out);
+		System.out.printf("cache.dir: %s\n", Config.getBaseCacheDir().getAbsolutePath());
+		System.out.printf("config.file: %s\n", Config.getConfigFile().getAbsolutePath());
+		System.out.printf("log.file: %s\n", Config.getLogFile().getAbsolutePath());
 
 		Debug.dumpf("os.name:                      %s", System.getProperty("os.name"));
 		Debug.dumpf("os.version:                   %s", System.getProperty("os.version"));
 		Debug.dumpf("user.dir:                     %s", System.getProperty("user.dir"));
-		Debug.dumpf("cache.dir:                    %s", Config.DEFAULT_BASE_CACHE_DIR.getAbsolutePath());
+		Debug.dumpf("cache.dir:                    %s", Config.getBaseCacheDir().getAbsolutePath());
+		Debug.dumpf("config.file:                  %s", Config.getConfigFile().getAbsolutePath());
+		Debug.dumpf("log.file                      %s", Config.getLogFile().getAbsolutePath());
 		Debug.dumpf("proc.cores:                   %s", Runtime.getRuntime().availableProcessors());
 		Debug.dumpf("java.version:                 %s", System.getProperty("java.version"));
 		Debug.dumpf("java.vm.specification.vendor: %s", System.getProperty("java.vm.specification.vendor"));
