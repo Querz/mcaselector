@@ -37,21 +37,31 @@ public final class Config {
 	static {
 		String osName = System.getProperty("os.name").toLowerCase();
 		if (osName.contains("mac")) {
-			DEFAULT_BASE_CACHE_DIR = new File(System.getProperty("user.home"), "/Library/Caches/mcaselector");
-			DEFAULT_BASE_LOG_FILE = new File(System.getProperty("user.home"), "/.log/mcaselector/mcaselector.debug.log");
-			DEFAULT_BASE_CONFIG_FILE = new File(System.getProperty("user.home"), "/Library/Application Support/mcaselector/settings.ini");
+			DEFAULT_BASE_CACHE_DIR = new File(System.getProperty("user.home"), "Library/Caches/mcaselector");
+			DEFAULT_BASE_LOG_FILE = new File(System.getProperty("user.home"), ".log/mcaselector/debug.log");
+			DEFAULT_BASE_CONFIG_FILE = new File(System.getProperty("user.home"), "Library/Application Support/mcaselector/settings.ini");
 		} else if (osName.contains("windows")) {
-			DEFAULT_BASE_CACHE_DIR = new File("%LOCALAPPDATA%/mcaselector");
-			DEFAULT_BASE_LOG_FILE = new File("%LOCALAPPDATA%/mcaselector/mcaslector.debug.log");
-			DEFAULT_BASE_CONFIG_FILE = new File("%LOCALAPPDATA%/mcaselector/settings.ini");
+			String localAppData = System.getenv("LOCALAPPDATA");
+			File localAppDataFile;
+			if (localAppData == null || localAppData.isEmpty()) {
+				localAppDataFile = DEFAULT_BASE_DIR;
+			} else {
+				localAppDataFile = new File(localAppData);
+			}
+			DEFAULT_BASE_CACHE_DIR = new File(localAppDataFile, "mcaselector/cache");
+			DEFAULT_BASE_LOG_FILE = new File(localAppDataFile, "mcaselector/debug.log");
+			DEFAULT_BASE_CONFIG_FILE = new File(localAppDataFile, "mcaselector/settings.ini");
 		} else {
 			String linuxCacheDir = System.getenv("XDG_CACHE_DIR");
+			File linuxCacheDirFile;
 			if (linuxCacheDir == null || linuxCacheDir.isEmpty()) {
-				linuxCacheDir = System.getProperty("user.home") + "/.cache/mcaselector";
+				linuxCacheDirFile = new File(System.getProperty("user.home"), ".cache");
+			} else {
+				linuxCacheDirFile = new File(linuxCacheDir);
 			}
-			DEFAULT_BASE_CACHE_DIR = new File(linuxCacheDir);
-			DEFAULT_BASE_LOG_FILE = new File(System.getProperty("user.homte"), "/.log/mcaselector/mcaselector.debug.log");
-			DEFAULT_BASE_CONFIG_FILE = new File(System.getProperty("user.home"), "/.mcaselector");
+			DEFAULT_BASE_CACHE_DIR = new File(linuxCacheDirFile, "mcaselector");
+			DEFAULT_BASE_LOG_FILE = new File(System.getProperty("user.home"), ".log/mcaselector/debug.log");
+			DEFAULT_BASE_CONFIG_FILE = new File(System.getProperty("user.home"), ".mcaselector");
 		}
 
 		if (!DEFAULT_BASE_CACHE_DIR.exists()) {
