@@ -16,6 +16,7 @@ import net.querz.nbt.tag.Tag;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -32,6 +33,8 @@ public class MCAChunkData {
 	private CompoundTag data;
 
 	private final Point2i absoluteLocation;
+
+	private static final Random random = new Random();
 
 	@Override
 	public String toString() {
@@ -229,7 +232,7 @@ public class MCAChunkData {
 		level.putInt("zPos", level.getInt("zPos") + offset.blockToChunk().getY());
 
 		// adjust entity positions
-		if (level.containsKey("Entities") && level.get("Entities").getID() != CompoundTag.ID) {
+		if (level.containsKey("Entities") && level.get("Entities").getID() != LongArrayTag.ID) {
 			ListTag<CompoundTag> entities = catchClassCastException(() -> level.getListTag("Entities").asCompoundTagList());
 			if (entities != null) {
 				entities.forEach(v -> applyOffsetToEntity(v, offset));
@@ -237,7 +240,7 @@ public class MCAChunkData {
 		}
 
 		// adjust tile entity positions
-		if (level.containsKey("TileEntities") && level.get("TileEntities").getID() == CompoundTag.ID) {
+		if (level.containsKey("TileEntities") && level.get("TileEntities").getID() != LongArrayTag.ID) {
 			ListTag<CompoundTag> tileEntities = catchClassCastException(() -> level.getListTag("TileEntities").asCompoundTagList());
 			if (tileEntities != null) {
 				tileEntities.forEach(v -> applyOffsetToTileEntity(v, offset));
@@ -592,6 +595,25 @@ public class MCAChunkData {
 			ListTag<CompoundTag> items = catchClassCastException(() -> entity.getListTag("ArmorItems").asCompoundTagList());
 			if (items != null) {
 				items.forEach(i -> applyOffsetToItem(i, offset));
+			}
+		}
+
+		fixEntityUUID(entity);
+	}
+
+	private void fixEntityUUID(CompoundTag entity) {
+		if (entity.containsKey("UUIDMost")) {
+			entity.putLong("UUIDMost", random.nextLong());
+		}
+		if (entity.containsKey("UUIDLeast")) {
+			entity.putLong("UUIDLeast", random.nextLong());
+		}
+		if (entity.containsKey("UUID")) {
+			int[] uuid = entity.getIntArray("UUID");
+			if (uuid.length == 4) {
+				for (int i = 0; i < 4; i++) {
+					uuid[i] = random.nextInt();
+				}
 			}
 		}
 	}
