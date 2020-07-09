@@ -243,10 +243,6 @@ public final class Config {
 					"LogFile",
 					DEFAULT_BASE_LOG_FILE.getAbsolutePath()).replace("{user.dir}", userDir)
 			);
-			configFile = new File(config.getOrDefault(
-					"ConfigFile",
-					DEFAULT_BASE_CONFIG_FILE.getAbsolutePath()).replace("{user.dir}", userDir)
-			);
 
 			String localeString = config.getOrDefault("Locale", DEFAULT_LOCALE.toString());
 			String[] localeSplit = localeString.split("_");
@@ -278,10 +274,6 @@ public final class Config {
 				"LogFile",
 				logFile.getAbsolutePath().startsWith(userDir) ? logFile.getAbsolutePath().replace(userDir, "{user.dir}") : logFile.getAbsolutePath(),
 				DEFAULT_BASE_LOG_FILE.getAbsolutePath().replace(userDir, "{user.dir}"), lines);
-		addSettingsLine(
-				"ConfigFile",
-				configFile.getAbsolutePath().startsWith(userDir) ? configFile.getAbsolutePath().replace(userDir, "{user.dir}") : configFile.getAbsolutePath(),
-				DEFAULT_BASE_CONFIG_FILE.getAbsolutePath().replace(userDir, "{user.dir}"), lines);
 		addSettingsLine("Locale", locale.toString(), DEFAULT_LOCALE.toString(), lines);
 		addSettingsLine("RegionSelectionColor", regionSelectionColor.toString(), DEFAULT_REGION_SELECTION_COLOR.toString(), lines);
 		addSettingsLine("ChunkSelectionColor", chunkSelectionColor.toString(), DEFAULT_CHUNK_SELECTION_COLOR.toString(), lines);
