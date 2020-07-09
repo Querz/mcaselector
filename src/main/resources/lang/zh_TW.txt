@@ -47,6 +47,7 @@ dialog.settings.chunk_color;已選擇區塊的顏色標示
 dialog.settings.shade;陰影
 dialog.settings.shade_water;水深
 dialog.settings.print_debug;列印偵錯訊息
+dialog.settings.show_log_file;顯示日誌文件
 dialog.settings.reset;重置
 dialog.goto.title;轉到位置
 dialog.confirmation.question;你確定嗎？

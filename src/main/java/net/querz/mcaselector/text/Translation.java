@@ -65,6 +65,7 @@ public enum Translation {
 	DIALOG_SETTINGS_SHADE("dialog.settings.shade"),
 	DIALOG_SETTINGS_SHADE_WATER("dialog.settings.shade_water"),
 	DIALOG_SETTINGS_PRINT_DEBUG("dialog.settings.print_debug"),
+	DIALOG_SETTINGS_SHOW_LOG_FILE("dialog.settings.show_log_file"),
 	DIALOG_SETTINGS_RESET("dialog.settings.reset"),
 	DIALOG_GOTO_TITLE("dialog.goto.title"),
 	DIALOG_CONFIRMATION_QUESTION("dialog.confirmation.question"),
@@ -278,7 +279,7 @@ public enum Translation {
 			Enumeration<JarEntry> entries = jar.entries();
 			Set<String> result = new HashSet<>();
 
-			while(entries.hasMoreElements()) {
+			while (entries.hasMoreElements()) {
 				String name = entries.nextElement().getName();
 				if (name.startsWith(path)) {
 					String entry = name.substring(path.length());

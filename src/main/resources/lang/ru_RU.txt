@@ -47,6 +47,7 @@ dialog.settings.chunk_color;Цвет выделяемых чанков
 dialog.settings.shade;тень
 dialog.settings.shade_water;Глубина воды
 dialog.settings.print_debug;Отображать системные сообщения
+dialog.settings.show_log_file;Показать файл журнала
 dialog.settings.reset;Сбросить
 dialog.goto.title;Перейти по координатам
 dialog.confirmation.question;Вы уверены?

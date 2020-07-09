@@ -47,6 +47,7 @@ dialog.settings.chunk_color;Couleur de sélection des chunks
 dialog.settings.shade;Ombre
 dialog.settings.shade_water;Profondeur d'eau
 dialog.settings.print_debug;Logger des messages de debug
+dialog.settings.show_log_file;Afficher le fichier journal
 dialog.settings.reset;Réinitialiser
 dialog.goto.title;Aller à une position
 dialog.confirmation.question;Êtes-vous sur ?

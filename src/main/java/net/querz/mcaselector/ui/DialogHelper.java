@@ -185,14 +185,13 @@ public class DialogHelper {
 		result.ifPresent(r -> {
 			if (Config.getLoadThreads() != r.getReadThreads()
 					|| Config.getProcessThreads() != r.getProcessThreads()
-					|| Config.getWriteThreads() != r.getWriteThreads()
-					|| Config.getMaxLoadedFiles() != r.getMaxLoadedFiles()) {
+					|| Config.getWriteThreads() != r.getWriteThreads()) {
 				Config.setLoadThreads(r.getReadThreads());
 				Config.setProcessThreads(r.getProcessThreads());
 				Config.setWriteThreads(r.getWriteThreads());
-				Config.setMaxLoadedFiles(r.getMaxLoadedFiles());
 				MCAFilePipe.init();
 			}
+			Config.setMaxLoadedFiles(r.getMaxLoadedFiles());
 
 			if (!Config.getLocale().equals(r.getLocale())) {
 				Config.setLocale(r.getLocale());

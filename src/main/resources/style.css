@@ -330,16 +330,18 @@
 	-fx-padding: 8 15 8 0;
 }
 
-.about-dialog-pane .about-dialog-grid-pane .hyperlink:visited  {
-	-fx-text-fill: -color-text-light;
-}
-
 .about-dialog-pane .about-dialog-grid-pane .hyperlink .label {
 	-fx-padding: 0;
 }
 
 .about-dialog-pane .about-dialog-grid-pane .label-hint {
 	-fx-padding: 0 0 0 15;
+}
+
+/*---------- HYPERLINK ----------*/
+
+.hyperlink:visited  {
+	-fx-text-fill: -color-text-light;
 }
 
 /*---------- PROGRESS DIALOG ----------*/
@@ -574,7 +576,7 @@
 
 .slider-grid-pane .slider {
 	-fx-pref-width: 200;
-	-fx-padding: 0 10 0 10;
+	-fx-padding: 0 10 0 0;
 }
 
 .color-preview-button {
@@ -583,6 +585,10 @@
 
 .slider-grid-pane .label {
 	-fx-padding: 10 10 10 0;
+}
+
+.slider-grid-pane .debug-box {
+	-fx-padding: 4 0 -3 0;
 }
 
 .languages-combo-box {

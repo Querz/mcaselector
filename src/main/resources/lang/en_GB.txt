@@ -47,6 +47,7 @@ dialog.settings.chunk_color;Chunk selection color
 dialog.settings.shade;Shade
 dialog.settings.shade_water;Shade water
 dialog.settings.print_debug;Print debug messages
+dialog.settings.show_log_file;Show log file
 dialog.settings.reset;Reset
 dialog.goto.title;Goto location
 dialog.confirmation.question;Are you sure?

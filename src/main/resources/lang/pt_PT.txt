@@ -24,6 +24,8 @@ menu.view.goto;Ir para
 menu.view.clear_cache;Limpar cache
 menu.view.clear_all_cache;Limpar todo o cache
 menu.selection.clear;Deselecionar tudo
+menu.selection.copy_chunks;Copiar chunks
+menu.selection.paste_chunks;Colar chunks
 menu.selection.export_chunks;Exportar chunks selecionados
 menu.selection.delete_chunks;Apagar chunks selecionados
 menu.selection.import_selection;Importar seleção
@@ -45,6 +47,7 @@ dialog.settings.chunk_color;Cor dos chunks
 dialog.settings.shade;Sombra
 dialog.settings.shade_water;Profundidade da água
 dialog.settings.print_debug;Mostrar mensagens de desenvolvedor
+dialog.settings.show_log_file;Mostrar arquivo de log
 dialog.settings.reset;Repor
 dialog.goto.title;Ir para coordenadas
 dialog.confirmation.question;Tem a certeza?
