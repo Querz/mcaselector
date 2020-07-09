@@ -184,12 +184,6 @@ public final class Debug {
 			logWriter = new LogWriter();
 		}
 
-		Properties sysProps = System.getProperties();
-		sysProps.list(System.out);
-		System.out.printf("cache.dir: %s\n", Config.getBaseCacheDir().getAbsolutePath());
-		System.out.printf("config.file: %s\n", Config.getConfigFile().getAbsolutePath());
-		System.out.printf("log.file: %s\n", Config.getLogFile().getAbsolutePath());
-
 		Debug.dumpf("os.name:                      %s", System.getProperty("os.name"));
 		Debug.dumpf("os.version:                   %s", System.getProperty("os.version"));
 		Debug.dumpf("user.dir:                     %s", System.getProperty("user.dir"));

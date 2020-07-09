@@ -47,6 +47,7 @@ dialog.settings.chunk_color;Color de los Chunks
 dialog.settings.shade;Volumen 3D
 dialog.settings.shade_water;Profundidad del agua
 dialog.settings.print_debug;Mostrar mensajes de desarrolador
+dialog.settings.show_log_file;Mostrar archivo de registro
 dialog.settings.reset;Resetear
 dialog.goto.title;Ir a coordenadas
 dialog.confirmation.question;¿Está seguro?

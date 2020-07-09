@@ -19,10 +19,7 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.github.VersionChecker;
 import net.querz.mcaselector.text.Translation;
-import java.awt.Desktop;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.function.Consumer;
 
 public class AboutDialog extends Alert {
@@ -69,7 +66,7 @@ public class AboutDialog extends Alert {
 		ImageView imgView = new ImageView(githubMark);
 		imgView.setScaleX(0.5);
 		imgView.setScaleY(0.5);
-		Hyperlink source = createHyperlink("GitHub", "https://github.com/Querz/mcaselector", imgView);
+		Hyperlink source = UIFactory.hyperlink("GitHub", "https://github.com/Querz/mcaselector", imgView);
 		grid.add(source, 1, 3);
 
 		getDialogPane().setContent(grid);
@@ -89,7 +86,7 @@ public class AboutDialog extends Alert {
 				if (version != null && version.isNewerThan(applicationVersion)) {
 					HBox box = new HBox();
 					String hyperlinkText = version.getTag() + (version.isPrerelease() ? " (pre)" : "");
-					Hyperlink download = createHyperlink(hyperlinkText, version.getLink(), null);
+					Hyperlink download = UIFactory.hyperlink(hyperlinkText, version.getLink(), null);
 					download.getStyleClass().add("hyperlink-update");
 					Label arrow = new Label("\u2192");
 					arrow.getStyleClass().add("label-hint");
@@ -112,24 +109,5 @@ public class AboutDialog extends Alert {
 
 		lookup.setDaemon(true);
 		lookup.start();
-	}
-
-	private Hyperlink createHyperlink(String text, String url, Node graphic) {
-		Hyperlink hyperlink;
-		if (graphic == null) {
-			hyperlink = new Hyperlink(text);
-		} else {
-			hyperlink = new Hyperlink(text, graphic);
-		}
-		hyperlink.setOnAction(e -> {
-			if (Desktop.isDesktopSupported()) {
-				try {
-					Desktop.getDesktop().browse(new URL(url).toURI());
-				} catch (IOException | URISyntaxException ex) {
-					Debug.dumpException("cannot open url using a default browser", ex);
-				}
-			}
-		});
-		return hyperlink;
 	}
 }

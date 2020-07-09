@@ -47,6 +47,7 @@ dialog.settings.chunk_color;Barva vybraného chunku
 dialog.settings.shade;Odstín
 dialog.settings.shade_water;Hloubka vody
 dialog.settings.print_debug;Vypisovat ladící zprávy
+dialog.settings.show_log_file;Zobrazit soubor protokolu
 dialog.settings.reset;Obnovit
 dialog.goto.title;Přejít na pozici
 dialog.confirmation.question;Jste si jisti?

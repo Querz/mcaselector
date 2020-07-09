@@ -1,8 +1,10 @@
 package net.querz.mcaselector.ui;
 
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -11,7 +13,14 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.Translation;
+
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 public final class UIFactory {
 
@@ -95,5 +104,45 @@ public final class UIFactory {
 		});
 		sliderValue.setText((int) slider.getValue() + "");
 		return sliderValue;
+	}
+
+	public static Hyperlink hyperlink(String text, String url, Node graphic) {
+		Hyperlink hyperlink;
+		if (graphic == null) {
+			hyperlink = new Hyperlink(text);
+		} else {
+			hyperlink = new Hyperlink(text, graphic);
+		}
+		hyperlink.setOnAction(e -> {
+			if (Desktop.isDesktopSupported()) {
+				try {
+					Desktop.getDesktop().browse(new URL(url).toURI());
+				} catch (IOException | URISyntaxException ex) {
+					Debug.dumpException("cannot open url using a default browser", ex);
+				}
+			}
+		});
+		return hyperlink;
+	}
+
+	public static Hyperlink explorerLink(Translation text, File file, Node graphic) {
+		Hyperlink hyperlink;
+		if (graphic == null) {
+			hyperlink = new Hyperlink();
+		} else {
+			hyperlink = new Hyperlink("", graphic);
+		}
+		hyperlink.textProperty().bind(text.getProperty());
+
+		hyperlink.setOnAction(e -> {
+			if (Desktop.isDesktopSupported()) {
+				try {
+					Desktop.getDesktop().open(file);
+				} catch (IOException ex) {
+					Debug.dumpException("cannot open file or directory", ex);
+				}
+			}
+		});
+		return hyperlink;
 	}
 }

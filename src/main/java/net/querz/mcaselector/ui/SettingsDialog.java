@@ -7,6 +7,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -119,11 +120,6 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		});
 		languages.getStyleClass().add("languages-combo-box");
 
-//		readThreadsSlider.setValue(Config.getLoadThreads());
-//		processThreadsSlider.setValue(Config.getProcessThreads());
-//		writeThreadsSlider.setValue(Config.getWriteThreads());
-//		maxLoadedFilesSlider.setValue(Config.getMaxLoadedFiles());
-
 		regionSelectionColorPreview.getStyleClass().clear();
 		chunkSelectionColorPreview.getStyleClass().clear();
 		pasteChunksColorPreview.getStyleClass().clear();
@@ -162,6 +158,11 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		shadeCheckBox.setOnAction(e -> shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected()));
 		shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected());
 
+		HBox debugBox = new HBox();
+		debugBox.getStyleClass().add("debug-box");
+		Hyperlink logFileLink = UIFactory.explorerLink(Translation.DIALOG_SETTINGS_SHOW_LOG_FILE, Config.getLogFile().getParentFile(), null);
+		debugBox.getChildren().addAll(debugCheckBox, logFileLink);
+
 		GridPane grid = new GridPane();
 		grid.getStyleClass().add("slider-grid-pane");
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_LANGUAGE), 0, 0, 1, 1);
@@ -185,7 +186,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		grid.add(pasteChunksColorPreview, 1, 7, 2, 1);
 		grid.add(shadeCheckBox, 1, 8, 2, 1);
 		grid.add(shadeWaterCheckBox, 1, 9, 2, 1);
-		grid.add(debugCheckBox, 1, 10, 2, 1);
+		grid.add(debugBox, 1, 10, 2, 1);
 		grid.add(UIFactory.attachTextFieldToSlider(readThreadsSlider), 2, 1, 1, 1);
 		grid.add(UIFactory.attachTextFieldToSlider(processThreadsSlider), 2, 2, 1, 1);
 		grid.add(UIFactory.attachTextFieldToSlider(writeThreadsSlider), 2, 3, 1, 1);

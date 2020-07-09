@@ -215,6 +215,7 @@ public final class Config {
 		if (!configFile.exists()) {
 			return;
 		}
+		String userDir = DEFAULT_BASE_DIR.getAbsolutePath();
 		Map<String, String> config = new HashMap<>();
 		try {
 			Files.lines(configFile.toPath()).forEach(l -> {
@@ -236,15 +237,15 @@ public final class Config {
 			//set values
 			baseCacheDir = new File(config.getOrDefault(
 					"BaseCacheDir",
-					baseCacheDir.getAbsolutePath()).replace("{user.dir}", DEFAULT_BASE_CACHE_DIR.getAbsolutePath())
+					DEFAULT_BASE_CACHE_DIR.getAbsolutePath()).replace("{user.dir}", userDir)
 			);
 			logFile = new File(config.getOrDefault(
 					"LogFile",
-					logFile.getAbsolutePath()).replace("{user.dir}", DEFAULT_BASE_LOG_FILE.getAbsolutePath())
+					DEFAULT_BASE_LOG_FILE.getAbsolutePath()).replace("{user.dir}", userDir)
 			);
 			configFile = new File(config.getOrDefault(
 					"ConfigFile",
-					configFile.getAbsolutePath()).replace("{user.dir}", DEFAULT_BASE_CONFIG_FILE.getAbsolutePath())
+					DEFAULT_BASE_CONFIG_FILE.getAbsolutePath()).replace("{user.dir}", userDir)
 			);
 
 			String localeString = config.getOrDefault("Locale", DEFAULT_LOCALE.toString());

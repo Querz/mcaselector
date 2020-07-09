@@ -47,6 +47,7 @@ dialog.settings.chunk_color;Farbe selektierter Chunk
 dialog.settings.shade;Schatten
 dialog.settings.shade_water;Wassertiefe
 dialog.settings.print_debug;Debug
+dialog.settings.show_log_file;Log-Datei anzeigen
 dialog.settings.reset;Zurücksetzen
 dialog.goto.title;Gehe zu Koordinaten
 dialog.confirmation.question;Bist Du dir sicher?

@@ -47,6 +47,7 @@ dialog.settings.chunk_color;区块选择颜色
 dialog.settings.shade;阴影
 dialog.settings.shade_water;水深
 dialog.settings.print_debug;打印调试消息
+dialog.settings.show_log_file;显示日志文件
 dialog.settings.reset;重置
 dialog.goto.title;转到位置
 dialog.confirmation.question;你确定吗?
