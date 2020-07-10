@@ -38,30 +38,16 @@ public final class Config {
 		String osName = System.getProperty("os.name").toLowerCase();
 		if (osName.contains("mac")) {
 			DEFAULT_BASE_CACHE_DIR = new File(System.getProperty("user.home"), "Library/Caches/mcaselector");
-			DEFAULT_BASE_LOG_FILE = new File(System.getProperty("user.home"), ".log/mcaselector/debug.log");
+			DEFAULT_BASE_LOG_FILE = new File(System.getProperty("user.home"), "Library/Logs/mcaselector/debug.log");
 			DEFAULT_BASE_CONFIG_FILE = new File(System.getProperty("user.home"), "Library/Application Support/mcaselector/settings.ini");
 		} else if (osName.contains("windows")) {
-			String localAppData = System.getenv("LOCALAPPDATA");
-			File localAppDataFile;
-			if (localAppData == null || localAppData.isEmpty()) {
-				localAppDataFile = DEFAULT_BASE_DIR;
-			} else {
-				localAppDataFile = new File(localAppData);
-			}
-			DEFAULT_BASE_CACHE_DIR = new File(localAppDataFile, "mcaselector/cache");
-			DEFAULT_BASE_LOG_FILE = new File(localAppDataFile, "mcaselector/debug.log");
-			DEFAULT_BASE_CONFIG_FILE = new File(localAppDataFile, "mcaselector/settings.ini");
+			DEFAULT_BASE_CACHE_DIR = getEnvFilesWithDefault(DEFAULT_BASE_DIR, "mcaselector/cache", "LOCALAPPDATA");
+			DEFAULT_BASE_LOG_FILE = getEnvFilesWithDefault(DEFAULT_BASE_DIR, "mcaselector/debug.log", "LOCALAPPDATA");
+			DEFAULT_BASE_CONFIG_FILE = getEnvFilesWithDefault(DEFAULT_BASE_DIR, "mcaselector/settings.ini", "LOCALAPPDATA");
 		} else {
-			String linuxCacheDir = System.getenv("XDG_CACHE_DIR");
-			File linuxCacheDirFile;
-			if (linuxCacheDir == null || linuxCacheDir.isEmpty()) {
-				linuxCacheDirFile = new File(System.getProperty("user.home"), ".cache");
-			} else {
-				linuxCacheDirFile = new File(linuxCacheDir);
-			}
-			DEFAULT_BASE_CACHE_DIR = new File(linuxCacheDirFile, "mcaselector");
-			DEFAULT_BASE_LOG_FILE = new File(System.getProperty("user.home"), ".log/mcaselector/debug.log");
-			DEFAULT_BASE_CONFIG_FILE = new File(System.getProperty("user.home"), ".mcaselector");
+			DEFAULT_BASE_CACHE_DIR = getEnvFilesWithDefault(new File(System.getProperty("user.home"), ".cache"), "mcaselector", "XDG_CACHE_HOME", "XDG_CACHE_DIR", "XDG_CACHE_DIRS");
+			DEFAULT_BASE_LOG_FILE = getEnvFilesWithDefault(new File(System.getProperty("user.home"), ".local/share"), "mcaselector/debug.log", "XDG_DATA_HOME", "XDG_DATA_DIRS");
+			DEFAULT_BASE_CONFIG_FILE = getEnvFilesWithDefault(new File(System.getProperty("user.home"), ".mcaselector"), "mcaselector/settings.ini", "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
 		}
 
 		if (!DEFAULT_BASE_CACHE_DIR.exists()) {
@@ -73,6 +59,22 @@ public final class Config {
 		if (!DEFAULT_BASE_CONFIG_FILE.getParentFile().exists()) {
 			DEFAULT_BASE_CONFIG_FILE.getParentFile().mkdirs();
 		}
+	}
+
+	private static File getEnvFilesWithDefault(File def, String suffix, String... envs) {
+		for (String env : envs) {
+			String value = System.getenv(env);
+			if (value != null && !value.isEmpty()) {
+				for (String part : value.split(":")) {
+					File f = new File(part, suffix);
+					if (f.exists()) {
+						return f;
+					}
+				}
+				return new File(value, suffix);
+			}
+		}
+		return new File(def, suffix);
 	}
 
 	public static final Color DEFAULT_REGION_SELECTION_COLOR = new Color(1, 0.45, 0, 0.8);
@@ -91,7 +93,6 @@ public final class Config {
 	private static UUID worldUUID = null;
 	private static File baseCacheDir = DEFAULT_BASE_CACHE_DIR;
 	private static File logFile = DEFAULT_BASE_LOG_FILE;
-	private static File configFile = DEFAULT_BASE_CONFIG_FILE;
 	private static File cacheDir = null;
 
 	private static Locale locale = DEFAULT_LOCALE;
@@ -161,7 +162,7 @@ public final class Config {
 	}
 
 	public static File getConfigFile() {
-		return configFile;
+		return DEFAULT_BASE_CONFIG_FILE;
 	}
 
 	public static void setShade(boolean shade) {
@@ -212,13 +213,13 @@ public final class Config {
 	}
 
 	public static void loadFromIni() {
-		if (!configFile.exists()) {
+		if (!DEFAULT_BASE_CONFIG_FILE.exists()) {
 			return;
 		}
 		String userDir = DEFAULT_BASE_DIR.getAbsolutePath();
 		Map<String, String> config = new HashMap<>();
 		try {
-			Files.lines(configFile.toPath()).forEach(l -> {
+			Files.lines(DEFAULT_BASE_CONFIG_FILE.toPath()).forEach(l -> {
 				if (l.charAt(0) == ';') {
 					return;
 				}
@@ -292,7 +293,7 @@ public final class Config {
 			return;
 		}
 		try {
-			Files.write(configFile.toPath(), lines);
+			Files.write(DEFAULT_BASE_CONFIG_FILE.toPath(), lines);
 		} catch (IOException ex) {
 			Debug.dumpException("error writing settings", ex);
 		}
