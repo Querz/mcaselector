@@ -277,7 +277,7 @@ public class ChunkImporter {
 
 					Debug.dumpf("merging chunk from region %s into %s", sourceData.getKey(), target);
 
-					source.mergeChunksInto(destination, offset, overwrite, sourceChunks.get(sourceData.getKey()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
+					source.mergeChunksInto(destination, offset, overwrite, sourceChunks == null ? null : sourceChunks.get(sourceData.getKey()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
 				}
 
 				MCAFilePipe.executeSaveData(new MCAChunkImporterSaveJob(getFile(), destination, progressChannel));
