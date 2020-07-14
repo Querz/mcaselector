@@ -37,10 +37,9 @@
 * [Checkout and building](#checkout-and-building)
 * [Translation](#translation)
 * [Download and installation](#download-and-installation)
-    * [If you have Java from Oracle installed on your system](#if-you-have-java-from-oracle-installed-on-your-system)
-    * [If you have Minecraft Java Edition installed on your system](#if-you-have-minecraft-java-edition-installed-on-your-system)
-    * [If you are using OpenJDK](#if-you-are-using-openjdk)
-    * [If you are using Java 11 or higher](#if-you-are-using-java-11-or-higher)
+  * [What works on most systems](#what-works-on-most-systems)
+  * [If you have Minecraft Java Edition installed](#if-you-have-minecraft-java-edition-installed)
+  * [If you receive a JavaFX error](#if-you-receive-a-javafx-error)
 <!--toc-end-->
 
 ---
@@ -337,7 +336,7 @@ If you would like to contribute a translation, you can find the language files i
 
 ## Download and installation
 
-[**Download Version 1.12.1**](https://github.com/Querz/mcaselector/releases/download/1.12.1/mcaselector-1.12.1.jar)
+[**Download Version 1.12.2**](https://github.com/Querz/mcaselector/releases/download/1.12.2/mcaselector-1.12.2.jar)
 
 "Requirements":
 * Either:
@@ -347,33 +346,47 @@ If you would like to contribute a translation, you can find the language files i
   * At least 6 GB of RAM. If lower, more RAM has to manually be assigned to the JVM using the `-Xmx` argument. Assigning 4 GB is recommended.
 * A brain
 
-#### If you have Java from Oracle installed on your system
+### What works on most systems
+Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.12.2.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
 
-Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.12.1.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
+### If you have Minecraft Java Edition installed
+Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of Java on your system.
 
-#### If you have Minecraft Java Edition installed on your system
+For Windows:
+* Hold `Shift` and Right-click on an empty space and select `Open PowerShell window here` (`Open Command window here` on Windows 8 and earlier).
+* Type `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\java -jar `, then drag and drop the `mcaselector-1.12.2.jar into the console` and press `Enter`.
 
-Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of java on your system. On Windows, that java version is usually located in `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\` and once inside this folder you can simply run `java.exe -jar <path-to-mcaselector-1.12.1.jar>`. On Mac OS you should find it in `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/` where you can execute `./java -jar <path-to-mcaselector-1.12.1.jar>`.
+For MacOS:
+* Press `Cmd+Space`, type `Terminal` and press `Enter`.
+* Type `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/java -jar ` (with a space at the end), then drag and drop the `mcaselector-1.12.2.jar` into the console and press `Enter`.
 
-**WARNING:** For macOS 10.14+ (Mojave) It is NOT recommended to use the JRE provided by Minecraft (1.8.0_74), because it contains a severe bug that causes JavaFX applications to crash when they lose focus while a dialog window (such as the save-file-dialog) is open (see the bug report [here](https://bugs.openjdk.java.net/browse/JDK-8211304)). This bug has been fixed in Java 1.8.0_201 and above.
+**WARNING:** For MacOS 10.14+ (Mojave) It is NOT recommended to use the JRE provided by Minecraft (1.8.0_74), because it contains a severe bug that causes JavaFX applications to crash when they lose focus while a dialog window (such as the save-file-dialog) is open (see the bug report [here](https://bugs.openjdk.java.net/browse/JDK-8211304)). This bug has been fixed in Java 1.8.0_201 and above.
 
-#### If you are using OpenJDK
+### If you receive a JavaFX error
+"When I run `mcaselector-1.12.2.jar`, an error dialog appears that looks like this:"
 
-If you are using a distribution of OpenJDK, you have to make sure that it comes with [JavaFX](https://gluonhq.com/products/javafx/), as it is needed to run the MCA Selector. Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. On Debian distributions, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of JavaFX is required to run the `.jar`.
+<p align="center">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/84ccd7e9b8e70b885a36f8bdf8fce62953be00b2/missing_javafx.png" alt="Popup dialog stating a missing JavaFX installation">
+</p>
 
-#### If you are using Java 11 or higher
+Please find and download the appropriate JavaFX version from [Here](https://gluonhq.com/products/javafx/). If you know what to do, do it. If you don't, follow these steps:
 
-If you are using Java 11 or higher, the JavaFX modules are not included automatically. You will need to include them by specifying the module path for JavaFX. Some examples are included below, but you may need to edit paths if your system stores the JavaFX modules in a different location.
+For Windows:
+* Download "JavaFX Windows SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
+* Unzip the `.zip`-file with your program of choice, then navigate into the unzipped folder.
+* Hold `Shift` and Right-click on an empty space in that folder and select `Open PowerShell window here` (`Open Command window here` on Windows 8 and earlier). Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type ` --add-modules ALL-MODULE-PATH -jar ` (with a space at the beginning and the end), then drag and drop the `mcaselector-1.12.2.jar into the console and hit `Enter`.
 
-On Windows with Oracle Java 13:
-```
-"C:\Program Files\Java\jdk-13.0.1\bin\java.exe" --module-path "C:\Program Files\Java\javafx-sdk-13.0.1\lib" --add-modules ALL-MODULE-PATH -jar mcaselector-1.12.1.jar
-```
+For MacOS:
+* Download "JavaFX Mac OS X SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
+* Double-click the `.zip`-file to unpack, then navigate into the unzipped folder.
+* Press `Cmd+Space`, type `Terminal` and press `Enter`. Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type `--add-modules ALL-MODULE-PATH -jar ` (with a space at the end), then drag and drop the `mcaselector-1.12.2.jar` into the console and hit `Enter`.
 
-On Debian with OpenJDK 11 and openjfx:
-```
-java --module-path /usr/share/openjfx/lib --add-modules ALL-MODULE-PATH -jar mcaselector-1.12.1.jar
-```
+For Linux:
+* Download "JavaFX Linux SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
+* Unzip the `.zip`-file with your program of choice.
+* Open the command prompt and type `java --module-path <path to unzipped folder>/lib --add-modules ALL-MODULE-PATH -jar <path to mcaselector-1.12.2.jar>` where you replace everything in `<>` with the appropriate paths.
+* Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. On Debian, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of JavaFX is required to run the `mcaselector-1.12.2.jar`.
 
-##
-If none of these instructions work, apply "A brain" that you providently held ready after having read the "Requirements" section carefully.
+---
+
+If none of these instructions work, apply "A brain" that you providently held ready after having read the "Requirements" section carefully. Or ask your question on [Discord](https://discord.gg/h942U8U).
