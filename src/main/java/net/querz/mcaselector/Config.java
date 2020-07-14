@@ -45,7 +45,7 @@ public final class Config {
 			DEFAULT_BASE_LOG_FILE = getEnvFilesWithDefault(DEFAULT_BASE_DIR, "mcaselector/debug.log", "LOCALAPPDATA");
 			DEFAULT_BASE_CONFIG_FILE = getEnvFilesWithDefault(DEFAULT_BASE_DIR, "mcaselector/settings.ini", "LOCALAPPDATA");
 		} else {
-			DEFAULT_BASE_CACHE_DIR = getEnvFilesWithDefault(new File(System.getProperty("user.home"), ".cache"), "mcaselector", "XDG_CACHE_HOME", "XDG_CACHE_DIR", "XDG_CACHE_DIRS");
+			DEFAULT_BASE_CACHE_DIR = getEnvFilesWithDefault(new File(System.getProperty("user.home"), ".cache"), "mcaselector", "XDG_CACHE_HOME", "XDG_CACHE_DIRS");
 			DEFAULT_BASE_LOG_FILE = getEnvFilesWithDefault(new File(System.getProperty("user.home"), ".local/share"), "mcaselector/debug.log", "XDG_DATA_HOME", "XDG_DATA_DIRS");
 			DEFAULT_BASE_CONFIG_FILE = getEnvFilesWithDefault(new File(System.getProperty("user.home"), ".mcaselector"), "mcaselector/settings.ini", "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
 		}
