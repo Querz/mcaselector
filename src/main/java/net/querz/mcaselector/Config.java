@@ -41,13 +41,13 @@ public final class Config {
 			DEFAULT_BASE_LOG_FILE = new File(System.getProperty("user.home"), "Library/Logs/mcaselector/debug.log");
 			DEFAULT_BASE_CONFIG_FILE = new File(System.getProperty("user.home"), "Library/Application Support/mcaselector/settings.ini");
 		} else if (osName.contains("windows")) {
-			DEFAULT_BASE_CACHE_DIR = getEnvFilesWithDefault(DEFAULT_BASE_DIR.getAbsolutePath(), "mcaselector/cache", "LOCALAPPDATA");
-			DEFAULT_BASE_LOG_FILE = getEnvFilesWithDefault(DEFAULT_BASE_DIR.getAbsolutePath(), "mcaselector/debug.log", "LOCALAPPDATA");
-			DEFAULT_BASE_CONFIG_FILE = getEnvFilesWithDefault(DEFAULT_BASE_DIR.getAbsolutePath(), "mcaselector/settings.ini", "LOCALAPPDATA");
+			DEFAULT_BASE_CACHE_DIR = getEnvFilesWithDefault(DEFAULT_BASE_DIR.getAbsolutePath(), "mcaselector/cache", ';', "LOCALAPPDATA");
+			DEFAULT_BASE_LOG_FILE = getEnvFilesWithDefault(DEFAULT_BASE_DIR.getAbsolutePath(), "mcaselector/debug.log", ';', "LOCALAPPDATA");
+			DEFAULT_BASE_CONFIG_FILE = getEnvFilesWithDefault(DEFAULT_BASE_DIR.getAbsolutePath(), "mcaselector/settings.ini", ';', "LOCALAPPDATA");
 		} else {
-			DEFAULT_BASE_CACHE_DIR = getEnvFilesWithDefault("~/.cache", "mcaselector", "XDG_CACHE_HOME", "XDG_CACHE_DIRS");
-			DEFAULT_BASE_LOG_FILE = getEnvFilesWithDefault("~/.local/share", "mcaselector/debug.log", "XDG_DATA_HOME", "XDG_DATA_DIRS");
-			DEFAULT_BASE_CONFIG_FILE = getEnvFilesWithDefault("~/.mcaselector", "mcaselector/settings.ini", "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
+			DEFAULT_BASE_CACHE_DIR = getEnvFilesWithDefault("~/.cache", "mcaselector", ':', "XDG_CACHE_HOME", "XDG_CACHE_DIRS");
+			DEFAULT_BASE_LOG_FILE = getEnvFilesWithDefault("~/.local/share", "mcaselector/debug.log", ';', "XDG_DATA_HOME", "XDG_DATA_DIRS");
+			DEFAULT_BASE_CONFIG_FILE = getEnvFilesWithDefault("~/.mcaselector", "mcaselector/settings.ini", ';', "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
 		}
 
 		if (!DEFAULT_BASE_CACHE_DIR.exists()) {
@@ -61,11 +61,11 @@ public final class Config {
 		}
 	}
 
-	private static File getEnvFilesWithDefault(String def, String suffix, String... envs) {
+	private static File getEnvFilesWithDefault(String def, String suffix, char divider, String... envs) {
 		for (String env : envs) {
 			String value = System.getenv(env);
 			if (value != null && !value.isEmpty()) {
-				String[] split = value.split(":");
+				String[] split = value.split("" + divider);
 				if (split.length > 1) {
 					for (String part : split) {
 						File f = new File(resolveHome(part), suffix);

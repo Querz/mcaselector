@@ -187,6 +187,7 @@ public final class Debug {
 		Debug.dumpf("os.name:                      %s", System.getProperty("os.name"));
 		Debug.dumpf("os.version:                   %s", System.getProperty("os.version"));
 		Debug.dumpf("user.dir:                     %s", System.getProperty("user.dir"));
+		Debug.dumpf("jar.dir:                      %s", Config.DEFAULT_BASE_DIR);
 		Debug.dumpf("cache.dir:                    %s", Config.getBaseCacheDir().getAbsolutePath());
 		Debug.dumpf("config.file:                  %s", Config.getConfigFile().getAbsolutePath());
 		Debug.dumpf("log.file                      %s", Config.getLogFile().getAbsolutePath());
