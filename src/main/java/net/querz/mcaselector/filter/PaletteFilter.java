@@ -64,6 +64,8 @@ public class PaletteFilter extends TextFilter<List<String>> {
 					setValue(null);
 					setValid(false);
 					return;
+				} else {
+					rawBlockNames[i] = "minecraft:" + rawBlockNames[i];
 				}
 			}
 			setValid(true);

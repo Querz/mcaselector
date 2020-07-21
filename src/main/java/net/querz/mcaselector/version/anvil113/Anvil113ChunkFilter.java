@@ -37,7 +37,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 					continue;
 				}
 				for (CompoundTag p : palette) {
-					if (("minecraft:" + name).equals(withDefault(() -> p.getString("Name"), null))) {
+					if (name.equals(withDefault(() -> p.getString("Name"), null))) {
 						c++;
 						continue nameLoop;
 					}
