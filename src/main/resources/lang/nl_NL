@@ -1,0 +1,124 @@
+status.region;region
+status.region.tooltip;De momenteel gekozen region, representeert de nummers in de bestandsnaam.
+status.chunk;chunk
+status.chunk.tooltip;De momenteel gekozen chunk.
+status.block;blok
+status.block.tooltip;Een benadering van het momenteel gekozen blok.
+status.selected;geselecteerd
+status.selected.tooltip;De momenteel geselecteerde hoeveelheid chunks.
+status.visible;zichtbaar
+status.visible.tooltip;De hoeveelheid geladen region afbeeldingen voor het renderen.
+status.total;totaal
+status.total.tooltip;De totale hoeveelheid geladen regions, inclusief de niet zichtbare geselecteerde regions.
+menu.file;Bestand
+menu.view;Beeld
+menu.selection;Selectie
+menu.tools;Gereedschap
+menu.about;Over
+menu.file.open;Open
+menu.file.settings;Instellingen
+menu.file.quit;Stoppen
+menu.view.chunk_grid;Chunk Raster
+menu.view.region_grid;Region Raster
+menu.view.goto;Ga naar
+menu.view.clear_cache;Cache wissen
+menu.view.clear_all_cache;Wis alle cache
+menu.selection.clear;Wissen
+menu.selection.copy_chunks;Kopiëer chunks
+menu.selection.paste_chunks;Plak chunks
+menu.selection.export_chunks;Geselecteerde chunks exporteren
+menu.selection.delete_chunks;Geselcteerde chunks verwijderen
+menu.selection.import_selection;Selectie importeren
+menu.selection.export_selection;Selectie exporteren
+menu.selection.clear_cache;Cache wissen
+menu.tools.import_chunks;Chunks importeren
+menu.tools.filter_chunks;Chunks filteren
+menu.tools.change_fields;Velden veranderen
+menu.tools.edit_nbt;Chunk aanpassen
+menu.tools.swap_chunks;Chunks omwisselen
+dialog.settings.title;Instellingen
+dialog.settings.language;Taal
+dialog.settings.read_threads;Lees Threads
+dialog.settings.process_threads;Verwerk Threads
+dialog.settings.write_threads;Schrijf Threads
+dialog.settings.max_files;Maximaal geladen bestanden
+dialog.settings.region_color;Region selectie kleur
+dialog.settings.chunk_color;Chunk selectie kleur
+dialog.settings.shade;Schaduw
+dialog.settings.shade_water;Shaduw water
+dialog.settings.print_debug;Print foutopsporingsberichten
+dialog.settings.show_log_file;Toon logbestand
+dialog.settings.reset;Reset
+dialog.goto.title;Ga naar locatie
+dialog.confirmation.question;Weet je het zeker?
+dialog.delete_chunks_confirmation.title;Chunks verwijderen
+dialog.delete_chunks_confirmation.header_short;Je staat op het punt een onbekend aantal chunks uit deze wereld te verwijderen.
+dialog.delete_chunks_confirmation.header_verbose;Je staat op het punt %d chunks uit deze wereld te verwijderen.
+dialog.import_chunks_confirmation.title;Chunks importeren
+dialog.import_chunks_confirmation.header;Je staat op het punt een onbekend aantal chunks in deze wereld te importeren.
+dialog.import_chunks_confirmation.options;Opties
+dialog.import_chunks_confirmation.options.offset;Verplaatsing
+dialog.import_chunks_confirmation.options.overwrite;Schrijf bestaande chunks over
+dialog.import_chunks_confirmation.options.selection_only;Alleen van toepassing op selectie
+dialog.import_chunks_confirmation.options.sections;Secties
+dialog.import_chunks_confirmation.warning;Waarschuwing: Importeren van verplaatste chunks update niet de inhoud van command blocks.
+dialog.export_chunks_confirmation.title;Chunks exporteren
+dialog.export_chunks_confirmation.header_short;Je staat op het punt een onbekend aantal chunks uit deze wereld te exporteren.
+dialog.export_chunks_confirmation.header_verbose;Je staat op het punt %d chunks uit deze wereld te exporteren.
+dialog.filter_chunks.title;Chunks filteren
+dialog.filter_chunks.filter.add.tooltip;Voeg een nieuwe voorwaarde hieronder toe.
+dialog.filter_chunks.filter.delete.tooltip;Verwijder deze voorwaarde.
+dialog.filter_chunks.filter.type.tooltip;Het type van deze voorwaarde.
+dialog.filter_chunks.filter.operator.tooltip;De operator om meerdere voorwaarden te koppelen.
+dialog.filter_chunks.filter.comparator.tooltip;The vergelijker.
+dialog.filter_chunks.select;Selecteren
+dialog.filter_chunks.select.tooltip;Creëert een selectie van de aangepaste chunks.
+dialog.filter_chunks.export;Exporteren
+dialog.filter_chunks.export.tooltip;Exporteert alle aangepaste chunks in een nieuwe map.
+dialog.filter_chunks.delete;Verwijderen
+dialog.filter_chunks.delete.tooltip;Verwijdert alle aangepaste chunks uit de huidige wereld.
+dialog.filter_chunks.selection_only;Alleen van toepassing op selectie
+dialog.filter_chunks.selection_radius;Selectie radius
+dialog.filter_chunks.selection_only.tooltip;Of dit filter alleen van toepassing is op de huidige selectie.
+dialog.change_nbt.title;NBT aanpassen
+dialog.change_nbt.change;Aanpassen
+dialog.change_nbt.change.tooltip;Past de waarde alleen aan als de bijbehorende sleutel bestaat.
+dialog.change_nbt.force;Forceer
+dialog.change_nbt.force.tooltip;Creëert het label als het niet bestaat.
+dialog.change_nbt.selection_only;Alleen van toepassing op selectie
+dialog.change_nbt.selection_only.tooltip;Of dit filter alleen van toepassing is op de huidige selectie.
+dialog.change_nbt_confirmation.title;NBT aanpassen
+dialog.change_nbt_confirmation.header_short;Je staat op het punt de gegevens van een onbekend aantal chunks in deze wereld te veranderen.
+dialog.change_nbt_confirmation.header_verbose;Je staat op het punt de gegevens van %d chunks in deze wereld te veranderen.
+dialog.edit_nbt.title;Chunk aanpassen
+dialog.edit_nbt.placeholder.loading;bezig met laden...
+dialog.edit_nbt.placeholder.no_chunk_data;geen chunk gegevens gevonden
+dialog.edit_nbt.placeholder.no_region_file;region bestand bestaat niet
+dialog.edit_array.index;Index
+dialog.edit_array.value;Waarde
+dialog.about.title;Over
+dialog.about.header;Over MCA Selector
+dialog.about.version;Versie:
+dialog.about.version.unknown;onbekend
+dialog.about.version.check;controleren
+dialog.about.version.checking;bezig met controleren...
+dialog.about.version.up_to_date;Actueel
+dialog.about.version.error;Fout
+dialog.about.license;Licentie:
+dialog.about.copyright;Auteursrechten:
+dialog.about.source;Bron:
+dialog.progress.title;Vooruitgang
+dialog.progress.no_files;geen bestanden
+dialog.progress.running;lopend...
+dialog.progress.cancelling;wordt geannuleerd...
+dialog.progress.collecting_data;gegevens verzamelen...
+dialog.progress.done;klaar.
+dialog.progress.title.deleting_selection;Selectie verwijderen...
+dialog.progress.title.exporting_selection;Selectie exporteren...
+dialog.progress.title.importing_chunks;Chunks importeren...
+dialog.progress.title.deleting_filtered_chunks;Gefilterde chunks verwijderen...
+dialog.progress.title.exporting_filtered_chunks;Gefilterde chunks exporteren...
+dialog.progress.title.selecting_filtered_chunks;Gefilterde chunks selecteren...
+dialog.progress.title.changing_nbt_data;NBT gegevens aanpassen...
+button.cancel;Annuleren
+button.ok;OK
