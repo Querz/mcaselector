@@ -379,11 +379,8 @@ For MacOS:
 
 Type the command `java -version` and press `Enter`. If the output shows that your java command is linked to `java version "1.8.0"`, you can simply run MCA Selector through the console.
 
-For Windows:
+For Windows and MacOS:
 * Type `java -jar ` (with a space at the end) and drag and drop the `mcaselector-1.12.2.jar` into the console and hit `Enter`.
-
-For MacOS:
-* Type `java -jar ` (with a space at the end and drag and drop the `mcaselector-1.12.2.jar` into the console and hit `Enter`.
 
 For Linux:
 * Run `java -jar <path to mcaselector-1.12.2.jar` where you replace everything in `<>`.
