@@ -189,7 +189,8 @@ The MCA Selector currently supports the following Minecraft versions:
 | 1.13 - 1.13.2     | 1444 - 1631 |
 | 1.14 - 1.14.4     | 1901 - 1976 |
 | 1.15 - 1.15.2     | 2200 - 2230 |
-| 1.16 - ?          | 2566 - ?    |
+| 1.16 - 1.16.1     | 2566 - 2567 |
+| 20w29a            | 2571        |
 
 There is no guarantee for worlds generated in a Snapshot version to work, even if it is specified in the table above. This only represents the current development status towards the next Minecraft release. Old Snapshots of past Minecraft releases are not supported.
 
@@ -336,7 +337,7 @@ If you would like to contribute a translation, you can find the language files i
 
 ## Download and installation
 
-[**Download Version 1.12.2**](https://github.com/Querz/mcaselector/releases/download/1.12.2/mcaselector-1.12.2.jar)
+[**Download Version 1.12.3**](https://github.com/Querz/mcaselector/releases/download/1.12.3/mcaselector-1.12.3.jar)
 
 "Requirements":
 * Either:
@@ -347,23 +348,23 @@ If you would like to contribute a translation, you can find the language files i
 * A brain
 
 ### What works on most systems
-Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.12.2.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
+Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.12.3.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
 
 ### If you have Minecraft Java Edition installed
 Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of Java on your system.
 
 For Windows:
 * Hold `Shift` and Right-click on an empty space and select `Open PowerShell window here` (`Open Command window here` on Windows 8 and earlier).
-* Type `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\java -jar `, then drag and drop the `mcaselector-1.12.2.jar into the console` and press `Enter`.
+* Type `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\java -jar `, then drag and drop the `mcaselector-1.12.3.jar into the console` and press `Enter`.
 
 For MacOS:
 * Press `Cmd+Space`, type `Terminal` and press `Enter`.
-* Type `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/java -jar ` (with a space at the end), then drag and drop the `mcaselector-1.12.2.jar` into the console and press `Enter`.
+* Type `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/java -jar ` (with a space at the end), then drag and drop the `mcaselector-1.12.3.jar` into the console and press `Enter`.
 
 **WARNING:** For MacOS 10.14+ (Mojave) It is NOT recommended to use the JRE provided by Minecraft (1.8.0_74), because it contains a severe bug that causes JavaFX applications to crash when they lose focus while a dialog window (such as the save-file-dialog) is open (see the bug report [here](https://bugs.openjdk.java.net/browse/JDK-8211304)). This bug has been fixed in Java 1.8.0_201 and above.
 
 ### If you receive a JavaFX error
-"When I run `mcaselector-1.12.2.jar`, an error dialog appears that looks like this:"
+"When I run `mcaselector-1.12.3.jar`, an error dialog appears that looks like this:"
 
 <p align="center">
   <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/84ccd7e9b8e70b885a36f8bdf8fce62953be00b2/missing_javafx.png" alt="Popup dialog stating a missing JavaFX installation">
@@ -380,28 +381,28 @@ For MacOS:
 Type the command `java -version` and press `Enter`. If the output shows that your java command is linked to `java version "1.8.0"`, you can simply run MCA Selector through the console.
 
 For Windows and MacOS:
-* Type `java -jar ` (with a space at the end) and drag and drop the `mcaselector-1.12.2.jar` into the console and hit `Enter`.
+* Type `java -jar ` (with a space at the end) and drag and drop the `mcaselector-1.12.3.jar` into the console and hit `Enter`.
 
 For Linux:
-* Run `java -jar <path to mcaselector-1.12.2.jar` where you replace everything in `<>`.
+* Run `java -jar <path to mcaselector-1.12.3.jar` where you replace everything in `<>`.
 
 If the output shows a Java version higher than Java 8, please find and download the appropriate JavaFX version from [Here](https://gluonhq.com/products/javafx/). If you know what to do, do it. If you don't, follow these steps:
 
 For Windows:
 * Download "JavaFX Windows SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
 * Unzip the `.zip`-file with your program of choice, then navigate into the unzipped folder.
-* Hold `Shift` and Right-click on an empty space in that folder and select `Open PowerShell window here` (`Open Command window here` on Windows 8 and earlier). Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type ` --add-modules ALL-MODULE-PATH -jar ` (with a space at the beginning and the end), then drag and drop the `mcaselector-1.12.2.jar` into the console and hit `Enter`.
+* Hold `Shift` and Right-click on an empty space in that folder and select `Open PowerShell window here` (`Open Command window here` on Windows 8 and earlier). Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type ` --add-modules ALL-MODULE-PATH -jar ` (with a space at the beginning and the end), then drag and drop the `mcaselector-1.12.3.jar` into the console and hit `Enter`.
 
 For MacOS:
 * Download "JavaFX Mac OS X SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
 * Double-click the `.zip`-file to unpack, then navigate into the unzipped folder.
-* Press `Cmd+Space`, type `Terminal` and press `Enter`. Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type `--add-modules ALL-MODULE-PATH -jar ` (with a space at the end), then drag and drop the `mcaselector-1.12.2.jar` into the console and hit `Enter`.
+* Press `Cmd+Space`, type `Terminal` and press `Enter`. Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type `--add-modules ALL-MODULE-PATH -jar ` (with a space at the end), then drag and drop the `mcaselector-1.12.3.jar` into the console and hit `Enter`.
 
 For Linux:
 * Download "JavaFX Linux SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
 * Unzip the `.zip`-file with your program of choice.
-* Open the command prompt and run `java --module-path <path to unzipped folder>/lib --add-modules ALL-MODULE-PATH -jar <path to mcaselector-1.12.2.jar>` where you replace everything in `<>` with the appropriate paths.
-* Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. On Debian, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of JavaFX is required to run the `mcaselector-1.12.2.jar`.
+* Open the command prompt and run `java --module-path <path to unzipped folder>/lib --add-modules ALL-MODULE-PATH -jar <path to mcaselector-1.12.3.jar>` where you replace everything in `<>` with the appropriate paths.
+* Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. On Debian, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of JavaFX is required to run the `mcaselector-1.12.3.jar`.
 
 ---
 
