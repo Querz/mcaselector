@@ -369,12 +369,31 @@ For MacOS:
   <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/84ccd7e9b8e70b885a36f8bdf8fce62953be00b2/missing_javafx.png" alt="Popup dialog stating a missing JavaFX installation">
 </p>
 
-Please find and download the appropriate JavaFX version from [Here](https://gluonhq.com/products/javafx/). If you know what to do, do it. If you don't, follow these steps:
+Open the console or terminal on your OS.
+
+For Windows:
+* Hold `Shift` and Right-click on an empty space on your desktop and select `Open PowerShell here` (`Open Command window here` on Windows 8 and earlier).
+
+For MacOS:
+* Press `Cmd+Space`, type `Terminal` and press `Enter`.
+
+Type the command `java -version` and press `Enter`. If the output shows that your java command is linked to `java version "1.8.0"`, you can simply run MCA Selector through the console.
+
+For Windows:
+* Type `java -jar ` (with a space at the end) and drag and drop the `mcaselector-1.12.2.jar` into the console and hit `Enter`.
+
+For MacOS:
+* Type `java -jar ` (with a space at the end and drag and drop the `mcaselector-1.12.2.jar` into the console and hit `Enter`.
+
+For Linux:
+* Run `java -jar <path to mcaselector-1.12.2.jar` where you replace everything in `<>`.
+
+If the output shows a Java version higher than Java 8, please find and download the appropriate JavaFX version from [Here](https://gluonhq.com/products/javafx/). If you know what to do, do it. If you don't, follow these steps:
 
 For Windows:
 * Download "JavaFX Windows SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
 * Unzip the `.zip`-file with your program of choice, then navigate into the unzipped folder.
-* Hold `Shift` and Right-click on an empty space in that folder and select `Open PowerShell window here` (`Open Command window here` on Windows 8 and earlier). Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type ` --add-modules ALL-MODULE-PATH -jar ` (with a space at the beginning and the end), then drag and drop the `mcaselector-1.12.2.jar into the console and hit `Enter`.
+* Hold `Shift` and Right-click on an empty space in that folder and select `Open PowerShell window here` (`Open Command window here` on Windows 8 and earlier). Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type ` --add-modules ALL-MODULE-PATH -jar ` (with a space at the beginning and the end), then drag and drop the `mcaselector-1.12.2.jar` into the console and hit `Enter`.
 
 For MacOS:
 * Download "JavaFX Mac OS X SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
@@ -384,7 +403,7 @@ For MacOS:
 For Linux:
 * Download "JavaFX Linux SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
 * Unzip the `.zip`-file with your program of choice.
-* Open the command prompt and type `java --module-path <path to unzipped folder>/lib --add-modules ALL-MODULE-PATH -jar <path to mcaselector-1.12.2.jar>` where you replace everything in `<>` with the appropriate paths.
+* Open the command prompt and run `java --module-path <path to unzipped folder>/lib --add-modules ALL-MODULE-PATH -jar <path to mcaselector-1.12.2.jar>` where you replace everything in `<>` with the appropriate paths.
 * Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. On Debian, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of JavaFX is required to run the `mcaselector-1.12.2.jar`.
 
 ---
