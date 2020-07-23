@@ -1,0 +1,124 @@
+status.region;regione
+status.region.tooltip;La regione attualmente coperta ha il proprio numero nel nome del file.
+status.chunk;chunk
+status.chunk.tooltip;Il numero di chunk coperti.
+status.block;blocco
+status.block.tooltip;Un'approssimazione del numero di blocchi coperti.
+status.selected;selezionato
+status.selected.tooltip;Il numero corrente di chunk selezionati.
+status.visible;visibile
+status.visible.tooltip;Il numero di immagini di regioni caricate per il rendering.
+status.total;totale
+status.total.tooltip;Il numero totale di regioni caricate, incluse le regioni non visibili.
+menu.file;File
+menu.view;Vista
+menu.selection;Selezione
+menu.tools;Strumenti
+menu.about;Info
+menu.file.open;Apri
+menu.file.settings;Impostazioni
+menu.file.quit;Esci
+menu.view.chunk_grid;Griglia dei chunk
+menu.view.region_grid;Griglia della regione
+menu.view.goto;Vai a
+menu.view.clear_cache;Svuota la cache
+menu.view.clear_all_cache;Svuota tutta la cache
+menu.selection.clear;Svuota
+menu.selection.copy_chunks;Copia i chunk
+menu.selection.paste_chunks;Incolla i chunk
+menu.selection.export_chunks;Esporta i chunk selezionati
+menu.selection.delete_chunks;Elimina i chunk selezionati
+menu.selection.import_selection;Importa selezione
+menu.selection.export_selection;Esporta selezione
+menu.selection.clear_cache;Svuota la cache
+menu.tools.import_chunks;Importa dei chunk
+menu.tools.filter_chunks;Filtra i chunk
+menu.tools.change_fields;Cambia l'area
+menu.tools.edit_nbt;Modifica chunk
+menu.tools.swap_chunks;Scambia i chunk
+dialog.settings.title;Impostazioni
+dialog.settings.language;Lingua
+dialog.settings.read_threads;Leggi i thread
+dialog.settings.process_threads;Processa i thread
+dialog.settings.write_threads;Scrivi i thread
+dialog.settings.max_files;Numero massimo di file caricati
+dialog.settings.region_color;Colore della regione selezionata
+dialog.settings.chunk_color;Colore del chunk selezionato
+dialog.settings.shade;Ombra
+dialog.settings.shade_water;Sfumatura dell'acqua
+dialog.settings.print_debug;Scrivi il messaggio di debug
+dialog.settings.show_log_file;Mostra il file dei log
+dialog.settings.reset;Reset
+dialog.goto.title;Vai in un posto
+dialog.confirmation.question;Sei sicuro
+dialog.delete_chunks_confirmation.title;Elimina chunk
+dialog.delete_chunks_confirmation.header_short;Stai per eleminare un numero ignoto di chunk da questo mondo.
+dialog.delete_chunks_confirmation.header_verbose;Sei sicuro di voler eliminare %d chunk da questo mondo.
+dialog.import_chunks_confirmation.title;Importa chunk
+dialog.import_chunks_confirmation.header;Stai per importare un numero ignoto di chunk in questo mondo.
+dialog.import_chunks_confirmation.options;Opzioni
+dialog.import_chunks_confirmation.options.offset;Offset
+dialog.import_chunks_confirmation.options.overwrite;Sovrascrivi chunk esistenti
+dialog.import_chunks_confirmation.options.selection_only;Applica solo alla selezione
+dialog.import_chunks_confirmation.options.sections;Sezioni
+dialog.import_chunks_confirmation.warning;Attenzione Importare chunk con offset non modificherà le impostazioni dei command block.
+dialog.export_chunks_confirmation.title;Esporta chunk
+dialog.export_chunks_confirmation.header_short;Stai per esportare un numero ignoto di chunk da questo mondo.
+dialog.export_chunks_confirmation.header_verbose;Stai per esportare %d chunk da questo mondo.
+dialog.filter_chunks.title;Filtra chunk
+dialog.filter_chunks.filter.add.tooltip;Aggiungi una nuova condizione sotto questa.
+dialog.filter_chunks.filter.delete.tooltip;Elimina questa condizione.
+dialog.filter_chunks.filter.type.tooltip;Il tipo di questa condizione.
+dialog.filter_chunks.filter.operator.tooltip;L'operatore per collegare multiple condizioni.
+dialog.filter_chunks.filter.comparator.tooltip;The comparator.
+dialog.filter_chunks.select;Select
+dialog.filter_chunks.select.tooltip;Crea una selezione dei chunk affetti.
+dialog.filter_chunks.export;Esporta
+dialog.filter_chunks.export.tooltip;Esporta tutti i chunk affetti.
+dialog.filter_chunks.delete;Annulla
+dialog.filter_chunks.delete.tooltip;Elimina tutti i chunk affetti dal mondo corrente.
+dialog.filter_chunks.selection_only;Applica solo alla selezione
+dialog.filter_chunks.selection_radius;Raggio di selezione
+dialog.filter_chunks.selection_only.tooltip;If this filter should only apply to the current selection.
+dialog.change_nbt.title;Cambia NBT
+dialog.change_nbt.change;Cambia
+dialog.change_nbt.change.tooltip;Cambia il valore solo se la key esiste.
+dialog.change_nbt.force;Forza
+dialog.change_nbt.force.tooltip;Crea il tag se non esiste.
+dialog.change_nbt.selection_only;Applica solo alla selezione
+dialog.change_nbt.selection_only.tooltip;Se questo filtro deve essere applicato solo alla selezione corrente.
+dialog.change_nbt_confirmation.title;Change NBT
+dialog.change_nbt_confirmation.header_short;You are about to change data in an unknown number of chunks in this world.
+dialog.change_nbt_confirmation.header_verbose;Stai per cambiare i dati di %d chunk in questo mondo.
+dialog.edit_nbt.title;Modifica chunk
+dialog.edit_nbt.placeholder.loading;caricamento...
+dialog.edit_nbt.placeholder.no_chunk_data;no chunk data found
+dialog.edit_nbt.placeholder.no_region_file;region file does not exist
+dialog.edit_array.index;Indice
+dialog.edit_array.value;Valori
+dialog.about.title;About
+dialog.about.header;Su MCA Selector
+dialog.about.version;Versione
+dialog.about.version.unknown;sconosciuta
+dialog.about.version.check;controlla
+dialog.about.version.checking;controllando...
+dialog.about.version.up_to_date;Aggiornata
+dialog.about.version.error;Errore
+dialog.about.license;Licenza
+dialog.about.copyright;Diritti d'autore
+dialog.about.source;Fonte
+dialog.progress.title;Progressi
+dialog.progress.no_files;nessun file
+dialog.progress.running;eseguendo...
+dialog.progress.cancelling;cancellando...
+dialog.progress.collecting_data;collezionando dati...
+dialog.progress.done;fatto.
+dialog.progress.title.deleting_selection;Annullando selezione...
+dialog.progress.title.exporting_selection;Exporting selection...
+dialog.progress.title.importing_chunks;Importing chunks...
+dialog.progress.title.deleting_filtered_chunks;Eliminando i chunk filtrati...
+dialog.progress.title.exporting_filtered_chunks;Esportando i chunk filtrati...
+dialog.progress.title.selecting_filtered_chunks;Selezionando i chunk filtrati...
+dialog.progress.title.changing_nbt_data;Cambiando dati NBT...
+button.cancel;Annulla
+button.ok;Va bene
