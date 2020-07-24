@@ -70,7 +70,7 @@ dialog.filter_chunks.filter.add.tooltip;Aggiungi una nuova condizione sotto ques
 dialog.filter_chunks.filter.delete.tooltip;Elimina questa condizione.
 dialog.filter_chunks.filter.type.tooltip;Il tipo di questa condizione.
 dialog.filter_chunks.filter.operator.tooltip;L'operatore per collegare multiple condizioni.
-dialog.filter_chunks.filter.comparator.tooltip;The comparator.
+dialog.filter_chunks.filter.comparator.tooltip;Il comparatore.
 dialog.filter_chunks.select;Select
 dialog.filter_chunks.select.tooltip;Crea una selezione dei chunk affetti.
 dialog.filter_chunks.export;Esporta
@@ -92,11 +92,11 @@ dialog.change_nbt_confirmation.header_short;You are about to change data in an u
 dialog.change_nbt_confirmation.header_verbose;Stai per cambiare i dati di %d chunk in questo mondo.
 dialog.edit_nbt.title;Modifica chunk
 dialog.edit_nbt.placeholder.loading;caricamento...
-dialog.edit_nbt.placeholder.no_chunk_data;no chunk data found
-dialog.edit_nbt.placeholder.no_region_file;region file does not exist
+dialog.edit_nbt.placeholder.no_chunk_data;nessun dato di chunk trovato
+dialog.edit_nbt.placeholder.no_region_file;il file region non esiste
 dialog.edit_array.index;Indice
 dialog.edit_array.value;Valori
-dialog.about.title;About
+dialog.about.title;Info
 dialog.about.header;Su MCA Selector
 dialog.about.version;Versione
 dialog.about.version.unknown;sconosciuta
