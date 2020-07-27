@@ -176,7 +176,7 @@ public final class TileImage {
 		}
 		int dataVersion = chunkData.getData().getInt("DataVersion");
 		try {
-			VersionController.getChunkDataProcessor(dataVersion).drawChunk(
+			VersionController.getChunkRenderer(dataVersion).drawChunk(
 					chunkData.getData(),
 					VersionController.getColorMapping(dataVersion),
 					x, z,

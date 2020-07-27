@@ -18,13 +18,13 @@ public class PaletteFilter extends TextFilter<List<String>> {
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Objects.requireNonNull(PaletteFilter.class.getClassLoader().getResourceAsStream("block-names.csv"))))) {
+				new InputStreamReader(Objects.requireNonNull(PaletteFilter.class.getClassLoader().getResourceAsStream("mapping/all_block_names.txt"))))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				validNames.add(line);
 			}
 		} catch (IOException ex) {
-			Debug.dumpException("error reading block-names.csv", ex);
+			Debug.dumpException("error reading mapping/all_block_names.txt", ex);
 		}
 	}
 

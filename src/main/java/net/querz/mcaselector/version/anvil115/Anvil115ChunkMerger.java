@@ -1,128 +1,20 @@
-package net.querz.mcaselector.version.anvil112;
+package net.querz.mcaselector.version.anvil115;
 
 import net.querz.mcaselector.range.Range;
-import net.querz.mcaselector.version.ChunkDataProcessor;
-import net.querz.mcaselector.version.ColorMapping;
-import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.version.ChunkMerger;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.Tag;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
-import static net.querz.mcaselector.validation.ValidationHelper.*;
+import static net.querz.mcaselector.validation.ValidationHelper.catchClassCastException;
+import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
 
-public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
+public class Anvil115ChunkMerger implements ChunkMerger {
 
 	@Override
-	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, int[] waterPixels, byte[] terrainHeights, byte[] waterHeights, boolean water) {
-		ListTag<CompoundTag> sections = withDefault(() -> root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
-		if (sections == null) {
-			return;
-		}
-		sections.sort(this::filterSections);
-
-		//loop over x / z
-		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
-			zLoop:
-			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
-
-				byte[] biomes = withDefault(() -> root.getCompoundTag("Level").getByteArray("Biomes"), null);
-				int biome = -1;
-				if (biomes != null && biomes.length != 0) {
-					biome = biomes[getBlockIndex(cx, 0, cz)];
-				}
-
-				boolean waterDepth = false;
-				//loop over sections
-				for (int i = 0; i < sections.size(); i++) {
-					final int si = i;
-					byte[] blocks = withDefault(() -> sections.get(si).getByteArray("Blocks"), null);
-					if (blocks == null) {
-						continue;
-					}
-					byte[] data = withDefault(() -> sections.get(si).getByteArray("Data"), null);
-					if (data == null) {
-						continue;
-					}
-
-					Byte height = withDefault(() -> sections.get(si).getByte("Y"), null);
-					if (height == null) {
-						continue;
-					}
-					int sectionHeight = height * 16;
-
-					//loop over y value in section from top to bottom
-					for (int cy = Tile.CHUNK_SIZE - 1; cy >= 0; cy--) {
-						int index = getBlockIndex(cx, cy, cz);
-						short block = (short) (blocks[index] & 0xFF);
-
-						//ignore bedrock and netherrack until 75
-						if (isIgnoredInNether(biome, block, sectionHeight + cy)) {
-							continue;
-						}
-
-						byte blockData = (byte) (index % 2 == 0 ? data[index / 2] & 0x0F : (data[index / 2] >> 4) & 0x0F);
-
-						if (!isEmpty(block)) {
-							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
-							if (water) {
-								if (!waterDepth) {
-									pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
-									waterHeights[regionIndex] = (byte) (sectionHeight + cy);
-								}
-								if (isWater(block)) {
-									waterDepth = true;
-									continue;
-								} else {
-									waterPixels[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
-								}
-							} else {
-								pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
-							}
-							terrainHeights[regionIndex] = (byte) (sectionHeight + cy);
-							continue zLoop;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	private boolean isWater(short block) {
-		switch (block) {
-		case 8:
-		case 9:
-			return true;
-		}
-		return false;
-	}
-
-	private boolean isIgnoredInNether(int biome, short block, int height) {
-		if (biome == 8) {
-			switch (block) {
-			case 7:   //bedrock
-			case 10:  //flowing_lava
-			case 11:  //lava
-			case 87:  //netherrack
-			case 153: //quartz_ore
-				return height > 75;
-			}
-		}
-		return false;
-	}
-
-	private boolean isEmpty(int blockID) {
-		return blockID == 0 || blockID == 166 || blockID == 217;
-	}
-
-	private int getBlockIndex(int x, int y, int z) {
-		return y * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + z * Tile.CHUNK_SIZE + x;
-	}
-
-	private int filterSections(CompoundTag sectionA, CompoundTag sectionB) {
-		return withDefault(() -> sectionB.getByte("Y"), (byte) -1) - withDefault(() -> sectionA.getByte("Y"), (byte) -1);
-	}
-
 	public void mergeChunks(CompoundTag source, CompoundTag destination, List<Range> ranges) {
 		mergeCompoundTagLists(source, destination, ranges, "Sections", c -> (int) c.getByte("Y"));
 		mergeCompoundTagLists(source, destination, ranges, "Entities", c -> c.getListTag("Pos").asDoubleTagList().get(1).asInt() >> 4);
@@ -134,13 +26,14 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 		mergeListTagLists(source, destination, ranges, "ToBeTicked");
 		mergeListTagLists(source, destination, ranges, "PostProcessing");
 		mergeStructures(source, destination, ranges);
-		// do not merge biomes here, we will overwrite this function in a future version
 
 		// we need to fix entity UUIDs, because Minecraft doesn't like duplicates
 		fixEntityUUIDs(destination);
+
+		mergeBiomes(source, destination, ranges);
 	}
 
-	protected void fixEntityUUIDs(CompoundTag root) {
+	private void fixEntityUUIDs(CompoundTag root) {
 		ListTag<CompoundTag> entities = withDefault(() -> root.getCompoundTag("Level").getListTag("Entities").asCompoundTagList(), null);
 		if (entities == null) {
 			return;
@@ -148,12 +41,14 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 		entities.forEach(this::fixEntityUUID);
 	}
 
-	protected void fixEntityUUID(CompoundTag entity) {
-		if (entity.containsKey("UUIDMost")) {
-			entity.putLong("UUIDMost", random.nextLong());
-		}
-		if (entity.containsKey("UUIDLeast")) {
-			entity.putLong("UUIDLeast", random.nextLong());
+	private void fixEntityUUID(CompoundTag entity) {
+		if (entity.containsKey("UUID")) {
+			int[] uuid = entity.getIntArray("UUID");
+			if (uuid.length == 4) {
+				for (int i = 0; i < 4; i++) {
+					uuid[i] = random.nextInt();
+				}
+			}
 		}
 		if (entity.containsKey("Passengers")) {
 			ListTag<CompoundTag> passengers = withDefault(() -> entity.getListTag("Passengers").asCompoundTagList(), null);
@@ -161,6 +56,76 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 				passengers.forEach(this::fixEntityUUID);
 			}
 		}
+	}
+
+	protected void mergeBiomes(CompoundTag source, CompoundTag destination, List<Range> ranges) {
+		int[] sourceBiomes = withDefault(() -> source.getCompoundTag("Level").getIntArray("Biomes"), null);
+		int[] destinationBiomes = withDefault(() -> destination.getCompoundTag("Level").getIntArray("Biomes"), null);
+
+		if (destinationBiomes == null) {
+			// if there is no destination, we will let minecraft set the biome
+			destinationBiomes = new int[1024];
+			Arrays.fill(destinationBiomes, -1);
+		}
+
+		if (sourceBiomes == null) {
+			// if there is no source biome, we set the biome to -1
+			// merge biomes
+			for (Range range : ranges) {
+				int m = Math.min(range.getTo(), 15);
+				for (int i = Math.max(range.getFrom(), 0); i <= m; i++) {
+					setSectionBiomes(-1, destinationBiomes, i);
+				}
+			}
+		} else {
+			for (Range range : ranges) {
+				int m = Math.min(range.getTo(), 15);
+				for (int i = Math.max(range.getFrom(), 0); i <= m; i++) {
+					copySectionBiomes(sourceBiomes, destinationBiomes, i);
+				}
+			}
+		}
+	}
+
+	private void copySectionBiomes(int[] sourceBiomes, int[] destinationBiomes, int sectionY) {
+		for (int y = 0; y < 4; y++) {
+			int biomeY = sectionY * 4 + y;
+			for (int x = 0; x < 4; x++) {
+				for (int z = 0; z < 4; z++) {
+					setBiomeAt(destinationBiomes, x, biomeY, z, getBiomeAt(sourceBiomes, x, biomeY, z));
+				}
+			}
+		}
+	}
+
+	private void setSectionBiomes(int biome, int[] destinationBiomes, int sectionY) {
+		for (int y = 0; y < 4; y++) {
+			int biomeY = sectionY * 4 + y;
+			for (int x = 0; x < 4; x++) {
+				for (int z = 0; z < 4; z++) {
+					setBiomeAt(destinationBiomes, x, biomeY, z, biome);
+				}
+			}
+		}
+	}
+
+	private int getBiomeAt(int[] biomes, int biomeX, int biomeY, int biomeZ) {
+		if (biomes == null || biomes.length != 1024) {
+			return -1;
+		}
+		return biomes[getBiomeIndex(biomeX, biomeY, biomeZ)];
+	}
+
+	private void setBiomeAt(int[] biomes, int biomeX, int biomeY, int biomeZ, int biomeID) {
+		if (biomes == null || biomes.length != 1024) {
+			biomes = new int[1024];
+			Arrays.fill(biomes, -1);
+		}
+		biomes[getBiomeIndex(biomeX, biomeY, biomeZ)] = biomeID;
+	}
+
+	private int getBiomeIndex(int x, int y, int z) {
+		return y * 16 + z * 4 + x;
 	}
 
 	private void mergeStructures(CompoundTag source, CompoundTag destination, List<Range> ranges) {
@@ -270,37 +235,6 @@ public class Anvil112ChunkDataProcessor implements ChunkDataProcessor {
 		ListTag<CompoundTag> destinationElements = withDefault(() -> destination.getCompoundTag("Level").getListTag(name).asCompoundTagList(), new ListTag<>(CompoundTag.class));
 
 		initLevel(destination).put(name, mergeLists(sourceElements, destinationElements, ranges, ySupplier));
-	}
-
-	private <T extends Tag<?>> ListTag<T> mergeLists(ListTag<T> source, ListTag<T> destination, List<Range> ranges, Function<T, Integer> ySupplier) {
-		@SuppressWarnings("unchecked")
-		ListTag<T> resultList = (ListTag<T>) ListTag.createUnchecked(null);
-
-		Set<T> resultSet = new HashSet<>();
-		for (T dest : destination) {
-			resultSet.add(dest);
-		}
-
-		elem: for (T destinationElement : destination) {
-			for (Range range : ranges) {
-				if (range.contains(ySupplier.apply(destinationElement))) {
-					resultSet.remove(destinationElement);
-					continue elem;
-				}
-			}
-		}
-
-		elem: for (T sourceElement : source) {
-			for (Range range : ranges) {
-				if (range.contains(ySupplier.apply(sourceElement))) {
-					resultSet.add(sourceElement);
-					continue elem;
-				}
-			}
-		}
-
-		resultList.addAll(resultSet);
-		return resultList;
 	}
 
 	private CompoundTag initLevel(CompoundTag c) {

@@ -25,13 +25,13 @@ public class EntityFilter extends TextFilter<List<String>> {
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Objects.requireNonNull(EntityFilter.class.getClassLoader().getResourceAsStream("entity-names.csv"))))) {
+				new InputStreamReader(Objects.requireNonNull(EntityFilter.class.getClassLoader().getResourceAsStream("mapping/all_entity_names.txt"))))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				validNames.add("minecraft:" + line);
 			}
 		} catch (IOException ex) {
-			Debug.dumpException("error reading entity-names.csv", ex);
+			Debug.dumpException("error reading mapping/all_entity_names.txt", ex);
 		}
 	}
 

@@ -1,7 +1,7 @@
-package net.querz.mcaselector.version.anvil113;
+package net.querz.mcaselector.version.anvil114;
 
-import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.StringTag;
@@ -9,19 +9,25 @@ import net.querz.nbt.tag.Tag;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
-import static net.querz.mcaselector.validation.ValidationHelper.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
 
-public class Anvil113ColorMapping implements ColorMapping {
+public class Anvil114ColorMapping implements ColorMapping {
 
 	//value can either be an Integer (color) or a BlockStateMapping
 	private final Map<String, Object> mapping = new TreeMap<>();
 
-	public Anvil113ColorMapping() {
+	public Anvil114ColorMapping() {
 		// note_block:pitch=1,powered=true,instrument=flute;01ab9f
 		// noinspection ConstantConditions
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Anvil113ColorMapping.class.getClassLoader().getResourceAsStream("mapping/113/colors.txt")))) {
+				new InputStreamReader(Anvil114ColorMapping.class.getClassLoader().getResourceAsStream("mapping/114/colors.txt")))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				String[] elements = line.split(";");
@@ -43,11 +49,11 @@ public class Anvil113ColorMapping implements ColorMapping {
 					//default block color, set value to Integer color
 					mapping.put("minecraft:" + blockData[0], color);
 				} else {
-					BlockStateMapping bsm;
+					Anvil114ColorMapping.BlockStateMapping bsm;
 					if (mapping.containsKey("minecraft:" + blockData[0])) {
-						bsm = (BlockStateMapping) mapping.get("minecraft:" + blockData[0]);
+						bsm = (Anvil114ColorMapping.BlockStateMapping) mapping.get("minecraft:" + blockData[0]);
 					} else {
-						bsm = new BlockStateMapping();
+						bsm = new Anvil114ColorMapping.BlockStateMapping();
 						mapping.put("minecraft:" + blockData[0], bsm);
 					}
 					Set<String> conditions = new HashSet<>(Arrays.asList(blockData[1].split(",")));
@@ -55,7 +61,7 @@ public class Anvil113ColorMapping implements ColorMapping {
 				}
 			}
 		} catch (IOException ex) {
-			throw new RuntimeException("failed to read mapping/113/colors.txt");
+			throw new RuntimeException("failed to read mapping/114/colors.txt");
 		}
 	}
 
@@ -67,8 +73,8 @@ public class Anvil113ColorMapping implements ColorMapping {
 		Object value = mapping.get(withDefault(() -> ((CompoundTag) o).getString("Name"), ""));
 		if (value instanceof Integer) {
 			return (int) value;
-		} else if (value instanceof BlockStateMapping) {
-			return ((BlockStateMapping) value).getColor(withDefault(() -> ((CompoundTag) o).getCompoundTag("Properties"), null));
+		} else if (value instanceof Anvil114ColorMapping.BlockStateMapping) {
+			return ((Anvil114ColorMapping.BlockStateMapping) value).getColor(withDefault(() -> ((CompoundTag) o).getCompoundTag("Properties"), null));
 		}
 		return 0x000000;
 	}

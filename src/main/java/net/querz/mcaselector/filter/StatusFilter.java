@@ -1,8 +1,12 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.debug.Debug;
 import net.querz.nbt.tag.StringTag;
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class StatusFilter extends TextFilter<String> {
@@ -14,34 +18,15 @@ public class StatusFilter extends TextFilter<String> {
 	};
 
 	static {
-		validStatus.addAll(Arrays.asList(
-			"empty",
-
-			// old status
-			"base",
-			"carved",
-			"liquid_carved",
-			"decorated",
-			"lighted",
-			"mobs_spawned",
-			"finalized",
-			"fullchunk",
-			"postprocessed",
-
-			// new status
-			"structure_starts",
-			"structure_references",
-			"biomes",
-			"noise",
-			"surface",
-			"carvers",
-			"liquid_carvers",
-			"features",
-			"light",
-			"spawn",
-			"heightmaps",
-			"full"
-		));
+		try (BufferedReader bis = new BufferedReader(
+				new InputStreamReader(Objects.requireNonNull(BiomeFilter.class.getClassLoader().getResourceAsStream("mapping/all_status.txt"))))) {
+			String line;
+			while ((line = bis.readLine()) != null) {
+				validStatus.add(line);
+			}
+		} catch (IOException ex) {
+			Debug.dumpException("error reading mapping/all_status.txt for StatusFilter", ex);
+		}
 	}
 
 	public StatusFilter() {

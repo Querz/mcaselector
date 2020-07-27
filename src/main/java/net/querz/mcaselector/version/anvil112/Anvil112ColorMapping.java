@@ -14,7 +14,7 @@ public class Anvil112ColorMapping implements ColorMapping {
 	public Anvil112ColorMapping() {
 		// noinspection ConstantConditions
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Anvil112ColorMapping.class.getClassLoader().getResourceAsStream("colors112.csv")))) {
+				new InputStreamReader(Anvil112ColorMapping.class.getClassLoader().getResourceAsStream("mapping/112/colors.txt")))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				String[] elements = line.split(";");
@@ -24,22 +24,22 @@ public class Anvil112ColorMapping implements ColorMapping {
 				}
 				Integer id = TextHelper.parseInt(elements[0], 10);
 				if (id == null || id < 0 || id > 255) {
-					Debug.dumpf("Invalid block id in color file: \"%s\"", elements[0]);
+					Debug.dumpf("invalid block id in color file: \"%s\"", elements[0]);
 					continue;
 				}
 				Integer data = TextHelper.parseInt(elements[1], 10);
 				if (data == null || data < 0 || data > 15) {
-					Debug.dumpf("Invalid block data in color file: \"%s\"", elements[1]);
+					Debug.dumpf("invalid block data in color file: \"%s\"", elements[1]);
 					continue;
 				}
 				Integer color = TextHelper.parseInt(elements[2], 16);
 				if (color == null || color < 0x0 || color > 0xFFFFFF) {
-					Debug.dumpf("Invalid color code in color file: \"%s\"", elements[2]);
+					Debug.dumpf("invalid color code in color file: \"%s\"", elements[2]);
 				}
 				mapping.put((id << 4) + data, color);
 			}
 		} catch (IOException ex) {
-			throw new RuntimeException("Unable to open color file");
+			throw new RuntimeException("failed to read mapping/112/colors.txt");
 		}
 	}
 

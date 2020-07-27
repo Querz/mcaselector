@@ -1,15 +1,16 @@
 package net.querz.mcaselector.version.anvil113;
 
-import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.tiles.Tile;
-import net.querz.mcaselector.version.anvil112.Anvil112ChunkDataProcessor;
+import net.querz.mcaselector.version.ChunkRenderer;
+import net.querz.mcaselector.version.ColorMapping;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.LongArrayTag;
 import net.querz.nbt.tag.Tag;
-import static net.querz.mcaselector.validation.ValidationHelper.*;
+import static net.querz.mcaselector.validation.ValidationHelper.catchClassCastException;
+import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
 
-public class Anvil113ChunkDataProcessor extends Anvil112ChunkDataProcessor {
+public class Anvil113ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, int[] waterPixels, byte[] terrainHeights, byte[] waterHeights, boolean water) {
@@ -41,7 +42,7 @@ public class Anvil113ChunkDataProcessor extends Anvil112ChunkDataProcessor {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
 
-				int biome = getBiomeAtBlock(biomes, cx, 255, cz);
+				int biome = getBiomeAtBlock(biomes, cx, cz);
 
 				//loop over sections
 				boolean waterDepth = false;
@@ -113,15 +114,15 @@ public class Anvil113ChunkDataProcessor extends Anvil112ChunkDataProcessor {
 		return false;
 	}
 
-	protected boolean isIgnoredInNether(int biome, CompoundTag blockData, int height) {
+	private boolean isIgnoredInNether(int biome, CompoundTag blockData, int height) {
 		if (biome == 8) {
 			switch (withDefault(() -> blockData.getString("Name"), "")) {
-			case "minecraft:bedrock":
-			case "minecraft:flowing_lava":
-			case "minecraft:lava":
-			case "minecraft:netherrack":
-			case "minecraft:nether_quartz_ore":
-				return height > 75;
+				case "minecraft:bedrock":
+				case "minecraft:flowing_lava":
+				case "minecraft:lava":
+				case "minecraft:netherrack":
+				case "minecraft:nether_quartz_ore":
+					return height > 75;
 			}
 		}
 		return false;
@@ -149,14 +150,14 @@ public class Anvil113ChunkDataProcessor extends Anvil112ChunkDataProcessor {
 		return z * Tile.CHUNK_SIZE + x;
 	}
 
-	protected int getBiomeAtBlock(int[] biomes, int biomeX, int biomeY, int biomeZ) {
+	private int getBiomeAtBlock(int[] biomes, int biomeX, int biomeZ) {
 		if (biomes == null || biomes.length != 256) {
 			return -1;
 		}
 		return biomes[getBiomeIndex(biomeX, biomeZ)];
 	}
 
-	protected int getPaletteIndex(int index, long[] blockStates, int bits, int clean) {
+	private int getPaletteIndex(int index, long[] blockStates, int bits, int clean) {
 		double blockStatesIndex = index / (4096D / blockStates.length);
 
 		int longIndex = (int) blockStatesIndex;

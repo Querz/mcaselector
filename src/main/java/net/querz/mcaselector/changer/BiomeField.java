@@ -18,7 +18,7 @@ public class BiomeField extends Field<Integer> {
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
-			new InputStreamReader(Objects.requireNonNull(BiomeFilter.class.getClassLoader().getResourceAsStream("biomes.csv"))))) {
+			new InputStreamReader(Objects.requireNonNull(BiomeFilter.class.getClassLoader().getResourceAsStream("mapping/all_biomes.txt"))))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				String[] split = line.split(";");
@@ -35,7 +35,7 @@ public class BiomeField extends Field<Integer> {
 				validIDs.add(id);
 			}
 		} catch (IOException ex) {
-			Debug.dumpException("error reading biomes.csv for BiomeField", ex);
+			Debug.dumpException("error reading mapping/all_biomes.txt for BiomeField", ex);
 		}
 	}
 

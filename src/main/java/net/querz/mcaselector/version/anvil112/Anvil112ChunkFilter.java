@@ -21,7 +21,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 	public Anvil112ChunkFilter() {
 		// noinspection ConstantConditions
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Anvil112ChunkFilter.class.getClassLoader().getResourceAsStream("block-id-mapping.csv")))) {
+				new InputStreamReader(Anvil112ChunkFilter.class.getClassLoader().getResourceAsStream("mapping/block_name_to_id.txt")))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				line = line.trim();
@@ -71,7 +71,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 			}
 
 		} catch (IOException ex) {
-			throw new RuntimeException("Unable to open block id mapping file");
+			throw new RuntimeException("failed to open mapping/block_name_to_id.txt");
 		}
 	}
 
@@ -86,7 +86,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		for (String name : names) {
 			BlockData[] bd = mapping.get(name);
 			if (bd == null) {
-				Debug.dump("No mapping found for " + name);
+				Debug.dump("no mapping found for " + name);
 				continue;
 			}
 			for (CompoundTag t : sections) {
