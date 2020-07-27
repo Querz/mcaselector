@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.dialog;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -9,6 +9,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.ProgressTask;
+import net.querz.mcaselector.ui.UIFactory;
+
 import java.util.function.Consumer;
 
 public class ProgressDialog extends Stage {

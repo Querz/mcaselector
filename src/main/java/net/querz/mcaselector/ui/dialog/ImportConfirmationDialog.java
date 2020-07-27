@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.dialog;
 
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
@@ -12,6 +12,9 @@ import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.LocationInput;
+import net.querz.mcaselector.ui.UIFactory;
+
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;

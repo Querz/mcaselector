@@ -14,6 +14,19 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.TileMapSelection;
+import net.querz.mcaselector.ui.dialog.AboutDialog;
+import net.querz.mcaselector.ui.dialog.CancellableProgressDialog;
+import net.querz.mcaselector.ui.dialog.ChangeFieldsConfirmationDialog;
+import net.querz.mcaselector.ui.dialog.ChangeNBTDialog;
+import net.querz.mcaselector.ui.dialog.DeleteConfirmationDialog;
+import net.querz.mcaselector.ui.dialog.ExportConfirmationDialog;
+import net.querz.mcaselector.ui.dialog.FilterChunksDialog;
+import net.querz.mcaselector.ui.dialog.GotoDialog;
+import net.querz.mcaselector.ui.dialog.ImportConfirmationDialog;
+import net.querz.mcaselector.ui.dialog.NBTEditorDialog;
+import net.querz.mcaselector.ui.dialog.ProgressDialog;
+import net.querz.mcaselector.ui.dialog.SettingsDialog;
+
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -28,7 +41,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import static net.querz.mcaselector.ui.ImportConfirmationDialog.ChunkImportConfirmationData;
+import static net.querz.mcaselector.ui.dialog.ImportConfirmationDialog.ChunkImportConfirmationData;
 
 public class DialogHelper {
 

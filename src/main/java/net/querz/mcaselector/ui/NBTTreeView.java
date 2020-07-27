@@ -23,6 +23,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.ui.dialog.EditArrayDialog;
 import net.querz.nbt.tag.*;
 import java.io.Serializable;
 import java.util.HashMap;

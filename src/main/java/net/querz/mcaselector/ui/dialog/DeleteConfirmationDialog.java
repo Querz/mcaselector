@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.dialog;
 
 import javafx.stage.Stage;
 import net.querz.mcaselector.tiles.TileMap;

@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.dialog;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -26,6 +26,8 @@ import net.querz.mcaselector.filter.ZPosFilter;
 import net.querz.mcaselector.headless.FilterParser;
 import net.querz.mcaselector.headless.ParseException;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.GroupFilterBox;
+import net.querz.mcaselector.ui.UIFactory;
 
 public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 

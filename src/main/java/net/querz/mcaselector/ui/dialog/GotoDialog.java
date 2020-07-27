@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.dialog;
 
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.LocationInput;
 
 public class GotoDialog extends Dialog<Point2i> {
 

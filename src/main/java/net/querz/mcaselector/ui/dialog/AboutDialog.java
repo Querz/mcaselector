@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.dialog;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -19,6 +19,8 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.github.VersionChecker;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.UIFactory;
+
 import java.io.IOException;
 import java.util.function.Consumer;
 

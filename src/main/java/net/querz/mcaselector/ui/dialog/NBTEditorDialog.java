@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.dialog;
 
 import javafx.application.Platform;
 import javafx.scene.control.Button;
@@ -22,6 +22,8 @@ import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
+import net.querz.mcaselector.ui.NBTTreeView;
+import net.querz.mcaselector.ui.UIFactory;
 import net.querz.nbt.tag.*;
 import java.io.File;
 import java.io.FileInputStream;

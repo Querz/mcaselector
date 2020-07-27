@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.dialog;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -25,6 +25,8 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.TileMap;
+import net.querz.mcaselector.ui.UIFactory;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

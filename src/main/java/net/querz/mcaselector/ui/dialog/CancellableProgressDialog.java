@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.dialog;
 
 import javafx.application.Platform;
 import javafx.scene.control.Button;
@@ -6,6 +6,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.UIFactory;
 
 public class CancellableProgressDialog extends ProgressDialog {
 

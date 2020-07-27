@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.dialog;
 
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -14,6 +14,8 @@ import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.UIFactory;
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
