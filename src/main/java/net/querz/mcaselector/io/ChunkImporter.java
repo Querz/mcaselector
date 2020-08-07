@@ -214,7 +214,7 @@ public class ChunkImporter {
 
 			byte[] destData;
 
-			if (getFile().exists()) {
+			if (getFile().exists() && getFile().length() > 0) {
 				destData = load();
 				if (destData == null) {
 					Debug.errorf("error loading destination mca file %s", getFile().getName());
