@@ -625,7 +625,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 			Point2i regionOffset = region.regionToBlock().sub((int) offset.getX(), (int) offset.getY());
 
-			if (!tile.isLoaded() && !tile.isLoading()) {
+			if (Config.getWorldDir() != null && !tile.isLoaded() && !tile.isLoading()) {
 				imgPool.requestImage(tile, getZoomLevel());
 			}
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);

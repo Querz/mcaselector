@@ -15,7 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class ImagePool {
+public final class ImagePool {
 
 	private final Map<Integer, LinkedHashMap<Point2i, Image>> pool = new HashMap<>();
 	private final Set<Point2i> noMCA = new HashSet<>();

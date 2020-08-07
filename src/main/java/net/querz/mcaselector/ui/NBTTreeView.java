@@ -321,7 +321,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		}
 	}
 
-	static class NamedTag implements Serializable {
+	public static class NamedTag implements Serializable {
 		String name;
 		Tag<?> tag;
 		Tag<?> parent;
@@ -333,7 +333,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		}
 	}
 
-	static class NBTTreeItem extends TreeItem<NamedTag> {
+	public static class NBTTreeItem extends TreeItem<NamedTag> {
 
 		public NBTTreeItem(NamedTag tag) {
 			super(tag);
