@@ -1,5 +1,5 @@
 @font-face {
-    src: url('font/LiberationSans-Regular.ttf');
+    src: url('font/NotoSans-Regular.ttf');
 }
 
 * {
@@ -56,7 +56,7 @@
 	-color-table-line: #636769;
 	-color-warning-text: #ff6651;
 
-	-fx-font-family: "Liberation Sans";
+	-fx-font-family: "Noto Sans";
 }
 
 /*---------- MENU BAR, MENU AND MENU ITEM ----------*/
