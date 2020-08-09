@@ -1,3 +1,7 @@
+@font-face {
+    src: url('font/LiberationSans-Regular.ttf');
+}
+
 * {
 	-color-text-light: #f2f2f2;
 	-color-text-dark: #a6a6a6;
@@ -51,6 +55,8 @@
 	-color-treeview-cell-insert: #636769;
 	-color-table-line: #636769;
 	-color-warning-text: #ff6651;
+
+	-fx-font-family: "Liberation Sans";
 }
 
 /*---------- MENU BAR, MENU AND MENU ITEM ----------*/
