@@ -61,9 +61,9 @@ public class Tile {
 		Point2i min = o.sub(threshold * SIZE).blockToRegion().regionToBlock();
 		Point2i max = new Point2i(
 				(int) (o.getX() + tileMap.getWidth() * tileMap.getScale()),
-				(int) (o.getY() + tileMap.getHeight() * tileMap.getScale())).add(threshold * SIZE).blockToRegion().regionToBlock();
-		return location.getX() * SIZE >= min.getX() && location.getY() * SIZE >= min.getY()
-				&& location.getX() * SIZE <= max.getX() && location.getY() * SIZE <= max.getY();
+				(int) (o.getZ() + tileMap.getHeight() * tileMap.getScale())).add(threshold * SIZE).blockToRegion().regionToBlock();
+		return location.getX() * SIZE >= min.getX() && location.getZ() * SIZE >= min.getZ()
+				&& location.getX() * SIZE <= max.getX() && location.getZ() * SIZE <= max.getZ();
 	}
 
 	public Image getImage() {
@@ -176,7 +176,7 @@ public class Tile {
 			return;
 		}
 
-		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/" + getZoomLevel(scaleSupplier.get()) + "/r.%d.%d.png", location.getX(), location.getY());
+		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/" + getZoomLevel(scaleSupplier.get()) + "/r.%d.%d.png", location.getX(), location.getZ());
 
 		Debug.dump("loading region " + location + " from cache: " + res);
 

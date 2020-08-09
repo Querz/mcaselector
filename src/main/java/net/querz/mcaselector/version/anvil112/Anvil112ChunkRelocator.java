@@ -9,7 +9,6 @@ import net.querz.nbt.tag.IntTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.LongArrayTag;
 import static net.querz.mcaselector.validation.ValidationHelper.catchClassCastException;
-import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
 
 public class Anvil112ChunkRelocator implements ChunkRelocator {
 
@@ -26,7 +25,7 @@ public class Anvil112ChunkRelocator implements ChunkRelocator {
 
 		// adjust or set chunk position
 		level.putInt("xPos", level.getInt("xPos") + offset.blockToChunk().getX());
-		level.putInt("zPos", level.getInt("zPos") + offset.blockToChunk().getY());
+		level.putInt("zPos", level.getInt("zPos") + offset.blockToChunk().getZ());
 
 		// adjust entity positions
 		if (level.containsKey("Entities") && level.get("Entities").getID() != LongArrayTag.ID) {
@@ -65,7 +64,7 @@ public class Anvil112ChunkRelocator implements ChunkRelocator {
 
 	private void applyOffsetToTick(CompoundTag tick, Point2i offset) {
 		applyIntIfPresent(tick, "x", offset.getX());
-		applyIntIfPresent(tick, "z", offset.getY());
+		applyIntIfPresent(tick, "z", offset.getZ());
 	}
 
 	private void applyOffsetToTileEntity(CompoundTag tileEntity, Point2i offset) {
@@ -74,7 +73,7 @@ public class Anvil112ChunkRelocator implements ChunkRelocator {
 		}
 
 		applyIntIfPresent(tileEntity, "x", offset.getX());
-		applyIntIfPresent(tileEntity, "z", offset.getY());
+		applyIntIfPresent(tileEntity, "z", offset.getZ());
 
 		String id = catchClassCastException(() -> tileEntity.getString("id"));
 		if (id != null) {
@@ -85,7 +84,7 @@ public class Anvil112ChunkRelocator implements ChunkRelocator {
 					break;
 				case "minecraft:structure_block":
 					applyIntIfPresent(tileEntity, "posX", offset.getX());
-					applyIntIfPresent(tileEntity, "posX", offset.getY());
+					applyIntIfPresent(tileEntity, "posX", offset.getZ());
 					break;
 				case "minecraft:mob_spawner":
 					if (tileEntity.containsKey("SpawnPotentials")) {
@@ -111,7 +110,7 @@ public class Anvil112ChunkRelocator implements ChunkRelocator {
 			ListTag<DoubleTag> entityPos = catchClassCastException(() -> entity.getListTag("Pos").asDoubleTagList());
 			if (entityPos != null && entityPos.size() == 3) {
 				entityPos.set(0, new DoubleTag(entityPos.get(0).asDouble() + offset.getX()));
-				entityPos.set(2, new DoubleTag(entityPos.get(2).asDouble() + offset.getY()));
+				entityPos.set(2, new DoubleTag(entityPos.get(2).asDouble() + offset.getZ()));
 			}
 		}
 
@@ -123,11 +122,11 @@ public class Anvil112ChunkRelocator implements ChunkRelocator {
 
 		// projectiles
 		applyIntIfPresent(entity, "xTile", offset.getX());
-		applyIntIfPresent(entity, "zTile", offset.getY());
+		applyIntIfPresent(entity, "zTile", offset.getZ());
 
 		// entities that have a sleeping place
 		applyIntIfPresent(entity, "SleepingX", offset.getX());
-		applyIntIfPresent(entity, "SleepingZ", offset.getY());
+		applyIntIfPresent(entity, "SleepingZ", offset.getZ());
 
 		// positions for specific entity types
 		String id = catchClassCastException(() -> entity.getString("id"));
@@ -135,11 +134,11 @@ public class Anvil112ChunkRelocator implements ChunkRelocator {
 			switch (id) {
 				case "minecraft:shulker":
 					applyIntIfPresent(entity, "APX", offset.getX());
-					applyIntIfPresent(entity, "APZ", offset.getY());
+					applyIntIfPresent(entity, "APZ", offset.getZ());
 					break;
 				case "minecraft:vex":
 					applyIntIfPresent(entity, "BoundX", offset.getX());
-					applyIntIfPresent(entity, "BoundZ", offset.getY());
+					applyIntIfPresent(entity, "BoundZ", offset.getZ());
 					break;
 				case "minecraft:shulker_bullet":
 					CompoundTag owner = catchClassCastException(() -> entity.getCompoundTag("Owner"));
@@ -154,7 +153,7 @@ public class Anvil112ChunkRelocator implements ChunkRelocator {
 				case "minecraft:item_frame":
 				case "minecraft:painting":
 					applyIntIfPresent(entity, "TileX", offset.getX());
-					applyIntIfPresent(entity, "TileZ", offset.getY());
+					applyIntIfPresent(entity, "TileZ", offset.getZ());
 					break;
 				case "minecraft:villager":
 					if (entity.containsKey("Brain")) {
@@ -234,7 +233,7 @@ public class Anvil112ChunkRelocator implements ChunkRelocator {
 	private void applyIntOffsetIfRootPresent(CompoundTag root, String xKey, String zKey, Point2i offset) {
 		if (root != null) {
 			applyIntIfPresent(root, xKey, offset.getX());
-			applyIntIfPresent(root, zKey, offset.getY());
+			applyIntIfPresent(root, zKey, offset.getZ());
 		}
 	}
 
@@ -248,14 +247,14 @@ public class Anvil112ChunkRelocator implements ChunkRelocator {
 	private void applyOffsetToIntListPos(ListTag<IntTag> pos, Point2i offset) {
 		if (pos != null && pos.size() == 3) {
 			pos.set(0, new IntTag(pos.get(0).asInt() + offset.getX()));
-			pos.set(2, new IntTag(pos.get(2).asInt() + offset.getY()));
+			pos.set(2, new IntTag(pos.get(2).asInt() + offset.getZ()));
 		}
 	}
 
 	private void applyOffsetToIntArrayPos(int[] pos, Point2i offset) {
 		if (pos != null && pos.length == 3) {
 			pos[0] += offset.getX();
-			pos[2] += offset.getY();
+			pos[2] += offset.getZ();
 		}
 	}
 }

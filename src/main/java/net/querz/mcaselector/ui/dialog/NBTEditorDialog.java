@@ -195,8 +195,8 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 
 		Point2i rel = chunkLocation.mod(32);
 		rel.setX(rel.getX() < 0 ? 32 + rel.getX() : rel.getX());
-		rel.setY(rel.getY() < 0 ? 32 + rel.getY() : rel.getY());
-		int index = rel.getY() * Tile.SIZE_IN_CHUNKS + rel.getX();
+		rel.setZ(rel.getZ() < 0 ? 32 + rel.getZ() : rel.getZ());
+		int index = rel.getZ() * Tile.SIZE_IN_CHUNKS + rel.getX();
 
 		MCAChunkData chunkData = dest.getChunkData(index);
 		chunkData.setData(this.data);

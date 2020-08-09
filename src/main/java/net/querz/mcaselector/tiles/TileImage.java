@@ -73,11 +73,11 @@ public final class TileImage {
 			if (regionChunk.getX() < 0) {
 				regionChunk.setX(regionChunk.getX() + Tile.SIZE_IN_CHUNKS);
 			}
-			if (regionChunk.getY() < 0) {
-				regionChunk.setY(regionChunk.getY() + Tile.SIZE_IN_CHUNKS);
+			if (regionChunk.getZ() < 0) {
+				regionChunk.setZ(regionChunk.getZ() + Tile.SIZE_IN_CHUNKS);
 			}
 
-			ctx.fillRect(regionChunk.getX() * Tile.CHUNK_SIZE / (float) zoomLevel, regionChunk.getY() * Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel);
+			ctx.fillRect(regionChunk.getX() * Tile.CHUNK_SIZE / (float) zoomLevel, regionChunk.getZ() * Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel);
 		}
 
 		SnapshotParameters params = new SnapshotParameters();

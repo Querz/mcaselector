@@ -9,21 +9,13 @@ import net.querz.nbt.io.NBTDeserializer;
 import net.querz.nbt.io.NBTSerializer;
 import net.querz.nbt.io.NamedTag;
 import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.DoubleTag;
-import net.querz.nbt.tag.IntArrayTag;
-import net.querz.nbt.tag.IntTag;
-import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.LongArrayTag;
-import net.querz.nbt.tag.Tag;
 import java.io.*;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.InflaterInputStream;
-import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class MCAChunkData {
 
@@ -62,7 +54,7 @@ public class MCAChunkData {
 		CompoundTag root = new CompoundTag();
 		CompoundTag level = new CompoundTag();
 		level.putInt("xPos", absoluteLocation.getX());
-		level.putInt("zPos", absoluteLocation.getY());
+		level.putInt("zPos", absoluteLocation.getZ());
 		level.putString("Status", "full");
 		root.put("Level", level);
 		root.putInt("DataVersion", dataVersion);

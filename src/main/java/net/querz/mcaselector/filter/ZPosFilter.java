@@ -22,7 +22,7 @@ public class ZPosFilter extends IntFilter implements RegionMatcher {
 		Point2i chunk = region.regionToChunk();
 		for (int i = 0; i < 32; i++) {
 			Point2i p = chunk.add(i);
-			if (matches(getFilterNumber(), p.getY())) {
+			if (matches(getFilterNumber(), p.getZ())) {
 				return true;
 			}
 		}

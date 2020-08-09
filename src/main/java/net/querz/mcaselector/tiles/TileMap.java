@@ -130,13 +130,13 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	public static Point2f getRegionGridMin(Point2f offset, float scale) {
 		Point2i min = offset.toPoint2i().blockToRegion();
 		Point2i regionOffset = min.regionToBlock().sub((int) offset.getX(), (int) offset.getY());
-		return new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
+		return new Point2f(regionOffset.getX() / scale, regionOffset.getZ() / scale);
 	}
 
 	public static Point2f getChunkGridMin(Point2f offset, float scale) {
 		Point2i min = offset.toPoint2i().blockToChunk();
 		Point2i chunkOffset = min.chunkToBlock().sub((int) offset.getX(), (int) offset.getY());
-		return new Point2f(chunkOffset.getX() / scale, chunkOffset.getY() / scale);
+		return new Point2f(chunkOffset.getX() / scale, chunkOffset.getZ() / scale);
 	}
 
 	private void onKeyPressed(KeyEvent event) {
@@ -318,12 +318,12 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				Point2i min = o.sub(TILE_VISIBILITY_THRESHOLD * Tile.SIZE).blockToRegion().regionToBlock();
 				Point2i max = new Point2i(
 						(int) (o.getX() + getWidth() * scale),
-						(int) (o.getY() + getHeight() * scale)).add(TILE_VISIBILITY_THRESHOLD * Tile.SIZE).blockToRegion().regionToBlock();
+						(int) (o.getZ() + getHeight() * scale)).add(TILE_VISIBILITY_THRESHOLD * Tile.SIZE).blockToRegion().regionToBlock();
 
 				Point2i location = img.regionToBlock().add(pastedChunksOffset.chunkToBlock());
 
-				return location.getX() < min.getX() || location.getY() < min.getY()
-						|| location.getX() > max.getX() || location.getY() > max.getY();
+				return location.getX() < min.getX() || location.getZ() < min.getZ()
+						|| location.getX() > max.getX() || location.getZ() > max.getZ();
 			});
 		}
 
@@ -517,7 +517,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		} else {
 			pastedChunksCache = new HashMap<>();
 			Point2i offsetInChunks = offset.toPoint2i().blockToChunk(); // 0|0
-			Point2i pastedMid = new Point2i((max.getX() - min.getX()) / 2, (max.getY() - min.getY()) / 2);
+			Point2i pastedMid = new Point2i((max.getX() - min.getX()) / 2, (max.getZ() - min.getZ()) / 2);
 			Point2i originOffset = offsetInChunks.sub(min).sub(pastedMid);
 			Point2f screenSizeInChunks = new Point2f(getWidth(), getHeight()).mul(scale).div(16);
 			pastedChunksOffset = originOffset.add(screenSizeInChunks.div(2).toPoint2i());
@@ -557,9 +557,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private void sortPoints(Point2i a, Point2i b) {
 		Point2i aa = a.clone();
 		a.setX(Math.min(a.getX(), b.getX()));
-		a.setY(Math.min(a.getY(), b.getY()));
+		a.setZ(Math.min(a.getZ(), b.getZ()));
 		b.setX(Math.max(aa.getX(), b.getX()));
-		b.setY(Math.max(aa.getY(), b.getY()));
+		b.setZ(Math.max(aa.getZ(), b.getZ()));
 	}
 
 	private void mark(double mouseX, double mouseY, boolean marked) {
@@ -568,7 +568,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			Point2i firstRegionBlock = getMouseRegionBlock(firstMouseLocation.getX(), firstMouseLocation.getY());
 			sortPoints(firstRegionBlock, regionBlock);
 			for (int x = firstRegionBlock.getX(); x <= regionBlock.getX(); x++) {
-				for (int z = firstRegionBlock.getY(); z <= regionBlock.getY(); z++) {
+				for (int z = firstRegionBlock.getZ(); z <= regionBlock.getZ(); z++) {
 					Point2i region = new Point2i(x, z);
 					Tile tile = tiles.get(region);
 					if (tile == null) {
@@ -590,7 +590,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			sortPoints(firstChunkBlock, chunkBlock);
 			Set<Tile> changedTiles = new HashSet<>();
 			for (int x = firstChunkBlock.getX(); x <= chunkBlock.getX(); x++) {
-				for (int z = firstChunkBlock.getY(); z <= chunkBlock.getY(); z++) {
+				for (int z = firstChunkBlock.getZ(); z <= chunkBlock.getZ(); z++) {
 					Point2i chunk = new Point2i(x, z);
 					Tile tile = tiles.get(chunk.chunkToRegion());
 					if (tile == null) {
@@ -628,7 +628,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			if (Config.getWorldDir() != null && !tile.isLoaded() && !tile.isLoading()) {
 				imgPool.requestImage(tile, getZoomLevel());
 			}
-			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
+			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getZ() / scale);
 
 			TileImage.draw(tile, ctx, scale, p);
 
@@ -637,7 +637,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		if (pastedChunks != null) {
 			runOnVisibleRegions(region -> {
 				Point2i regionOffset = region.regionToBlock().sub((int) offset.getX(), (int) offset.getY());
-				Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
+				Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getZ() / scale);
 				p = p.add(pastedChunksOffset.mul(16).div(scale).toPoint2f());
 				drawPastedChunks(ctx, region, p);
 			}, pastedChunksOffset.mul(16).toPoint2f());
@@ -673,7 +673,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 					Point2i regionChunk = chunk.and(0x1F);
 					ctx2.fillRect(
 							regionChunk.getX() * Tile.CHUNK_SIZE / (float) zoomLevel,
-							regionChunk.getY() * Tile.CHUNK_SIZE / (float) zoomLevel,
+							regionChunk.getZ() * Tile.CHUNK_SIZE / (float) zoomLevel,
 							Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel);
 				}
 			}
@@ -743,12 +743,12 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		int ySteps = 0;
 		int step = 0;
 		int x = mid.getX();
-		int y = mid.getY();
-		while ((x <= max.getX() || y <= max.getY()) && (x >= min.getX() || y >= min.getY())) {
+		int y = mid.getZ();
+		while ((x <= max.getX() || y <= max.getZ()) && (x >= min.getX() || y >= min.getZ())) {
 			for (int i = 0; i < steps * 2; i++) {
 				x = mid.getX() + xSteps;
-				y = mid.getY() + ySteps;
-				if (x <= max.getX() && x >= min.getX() && y <= max.getY() && y >= min.getY()) {
+				y = mid.getZ() + ySteps;
+				if (x <= max.getX() && x >= min.getX() && y <= max.getZ() && y >= min.getZ()) {
 					consumer.accept(new Point2i(x, y));
 				}
 				switch (dir) {

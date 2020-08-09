@@ -172,7 +172,7 @@ public class ChunkImporter {
 		public void execute() {
 
 			// special case for non existing destination file and no offset
-			if (offset.getX() == 0 && offset.getY() == 0 && !getFile().exists() && (selection == null || selection.size() == 0)) {
+			if (offset.getX() == 0 && offset.getZ() == 0 && !getFile().exists() && (selection == null || selection.size() == 0)) {
 				//if the entire mca file doesn't exist, just copy it over
 				File source = new File(sourceDir, getFile().getName());
 				try {

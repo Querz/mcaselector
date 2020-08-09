@@ -42,7 +42,7 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 			getDialogPane().lookupButton(ButtonType.OK).setDisable(!valid);
 			data.offset = locationInput.getValue();
 			dataAction.accept(data);
-			if (valid && (data.offset.getX() != 0 || data.offset.getY() != 0)) {
+			if (valid && (data.offset.getX() != 0 || data.offset.getZ() != 0)) {
 				warning.getStyleClass().remove("import-chunks-warning-invisible");
 				warningVisible.set(true);
 			} else if (warningVisible.get()) {
@@ -110,7 +110,7 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 			if (preFill.offset != null) {
 				data.offset = preFill.offset;
 				locationInput.setX(preFill.offset.getX());
-				locationInput.setZ(preFill.offset.getY());
+				locationInput.setZ(preFill.offset.getZ());
 			}
 			data.overwrite = preFill.overwrite;
 			overwrite.setSelected(preFill.overwrite);

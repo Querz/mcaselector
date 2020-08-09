@@ -24,10 +24,10 @@ public class SelectionHelper {
 				Point2i r = entry.getKey();
 				if (entry.getValue() != null) {
 					for (Point2i c : entry.getValue()) {
-						bw.write(r.getX() + ";" + r.getY() + ";" + c.getX() + ";" + c.getY() + "\n");
+						bw.write(r.getX() + ";" + r.getZ() + ";" + c.getX() + ";" + c.getZ() + "\n");
 					}
 				} else {
-					bw.write(r.getX() + ";" + r.getY() + "\n");
+					bw.write(r.getX() + ";" + r.getZ() + "\n");
 				}
 			}
 		} catch (IOException ex) {

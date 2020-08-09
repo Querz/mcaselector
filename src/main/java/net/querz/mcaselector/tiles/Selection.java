@@ -62,17 +62,17 @@ public class Selection implements Serializable {
 				}
 				minRegionX = entry.getKey().getX();
 			}
-			if (entry.getKey().getY() <= minRegionZ) {
+			if (entry.getKey().getZ() <= minRegionZ) {
 				if (entry.getValue() == null) {
-					min.setY(entry.getKey().regionToChunk().getY());
+					min.setZ(entry.getKey().regionToChunk().getZ());
 				} else {
 					for (Point2i chunk : entry.getValue()) {
-						if (chunk.getY() < min.getY()) {
-							min.setY(chunk.getY());
+						if (chunk.getZ() < min.getZ()) {
+							min.setZ(chunk.getZ());
 						}
 					}
 				}
-				minRegionZ = entry.getKey().getY();
+				minRegionZ = entry.getKey().getZ();
 			}
 			if (entry.getKey().getX() >= maxRegionX) {
 				if (entry.getValue() == null) {
@@ -86,17 +86,17 @@ public class Selection implements Serializable {
 				}
 				maxRegionX = entry.getKey().getX();
 			}
-			if (entry.getKey().getY() >= maxRegionZ) {
+			if (entry.getKey().getZ() >= maxRegionZ) {
 				if (entry.getValue() == null) {
-					max.setY(entry.getKey().regionToChunk().getY() + 31);
+					max.setZ(entry.getKey().regionToChunk().getZ() + 31);
 				} else {
 					for (Point2i chunk : entry.getValue()) {
-						if (chunk.getY() > max.getY()) {
-							max.setY(chunk.getY());
+						if (chunk.getZ() > max.getZ()) {
+							max.setZ(chunk.getZ());
 						}
 					}
 				}
-				maxRegionZ = entry.getKey().getY();
+				maxRegionZ = entry.getKey().getZ();
 			}
 		}
 	}

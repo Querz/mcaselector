@@ -141,7 +141,7 @@ public class ChunkFilterSelector {
 					Point2i endChunk = startChunk.add(Tile.SIZE_IN_CHUNKS - 1);
 
 					for (int x = startChunk.getX() - radius; x <= endChunk.getX() + radius; x++) {
-						for (int z = startChunk.getY() - radius; z <= endChunk.getY() + radius; z++) {
+						for (int z = startChunk.getZ() - radius; z <= endChunk.getZ() + radius; z++) {
 							Point2i currentChunk = new Point2i(x, z);
 							Point2i currentRegion = currentChunk.chunkToRegion();
 
@@ -161,7 +161,7 @@ public class ChunkFilterSelector {
 					output.put(reg.getKey(), new HashSet<>(reg.getValue()));
 					for (Point2i chunk : reg.getValue()) {
 						for (int x = chunk.getX() - radius; x <= chunk.getX() + radius; x++) {
-							for (int z = chunk.getY() - radius; z <= chunk.getY() + radius; z++) {
+							for (int z = chunk.getZ() - radius; z <= chunk.getZ() + radius; z++) {
 								Point2i currentChunk = new Point2i(x, z);
 								Point2i currentRegion = currentChunk.chunkToRegion();
 								if (!output.containsKey(currentRegion)) {

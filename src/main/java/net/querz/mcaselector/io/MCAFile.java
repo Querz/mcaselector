@@ -136,8 +136,8 @@ public class MCAFile {
 
 			Point2i rel = chunk.mod(32);
 			rel.setX(rel.getX() < 0 ? 32 + rel.getX() : rel.getX());
-			rel.setY(rel.getY() < 0 ? 32 + rel.getY() : rel.getY());
-			int headerIndex = rel.getY() * 32 + rel.getX();
+			rel.setZ(rel.getZ() < 0 ? 32 + rel.getZ() : rel.getZ());
+			int headerIndex = rel.getZ() * 32 + rel.getX();
 			int headerOffset = headerIndex * 4;
 
 			raf.seek(headerOffset);
@@ -329,14 +329,14 @@ public class MCAFile {
 		Point2i relativeOffset = getRelativeOffset(location, destination.location, offset);
 		int startX = relativeOffset.getX() > 0 ? 0 : Tile.SIZE_IN_CHUNKS - (Tile.SIZE_IN_CHUNKS + relativeOffset.getX());
 		int limitX = relativeOffset.getX() > 0 ? (Tile.SIZE_IN_CHUNKS - relativeOffset.getX()) : Tile.SIZE_IN_CHUNKS;
-		int startZ = relativeOffset.getY() > 0 ? 0 : Tile.SIZE_IN_CHUNKS - (Tile.SIZE_IN_CHUNKS + relativeOffset.getY());
-		int limitZ = relativeOffset.getY() > 0 ? (Tile.SIZE_IN_CHUNKS - relativeOffset.getY()) : Tile.SIZE_IN_CHUNKS;
+		int startZ = relativeOffset.getZ() > 0 ? 0 : Tile.SIZE_IN_CHUNKS - (Tile.SIZE_IN_CHUNKS + relativeOffset.getZ());
+		int limitZ = relativeOffset.getZ() > 0 ? (Tile.SIZE_IN_CHUNKS - relativeOffset.getZ()) : Tile.SIZE_IN_CHUNKS;
 
 		for (int x = startX; x < limitX; x++) {
 			for (int z = startZ; z < limitZ; z++) {
 				int sourceIndex = z * Tile.SIZE_IN_CHUNKS + x;
 				int destX = relativeOffset.getX() > 0 ? relativeOffset.getX() + x : x - startX;
-				int destZ = relativeOffset.getY() > 0 ? relativeOffset.getY() + z : z - startZ;
+				int destZ = relativeOffset.getZ() > 0 ? relativeOffset.getZ() + z : z - startZ;
 				int destIndex = destZ * Tile.SIZE_IN_CHUNKS + destX;
 
 				MCAChunkData sourceChunk = chunks[sourceIndex];
@@ -457,7 +457,7 @@ public class MCAFile {
 
 	private int getChunkIndex(Point2i chunkCoordinate) {
 		return (chunkCoordinate.getX() & (Tile.SIZE_IN_CHUNKS - 1))
-				+ (chunkCoordinate.getY() & (Tile.SIZE_IN_CHUNKS - 1)) * Tile.SIZE_IN_CHUNKS;
+				+ (chunkCoordinate.getZ() & (Tile.SIZE_IN_CHUNKS - 1)) * Tile.SIZE_IN_CHUNKS;
 	}
 
 	private Point2i getChunkOffsetFromIndex(int index) {

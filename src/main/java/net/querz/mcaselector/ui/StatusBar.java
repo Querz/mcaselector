@@ -104,11 +104,11 @@ public class StatusBar extends StackPane {
 		totalRegions.setText(Translation.STATUS_TOTAL + ": " + tileMap.getLoadedTiles());
 		Point2i b = tileMap.getHoveredBlock();
 		if (b != null) {
-			hoveredBlock.setText(Translation.STATUS_BLOCK + ": " + b.getX() + ", " + b.getY());
+			hoveredBlock.setText(Translation.STATUS_BLOCK + ": " + b.getX() + ", " + b.getZ());
 			Point2i c = b.blockToChunk();
-			hoveredChunk.setText(Translation.STATUS_CHUNK + ": " + c.getX() + ", " + c.getY());
+			hoveredChunk.setText(Translation.STATUS_CHUNK + ": " + c.getX() + ", " + c.getZ());
 			Point2i r = b.blockToRegion();
-			hoveredRegion.setText(Translation.STATUS_REGION + ": " + r.getX() + ", " + r.getY());
+			hoveredRegion.setText(Translation.STATUS_REGION + ": " + r.getX() + ", " + r.getZ());
 		} else {
 			hoveredBlock.setText(Translation.STATUS_BLOCK + ": -, -");
 			hoveredChunk.setText(Translation.STATUS_CHUNK + ": -, -");

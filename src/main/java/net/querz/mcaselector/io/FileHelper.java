@@ -97,11 +97,11 @@ public final class FileHelper {
 	}
 
 	public static String createMCAFileName(Point2i r) {
-		return String.format("r.%d.%d.mca", r.getX(), r.getY());
+		return String.format("r.%d.%d.mca", r.getX(), r.getZ());
 	}
 
 	public static String createPNGFileName(Point2i r) {
-		return String.format("r.%d.%d.png", r.getX(), r.getY());
+		return String.format("r.%d.%d.png", r.getX(), r.getZ());
 	}
 
 	public static Attributes getManifestAttributes() throws IOException {

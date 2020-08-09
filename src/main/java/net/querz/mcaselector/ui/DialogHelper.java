@@ -190,7 +190,7 @@ public class DialogHelper {
 
 	public static void gotoCoordinate(TileMap tileMap, Stage primaryStage) {
 		Optional<Point2i> result = new GotoDialog(primaryStage).showAndWait();
-		result.ifPresent(r -> tileMap.goTo(r.getX(), r.getY()));
+		result.ifPresent(r -> tileMap.goTo(r.getX(), r.getZ()));
 	}
 
 	public static void editSettings(TileMap tileMap, Stage primaryStage) {
