@@ -406,6 +406,8 @@ For Linux:
 * Open the command prompt and run `java --module-path <path to unzipped folder>/lib --add-modules ALL-MODULE-PATH -jar <path to mcaselector-1.12.3.jar>` where you replace everything in `<>` with the appropriate paths.
 * Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. On Debian, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of JavaFX is required to run the `mcaselector-1.12.3.jar`.
 
+To avoid having to go through this process every time to start MCA Selector, the resulting command can be copied into a `.bat`-file on Windows or `.sh`-file on MaxOS and Linux and can then be executed by double-clicking the `.bat`-file on Windows or running `sh <file>.sh` in the terminal / console on MacOS or Linux where `<file>` must be replaced by the name of the `.sh`-file.
+
 ---
 
 If none of these instructions work, apply "A brain" that you providently held ready after having read the "Requirements" section carefully. Or ask your question on [Discord](https://discord.gg/h942U8U).
