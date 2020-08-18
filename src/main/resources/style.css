@@ -1,5 +1,5 @@
 @font-face {
-    src: url('font/NotoSans-Regular.ttf');
+    src: url("font/NotoSans-Regular.ttf"), /*CSSParser doesn't like it when the css minifier removes the semicolon at the end, so we just use a comma*/
 }
 
 * {
