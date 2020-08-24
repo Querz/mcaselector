@@ -44,7 +44,7 @@ public final class VersionController {
 		ANVIL112(0, 1343, Anvil112ChunkFilter.class, Anvil112ChunkMerger.class, Anvil112ChunkRelocator.class, Anvil112ChunkRenderer.class, Anvil112ColorMapping.class),
 		ANVIL113(1344, 1631, Anvil113ChunkFilter.class, Anvil113ChunkMerger.class, Anvil113ChunkRelocator.class, Anvil113ChunkRenderer.class, Anvil113ColorMapping.class),
 		ANVIL114(1632, 2201, Anvil113ChunkFilter.class, Anvil113ChunkMerger.class, Anvil114ChunkRelocator.class, Anvil113ChunkRenderer.class, Anvil114ColorMapping.class),
-		ANVIL115(2202, 2526, Anvil115ChunkFilter.class, Anvil115ChunkMerger.class, Anvil115ChunkRelocator.class, Anvil113ChunkRenderer.class, Anvil115ColorMapping.class),
+		ANVIL115(2202, 2526, Anvil115ChunkFilter.class, Anvil115ChunkMerger.class, Anvil115ChunkRelocator.class, Anvil115ChunkRenderer.class, Anvil115ColorMapping.class),
 		ANVIL116(2527, Integer.MAX_VALUE, Anvil115ChunkFilter.class, Anvil115ChunkMerger.class, Anvil116ChunkRelocator.class, Anvil116ChunkRenderer.class, Anvil116ColorMapping.class);
 
 		private final int minVersion, maxVersion;

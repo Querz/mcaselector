@@ -435,7 +435,9 @@ public class MCAFile {
 				int read = dis.read(data);
 
 				if (read != sectors * SECTION_SIZE) {
-					throw new RuntimeException("deFragment read less data from original file than expected: " + read + " instead of " + sectors * SECTION_SIZE);
+					Point2i region = FileHelper.parseMCAFileName(tmpFile);
+					Point2i chunk = region.regionToChunk().add(getChunkOffsetFromIndex(i));
+					throw new RuntimeException(String.format("deFragment read less data from original file than expected: %d instead of %d in chunk %s", read, sectors * SECTION_SIZE, chunk));
 				}
 
 				dos.write(data);

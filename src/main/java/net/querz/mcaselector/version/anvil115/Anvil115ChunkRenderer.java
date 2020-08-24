@@ -1,4 +1,4 @@
-package net.querz.mcaselector.version.anvil116;
+package net.querz.mcaselector.version.anvil115;
 
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.ChunkRenderer;
@@ -10,7 +10,7 @@ import net.querz.nbt.tag.Tag;
 import static net.querz.mcaselector.validation.ValidationHelper.catchClassCastException;
 import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
 
-public class Anvil116ChunkRenderer implements ChunkRenderer {
+public class Anvil115ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, int[] waterPixels, byte[] terrainHeights, byte[] waterHeights, boolean water) {
@@ -123,13 +123,6 @@ public class Anvil116ChunkRenderer implements ChunkRenderer {
 				case "minecraft:lava":
 				case "minecraft:netherrack":
 				case "minecraft:nether_quartz_ore":
-				case "minecraft:basalt":
-				case "minecraft:soul_sand":
-				case "minecraft:nether_gold_ore":
-				case "minecraft:netherite_block":
-				case "minecraft:ancient_debris":
-				case "minecraft:crimson_nylium":
-				case "minecraft:warped_nylium":
 					return height > 75;
 			}
 		}
@@ -166,10 +159,24 @@ public class Anvil116ChunkRenderer implements ChunkRenderer {
 	}
 
 	private int getPaletteIndex(int index, long[] blockStates, int bits, int clean) {
-		int indicesPerLong = (int) (64D / bits);
-		int blockStatesIndex = index / indicesPerLong;
-		int startBit = (index % indicesPerLong) * bits;
-		return (int) (blockStates[blockStatesIndex] >> startBit) & clean;
+		double blockStatesIndex = index / (4096D / blockStates.length);
+
+		int longIndex = (int) blockStatesIndex;
+		int startBit = (int) ((blockStatesIndex - Math.floor(blockStatesIndex)) * 64D);
+
+		if (startBit + bits > 64) {
+			//get msb from current long, no need to cleanup manually, just fill with 0
+			int previous = (int) (blockStates[longIndex] >>> startBit);
+
+			//cleanup pattern for bits from next long
+			int remainingClean = ((int) Math.pow(2, startBit + bits - 64) - 1);
+
+			//get lsb from next long
+			int next = ((int) blockStates[longIndex + 1]) & remainingClean;
+			return (next << 64 - startBit) + previous;
+		} else {
+			return (int) (blockStates[longIndex] >> startBit) & clean;
+		}
 	}
 
 	private int filterSections(CompoundTag sectionA, CompoundTag sectionB) {
