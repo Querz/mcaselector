@@ -432,14 +432,7 @@ public class MCAFile {
 				DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(rafTmp.getFD()), sectors * SECTION_SIZE));
 
 				byte[] data = new byte[sectors * SECTION_SIZE];
-				int read = dis.read(data);
-
-				if (read != sectors * SECTION_SIZE) {
-					Point2i region = FileHelper.parseMCAFileName(tmpFile);
-					Point2i chunk = region.regionToChunk().add(getChunkOffsetFromIndex(i));
-					throw new RuntimeException(String.format("deFragment read less data from original file than expected: %d instead of %d in chunk %s", read, sectors * SECTION_SIZE, chunk));
-				}
-
+				dis.read(data);
 				dos.write(data);
 				offsets[i] = globalOffset; //always keep MCAFile information up to date
 				globalOffset += sectors;
