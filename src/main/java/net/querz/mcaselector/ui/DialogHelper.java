@@ -177,7 +177,7 @@ public class DialogHelper {
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									dir, t, false, dataProperty.get().overwrite(),
 									null,
-									dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null,
+									new SelectionData(dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null, tileMap.isSelectionInverted()),
 									dataProperty.get().getRanges(),
 									dataProperty.get().getOffset(),
 									tempFiles));
@@ -292,7 +292,7 @@ public class DialogHelper {
 
 	public static void copySelectedChunks(TileMap tileMap) {
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		Selection selection = new Selection(tileMap.getMarkedChunks(), Config.getWorldDir());
+		Selection selection = new Selection(tileMap.getMarkedChunks(), tileMap.isSelectionInverted(), Config.getWorldDir());
 		TileMapSelection tileMapSelection = new TileMapSelection(selection);
 		clipboard.setContents(tileMapSelection, tileMap);
 	}
@@ -308,8 +308,8 @@ public class DialogHelper {
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									tileMap.getPastedWorld(), t, false, dataProperty.get().overwrite(),
-									tileMap.getPastedChunks(),
-									dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null,
+									new SelectionData(tileMap.getPastedChunks(), tileMap.getPastedChunksInverted()),
+									new SelectionData(dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null, tileMap.isSelectionInverted()),
 									dataProperty.get().getRanges(),
 									dataProperty.get().getOffset(),
 									tempFiles));
@@ -328,7 +328,7 @@ public class DialogHelper {
 
 					Selection selection = (Selection) data;
 
-					tileMap.setPastedChunks(selection.getSelectionData(), selection.getMin(), selection.getMax(), selection.getWorld());
+					tileMap.setPastedChunks(selection.getSelectionData(), selection.isInverted(), selection.getMin(), selection.getMax(), selection.getWorld());
 					tileMap.update();
 
 				} catch (UnsupportedFlavorException | IOException ex) {
@@ -405,9 +405,9 @@ public class DialogHelper {
 		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export"),
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showOpenDialog(primaryStage);
 		if (file != null) {
-			Map<Point2i, Set<Point2i>> chunks = SelectionHelper.importSelection(file);
+			SelectionData selection = SelectionHelper.importSelection(file);
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
-			tileMap.setMarkedChunks(chunks);
+			tileMap.setMarkedChunks(selection.getSelection());
 			tileMap.update();
 		}
 	}
@@ -416,7 +416,7 @@ public class DialogHelper {
 		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export"),
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showSaveDialog(primaryStage);
 		if (file != null) {
-			SelectionHelper.exportSelection(tileMap.getMarkedChunks(), file);
+			SelectionHelper.exportSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), file);
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
 			tileMap.update();
 		}

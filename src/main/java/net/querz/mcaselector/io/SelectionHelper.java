@@ -18,9 +18,12 @@ public class SelectionHelper {
 
 	private SelectionHelper() {}
 
-	public static void exportSelection(Map<Point2i, Set<Point2i>> chunks, File file) {
+	public static void exportSelection(SelectionData data, File file) {
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-			for (Map.Entry<Point2i, Set<Point2i>> entry : chunks.entrySet()) {
+			if (data.isInverted()) {
+				bw.write("inverted\n");
+			}
+			for (Map.Entry<Point2i, Set<Point2i>> entry : data.getSelection().entrySet()) {
 				Point2i r = entry.getKey();
 				if (entry.getValue() != null) {
 					for (Point2i c : entry.getValue()) {
@@ -35,11 +38,18 @@ public class SelectionHelper {
 		}
 	}
 
-	public static Map<Point2i, Set<Point2i>> importSelection(File file) {
+	public static SelectionData importSelection(File file) {
 		Map<Point2i, Set<Point2i>> chunks = new HashMap<>();
+		boolean inverted = false;
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
+			int num = 0;
 			while ((line = br.readLine()) != null) {
+				num++;
+				if (num == 1 && "inverted".equals(line)) {
+					inverted = true;
+					continue;
+				}
 				String[] elements = line.split(";");
 				if (elements.length == 2 || elements.length == 4) {
 					Integer x = TextHelper.parseInt(elements[0], 10);
@@ -72,6 +82,6 @@ public class SelectionHelper {
 		} catch (IOException ex) {
 			Debug.dumpException("failed to import selection", ex);
 		}
-		return chunks;
+		return new SelectionData(chunks, inverted);
 	}
 }

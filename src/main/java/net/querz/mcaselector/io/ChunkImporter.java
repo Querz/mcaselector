@@ -13,11 +13,14 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ChunkImporter {
 
@@ -139,6 +142,167 @@ public class ChunkImporter {
 		} catch (Exception ex) {
 			Debug.dumpException("failed creating jobs to import chunks", ex);
 		}
+	}
+
+	public static void main(String[] args) {
+		Map<Point2i, Set<Point2i>> s = new HashMap<>();
+		s.put(new Point2i(0, -1), null);
+		s.put(new Point2i(0, -2), null);
+		s.put(new Point2i(0, 0), Collections.singleton(new Point2i(0, 0)));
+
+		Map<Point2i, Set<Point2i>> t = new HashMap<>();
+		t.put(new Point2i(0, 0), Collections.singleton(new Point2i(0, 0)));
+
+		Map<Point2i, Set<Point2i>> ts = createTargetSourceMapping(
+				new File("test/source_mapping"),
+				null,
+				new SelectionData(t, false),
+				new Point2i(1, 0)
+		);
+
+		System.out.println(ts);
+	}
+
+	public static void importChunks(File sourceDirectory, Progress progressChannel, boolean headless, boolean overwrite, SelectionData sourceSelection, SelectionData targetSelection, List<Range> ranges, Point2i offset, DataProperty<Map<Point2i, File>> tempFiles) {
+
+		try {
+			File[] sourceFiles = sourceDirectory.listFiles();
+			if (sourceFiles == null || sourceFiles.length == 0) {
+				if (headless) {
+					progressChannel.done("no files");
+				} else {
+					progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
+				}
+				return;
+			}
+
+			MCAFilePipe.clearQueues();
+
+			if (headless) {
+				progressChannel.setMessage("collecting data...");
+			} else {
+				progressChannel.setMessage(Translation.DIALOG_PROGRESS_COLLECTING_DATA.toString());
+			}
+
+			// if source world and target world is the same, we need to create temp files of all source files
+			Map<Point2i, File> tempFilesMap = null;
+			if (sourceDirectory.equals(Config.getWorldDir())) {
+				tempFilesMap = new HashMap<>();
+			}
+			tempFiles.set(tempFilesMap);
+
+			Map<Point2i, Set<Point2i>> targetMapping = createTargetSourceMapping(sourceDirectory, sourceSelection, targetSelection, offset);
+
+			progressChannel.setMax(targetMapping.size());
+			progressChannel.updateProgress(sourceFiles[0].getName(), 0);
+
+			// create local source and local target selections
+			for (Map.Entry<Point2i, Set<Point2i>> entry : targetMapping.entrySet()) {
+				Point2i targetRegion = entry.getKey();
+				Set<Point2i> sourceRegions = entry.getValue();
+				File targetFile = FileHelper.createMCAFilePath(targetRegion);
+
+				Map<Point2i, Set<Point2i>> localSourceSelection = new HashMap<>();
+				Set<Point2i> localTargetSelection;
+
+				// creating local source selection
+				if (sourceSelection == null) {
+					localSourceSelection = Collections.emptyMap();
+				} else {
+					for (Point2i sourceRegion : sourceRegions) {
+						Set<Point2i> localSourceChunks;
+						if (sourceSelection.getSelection().containsKey(sourceRegion)) {
+							localSourceChunks = sourceSelection.getSelection().get(sourceRegion);
+							if (localSourceChunks == null) {
+								localSourceChunks = Collections.emptySet();
+							}
+						} else {
+							localSourceChunks = Collections.emptySet();
+						}
+						// invert source selection if necessary
+						if (sourceSelection.isInverted()) {
+							localSourceChunks = SelectionData.createInvertedRegionSet(sourceRegion, localSourceChunks);
+						}
+						localSourceSelection.put(sourceRegion, localSourceChunks);
+					}
+				}
+
+				// creating local target selection
+				if (targetSelection == null) {
+					localTargetSelection = Collections.emptySet();
+				} else {
+					if (targetSelection.getSelection().containsKey(targetRegion)) {
+						localTargetSelection = targetSelection.getSelection().get(targetRegion);
+						if (localTargetSelection == null) {
+							localTargetSelection = Collections.emptySet();
+						}
+					} else {
+						localTargetSelection = Collections.emptySet();
+					}
+
+					// invert target selection if necessary
+					if (targetSelection.isInverted()) {
+						localTargetSelection = SelectionData.createInvertedRegionSet(targetRegion, localTargetSelection);
+					}
+				}
+
+				MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetFile, sourceDirectory, targetRegion, sourceRegions, offset, progressChannel, overwrite, localSourceSelection, localTargetSelection, ranges, tempFilesMap));
+			}
+		} catch (Exception ex) {
+			Debug.dumpException("failed creating jobs to import chunks", ex);
+		}
+	}
+
+	// returns a map where the key is a target region and the value is a set of all source regions, if they exist
+	public static Map<Point2i, Set<Point2i>> createTargetSourceMapping(File sourceDirectory, SelectionData sourceSelection, SelectionData targetSelection, Point2i offset) {
+		Map<Point2i, Set<Point2i>> sourceTargetMapping = new HashMap<>();
+
+		// get all possible source files
+		Set<Point2i> sourceRegions = parseAllMCAFileNames(sourceDirectory);
+		if (sourceSelection != null) {
+			sourceRegions.removeIf(s -> !sourceSelection.isRegionSelected(s));
+		}
+
+		// get target regions with offset based on source regions, target selection and inversion
+		for (Point2i sourceRegion : sourceRegions) {
+			Set<Point2i> targetRegions = getTargetRegions(sourceRegion, offset);
+			if (targetSelection != null) {
+				targetRegions.removeIf(t -> !targetSelection.isRegionSelected(t));
+			}
+			if (targetRegions.isEmpty()) {
+				continue;
+			}
+			sourceTargetMapping.put(sourceRegion, targetRegions);
+		}
+
+		// now we invert the mapping to create a target -> sources mapping
+		Map<Point2i, Set<Point2i>> targetSourceMapping = new HashMap<>();
+		int initSize = Math.min((offset.getX() % 32 != 0 ? 2 : 0) + (offset.getZ() % 32 != 0 ? 2 : 0), 1); // init with 1, 2, 4
+		for (Map.Entry<Point2i, Set<Point2i>> entry : sourceTargetMapping.entrySet()) {
+			for (Point2i target : entry.getValue()) {
+				if (targetSourceMapping.containsKey(target)) {
+					targetSourceMapping.get(target).add(entry.getKey());
+				} else {
+					targetSourceMapping.compute(target, (k, o) -> {
+						Set<Point2i> sources = new HashSet<>(initSize);
+						sources.add(entry.getKey());
+						return sources;
+					});
+				}
+			}
+		}
+
+		return targetSourceMapping;
+	}
+
+	private static Set<Point2i> parseAllMCAFileNames(File directory) {
+		File[] files = directory.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
+		if (files == null) {
+			return Collections.emptySet();
+		}
+		Set<Point2i> regions = new HashSet<>(files.length);
+		Arrays.stream(files).forEach(f -> regions.add(FileHelper.parseMCAFileName(f)));
+		return regions;
 	}
 
 	private static class MCAChunkImporterLoadJob extends LoadDataJob {

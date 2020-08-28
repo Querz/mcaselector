@@ -39,21 +39,21 @@ public final class TileImage {
 
 	private TileImage() {}
 
-	public static void draw(Tile tile, GraphicsContext ctx, float scale, Point2f offset) {
+	public static void draw(Tile tile, GraphicsContext ctx, float scale, Point2f offset, boolean selectionInverted) {
 		if (tile.image != null) {
 			ctx.drawImage(tile.getImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		} else {
 			ctx.drawImage(ImageHelper.getEmptyTileImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		}
 
-		if (tile.marked) {
+		if (tile.marked && tile.markedChunks.isEmpty() && !selectionInverted || !tile.marked && tile.markedChunks.isEmpty() && selectionInverted) {
 			//draw marked region
 			ctx.setFill(Config.getRegionSelectionColor().makeJavaFXColor());
 			ctx.fillRect(offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		} else if (tile.markedChunks.size() > 0) {
 
 			if (tile.markedChunksImage == null) {
-				createMarkedChunksImage(tile, Tile.getZoomLevel(scale));
+				createMarkedChunksImage(tile, Tile.getZoomLevel(scale), selectionInverted);
 			}
 
 			// apply markedChunksImage to ctx
@@ -61,12 +61,16 @@ public final class TileImage {
 		}
 	}
 
-	static void createMarkedChunksImage(Tile tile, int zoomLevel) {
+	static void createMarkedChunksImage(Tile tile, int zoomLevel, boolean inverted) {
 		WritableImage wImage = new WritableImage(Tile.SIZE / zoomLevel, Tile.SIZE / zoomLevel);
 
 		Canvas canvas = new Canvas(Tile.SIZE / (float) zoomLevel, Tile.SIZE / (float) zoomLevel);
 		GraphicsContext ctx = canvas.getGraphicsContext2D();
 		ctx.setFill(Config.getChunkSelectionColor().makeJavaFXColor());
+
+		if (inverted) {
+			ctx.fillRect(0, 0, Tile.SIZE, Tile.SIZE);
+		}
 
 		for (Point2i markedChunk : tile.markedChunks) {
 			Point2i regionChunk = markedChunk.mod(Tile.SIZE_IN_CHUNKS);
@@ -77,7 +81,11 @@ public final class TileImage {
 				regionChunk.setZ(regionChunk.getZ() + Tile.SIZE_IN_CHUNKS);
 			}
 
-			ctx.fillRect(regionChunk.getX() * Tile.CHUNK_SIZE / (float) zoomLevel, regionChunk.getZ() * Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel);
+			if (inverted) {
+				ctx.clearRect(regionChunk.getX() * Tile.CHUNK_SIZE / (float) zoomLevel, regionChunk.getZ() * Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel);
+			} else {
+				ctx.fillRect(regionChunk.getX() * Tile.CHUNK_SIZE / (float) zoomLevel, regionChunk.getZ() * Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel);
+			}
 		}
 
 		SnapshotParameters params = new SnapshotParameters();

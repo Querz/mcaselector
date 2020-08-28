@@ -9,17 +9,23 @@ import java.util.Set;
 public class Selection implements Serializable {
 
 	private final Map<Point2i, Set<Point2i>> selection;
+	private final boolean inverted;
 	private Point2i min, max;
 	private final File world;
 
-	public Selection(Map<Point2i, Set<Point2i>> selection, File world) {
+	public Selection(Map<Point2i, Set<Point2i>> selection, boolean inverted, File world) {
 		this.selection = selection;
+		this.inverted = inverted;
 		this.world = world;
 		calculateMinMax();
 	}
 
 	public Map<Point2i, Set<Point2i>> getSelectionData() {
 		return selection;
+	}
+
+	public boolean isInverted() {
+		return inverted;
 	}
 
 	public Point2i getMin() {

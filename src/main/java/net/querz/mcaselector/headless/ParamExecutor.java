@@ -9,6 +9,7 @@ import net.querz.mcaselector.io.ChunkFilterExporter;
 import net.querz.mcaselector.io.ChunkFilterSelector;
 import net.querz.mcaselector.io.ChunkImporter;
 import net.querz.mcaselector.io.FieldChanger;
+import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.SelectionDeleter;
 import net.querz.mcaselector.io.SelectionExporter;
 import net.querz.mcaselector.io.SelectionHelper;
@@ -214,7 +215,7 @@ public class ParamExecutor {
 		if (params.containsKey("selection")) {
 			 selectionFile = parseFile(params.get("selection"), "csv");
 		}
-		Map<Point2i, Set<Point2i>> selection = null;
+		SelectionData selection = null;
 		if (selectionFile != null && selectionFile.exists()) {
 			selection = SelectionHelper.importSelection(selectionFile);
 		}
@@ -230,7 +231,7 @@ public class ParamExecutor {
 		progress.onDone(future);
 
 		DataProperty<Map<Point2i, File>> tempFiles = new DataProperty<>();
-		ChunkImporter.importChunks(input, progress, true, overwrite, null, selection, ranges, new Point2i(offsetX, offsetZ), tempFiles);
+		ChunkImporter.importChunks(input, progress, true, overwrite, null, selection.getSelection(), ranges, new Point2i(offsetX, offsetZ), tempFiles);
 		if (tempFiles.get() != null) {
 			for (File tempFile : tempFiles.get().values()) {
 				if (!tempFile.delete()) {
@@ -299,7 +300,7 @@ public class ParamExecutor {
 
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(() -> {
-			SelectionHelper.exportSelection(selection, output);
+			SelectionHelper.exportSelection(new SelectionData(selection, false), output);
 			future.run();
 		});
 
@@ -344,7 +345,7 @@ public class ParamExecutor {
 
 			File input = parseFile(params.get(key), "csv");
 			fileMustExist(input);
-			return SelectionHelper.importSelection(input);
+			return SelectionHelper.importSelection(input).getSelection();
 		}
 		return null;
 	}
