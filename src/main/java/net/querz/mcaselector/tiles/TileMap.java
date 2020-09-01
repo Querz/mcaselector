@@ -10,6 +10,7 @@ import javafx.scene.input.*;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.RegionImageGenerator;
+import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.debug.Debug;
@@ -671,12 +672,18 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	private void drawPastedChunks(GraphicsContext ctx, Point2i region, Point2f pos) {
+		int zoomLevel = getZoomLevel();
+
+		ctx.setFill(Config.getPasteChunksColor().makeJavaFXColor());
+
 		if (!pastedChunks.containsKey(region)) {
+			if (pastedChunksInverted) {
+				ctx.fillRect(pos.getX(), pos.getY(), Math.ceil(Tile.SIZE / scale), Math.ceil(Tile.SIZE / scale));
+			}
 			return;
 		}
 
 		if (!pastedChunksCache.containsKey(region)) {
-			int zoomLevel = getZoomLevel();
 			WritableImage image = new WritableImage(Tile.SIZE / zoomLevel, Tile.SIZE / zoomLevel);
 
 			Canvas canvas = new Canvas(Tile.SIZE / (float) zoomLevel, Tile.SIZE / (float) zoomLevel);
@@ -684,9 +691,15 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			ctx2.setFill(Config.getPasteChunksColor().makeJavaFXColor());
 
 			Set<Point2i> chunks = pastedChunks.get(region);
+
 			if (chunks == null) {
-				ctx2.fillRect(0, 0, (float) Tile.SIZE / zoomLevel, (float) Tile.SIZE / zoomLevel);
+				if (!pastedChunksInverted) {
+					ctx2.fillRect(0, 0, (float) Tile.SIZE / zoomLevel, (float) Tile.SIZE / zoomLevel);
+				}
 			} else {
+				if (pastedChunksInverted) {
+					chunks = SelectionData.createInvertedRegionSet(region, chunks);
+				}
 				for (Point2i chunk : chunks) {
 					Point2i regionChunk = chunk.and(0x1F);
 					ctx2.fillRect(
