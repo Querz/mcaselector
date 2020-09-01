@@ -149,6 +149,7 @@ public class OptionBar extends MenuBar {
 		filterChunks.setDisable(!enabled);
 		changeFields.setDisable(!enabled);
 		importChunks.setDisable(!enabled);
+		invert.setDisable(!enabled);
 		copy.setDisable(!enabled);
 		paste.setDisable(!enabled || !hasValidClipboardContent(tileMap));
 	}
