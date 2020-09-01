@@ -414,11 +414,13 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		visibleTiles.clear();
 		imgPool.clear();
 		selectedChunks = 0;
+		selectionInverted = false;
 
 		pastedChunks = null;
 		pastedWorld = null;
 		pastedChunksCache = null;
 		pastedChunksOffset = null;
+		pastedChunksInverted = false;
 	}
 
 	public void clearTile(Point2i p) {
