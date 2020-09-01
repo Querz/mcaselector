@@ -231,7 +231,7 @@ public class ParamExecutor {
 		progress.onDone(future);
 
 		DataProperty<Map<Point2i, File>> tempFiles = new DataProperty<>();
-		ChunkImporter.importChunks(input, progress, true, overwrite, null, selection.getSelection(), ranges, new Point2i(offsetX, offsetZ), tempFiles);
+		ChunkImporter.importChunks(input, progress, true, overwrite, null, selection, ranges, new Point2i(offsetX, offsetZ), tempFiles);
 		if (tempFiles.get() != null) {
 			for (File tempFile : tempFiles.get().values()) {
 				if (!tempFile.delete()) {

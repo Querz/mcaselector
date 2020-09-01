@@ -20,148 +20,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ChunkImporter {
 
 	private ChunkImporter() {}
-
-	public static void importChunks(File importDir, Progress progressChannel, boolean headless, boolean overwrite, Map<Point2i, Set<Point2i>> sourceSelection, Map<Point2i, Set<Point2i>> selection, List<Range> ranges, Point2i offset, DataProperty<Map<Point2i, File>> tempFiles) {
-		try {
-			File[] importFiles;
-			if (sourceSelection == null) {
-				importFiles = importDir.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
-			} else {
-				importFiles = importDir.listFiles((dir, name) -> {
-					Point2i p = FileHelper.parseMCAFileName(name);
-					if (p != null) {
-						return sourceSelection.containsKey(p);
-					}
-					return false;
-				});
-			}
-
-			if (importFiles == null || importFiles.length == 0) {
-				if (headless) {
-					progressChannel.done("no files");
-				} else {
-					progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
-				}
-				return;
-			}
-
-			MCAFilePipe.clearQueues();
-
-			if (headless) {
-				progressChannel.setMessage("collecting data...");
-			} else {
-				progressChannel.setMessage(Translation.DIALOG_PROGRESS_COLLECTING_DATA.toString());
-			}
-
-			// if source world and target world is the same, we need to create temp files of all source files
-			Map<Point2i, File> tempFilesMap = null;
-			if (importDir.equals(Config.getWorldDir())) {
-				tempFilesMap = new HashMap<>();
-			}
-			tempFiles.set(tempFilesMap);
-
-			Map<Point2i, Set<Point2i>> targetMapping = new HashMap<>();
-
-			// find target files
-			for (File file : importFiles) {
-				Point2i source = FileHelper.parseMCAFileName(file);
-				if (source == null) {
-					Debug.dumpf("could not parse region from mca file name: %s", file.getName());
-					continue;
-				}
-
-				try {
-					Set<Point2i> targets = getTargetRegions(source, offset);
-					mapSourceRegionsByTargetRegion(source, targets, targetMapping);
-				} catch (Exception ex) {
-					Debug.dumpException("failed to map source to target regions", ex);
-				}
-			}
-
-			progressChannel.setMax(targetMapping.size());
-
-			progressChannel.updateProgress(importFiles[0].getName(), 0);
-
-			for (Map.Entry<Point2i, Set<Point2i>> entry : targetMapping.entrySet()) {
-				Point2i targetRegion = entry.getKey();
-				Set<Point2i> sourceRegions = entry.getValue();
-
-				if (selection == null || selection.containsKey(targetRegion)) {
-					File targetFile = FileHelper.createMCAFilePath(targetRegion);
-					Set<Point2i> localTargetSelection = selection == null ? null : selection.get(targetRegion);
-					if (localTargetSelection == null) {
-						// null --> no selection, 0 --> all chunks in this region are selected
-						localTargetSelection = new HashSet<>(0);
-					}
-
-					Set<Point2i> actualSourceRegions;
-					Map<Point2i, Set<Point2i>> localSourceSelection = null;
-					if (sourceSelection == null) {
-						actualSourceRegions = sourceRegions;
-					} else {
-						actualSourceRegions = new HashSet<>(0);
-						localSourceSelection = new HashMap<>();
-						for (Point2i sourceRegion : sourceRegions) {
-							if (sourceSelection.containsKey(sourceRegion)) {
-								actualSourceRegions.add(sourceRegion);
-								localSourceSelection.put(sourceRegion, sourceSelection.get(sourceRegion));
-							}
-						}
-						if (actualSourceRegions.size() == 0) {
-							progressChannel.incrementProgress(FileHelper.createMCAFileName(targetRegion));
-							continue;
-						}
-					}
-
-					if (actualSourceRegions.size() != 0) {
-						if (tempFilesMap != null) {
-							for (Point2i sourceRegion : actualSourceRegions) {
-								if (!tempFilesMap.containsKey(sourceRegion)) {
-									try {
-										File tempFile = File.createTempFile(FileHelper.createMCAFileName(sourceRegion), null, null);
-										Files.copy(FileHelper.createMCAFilePath(sourceRegion).toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-										tempFilesMap.put(sourceRegion, tempFile);
-									} catch (Exception ex) {
-										Debug.dumpException("failed to create temp file of " + FileHelper.createMCAFilePath(sourceRegion), ex);
-									}
-								}
-							}
-						}
-
-						MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetFile, importDir, targetRegion, actualSourceRegions, offset, progressChannel, overwrite, localSourceSelection, localTargetSelection, ranges, tempFilesMap));
-					}
-				} else {
-					progressChannel.incrementProgress(FileHelper.createMCAFileName(targetRegion));
-				}
-			}
-		} catch (Exception ex) {
-			Debug.dumpException("failed creating jobs to import chunks", ex);
-		}
-	}
-
-	public static void main(String[] args) {
-		Map<Point2i, Set<Point2i>> s = new HashMap<>();
-		s.put(new Point2i(0, -1), null);
-		s.put(new Point2i(0, -2), null);
-		s.put(new Point2i(0, 0), Collections.singleton(new Point2i(0, 0)));
-
-		Map<Point2i, Set<Point2i>> t = new HashMap<>();
-		t.put(new Point2i(0, 0), Collections.singleton(new Point2i(0, 0)));
-
-		Map<Point2i, Set<Point2i>> ts = createTargetSourceMapping(
-				new File("test/source_mapping"),
-				null,
-				new SelectionData(t, false),
-				new Point2i(1, 0)
-		);
-
-		System.out.println(ts);
-	}
 
 	public static void importChunks(File sourceDirectory, Progress progressChannel, boolean headless, boolean overwrite, SelectionData sourceSelection, SelectionData targetSelection, List<Range> ranges, Point2i offset, DataProperty<Map<Point2i, File>> tempFiles) {
 
@@ -485,14 +347,6 @@ public class ChunkImporter {
 			Debug.dumpf("took %s to save data to %s", t, getFile().getName());
 		}
 	}
-
-	private static void mapSourceRegionsByTargetRegion(Point2i source, Set<Point2i> targets, Map<Point2i, Set<Point2i>> map) {
-		for (Point2i target : targets) {
-			map.computeIfAbsent(target, key -> new HashSet<>(4));
-			map.get(target).add(source);
-		}
-	}
-
 
 	// source is a region coordinate, offset is a chunk coordinate
 	private static Set<Point2i> getTargetRegions(Point2i source, Point2i offset) {
