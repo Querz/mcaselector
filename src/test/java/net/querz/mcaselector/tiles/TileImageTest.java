@@ -3,19 +3,17 @@ package net.querz.mcaselector.tiles;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
-import junit.framework.TestCase;
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.MCASelectorTestCase;
 import net.querz.mcaselector.point.Point2i;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
 import java.util.UUID;
 import static org.junit.Assert.*;
 
-public class TileImageTest extends TestCase {
+public class TileImageTest extends MCASelectorTestCase {
 
 	public void testGenerateImage112() throws IOException {
 		Config.setShade(true);
@@ -187,10 +185,6 @@ public class TileImageTest extends TestCase {
 		assertImageEquals("anvil116/r.0.0-no_shade.png", image);
 	}
 
-	private byte[] loadDataFromResource(String resource) throws IOException {
-		return Files.readAllBytes(getResourceFile(resource).toPath());
-	}
-
 	private void writeImage(Image image, File file) throws IOException {
 		if (!file.getParentFile().exists()) {
 			file.getParentFile().mkdirs();
@@ -202,12 +196,6 @@ public class TileImageTest extends TestCase {
 	private void assertImageEquals(String expected, Image actual) throws IOException {
 		Image expectedImage = SwingFXUtils.toFXImage(ImageIO.read(getResourceFile(expected)), null);
 		assertArrayEquals(getImageData(expectedImage), getImageData(actual));
-	}
-
-	private File getResourceFile(String resource) {
-		URL resFileURL = getClass().getClassLoader().getResource(resource);
-		assertNotNull(resFileURL);
-		return new File(resFileURL.getFile());
 	}
 
 	private int[] getImageData(Image image) {
