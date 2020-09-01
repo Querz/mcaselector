@@ -17,3 +17,6 @@ import_test/
 *.log
 deploy/
 export/
+!src/test/resources/import/source/r.0.-1.mca
+!src/test/resources/import/source/r.-1.-1.mca
+!src/test/resources/import/target/r.-1.-1.mca
