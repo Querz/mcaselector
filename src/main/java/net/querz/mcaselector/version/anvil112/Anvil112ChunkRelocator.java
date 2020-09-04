@@ -84,7 +84,7 @@ public class Anvil112ChunkRelocator implements ChunkRelocator {
 					break;
 				case "minecraft:structure_block":
 					applyIntIfPresent(tileEntity, "posX", offset.getX());
-					applyIntIfPresent(tileEntity, "posX", offset.getZ());
+					applyIntIfPresent(tileEntity, "posZ", offset.getZ());
 					break;
 				case "minecraft:mob_spawner":
 					if (tileEntity.containsKey("SpawnPotentials")) {
