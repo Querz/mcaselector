@@ -18,7 +18,49 @@ public final class Debug {
 	private Debug() {}
 
 	public static void dump(Object... objects) {
-		if (Config.debug()) {
+		try {
+			if (Config.debug()) {
+				for (Object o : objects) {
+					if (o instanceof Exception) {
+						ExceptionInfo info = new ExceptionInfo((Exception) o);
+						if (!lastExceptions.containsKey(info)) {
+							lastExceptions.put(info, info);
+							if (logWriter != null) {
+								appendLogFile(TextHelper.getStacktraceAsString((Exception) o));
+							}
+							((Exception) o).printStackTrace();
+						} else {
+							// poke original instance
+							lastExceptions.get(info).poke();
+						}
+					} else {
+						if (logWriter != null) {
+							appendLogFile(o.toString());
+						}
+						System.out.println(o);
+					}
+				}
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static void dumpf(String format, Object... objects) {
+		try {
+			if (Config.debug()) {
+				if (logWriter != null) {
+					appendLogFile(String.format(format, objects));
+				}
+				System.out.printf(format + "\n", objects);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static void error(Object... objects) {
+		try {
 			for (Object o : objects) {
 				if (o instanceof Exception) {
 					ExceptionInfo info = new ExceptionInfo((Exception) o);
@@ -39,38 +81,8 @@ public final class Debug {
 					System.out.println(o);
 				}
 			}
-		}
-	}
-
-	public static void dumpf(String format, Object... objects) {
-		if (Config.debug()) {
-			if (logWriter != null) {
-				appendLogFile(String.format(format, objects));
-			}
-			System.out.printf(format + "\n", objects);
-		}
-	}
-
-	public static void error(Object... objects) {
-		for (Object o : objects) {
-			if (o instanceof Exception) {
-				ExceptionInfo info = new ExceptionInfo((Exception) o);
-				if (!lastExceptions.containsKey(info)) {
-					lastExceptions.put(info, info);
-					if (logWriter != null) {
-						appendLogFile(TextHelper.getStacktraceAsString((Exception) o));
-					}
-					((Exception) o).printStackTrace();
-				} else {
-					// poke original instance
-					lastExceptions.get(info).poke();
-				}
-			} else {
-				if (logWriter != null) {
-					appendLogFile(o.toString());
-				}
-				System.out.println(o);
-			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 
@@ -79,29 +91,45 @@ public final class Debug {
 	}
 
 	public static void errorf(String format, Object... objects) {
-		if (logWriter != null) {
-			appendLogFile(String.format(format, objects));
+		try {
+			if (logWriter != null) {
+				appendLogFile(String.format(format, objects));
+			}
+			System.out.printf(format + "\n", objects);
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
-		System.out.printf(format + "\n", objects);
 	}
 
 	public static void print(Object... objects) {
-		if (logWriter != null) {
-			Arrays.stream(objects).forEach(o -> appendLogFile(o.toString()));
+		try {
+			if (logWriter != null) {
+				Arrays.stream(objects).forEach(o -> appendLogFile(o.toString()));
+			}
+			Arrays.stream(objects).forEach(System.out::println);
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
-		Arrays.stream(objects).forEach(System.out::println);
 	}
 
 	public static void printf(String format, Object... objects) {
-		if (logWriter != null) {
-			appendLogFile(String.format(format, objects));
+		try {
+			if (logWriter != null) {
+				appendLogFile(String.format(format, objects));
+			}
+			System.out.printf(format + "\n", objects);
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
-		System.out.printf(format + "\n", objects);
 	}
 
 	public static void dumpfToConsoleOnly(String format, Object... objects) {
-		if (Config.debug()) {
-			System.out.printf(format + "\n", objects);
+		try {
+			if (Config.debug()) {
+				System.out.printf(format + "\n", objects);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 
