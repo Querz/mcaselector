@@ -9,7 +9,6 @@ import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class Debug {
@@ -254,7 +253,7 @@ public final class Debug {
 			return ex instanceof ExceptionInfo
 					&& exception == ((ExceptionInfo) ex).exception
 					&& line == ((ExceptionInfo) ex).line
-					&& file.equals(((ExceptionInfo) ex).file);
+					&& (file == null && ((ExceptionInfo) ex).file == null || file != null && file.equals(((ExceptionInfo) ex).file));
 		}
 
 		@Override
