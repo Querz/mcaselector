@@ -4,17 +4,19 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.MCASelectorTestCase;
 import net.querz.mcaselector.point.Point2i;
+import org.junit.Test;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 import static org.junit.Assert.*;
+import static net.querz.mcaselector.MCASelectorTestCase.*;
 
-public class TileImageTest extends MCASelectorTestCase {
+public class TileImageTest {
 
+	@Test
 	public void testGenerateImage112() throws IOException {
 		Config.setShade(true);
 		Config.setShadeWater(true);
@@ -49,6 +51,7 @@ public class TileImageTest extends MCASelectorTestCase {
 		assertImageEquals("anvil112/r.0.0-no_shade.png", image);
 	}
 
+	@Test
 	public void testGenerateImage113() throws IOException {
 		Config.setShade(true);
 		Config.setShadeWater(true);
@@ -83,6 +86,7 @@ public class TileImageTest extends MCASelectorTestCase {
 		assertImageEquals("anvil113/r.0.0-no_shade.png", image);
 	}
 
+	@Test
 	public void testGenerateImage114() throws IOException {
 		Config.setShade(true);
 		Config.setShadeWater(true);
@@ -117,6 +121,7 @@ public class TileImageTest extends MCASelectorTestCase {
 		assertImageEquals("anvil114/r.0.0-no_shade.png", image);
 	}
 
+	@Test
 	public void testGenerateImage115() throws IOException {
 		Config.setShade(true);
 		Config.setShadeWater(true);
@@ -151,6 +156,7 @@ public class TileImageTest extends MCASelectorTestCase {
 		assertImageEquals("anvil115/r.0.0-no_shade.png", image);
 	}
 
+	@Test
 	public void testGenerateImage116() throws IOException {
 		Config.setShade(true);
 		Config.setShadeWater(true);

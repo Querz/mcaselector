@@ -73,14 +73,8 @@ public class ChunkImporter {
 				} else {
 					for (Point2i sourceRegion : sourceRegions) {
 						Set<Point2i> localSourceChunks;
-						if (sourceSelection.getSelection().containsKey(sourceRegion)) {
-							localSourceChunks = sourceSelection.getSelection().get(sourceRegion);
-							if (localSourceChunks == null) {
-								localSourceChunks = Collections.emptySet();
-							}
-						} else {
-							localSourceChunks = Collections.emptySet();
-						}
+						localSourceChunks = sourceSelection.getSelection().getOrDefault(sourceRegion, null);
+
 						// invert source selection if necessary
 						if (sourceSelection.isInverted()) {
 							localSourceChunks = SelectionData.createInvertedRegionSet(sourceRegion, localSourceChunks);
@@ -202,6 +196,7 @@ public class ChunkImporter {
 				//if the entire mca file doesn't exist, just copy it over
 				File source = new File(sourceDir, getFile().getName());
 				try {
+					System.out.println("copying " + source + " to " + getFile());
 					Files.copy(source.toPath(), getFile().toPath());
 				} catch (IOException ex) {
 					Debug.dumpException(String.format("failed to copy file %s to %s", source, getFile()), ex);
@@ -209,8 +204,6 @@ public class ChunkImporter {
 				progressChannel.incrementProgress(getFile().getName(), sources.size());
 				return;
 			}
-
-			// regular case
 
 			Map<Point2i, byte[]> sourceDataMapping = new HashMap<>();
 
@@ -287,7 +280,7 @@ public class ChunkImporter {
 				MCAFile destination;
 				// no destination file: create new MCAFile
 				if (getData() == null) {
-					 destination = new MCAFile(getFile());
+					destination = new MCAFile(getFile());
 				} else {
 					destination = MCAFile.readAll(getFile(), new ByteArrayPointer(getData()));
 				}
@@ -301,7 +294,11 @@ public class ChunkImporter {
 				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMapping.entrySet()) {
 					MCAFile source = MCAFile.readAll(new File(sourceDir, FileHelper.createMCAFileName(sourceData.getKey())), new ByteArrayPointer(sourceData.getValue()));
 
-					Debug.dumpf("merging chunk from region %s into %s", sourceData.getKey(), target);
+					Debug.dumpf("merging chunks from region %s into %s", sourceData.getKey(), target);
+
+					if (sourceData.getKey().equals(new Point2i(0, -1)) && target.equals(new Point2i(0, -1))) {
+						System.out.println(sourceChunks);
+					}
 
 					source.mergeChunksInto(destination, offset, overwrite, sourceChunks == null ? null : sourceChunks.get(sourceData.getKey()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
 				}
