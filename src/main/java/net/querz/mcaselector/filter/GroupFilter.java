@@ -31,6 +31,10 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 		this.inverted = inverted;
 	}
 
+	public boolean isInverted() {
+		return inverted;
+	}
+
 	//returns index of where this filter was added
 	public int addFilterAfter(Filter<?> filter, Filter<?> after) {
 		filter.setParent(this);
@@ -95,7 +99,7 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 		for (int i = 0; i < children.size(); i++) {
 			Filter<?> child = children.get(i);
 			if (child instanceof GroupFilter && ((GroupFilter) child).appliesToRegion(region)) {
-				return true;
+				return !inverted;
 			} else if (child instanceof RegionMatcher) {
 				RegionMatcher regionMatcher = (RegionMatcher) child;
 
@@ -104,17 +108,17 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 				} else if (child.getOperator() == Operator.OR) {
 					//don't check other conditions if everything before OR is already true
 					if (currentResult) {
-						return true;
+						return !inverted;
 					}
 					//otherwise, reset currentResult
 					currentResult = regionMatcher.matchesRegion(region);
 				}
 			} else {
-				return true;
+				return !inverted;
 			}
 		}
 
-		return currentResult;
+		return inverted != currentResult;
 	}
 
 	@Override
