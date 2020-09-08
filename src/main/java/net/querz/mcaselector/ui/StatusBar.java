@@ -99,7 +99,7 @@ public class StatusBar extends StackPane {
 	}
 
 	private void update(TileMap tileMap) {
-		selectedChunks.setText(Translation.STATUS_SELECTED + ": " + tileMap.getSelectedChunks());
+		selectedChunks.setText(Translation.STATUS_SELECTED + ": " + (tileMap.isSelectionInverted() ? "?" : tileMap.getSelectedChunks()));
 		visibleRegions.setText(Translation.STATUS_VISIBLE + ": " + tileMap.getVisibleTiles());
 		totalRegions.setText(Translation.STATUS_TOTAL + ": " + tileMap.getLoadedTiles());
 		Point2i b = tileMap.getHoveredBlock();

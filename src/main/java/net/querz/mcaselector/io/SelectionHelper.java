@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io;
 
+import net.querz.mcaselector.Config;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
@@ -83,5 +84,18 @@ public class SelectionHelper {
 			Debug.dumpException("failed to import selection", ex);
 		}
 		return new SelectionData(chunks, inverted);
+	}
+
+	public static Map<Point2i, Set<Point2i>> getTrueSelection(SelectionData selection) {
+		Map<Point2i, Set<Point2i>> sel = selection == null ? null : selection.getSelection();
+		if (selection != null && selection.isInverted()) {
+			Set<Point2i> allRegions = FileHelper.parseAllMCAFileNames(Config.getWorldDir());
+			for (Point2i region : allRegions) {
+				if (selection.isRegionSelected(region)) {
+					sel.put(region, SelectionData.createInvertedRegionSet(region, selection.getSelection().get(region)));
+				}
+			}
+		}
+		return sel;
 	}
 }

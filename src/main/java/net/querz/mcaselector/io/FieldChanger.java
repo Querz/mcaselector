@@ -19,7 +19,7 @@ public class FieldChanger {
 
 	private FieldChanger() {}
 
-	public static void changeNBTFields(List<Field<?>> fields, boolean force, Map<Point2i, Set<Point2i>> selection, Progress progressChannel) {
+	public static void changeNBTFields(List<Field<?>> fields, boolean force, SelectionData selection, Progress progressChannel) {
 		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
 		if (files == null || files.length == 0) {
 			return;
@@ -27,11 +27,13 @@ public class FieldChanger {
 
 		MCAFilePipe.clearQueues();
 
+		Map<Point2i, Set<Point2i>> sel = SelectionHelper.getTrueSelection(selection);
+
 		progressChannel.setMax(files.length);
 		progressChannel.updateProgress(files[0].getName(), 0);
 
 		for (File file : files) {
-			MCAFilePipe.addJob(new MCAFieldChangeLoadJob(file, fields, force, selection, progressChannel));
+			MCAFilePipe.addJob(new MCAFieldChangeLoadJob(file, fields, force, sel, progressChannel));
 		}
 	}
 

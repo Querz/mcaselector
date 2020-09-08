@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,7 +25,6 @@ public class ChunkImporter {
 	private ChunkImporter() {}
 
 	public static void importChunks(File sourceDirectory, Progress progressChannel, boolean headless, boolean overwrite, SelectionData sourceSelection, SelectionData targetSelection, List<Range> ranges, Point2i offset, DataProperty<Map<Point2i, File>> tempFiles) {
-
 		try {
 			File[] sourceFiles = sourceDirectory.listFiles();
 			if (sourceFiles == null || sourceFiles.length == 0) {
@@ -100,7 +98,7 @@ public class ChunkImporter {
 		Map<Point2i, Set<Point2i>> sourceTargetMapping = new HashMap<>();
 
 		// get all possible source files
-		Set<Point2i> sourceRegions = parseAllMCAFileNames(sourceDirectory);
+		Set<Point2i> sourceRegions = FileHelper.parseAllMCAFileNames(sourceDirectory);
 		if (sourceSelection != null) {
 			sourceRegions.removeIf(s -> !sourceSelection.isRegionSelected(s));
 		}
@@ -135,16 +133,6 @@ public class ChunkImporter {
 		}
 
 		return targetSourceMapping;
-	}
-
-	private static Set<Point2i> parseAllMCAFileNames(File directory) {
-		File[] files = directory.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
-		if (files == null) {
-			return Collections.emptySet();
-		}
-		Set<Point2i> regions = new HashSet<>(files.length);
-		Arrays.stream(files).forEach(f -> regions.add(FileHelper.parseMCAFileName(f)));
-		return regions;
 	}
 
 	private static class MCAChunkImporterLoadJob extends LoadDataJob {

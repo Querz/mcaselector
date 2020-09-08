@@ -55,4 +55,9 @@ public class SelectionData {
 		}
 		return invertedSelectedChunks;
 	}
+
+	@Override
+	public String toString() {
+		return "i=" + inverted + ":" + selection;
+	}
 }

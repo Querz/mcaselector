@@ -155,7 +155,7 @@ public class ParamExecutor {
 
 		List<Field<?>> fields = new ChangeParser(params.get("query")).parse();
 
-		Map<Point2i, Set<Point2i>> selection = loadSelection(params, "input");
+		SelectionData selection = loadSelection(params, "input");
 
 		printHeadlessSettings();
 
@@ -182,7 +182,7 @@ public class ParamExecutor {
 			Debug.print("filter set: " + g);
 		}
 
-		Map<Point2i, Set<Point2i>> selection = loadSelection(params, "input");
+		SelectionData selection = loadSelection(params, "input");
 
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(future);
@@ -258,7 +258,7 @@ public class ParamExecutor {
 			Debug.print("filter set: " + g);
 		}
 
-		Map<Point2i, Set<Point2i>> selection = loadSelection(params, "input");
+		SelectionData selection = loadSelection(params, "input");
 
 		Debug.print("exporting chunks...");
 
@@ -339,13 +339,13 @@ public class ParamExecutor {
 		return 1;
 	}
 
-	private static Map<Point2i, Set<Point2i>> loadSelection(Map<String, String> params, String key) throws ParseException {
+	private static SelectionData loadSelection(Map<String, String> params, String key) throws ParseException {
 		if (params.containsKey(key)) {
 			Debug.print("loading selection...");
 
 			File input = parseFile(params.get(key), "csv");
 			fileMustExist(input);
-			return SelectionHelper.importSelection(input).getSelection();
+			return SelectionHelper.importSelection(input);
 		}
 		return null;
 	}

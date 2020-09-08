@@ -76,15 +76,36 @@ public final class CacheHelper {
 	}
 
 	public static void clearSelectionCache(TileMap tileMap) {
-		for (Map.Entry<Point2i, Set<Point2i>> entry : tileMap.getMarkedChunks().entrySet()) {
-			for (File cacheDir : Config.getCacheDirs()) {
-				File file = FileHelper.createPNGFilePath(cacheDir, entry.getKey());
-				if (file.exists()) {
-					if (!file.delete()) {
-						Debug.error("could not delete file " + file);
+		if (tileMap.isSelectionInverted()) {
+			SelectionData selection = new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted());
+			File[] cacheDirs = Config.getCacheDirs();
+			for (File cacheDir : cacheDirs) {
+				File[] cacheFiles = cacheDir.listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.png$"));
+				if (cacheFiles == null) {
+					continue;
+				}
+				for (File cacheFile : cacheFiles) {
+					Point2i cacheRegion = FileHelper.parseCacheFileName(cacheFile);
+					if (selection.isRegionSelected(cacheRegion) && cacheFile.exists()) {
+						if (!cacheFile.delete()) {
+							Debug.error("could not delete file " + cacheFile);
+							continue;
+						}
+						tileMap.clearTile(cacheRegion);
 					}
 				}
-				tileMap.clearTile(entry.getKey());
+			}
+		} else {
+			for (Map.Entry<Point2i, Set<Point2i>> entry : tileMap.getMarkedChunks().entrySet()) {
+				for (File cacheDir : Config.getCacheDirs()) {
+					File file = FileHelper.createPNGFilePath(cacheDir, entry.getKey());
+					if (file.exists()) {
+						if (!file.delete()) {
+							Debug.error("could not delete file " + file);
+						}
+					}
+					tileMap.clearTile(entry.getKey());
+				}
 			}
 		}
 		tileMap.update();

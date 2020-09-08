@@ -448,6 +448,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		update();
 	}
 
+	public void setSelectionInverted(boolean inverted) {
+		selectionInverted = inverted;
+	}
+
 	public boolean isSelectionInverted() {
 		return selectionInverted;
 	}

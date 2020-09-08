@@ -19,7 +19,7 @@ public class ChunkFilterExporter {
 
 	private ChunkFilterExporter() {}
 
-	public static void exportFilter(GroupFilter filter, Map<Point2i, Set<Point2i>> selection, File destination, Progress progressChannel, boolean headless) {
+	public static void exportFilter(GroupFilter filter, SelectionData selection, File destination, Progress progressChannel, boolean headless) {
 		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
 		if (files == null || files.length == 0) {
 			if (headless) {
@@ -32,11 +32,13 @@ public class ChunkFilterExporter {
 
 		MCAFilePipe.clearQueues();
 
+		Map<Point2i, Set<Point2i>> sel = SelectionHelper.getTrueSelection(selection);
+
 		progressChannel.setMax(files.length);
 		progressChannel.updateProgress(files[0].getName(), 0);
 
 		for (File file : files) {
-			MCAFilePipe.addJob(new MCAExportFilterLoadJob(file, filter, selection, destination, progressChannel));
+			MCAFilePipe.addJob(new MCAExportFilterLoadJob(file, filter, sel, destination, progressChannel));
 		}
 	}
 

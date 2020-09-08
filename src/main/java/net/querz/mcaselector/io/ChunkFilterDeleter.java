@@ -19,7 +19,7 @@ public class ChunkFilterDeleter {
 
 	private ChunkFilterDeleter() {}
 
-	public static void deleteFilter(GroupFilter filter, Map<Point2i, Set<Point2i>> selection, Progress progressChannel, boolean headless) {
+	public static void deleteFilter(GroupFilter filter, SelectionData selection, Progress progressChannel, boolean headless) {
 		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
 		if (files == null || files.length == 0) {
 			if (headless) {
@@ -32,11 +32,13 @@ public class ChunkFilterDeleter {
 
 		MCAFilePipe.clearQueues();
 
+		Map<Point2i, Set<Point2i>> sel = SelectionHelper.getTrueSelection(selection);
+
 		progressChannel.setMax(files.length);
 		progressChannel.updateProgress(files[0].getName(), 0);
 
 		for (File file : files) {
-			MCAFilePipe.addJob(new MCADeleteFilterLoadJob(file, filter, selection, progressChannel));
+			MCAFilePipe.addJob(new MCADeleteFilterLoadJob(file, filter, sel, progressChannel));
 		}
 	}
 

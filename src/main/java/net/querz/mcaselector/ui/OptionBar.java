@@ -61,6 +61,7 @@ public class OptionBar extends MenuBar {
 	private final MenuItem swapChunks = UIFactory.menuItem(Translation.MENU_TOOLS_SWAP_CHUNKS);
 
 	private int previousSelectedChunks = 0;
+	private boolean previousInvertedSelection = false;
 
 	public OptionBar(TileMap tileMap, Stage primaryStage) {
 		getStyleClass().add("option-bar");
@@ -131,7 +132,7 @@ public class OptionBar extends MenuBar {
 		editNBT.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCodeCombination.SHORTCUT_DOWN));
 		swapChunks.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCodeCombination.SHORTCUT_DOWN));
 
-		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks());
+		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks(), tileMap.isSelectionInverted());
 		setWorldDependentMenuItemsEnabled(false, tileMap);
 
 		Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> paste.setDisable(!hasValidClipboardContent(tileMap) || tileMap.getDisabled()));
@@ -139,10 +140,12 @@ public class OptionBar extends MenuBar {
 
 	private void onUpdate(TileMap tileMap) {
 		int selectedChunks = tileMap.getSelectedChunks();
-		if (previousSelectedChunks != selectedChunks) {
-			setSelectionDependentMenuItemsEnabled(selectedChunks);
+		boolean invertedSelection = tileMap.isSelectionInverted();
+		if (previousSelectedChunks != selectedChunks || previousInvertedSelection != invertedSelection) {
+			setSelectionDependentMenuItemsEnabled(selectedChunks, invertedSelection);
 		}
 		previousSelectedChunks = selectedChunks;
+		previousInvertedSelection = invertedSelection;
 	}
 
 	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap) {
@@ -150,19 +153,18 @@ public class OptionBar extends MenuBar {
 		changeFields.setDisable(!enabled);
 		importChunks.setDisable(!enabled);
 		invert.setDisable(!enabled);
-		copy.setDisable(!enabled);
 		paste.setDisable(!enabled || !hasValidClipboardContent(tileMap));
 	}
 
-	private void setSelectionDependentMenuItemsEnabled(int selected) {
-		clear.setDisable(selected == 0);
-		exportChunks.setDisable(selected == 0);
-		exportSelection.setDisable(selected == 0);
-		delete.setDisable(selected == 0);
-		clearSelectionCache.setDisable(selected == 0);
-		editNBT.setDisable(selected != 1);
-		swapChunks.setDisable(selected != 2);
-		copy.setDisable(selected == 0);
+	private void setSelectionDependentMenuItemsEnabled(int selected, boolean inverted) {
+		clear.setDisable(selected == 0 && !inverted);
+		exportChunks.setDisable(selected == 0 && !inverted);
+		exportSelection.setDisable(selected == 0 && !inverted);
+		delete.setDisable(selected == 0 && !inverted);
+		clearSelectionCache.setDisable(selected == 0 && !inverted);
+		editNBT.setDisable(selected != 1 || inverted);
+		swapChunks.setDisable(selected != 2 || inverted);
+		copy.setDisable(selected == 0 && !inverted);
 	}
 
 	private boolean hasValidClipboardContent(TileMap tileMap) {
