@@ -95,8 +95,9 @@ public final class FileHelper {
 		return saves.getAbsolutePath();
 	}
 
-	public static String getLastOpenedDirectory(String key) {
-		return lastOpenedDirectoryMap.get(key);
+	public static String getLastOpenedDirectory(String key, String def) {
+		String value = lastOpenedDirectoryMap.getOrDefault(key, def);
+		return !new File(value).exists() ? def : value;
 	}
 
 	public static void setLastOpenedDirectory(String key, String lastOpenedDirectory) {

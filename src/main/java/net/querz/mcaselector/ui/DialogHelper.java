@@ -103,7 +103,7 @@ public class DialogHelper {
 					});
 					break;
 				case EXPORT:
-					File dir = createDirectoryChooser(FileHelper.getLastOpenedDirectory("chunk_import_export")).showDialog(primaryStage);
+					File dir = createDirectoryChooser(FileHelper.getLastOpenedDirectory("chunk_import_export", null)).showDialog(primaryStage);
 					if (dir != null) {
 						confRes = new ExportConfirmationDialog(null, primaryStage).showAndWait();
 						confRes.ifPresent(confR -> {
@@ -150,7 +150,7 @@ public class DialogHelper {
 	}
 
 	public static void exportSelectedChunks(TileMap tileMap, Stage primaryStage) {
-		File dir = createDirectoryChooser(FileHelper.getLastOpenedDirectory("chunk_import_export")).showDialog(primaryStage);
+		File dir = createDirectoryChooser(FileHelper.getLastOpenedDirectory("chunk_import_export", null)).showDialog(primaryStage);
 		if (dir != null) {
 			Optional<ButtonType> result = new ExportConfirmationDialog(tileMap, primaryStage).showAndWait();
 			result.ifPresent(r -> {
@@ -164,7 +164,7 @@ public class DialogHelper {
 	}
 
 	public static void importChunks(TileMap tileMap, Stage primaryStage) {
-		File dir = createDirectoryChooser(FileHelper.getLastOpenedDirectory("chunk_import_export")).showDialog(primaryStage);
+		File dir = createDirectoryChooser(FileHelper.getLastOpenedDirectory("chunk_import_export", null)).showDialog(primaryStage);
 		DataProperty<ChunkImportConfirmationData> dataProperty = new DataProperty<>();
 		if (dir != null) {
 			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, null, dataProperty::set).showAndWait();
@@ -382,9 +382,8 @@ public class DialogHelper {
 	}
 
 	public static void openWorld(TileMap tileMap, Stage primaryStage, OptionBar optionBar) {
-		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world");
-		String savesDir = lastOpenDirectory == null ?  FileHelper.getMCSavesDir() : lastOpenDirectory;
-		File file = createDirectoryChooser(savesDir).showDialog(primaryStage);
+		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", FileHelper.getMCSavesDir());
+		File file = createDirectoryChooser(lastOpenDirectory).showDialog(primaryStage);
 		if (file != null && file.isDirectory()) {
 			File[] files = file.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
 			if (files != null && files.length > 0) {
@@ -401,7 +400,7 @@ public class DialogHelper {
 	}
 
 	public static void importSelection(TileMap tileMap, Stage primaryStage) {
-		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export"),
+		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export", null),
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showOpenDialog(primaryStage);
 		if (file != null) {
 			SelectionData selection = SelectionHelper.importSelection(file);
@@ -413,7 +412,7 @@ public class DialogHelper {
 	}
 
 	public static void exportSelection(TileMap tileMap, Stage primaryStage) {
-		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export"),
+		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export", null),
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showSaveDialog(primaryStage);
 		if (file != null) {
 			SelectionHelper.exportSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), file);
