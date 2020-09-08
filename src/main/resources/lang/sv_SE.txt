@@ -24,6 +24,7 @@ menu.view.goto;Gå till
 menu.view.clear_cache;Rensa cache
 menu.view.clear_all_cache;Rensa all cache
 menu.selection.clear;Rensa
+menu.selection.invert;Invertera
 menu.selection.copy_chunks;Kopiera chunks
 menu.selection.paste_chunks;Klistra in chunks
 menu.selection.export_chunks;Exportera valda chunks
