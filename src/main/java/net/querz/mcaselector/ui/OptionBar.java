@@ -21,13 +21,14 @@ public class OptionBar extends MenuBar {
 	/*
 	* File			View				Selection					Tools				About
 	* - Open		- Chunk Grid		- Clear selection			- Import chunks
-	* - Settings	- Region Grid		- Copy chunks				- Filter chunks
-	* - Quit		- Goto				- Paste chunks				- Change fields
-	*				- Clear cache		- Export selected chunks	- Edit NBT
-	*				- Clear all cache	- Delete selected chunks	- Swap chunks
-	*									- Import selection		
-	*									- Export selection		
-	*									- Clear cache
+	* - Settings	- Region Grid		- Invert selection			- Filter chunks
+	* - Quit		- Goto				- Copy chunks				- Change fields
+	*				- Clear cache		- Paste chunks				- Edit NBT
+	*				- Clear all cache	- Export selected chunks	- Swap chunks
+	*									- Delete selected chunks
+	*									- Import selection
+	*									- Export selection
+	* 									- Clear cache
 	* */
 
 	private final Menu file = UIFactory.menu(Translation.MENU_FILE);
@@ -45,6 +46,7 @@ public class OptionBar extends MenuBar {
 	private final MenuItem clearViewCache = UIFactory.menuItem(Translation.MENU_VIEW_CLEAR_CACHE);
 	private final MenuItem clearAllCache = UIFactory.menuItem(Translation.MENU_VIEW_CLEAR_ALL_CACHE);
 	private final MenuItem clear = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR);
+	private final MenuItem invert = UIFactory.menuItem(Translation.MENU_SELECTION_INVERT);
 	private final MenuItem copy = UIFactory.menuItem(Translation.MENU_SELECTION_COPY_CHUNKS);
 	private final MenuItem paste = UIFactory.menuItem(Translation.MENU_SELECTION_PASTE_CHUNKS);
 	private final MenuItem exportChunks = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_CHUNKS);
@@ -59,6 +61,7 @@ public class OptionBar extends MenuBar {
 	private final MenuItem swapChunks = UIFactory.menuItem(Translation.MENU_TOOLS_SWAP_CHUNKS);
 
 	private int previousSelectedChunks = 0;
+	private boolean previousInvertedSelection = false;
 
 	public OptionBar(TileMap tileMap, Stage primaryStage) {
 		getStyleClass().add("option-bar");
@@ -71,7 +74,7 @@ public class OptionBar extends MenuBar {
 				goTo, UIFactory.separator(),
 				clearViewCache, clearAllCache);
 		selection.getItems().addAll(
-				clear, UIFactory.separator(),
+				clear, invert, UIFactory.separator(),
 				copy, paste, UIFactory.separator(),
 				exportChunks, delete, UIFactory.separator(),
 				importSelection, exportSelection, UIFactory.separator(),
@@ -92,6 +95,7 @@ public class OptionBar extends MenuBar {
 		clearAllCache.setOnAction(e -> CacheHelper.clearAllCache(tileMap));
 		clearViewCache.setOnAction(e -> CacheHelper.clearViewCache(tileMap));
 		clear.setOnAction(e -> tileMap.clearSelection());
+		invert.setOnAction(e -> tileMap.invertSelection());
 		copy.setOnAction(e -> DialogHelper.copySelectedChunks(tileMap));
 		paste.setOnAction(e -> DialogHelper.pasteSelectedChunks(tileMap, primaryStage));
 		exportChunks.setOnAction(e -> DialogHelper.exportSelectedChunks(tileMap, primaryStage));
@@ -114,6 +118,7 @@ public class OptionBar extends MenuBar {
 		clearAllCache.setAccelerator(new KeyCodeCombination(KeyCode.K, KeyCodeCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
 		clearViewCache.setAccelerator(new KeyCodeCombination(KeyCode.K, KeyCodeCombination.SHORTCUT_DOWN));
 		clear.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCodeCombination.SHORTCUT_DOWN));
+		invert.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCodeCombination.SHORTCUT_DOWN));
 		copy.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCodeCombination.SHORTCUT_DOWN));
 		paste.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCodeCombination.SHORTCUT_DOWN));
 		exportChunks.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCodeCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
@@ -127,7 +132,7 @@ public class OptionBar extends MenuBar {
 		editNBT.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCodeCombination.SHORTCUT_DOWN));
 		swapChunks.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCodeCombination.SHORTCUT_DOWN));
 
-		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks());
+		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks(), tileMap.isSelectionInverted());
 		setWorldDependentMenuItemsEnabled(false, tileMap);
 
 		Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> paste.setDisable(!hasValidClipboardContent(tileMap) || tileMap.getDisabled()));
@@ -135,29 +140,31 @@ public class OptionBar extends MenuBar {
 
 	private void onUpdate(TileMap tileMap) {
 		int selectedChunks = tileMap.getSelectedChunks();
-		if (previousSelectedChunks != selectedChunks) {
-			setSelectionDependentMenuItemsEnabled(selectedChunks);
+		boolean invertedSelection = tileMap.isSelectionInverted();
+		if (previousSelectedChunks != selectedChunks || previousInvertedSelection != invertedSelection) {
+			setSelectionDependentMenuItemsEnabled(selectedChunks, invertedSelection);
 		}
 		previousSelectedChunks = selectedChunks;
+		previousInvertedSelection = invertedSelection;
 	}
 
 	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap) {
 		filterChunks.setDisable(!enabled);
 		changeFields.setDisable(!enabled);
 		importChunks.setDisable(!enabled);
-		copy.setDisable(!enabled);
+		invert.setDisable(!enabled);
 		paste.setDisable(!enabled || !hasValidClipboardContent(tileMap));
 	}
 
-	private void setSelectionDependentMenuItemsEnabled(int selected) {
-		clear.setDisable(selected == 0);
-		exportChunks.setDisable(selected == 0);
-		exportSelection.setDisable(selected == 0);
-		delete.setDisable(selected == 0);
-		clearSelectionCache.setDisable(selected == 0);
-		editNBT.setDisable(selected != 1);
-		swapChunks.setDisable(selected != 2);
-		copy.setDisable(selected == 0);
+	private void setSelectionDependentMenuItemsEnabled(int selected, boolean inverted) {
+		clear.setDisable(selected == 0 && !inverted);
+		exportChunks.setDisable(selected == 0 && !inverted);
+		exportSelection.setDisable(selected == 0 && !inverted);
+		delete.setDisable(selected == 0 && !inverted);
+		clearSelectionCache.setDisable(selected == 0 && !inverted);
+		editNBT.setDisable(selected != 1 || inverted);
+		swapChunks.setDisable(selected != 2 || inverted);
+		copy.setDisable(selected == 0 && !inverted);
 	}
 
 	private boolean hasValidClipboardContent(TileMap tileMap) {

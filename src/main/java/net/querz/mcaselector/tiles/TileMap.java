@@ -10,6 +10,7 @@ import javafx.scene.input.*;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.RegionImageGenerator;
+import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.debug.Debug;
@@ -69,10 +70,13 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private final ImagePool imgPool;
 
 	private Map<Point2i, Set<Point2i>> pastedChunks;
+	private boolean pastedChunksInverted;
 	private File pastedWorld;
 	private Map<Point2i, Image> pastedChunksCache;
 	private Point2i pastedChunksOffset;
 	private Point2i firstPastedChunksOffset;
+
+	private boolean selectionInverted = false;
 
 	public TileMap(Window window, int width, int height) {
 		super(width, height);
@@ -234,9 +238,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			firstPastedChunksOffset = pastedChunksOffset;
 
 			if (event.getButton() == MouseButton.PRIMARY && !window.isKeyPressed(KeyCode.COMMAND) && pastedChunks == null) {
-				mark(event.getX(), event.getY(), true);
+				mark(event.getX(), event.getY(), !selectionInverted);
 			} else if (event.getButton() == MouseButton.SECONDARY) {
-				mark(event.getX(), event.getY(), false);
+				mark(event.getX(), event.getY(), selectionInverted);
 			}
 			update();
 		}
@@ -263,10 +267,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				Point2f diff = mouseLocation.sub(firstMouseLocation).mul(scale);
 				pastedChunksOffset = firstPastedChunksOffset.add(diff.toPoint2i().div(16));
 			} else {
-				mark(event.getX(), event.getY(), true);
+				mark(event.getX(), event.getY(), !selectionInverted);
 			}
 		} else if (!disabled && event.getButton() == MouseButton.SECONDARY) {
-			mark(event.getX(), event.getY(), false);
+			mark(event.getX(), event.getY(), selectionInverted);
 		}
 		update();
 	}
@@ -274,7 +278,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	public void redrawOverlays() {
 		for (Map.Entry<Point2i, Tile> entry : tiles.entrySet()) {
 			if (entry.getValue().markedChunksImage != null) {
-				TileImage.createMarkedChunksImage(entry.getValue(), getZoomLevel());
+				TileImage.createMarkedChunksImage(entry.getValue(), getZoomLevel(), selectionInverted);
 			}
 		}
 		if (pastedChunksCache != null) {
@@ -410,11 +414,13 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		visibleTiles.clear();
 		imgPool.clear();
 		selectedChunks = 0;
+		selectionInverted = false;
 
 		pastedChunks = null;
 		pastedWorld = null;
 		pastedChunksCache = null;
 		pastedChunksOffset = null;
+		pastedChunksInverted = false;
 	}
 
 	public void clearTile(Point2i p) {
@@ -434,6 +440,20 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 		selectedChunks = 0;
 		update();
+	}
+
+	public void invertSelection() {
+		selectionInverted = !selectionInverted;
+		redrawOverlays();
+		update();
+	}
+
+	public void setSelectionInverted(boolean inverted) {
+		selectionInverted = inverted;
+	}
+
+	public boolean isSelectionInverted() {
+		return selectionInverted;
 	}
 
 	public void unloadTiles() {
@@ -508,8 +528,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 	}
 
-	public void setPastedChunks(Map<Point2i, Set<Point2i>> chunks, Point2i min, Point2i max, File pastedWorld) {
+	public void setPastedChunks(Map<Point2i, Set<Point2i>> chunks, boolean inverted, Point2i min, Point2i max, File pastedWorld) {
 		pastedChunks = chunks;
+		pastedChunksInverted = inverted;
 		this.pastedWorld = pastedWorld;
 		if (chunks == null) {
 			pastedChunksCache = null;
@@ -526,6 +547,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	public Map<Point2i, Set<Point2i>> getPastedChunks() {
 		return pastedChunks;
+	}
+
+	public boolean getPastedChunksInverted() {
+		return pastedChunksInverted;
 	}
 
 	public boolean isInPastingMode() {
@@ -609,7 +634,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 					}
 				}
 			}
-			changedTiles.forEach(tile -> TileImage.createMarkedChunksImage(tile, getZoomLevel()));
+			changedTiles.forEach(tile -> TileImage.createMarkedChunksImage(tile, getZoomLevel(), selectionInverted));
 		}
 	}
 
@@ -630,7 +655,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			}
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getZ() / scale);
 
-			TileImage.draw(tile, ctx, scale, p);
+			TileImage.draw(tile, ctx, scale, p, selectionInverted);
 
 		}, new Point2f());
 
@@ -653,12 +678,18 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	private void drawPastedChunks(GraphicsContext ctx, Point2i region, Point2f pos) {
+		int zoomLevel = getZoomLevel();
+
+		ctx.setFill(Config.getPasteChunksColor().makeJavaFXColor());
+
 		if (!pastedChunks.containsKey(region)) {
+			if (pastedChunksInverted) {
+				ctx.fillRect(pos.getX(), pos.getY(), Math.ceil(Tile.SIZE / scale), Math.ceil(Tile.SIZE / scale));
+			}
 			return;
 		}
 
 		if (!pastedChunksCache.containsKey(region)) {
-			int zoomLevel = getZoomLevel();
 			WritableImage image = new WritableImage(Tile.SIZE / zoomLevel, Tile.SIZE / zoomLevel);
 
 			Canvas canvas = new Canvas(Tile.SIZE / (float) zoomLevel, Tile.SIZE / (float) zoomLevel);
@@ -666,9 +697,15 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			ctx2.setFill(Config.getPasteChunksColor().makeJavaFXColor());
 
 			Set<Point2i> chunks = pastedChunks.get(region);
+
 			if (chunks == null) {
-				ctx2.fillRect(0, 0, (float) Tile.SIZE / zoomLevel, (float) Tile.SIZE / zoomLevel);
+				if (!pastedChunksInverted) {
+					ctx2.fillRect(0, 0, (float) Tile.SIZE / zoomLevel, (float) Tile.SIZE / zoomLevel);
+				}
 			} else {
+				if (pastedChunksInverted) {
+					chunks = SelectionData.createInvertedRegionSet(region, chunks);
+				}
 				for (Point2i chunk : chunks) {
 					Point2i regionChunk = chunk.and(0x1F);
 					ctx2.fillRect(

@@ -15,8 +15,11 @@ public class ExportConfirmationDialog extends ConfirmationDialog {
 		);
 
 		if (tileMap != null) {
-			headerTextProperty().unbind();
-			setHeaderText(String.format(Translation.DIALOG_EXPORT_CHUNKS_CONFIRMATION_HEADER_VERBOSE.toString(), tileMap.getSelectedChunks()));
+			if (!tileMap.isSelectionInverted()) {
+				headerTextProperty().unbind();
+				setHeaderText(String.format(Translation.DIALOG_DELETE_CHUNKS_CONFIRMATION_HEADER_VERBOSE.toString(), tileMap.getSelectedChunks()));
+			}
+			tileMap.releaseAllKeys();
 		}
 	}
 }

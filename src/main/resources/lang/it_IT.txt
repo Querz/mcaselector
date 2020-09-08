@@ -24,6 +24,7 @@ menu.view.goto;Vai a
 menu.view.clear_cache;Svuota la cache
 menu.view.clear_all_cache;Svuota tutta la cache
 menu.selection.clear;Svuota
+menu.selection.invert;Invertire
 menu.selection.copy_chunks;Copia i chunk
 menu.selection.paste_chunks;Incolla i chunk
 menu.selection.export_chunks;Esporta i chunk selezionati
@@ -61,7 +62,7 @@ dialog.import_chunks_confirmation.options.offset;Offset
 dialog.import_chunks_confirmation.options.overwrite;Sovrascrivi chunk esistenti
 dialog.import_chunks_confirmation.options.selection_only;Applica solo alla selezione
 dialog.import_chunks_confirmation.options.sections;Sezioni
-dialog.import_chunks_confirmation.warning;Attenzione Importare chunk con offset non modificherà le impostazioni dei command block.
+dialog.import_chunks_confirmation.warning;Attenzione Importare chunk con offset non modificherï¿½ le impostazioni dei command block.
 dialog.export_chunks_confirmation.title;Esporta chunk
 dialog.export_chunks_confirmation.header_short;Stai per esportare un numero ignoto di chunk da questo mondo.
 dialog.export_chunks_confirmation.header_verbose;Stai per esportare %d chunk da questo mondo.

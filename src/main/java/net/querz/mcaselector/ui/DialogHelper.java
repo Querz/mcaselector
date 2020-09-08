@@ -26,7 +26,6 @@ import net.querz.mcaselector.ui.dialog.ImportConfirmationDialog;
 import net.querz.mcaselector.ui.dialog.NBTEditorDialog;
 import net.querz.mcaselector.ui.dialog.ProgressDialog;
 import net.querz.mcaselector.ui.dialog.SettingsDialog;
-
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -59,7 +58,7 @@ public class DialogHelper {
 							.showProgressBar(t -> FieldChanger.changeNBTFields(
 									r.getFields(),
 									r.isForce(),
-									r.isSelectionOnly() ? tileMap.getMarkedChunks() : null,
+									r.isSelectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
 									t
 							));
 					if (r.requiresClearCache()) {
@@ -91,7 +90,7 @@ public class DialogHelper {
 							new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_FILTERED_CHUNKS, primaryStage)
 									.showProgressBar(t -> ChunkFilterDeleter.deleteFilter(
 											r.getFilter(),
-											r.isSelectionOnly() ? tileMap.getMarkedChunks() : null,
+											r.isSelectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
 											t,
 											false
 									));
@@ -114,7 +113,7 @@ public class DialogHelper {
 								new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_FILTERED_CHUNKS, primaryStage)
 										.showProgressBar(t -> ChunkFilterExporter.exportFilter(
 												r.getFilter(),
-												r.isSelectionOnly() ? tileMap.getMarkedChunks() : null,
+												r.isSelectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
 												dir,
 												t,
 												false
@@ -144,7 +143,7 @@ public class DialogHelper {
 		result.ifPresent(r -> {
 			if (r == ButtonType.OK) {
 				new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_SELECTION, primaryStage)
-						.showProgressBar(t -> SelectionDeleter.deleteSelection(tileMap.getMarkedChunks(), t));
+						.showProgressBar(t -> SelectionDeleter.deleteSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), t));
 				CacheHelper.clearSelectionCache(tileMap);
 			}
 		});
@@ -158,7 +157,7 @@ public class DialogHelper {
 				if (r == ButtonType.OK) {
 					FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_SELECTION, primaryStage)
-							.showProgressBar(t -> SelectionExporter.exportSelection(tileMap.getMarkedChunks(), dir, t));
+							.showProgressBar(t -> SelectionExporter.exportSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), dir, t));
 				}
 			});
 		}
@@ -177,7 +176,7 @@ public class DialogHelper {
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									dir, t, false, dataProperty.get().overwrite(),
 									null,
-									dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null,
+									dataProperty.get().selectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
 									dataProperty.get().getRanges(),
 									dataProperty.get().getOffset(),
 									tempFiles));
@@ -292,7 +291,7 @@ public class DialogHelper {
 
 	public static void copySelectedChunks(TileMap tileMap) {
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		Selection selection = new Selection(tileMap.getMarkedChunks(), Config.getWorldDir());
+		Selection selection = new Selection(tileMap.getMarkedChunks(), tileMap.isSelectionInverted(), Config.getWorldDir());
 		TileMapSelection tileMapSelection = new TileMapSelection(selection);
 		clipboard.setContents(tileMapSelection, tileMap);
 	}
@@ -308,8 +307,8 @@ public class DialogHelper {
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									tileMap.getPastedWorld(), t, false, dataProperty.get().overwrite(),
-									tileMap.getPastedChunks(),
-									dataProperty.get().selectionOnly() ? tileMap.getMarkedChunks() : null,
+									new SelectionData(tileMap.getPastedChunks(), tileMap.getPastedChunksInverted()),
+									dataProperty.get().selectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
 									dataProperty.get().getRanges(),
 									dataProperty.get().getOffset(),
 									tempFiles));
@@ -328,7 +327,7 @@ public class DialogHelper {
 
 					Selection selection = (Selection) data;
 
-					tileMap.setPastedChunks(selection.getSelectionData(), selection.getMin(), selection.getMax(), selection.getWorld());
+					tileMap.setPastedChunks(selection.getSelectionData(), selection.isInverted(), selection.getMin(), selection.getMax(), selection.getWorld());
 					tileMap.update();
 
 				} catch (UnsupportedFlavorException | IOException ex) {
@@ -405,9 +404,10 @@ public class DialogHelper {
 		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export"),
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showOpenDialog(primaryStage);
 		if (file != null) {
-			Map<Point2i, Set<Point2i>> chunks = SelectionHelper.importSelection(file);
+			SelectionData selection = SelectionHelper.importSelection(file);
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
-			tileMap.setMarkedChunks(chunks);
+			tileMap.setMarkedChunks(selection.getSelection());
+			tileMap.setSelectionInverted(selection.isInverted());
 			tileMap.update();
 		}
 	}
@@ -416,7 +416,7 @@ public class DialogHelper {
 		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export"),
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showSaveDialog(primaryStage);
 		if (file != null) {
-			SelectionHelper.exportSelection(tileMap.getMarkedChunks(), file);
+			SelectionHelper.exportSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), file);
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
 			tileMap.update();
 		}

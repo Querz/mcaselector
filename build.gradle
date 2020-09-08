@@ -25,9 +25,10 @@ repositories {
 }
 
 dependencies {
-	compile 'com.github.Querz:NBT:5.5'
-	shadow 'com.github.Querz:NBT:5.5'
-	testCompile group: 'junit', name: 'junit', version: '4.12'
+	compile 'com.github.Querz:NBT:little-endian-io-SNAPSHOT'
+	shadow 'com.github.Querz:NBT:little-endian-io-SNAPSHOT'
+	testCompile 'junit:junit:4.12'
+	testCompile 'commons-io:commons-io:2.6'
 }
 
 jar {

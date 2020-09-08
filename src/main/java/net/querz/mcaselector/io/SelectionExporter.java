@@ -16,19 +16,21 @@ public class SelectionExporter {
 
 	private SelectionExporter() {}
 
-	public static void exportSelection(Map<Point2i, Set<Point2i>> chunksToBeExported, File destination, Progress progressChannel) {
-		if (chunksToBeExported.isEmpty()) {
+	public static void exportSelection(SelectionData selection, File destination, Progress progressChannel) {
+		if (selection.getSelection().isEmpty() && !selection.isInverted()) {
 			progressChannel.done("no selection");
 			return;
 		}
 
 		MCAFilePipe.clearQueues();
 
-		progressChannel.setMax(chunksToBeExported.size());
-		Point2i first = chunksToBeExported.entrySet().iterator().next().getKey();
+		Map<Point2i, Set<Point2i>> sel = SelectionHelper.getTrueSelection(selection);
+
+		progressChannel.setMax(sel.size());
+		Point2i first = sel.entrySet().iterator().next().getKey();
 		progressChannel.updateProgress(FileHelper.createMCAFileName(first), 0);
 
-		for (Map.Entry<Point2i, Set<Point2i>> entry : chunksToBeExported.entrySet()) {
+		for (Map.Entry<Point2i, Set<Point2i>> entry : sel.entrySet()) {
 			MCAFilePipe.addJob(new MCADeleteSelectionLoadJob(
 					FileHelper.createMCAFilePath(entry.getKey()),
 					entry.getValue(),

@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io;
 
+import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
@@ -15,37 +16,41 @@ public class SelectionDeleter {
 
 	private SelectionDeleter() {}
 
-	public static void deleteSelection(Map<Point2i, Set<Point2i>> chunksToBeDeleted, Progress progressChannel) {
-		if (chunksToBeDeleted.isEmpty()) {
+	public static void deleteSelection(SelectionData selection, Progress progressChannel) {
+		if (selection.getSelection().isEmpty() && !selection.isInverted()) {
 			progressChannel.done("no selection");
 			return;
 		}
 
 		MCAFilePipe.clearQueues();
 
-		progressChannel.setMax(chunksToBeDeleted.size());
-		Point2i first = chunksToBeDeleted.entrySet().iterator().next().getKey();
+		Map<Point2i, Set<Point2i>> sel = SelectionHelper.getTrueSelection(selection);
+
+		progressChannel.setMax(sel.size());
+
+		Point2i first = sel.entrySet().iterator().next().getKey();
+
 		progressChannel.updateProgress(FileHelper.createMCAFileName(first), 0);
 
-		for (Map.Entry<Point2i, Set<Point2i>> entry : chunksToBeDeleted.entrySet()) {
+		for (Map.Entry<Point2i, Set<Point2i>> entry : sel.entrySet()) {
 			MCAFilePipe.addJob(new MCADeleteSelectionLoadJob(FileHelper.createMCAFilePath(entry.getKey()), entry.getValue(), progressChannel));
 		}
 	}
 
 	private static class MCADeleteSelectionLoadJob extends LoadDataJob {
 
-		private final Set<Point2i> chunksToBeDeleted;
+		private final Set<Point2i> selection;
 		private final Progress progressChannel;
 
-		private MCADeleteSelectionLoadJob(File file, Set<Point2i> chunksToBeDeleted, Progress progressChannel) {
+		private MCADeleteSelectionLoadJob(File file, Set<Point2i> selection, Progress progressChannel) {
 			super(file);
-			this.chunksToBeDeleted = chunksToBeDeleted;
+			this.selection = selection;
 			this.progressChannel = progressChannel;
 		}
 
 		@Override
 		public void execute() {
-			if (chunksToBeDeleted == null) {
+			if (selection == null) {
 				if (getFile().delete()) {
 					Debug.dumpf("deleted file %s", getFile().getName());
 				} else {
@@ -56,7 +61,7 @@ public class SelectionDeleter {
 			}
 			byte[] data = load(MCAFile.SECTION_SIZE * 2); //load header only
 			if (data != null) {
-				MCAFilePipe.executeProcessData(new MCADeleteSelectionProcessJob(getFile(), data, chunksToBeDeleted, progressChannel));
+				MCAFilePipe.executeProcessData(new MCADeleteSelectionProcessJob(getFile(), data, selection, progressChannel));
 			} else {
 				Debug.errorf("error loading mca file %s", getFile().getName());
 				progressChannel.incrementProgress(getFile().getName());
@@ -67,11 +72,11 @@ public class SelectionDeleter {
 	private static class MCADeleteSelectionProcessJob extends ProcessDataJob {
 
 		private final Progress progressChannel;
-		private final Set<Point2i> chunksToBeDeleted;
+		private final Set<Point2i> selection;
 
-		private MCADeleteSelectionProcessJob(File file, byte[] data, Set<Point2i> chunksToBeDeleted, Progress progressChannel) {
+		private MCADeleteSelectionProcessJob(File file, byte[] data, Set<Point2i> selection, Progress progressChannel) {
 			super(file, data);
-			this.chunksToBeDeleted = chunksToBeDeleted;
+			this.selection = selection;
 			this.progressChannel = progressChannel;
 		}
 
@@ -82,7 +87,7 @@ public class SelectionDeleter {
 			try {
 				MCAFile mca = MCAFile.readHeader(getFile(), new ByteArrayPointer(getData()));
 				if (mca != null) {
-					mca.deleteChunkIndices(chunksToBeDeleted);
+					mca.deleteChunkIndices(selection);
 					Debug.dumpf("took %s to delete chunk indices in %s", t, getFile().getName());
 					MCAFilePipe.executeSaveData(new MCADeleteSelectionSaveJob(getFile(), mca, progressChannel));
 				}

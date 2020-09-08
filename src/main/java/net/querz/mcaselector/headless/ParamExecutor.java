@@ -9,6 +9,7 @@ import net.querz.mcaselector.io.ChunkFilterExporter;
 import net.querz.mcaselector.io.ChunkFilterSelector;
 import net.querz.mcaselector.io.ChunkImporter;
 import net.querz.mcaselector.io.FieldChanger;
+import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.SelectionDeleter;
 import net.querz.mcaselector.io.SelectionExporter;
 import net.querz.mcaselector.io.SelectionHelper;
@@ -154,7 +155,7 @@ public class ParamExecutor {
 
 		List<Field<?>> fields = new ChangeParser(params.get("query")).parse();
 
-		Map<Point2i, Set<Point2i>> selection = loadSelection(params, "input");
+		SelectionData selection = loadSelection(params, "input");
 
 		printHeadlessSettings();
 
@@ -181,7 +182,7 @@ public class ParamExecutor {
 			Debug.print("filter set: " + g);
 		}
 
-		Map<Point2i, Set<Point2i>> selection = loadSelection(params, "input");
+		SelectionData selection = loadSelection(params, "input");
 
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(future);
@@ -214,7 +215,7 @@ public class ParamExecutor {
 		if (params.containsKey("selection")) {
 			 selectionFile = parseFile(params.get("selection"), "csv");
 		}
-		Map<Point2i, Set<Point2i>> selection = null;
+		SelectionData selection = null;
 		if (selectionFile != null && selectionFile.exists()) {
 			selection = SelectionHelper.importSelection(selectionFile);
 		}
@@ -257,7 +258,7 @@ public class ParamExecutor {
 			Debug.print("filter set: " + g);
 		}
 
-		Map<Point2i, Set<Point2i>> selection = loadSelection(params, "input");
+		SelectionData selection = loadSelection(params, "input");
 
 		Debug.print("exporting chunks...");
 
@@ -299,7 +300,7 @@ public class ParamExecutor {
 
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(() -> {
-			SelectionHelper.exportSelection(selection, output);
+			SelectionHelper.exportSelection(new SelectionData(selection, false), output);
 			future.run();
 		});
 
@@ -338,7 +339,7 @@ public class ParamExecutor {
 		return 1;
 	}
 
-	private static Map<Point2i, Set<Point2i>> loadSelection(Map<String, String> params, String key) throws ParseException {
+	private static SelectionData loadSelection(Map<String, String> params, String key) throws ParseException {
 		if (params.containsKey(key)) {
 			Debug.print("loading selection...");
 

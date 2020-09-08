@@ -12,9 +12,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
@@ -24,6 +28,7 @@ public final class FileHelper {
 
 	public static final String MCA_FILE_PATTERN = "^r\\.-?\\d+\\.-?\\d+\\.mca$";
 	public static final Pattern REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
+	public static final Pattern CACHE_REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.png$");
 
 	private static final Map<String, String> lastOpenedDirectoryMap = new HashMap<>();
 
@@ -59,6 +64,20 @@ public final class FileHelper {
 
 	public static Point2i parseMCAFileName(String name) {
 		Matcher m = FileHelper.REGION_GROUP_PATTERN.matcher(name);
+		if (m.find()) {
+			int x = Integer.parseInt(m.group("regionX"));
+			int z = Integer.parseInt(m.group("regionZ"));
+			return new Point2i(x, z);
+		}
+		return null;
+	}
+
+	public static Point2i parseCacheFileName(File file) {
+		return parseMCAFileName(file.getName());
+	}
+
+	public static Point2i parseCacheFileName(String name) {
+		Matcher m = FileHelper.CACHE_REGION_GROUP_PATTERN.matcher(name);
 		if (m.find()) {
 			int x = Integer.parseInt(m.group("regionX"));
 			int z = Integer.parseInt(m.group("regionZ"));
@@ -133,5 +152,15 @@ public final class FileHelper {
 				throw ex;
 			}
 		});
+	}
+
+	public static Set<Point2i> parseAllMCAFileNames(File directory) {
+		File[] files = directory.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
+		if (files == null) {
+			return Collections.emptySet();
+		}
+		Set<Point2i> regions = new HashSet<>(files.length);
+		Arrays.stream(files).forEach(f -> regions.add(FileHelper.parseMCAFileName(f)));
+		return regions;
 	}
 }
