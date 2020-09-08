@@ -2,7 +2,6 @@ package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.tiles.Tile;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -10,8 +9,8 @@ import java.util.Set;
 
 public class SelectionData {
 
-	private Map<Point2i, Set<Point2i>> selection;
-	private boolean inverted;
+	private final Map<Point2i, Set<Point2i>> selection;
+	private final boolean inverted;
 
 	public SelectionData(Map<Point2i, Set<Point2i>> selection, boolean inverted) {
 		this.selection = selection;
@@ -35,9 +34,13 @@ public class SelectionData {
 	}
 
 	public static Set<Point2i> createInvertedRegionSet(Point2i region, Set<Point2i> selectedChunks) {
-		// null (no chunks selected) --> 0 (all chunks selected)
+		// null (all chunks selected) --> empty set (no chunks selected)
 		if (selectedChunks == null) {
 			return Collections.emptySet();
+		}
+		// empty set (no chunks selected) --> null (all chunks selected)
+		if (selectedChunks.isEmpty()) {
+			return null;
 		}
 		// set the initial capacity precisely because we can
 		Set<Point2i> invertedSelectedChunks = new HashSet<>(Tile.CHUNKS - selectedChunks.size());

@@ -73,12 +73,7 @@ public class ChunkImporter {
 				} else {
 					for (Point2i sourceRegion : sourceRegions) {
 						Set<Point2i> localSourceChunks;
-						localSourceChunks = sourceSelection.getSelection().getOrDefault(sourceRegion, null);
-
-						// invert source selection if necessary
-						if (sourceSelection.isInverted()) {
-							localSourceChunks = SelectionData.createInvertedRegionSet(sourceRegion, localSourceChunks);
-						}
+						localSourceChunks = sourceSelection.getSelection().getOrDefault(sourceRegion, Collections.emptySet());
 						localSourceSelection.put(sourceRegion, localSourceChunks);
 					}
 				}
@@ -87,22 +82,13 @@ public class ChunkImporter {
 				if (targetSelection == null) {
 					localTargetSelection = Collections.emptySet();
 				} else {
-					if (targetSelection.getSelection().containsKey(targetRegion)) {
-						localTargetSelection = targetSelection.getSelection().get(targetRegion);
-						if (localTargetSelection == null) {
-							localTargetSelection = Collections.emptySet();
-						}
-					} else {
-						localTargetSelection = Collections.emptySet();
-					}
-
-					// invert target selection if necessary
-					if (targetSelection.isInverted()) {
-						localTargetSelection = SelectionData.createInvertedRegionSet(targetRegion, localTargetSelection);
-					}
+					localTargetSelection = targetSelection.getSelection().getOrDefault(targetRegion, Collections.emptySet());
 				}
 
-				MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetFile, sourceDirectory, targetRegion, sourceRegions, offset, progressChannel, overwrite, localSourceSelection, localTargetSelection, ranges, tempFilesMap));
+				boolean sourceInverted = sourceSelection != null && sourceSelection.isInverted();
+				boolean targetInverted = targetSelection != null && targetSelection.isInverted();
+
+				MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetFile, sourceDirectory, targetRegion, sourceRegions, offset, progressChannel, overwrite, localSourceSelection, sourceInverted, localTargetSelection, targetInverted, ranges, tempFilesMap));
 			}
 		} catch (Exception ex) {
 			Debug.dumpException("failed creating jobs to import chunks", ex);
@@ -170,11 +156,13 @@ public class ChunkImporter {
 		private final Progress progressChannel;
 		private final boolean overwrite;
 		private final Map<Point2i, Set<Point2i>> sourceChunks;
+		private final boolean sourceChunksInverted;
 		private final Set<Point2i> selection;
+		private final boolean targetChunksInverted;
 		private final List<Range> ranges;
 		private final Map<Point2i, File> tempFilesMap;
 
-		private MCAChunkImporterLoadJob(File targetFile, File sourceDir, Point2i target, Set<Point2i> sources, Point2i offset, Progress progressChannel, boolean overwrite, Map<Point2i, Set<Point2i>> sourceChunks, Set<Point2i> selection, List<Range> ranges, Map<Point2i, File> tempFilesMap) {
+		private MCAChunkImporterLoadJob(File targetFile, File sourceDir, Point2i target, Set<Point2i> sources, Point2i offset, Progress progressChannel, boolean overwrite, Map<Point2i, Set<Point2i>> sourceChunks, boolean sourceChunksInverted, Set<Point2i> selection, boolean targetChunksInverted, List<Range> ranges, Map<Point2i, File> tempFilesMap) {
 			super(targetFile);
 			this.target = target;
 			this.sources = sources;
@@ -183,7 +171,9 @@ public class ChunkImporter {
 			this.progressChannel = progressChannel;
 			this.overwrite = overwrite;
 			this.sourceChunks = sourceChunks;
+			this.sourceChunksInverted = sourceChunksInverted;
 			this.selection = selection;
+			this.targetChunksInverted = targetChunksInverted;
 			this.ranges = ranges;
 			this.tempFilesMap = tempFilesMap;
 		}
@@ -196,7 +186,6 @@ public class ChunkImporter {
 				//if the entire mca file doesn't exist, just copy it over
 				File source = new File(sourceDir, getFile().getName());
 				try {
-					System.out.println("copying " + source + " to " + getFile());
 					Files.copy(source.toPath(), getFile().toPath());
 				} catch (IOException ex) {
 					Debug.dumpException(String.format("failed to copy file %s to %s", source, getFile()), ex);
@@ -244,7 +233,7 @@ public class ChunkImporter {
 				destData = null;
 			}
 
-			MCAFilePipe.executeProcessData(new MCAChunkImporterProcessJob(getFile(), sourceDir, target, sourceDataMapping, destData, offset, progressChannel, overwrite, sourceChunks, selection, ranges));
+			MCAFilePipe.executeProcessData(new MCAChunkImporterProcessJob(getFile(), sourceDir, target, sourceDataMapping, destData, offset, progressChannel, overwrite, sourceChunks, sourceChunksInverted, selection, targetChunksInverted, ranges));
 		}
 	}
 
@@ -257,10 +246,12 @@ public class ChunkImporter {
 		private final Progress progressChannel;
 		private final boolean overwrite;
 		private final Map<Point2i, Set<Point2i>> sourceChunks;
+		private final boolean sourceChunksInverted;
 		private final Set<Point2i> selection;
+		private final boolean targetChunksInverted;
 		private final List<Range> ranges;
 
-		private MCAChunkImporterProcessJob(File targetFile, File sourceDir, Point2i target, Map<Point2i, byte[]> sourceDataMapping, byte[] destData, Point2i offset, Progress progressChannel, boolean overwrite, Map<Point2i, Set<Point2i>> sourceChunks, Set<Point2i> selection, List<Range> ranges) {
+		private MCAChunkImporterProcessJob(File targetFile, File sourceDir, Point2i target, Map<Point2i, byte[]> sourceDataMapping, byte[] destData, Point2i offset, Progress progressChannel, boolean overwrite, Map<Point2i, Set<Point2i>> sourceChunks, boolean sourceChunksInverted, Set<Point2i> selection, boolean targetChunksInverted, List<Range> ranges) {
 			super(targetFile, destData);
 			this.sourceDir = sourceDir;
 			this.target = target;
@@ -269,7 +260,9 @@ public class ChunkImporter {
 			this.progressChannel = progressChannel;
 			this.overwrite = overwrite;
 			this.sourceChunks = sourceChunks;
+			this.sourceChunksInverted = sourceChunksInverted;
 			this.selection = selection;
+			this.targetChunksInverted = targetChunksInverted;
 			this.ranges = ranges;
 		}
 
@@ -291,14 +284,22 @@ public class ChunkImporter {
 					return;
 				}
 
+				Set<Point2i> selection = this.selection;
+				// invert target selection if necessary
+				if (targetChunksInverted) {
+					selection = SelectionData.createInvertedRegionSet(target, selection);
+				}
+
+				Map<Point2i, Set<Point2i>> sourceChunks = this.sourceChunks;
+				// invert source selection if necessary
+				if (sourceChunksInverted) {
+					sourceChunks.replaceAll(SelectionData::createInvertedRegionSet);
+				}
+
 				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMapping.entrySet()) {
 					MCAFile source = MCAFile.readAll(new File(sourceDir, FileHelper.createMCAFileName(sourceData.getKey())), new ByteArrayPointer(sourceData.getValue()));
 
 					Debug.dumpf("merging chunks from region %s into %s", sourceData.getKey(), target);
-
-					if (sourceData.getKey().equals(new Point2i(0, -1)) && target.equals(new Point2i(0, -1))) {
-						System.out.println(sourceChunks);
-					}
 
 					source.mergeChunksInto(destination, offset, overwrite, sourceChunks == null ? null : sourceChunks.get(sourceData.getKey()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
 				}

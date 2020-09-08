@@ -47,9 +47,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_NoSourceSelection_NoTargetSelection_NoOffset() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		TestProgress progress;
 		ChunkImporter.importChunks(
 				tmpDir("source"),
@@ -65,16 +62,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
@@ -101,9 +89,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_NoSourceSelection_NoTargetSelection_Offset() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		TestProgress progress;
 		ChunkImporter.importChunks(
 				tmpDir("source"),
@@ -119,16 +104,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(12, -26));
@@ -155,9 +131,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_NoSourceSelection_NoTargetSelection_Offset_NewFiles() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		TestProgress progress;
 		ChunkImporter.importChunks(
 				tmpDir("source"),
@@ -173,16 +146,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(18, -20));
@@ -206,9 +170,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_NoSourceSelection_TargetSelection_NoOffset() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		Map<Point2i, Set<Point2i>> targetSelection = new HashMap<>();
 		targetSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-9, -4)));
 		targetSelection.put(new Point2i(0, -1), null);
@@ -228,16 +189,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
@@ -262,9 +214,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_NoSourceSelection_TargetSelection_Offset() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		Map<Point2i, Set<Point2i>> targetSelection = new HashMap<>();
 		targetSelection.put(new Point2i(0, 0), Collections.singleton(new Point2i(0, 0)));
 		targetSelection.put(new Point2i(0, -1), null);
@@ -284,16 +233,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(19, -19));
@@ -322,9 +262,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_NoSourceSelection_InvertedTargetSelection_NoOffset() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		Map<Point2i, Set<Point2i>> targetSelection = new HashMap<>();
 		targetSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-9, -4)));
 		targetSelection.put(new Point2i(0, -1), null);
@@ -344,16 +281,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
@@ -378,9 +306,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_NoSourceSelection_InvertedTargetSelection_Offset() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		Map<Point2i, Set<Point2i>> targetSelection = new HashMap<>();
 		targetSelection.put(new Point2i(0, 0), Collections.singleton(new Point2i(0, 0)));
 		targetSelection.put(new Point2i(0, -1), null);
@@ -400,16 +325,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(19, -19));
@@ -440,9 +356,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_SourceSelection_NoTargetSelection_NoOffset() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
 		sourceSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-9, -4)));
 		sourceSelection.put(new Point2i(0, -1), null);
@@ -462,16 +375,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
@@ -496,9 +400,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_SourceSelection_NoTargetSelection_Offset() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
 		sourceSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-9, -4)));
 		sourceSelection.put(new Point2i(0, -1), null);
@@ -518,16 +419,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(19, -20));
@@ -556,9 +448,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_SourceSelection_TargetSelection_NoOffset() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
 		sourceSelection.put(new Point2i(-1, -1), new HashSet<>(Arrays.asList(new Point2i(-9, -4), new Point2i(-8, -4))));
 		sourceSelection.put(new Point2i(0, -1), null);
@@ -582,16 +471,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
@@ -616,9 +496,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_SourceSelection_TargetSelection_NoOffset_NoTargetRegion() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
 		sourceSelection.put(new Point2i(-1, -1), new HashSet<>(Arrays.asList(new Point2i(-9, -4), new Point2i(-8, -4))));
 		sourceSelection.put(new Point2i(0, -1), null);
@@ -642,16 +519,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
@@ -675,9 +543,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_SourceSelection_TargetSelection_Offset() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
 		sourceSelection.put(new Point2i(-1, -1), new HashSet<>(Arrays.asList(new Point2i(-9, -4), new Point2i(-8, -4), new Point2i(-9, -5))));
 		sourceSelection.put(new Point2i(0, -1), null);
@@ -701,16 +566,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(19, -19));
@@ -740,9 +596,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_SourceSelection_InvertedTargetSelection_NoOffset() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
 		sourceSelection.put(new Point2i(-1, -1), new HashSet<>(Arrays.asList(new Point2i(-9, -4), new Point2i(-8, -4))));
 		sourceSelection.put(new Point2i(0, -1), null);
@@ -766,16 +619,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
@@ -799,9 +643,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_SourceSelection_InvertedTargetSelection_Offset() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
 		sourceSelection.put(new Point2i(-1, -1), new HashSet<>(Arrays.asList(new Point2i(-9, -4), new Point2i(-8, -4))));
 		sourceSelection.put(new Point2i(0, -1), null);
@@ -825,16 +666,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(19, -19));
@@ -862,9 +694,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_InvertedSourceSelection_NoTargetSelection_NoOffset() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
 		sourceSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-9, -4)));
 		sourceSelection.put(new Point2i(0, -1), null);
@@ -884,16 +713,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
@@ -918,9 +738,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_InvertedSourceSelection_NoTargetSelection_NoOffset_TargetRegion() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
 		sourceSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-9, -4)));
 
@@ -939,16 +756,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
@@ -974,9 +782,6 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_InvertedSourceSelection_NoTargetSelection_Offset() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
 		sourceSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-9, -4)));
 		sourceSelection.put(new Point2i(0, -1), null);
@@ -996,16 +801,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(19, -19));
@@ -1036,15 +832,12 @@ public class ChunkImporterTest {
 
 	@Test
 	public void test_InvertedSourceSelection_TargetSelection_NoOffset() throws IOException {
-		String source1before = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2before = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
 		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
 		sourceSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-9, -4)));
 		sourceSelection.put(new Point2i(0, -1), null);
 
 		Map<Point2i, Set<Point2i>> targetSelection = new HashMap<>();
-		targetSelection.put(new Point2i(-1, 1), new HashSet<>(Arrays.asList(new Point2i(1, 0), new Point2i(0, 1))));
+		targetSelection.put(new Point2i(-1, -1), new HashSet<>(Arrays.asList(new Point2i(-8, -4), new Point2i(-8, -5))));
 		targetSelection.put(new Point2i(0, -1), null);
 
 		TestProgress progress;
@@ -1062,16 +855,7 @@ public class ChunkImporterTest {
 
 		progress.join();
 
-		String source1after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
-		String source2after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
-
-		// make sure that we never touch the source
-		assertEquals(source1before, source1after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1before);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2before);
-		assertEquals(source2before, source2after);
-		assertEquals("CB01AFFCCC28DD4CFF94C48D337D4140", source1after);
-		assertEquals("442C56C5849D37AD19DC54B280295921", source2after);
+		assertSourceFilesAreUnchanged();
 
 		// make sure that all chunks exist in the new files
 		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
@@ -1079,12 +863,11 @@ public class ChunkImporterTest {
 		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -5));
 		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -6));
 		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -5));
-		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-9, -5));
 		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -4));
+		assertNoChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-9, -5));
 		assertNoChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-9, -4));
 
 		// make sure that chunks were successfully copied
-		assertChunkEquals(tmpFile("source", "r.-1.-1.mca"), new Point2i(-9, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-9, -5));
 		assertChunkEquals(tmpFile("source", "r.-1.-1.mca"), new Point2i(-8, -4), tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -4));
 
 		// make sure that existing chunks are still there
@@ -1094,7 +877,352 @@ public class ChunkImporterTest {
 		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-7, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -5));
 	}
 
+	@Test
+	public void test_InvertedSourceSelection_TargetSelection_NoOffset_WithFile() throws IOException {
+		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
+		sourceSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-9, -4)));
+
+		Map<Point2i, Set<Point2i>> targetSelection = new HashMap<>();
+		targetSelection.put(new Point2i(-1, -1), new HashSet<>(Arrays.asList(new Point2i(-8, -4), new Point2i(-8, -5))));
+		targetSelection.put(new Point2i(0, -1), null);
+
+		TestProgress progress;
+		ChunkImporter.importChunks(
+				tmpDir("source"),
+				progress = new TestProgress(() -> {}, 60),
+				true, // headless
+				true, // overwrite
+				new SelectionData(sourceSelection, true), // sourceSelection
+				new SelectionData(targetSelection, false), // targetSelection
+				null, // ranges
+				new Point2i(0, 0), // offset
+				new DataProperty<>()
+		);
+
+		progress.join();
+
+		assertSourceFilesAreUnchanged();
+
+		// make sure that all chunks exist in the new files
+		assertChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -6));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -5));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -6));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -5));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -4));
+		assertNoChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-9, -5));
+		assertNoChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-9, -4));
+
+		// make sure that chunks were successfully copied
+		assertChunkEquals(tmpFile("source", "r.-1.-1.mca"), new Point2i(-8, -4), tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -4));
+		assertChunkEquals(tmpFile("source", "r.0.-1.mca"), new Point2i(10, -24), tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
+
+		// make sure that existing chunks are still there
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-8, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -5));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-8, -6), tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -6));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-7, -6), tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -6));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-7, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -5));
+	}
+
+	@Test
+	public void test_InvertedSourceSelection_TargetSelection_Offset() throws IOException {
+		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
+		sourceSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-9, -4)));
+		sourceSelection.put(new Point2i(0, -1), null);
+
+		Map<Point2i, Set<Point2i>> targetSelection = new HashMap<>();
+		targetSelection.put(new Point2i(0, 0), Collections.singleton(new Point2i(0, 0)));
+		targetSelection.put(new Point2i(0, -1), null);
+
+		TestProgress progress;
+		ChunkImporter.importChunks(
+				tmpDir("source"),
+				progress = new TestProgress(() -> {}, 60),
+				true, // headless
+				true, // overwrite
+				new SelectionData(sourceSelection, true), // sourceSelection
+				new SelectionData(targetSelection, false), // targetSelection
+				null, // ranges
+				new Point2i(8, 4), // offset
+				new DataProperty<>()
+		);
+
+		progress.join();
+
+		assertSourceFilesAreUnchanged();
+
+		// make sure that all chunks exist in the new files
+		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(18, -20));
+		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -6));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -5));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -6));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -5));
+		assertChunkExists(tmpFile("target", "r.0.0.mca"), new Point2i(0, 0));
+		assertNoChunkExists(tmpFile("target", "r.-1.0.mca"), new Point2i(-1, 0));
+		assertNoChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-1, -1));
+		assertChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(0, -1));
+
+		// make sure that chunks were successfully copied
+		assertChunkEqualsIgnoreLocations(tmpFile("source", "r.-1.-1.mca"), new Point2i(-8, -4), tmpFile("target", "r.0.0.mca"), new Point2i(0, 0));
+		assertChunkEqualsIgnoreLocations(tmpFile("source", "r.-1.-1.mca"), new Point2i(-8, -5), tmpFile("target", "r.0.-1.mca"), new Point2i(0, -1));
+
+		// make sure that existing chunks are still there
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-8, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -5));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-8, -6), tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -6));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-7, -6), tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -6));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-7, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -5));
+	}
+
+	@Test
+	public void test_InvertedSourceSelection_TargetSelection_Offset_WithFile() throws IOException {
+		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
+		sourceSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-9, -4)));
+
+		Map<Point2i, Set<Point2i>> targetSelection = new HashMap<>();
+		targetSelection.put(new Point2i(0, 0), Collections.singleton(new Point2i(0, 0)));
+
+		TestProgress progress;
+		ChunkImporter.importChunks(
+				tmpDir("source"),
+				progress = new TestProgress(() -> {}, 60),
+				true, // headless
+				true, // overwrite
+				new SelectionData(sourceSelection, true), // sourceSelection
+				new SelectionData(targetSelection, false), // targetSelection
+				null, // ranges
+				new Point2i(8, 4), // offset
+				new DataProperty<>()
+		);
+
+		progress.join();
+
+		assertSourceFilesAreUnchanged();
+
+		// make sure that all chunks exist in the new files
+		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(18, -20));
+		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -6));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -5));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -6));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -5));
+		assertChunkExists(tmpFile("target", "r.0.0.mca"), new Point2i(0, 0));
+		assertNoChunkExists(tmpFile("target", "r.-1.0.mca"), new Point2i(-1, 0));
+		assertNoChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-1, -1));
+		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(0, -1));
+
+		// make sure that chunks were successfully copied
+		assertChunkEqualsIgnoreLocations(tmpFile("source", "r.-1.-1.mca"), new Point2i(-8, -4), tmpFile("target", "r.0.0.mca"), new Point2i(0, 0));
+
+		// make sure that existing chunks are still there
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-8, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -5));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-8, -6), tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -6));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-7, -6), tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -6));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-7, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -5));
+	}
+
+	@Test
+	public void test_InvertedSourceSelection_InvertedTargetSelection_NoOffset() throws IOException {
+		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
+		sourceSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-9, -4)));
+		sourceSelection.put(new Point2i(0, -1), null);
+
+		Map<Point2i, Set<Point2i>> targetSelection = new HashMap<>();
+		targetSelection.put(new Point2i(-1, -1), new HashSet<>(Arrays.asList(new Point2i(-8, -4), new Point2i(-8, -5))));
+		targetSelection.put(new Point2i(0, -1), null);
+
+		TestProgress progress;
+		ChunkImporter.importChunks(
+				tmpDir("source"),
+				progress = new TestProgress(() -> {}, 60),
+				true, // headless
+				true, // overwrite
+				new SelectionData(sourceSelection, true), // sourceSelection
+				new SelectionData(targetSelection, true), // targetSelection
+				null, // ranges
+				new Point2i(0, 0), // offset
+				new DataProperty<>()
+		);
+
+		progress.join();
+
+		assertSourceFilesAreUnchanged();
+
+		// make sure that all chunks exist in the new files
+		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -6));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -5));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -6));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -5));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-9, -5));
+		assertNoChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -4));
+		assertNoChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-9, -4));
+
+		// make sure that chunks were successfully copied
+		assertChunkEquals(tmpFile("source", "r.-1.-1.mca"), new Point2i(-9, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-9, -5));
+
+		// make sure that existing chunks are still there
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-8, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -5));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-8, -6), tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -6));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-7, -6), tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -6));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-7, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -5));
+	}
+
+	@Test
+	public void test_InvertedSourceSelection_InvertedTargetSelection_NoOffset_WithFile() throws IOException {
+		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
+		sourceSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-9, -4)));
+
+		Map<Point2i, Set<Point2i>> targetSelection = new HashMap<>();
+		targetSelection.put(new Point2i(-1, -1), new HashSet<>(Arrays.asList(new Point2i(-8, -4), new Point2i(-8, -5))));
+
+		TestProgress progress;
+		ChunkImporter.importChunks(
+				tmpDir("source"),
+				progress = new TestProgress(() -> {}, 60),
+				true, // headless
+				true, // overwrite
+				new SelectionData(sourceSelection, true), // sourceSelection
+				new SelectionData(targetSelection, true), // targetSelection
+				null, // ranges
+				new Point2i(0, 0), // offset
+				new DataProperty<>()
+		);
+
+		progress.join();
+
+		assertSourceFilesAreUnchanged();
+
+		// make sure that all chunks exist in the new files
+		assertChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -6));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -5));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -6));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -5));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-9, -5));
+		assertNoChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -4));
+		assertNoChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-9, -4));
+
+		// make sure that chunks were successfully copied
+		assertChunkEquals(tmpFile("source", "r.-1.-1.mca"), new Point2i(-9, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-9, -5));
+		assertChunkEquals(tmpFile("source", "r.0.-1.mca"), new Point2i(10, -24), tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
+
+		// make sure that existing chunks are still there
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-8, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -5));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-8, -6), tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -6));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-7, -6), tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -6));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-7, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -5));
+	}
+
+	@Test
+	public void test_InvertedSourceSelection_InvertedTargetSelection_Offset() throws IOException {
+		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
+		sourceSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-9, -4)));
+		sourceSelection.put(new Point2i(0, -1), null);
+
+		Map<Point2i, Set<Point2i>> targetSelection = new HashMap<>();
+		targetSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-1, -1)));
+		targetSelection.put(new Point2i(0, -1), null);
+
+		TestProgress progress;
+		ChunkImporter.importChunks(
+				tmpDir("source"),
+				progress = new TestProgress(() -> {}, 60),
+				true, // headless
+				true, // overwrite
+				new SelectionData(sourceSelection, true), // sourceSelection
+				new SelectionData(targetSelection, true), // targetSelection
+				null, // ranges
+				new Point2i(8, 4), // offset
+				new DataProperty<>()
+		);
+
+		progress.join();
+
+		assertSourceFilesAreUnchanged();
+
+		// make sure that all chunks exist in the new files
+		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
+		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(18, -20));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -6));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -5));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -6));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -5));
+
+		assertNoChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-1, -1));
+		assertNoChunkExists(tmpFile("target", "r.-1.0.mca"), new Point2i(-1, 0));
+		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(0, -1));
+		assertChunkExists(tmpFile("target", "r.0.0.mca"), new Point2i(0, 0));
+
+		// make sure that chunks were successfully copied
+		assertChunkEqualsIgnoreLocations(tmpFile("source", "r.-1.-1.mca"), new Point2i(-8, -4), tmpFile("target", "r.0.0.mca"), new Point2i(0, 0));
+
+		// make sure that existing chunks are still there
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-8, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -5));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-8, -6), tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -6));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-7, -6), tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -6));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-7, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -5));
+	}
+
+	@Test
+	public void test_InvertedSourceSelection_InvertedTargetSelection_Offset_WithFile() throws IOException {
+		Map<Point2i, Set<Point2i>> sourceSelection = new HashMap<>();
+		sourceSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-9, -4)));
+
+		Map<Point2i, Set<Point2i>> targetSelection = new HashMap<>();
+		targetSelection.put(new Point2i(-1, -1), Collections.singleton(new Point2i(-1, -1)));
+
+		TestProgress progress;
+		ChunkImporter.importChunks(
+				tmpDir("source"),
+				progress = new TestProgress(() -> {}, 60),
+				true, // headless
+				true, // overwrite
+				new SelectionData(sourceSelection, true), // sourceSelection
+				new SelectionData(targetSelection, true), // targetSelection
+				null, // ranges
+				new Point2i(8, 4), // offset
+				new DataProperty<>()
+		);
+
+		progress.join();
+
+		assertSourceFilesAreUnchanged();
+
+		// make sure that all chunks exist in the new files
+		assertNoChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(10, -24));
+		assertChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(18, -20));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -6));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -5));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -6));
+		assertChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -5));
+
+		assertNoChunkExists(tmpFile("target", "r.-1.-1.mca"), new Point2i(-1, -1));
+		assertNoChunkExists(tmpFile("target", "r.-1.0.mca"), new Point2i(-1, 0));
+		assertChunkExists(tmpFile("target", "r.0.-1.mca"), new Point2i(0, -1));
+		assertChunkExists(tmpFile("target", "r.0.0.mca"), new Point2i(0, 0));
+
+		// make sure that chunks were successfully copied
+		assertChunkEqualsIgnoreLocations(tmpFile("source", "r.-1.-1.mca"), new Point2i(-8, -4), tmpFile("target", "r.0.0.mca"), new Point2i(0, 0));
+		assertChunkEqualsIgnoreLocations(tmpFile("source", "r.0.-1.mca"), new Point2i(10, -24), tmpFile("target", "r.0.-1.mca"), new Point2i(18, -20));
+
+		// make sure that existing chunks are still there
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-8, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -5));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-8, -6), tmpFile("target", "r.-1.-1.mca"), new Point2i(-8, -6));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-7, -6), tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -6));
+		assertChunkEquals(getResourceFile("import/target/r.-1.-1.mca"), new Point2i(-7, -5), tmpFile("target", "r.-1.-1.mca"), new Point2i(-7, -5));
+	}
+
 // ---------------------------------------------------------------------------------------------------------------------
+
+	private void assertSourceFilesAreUnchanged() {
+		String source1before = calculateFileMD5(getResourceFile("import/source/r.-1.-1.mca"));
+		String source2before = calculateFileMD5(getResourceFile("import/source/r.0.-1.mca"));
+		String source1after = calculateFileMD5(tmpFile("source", "r.-1.-1.mca"));
+		String source2after = calculateFileMD5(tmpFile("source", "r.0.-1.mca"));
+		assertEquals(source1before, source1after);
+		assertEquals(source2before, source2after);
+	}
 
 	private void assertChunkExists(File file, Point2i chunk) throws IOException {
 		assertTrue(file.exists());
