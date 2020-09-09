@@ -358,7 +358,7 @@ Minecraft Java Edition comes with a JRE that you can use to start the MCA Select
 
 For Windows:
 * Hold `Shift` and Right-click on an empty space and select `Open PowerShell window here` (`Open Command window here` on Windows 8 and earlier).
-* Type `C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\java -jar `, then drag and drop the `mcaselector-1.12.3.jar into the console` and press `Enter`.
+* Type `& "C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\java" -jar `, then drag and drop the `mcaselector-1.12.3.jar into the console` and press `Enter`. In the Command window (Windows 8 and earlier), the command starts with `"C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\java" -jar ` instead and the path to `mcaselector-1.12.3.jar` must be typed or copied and pasted into the console manually.
 
 For MacOS:
 * Press `Cmd+Space`, type `Terminal` and press `Enter`.
