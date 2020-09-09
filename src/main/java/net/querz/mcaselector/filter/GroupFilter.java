@@ -7,7 +7,7 @@ import java.util.List;
 public class GroupFilter extends Filter<List<Filter<?>>> {
 
 	private List<Filter<?>> children = new ArrayList<>();
-	private boolean inverted = false;
+	private boolean negated = false;
 
 	public GroupFilter() {
 		super(FilterType.GROUP);
@@ -27,12 +27,12 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 		return children.size() - 1;
 	}
 
-	public void setInverted(boolean inverted) {
-		this.inverted = inverted;
+	public void setNegated(boolean negated) {
+		this.negated = negated;
 	}
 
-	public boolean isInverted() {
-		return inverted;
+	public boolean isNegated() {
+		return negated;
 	}
 
 	//returns index of where this filter was added
@@ -84,13 +84,13 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 			} else if (children.get(i).getOperator() == Operator.OR) {
 				//don't check other conditions if everything before OR is already true
 				if (currentResult) {
-					return !inverted;
+					return !negated;
 				}
 				//otherwise, reset currentResult
 				currentResult = children.get(i).matches(data);
 			}
 		}
-		return inverted != currentResult;
+		return negated != currentResult;
 	}
 
 	public boolean appliesToRegion(Point2i region) {
@@ -99,7 +99,7 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 		for (int i = 0; i < children.size(); i++) {
 			Filter<?> child = children.get(i);
 			if (child instanceof GroupFilter && ((GroupFilter) child).appliesToRegion(region)) {
-				return !inverted;
+				return !negated;
 			} else if (child instanceof RegionMatcher) {
 				RegionMatcher regionMatcher = (RegionMatcher) child;
 
@@ -108,17 +108,17 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 				} else if (child.getOperator() == Operator.OR) {
 					//don't check other conditions if everything before OR is already true
 					if (currentResult) {
-						return !inverted;
+						return !negated;
 					}
 					//otherwise, reset currentResult
 					currentResult = regionMatcher.matchesRegion(region);
 				}
 			} else {
-				return !inverted;
+				return !negated;
 			}
 		}
 
-		return inverted != currentResult;
+		return negated != currentResult;
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 	}
 
 	private String toString(int depth) {
-		StringBuilder s = new StringBuilder(depth == 0 ? "" : "(");
+		StringBuilder s = new StringBuilder(depth == 0 ? "" : (negated ? "!(" : "("));
 		for (int i = 0; i < children.size(); i++) {
 			s.append(i != 0 ? " " + children.get(i).getOperator() + " " : "");
 			s.append(children.get(i).getType() == FilterType.GROUP ? ((GroupFilter) children.get(i)).toString(depth + 1) : children.get(i));
@@ -151,7 +151,7 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 		List<Filter<?>> cloneChildren = new ArrayList<>(children.size());
 		children.forEach(c -> cloneChildren.add(c.clone()));
 		GroupFilter clone = new GroupFilter(getOperator());
-		clone.inverted = inverted;
+		clone.negated = negated;
 		clone.children = cloneChildren;
 		return clone;
 	}
