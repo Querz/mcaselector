@@ -30,16 +30,27 @@ public class FilterParser {
 
 			ptr.skipWhitespace();
 
+			// parse negated group
+			boolean negated = false;
+			if (ptr.currentChar() == '!') {
+				negated = true;
+				ptr.next();
+				ptr.skipWhitespace();
+			}
+
 			// parse group
 			if (ptr.currentChar() == '(') {
 				ptr.next();
 				GroupFilter child = parse();
 				child.setOperator(operator);
 				group.addFilter(child);
+				group.setNegated(negated);
 				ptr.skipWhitespace();
 				ptr.expectChar(')');
 				ptr.skipWhitespace();
 				continue;
+			} else if (negated) {
+				throw ptr.parseException("only groups can be negated");
 			}
 
 			group.addFilter(parseFilterType(operator));
