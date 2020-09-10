@@ -1,11 +1,18 @@
-plugins {
-	id 'com.github.johnrengelman.shadow' version '5.1.0'
-	id 'com.eriwen.gradle.css' version '2.14.0'
+buildscript {
+	repositories {
+		jcenter()
+		maven { url 'https://jitpack.io' }
+	}
+	dependencies {
+		classpath 'com.github.eriwen:gradle-css-plugin:9fe88d7126'
+		classpath 'com.github.jengelman.gradle.plugins:shadow:6.0.0'
+	}
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'css'
 
 group 'net.querz.mcaselector'
@@ -25,22 +32,22 @@ repositories {
 }
 
 dependencies {
-	compile 'com.github.Querz:NBT:little-endian-io-SNAPSHOT'
-	shadow 'com.github.Querz:NBT:little-endian-io-SNAPSHOT'
-	testCompile 'junit:junit:4.12'
-	testCompile 'commons-io:commons-io:2.6'
+	implementation 'com.github.Querz:NBT:little-endian-io-SNAPSHOT'
+	testImplementation 'junit:junit:4.12'
+	testImplementation 'commons-io:commons-io:2.6'
 }
 
 jar {
-	manifest {
-		attributes 'Main-Class': 'net.querz.mcaselector.Main', 'Application-Version': project.version
-	}
+	archiveFileName = project.name + '-' + project.version + '-min.jar'
+	manifest.attributes 'Main-Class': 'net.querz.mcaselector.Main', 'Application-Version': project.version
 	from 'LICENSE'
 }
 
 shadowJar {
 	minimize()
-	configurations = [project.configurations.shadow]
+	archiveFileName = project.name + '-' + project.version + '.jar'
+	project.configurations.implementation.canBeResolved = true
+	configurations = [project.configurations.implementation]
 	from 'LICENSE'
 }
 
@@ -53,6 +60,9 @@ minifyCss {
 	source = "${sourceSets.main.resources.srcDirs[0]}/style.css"
 	dest = "${sourceSets.main.output.resourcesDir}/style.css"
 }
+
+jar.finalizedBy shadowJar
+jar.dependsOn minifyCss
 
 task updateReadme {
 	doLast {
@@ -87,16 +97,6 @@ task updateReadme {
 			fileset(dir: '.', includes: 'README.md')
 		}
 	}
-}
-
-import org.gradle.internal.jvm.Jvm
-
-task printGradleVersion() {
-	def gradleVersion = project.getGradle().getGradleVersion()
-	println "Gradle version: $gradleVersion"
-
-	def currentJvm = Jvm.current()
-	println "JVM: $currentJvm"
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
