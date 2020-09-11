@@ -71,30 +71,27 @@ task updateReadme {
 				replace: "Download Version ${version}",
 				flags: 'g',
 				byline: true) {
-			fileset(dir: '.', includes: 'README.md')
+			fileset dir: '.', includes: 'README.md'
 		}
-
 		ant.replaceregexp(
 				match: '(?:download/)\\d+\\.\\d+(?:\\.\\d+)?',
 				replace: "download/${version}",
 				flags: 'g',
 				byline: true) {
-			fileset(dir: '.', includes: 'README.md')
+			fileset dir: '.', includes: 'README.md'
 		}
-
 		ant.replaceregexp(
 				match: '(?:mcaselector-)\\d+\\.\\d+(?:\\.\\d+)?',
 				replace: "mcaselector-${version}",
 				flags: 'g',
 				byline: true) {
-			fileset(dir: '.', includes: 'README.md')
+			fileset dir: '.', includes: 'README.md'
 		}
-
 		ant.replaceregexp(
 				match: '<!--toc-start-->[\\s\\S]*<!--toc-end-->',
 				replace: createTOC('README.md', '<!--toc-start-->', '<!--toc-end-->', true, true),
 				flags: 'g') {
-			fileset(dir: '.', includes: 'README.md')
+			fileset dir: '.', includes: 'README.md'
 		}
 	}
 }
