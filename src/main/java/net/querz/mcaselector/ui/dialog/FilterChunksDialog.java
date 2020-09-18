@@ -100,7 +100,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 			try {
 				gf = fp.parse();
 				gf = FilterParser.unwrap(gf);
-				Debug.dumpf("parsed filter query from: %s, to: ", filterQuery.getText(), gf);
+				Debug.dumpf("parsed filter query from: %s, to: %s", filterQuery.getText(), gf);
 				value = gf;
 				groupFilterBox.setFilter(gf);
 			} catch (ParseException ex) {

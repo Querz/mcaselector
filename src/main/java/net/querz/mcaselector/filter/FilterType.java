@@ -1,30 +1,31 @@
 package net.querz.mcaselector.filter;
 
-import net.querz.mcaselector.debug.Debug;
+import java.util.function.Supplier;
 
 public enum FilterType {
 
-	GROUP("Group", GroupFilter.class, Format.GROUP),
-	DATA_VERSION("DataVersion", DataVersionFilter.class, Format.NUMBER),
-	INHABITED_TIME("InhabitedTime", InhabitedTimeFilter.class, Format.NUMBER),
-	X_POS("xPos", XPosFilter.class, Format.NUMBER),
-	Z_POS("zPos", ZPosFilter.class, Format.NUMBER),
-	LAST_UPDATE("LastUpdate", LastUpdateFilter.class, Format.NUMBER),
-	PALETTE("Palette", PaletteFilter.class, Format.TEXT),
-	BIOME("Biome", BiomeFilter.class, Format.TEXT),
-	STATUS("Status", StatusFilter.class, Format.TEXT),
-	LIGHT_POPULATED("LightPopulated", LightPopulatedFilter.class, Format.NUMBER),
-	ENTITIES("Entities", EntityFilter.class, Format.TEXT),
-	ENTITY_AMOUNT("#Entities", EntityAmountFilter.class, Format.NUMBER),
-	TILE_ENTITY_AMOUNT("#TileEntities", TileEntityAmountFilter.class, Format.NUMBER);
+	GROUP("Group", GroupFilter::new, Format.GROUP),
+	NOT_GROUP("Not Group", () -> new GroupFilter(true), Format.GROUP),
+	DATA_VERSION("DataVersion", DataVersionFilter::new, Format.NUMBER),
+	INHABITED_TIME("InhabitedTime", InhabitedTimeFilter::new, Format.NUMBER),
+	X_POS("xPos", XPosFilter::new, Format.NUMBER),
+	Z_POS("zPos", ZPosFilter::new, Format.NUMBER),
+	LAST_UPDATE("LastUpdate", LastUpdateFilter::new, Format.NUMBER),
+	PALETTE("Palette", PaletteFilter::new, Format.TEXT),
+	BIOME("Biome", BiomeFilter::new, Format.TEXT),
+	STATUS("Status", StatusFilter::new, Format.TEXT),
+	LIGHT_POPULATED("LightPopulated", LightPopulatedFilter::new, Format.NUMBER),
+	ENTITIES("Entities", EntityFilter::new, Format.TEXT),
+	ENTITY_AMOUNT("#Entities", EntityAmountFilter::new, Format.NUMBER),
+	TILE_ENTITY_AMOUNT("#TileEntities", TileEntityAmountFilter::new, Format.NUMBER);
 
 	private final String string;
-	private final Class<? extends Filter<?>> clazz;
+	private final Supplier<? extends Filter<?>> creator;
 	private final Format format;
 
-	FilterType(String string, Class<? extends Filter<?>> clazz, Format format) {
+	FilterType(String string, Supplier<? extends Filter<?>> creator, Format format) {
 		this.string = string;
-		this.clazz = clazz;
+		this.creator = creator;
 		this.format = format;
 	}
 
@@ -33,12 +34,7 @@ public enum FilterType {
 	}
 
 	public Filter<?> create() {
-		try {
-			return clazz.newInstance();
-		} catch (InstantiationException | IllegalAccessException ex) {
-			Debug.dumpException("failed to create new filter instance", ex);
-		}
-		return null;
+		return creator.get();
 	}
 
 	@Override

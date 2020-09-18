@@ -82,6 +82,7 @@ Because the conditions use internal values used by Minecraft, the following tabl
 | Condition | Type | Description |
 | --------- | ----- | ----------- |
 | Group | - | Groups multiple conditions. |
+| Not Group | - | A negated group. |
 | DataVersion | int | The DataVersion tag of the chunk. 100-1343 for 1.12.2 and below, 1444 for 1.13 snapshots and above. |
 | InhabitedTime | long | The total amount of time in game-ticks players have spent in that chunk. 1 second ~20 ticks. Also accepts a duration string such as `1 year 2 months 3 days 4 hours 5 minutes 6 seconds`. |
 | LastUpdate | int | The time a chunk was last updated in seconds since 1970-01-01. Also accepts a timestamp in the `yyyy-MM-dd HH-mm-ss`-format such as `2018-01-02 15:03:04`. If the time is omitted, it will default to `00:00:00`. |
@@ -343,6 +344,8 @@ If you would like to contribute a translation, you can find the language files i
 ## Download and installation
 
 [**Download Version 1.12.3**](https://github.com/Querz/mcaselector/releases/download/1.12.3/mcaselector-1.12.3.jar)
+
+**MCA Selector modifies and deletes chunks in your Minecraft world. Please make backups of your world before using.**
 
 "Requirements":
 * Either:
