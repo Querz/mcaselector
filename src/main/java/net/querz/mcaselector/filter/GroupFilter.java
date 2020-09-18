@@ -13,6 +13,11 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 		super(FilterType.GROUP);
 	}
 
+	public GroupFilter(boolean negated) {
+		super(FilterType.GROUP);
+		setNegated(negated);
+	}
+
 	public GroupFilter(Operator operator) {
 		super(FilterType.GROUP, operator);
 	}
@@ -25,6 +30,11 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 		filter.setParent(this);
 		children.add(filter);
 		return children.size() - 1;
+	}
+
+	@Override
+	public FilterType getType() {
+		return negated ? FilterType.NOT_GROUP : FilterType.GROUP;
 	}
 
 	public void setNegated(boolean negated) {
@@ -127,12 +137,25 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 	}
 
 	private String toString(int depth) {
-		StringBuilder s = new StringBuilder(depth == 0 ? "" : (negated ? "!(" : "("));
+		// add !(...) always
+		// add (...) if depth is not 0
+		// don't add empty groups
+
+		boolean showGroup = (negated || depth != 0) && children.size() > 0;
+
+		StringBuilder s = new StringBuilder(showGroup ? negated ? "!(" : "(" : "");
 		for (int i = 0; i < children.size(); i++) {
-			s.append(i != 0 ? " " + children.get(i).getOperator() + " " : "");
-			s.append(children.get(i).getType() == FilterType.GROUP ? ((GroupFilter) children.get(i)).toString(depth + 1) : children.get(i));
+			String child;
+			if (children.get(i).getType() == FilterType.GROUP) {
+				child = ((GroupFilter) children.get(i)).toString(depth + 1);
+			} else {
+				child = children.get(i).toString();
+			}
+			if (child.length() != 0) {
+				s.append(i != 0 ? " " + children.get(i).getOperator() + " " : "").append(child);
+			}
 		}
-		s.append(depth == 0 ? "" : ")");
+		s.append(showGroup ? ")" : "");
 		return s.toString();
 	}
 

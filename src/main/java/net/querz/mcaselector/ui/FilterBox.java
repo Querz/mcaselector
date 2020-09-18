@@ -32,7 +32,7 @@ public abstract class FilterBox extends BorderPane {
 
 	private static final DataFormat filterBoxDataFormat = new DataFormat("filterbox-dataformat");
 
-	private final Filter<?> filter;
+	private Filter<?> filter;
 	private FilterBox parent;
 
 	protected Label delete = new Label("", new ImageView(deleteIcon));
@@ -67,7 +67,6 @@ public abstract class FilterBox extends BorderPane {
 			getStyleClass().add("filter-box-root");
 		}
 		getStyleClass().add("filter-box");
-		this.filter = filter;
 
 		add.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_ADD_TOOLTIP));
 		add.getStyleClass().add("control-label");
@@ -102,14 +101,9 @@ public abstract class FilterBox extends BorderPane {
 
 		operator.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_OPERATOR_TOOLTIP));
 		operator.getItems().addAll(Operator.values());
-		operator.getSelectionModel().select(filter.getOperator());
 		operator.setOnAction(e -> onOperator(filter));
 		operator.getStyleClass().add("filter-operator-combo-box");
 		filterOperators.add(operator, 0, 0, 1, 1);
-
-		if (filter.getParent() == null || ((GroupFilter) filter.getParent()).getFilterValue().get(0) == filter) {
-			operator.setVisible(false);
-		}
 
 		filterOperators.setAlignment(Pos.TOP_LEFT);
 
@@ -117,6 +111,8 @@ public abstract class FilterBox extends BorderPane {
 
 		add.setOnMouseReleased(e -> onAdd(filter));
 		delete.setOnMouseReleased(e -> onDelete(filter));
+
+		setFilter(filter);
 	}
 
 	private void onDragDetected(MouseEvent e) {
@@ -305,7 +301,9 @@ public abstract class FilterBox extends BorderPane {
 		}
 		if (this instanceof GroupFilterBox) {
 			((GroupFilterBox) this).filters.getChildren().add(index, new NumberFilterBox(this, f, false));
-			type.setDisable(true);
+			type.getItems().clear();
+			type.getItems().addAll(FilterType.GROUP, FilterType.NOT_GROUP);
+			type.getSelectionModel().select(filter.getType());
 		} else if (parent instanceof GroupFilterBox) {
 			((GroupFilterBox) parent).filters.getChildren().add(index, new NumberFilterBox(this.parent, f, this.root));
 		}
@@ -317,11 +315,12 @@ public abstract class FilterBox extends BorderPane {
 		((GroupFilter) filter.getParent()).removeFilter(filter);
 		if (parent instanceof GroupFilterBox) {
 			((GroupFilterBox) parent).filters.getChildren().remove(this);
-			if (((GroupFilterBox) parent).filters.getChildren().isEmpty()) {
+			if (!((GroupFilterBox) parent).filters.getChildren().isEmpty()) {
 				if (parent.parent != null) {
-					((GroupFilterBox) parent).type.setDisable(false);
+					parent.type.getItems().clear();
+					parent.type.getItems().addAll(FilterType.values());
+					parent.type.getSelectionModel().select(parent.filter.getType());
 				}
-			} else {
 				((FilterBox) ((GroupFilterBox) parent).filters.getChildren().get(0)).operator.setVisible(false);
 			}
 		}
@@ -330,35 +329,65 @@ public abstract class FilterBox extends BorderPane {
 	}
 
 	protected void update(FilterType type) {
+		if (type == null) {
+			return;
+		}
+
 		if (type != filter.getType()) {
-			Filter<?> newFilter = type.create();
-
-			//removes this filter and replaces it by a new filter
 			GroupFilter parent = ((GroupFilter) filter.getParent());
-			parent.addFilterAfter(Objects.requireNonNull(newFilter), filter);
-			parent.getFilterValue().remove(filter);
+			Filter<?> f = null;
 
-			//remove this filter from view and add new filterbox
+			// test if we only switched the group type
+			if (filter.getType().getFormat() == FilterType.Format.GROUP && type.getFormat() == FilterType.Format.GROUP) {
+				((GroupFilter) filter).setNegated(type == FilterType.NOT_GROUP);
+				f = filter;
+			} else if (parent != null) {
+				// add new filter
+				f = type.create();
+				parent.addFilterAfter(Objects.requireNonNull(f), filter);
+				parent.getFilterValue().remove(filter);
+
+				// use the same value and comparator if the filter format is equal
+				if (filter.getType().getFormat() == type.getFormat()) {
+					f.setFilterValue(filter.getRawValue());
+					f.setComparator(filter.getComparator());
+				}
+				// always keep the operator
+				f.setOperator(filter.getOperator());
+			}
+
+			// remove this filter from view and add new filterbox
 			FilterBox newBox = null;
 			switch (type.getFormat()) {
 			case GROUP:
-				newBox = new GroupFilterBox(this.parent, (GroupFilter) newFilter, false);
+				newBox = new GroupFilterBox(this.parent, (GroupFilter) f, false);
 				break;
 			case TEXT:
-				newBox = new TextFilterBox(this.parent, (TextFilter<?>) newFilter, false);
+				newBox = new TextFilterBox(this.parent, (TextFilter<?>) f, false);
 				break;
 			case NUMBER:
-				newBox = new NumberFilterBox(this.parent, (NumberFilter<?>) newFilter, false);
+				newBox = new NumberFilterBox(this.parent, (NumberFilter<?>) f, false);
 				break;
 			default:
 				Debug.dump("unknown FilterType Format: " + type.getFormat());
 			}
 
-			int index = ((GroupFilterBox) this.parent).filters.getChildren().indexOf(this);
-			((GroupFilterBox) this.parent).filters.getChildren().remove(index);
-			((GroupFilterBox) this.parent).filters.getChildren().add(index, newBox);
+			if (this.parent != null) {
+				int index = ((GroupFilterBox) this.parent).filters.getChildren().indexOf(this);
+				((GroupFilterBox) this.parent).filters.getChildren().remove(index);
+				((GroupFilterBox) this.parent).filters.getChildren().add(index, newBox);
+			}
 		}
 		callUpdateEvent();
+	}
+
+	protected void setFilter(Filter<?> filter) {
+		this.filter = filter;
+		operator.getSelectionModel().select(filter.getOperator());
+
+		if (filter.getParent() == null || ((GroupFilter) filter.getParent()).getFilterValue().get(0) == filter) {
+			operator.setVisible(false);
+		}
 	}
 
 	private void onOperator(Filter<?> filter) {

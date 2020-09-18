@@ -43,8 +43,8 @@ public class FilterParser {
 				ptr.next();
 				GroupFilter child = parse();
 				child.setOperator(operator);
+				child.setNegated(negated);
 				group.addFilter(child);
-				group.setNegated(negated);
 				ptr.skipWhitespace();
 				ptr.expectChar(')');
 				ptr.skipWhitespace();
@@ -67,7 +67,7 @@ public class FilterParser {
 		FilterType t = FilterType.getByName(type);
 
 		if (t == null) {
-			throw ptr.parseException("invalid filter type");
+			throw ptr.parseException("invalid filter type \"" + type + "\"");
 		}
 
 		Comparator comparator = parseComparator();
@@ -134,12 +134,12 @@ public class FilterParser {
 
 	public static GroupFilter unwrap(GroupFilter filter) {
 		GroupFilter current = filter;
-		while (current.getFilterValue().size() == 1 && current.getFilterValue().get(0).getType() == FilterType.GROUP) {
+		while (current.getFilterValue().size() == 1 && current.getFilterValue().get(0).getType().getFormat() == FilterType.Format.GROUP) {
 			current = (GroupFilter) current.getFilterValue().get(0);
 		}
 
 		for (int i = 0; i < current.getFilterValue().size(); i++) {
-			if (current.getFilterValue().get(i).getType() == FilterType.GROUP) {
+			if (current.getFilterValue().get(i).getType().getFormat() == FilterType.Format.GROUP) {
 				current.getFilterValue().set(i, unwrap((GroupFilter) current.getFilterValue().get(i)));
 			}
 		}

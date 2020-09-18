@@ -20,6 +20,7 @@ public class GroupFilterBox extends FilterBox {
 	}
 
 	private void setFilter(FilterBox parent, GroupFilter filter, boolean root) {
+		super.setFilter(filter);
 		filters.getChildren().clear();
 		add.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_ADD_TOOLTIP));
 		delete.setVisible(!root);
@@ -31,7 +32,11 @@ public class GroupFilterBox extends FilterBox {
 			getStyleClass().add("group-filter-box");
 		}
 
-		type.setDisable(!filter.getFilterValue().isEmpty() || root && parent == null);
+		if (!filter.getFilterValue().isEmpty() || root && parent == null) {
+			type.getItems().clear();
+			type.getItems().addAll(FilterType.GROUP, FilterType.NOT_GROUP);
+			type.getSelectionModel().select(filter.getType());
+		}
 
 		for (Filter<?> f : filter.getFilterValue()) {
 			if (f instanceof NumberFilter) {
