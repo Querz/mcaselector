@@ -14,7 +14,7 @@ public class StatusFilter extends TextFilter<String> {
 	private static final Set<String> validStatus = new HashSet<>();
 	private static final Comparator[] comparators = {
 			Comparator.EQUAL,
-			Comparator.NOT_EQUAL
+			Comparator.NOT_EQUAL,
 	};
 
 	static {
@@ -49,6 +49,22 @@ public class StatusFilter extends TextFilter<String> {
 	}
 
 	@Override
+	public boolean matches(FilterData data) {
+		switch (getComparator()) {
+			case EQUAL:
+				return isEqual(value, data);
+			case NOT_EQUAL:
+				return !isEqual(value, data);
+		}
+		return false;
+	}
+
+	public boolean isEqual(String value, FilterData data) {
+		StringTag tag = data.getChunk().getCompoundTag("Level").getStringTag("Status");
+		return tag != null && value.equals(tag.getValue());
+	}
+
+	@Override
 	public boolean contains(String value, FilterData data) {
 		StringTag tag = data.getChunk().getCompoundTag("Level").getStringTag("Status");
 		return tag != null && validStatus.contains(tag.getValue());
@@ -64,6 +80,7 @@ public class StatusFilter extends TextFilter<String> {
 	public void setFilterValue(String raw) {
 		if (validStatus.contains(raw)) {
 			setValue(raw);
+			setRawValue(raw);
 			setValid(true);
 		} else {
 			setValue(null);

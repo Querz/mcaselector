@@ -24,4 +24,12 @@ public enum Operator {
 		}
 		return null;
 	}
+
+	public static Operator negate(Operator o) {
+		switch (o) {
+			case AND: return OR;
+			case OR: return AND;
+		}
+		throw new IllegalArgumentException("failed to negate operator " + o);
+	}
 }

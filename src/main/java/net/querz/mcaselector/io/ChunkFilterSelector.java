@@ -118,7 +118,7 @@ public class ChunkFilterSelector {
 
 					callback.accept(region);
 
-					Debug.dumpf("took %s to delete chunk indices in %s", t, getFile().getName());
+					Debug.dumpf("took %s to select chunks in %s", t, getFile().getName());
 				}
 			} catch (Exception ex) {
 				Debug.dumpException("error selecting chunks in " + getFile().getName(), ex);

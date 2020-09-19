@@ -51,4 +51,18 @@ public enum Comparator {
 		}
 		return null;
 	}
+
+	public static Comparator negate(Comparator c) {
+		switch (c) {
+			case EQUAL: return NOT_EQUAL;
+			case NOT_EQUAL: return EQUAL;
+			case SMALLER: return LARGER_EQUAL;
+			case LARGER: return SMALLER_EQUAL;
+			case SMALLER_EQUAL: return LARGER;
+			case LARGER_EQUAL: return SMALLER;
+			case CONTAINS: return CONTAINS_NOT;
+			case CONTAINS_NOT: return CONTAINS;
+		}
+		throw new IllegalArgumentException("failed to negate comparator " + c);
+	}
 }

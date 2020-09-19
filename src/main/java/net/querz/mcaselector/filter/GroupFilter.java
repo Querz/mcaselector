@@ -104,12 +104,14 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 	}
 
 	public boolean appliesToRegion(Point2i region) {
+		GroupFilter gf = resolveNegations();
+
 		// if we have anything else than xPos and zPos filters, we apply to this region
 		boolean currentResult = true;
-		for (int i = 0; i < children.size(); i++) {
-			Filter<?> child = children.get(i);
+		for (int i = 0; i < gf.children.size(); i++) {
+			Filter<?> child = gf.children.get(i);
 			if (child instanceof GroupFilter && ((GroupFilter) child).appliesToRegion(region)) {
-				return !negated;
+				currentResult = true;
 			} else if (child instanceof RegionMatcher) {
 				RegionMatcher regionMatcher = (RegionMatcher) child;
 
@@ -118,17 +120,59 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 				} else if (child.getOperator() == Operator.OR) {
 					//don't check other conditions if everything before OR is already true
 					if (currentResult) {
-						return !negated;
+						return true;
 					}
 					//otherwise, reset currentResult
 					currentResult = regionMatcher.matchesRegion(region);
 				}
 			} else {
-				return !negated;
+				return true;
 			}
 		}
 
-		return negated != currentResult;
+		return currentResult;
+	}
+
+	private GroupFilter resolveNegations() {
+		return resolveNegations(negated);
+	}
+
+	private GroupFilter resolveNegations(boolean negated) {
+		GroupFilter group = new GroupFilter();
+		GroupFilter workingGroup = new GroupFilter();
+		for (int i = 0; i < children.size(); i++) {
+			Filter<?> child = children.get(i);
+			if (child instanceof GroupFilter) {
+				group.addFilter(((GroupFilter) child).resolveNegations(negated));
+				continue;
+			}
+
+			if (negated) {
+				Filter<?> clone = child.clone();
+				clone.setOperator(Operator.negate(child.getOperator()));
+				clone.setComparator(Comparator.negate(child.getComparator()));
+
+				if (clone.getOperator() == Operator.AND && i != 0) {
+					if (workingGroup.children.size() == 1) {
+						group.addFilter(workingGroup.children.get(0));
+					} else {
+						group.addFilter(workingGroup);
+					}
+					workingGroup = new GroupFilter();
+				}
+				workingGroup.addFilter(clone);
+			} else {
+				group.addFilter(child.clone());
+			}
+		}
+		if (!workingGroup.isEmpty()) {
+			if (workingGroup.children.size() == 1) {
+				group.addFilter(workingGroup.children.get(0));
+			} else {
+				group.addFilter(workingGroup);
+			}
+		}
+		return group;
 	}
 
 	@Override
