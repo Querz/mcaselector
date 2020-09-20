@@ -97,7 +97,7 @@ public final class FileHelper {
 
 	public static String getLastOpenedDirectory(String key, String def) {
 		String value = lastOpenedDirectoryMap.getOrDefault(key, def);
-		return !new File(value).exists() ? def : value;
+		return value == null || !new File(value).exists() ? def : value;
 	}
 
 	public static void setLastOpenedDirectory(String key, String lastOpenedDirectory) {
