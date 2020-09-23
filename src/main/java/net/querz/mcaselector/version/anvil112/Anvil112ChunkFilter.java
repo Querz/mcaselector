@@ -55,8 +55,9 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 				String[] names = elements[0].split(",");
 				for (String name : names) {
+					String fullName = "minecraft:" + name;
 					BlockData blockData = new BlockData(id, data);
-					BlockData[] array = mapping.get(name);
+					BlockData[] array = mapping.get(fullName);
 					if (array != null) {
 						BlockData[] newArray = new BlockData[array.length + 1];
 						System.arraycopy(array, 0, newArray, 0, array.length);
@@ -66,7 +67,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 						array = new BlockData[1];
 						array[0] = blockData;
 					}
-					mapping.put(name, array);
+					mapping.put(fullName, array);
 				}
 			}
 
