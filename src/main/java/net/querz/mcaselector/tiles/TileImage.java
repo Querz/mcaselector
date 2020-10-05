@@ -153,9 +153,8 @@ public final class TileImage {
 
 					MCAChunkData data = mcaFile.getChunkData(index);
 
-					data.readHeader(ptr);
-
 					try {
+						data.readHeader(ptr);
 						data.loadData(ptr);
 					} catch (Exception ex) {
 						Debug.dumpException(String.format("failed to load chunk %s from raw data in %s", new Point2i(cx, cz), mcaFile.getFile().getName()), ex);
