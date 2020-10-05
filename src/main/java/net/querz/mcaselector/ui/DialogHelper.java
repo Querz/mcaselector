@@ -145,6 +145,8 @@ public class DialogHelper {
 				new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_SELECTION, primaryStage)
 						.showProgressBar(t -> SelectionDeleter.deleteSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), t));
 				CacheHelper.clearSelectionCache(tileMap);
+				tileMap.clear();
+				tileMap.update();
 			}
 		});
 	}

@@ -439,6 +439,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			entry.getValue().clearMarks();
 		}
 		selectedChunks = 0;
+		selectionInverted = false;
 		update();
 	}
 

@@ -10,10 +10,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class SelectionHelper {
 
@@ -89,10 +86,15 @@ public class SelectionHelper {
 	public static Map<Point2i, Set<Point2i>> getTrueSelection(SelectionData selection) {
 		Map<Point2i, Set<Point2i>> sel = selection == null ? null : selection.getSelection();
 		if (selection != null && selection.isInverted()) {
+			sel = new HashMap<>();
 			Set<Point2i> allRegions = FileHelper.parseAllMCAFileNames(Config.getWorldDir());
 			for (Point2i region : allRegions) {
 				if (selection.isRegionSelected(region)) {
-					sel.put(region, SelectionData.createInvertedRegionSet(region, selection.getSelection().get(region)));
+					if (!selection.getSelection().containsKey(region)) {
+						sel.put(region, null);
+					} else if (selection.getSelection().get(region) != null) {
+						sel.put(region, SelectionData.createInvertedRegionSet(region, selection.getSelection().get(region)));
+					}
 				}
 			}
 		}
