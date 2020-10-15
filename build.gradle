@@ -16,7 +16,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'css'
 
 group 'net.querz.mcaselector'
-version '1.13.1'
+version '1.13.2'
 
 sourceCompatibility = 1.8
 
