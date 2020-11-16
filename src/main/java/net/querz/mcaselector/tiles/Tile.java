@@ -113,12 +113,17 @@ public class Tile {
 		}
 	}
 
-	public void mark(Point2i chunkBlock) {
-		markedChunks.add(chunkBlock);
+	public void mark(Point2i chunk) {
+		// don't do anything if the entire tile is already marked
+		if (isMarked()) {
+			return;
+		}
+		int sizeBefore = markedChunks.size();
+		markedChunks.add(chunk);
 		if (markedChunks.size() == CHUNKS) {
 			mark(true);
-		} else {
-			markedChunksImage = null; //reset markedChunksImage
+		} else if (sizeBefore != markedChunks.size()) {
+			markedChunksImage = null; // reset markedChunksImage if there was a change
 		}
 	}
 
