@@ -33,6 +33,7 @@ repositories {
 
 dependencies {
 	implementation 'com.github.Querz:NBT:little-endian-io-SNAPSHOT'
+	implementation 'org.json:json:20201115'
 	testImplementation 'junit:junit:4.12'
 	testImplementation 'commons-io:commons-io:2.6'
 }

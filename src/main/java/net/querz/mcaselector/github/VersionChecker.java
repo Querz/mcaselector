@@ -1,20 +1,16 @@
 package net.querz.mcaselector.github;
 
 import net.querz.mcaselector.validation.ValidationHelper;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map;
 
 public class VersionChecker {
 
 	private static final String endpointTemplate = "https://api.github.com/repos/%s/%s/releases/latest";
-
-	private final ScriptEngine engine;
 
 	private final String owner;
 	private final String repository;
@@ -22,15 +18,12 @@ public class VersionChecker {
 	public VersionChecker(String owner, String repository) {
 		this.owner = owner;
 		this.repository = repository;
-		ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
-		engine = scriptEngineManager.getEngineByName("javascript");
 	}
 
 	public VersionData fetchLatestVersion() throws Exception {
 		String endpoint = String.format(endpointTemplate, owner, repository);
 		URL url = new URL(endpoint);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setRequestMethod("GET");
 
 		StringBuilder stringBuilder = new StringBuilder();
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
@@ -42,30 +35,23 @@ public class VersionChecker {
 		return parseJson(stringBuilder.toString());
 	}
 
-	// a dirty way to parse json without using any 3rd party dependency.
-	private VersionData parseJson(String json) throws Exception {
-		String script = "Java.asJSONCompatible(" + json + ")";
-		Object result = engine.eval(script);
-		if (!(result instanceof Map)) {
-			throw new IOException("could not parse json");
-		}
+	private VersionData parseJson(String json) throws JSONException {
+		JSONObject result = new JSONObject(json);
 
 		int latestID = 0;
 		String latestTag = null;
 		String latestLink = null;
 		boolean prerelease = false;
 
-		@SuppressWarnings("unchecked")
-		Map<String, Object> map = (Map<String, Object>) result;
-		for (Map.Entry<String, Object> e : map.entrySet()) {
-			if ("id".equals(e.getKey())) {
-				latestID = (int) e.getValue();
-			} else if ("tag_name".equals(e.getKey())) {
-				latestTag = (String) e.getValue();
-			} else if ("html_url".equals(e.getKey())) {
-				latestLink = (String) e.getValue();
-			} else if ("prerelease".equals(e.getKey())) {
-				prerelease = (boolean) e.getValue();
+		for (String key : result.keySet()) {
+			if ("id".equals(key)) {
+				latestID = result.getInt("id");
+			} else if ("tag_name".equals(key)) {
+				latestTag = result.getString("tag_name");
+			} else if ("html_url".equals(key)) {
+				latestLink = result.getString("html_url");
+			} else if ("prerelease".equals(key)) {
+				prerelease = result.getBoolean("prerelease");
 			}
 		}
 
