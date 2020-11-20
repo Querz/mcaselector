@@ -274,6 +274,28 @@
 	-fx-padding: 0;
 }
 
+/*---------- LISTVIEW ----------*/
+
+.list-view {
+	-fx-background-color: -color-dialog-background;
+}
+
+.indexed-cell:even {
+	-fx-background-color: -color-field-cell-even;
+}
+
+.indexed-cell:odd {
+	-fx-background-color: -color-field-cell-odd;
+}
+
+.cell {
+	-fx-text-fill: -color-text-light;
+}
+
+.list-cell:selected {
+	-fx-background-color: -color-text-field-focused-shadow;
+}
+
 /*---------- LOCATION INPUT ----------*/
 
 .location-input {

@@ -37,6 +37,7 @@ public class OptionBar extends MenuBar {
 	private final Menu tools = UIFactory.menu(Translation.MENU_TOOLS);
 	private final Label about = UIFactory.label(Translation.MENU_ABOUT);
 
+	private final MenuItem openWorld = UIFactory.menuItem(Translation.MENU_FILE_OPEN_WORLD);
 	private final MenuItem open = UIFactory.menuItem(Translation.MENU_FILE_OPEN);
 	private final MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
 	private final MenuItem quit = UIFactory.menuItem(Translation.MENU_FILE_QUIT);
@@ -68,7 +69,7 @@ public class OptionBar extends MenuBar {
 
 		tileMap.setOnUpdate(this::onUpdate);
 
-		file.getItems().addAll(open, settings, UIFactory.separator(), quit);
+		file.getItems().addAll(openWorld, open, UIFactory.separator(), settings, UIFactory.separator(), quit);
 		view.getItems().addAll(
 				chunkGrid, regionGrid, UIFactory.separator(),
 				goTo, UIFactory.separator(),
@@ -86,7 +87,8 @@ public class OptionBar extends MenuBar {
 
 		getMenus().addAll(file, view, selection, tools, aboutMenu);
 
-		open.setOnAction(e -> DialogHelper.openWorld(tileMap, primaryStage, this));
+		openWorld.setOnAction(e -> DialogHelper.openWorld(tileMap, primaryStage, this));
+		open.setOnAction(e -> DialogHelper.openRegion(tileMap, primaryStage, this));
 		settings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage));
 		quit.setOnAction(e -> System.exit(0));
 		chunkGrid.setOnAction(e -> tileMap.setShowChunkGrid(chunkGrid.isSelected()));
