@@ -1,5 +1,7 @@
 package net.querz.mcaselector.ui.dialog;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.ListCell;
@@ -15,6 +17,8 @@ import java.util.List;
 public class SelectWorldDialog extends Dialog<File> {
 
 	private final ListView<File> worlds = new ListView<>();
+
+	private static final double cellHeight = 26D;
 
 	public SelectWorldDialog(List<File> worldDirectories, TileMap tileMap, Stage primaryStage) {
 		titleProperty().bind(Translation.DIALOG_SELECT_WORLD_TITLE.getProperty());
@@ -32,6 +36,15 @@ public class SelectWorldDialog extends Dialog<File> {
 		setResultConverter(p -> worlds.getSelectionModel().getSelectedItem());
 
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+
+		DoubleBinding padding = Bindings.createDoubleBinding(() -> worlds.getPadding().getTop() + worlds.getPadding().getBottom(), worlds.paddingProperty());
+		worlds.prefHeightProperty().bind(Bindings.min(
+				Bindings.createDoubleBinding(() -> 5D).multiply(cellHeight).add(padding),
+				Bindings.max(
+						Bindings.size(worlds.getItems()).multiply(cellHeight).add(padding),
+						Bindings.createDoubleBinding(() -> 1D).multiply(cellHeight).add(padding)
+				))
+		);
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
