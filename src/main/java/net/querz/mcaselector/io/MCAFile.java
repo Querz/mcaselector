@@ -411,7 +411,8 @@ public class MCAFile {
 					continue;
 				}
 
-				int sectors = this.sectors[i];
+				// sectors must not be negative
+				int sectors = Math.max(this.sectors[i], 0);
 
 				//write offset and sector size to tmp file
 				rafTmp.seek(INDEX_HEADER_LOCATION + i * 4);
@@ -428,8 +429,8 @@ public class MCAFile {
 				raf.seek(offsets[i] * SECTION_SIZE);
 				rafTmp.seek(globalOffset * SECTION_SIZE);
 
-				DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(raf.getFD()), sectors * SECTION_SIZE));
-				DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(rafTmp.getFD()), sectors * SECTION_SIZE));
+				DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(raf.getFD()), Math.max(sectors, 1) * SECTION_SIZE));
+				DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(rafTmp.getFD()), Math.max(sectors, 1) * SECTION_SIZE));
 
 				byte[] data = new byte[sectors * SECTION_SIZE];
 				dis.read(data);
