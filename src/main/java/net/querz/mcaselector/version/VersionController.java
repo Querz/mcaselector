@@ -6,6 +6,7 @@ import net.querz.mcaselector.version.anvil113.*;
 import net.querz.mcaselector.version.anvil114.*;
 import net.querz.mcaselector.version.anvil115.*;
 import net.querz.mcaselector.version.anvil116.*;
+import net.querz.mcaselector.version.anvil117.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,32 +37,49 @@ public final class VersionController {
 	private static final Map<Class<? extends ChunkFilter>, ChunkFilter> chunkFilterInstances = new HashMap<>();
 	private static final Map<Class<? extends ChunkMerger>, ChunkMerger> chunkMergerInstances = new HashMap<>();
 	private static final Map<Class<? extends ChunkRelocator>, ChunkRelocator> chunkRelocatorInstances = new HashMap<>();
+	private static final Map<Class<? extends POIRelocator>, POIRelocator> poiRelocatorInstances = new HashMap<>();
+	private static final Map<Class<? extends EntityRelocator>, EntityRelocator> entityRelocatorInstances = new HashMap<>();
 	private static final Map<Class<? extends ChunkRenderer>, ChunkRenderer> chunkRendererInstances = new HashMap<>();
 	private static final Map<Class<? extends ColorMapping>, ColorMapping> colorMappingInstances = new HashMap<>();
 
 	private enum Mapping {
 
-		ANVIL112(0, 1343, Anvil112ChunkFilter.class, Anvil112ChunkMerger.class, Anvil112ChunkRelocator.class, Anvil112ChunkRenderer.class, Anvil112ColorMapping.class),
-		ANVIL113(1344, 1631, Anvil113ChunkFilter.class, Anvil113ChunkMerger.class, Anvil113ChunkRelocator.class, Anvil113ChunkRenderer.class, Anvil113ColorMapping.class),
-		ANVIL114(1632, 2201, Anvil113ChunkFilter.class, Anvil113ChunkMerger.class, Anvil114ChunkRelocator.class, Anvil113ChunkRenderer.class, Anvil114ColorMapping.class),
-		ANVIL115(2202, 2526, Anvil115ChunkFilter.class, Anvil115ChunkMerger.class, Anvil115ChunkRelocator.class, Anvil115ChunkRenderer.class, Anvil115ColorMapping.class),
-		ANVIL116(2527, Integer.MAX_VALUE, Anvil115ChunkFilter.class, Anvil115ChunkMerger.class, Anvil116ChunkRelocator.class, Anvil116ChunkRenderer.class, Anvil116ColorMapping.class);
+		ANVIL112(0, 1343, Anvil112ChunkFilter.class, Anvil112ChunkMerger.class, Anvil112ChunkRelocator.class, Anvil112POIRelocator.class, Anvil112EntityRelocator.class, Anvil112ChunkRenderer.class, Anvil112ColorMapping.class),
+		ANVIL113(1344, 1631, Anvil113ChunkFilter.class, Anvil113ChunkMerger.class, Anvil113ChunkRelocator.class, Anvil112POIRelocator.class, Anvil112EntityRelocator.class, Anvil113ChunkRenderer.class, Anvil113ColorMapping.class),
+		ANVIL114(1632, 2201, Anvil113ChunkFilter.class, Anvil113ChunkMerger.class, Anvil114ChunkRelocator.class, Anvil112POIRelocator.class, Anvil112EntityRelocator.class, Anvil113ChunkRenderer.class, Anvil114ColorMapping.class),
+		ANVIL115(2202, 2526, Anvil115ChunkFilter.class, Anvil115ChunkMerger.class, Anvil115ChunkRelocator.class, Anvil112POIRelocator.class, Anvil112EntityRelocator.class, Anvil115ChunkRenderer.class, Anvil115ColorMapping.class),
+		ANVIL116(2527, 2680, Anvil115ChunkFilter.class, Anvil115ChunkMerger.class, Anvil116ChunkRelocator.class, Anvil112POIRelocator.class, Anvil112EntityRelocator.class, Anvil116ChunkRenderer.class, Anvil116ColorMapping.class),
+		ANVIL117(2681, Integer.MAX_VALUE, Anvil115ChunkFilter.class, Anvil115ChunkMerger.class, Anvil117ChunkRelocator.class, Anvil112POIRelocator.class, Anvil117EntityRelocator.class, Anvil116ChunkRenderer.class, Anvil117ColorMapping.class);
 
 		private final int minVersion, maxVersion;
 		private final Class<? extends ChunkFilter> chunkFilter;
 		private final Class<? extends ChunkMerger> chunkMerger;
 		private final Class<? extends ChunkRelocator> chunkRelocator;
+		private final Class<? extends POIRelocator> poiRelocator;
+		private final Class<? extends EntityRelocator> entityRelocator;
+
 		private final Class<? extends ChunkRenderer> chunkRenderer;
 		private final Class<? extends ColorMapping> colorMapping;
 
 		private static final Map<Integer, Mapping> mappingCache = new HashMap<>();
 
-		Mapping(int minVersion, int maxVersion, Class<? extends ChunkFilter> chunkFilter, Class<? extends ChunkMerger> chunkMerger, Class<? extends ChunkRelocator> chunkRelocator, Class<? extends ChunkRenderer> chunkRenderer, Class<? extends ColorMapping> colorMapping) {
+		Mapping(
+				int minVersion,
+				int maxVersion,
+				Class<? extends ChunkFilter> chunkFilter,
+				Class<? extends ChunkMerger> chunkMerger,
+				Class<? extends ChunkRelocator> chunkRelocator,
+				Class<? extends POIRelocator> poiRelocator,
+				Class<? extends EntityRelocator> entityRelocator,
+				Class<? extends ChunkRenderer> chunkRenderer,
+				Class<? extends ColorMapping> colorMapping) {
 			this.minVersion = minVersion;
 			this.maxVersion = maxVersion;
 			this.chunkFilter = chunkFilter;
 			this.chunkMerger = chunkMerger;
 			this.chunkRelocator = chunkRelocator;
+			this.poiRelocator = poiRelocator;
+			this.entityRelocator = entityRelocator;
 			this.chunkRenderer = chunkRenderer;
 			this.colorMapping = colorMapping;
 		}
@@ -94,6 +112,28 @@ public final class VersionController {
 					return k.newInstance();
 				} catch (InstantiationException | IllegalAccessException ex) {
 					Debug.dumpException(String.format("failed to create new instance of ChunkRelocator for %d-%d", minVersion, maxVersion), ex);
+				}
+				return null;
+			});
+		}
+
+		POIRelocator getPOIRelocator() {
+			return poiRelocatorInstances.computeIfAbsent(poiRelocator, k -> {
+				try {
+					return k.newInstance();
+				} catch (InstantiationException | IllegalAccessException ex) {
+					Debug.dumpException(String.format("failed to create new instance of POIRelocator for %d-%d", minVersion, maxVersion), ex);
+				}
+				return null;
+			});
+		}
+
+		EntityRelocator getEntityRelocator() {
+			return entityRelocatorInstances.computeIfAbsent(entityRelocator, k -> {
+				try {
+					return k.newInstance();
+				} catch (InstantiationException | IllegalAccessException ex) {
+					Debug.dumpException(String.format("failed to create new instance of EntityRelocator for %d-%d", minVersion, maxVersion), ex);
 				}
 				return null;
 			});

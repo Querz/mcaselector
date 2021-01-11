@@ -1,6 +1,5 @@
 package net.querz.mcaselector.io;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 public class ByteArrayPointer extends InputStream {
@@ -16,11 +15,11 @@ public class ByteArrayPointer extends InputStream {
 		this.pointer = (int) pointer;
 	}
 
-	public byte readByte() {
+	public byte readByte() throws ArrayIndexOutOfBoundsException {
 		return data[pointer++];
 	}
 
-	public int readInt() {
+	public int readInt() throws ArrayIndexOutOfBoundsException {
 		int i = (data[pointer++] & 0xFF) << 24;
 		i |= (data[pointer++] & 0xFF) << 16;
 		i |= (data[pointer++] & 0xFF) << 8;
@@ -28,11 +27,7 @@ public class ByteArrayPointer extends InputStream {
 	}
 
 	@Override
-	public int read() throws IOException {
-		try {
-			return data[pointer++] & 0xFF;
-		} catch (ArrayIndexOutOfBoundsException ex) {
-			throw new IOException(ex);
-		}
+	public int read() throws ArrayIndexOutOfBoundsException {
+		return data[pointer++] & 0xFF;
 	}
 }

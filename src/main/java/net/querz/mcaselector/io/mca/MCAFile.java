@@ -6,13 +6,10 @@ import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.filter.FilterData;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.MCAChunkData;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
-import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.ChunkMerger;
 import net.querz.mcaselector.version.VersionController;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -20,7 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public abstract class MCAFile {
+public class MCAFile {
 
 	private Point2i location;
 
@@ -88,12 +85,17 @@ public abstract class MCAFile {
 
 	public void load() throws IOException {
 		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
-			loadHeader(raf);
+			int[] offsets = loadHeader(raf);
 
 			chunks = new Chunk[1024];
 			Point2i origin = location.regionToChunk();
 
 			for (int i = 0; i < 1024; i++) {
+				if (offsets[i] == 0) {
+					continue;
+				}
+				raf.seek(offsets[i] * 4096);
+
 				Point2i chunkLocation = origin.add(getChunkOffsetFromIndex(i));
 
 				try {
@@ -107,44 +109,73 @@ public abstract class MCAFile {
 	}
 
 	public void load(ByteArrayPointer ptr) throws IOException {
-		loadHeader(ptr);
+		int[] offsets = loadHeader(ptr);
 
 		chunks = new Chunk[1024];
 		Point2i origin = location.regionToChunk();
 
 		for (int i = 0; i < 1024; i++) {
+			if (offsets[i] == 0) {
+				continue;
+			}
+			ptr.seek(offsets[i] * 4096);
+
 			Point2i chunkLocation = origin.add(getChunkOffsetFromIndex(i));
 
 			try {
 				chunks[i] = new Chunk(chunkLocation);
 				chunks[i].load(ptr);
-			} catch (Exception ex) {
+			} catch (IOException ex) {
 				Debug.dumpException("failed to load chunk at " + chunkLocation, ex);
 			}
 		}
 	}
 
-	public void loadHeader(RandomAccessFile raf) throws IOException {
-		raf.seek(4096);
+	public int[] loadHeader(RandomAccessFile raf) throws IOException {
+		int[] offsets = new int[1024];
+
+		raf.seek(0);
+		for (int i = 0; i < offsets.length; i++) {
+			int offset = (raf.read()) << 16;
+			offset |= (raf.read() & 0xFF) << 8;
+			offsets[i] = offset | raf.read() & 0xFF;
+			raf.read();
+		}
 
 		// read timestamps
 		timestamps = new int[1024];
 		for (int i = 0; i < 1024; i++) {
 			timestamps[i] = raf.readInt();
 		}
+
+		return offsets;
 	}
 
-	public void loadHeader(ByteArrayPointer ptr) throws IOException {
-		ptr.seek(4096);
+	public int[] loadHeader(ByteArrayPointer ptr) throws IOException {
+		int[] offsets = new int[1024];
 
-		// read timestamps
-		timestamps = new int[1024];
-		for (int i = 0; i < 1024; i++) {
-			timestamps[i] = ptr.readInt();
+		try {
+			ptr.seek(0);
+			for (int i = 0; i < offsets.length; i++) {
+				int offset = (ptr.read()) << 16;
+				offset |= (ptr.read() & 0xFF) << 8;
+				offsets[i] = offset | ptr.read() & 0xFF;
+				ptr.read();
+			}
+
+			// read timestamps
+			timestamps = new int[1024];
+			for (int i = 0; i < 1024; i++) {
+				timestamps[i] = ptr.readInt();
+			}
+		} catch (ArrayIndexOutOfBoundsException ex) {
+			throw new IOException(ex);
 		}
+
+		return offsets;
 	}
 
-	public static Chunk readSingleChunk(File file, Point2i chunk) throws IOException {
+	public static Chunk loadSingleChunk(File file, Point2i chunk) throws IOException {
 		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
 			// read offset, sector count and timestamp for specific chunk
 
@@ -265,17 +296,17 @@ public abstract class MCAFile {
 
 	public void mergeChunksInto(MCAFile destination, Point2i offset, boolean overwrite, Set<Point2i> sourceChunks, Set<Point2i> selection, List<Range> ranges) {
 		Point2i relativeOffset = location.regionToChunk().add(offset).sub(destination.location.regionToChunk());
-		int startX = relativeOffset.getX() > 0 ? 0 : Tile.SIZE_IN_CHUNKS - (Tile.SIZE_IN_CHUNKS + relativeOffset.getX());
-		int limitX = relativeOffset.getX() > 0 ? (Tile.SIZE_IN_CHUNKS - relativeOffset.getX()) : Tile.SIZE_IN_CHUNKS;
-		int startZ = relativeOffset.getZ() > 0 ? 0 : Tile.SIZE_IN_CHUNKS - (Tile.SIZE_IN_CHUNKS + relativeOffset.getZ());
-		int limitZ = relativeOffset.getZ() > 0 ? (Tile.SIZE_IN_CHUNKS - relativeOffset.getZ()) : Tile.SIZE_IN_CHUNKS;
+		int startX = relativeOffset.getX() > 0 ? 0 : 32 - (32 + relativeOffset.getX());
+		int limitX = relativeOffset.getX() > 0 ? (32 - relativeOffset.getX()) : 32;
+		int startZ = relativeOffset.getZ() > 0 ? 0 : 32 - (32 + relativeOffset.getZ());
+		int limitZ = relativeOffset.getZ() > 0 ? (32 - relativeOffset.getZ()) : 32;
 
 		for (int x = startX; x < limitX; x++) {
 			for (int z = startZ; z < limitZ; z++) {
-				int sourceIndex = z * Tile.SIZE_IN_CHUNKS + x;
+				int sourceIndex = z * 32 + x;
 				int destX = relativeOffset.getX() > 0 ? relativeOffset.getX() + x : x - startX;
 				int destZ = relativeOffset.getZ() > 0 ? relativeOffset.getZ() + z : z - startZ;
-				int destIndex = destZ * Tile.SIZE_IN_CHUNKS + destX;
+				int destIndex = destZ * 32 + destX;
 
 				Chunk sourceChunk = chunks[sourceIndex];
 				Chunk destinationChunk = destination.chunks[destIndex];
@@ -304,7 +335,7 @@ public abstract class MCAFile {
 								destination.chunks[destIndex] = destinationChunk;
 							} else if (sourceVersion != (destinationVersion = destinationChunk.getData().getInt("DataVersion"))) {
 								Point2i srcChunk = location.regionToChunk().add(x, z);
-								Debug.errorf("can't merge chunk at %s into chunk at %s because their DataVersion does not match (%d != %d)",
+								Debug.errorf("failed to merge chunk at %s into chunk at %s because their DataVersion does not match (%d != %d)",
 										srcChunk, destChunk, sourceVersion, destinationVersion);
 							}
 
@@ -323,6 +354,8 @@ public abstract class MCAFile {
 			}
 		}
 	}
+
+// END OF DATA MANIPULATION STUFF --------------------------------------------------------------------------------------
 
 	private int getChunkIndex(Point2i chunkCoordinate) {
 		return (chunkCoordinate.getX() & 0x1F) + (chunkCoordinate.getZ() & 0x1F) * 32;
@@ -356,5 +389,9 @@ public abstract class MCAFile {
 
 	public int getTimestamp(int index) {
 		return timestamps[index];
+	}
+
+	public Chunk getChunkAt(Point2i location) {
+		return chunks[getChunkIndex(location)];
 	}
 }

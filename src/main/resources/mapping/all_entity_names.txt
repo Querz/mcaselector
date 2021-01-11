@@ -1,6 +1,7 @@
 area_effect_cloud
 armor_stand
 arrow
+axolotl
 bat
 bee
 blaze
@@ -32,6 +33,7 @@ eye_of_ender
 falling_block
 fireball
 firework_rocket
+fishing_bobber
 fox
 furnace_minecart
 ghast
