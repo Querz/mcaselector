@@ -4,7 +4,6 @@ import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.CompressionType;
-import net.querz.mcaselector.io.MCAChunkData;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.version.ChunkRelocator;
 import net.querz.mcaselector.version.VersionController;
