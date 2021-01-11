@@ -220,6 +220,7 @@ public class DialogHelper {
 			Config.setPasteChunksColor(new Color(r.getPasteColor()));
 			Config.setShade(r.getShade());
 			Config.setShadeWater(r.getShadeWater());
+			Config.setMCSavesDir(r.getMcSavesDir());
 			Config.setDebug(r.getDebug());
 			tileMap.redrawOverlays();
 			tileMap.update();
@@ -387,7 +388,7 @@ public class DialogHelper {
 	}
 
 	public static void openRegion(TileMap tileMap, Stage primaryStage, OptionBar optionBar) {
-		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", FileHelper.getMCSavesDir());
+		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", Config.getMCSavesDir());
 		File file = createDirectoryChooser(lastOpenDirectory).showDialog(primaryStage);
 		if (file != null && file.isDirectory()) {
 			File[] files = file.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
@@ -405,7 +406,7 @@ public class DialogHelper {
 	}
 
 	public static void openWorld(TileMap tileMap, Stage primaryStage, OptionBar optionBar) {
-		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", FileHelper.getMCSavesDir());
+		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", Config.getMCSavesDir());
 		File file = createDirectoryChooser(lastOpenDirectory).showDialog(primaryStage);
 		if (file != null && file.isDirectory()) {
 			List<File> dimensions = detectDimensionDirectories(file);

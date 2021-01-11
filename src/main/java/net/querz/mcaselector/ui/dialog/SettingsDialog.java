@@ -33,6 +33,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	* - Maximum amount of loaded files
 	* toggle shading
 	* toggle shading of water
+	* minecraft saves folder
 	* toggle debug
 	* */
 
@@ -50,6 +51,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private final Button pasteChunksColorPreview = new Button();
 	private final CheckBox shadeCheckBox = new CheckBox();
 	private final CheckBox shadeWaterCheckBox = new CheckBox();
+	private final TextField mcSavesDir = new TextField();
 	private final CheckBox debugCheckBox = new CheckBox();
 
 	private Color regionSelectionColor = Config.getRegionSelectionColor().makeJavaFXColor();
@@ -80,6 +82,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			pasteChunksColorPreview.setBackground(new Background(new BackgroundFill(Config.DEFAULT_PASTE_CHUNKS_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
 			shadeCheckBox.setSelected(Config.DEFAULT_SHADE);
 			shadeWaterCheckBox.setSelected(Config.DEFAULT_SHADE_WATER);
+			mcSavesDir.setText(Config.DEFAULT_MC_SAVES_DIR);
 			debugCheckBox.setSelected(Config.DEFAULT_DEBUG);
 		});
 
@@ -96,6 +99,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 						pasteChunksColor,
 						shadeCheckBox.isSelected(),
 						shadeWaterCheckBox.isSelected(),
+						mcSavesDir.getText(),
 						debugCheckBox.isSelected()
 				);
 			}
@@ -133,6 +137,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		pasteChunksColorPreview.setBackground(new Background(new BackgroundFill(pasteChunksColor, CornerRadii.EMPTY, Insets.EMPTY)));
 		shadeCheckBox.setSelected(Config.shade());
 		shadeWaterCheckBox.setSelected(Config.shadeWater());
+		mcSavesDir.setText(Config.getMCSavesDir());
 		debugCheckBox.setSelected(Config.debug());
 
 		regionSelectionColorPreview.setOnMousePressed(e -> {
@@ -177,7 +182,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_REGION_COLOR), 0, 7, 1, 1);
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SHADE), 0, 8, 1, 1);
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SHADE_WATER), 0, 9, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_PRINT_DEBUG), 0, 10, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_MC_SAVES_DIR), 0, 10, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_PRINT_DEBUG), 0, 11, 1, 1);
 		grid.add(languages, 1, 0, 2, 1);
 		grid.add(readThreadsSlider, 1, 1, 1, 1);
 		grid.add(processThreadsSlider, 1, 2, 1, 1);
@@ -188,7 +194,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		grid.add(pasteChunksColorPreview, 1, 7, 2, 1);
 		grid.add(shadeCheckBox, 1, 8, 2, 1);
 		grid.add(shadeWaterCheckBox, 1, 9, 2, 1);
-		grid.add(debugBox, 1, 10, 2, 1);
+		grid.add(mcSavesDir, 1, 10, 2, 1);
+		grid.add(debugBox, 1, 11, 2, 1);
 		grid.add(UIFactory.attachTextFieldToSlider(readThreadsSlider), 2, 1, 1, 1);
 		grid.add(UIFactory.attachTextFieldToSlider(processThreadsSlider), 2, 2, 1, 1);
 		grid.add(UIFactory.attachTextFieldToSlider(writeThreadsSlider), 2, 3, 1, 1);
@@ -211,10 +218,11 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		private final Color regionColor, chunkColor, pasteColor;
 		private final boolean shadeWater;
 		private final boolean shade;
+		private final String mcSavesDir;
 		private final boolean debug;
 		private final Locale locale;
 
-		public Result(Locale locale, int readThreads, int processThreads, int writeThreads, int maxLoadedFiles, Color regionColor, Color chunkColor, Color pasteColor, boolean shade, boolean shadeWater, boolean debug) {
+		public Result(Locale locale, int readThreads, int processThreads, int writeThreads, int maxLoadedFiles, Color regionColor, Color chunkColor, Color pasteColor, boolean shade, boolean shadeWater, String mcSavesDir, boolean debug) {
 			this.locale = locale;
 			this.readThreads = readThreads;
 			this.processThreads = processThreads;
@@ -225,6 +233,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			this.pasteColor = pasteColor;
 			this.shade = shade;
 			this.shadeWater = shadeWater;
+			this.mcSavesDir = mcSavesDir;
 			this.debug = debug;
 		}
 
@@ -266,6 +275,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		public boolean getShadeWater() {
 			return shadeWater;
+		}
+
+		public String getMcSavesDir() {
+			return mcSavesDir;
 		}
 
 		public boolean getDebug() {
