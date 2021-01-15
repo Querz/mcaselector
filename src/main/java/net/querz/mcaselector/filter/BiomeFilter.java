@@ -68,7 +68,11 @@ public class BiomeFilter extends TextFilter<List<Integer>> {
 
 	@Override
 	public boolean contains(List<Integer> value, FilterData data) {
-		return VersionController.getChunkFilter(data.getChunk().getInt("DataVersion")).matchBiomeIDs(data.getChunk(), value.stream().mapToInt(i->i).toArray());
+		if (data.getRegion() == null) {
+			return false;
+		}
+		return VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"))
+				.matchBiomeIDs(data.getRegion().getData(), value.stream().mapToInt(i->i).toArray());
 	}
 
 	@Override

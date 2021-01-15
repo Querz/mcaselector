@@ -21,8 +21,9 @@ public class ChunkFilterSelector {
 	private ChunkFilterSelector() {}
 
 	public static void selectFilter(GroupFilter filter, int radius, Consumer<Map<Point2i, Set<Point2i>>> callback, Progress progressChannel, boolean headless) {
-		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
-		if (files == null || files.length == 0) {
+		WorldDirectories wd = Config.getWorldDirs();
+		RegionDirectories[] rd = wd.listRegions();
+		if (rd == null || rd.length == 0) {
 			if (headless) {
 				progressChannel.done("no files");
 			} else {
@@ -33,11 +34,13 @@ public class ChunkFilterSelector {
 
 		MCAFilePipe.clearQueues();
 
-		progressChannel.setMax(files.length);
-		progressChannel.updateProgress(files[0].getName(), 0);
+		// TODO: apply to selection only
 
-		for (File file : files) {
-			MCAFilePipe.addJob(new MCASelectFilterLoadJob(file, filter, radius, callback, progressChannel));
+		progressChannel.setMax(rd.length);
+		progressChannel.updateProgress(rd[0].getLocationAsFileName(), 0);
+
+		for (RegionDirectories r : rd) {
+			MCAFilePipe.addJob(new MCASelectFilterLoadJob(r, filter, radius, callback, progressChannel));
 		}
 	}
 
@@ -48,8 +51,8 @@ public class ChunkFilterSelector {
 		private final Consumer<Map<Point2i, Set<Point2i>>> callback;
 		private final int radius;
 
-		private MCASelectFilterLoadJob(File file, GroupFilter filter, int radius, Consumer<Map<Point2i, Set<Point2i>>> callback, Progress progressChannel) {
-			super(file);
+		private MCASelectFilterLoadJob(RegionDirectories dirs, GroupFilter filter, int radius, Consumer<Map<Point2i, Set<Point2i>>> callback, Progress progressChannel) {
+			super(dirs);
 			this.filter = filter;
 			this.radius = radius;
 			this.callback = callback;

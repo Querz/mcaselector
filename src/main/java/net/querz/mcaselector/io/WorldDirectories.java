@@ -1,6 +1,9 @@
 package net.querz.mcaselector.io;
 
+import net.querz.mcaselector.point.Point2i;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class WorldDirectories {
 
@@ -38,6 +41,51 @@ public class WorldDirectories {
 
 	public File getEntities() {
 		return entities;
+	}
+
+	public RegionDirectories makeRegionDirectories(Point2i region) {
+		RegionDirectories rd = new RegionDirectories();
+		rd.setRegion(new File(this.region, FileHelper.createMCAFileName(region)));
+		rd.setPoi(new File(this.poi, FileHelper.createMCAFileName(region)));
+		rd.setEntities(new File(this.entities, FileHelper.createMCAFileName(region)));
+		return rd;
+	}
+
+	public RegionDirectories[] listRegions() {
+		Map<Point2i, RegionDirectories> regionDirectories = new HashMap<>();
+		File[] r = this.region.listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
+		if (r != null) {
+			for (File f : r) {
+				Point2i l = FileHelper.parseMCAFileName(f);
+				regionDirectories.put(l, new RegionDirectories(l, f, null, null));
+			}
+		}
+
+		File[] p = this.entities.listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
+		if (p != null) {
+			for (File f : p) {
+				Point2i l = FileHelper.parseMCAFileName(f);
+				if (regionDirectories.containsKey(l)) {
+					regionDirectories.get(l).setEntities(f);
+				} else {
+					regionDirectories.put(l, new RegionDirectories(l, null, f, null));
+				}
+			}
+		}
+
+		File[] e = this.poi.listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
+		if (e != null) {
+			for (File f : e) {
+				Point2i l = FileHelper.parseMCAFileName(f);
+				if (regionDirectories.containsKey(l)) {
+					regionDirectories.get(l).setPoi(f);
+				} else {
+					regionDirectories.put(l, new RegionDirectories(l, null, null, f));
+				}
+			}
+		}
+
+		return regionDirectories.values().toArray(new RegionDirectories[0]);
 	}
 
 	@Override

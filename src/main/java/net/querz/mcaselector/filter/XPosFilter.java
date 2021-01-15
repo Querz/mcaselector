@@ -14,7 +14,10 @@ public class XPosFilter extends IntFilter implements RegionMatcher {
 
 	@Override
 	protected Integer getNumber(FilterData data) {
-		return data.getChunk().getCompoundTag("Level").getInt("xPos");
+		if (data.getRegion() == null) {
+			return null;
+		}
+		return data.getRegion().getData().getCompoundTag("Level").getInt("xPos");
 	}
 
 	@Override

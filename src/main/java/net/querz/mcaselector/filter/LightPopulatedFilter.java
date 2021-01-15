@@ -22,7 +22,10 @@ public class LightPopulatedFilter extends ByteFilter {
 
 	@Override
 	Byte getNumber(FilterData data) {
-		return data.getChunk().getCompoundTag("Level").getByte("LightPopulated");
+		if (data.getRegion() == null) {
+			return 0;
+		}
+		return data.getRegion().getData().getCompoundTag("Level").getByte("LightPopulated");
 	}
 
 	@Override

@@ -16,7 +16,10 @@ public class EntityAmountFilter extends IntFilter {
 
 	@Override
 	protected Integer getNumber(FilterData data) {
-		Tag<?> rawEntities = data.getChunk().getCompoundTag("Level").get("Entities");
+		if (data.getEntities() == null) {
+			return 0;
+		}
+		Tag<?> rawEntities = data.getEntities().getData().getCompoundTag("Level").get("Entities");
 		if (rawEntities == null || rawEntities.getID() == LongArrayTag.ID) {
 			return 0;
 		}

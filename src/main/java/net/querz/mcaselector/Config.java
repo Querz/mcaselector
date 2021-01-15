@@ -1,6 +1,7 @@
 package net.querz.mcaselector;
 
 import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.debug.Debug;
@@ -104,6 +105,7 @@ public final class Config {
 	public static final String DEFAULT_MC_SAVES_DIR = FileHelper.getMCSavesDir();
 
 	private static File worldDir = null;
+	private static WorldDirectories worldDirs = null;
 	private static UUID worldUUID = null;
 	private static File baseCacheDir = DEFAULT_BASE_CACHE_DIR;
 	private static File logFile = DEFAULT_BASE_LOG_FILE;
@@ -131,6 +133,10 @@ public final class Config {
 
 	public static File getWorldDir() {
 		return worldDir;
+	}
+
+	public static WorldDirectories getWorldDirs() {
+		return worldDirs;
 	}
 
 	public static void setWorldDir(File worldDir) {

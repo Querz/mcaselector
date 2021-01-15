@@ -14,7 +14,10 @@ public class InhabitedTimeFilter extends LongFilter {
 
 	@Override
 	protected Long getNumber(FilterData data) {
-		return data.getChunk().getCompoundTag("Level").getLong("InhabitedTime");
+		if (data.getRegion() == null) {
+			return 0L;
+		}
+		return data.getRegion().getData().getCompoundTag("Level").getLong("InhabitedTime");
 	}
 
 	@Override

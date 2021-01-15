@@ -39,7 +39,11 @@ public class PaletteFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean contains(List<String> value, FilterData data) {
-		return VersionController.getChunkFilter(data.getChunk().getInt("DataVersion")).matchBlockNames(data.getChunk(), value.toArray(new String[0]));
+		if (data.getRegion() == null) {
+			return false;
+		}
+		return VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"))
+				.matchBlockNames(data.getRegion().getData(), value.toArray(new String[0]));
 	}
 
 	@Override

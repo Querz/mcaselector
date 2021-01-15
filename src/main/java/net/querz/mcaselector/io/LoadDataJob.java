@@ -8,16 +8,20 @@ import java.io.IOException;
 
 public abstract class LoadDataJob extends Job {
 
-	public LoadDataJob(File file) {
-		super(file);
+	public LoadDataJob(RegionDirectories rd) {
+		super(rd);
 	}
 
-	public byte[] load() {
-		return load(getFile());
+	public byte[] loadPOI() {
+		return load(getRegionDirectories().getPoi());
 	}
 
-	public byte[] load(int length) {
-		return load(getFile(), length);
+	public byte[] loadEntities() {
+		return load(getRegionDirectories().getEntities());
+	}
+
+	public byte[] loadRegion() {
+		return load(getRegionDirectories().getRegion());
 	}
 
 	protected byte[] load(File file) {

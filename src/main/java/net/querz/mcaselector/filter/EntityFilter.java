@@ -16,7 +16,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class EntityFilter extends TextFilter<List<String>> {
 
@@ -46,7 +45,10 @@ public class EntityFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean contains(List<String> value, FilterData data) {
-		Tag<?> rawEntities = data.getChunk().getCompoundTag("Level").get("Entities");
+		if (data.getEntities() == null) {
+			return false;
+		}
+		Tag<?> rawEntities = data.getEntities().getData().getCompoundTag("Level").get("Entities");
 		if (rawEntities == null || rawEntities.getID() == LongArrayTag.ID) {
 			return false;
 		}

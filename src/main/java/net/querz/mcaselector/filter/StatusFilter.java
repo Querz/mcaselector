@@ -60,19 +60,28 @@ public class StatusFilter extends TextFilter<String> {
 	}
 
 	public boolean isEqual(String value, FilterData data) {
-		StringTag tag = data.getChunk().getCompoundTag("Level").getStringTag("Status");
+		if (data.getRegion() == null) {
+			return false;
+		}
+		StringTag tag = data.getRegion().getData().getCompoundTag("Level").getStringTag("Status");
 		return tag != null && value.equals(tag.getValue());
 	}
 
 	@Override
 	public boolean contains(String value, FilterData data) {
-		StringTag tag = data.getChunk().getCompoundTag("Level").getStringTag("Status");
+		if (data.getRegion() == null) {
+			return false;
+		}
+		StringTag tag = data.getRegion().getData().getCompoundTag("Level").getStringTag("Status");
 		return tag != null && validStatus.contains(tag.getValue());
 	}
 
 	@Override
 	public boolean containsNot(String value, FilterData data) {
-		StringTag tag = data.getChunk().getCompoundTag("Level").getStringTag("Status");
+		if (data.getRegion() == null) {
+			return true;
+		}
+		StringTag tag = data.getRegion().getData().getCompoundTag("Level").getStringTag("Status");
 		return tag == null || !validStatus.contains(tag.getValue());
 	}
 

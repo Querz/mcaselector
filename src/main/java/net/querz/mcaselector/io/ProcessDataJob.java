@@ -1,18 +1,26 @@
 package net.querz.mcaselector.io;
 
-import java.io.File;
-
 public abstract class ProcessDataJob extends Job {
 
-	private final byte[] data;
+	private final byte[] regionData, poiData, entitiesData;
 
-	public ProcessDataJob(File file, byte[] data) {
-		super(file);
-		this.data = data;
+	public ProcessDataJob(RegionDirectories dirs, byte[] regionData, byte[] poiData, byte[] entitiesData) {
+		super(dirs);
+		this.regionData = regionData;
+		this.poiData = poiData;
+		this.entitiesData = entitiesData;
 	}
 
-	public byte[] getData() {
-		return data;
+	public byte[] getRegionData() {
+		return regionData;
+	}
+
+	public byte[] getPoiData() {
+		return poiData;
+	}
+
+	public byte[] getEntitiesData() {
+		return entitiesData;
 	}
 
 	@Override

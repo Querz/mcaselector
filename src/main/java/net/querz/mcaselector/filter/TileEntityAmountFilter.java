@@ -16,7 +16,10 @@ public class TileEntityAmountFilter extends IntFilter {
 
 	@Override
 	protected Integer getNumber(FilterData data) {
-		Tag<?> rawTileEntities = data.getChunk().getCompoundTag("Level").get("TileEntities");
+		if (data.getRegion() == null) {
+			return 0;
+		}
+		Tag<?> rawTileEntities = data.getRegion().getData().getCompoundTag("Level").get("TileEntities");
 		if (rawTileEntities == null || rawTileEntities.getID() == LongArrayTag.ID) {
 			return 0;
 		}

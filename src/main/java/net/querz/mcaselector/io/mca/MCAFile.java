@@ -2,8 +2,6 @@ package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.filter.Filter;
-import net.querz.mcaselector.filter.FilterData;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
@@ -13,7 +11,8 @@ import net.querz.mcaselector.version.VersionController;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.HashSet;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Set;
 
@@ -38,13 +37,42 @@ public class MCAFile {
 
 // IO STUFF ------------------------------------------------------------------------------------------------------------
 
-	public boolean save() throws Exception {
-		try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
+	public boolean save() throws IOException {
+		return save(file);
+	}
+
+	public boolean save(File dest) throws IOException {
+		try (RandomAccessFile raf = new RandomAccessFile(dest, "rw")) {
 			return save(raf);
 		}
 	}
 
-	public boolean save(RandomAccessFile raf) throws Exception {
+	public boolean saveWithTempFile() throws IOException {
+		return saveWithTempFile(file);
+	}
+
+	// returns false if no chunk was saved and the file only consists of the mca header
+	public boolean saveWithTempFile(File dest) throws IOException {
+		File tempFile = File.createTempFile(dest.getName(), null, null);
+		boolean result;
+		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "rw")) {
+			result = save(raf);
+		}
+		if (!result) {
+			if (dest.delete()) {
+				Debug.dumpf("deleted empty region file %s", dest);
+			} else {
+				Debug.dumpf("failed to delete empty region file %s", dest);
+			}
+
+			tempFile.delete();
+		} else {
+			Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		}
+		return result;
+	}
+
+	public boolean save(RandomAccessFile raf) throws IOException {
 		int globalOffset = 2;
 		int lastWritten = 0;
 
@@ -220,69 +248,6 @@ public class MCAFile {
 		}
 	}
 
-	public void deleteChunks(Filter<?> filter, Set<Point2i> selection) {
-		for (int i = 0; i < 1024; i++) {
-			Chunk chunk = chunks[i];
-
-			if (chunk == null || chunk.isEmpty() || selection != null && !selection.contains(chunk.getAbsoluteLocation())) {
-				continue;
-			}
-
-			FilterData filterData = new FilterData(timestamps[i], chunk.getData());
-
-			if (filter.matches(filterData)) {
-				timestamps[i] = 0;
-				chunks[i] = null;
-			}
-		}
-	}
-
-	public void keepChunks(Filter<?> filter, Set<Point2i> selection) {
-		for (int i = 0; i < 1024; i++) {
-			Chunk chunk = chunks[i];
-
-			if (chunk == null || chunk.isEmpty()) {
-				continue;
-			}
-
-			FilterData filterData = new FilterData(timestamps[i], chunk.getData());
-
-			// keep chunk if filter AND selection applies
-			// ignore selection if it's null
-			if (!filter.matches(filterData) || selection != null && !selection.contains(chunk.getAbsoluteLocation())) {
-				timestamps[i] = 0;
-				chunks[i] = null;
-			}
-		}
-	}
-
-	public Set<Point2i> getFilteredChunks(Filter<?> filter) {
-		Set<Point2i> chunks = new HashSet<>();
-
-		for (int i = 0; i < 1024; i++) {
-			Chunk chunk = this.chunks[i];
-
-			if (chunk == null || chunk.isEmpty()) {
-				continue;
-			}
-
-			FilterData filterData = new FilterData(timestamps[i], chunk.getData());
-
-			Point2i location = chunk.getAbsoluteLocation();
-			try {
-				if (filter.matches(filterData)) {
-					if (location == null) {
-						continue;
-					}
-					chunks.add(location);
-				}
-			} catch (Exception ex) {
-				Debug.dumpException(String.format("failed to select chunk %s in %s", location, file), ex);
-			}
-		}
-		return chunks;
-	}
-
 	public void applyFieldChanges(List<Field<?>> fields, boolean force, Set<Point2i> selection) {
 		for (int i = 0; i < 1024; i++) {
 			Chunk chunk = chunks[i];
@@ -393,5 +358,13 @@ public class MCAFile {
 
 	public Chunk getChunkAt(Point2i location) {
 		return chunks[getChunkIndex(location)];
+	}
+
+	public Chunk getChunk(int index) {
+		return chunks[index];
+	}
+
+	public void setChunk(int index, Chunk chunk) {
+		chunks[index] = chunk;
 	}
 }
