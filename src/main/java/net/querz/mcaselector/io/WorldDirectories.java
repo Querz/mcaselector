@@ -92,4 +92,10 @@ public class WorldDirectories {
 	public String toString() {
 		return "<region=" + region + ", poi=" + poi + ", entities=" + entities + ">";
 	}
+
+	public boolean sharesDirectories(WorldDirectories other) {
+		return region != null && region.equals(other.region) ||
+				poi != null && poi.equals(other.poi) ||
+				entities != null && entities.equals(other.entities);
+	}
 }

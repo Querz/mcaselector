@@ -7,6 +7,7 @@ import net.querz.mcaselector.filter.FilterData;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.range.Range;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public class Region {
 		return region;
 	}
 
-	public MCAFile getPOI() {
+	public MCAFile getPoi() {
 		return poi;
 	}
 
@@ -249,4 +250,15 @@ public class Region {
 		}
 	}
 
+	public void mergeInto(Region region, Point2i offset, boolean overwrite, Set<Point2i> sourceChunks, Set<Point2i> selection, List<Range> ranges) {
+		if (this.region != null) {
+			this.region.mergeChunksInto(region.region, offset, overwrite, sourceChunks, selection, ranges);
+		}
+		if (this.poi != null) {
+			this.poi.mergeChunksInto(region.poi, offset, overwrite, sourceChunks, selection, ranges);
+		}
+		if (this.entities != null) {
+			this.entities.mergeChunksInto(region.entities, offset, overwrite, sourceChunks, selection, ranges);
+		}
+	}
 }

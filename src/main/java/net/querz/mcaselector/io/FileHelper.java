@@ -104,6 +104,25 @@ public final class FileHelper {
 		FileHelper.lastOpenedDirectoryMap.put(key, lastOpenedDirectory);
 	}
 
+	public static File createRegionMCAFilePath(Point2i r) {
+		return new File(Config.getWorldDirs().getRegion(), createMCAFileName(r));
+	}
+
+	public static File createPoiMCAFilePath(Point2i r) {
+		return new File(Config.getWorldDirs().getPoi(), createMCAFileName(r));
+	}
+
+	public static File createEntitiesMCAFilePath(Point2i r) {
+		return new File(Config.getWorldDirs().getEntities(), createMCAFileName(r));
+	}
+
+	public static RegionDirectories createRegionDirectories(Point2i r) {
+		File region = createRegionMCAFilePath(r);
+		File poi = createPoiMCAFilePath(r);
+		File entities = createEntitiesMCAFilePath(r);
+		return new RegionDirectories(r, region, poi, entities);
+	}
+
 	public static File createMCAFilePath(Point2i r) {
 		return new File(Config.getWorldDir(), createMCAFileName(r));
 	}

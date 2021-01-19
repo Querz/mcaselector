@@ -2,19 +2,18 @@ package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.filter.GroupFilter;
+import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.text.Translation;
-import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
 
 public class ChunkFilterSelector {
 
@@ -61,27 +60,24 @@ public class ChunkFilterSelector {
 
 		@Override
 		public void execute() {
-			Matcher m = FileHelper.REGION_GROUP_PATTERN.matcher(getFile().getName());
-			if (m.find()) {
-				int regionX = Integer.parseInt(m.group("regionX"));
-				int regionZ = Integer.parseInt(m.group("regionZ"));
+			// load all files
+			Point2i location = getRegionDirectories().getLocation();
 
-				if (!filter.appliesToRegion(new Point2i(regionX, regionZ))) {
-					Debug.dump("filter does not apply to file " + getFile().getName());
-					progressChannel.incrementProgress(getFile().getName());
-					return;
-				}
+			if (!filter.appliesToRegion(location)) {
+				Debug.dumpf("filter does not apply to region %s", getRegionDirectories().getLocation());
+				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
+				return;
+			}
 
-				byte[] data = load();
-				if (data != null) {
-					MCAFilePipe.executeProcessData(new MCASelectFilterProcessJob(getFile(), data, filter, callback, new Point2i(regionX, regionZ), radius, progressChannel));
-				} else {
-					Debug.errorf("error loading mca file %s", getFile().getName());
-					progressChannel.incrementProgress(getFile().getName());
-				}
+			byte[] regionData = loadRegion();
+			byte[] poiData = loadPOI();
+			byte[] entitiesData = loadEntities();
+
+			if (regionData == null && poiData == null && entitiesData == null) {
+				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
+				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 			} else {
-				Debug.dump("wtf, how did we get here??");
-				progressChannel.incrementProgress(getFile().getName());
+				MCAFilePipe.executeProcessData(new MCASelectFilterProcessJob(getRegionDirectories(), regionData, poiData, entitiesData, filter, callback, location, radius, progressChannel));
 			}
 		}
 	}
@@ -94,8 +90,8 @@ public class ChunkFilterSelector {
 		private final Point2i location;
 		private final int radius;
 
-		private MCASelectFilterProcessJob(File file, byte[] data, GroupFilter filter, Consumer<Map<Point2i, Set<Point2i>>> callback, Point2i location, int radius,  Progress progressChannel) {
-			super(file, data);
+		private MCASelectFilterProcessJob(RegionDirectories dirs, byte[] regionData, byte[] poiData, byte[] entitiesData, GroupFilter filter, Consumer<Map<Point2i, Set<Point2i>>> callback, Point2i location, int radius,  Progress progressChannel) {
+			super(dirs, regionData, poiData, entitiesData);
 			this.filter = filter;
 			this.callback = callback;
 			this.location = location;
@@ -108,25 +104,24 @@ public class ChunkFilterSelector {
 			//load MCAFile
 			Timer t = new Timer();
 			try {
-				MCAFile mca = MCAFile.readAll(getFile(), new ByteArrayPointer(getData()));
-				if (mca != null) {
-					Set<Point2i> chunks = mca.getFilteredChunks(filter);
-					if (chunks.size() == Tile.CHUNKS) {
-						chunks = null;
-					}
-					Map<Point2i, Set<Point2i>> region = new HashMap<>();
-					region.put(location, chunks);
+				Region region = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
 
-					region = applyRadius(region);
-
-					callback.accept(region);
-
-					Debug.dumpf("took %s to select chunks in %s", t, getFile().getName());
+				Set<Point2i> chunks = region.getFilteredChunks(filter);
+				if (chunks.size() == Tile.CHUNKS) {
+					chunks = null;
 				}
+				Map<Point2i, Set<Point2i>> selection = new HashMap<>();
+				selection.put(location, chunks);
+
+				selection = applyRadius(selection);
+
+				callback.accept(selection);
+
+				Debug.dumpf("took %s to select chunks in %s", t, getRegionDirectories().getLocationAsFileName());
 			} catch (Exception ex) {
-				Debug.dumpException("error selecting chunks in " + getFile().getName(), ex);
+				Debug.dumpException("error selecting chunks in " + getRegionDirectories().getLocationAsFileName(), ex);
 			}
-			progressChannel.incrementProgress(getFile().getName());
+			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 		}
 
 		private Map<Point2i, Set<Point2i>> applyRadius(Map<Point2i, Set<Point2i>> region) {
