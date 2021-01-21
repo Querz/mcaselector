@@ -11,6 +11,7 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.RegionImageGenerator;
 import net.querz.mcaselector.io.SelectionData;
+import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.debug.Debug;
@@ -71,7 +72,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private Map<Point2i, Set<Point2i>> pastedChunks;
 	private boolean pastedChunksInverted;
-	private File pastedWorld;
+	private WorldDirectories pastedWorld;
 	private Map<Point2i, Image> pastedChunksCache;
 	private Point2i pastedChunksOffset;
 	private Point2i firstPastedChunksOffset;
@@ -529,7 +530,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 	}
 
-	public void setPastedChunks(Map<Point2i, Set<Point2i>> chunks, boolean inverted, Point2i min, Point2i max, File pastedWorld) {
+	public void setPastedChunks(Map<Point2i, Set<Point2i>> chunks, boolean inverted, Point2i min, Point2i max, WorldDirectories pastedWorld) {
 		pastedChunks = chunks;
 		pastedChunksInverted = inverted;
 		this.pastedWorld = pastedWorld;
@@ -558,7 +559,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		return pastedChunks != null;
 	}
 
-	public File getPastedWorld() {
+	public WorldDirectories getPastedWorld() {
 		return pastedWorld;
 	}
 

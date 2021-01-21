@@ -111,7 +111,7 @@ public class MCAFile {
 		return globalOffset != 2;
 	}
 
-	public void load() throws IOException {
+	public int[] load() throws IOException {
 		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
 			int[] offsets = loadHeader(raf);
 
@@ -133,10 +133,11 @@ public class MCAFile {
 					Debug.dumpException("failed to load chunk at " + chunkLocation, ex);
 				}
 			}
+			return offsets;
 		}
 	}
 
-	public void load(ByteArrayPointer ptr) throws IOException {
+	public int[] load(ByteArrayPointer ptr) throws IOException {
 		int[] offsets = loadHeader(ptr);
 
 		chunks = new Chunk[1024];
@@ -157,6 +158,7 @@ public class MCAFile {
 				Debug.dumpException("failed to load chunk at " + chunkLocation, ex);
 			}
 		}
+		return offsets;
 	}
 
 	public int[] loadHeader(RandomAccessFile raf) throws IOException {
@@ -362,6 +364,10 @@ public class MCAFile {
 
 	public Chunk getChunk(int index) {
 		return chunks[index];
+	}
+
+	public void setChunkAt(Point2i location, Chunk chunk) {
+		chunks[getChunkIndex(location)] = chunk;
 	}
 
 	public void setChunk(int index, Chunk chunk) {

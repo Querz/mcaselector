@@ -15,8 +15,8 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.CompressionType;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.MCAChunkData;
-import net.querz.mcaselector.io.MCAFile;
+import net.querz.mcaselector.io.mca.Chunk;
+import net.querz.mcaselector.io.mca.MCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
@@ -162,18 +162,22 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 			File file = FileHelper.createMCAFilePath(region.get());
 			Debug.dumpf("attempting to read single chunk from file: %s", chunk.get());
 			if (file.exists()) {
-				MCAChunkData chunkData = MCAFile.readSingleChunk(file, chunk.get());
-				if (chunkData == null || chunkData.getData() == null) {
-					Debug.dump("no chunk data found for:" + chunk.get());
-					Platform.runLater(() -> treeViewHolder.setCenter(UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_NO_CHUNK_DATA)));
-					return;
+				try {
+					Chunk chunkData = MCAFile.loadSingleChunk(file, chunk.get());
+					if (chunkData.getData() == null) {
+						Debug.dump("no chunk data found for:" + chunk.get());
+						Platform.runLater(() -> treeViewHolder.setCenter(UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_NO_CHUNK_DATA)));
+						return;
+					}
+					data = chunkData.getData();
+					Platform.runLater(() -> {
+						treeView.setRoot(chunkData.getData());
+						treeViewHolder.setCenter(treeView);
+						getDialogPane().lookupButton(ButtonType.APPLY).setDisable(false);
+					});
+				} catch (IOException ex) {
+					Debug.dumpException("failed to load chunk", ex);
 				}
-				data = chunkData.getData();
-				Platform.runLater(() -> {
-					treeView.setRoot(chunkData.getData());
-					treeViewHolder.setCenter(treeView);
-					getDialogPane().lookupButton(ButtonType.APPLY).setDisable(false);
-				});
 			} else {
 				Platform.runLater(() -> treeViewHolder.setCenter(UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_NO_REGION_FILE)));
 			}
@@ -191,22 +195,27 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 			return;
 		}
 
-		MCAFile dest = MCAFile.readAll(file, new ByteArrayPointer(data));
+		MCAFile dest = new MCAFile(file);
+		try {
+			dest.load(new ByteArrayPointer(data));
+		} catch (IOException ex) {
+			Debug.dumpException("failed to load mca file", ex);
+		}
 
 		Point2i rel = chunkLocation.mod(32);
 		rel.setX(rel.getX() < 0 ? 32 + rel.getX() : rel.getX());
 		rel.setZ(rel.getZ() < 0 ? 32 + rel.getZ() : rel.getZ());
 		int index = rel.getZ() * Tile.SIZE_IN_CHUNKS + rel.getX();
 
-		MCAChunkData chunkData = dest.getChunkData(index);
+		Chunk chunkData = dest.getChunk(index);
 		chunkData.setData(this.data);
 		chunkData.setCompressionType(CompressionType.ZLIB);
-		dest.setChunkData(index, chunkData);
-		dest.setTimeStamp(index, (int) (System.currentTimeMillis() / 1000));
+		dest.setChunk(index, chunkData);
+		dest.setTimestamp(index, (int) (System.currentTimeMillis() / 1000));
 		try {
 			File tmpFile = File.createTempFile(file.getName(), null, null);
 			try (RandomAccessFile raf = new RandomAccessFile(tmpFile, "rw")) {
-				dest.saveAll(raf);
+				dest.save(raf);
 			}
 			Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		} catch (Exception ex) {

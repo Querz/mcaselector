@@ -112,14 +112,14 @@ public final class TileImage {
 		MCAFile mcaFile = new MCAFile(file);
 		int[] offsets;
 		try {
-			offsets = mcaFile.loadHeader(ptr);
+			offsets = mcaFile.load(ptr);
 		} catch (IOException ex) {
 			Debug.errorf("failed to read mca file header from %s", file);
 			tile.loaded = true;
 			return tile.image;
 		}
 
-		Debug.dumpf("took %s to read mca file header of %s", t, file.getName());
+		Debug.dumpf("took %s to read mca file %s", t, file.getName());
 
 		t.reset();
 
@@ -157,12 +157,16 @@ public final class TileImage {
 
 					Chunk data = mcaFile.getChunk(index);
 
-					try {
-						ptr.seek(offsets[index] * 4096);
-						data.load(ptr);
-					} catch (Exception ex) {
-						Debug.dumpException(String.format("failed to load chunk %s from raw data in %s", new Point2i(cx, cz), mcaFile.getFile().getName()), ex);
+					if (data == null) {
+						continue;
 					}
+
+//					try {
+//						ptr.seek(offsets[index] * 4096 + 4);
+//						data.load(ptr);
+//					} catch (Exception ex) {
+//						Debug.dumpException(String.format("failed to load chunk %s from raw data in %s", new Point2i(cx, cz), mcaFile.getFile().getName()), ex);
+//					}
 
 					drawChunkImage(data, cx * Tile.CHUNK_SIZE, cz * Tile.CHUNK_SIZE, pixelBuffer, waterPixels, terrainHeights, waterHeights);
 				}

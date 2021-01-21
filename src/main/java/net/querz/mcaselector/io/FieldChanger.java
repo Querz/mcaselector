@@ -3,9 +3,12 @@ package net.querz.mcaselector.io;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.text.Translation;
+
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
@@ -19,9 +22,15 @@ public class FieldChanger {
 
 	private FieldChanger() {}
 
-	public static void changeNBTFields(List<Field<?>> fields, boolean force, SelectionData selection, Progress progressChannel) {
-		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
-		if (files == null || files.length == 0) {
+	public static void changeNBTFields(List<Field<?>> fields, boolean force, SelectionData selection, Progress progressChannel, boolean headless) {
+		WorldDirectories wd = Config.getWorldDirs();
+		RegionDirectories[] rd = wd.listRegions();
+		if (rd == null || rd.length == 0) {
+			if (headless) {
+				progressChannel.done("no files");
+			} else {
+				progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
+			}
 			return;
 		}
 
@@ -29,11 +38,11 @@ public class FieldChanger {
 
 		Map<Point2i, Set<Point2i>> sel = SelectionHelper.getTrueSelection(selection);
 
-		progressChannel.setMax(files.length);
-		progressChannel.updateProgress(files[0].getName(), 0);
+		progressChannel.setMax(rd.length);
+		progressChannel.updateProgress(rd[0].getLocationAsFileName(), 0);
 
-		for (File file : files) {
-			MCAFilePipe.addJob(new MCAFieldChangeLoadJob(file, fields, force, sel, progressChannel));
+		for (RegionDirectories r : rd) {
+			MCAFilePipe.addJob(new MCAFieldChangeLoadJob(r, fields, force, sel, progressChannel));
 		}
 	}
 
@@ -44,8 +53,8 @@ public class FieldChanger {
 		private final boolean force;
 		private final Map<Point2i, Set<Point2i>> selection;
 
-		private MCAFieldChangeLoadJob(File file, List<Field<?>> fields, boolean force, Map<Point2i, Set<Point2i>> selection, Progress progressChannel) {
-			super(file);
+		private MCAFieldChangeLoadJob(RegionDirectories dirs, List<Field<?>> fields, boolean force, Map<Point2i, Set<Point2i>> selection, Progress progressChannel) {
+			super(dirs);
 			this.fields = fields;
 			this.force = force;
 			this.selection = selection;
@@ -56,25 +65,24 @@ public class FieldChanger {
 		public void execute() {
 			Set<Point2i> chunks = null;
 			if (selection != null) {
-				Matcher m = FileHelper.REGION_GROUP_PATTERN.matcher(getFile().getName());
-				if (m.find()) {
-					int regionX = Integer.parseInt(m.group("regionX"));
-					int regionZ = Integer.parseInt(m.group("regionZ"));
-					Point2i location = new Point2i(regionX, regionZ);
-					if (!selection.containsKey(location)) {
-						Debug.dumpf("will not apply nbt changes to %s", getFile().getName());
-						progressChannel.incrementProgress(getFile().getName());
-						return;
-					}
-					chunks = selection.get(location);
+				Point2i location = getRegionDirectories().getLocation();
+				if (!selection.containsKey(location)) {
+					Debug.dumpf("will not apply nbt changes to %s", getRegionDirectories().getLocationAsFileName());
+					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
+					return;
 				}
+				chunks = selection.get(location);
 			}
-			byte[] data = load();
-			if (data != null) {
-				MCAFilePipe.executeProcessData(new MCAFieldChangeProcessJob(getFile(), data, fields, force, chunks, progressChannel));
+
+			byte[] regionData = loadRegion();
+			byte[] poiData = loadPOI();
+			byte[] entitiesData = loadEntities();
+
+			if (regionData == null && poiData == null && entitiesData == null) {
+				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
+				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 			} else {
-				Debug.errorf("error loading mca file %s", getFile().getName());
-				progressChannel.incrementProgress(getFile().getName() + ": error");
+				MCAFilePipe.executeProcessData(new MCAFieldChangeProcessJob(getRegionDirectories(), regionData, poiData, entitiesData, fields, force, chunks, progressChannel));
 			}
 		}
 	}
@@ -86,8 +94,8 @@ public class FieldChanger {
 		private final boolean force;
 		private final Set<Point2i> selection;
 
-		private MCAFieldChangeProcessJob(File file, byte[] data, List<Field<?>> fields, boolean force, Set<Point2i> selection, Progress progressChannel) {
-			super(file, data);
+		private MCAFieldChangeProcessJob(RegionDirectories dirs, byte[] regionData, byte[] poiData, byte[] entitiesData, List<Field<?>> fields, boolean force, Set<Point2i> selection, Progress progressChannel) {
+			super(dirs, regionData, poiData, entitiesData);
 			this.fields = fields;
 			this.force = force;
 			this.selection = selection;
@@ -97,25 +105,25 @@ public class FieldChanger {
 		@Override
 		public void execute() {
 			//load MCAFile
-			Timer t = new Timer();
 			try {
-				MCAFile mca = MCAFile.readAll(getFile(), new ByteArrayPointer(getData()));
-				mca.applyFieldChanges(fields, force, selection);
-				Debug.dumpf("took %s to apply field changes to %s", t, getFile().getName());
-				MCAFilePipe.executeSaveData(new MCAFieldChangeSaveJob(getFile(), mca, progressChannel));
+				Region region = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
+
+				region.applyFieldChanges(fields, force, selection);
+
+				MCAFilePipe.executeSaveData(new MCAFieldChangeSaveJob(getRegionDirectories(), region, progressChannel));
 			} catch (Exception ex) {
-				progressChannel.incrementProgress(getFile().getName());
-				Debug.errorf("error changing fields in %s", getFile().getName());
+				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
+				Debug.errorf("error changing fields in %s", getRegionDirectories().getLocationAsFileName());
 			}
 		}
 	}
 
-	public static class MCAFieldChangeSaveJob extends SaveDataJob<MCAFile> {
+	public static class MCAFieldChangeSaveJob extends SaveDataJob<Region> {
 
 		private final Progress progressChannel;
 
-		private MCAFieldChangeSaveJob(File file, MCAFile data, Progress progressChannel) {
-			super(file, data);
+		private MCAFieldChangeSaveJob(RegionDirectories file, Region region, Progress progressChannel) {
+			super(file, region);
 			this.progressChannel = progressChannel;
 		}
 
@@ -123,28 +131,12 @@ public class FieldChanger {
 		public void execute() {
 			Timer t = new Timer();
 			try {
-				File tmpFile = File.createTempFile(getFile().getName(), null, null);
-
-				boolean empty;
-
-				try (RandomAccessFile raf = new RandomAccessFile(tmpFile, "rw")) {
-					empty = !getData().saveAll(raf);
-				}
-
-				if (empty) {
-					if (getFile().delete()) {
-						Debug.dumpf("deleted empty region file %s", getFile().getAbsolutePath());
-					} else {
-						Debug.dumpf("could not delete empty region file %s", getFile().getAbsolutePath());
-					}
-				} else {
-					Files.move(tmpFile.toPath(), getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
-				}
+				getData().saveWithTempFiles();
 			} catch (Exception ex) {
-				Debug.dumpException("failed to save changed chunks in " + getFile().getName(), ex);
+				Debug.dumpException("failed to save changed fields for " + getRegionDirectories().getLocationAsFileName(), ex);
 			}
-			progressChannel.incrementProgress(getFile().getName());
-			Debug.dumpf("took %s to save data to %s", t, getFile().getName());
+			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
+			Debug.dumpf("took %s to save data for %s", t, getRegionDirectories().getLocationAsFileName());
 		}
 	}
 }

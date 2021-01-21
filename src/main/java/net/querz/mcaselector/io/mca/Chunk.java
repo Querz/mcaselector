@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 public class Chunk {
@@ -34,15 +35,16 @@ public class Chunk {
 	}
 
 	public void load(ByteArrayPointer ptr) throws IOException {
+		int length = ptr.readInt();
 		compressionType = CompressionType.fromByte(ptr.readByte());
 		DataInputStream nbtIn = null;
 
 		switch (compressionType) {
 			case GZIP:
-				nbtIn = new DataInputStream(new GZIPInputStream(ptr));
+				nbtIn = new DataInputStream(new BufferedInputStream(new GZIPInputStream(ptr, length)));
 				break;
 			case ZLIB:
-				nbtIn = new DataInputStream(new InflaterInputStream(ptr));
+				nbtIn = new DataInputStream(new BufferedInputStream(new InflaterInputStream(ptr, new Inflater(), length)));
 				break;
 			case NONE:
 				nbtIn = new DataInputStream(ptr);

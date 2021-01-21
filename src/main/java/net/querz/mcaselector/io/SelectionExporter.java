@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io;
 
+import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
@@ -22,6 +23,16 @@ public class SelectionExporter {
 			return;
 		}
 
+		// make sure that target directories exist
+		try {
+			createDirectoryOrThrowException(destination, "region");
+			createDirectoryOrThrowException(destination, "poi");
+			createDirectoryOrThrowException(destination, "entities");
+		} catch (IOException ex) {
+			Debug.dumpException("failed to create directories", ex);
+			return;
+		}
+
 		MCAFilePipe.clearQueues();
 
 		Map<Point2i, Set<Point2i>> sel = SelectionHelper.getTrueSelection(selection);
@@ -32,10 +43,17 @@ public class SelectionExporter {
 
 		for (Map.Entry<Point2i, Set<Point2i>> entry : sel.entrySet()) {
 			MCAFilePipe.addJob(new MCADeleteSelectionLoadJob(
-					FileHelper.createMCAFilePath(entry.getKey()),
+					FileHelper.createRegionDirectories(entry.getKey()),
 					entry.getValue(),
-					new File(destination, FileHelper.createMCAFileName(entry.getKey())),
+					destination,
 					progressChannel));
+		}
+	}
+
+	private static void createDirectoryOrThrowException(File dir, String folder) throws IOException {
+		File d = new File(dir, folder);
+		if (!d.exists() && !d.mkdirs()) {
+			throw new IOException("failed to create directory " + d);
 		}
 	}
 
@@ -45,8 +63,8 @@ public class SelectionExporter {
 		private final File destination;
 		private final Progress progressChannel;
 
-		private MCADeleteSelectionLoadJob(File file, Set<Point2i> chunksToBeExported, File destination, Progress progressChannel) {
-			super(file);
+		private MCADeleteSelectionLoadJob(RegionDirectories dirs, Set<Point2i> chunksToBeExported, File destination, Progress progressChannel) {
+			super(dirs);
 			this.chunksToBeExported = chunksToBeExported;
 			this.destination = destination;
 			this.progressChannel = progressChannel;
@@ -54,22 +72,56 @@ public class SelectionExporter {
 
 		@Override
 		public void execute() {
-			if (chunksToBeExported == null) {
-				try {
-					Files.copy(getFile().toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Debug.dumpf("moved file %s", getFile().getName());
-				} catch (Exception ex) {
-					Debug.dumpException("error moving file " + getFile().getName(), ex);
-				}
-				progressChannel.incrementProgress(getFile().getName());
+			File toRegion = new File(destination, "region/" + getRegionDirectories().getLocationAsFileName());
+			File toPoi = new File(destination, "region/" + getRegionDirectories().getLocationAsFileName());
+			File toEntities = new File(destination, "region/" + getRegionDirectories().getLocationAsFileName());
+			if (toRegion.exists() || toPoi.exists() || toEntities.exists()) {
+				Debug.dumpf("%s exists, not overwriting", getRegionDirectories().getLocationAsFileName());
+				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return;
 			}
-			byte[] data = load(MCAFile.SECTION_SIZE * 2); //load header only
-			if (data != null) {
-				MCAFilePipe.executeProcessData(new MCADeleteSelectionProcessJob(getFile(), data, chunksToBeExported, destination, progressChannel));
+
+			RegionDirectories to = new RegionDirectories(getRegionDirectories().getLocation(), toRegion, toPoi, toEntities);
+
+			if (chunksToBeExported == null) {
+
+				// copy region
+				try {
+					Files.copy(getRegionDirectories().getRegion().toPath(), to.getRegion().toPath(), StandardCopyOption.REPLACE_EXISTING);
+					Debug.dumpf("copied file %s", getRegionDirectories().getRegion());
+				} catch (Exception ex) {
+					Debug.dumpException("failed to copy file " + getRegionDirectories().getRegion(), ex);
+				}
+
+				// copy poi
+				try {
+					Files.copy(getRegionDirectories().getPoi().toPath(), to.getPoi().toPath(), StandardCopyOption.REPLACE_EXISTING);
+					Debug.dumpf("copied file %s", getRegionDirectories().getPoi());
+				} catch (Exception ex) {
+					Debug.dumpException("failed to copy file " + getRegionDirectories().getPoi(), ex);
+				}
+
+				// copy entities
+				try {
+					Files.copy(getRegionDirectories().getEntities().toPath(), to.getEntities().toPath(), StandardCopyOption.REPLACE_EXISTING);
+					Debug.dumpf("copied file %s", getRegionDirectories().getEntities());
+				} catch (Exception ex) {
+					Debug.dumpException("failed to copy file " + getRegionDirectories().getEntities(), ex);
+				}
+
+				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
+				return;
+			}
+
+			byte[] regionData = loadRegion();
+			byte[] poiData = loadPOI();
+			byte[] entitiesData = loadEntities();
+
+			if (regionData == null && poiData == null && entitiesData == null) {
+				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
+				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 			} else {
-				Debug.errorf("error loading mca file %s", getFile().getName());
-				progressChannel.incrementProgress(getFile().getName());
+				MCAFilePipe.executeProcessData(new MCADeleteSelectionProcessJob(getRegionDirectories(), regionData, poiData, entitiesData, chunksToBeExported, to, progressChannel));
 			}
 		}
 	}
@@ -78,54 +130,51 @@ public class SelectionExporter {
 
 		private final Progress progressChannel;
 		private final Set<Point2i> chunksToBeExported;
-		private final File destination;
+		private final RegionDirectories destinations;
 
-		private MCADeleteSelectionProcessJob(File file, byte[] data, Set<Point2i> chunksToBeExported, File destination, Progress progressChannel) {
-			super(file, data);
+		private MCADeleteSelectionProcessJob(RegionDirectories dirs, byte[] regionData, byte[] poiData, byte[] entitiesData, Set<Point2i> chunksToBeExported, RegionDirectories destinations, Progress progressChannel) {
+			super(dirs, regionData, poiData, entitiesData);
 			this.chunksToBeExported = chunksToBeExported;
-			this.destination = destination;
+			this.destinations = destinations;
 			this.progressChannel = progressChannel;
 		}
 
 		@Override
 		public void execute() {
 			//load MCAFile
-			Timer t = new Timer();
 			try {
-				MCAFile mca = MCAFile.readHeader(getFile(), new ByteArrayPointer(getData()));
-				if (mca != null) {
+				Region region = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
 
-					Set<Point2i> inverted = new HashSet<>(Tile.CHUNKS - chunksToBeExported.size());
-					Point2i origin = chunksToBeExported.iterator().next().chunkToRegion().regionToChunk();
-					for (int x = origin.getX(); x < origin.getX() + Tile.SIZE_IN_CHUNKS; x++) {
-						for (int z = origin.getZ(); z < origin.getZ() + Tile.SIZE_IN_CHUNKS; z++) {
-							Point2i cp = new Point2i(x, z);
-							if (!chunksToBeExported.contains(cp)) {
-								inverted.add(cp);
-							}
+				Set<Point2i> inverted = new HashSet<>(Tile.CHUNKS - chunksToBeExported.size());
+				Point2i origin = chunksToBeExported.iterator().next().chunkToRegion().regionToChunk();
+				for (int x = origin.getX(); x < origin.getX() + Tile.SIZE_IN_CHUNKS; x++) {
+					for (int z = origin.getZ(); z < origin.getZ() + Tile.SIZE_IN_CHUNKS; z++) {
+						Point2i cp = new Point2i(x, z);
+						if (!chunksToBeExported.contains(cp)) {
+							inverted.add(cp);
 						}
 					}
-
-					mca.deleteChunkIndices(inverted);
-					Debug.dumpf("took %s to delete chunk indices in %s", t, getFile().getName());
-					MCAFilePipe.executeSaveData(new MCADeleteSelectionSaveJob(getFile(), mca, destination, progressChannel));
 				}
+
+				region.deleteChunks(inverted);
+				MCAFilePipe.executeSaveData(new MCADeleteSelectionSaveJob(getRegionDirectories(), region, destinations, progressChannel));
+
 			} catch (Exception ex) {
-				Debug.dumpException("error deleting chunk indices in " + getFile().getName(), ex);
-				progressChannel.incrementProgress(getFile().getName());
+				Debug.dumpException("error deleting chunk indices in " + getRegionDirectories().getLocationAsFileName(), ex);
+				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 
 			}
 		}
 	}
 
-	private static class MCADeleteSelectionSaveJob extends SaveDataJob<MCAFile> {
+	private static class MCADeleteSelectionSaveJob extends SaveDataJob<Region> {
 
 		private final Progress progressChannel;
-		private final File destination;
+		private final RegionDirectories destinations;
 
-		private MCADeleteSelectionSaveJob(File file, MCAFile data, File destination, Progress progressChannel) {
-			super(file, data);
-			this.destination = destination;
+		private MCADeleteSelectionSaveJob(RegionDirectories dirs, Region region, RegionDirectories destinations, Progress progressChannel) {
+			super(dirs, region);
+			this.destinations = destinations;
 			this.progressChannel = progressChannel;
 		}
 
@@ -133,19 +182,12 @@ public class SelectionExporter {
 		public void execute() {
 			Timer t = new Timer();
 			try {
-				File tmpFile;
-				try (RandomAccessFile raf = new RandomAccessFile(getFile(), "r")) {
-					tmpFile = getData().deFragment(raf);
-				}
-
-				if (tmpFile != null) {
-					Files.move(tmpFile.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
-				}
+				getData().saveWithTempFiles();
 			} catch (Exception ex) {
-				Debug.dumpException("failed to export chunks for " + getFile().getName(), ex);
+				Debug.dumpException("failed to export filtered chunks from " + getRegionDirectories().getLocationAsFileName(), ex);
 			}
-			progressChannel.incrementProgress(getFile().getName());
-			Debug.dumpf("took %s to save data to %s", t, getFile().getName());
+			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
+			Debug.dumpf("took %s to save data for %s", t, getRegionDirectories().getLocationAsFileName());
 		}
 	}
 }

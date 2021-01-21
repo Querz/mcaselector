@@ -9,6 +9,7 @@ import net.querz.mcaselector.io.ChunkFilterExporter;
 import net.querz.mcaselector.io.ChunkFilterSelector;
 import net.querz.mcaselector.io.ChunkImporter;
 import net.querz.mcaselector.io.FieldChanger;
+import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.SelectionDeleter;
 import net.querz.mcaselector.io.SelectionExporter;
@@ -53,15 +54,17 @@ public class ParamExecutor {
 			pi.registerDependencies("headless", null, new ActionKey("mode", null));
 			pi.registerDependencies("mode", null, new ActionKey("headless", null));
 			pi.registerRestrictions("mode", "select", "export", "import", "delete", "change", "cache");
-			pi.registerDependencies("mode", null, new ActionKey("world", null)); // every mode param needs a world dir
+			pi.registerDependencies("mode", null, new ActionKey("region", null)); // every mode param needs a region dir
 			pi.registerDependencies("mode", "select", new ActionKey("output", null), new ActionKey("query", null));
-			pi.registerDependencies("mode", "export", new ActionKey("output", null));
-			pi.registerDependencies("mode", "import", new ActionKey("input", null));
+			pi.registerDependencies("mode", "export", new ActionKey("output-region", null), new ActionKey("output-poi", null), new ActionKey("output-entities", null), new ActionKey("region", null), new ActionKey("poi", null), new ActionKey("entities", null));
+			pi.registerDependencies("mode", "import", new ActionKey("input-region", null), new ActionKey("input-poi", null), new ActionKey("input-entities", null));
 			pi.registerDependencies("mode", "change", new ActionKey("query", null));
 			pi.registerDependencies("mode", "cache", new ActionKey("output", null));
-			pi.registerDependencies("world", null, new ActionKey("mode", null)); // world param needs mode param
-			pi.registerSoftDependencies("output", null, new ActionKey("mode", "select"), new ActionKey("mode", "export"), new ActionKey("mode", "cache"));
-			pi.registerSoftDependencies("input", null, new ActionKey("mode", "export"), new ActionKey("mode", "import"), new ActionKey("mode", "delete"), new ActionKey("mode", "change"));
+			pi.registerDependencies("region", null, new ActionKey("mode", null)); // region param needs mode param
+			pi.registerDependencies("poi", null, new ActionKey("mode", null));
+			pi.registerDependencies("entities", null, new ActionKey("mode", null));
+			pi.registerSoftDependencies("output", null, new ActionKey("mode", "select"), new ActionKey("mode", "cache"));
+			pi.registerSoftDependencies("input", null, new ActionKey("mode", "delete"), new ActionKey("mode", "change"));
 			pi.registerSoftDependencies("query", null, new ActionKey("mode", "select"), new ActionKey("mode", "export"), new ActionKey("mode", "delete"), new ActionKey("mode", "change"));
 			pi.registerSoftDependencies("radius", null, new ActionKey("mode", "select"));
 			pi.registerDependencies("force", null, new ActionKey("mode", "change"));
@@ -129,9 +132,9 @@ public class ParamExecutor {
 			throw new IOException("no JavaFX installation found");
 		}
 
-		File world = parseDirectory(params.get("world"));
-		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
-		Config.setWorldDir(world);
+		File region = parseDirectory(params.get("region"));
+		checkDirectoryForFiles(region, FileHelper.MCA_FILE_PATTERN);
+		Config.setWorldDir(region);
 
 		File output = parseDirectory(params.get("output"));
 		createDirectoryIfNotExists(output);
@@ -149,9 +152,9 @@ public class ParamExecutor {
 	}
 
 	private static void runModeChange(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
-		File world = parseDirectory(params.get("world"));
-		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
-		Config.setWorldDir(world);
+		File region = parseDirectory(params.get("world"));
+		checkDirectoryForFiles(region, FileHelper.MCA_FILE_PATTERN);
+		Config.setWorldDir(region);
 
 		List<Field<?>> fields = new ChangeParser(params.get("query")).parse();
 
@@ -164,7 +167,7 @@ public class ParamExecutor {
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(future);
 
-		FieldChanger.changeNBTFields(fields, force, selection, progress);
+		FieldChanger.changeNBTFields(fields, force, selection, progress, true);
 	}
 
 
@@ -230,12 +233,18 @@ public class ParamExecutor {
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(future);
 
-		DataProperty<Map<Point2i, File>> tempFiles = new DataProperty<>();
-		ChunkImporter.importChunks(input, progress, true, overwrite, null, selection, ranges, new Point2i(offsetX, offsetZ), tempFiles);
+		DataProperty<Map<Point2i, RegionDirectories>> tempFiles = new DataProperty<>();
+		ChunkImporter.importChunks(null, progress, true, overwrite, null, selection, ranges, new Point2i(offsetX, offsetZ), tempFiles);
 		if (tempFiles.get() != null) {
-			for (File tempFile : tempFiles.get().values()) {
-				if (!tempFile.delete()) {
-					Debug.errorf("failed to delete temp file %s", tempFile);
+			for (RegionDirectories tempFile : tempFiles.get().values()) {
+				if (!tempFile.getRegion().delete()) {
+					Debug.errorf("failed to delete temp file %s", tempFile.getRegion());
+				}
+				if (!tempFile.getPoi().delete()) {
+					Debug.errorf("failed to delete temp file %s", tempFile.getPoi());
+				}
+				if (!tempFile.getEntities().delete()) {
+					Debug.errorf("failed to delete temp file %s", tempFile.getEntities());
 				}
 			}
 		}

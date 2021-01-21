@@ -2,10 +2,11 @@ package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.point.Point2i;
 import java.io.File;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WorldDirectories {
+public class WorldDirectories implements Serializable {
 
 	private File region;
 	private File poi;

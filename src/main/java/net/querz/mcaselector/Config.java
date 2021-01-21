@@ -145,6 +145,16 @@ public final class Config {
 		cacheDir = new File(baseCacheDir, worldUUID.toString().replace("-", ""));
 	}
 
+	public static void setWorldDirs(File regionDir, File poiDir, File entitiesDir) {
+		Config.worldDirs = new WorldDirectories(regionDir, poiDir, entitiesDir);
+		setWorldDir(regionDir);
+	}
+
+	public static void setWorldDirs(WorldDirectories dirs) {
+		Config.worldDirs = dirs;
+		setWorldDir(dirs.getRegion());
+	}
+
 	public static File getCacheDirForWorldUUID(UUID world, int zoomLevel) {
 		return new File(baseCacheDir, world.toString().replace("-", "") + "/" + zoomLevel);
 	}

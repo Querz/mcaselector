@@ -66,7 +66,7 @@ public final class MCAFilePipe {
 				&& saveDataExecutor.getQueue().size() < Config.getMaxLoadedFiles()) {
 			LoadDataJob job = waitingForLoad.poll();
 			if (job != null) {
-				Debug.dumpf("refilling data load executor queue with %s", job.getFile().getAbsolutePath());
+				Debug.dumpf("refilling data load executor queue with %s", job.getRegionDirectories().getLocationAsFileName());
 				loadDataExecutor.execute(job);
 			}
 		}
@@ -75,10 +75,10 @@ public final class MCAFilePipe {
 	public static void addJob(LoadDataJob job) {
 		if (processDataExecutor.getQueue().size() + loadDataExecutor.getQueue().size() > Config.getMaxLoadedFiles()
 				|| saveDataExecutor.getQueue().size() > Config.getMaxLoadedFiles()) {
-			Debug.dumpf("adding LoadDataJob %s for %s to wait queue", job.getClass().getSimpleName(), job.getFile().getName());
+			Debug.dumpf("adding LoadDataJob %s for %s to wait queue", job.getClass().getSimpleName(), job.getRegionDirectories().getLocationAsFileName());
 			waitingForLoad.offer(job);
 		} else {
-			Debug.dumpf("adding LoadDataJob %s for %s to executor queue", job.getClass().getSimpleName(), job.getFile().getName());
+			Debug.dumpf("adding LoadDataJob %s for %s to executor queue", job.getClass().getSimpleName(), job.getRegionDirectories().getLocationAsFileName());
 			loadDataExecutor.execute(job);
 		}
 	}

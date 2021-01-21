@@ -7,6 +7,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.*;
+import net.querz.mcaselector.io.mca.Chunk;
+import net.querz.mcaselector.io.mca.MCAFile;
 import net.querz.mcaselector.tiles.Selection;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.property.DataProperty;
@@ -62,7 +64,8 @@ public class DialogHelper {
 									r.getFields(),
 									r.isForce(),
 									r.isSelectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
-									t
+									t,
+									false
 							));
 					if (r.requiresClearCache()) {
 						if (r.isSelectionOnly()) {
@@ -176,10 +179,19 @@ public class DialogHelper {
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
 					FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
-					DataProperty<Map<Point2i, File>> tempFiles = new DataProperty<>();
+					DataProperty<Map<Point2i, RegionDirectories>> tempFiles = new DataProperty<>();
+
+					WorldDirectories wd = FileHelper.validateWorldDirectories(dir);
+					if (wd == null) {
+						// TODO: show error dialog
+
+						return;
+					}
+
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(
-									dir, t, false, dataProperty.get().overwrite(),
+									wd,
+									t, false, dataProperty.get().overwrite(),
 									null,
 									dataProperty.get().selectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
 									dataProperty.get().getRanges(),
@@ -274,14 +286,14 @@ public class DialogHelper {
 			Point2i fromOffset = toChunk.sub(fromChunk);
 			Point2i toOffset = fromChunk.sub(toChunk);
 
-			MCAChunkData fromData = getLoadedMCAChunkDataOrCreateNew(fromMCA, fromChunk);
+			Chunk fromData = getLoadedMCAChunkDataOrCreateNew(fromMCA, fromChunk);
 			fromData.relocate(fromOffset.chunkToBlock());
 
-			MCAChunkData toData = getLoadedMCAChunkDataOrCreateNew(toMCA, toChunk);
+			Chunk toData = getLoadedMCAChunkDataOrCreateNew(toMCA, toChunk);
 			toData.relocate(toOffset.chunkToBlock());
 
-			fromMCA.setChunkData(fromChunk, toData.getData() == null ? null : toData);
-			toMCA.setChunkData(toChunk, fromData.getData() == null ? null : fromData);
+			fromMCA.setChunkAt(fromChunk, toData.getData() == null ? null : toData);
+			toMCA.setChunkAt(toChunk, fromData.getData() == null ? null : fromData);
 
 			t.incrementProgress(FileHelper.createMCAFileName(toRegion));
 			saveMCAFileWithTempFile(toMCA);
@@ -297,7 +309,7 @@ public class DialogHelper {
 
 	public static void copySelectedChunks(TileMap tileMap) {
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		Selection selection = new Selection(tileMap.getMarkedChunks(), tileMap.isSelectionInverted(), Config.getWorldDir());
+		Selection selection = new Selection(tileMap.getMarkedChunks(), tileMap.isSelectionInverted(), Config.getWorldDirs());
 		TileMapSelection tileMapSelection = new TileMapSelection(selection);
 		clipboard.setContents(tileMapSelection, tileMap);
 	}
@@ -309,7 +321,7 @@ public class DialogHelper {
 			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, preFill, dataProperty::set).showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
-					DataProperty<Map<Point2i, File>> tempFiles = new DataProperty<>();
+					DataProperty<Map<Point2i, RegionDirectories>> tempFiles = new DataProperty<>();
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									tileMap.getPastedWorld(), t, false, dataProperty.get().overwrite(),
@@ -343,11 +355,17 @@ public class DialogHelper {
 		}
 	}
 
-	private static void deleteTempFiles(Map<Point2i, File> tempFiles) {
+	private static void deleteTempFiles(Map<Point2i, RegionDirectories> tempFiles) {
 		if (tempFiles != null) {
-			for (File tempFile : tempFiles.values()) {
-				if (!tempFile.delete()) {
-					Debug.errorf("failed to delete temp file %s", tempFile);
+			for (RegionDirectories tempFile : tempFiles.values()) {
+				if (!tempFile.getRegion().delete()) {
+					Debug.errorf("failed to delete temp file %s", tempFile.getRegion());
+				}
+				if (!tempFile.getPoi().delete()) {
+					Debug.errorf("failed to delete temp file %s", tempFile.getPoi());
+				}
+				if (!tempFile.getEntities().delete()) {
+					Debug.errorf("failed to delete temp file %s", tempFile.getEntities());
 				}
 			}
 		}
@@ -358,19 +376,17 @@ public class DialogHelper {
 			return new MCAFile(file);
 		}
 		try {
-			return MCAFile.read(file);
+			MCAFile mca = new MCAFile(file);
+			mca.load();
+			return mca;
 		} catch (IOException ex) {
 			Debug.dumpException("failed to read MCAFile " + file, ex);
 		}
 		return null;
 	}
 
-	private static MCAChunkData getLoadedMCAChunkDataOrCreateNew(MCAFile mcaFile, Point2i location) {
-		MCAChunkData loaded = mcaFile.getLoadedChunkData(location);
-		if (loaded == null) {
-			return mcaFile.getChunkData(location);
-		}
-		return loaded;
+	private static Chunk getLoadedMCAChunkDataOrCreateNew(MCAFile mcaFile, Point2i location) {
+		return mcaFile.getChunkAt(location);
 	}
 
 	private static void saveMCAFileWithTempFile(MCAFile mcaFile) {
@@ -418,9 +434,15 @@ public class DialogHelper {
 
 			// show world selection dialog
 			Optional<File> result = new SelectWorldDialog(dimensions, tileMap, primaryStage).showAndWait();
+			System.out.println(result);
 			result.ifPresent(dim -> {
 				WorldDirectories worldDirectories = detectWorldDirectories(dim);
-				Debug.dumpf("setting world to %s", worldDirectories);
+				Config.setWorldDirs(worldDirectories);
+				CacheHelper.validateCacheVersion(tileMap);
+				tileMap.clear();
+				tileMap.update();
+				tileMap.disable(false);
+				optionBar.setWorldDependentMenuItemsEnabled(true, tileMap);
 			});
 		}
 	}

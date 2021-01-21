@@ -116,6 +116,16 @@ public final class FileHelper {
 		return new File(Config.getWorldDirs().getEntities(), createMCAFileName(r));
 	}
 
+	public static WorldDirectories validateWorldDirectories(File dir) {
+		File region = new File(dir, "region");
+		File poi = new File(dir, "poi");
+		File entities = new File(dir, "entities");
+		if (!region.exists() || !poi.exists() || !entities.exists()) {
+			return null;
+		}
+		return new WorldDirectories(region, poi, entities);
+	}
+
 	public static RegionDirectories createRegionDirectories(Point2i r) {
 		File region = createRegionMCAFilePath(r);
 		File poi = createPoiMCAFilePath(r);

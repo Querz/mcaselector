@@ -91,7 +91,6 @@ public class ChunkFilterDeleter {
 
 		@Override
 		public void execute() {
-			//load MCAFile
 			try {
 				// parse raw data
 				Region region = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());

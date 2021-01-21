@@ -56,6 +56,16 @@ public class RegionDirectories {
 		return locationAsFileName;
 	}
 
+	public static RegionDirectories fromWorldDirectories(WorldDirectories wd, Point2i location) {
+		String fileName = FileHelper.createMCAFileName(location);
+		return new RegionDirectories(
+				location,
+				new File(wd.getRegion(), fileName),
+				new File(wd.getPoi(), fileName),
+				new File(wd.getEntities(), fileName)
+		);
+	}
+
 	@Override
 	public String toString() {
 		return "<region=" + region + ", poi=" + poi + ", entities=" + entities + ">";
