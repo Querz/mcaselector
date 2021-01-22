@@ -274,6 +274,17 @@
 	-fx-padding: 0;
 }
 
+/*---------- TEXT AREA ----------*/
+
+.text-area {
+	-fx-text-fill: -color-text-light;
+	-fx-pref-height: 75px;
+}
+
+.text-area .content {
+	-fx-background-color: -color-text-field-background;
+}
+
 /*---------- LISTVIEW ----------*/
 
 .list-view {
@@ -370,6 +381,12 @@
 
 .hyperlink:visited  {
 	-fx-text-fill: -color-text-light;
+}
+
+/*---------- ERROR DIALOG ----------*/
+
+.error-dialog-pane .copied-to-clipboard-label {
+	-fx-padding: 10 0 -10 0;
 }
 
 /*---------- PROGRESS DIALOG ----------*/

@@ -21,6 +21,7 @@ import net.querz.mcaselector.ui.dialog.CancellableProgressDialog;
 import net.querz.mcaselector.ui.dialog.ChangeFieldsConfirmationDialog;
 import net.querz.mcaselector.ui.dialog.ChangeNBTDialog;
 import net.querz.mcaselector.ui.dialog.DeleteConfirmationDialog;
+import net.querz.mcaselector.ui.dialog.ErrorDialog;
 import net.querz.mcaselector.ui.dialog.ExportConfirmationDialog;
 import net.querz.mcaselector.ui.dialog.FilterChunksDialog;
 import net.querz.mcaselector.ui.dialog.GotoDialog;
@@ -427,7 +428,7 @@ public class DialogHelper {
 		if (file != null && file.isDirectory()) {
 			List<File> dimensions = detectDimensionDirectories(file);
 			if (dimensions.size() == 0) {
-				// TODO: show error dialog that we didn't find any dimension
+				new ErrorDialog(primaryStage, String.format("no dimensions found in %s", file.getAbsolutePath())).showAndWait();
 				Debug.dumpf("no dimensions found in %s", file.getAbsolutePath());
 				return;
 			}
