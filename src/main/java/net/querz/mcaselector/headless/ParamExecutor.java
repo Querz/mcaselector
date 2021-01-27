@@ -21,15 +21,19 @@ import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
+import net.querz.mcaselector.text.Translation;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ParamExecutor {
@@ -53,8 +57,8 @@ public class ParamExecutor {
 			// register parameter dependencies and restrictions
 			pi.registerDependencies("headless", null, new ActionKey("mode", null));
 			pi.registerDependencies("mode", null, new ActionKey("headless", null));
-			pi.registerRestrictions("mode", "select", "export", "import", "delete", "change", "cache");
-			pi.registerDependencies("mode", null, new ActionKey("region", null)); // every mode param needs a region dir
+			pi.registerRestrictions("mode", "select", "export", "import", "delete", "change", "cache", "checkTranslations", "printTranslationWithAllKeys");
+			pi.registerDependencies("mode", "printTranslationWithAllKeys", new ActionKey("locale", null));
 			pi.registerDependencies("mode", "select", new ActionKey("output", null), new ActionKey("query", null));
 			pi.registerDependencies("mode", "export", new ActionKey("output-region", null), new ActionKey("output-poi", null), new ActionKey("output-entities", null), new ActionKey("region", null), new ActionKey("poi", null), new ActionKey("entities", null));
 			pi.registerDependencies("mode", "import", new ActionKey("input-region", null), new ActionKey("input-poi", null), new ActionKey("input-entities", null));
@@ -93,6 +97,8 @@ public class ParamExecutor {
 			pi.registerAction("mode", "delete", v -> runModeDelete(params.get(), future));
 			pi.registerAction("mode", "change", v -> runModeChange(params.get(), future));
 			pi.registerAction("mode", "cache", v -> runModeCache(params.get(), future));
+			pi.registerAction("mode", "checkTranslations", v -> runModeCheckTranslations(future));
+			pi.registerAction("mode", "printTranslationWithAllKeys", v -> runModePrintTranslationWithAllKeys(params.get(), future));
 
 			pi.execute();
 
@@ -125,6 +131,52 @@ public class ParamExecutor {
 		Config.setProcessThreads(parsePositiveInt(params.getOrDefault("process-threads", "" + Config.DEFAULT_PROCESS_THREADS)));
 		Config.setWriteThreads(parsePositiveInt(params.getOrDefault("write-threads", "" + Config.DEFAULT_WRITE_THREADS)));
 		Config.setMaxLoadedFiles(parsePositiveInt(params.getOrDefault("max-loaded-files", "" + Config.DEFAULT_MAX_LOADED_FILES)));
+	}
+
+	private static void runModeCheckTranslations(FutureTask<Boolean> future) {
+		Set<Locale> locales = Translation.getAvailableLanguages();
+		for (Locale locale : locales) {
+			Translation.load(locale);
+			boolean printedLanguage = false;
+			for (Translation translation : Translation.values()) {
+				if (!translation.isTranslated()) {
+					if (!printedLanguage) {
+						System.out.println(locale + ":");
+						printedLanguage = true;
+					}
+					System.out.println("  " + translation.getKey());
+				}
+			}
+		}
+		future.run();
+	}
+
+	private static void runModePrintTranslationWithAllKeys(Map<String, String> params, FutureTask<Boolean> future) {
+		String l = params.get("locale");
+		if (l == null) {
+			throw new IllegalArgumentException("no locale");
+		}
+
+		Pattern languangeFilePattern = Pattern.compile("^(?<locale>-?(?<language>-?[a-z]{2})_(?<country>-?[A-Z]{2}))$");
+
+		Locale locale;
+
+		Matcher matcher = languangeFilePattern.matcher(l);
+		if (matcher.matches()) {
+			String language = matcher.group("language");
+			String country = matcher.group("country");
+			locale = new Locale(language, country);
+		} else {
+			throw new IllegalArgumentException("invalid locale " + l);
+		}
+
+		Translation.load(locale);
+
+		for (Translation translation : Translation.values()) {
+			System.out.println(translation.getKey() + ";" + (translation.isTranslated() ? translation.toString() : ""));
+		}
+
+		future.run();
 	}
 
 	private static void runModeCache(Map<String, String> params, FutureTask<Boolean> future) throws IOException {

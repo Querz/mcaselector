@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WorldDirectories implements Serializable {
+public class WorldDirectories implements Serializable, Cloneable {
 
 	private File region;
 	private File poi;
@@ -87,6 +87,16 @@ public class WorldDirectories implements Serializable {
 		}
 
 		return regionDirectories.values().toArray(new RegionDirectories[0]);
+	}
+
+	@Override
+	public WorldDirectories clone() {
+		try {
+			return (WorldDirectories) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override

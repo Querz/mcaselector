@@ -19,16 +19,16 @@ import java.awt.datatransfer.Transferable;
 
 public class OptionBar extends MenuBar {
 	/*
-	* File			View				Selection					Tools				About
-	* - Open		- Chunk Grid		- Clear selection			- Import chunks
-	* - Settings	- Region Grid		- Invert selection			- Filter chunks
-	* - Quit		- Goto				- Copy chunks				- Change fields
-	*				- Clear cache		- Paste chunks				- Edit NBT
-	*				- Clear all cache	- Export selected chunks	- Swap chunks
-	*									- Delete selected chunks
-	*									- Import selection
-	*									- Export selection
-	* 									- Clear cache
+	* File				View				Selection					Tools				About
+	* - Open World		- Chunk Grid		- Clear selection			- Import chunks
+	* - Open Region		- Region Grid		- Invert selection			- Filter chunks
+	* - Settings		- Goto				- Copy chunks				- Change fields
+	* - World Settings	- Clear cache		- Paste chunks				- Edit NBT
+	* - Quit			- Clear all cache	- Export selected chunks	- Swap chunks
+	*										- Delete selected chunks
+	*										- Import selection
+	*										- Export selection
+	* 										- Clear cache
 	* */
 
 	private final Menu file = UIFactory.menu(Translation.MENU_FILE);
@@ -40,6 +40,7 @@ public class OptionBar extends MenuBar {
 	private final MenuItem openWorld = UIFactory.menuItem(Translation.MENU_FILE_OPEN_WORLD);
 	private final MenuItem open = UIFactory.menuItem(Translation.MENU_FILE_OPEN);
 	private final MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
+	private final MenuItem worldSettings = UIFactory.menuItem(Translation.MENU_FILE_WORLD_SETTINGS);
 	private final MenuItem quit = UIFactory.menuItem(Translation.MENU_FILE_QUIT);
 	private final CheckMenuItem chunkGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_CHUNK_GRID, true);
 	private final CheckMenuItem regionGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_REGION_GRID, true);
@@ -69,7 +70,10 @@ public class OptionBar extends MenuBar {
 
 		tileMap.setOnUpdate(this::onUpdate);
 
-		file.getItems().addAll(openWorld, open, UIFactory.separator(), settings, UIFactory.separator(), quit);
+		file.getItems().addAll(
+				openWorld, open, UIFactory.separator(),
+				settings, worldSettings, UIFactory.separator(),
+				quit);
 		view.getItems().addAll(
 				chunkGrid, regionGrid, UIFactory.separator(),
 				goTo, UIFactory.separator(),
@@ -90,6 +94,7 @@ public class OptionBar extends MenuBar {
 		openWorld.setOnAction(e -> DialogHelper.openWorld(tileMap, primaryStage, this));
 		open.setOnAction(e -> DialogHelper.openRegion(tileMap, primaryStage, this));
 		settings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage));
+		worldSettings.setOnAction(e -> DialogHelper.editWorldSettings(tileMap, primaryStage));
 		quit.setOnAction(e -> System.exit(0));
 		chunkGrid.setOnAction(e -> tileMap.setShowChunkGrid(chunkGrid.isSelected()));
 		regionGrid.setOnAction(e -> tileMap.setShowRegionGrid(regionGrid.isSelected()));

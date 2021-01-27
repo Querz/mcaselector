@@ -15,8 +15,10 @@ menu.view;View
 menu.selection;Selection
 menu.tools;Tools
 menu.about;About
-menu.file.open;Open
+menu.file.open_world;Open World
+menu.file.open;Open Region
 menu.file.settings;Settings
+menu.file.world_settings;World Settings
 menu.file.quit;Quit
 menu.view.chunk_grid;Chunk Grid
 menu.view.region_grid;Region Grid
@@ -37,6 +39,7 @@ menu.tools.filter_chunks;Filter chunks
 menu.tools.change_fields;Change fields
 menu.tools.edit_nbt;Edit chunk
 menu.tools.swap_chunks;Swap chunks
+dialog.select_world.title;Select Dimension
 dialog.settings.title;Settings
 dialog.settings.language;Language
 dialog.settings.read_threads;Read Threads
@@ -47,9 +50,13 @@ dialog.settings.region_color;Region selection color
 dialog.settings.chunk_color;Chunk selection color
 dialog.settings.shade;Shade
 dialog.settings.shade_water;Shade water
+dialog.settings.mc_saves_dir;MC Saves Directory
 dialog.settings.print_debug;Print debug messages
 dialog.settings.show_log_file;Show log file
 dialog.settings.reset;Reset
+dialog.world_settings.title;World Settings
+dialog.world_settings.poi;POI
+dialog.world_settings.entities;Entities
 dialog.goto.title;Goto location
 dialog.confirmation.question;Are you sure?
 dialog.delete_chunks_confirmation.title;Delete chunks
@@ -121,5 +128,9 @@ dialog.progress.title.deleting_filtered_chunks;Deleting filtered chunks...
 dialog.progress.title.exporting_filtered_chunks;Exporting filtered chunks...
 dialog.progress.title.selecting_filtered_chunks;Selecting filtered chunks...
 dialog.progress.title.changing_nbt_data;Changing NBT data...
+dialog.error.button.copy_to_clipboard;Copy to Clipboard
+dialog.error.title;Error
+dialog.error.header;An Error occurred
+dialog.error.copied_to_clipboard;Copied to clipboard!
 button.cancel;Cancel
 button.ok;OK

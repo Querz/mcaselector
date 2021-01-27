@@ -30,6 +30,7 @@ import net.querz.mcaselector.ui.dialog.NBTEditorDialog;
 import net.querz.mcaselector.ui.dialog.ProgressDialog;
 import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
 import net.querz.mcaselector.ui.dialog.SettingsDialog;
+import net.querz.mcaselector.ui.dialog.WorldSettingsDialog;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -240,6 +241,10 @@ public class DialogHelper {
 		});
 	}
 
+	public static void editWorldSettings(TileMap tileMap, Stage primaryStage) {
+		new WorldSettingsDialog(primaryStage).showAndWait();
+	}
+
 	public static void editNBT(TileMap tileMap, Stage primaryStage) {
 		new NBTEditorDialog(tileMap, primaryStage).showAndWait();
 	}
@@ -418,7 +423,11 @@ public class DialogHelper {
 				tileMap.update();
 				tileMap.disable(false);
 				optionBar.setWorldDependentMenuItemsEnabled(true, tileMap);
+			} else {
+				new ErrorDialog(primaryStage, String.format("no mca files found in %s", file));
 			}
+		} else {
+			new ErrorDialog(primaryStage, String.format("%s is not a directory", file));
 		}
 	}
 
@@ -428,14 +437,13 @@ public class DialogHelper {
 		if (file != null && file.isDirectory()) {
 			List<File> dimensions = detectDimensionDirectories(file);
 			if (dimensions.size() == 0) {
-				new ErrorDialog(primaryStage, String.format("no dimensions found in %s", file.getAbsolutePath())).showAndWait();
+				new ErrorDialog(primaryStage, String.format("no dimensions found in %s", file.getAbsolutePath()));
 				Debug.dumpf("no dimensions found in %s", file.getAbsolutePath());
 				return;
 			}
 
 			// show world selection dialog
 			Optional<File> result = new SelectWorldDialog(dimensions, tileMap, primaryStage).showAndWait();
-			System.out.println(result);
 			result.ifPresent(dim -> {
 				WorldDirectories worldDirectories = detectWorldDirectories(dim);
 				Config.setWorldDirs(worldDirectories);
@@ -445,6 +453,8 @@ public class DialogHelper {
 				tileMap.disable(false);
 				optionBar.setWorldDependentMenuItemsEnabled(true, tileMap);
 			});
+		} else {
+			new ErrorDialog(primaryStage, String.format("%s is not a directory", file));
 		}
 	}
 
@@ -470,7 +480,7 @@ public class DialogHelper {
 		}
 	}
 
-	private static DirectoryChooser createDirectoryChooser(String initialDirectory) {
+	public static DirectoryChooser createDirectoryChooser(String initialDirectory) {
 		DirectoryChooser directoryChooser = new DirectoryChooser();
 		if (initialDirectory != null) {
 			directoryChooser.setInitialDirectory(new File(initialDirectory));

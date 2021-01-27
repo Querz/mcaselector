@@ -36,6 +36,7 @@ public enum Translation {
 	MENU_FILE_OPEN_WORLD("menu.file.open_world"),
 	MENU_FILE_OPEN("menu.file.open"),
 	MENU_FILE_SETTINGS("menu.file.settings"),
+	MENU_FILE_WORLD_SETTINGS("menu.file.world_settings"),
 	MENU_FILE_QUIT("menu.file.quit"),
 	MENU_VIEW_CHUNK_GRID("menu.view.chunk_grid"),
 	MENU_VIEW_REGION_GRID("menu.view.region_grid"),
@@ -71,6 +72,9 @@ public enum Translation {
 	DIALOG_SETTINGS_PRINT_DEBUG("dialog.settings.print_debug"),
 	DIALOG_SETTINGS_SHOW_LOG_FILE("dialog.settings.show_log_file"),
 	DIALOG_SETTINGS_RESET("dialog.settings.reset"),
+	DIALOG_WORLD_SETTINGS_TITLE("dialog.world_settings.title"),
+	DIALOG_WORLD_SETTINGS_POI("dialog.world_settings.poi"),
+	DIALOG_WORLD_SETTINGS_ENTITIES("dialog.world_settings.entities"),
 	DIALOG_GOTO_TITLE("dialog.goto.title"),
 	DIALOG_CONFIRMATION_QUESTION("dialog.confirmation.question"),
 	DIALOG_DELETE_CHUNKS_CONFIRMATION_TITLE("dialog.delete_chunks_confirmation.title"),
@@ -197,6 +201,10 @@ public enum Translation {
 			return super.getValue();
 		}
 
+		public boolean isTranslated() {
+			return super.getValue() != null;
+		}
+
 		public String format(Object... values) {
 			String value = super.getValue();
 			if (value == null) {
@@ -208,6 +216,14 @@ public enum Translation {
 		public String getKey() {
 			return key;
 		}
+	}
+
+	public boolean isTranslated() {
+		return translationProperty.isTranslated();
+	}
+
+	public String getKey() {
+		return translationProperty.key;
 	}
 
 	public StringProperty getProperty() {

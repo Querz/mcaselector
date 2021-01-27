@@ -135,11 +135,23 @@ public final class CacheHelper {
 
 	private static String readVersionFromFile(File file) {
 		String version = null;
+		String poi = null;
+		String entities = null;
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			version = br.readLine();
+			poi = br.readLine();
+			entities = br.readLine();
 		} catch (IOException ex) {
 			Debug.dumpException("failed to read version from file " + file, ex);
 		}
+
+		if (poi != null && !poi.isEmpty() && !poi.equals("null")) {
+			Config.getWorldDirs().setPoi(new File(poi));
+		}
+		if (entities != null && !entities.isEmpty() && !entities.equals("null")) {
+			Config.getWorldDirs().setEntities(new File(entities));
+		}
+
 		return version;
 	}
 
@@ -162,7 +174,9 @@ public final class CacheHelper {
 		}
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(versionFile))) {
-			bw.write(applicationVersion);
+			bw.write(applicationVersion + "\n");
+			bw.write(Config.getWorldDirs().getPoi() + "\n");
+			bw.write(Config.getWorldDirs().getEntities() + "");
 		} catch (IOException ex) {
 			Debug.dumpException("failed to write cache version file", ex);
 		}

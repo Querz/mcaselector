@@ -390,6 +390,12 @@
 	-fx-padding: 10 0 -10 0;
 }
 
+/*...*/
+
+.world-settings-dialog-pane .grid-pane {
+	-fx-spacing: 3px;
+}
+
 /*---------- PROGRESS DIALOG ----------*/
 
 .progress-dialog {

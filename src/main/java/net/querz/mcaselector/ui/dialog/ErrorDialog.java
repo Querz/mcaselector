@@ -24,6 +24,7 @@ public class ErrorDialog extends Alert {
 		super(AlertType.ERROR, null, ButtonType.CLOSE);
 		init(primaryStage);
 		setContentText(errorMessage);
+		showAndWait();
 	}
 
 	// adds a copy-to-clipboard button
@@ -50,6 +51,7 @@ public class ErrorDialog extends Alert {
 
 		content.getChildren().addAll(errorText, copiedToClipboard);
 		getDialogPane().setContent(content);
+		showAndWait();
 	}
 
 	private void init(Stage primaryStage) {
