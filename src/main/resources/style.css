@@ -392,8 +392,20 @@
 
 /*...*/
 
-.world-settings-dialog-pane .grid-pane {
-	-fx-spacing: 3px;
+.world-settings-dialog-pane .grid-pane .label {
+	-fx-padding: 5 10 5 0;
+}
+
+.world-settings-dialog-pane .grid-pane .h-box {
+	-fx-spacing: 5;
+}
+
+.world-settings-dialog-pane .grid-pane .button {
+	-fx-padding: 0 10 0 10;
+}
+
+.world-settings-dialog-pane .grid-pane .text-field {
+	-fx-pref-width: 300px;
 }
 
 /*---------- PROGRESS DIALOG ----------*/

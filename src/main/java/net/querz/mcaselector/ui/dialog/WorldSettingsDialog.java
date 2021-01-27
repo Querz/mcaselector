@@ -8,6 +8,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.Config;
@@ -65,14 +67,20 @@ public class WorldSettingsDialog extends Dialog<WorldDirectories> {
 		}
 
 		GridPane grid = new GridPane();
+		grid.getStyleClass().add("grid-pane");
 		grid.add(poiLabel, 0, 0);
 		grid.add(entitiesLabel, 0, 1);
-		grid.add(poiDir, 1, 0);
-		grid.add(entitiesDir, 1, 1);
-		grid.add(openPoi, 2, 0);
-		grid.add(openEntities, 2, 1);
+		grid.add(wrapTextFieldAndButton(poiDir, openPoi), 1, 0);
+		grid.add(wrapTextFieldAndButton(entitiesDir, openEntities), 1, 1);
 
 		getDialogPane().setContent(grid);
+	}
+
+	private HBox wrapTextFieldAndButton(TextField textField, Button button) {
+		HBox box = new HBox();
+		box.getStyleClass().add("h-box");
+		box.getChildren().addAll(textField, button);
+		return box;
 	}
 
 	private File openDirectory(TextField textField) {
