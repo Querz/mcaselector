@@ -278,7 +278,8 @@
 
 .text-area {
 	-fx-text-fill: -color-text-light;
-	-fx-pref-height: 75px;
+	-fx-pref-height: 200px;
+	-fx-pref-width: 600px;
 }
 
 .text-area .content {
