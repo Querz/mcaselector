@@ -33,6 +33,8 @@ public class MCAFile {
 		}
 		this.location = location;
 		this.file = file;
+		this.chunks = new Chunk[1024];
+		this.timestamps = new int[1024];
 	}
 
 // IO STUFF ------------------------------------------------------------------------------------------------------------
@@ -115,11 +117,11 @@ public class MCAFile {
 		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
 			int[] offsets = loadHeader(raf);
 
-			chunks = new Chunk[1024];
 			Point2i origin = location.regionToChunk();
 
 			for (int i = 0; i < 1024; i++) {
 				if (offsets[i] == 0) {
+					chunks[i] = null;
 					continue;
 				}
 				raf.seek(offsets[i] * 4096);
@@ -130,6 +132,7 @@ public class MCAFile {
 					chunks[i] = new Chunk(chunkLocation);
 					chunks[i].load(raf);
 				} catch (Exception ex) {
+					chunks[i] = null;
 					Debug.dumpException("failed to load chunk at " + chunkLocation, ex);
 				}
 			}
@@ -140,11 +143,11 @@ public class MCAFile {
 	public int[] load(ByteArrayPointer ptr) throws IOException {
 		int[] offsets = loadHeader(ptr);
 
-		chunks = new Chunk[1024];
 		Point2i origin = location.regionToChunk();
 
 		for (int i = 0; i < 1024; i++) {
 			if (offsets[i] == 0) {
+				chunks[i] = null;
 				continue;
 			}
 			ptr.seek(offsets[i] * 4096);
@@ -155,6 +158,7 @@ public class MCAFile {
 				chunks[i] = new Chunk(chunkLocation);
 				chunks[i].load(ptr);
 			} catch (IOException ex) {
+				chunks[i] = null;
 				Debug.dumpException("failed to load chunk at " + chunkLocation, ex);
 			}
 		}
@@ -173,7 +177,6 @@ public class MCAFile {
 		}
 
 		// read timestamps
-		timestamps = new int[1024];
 		for (int i = 0; i < 1024; i++) {
 			timestamps[i] = raf.readInt();
 		}

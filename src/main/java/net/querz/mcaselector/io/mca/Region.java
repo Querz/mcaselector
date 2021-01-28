@@ -24,13 +24,13 @@ public class Region {
 
 	public static Region loadRegion(RegionDirectories dirs, byte[] regionData, byte[] poiData, byte[] entitiesData) throws IOException {
 		Region r = new Region();
-		if (dirs.getRegion() != null) {
+		if (dirs.getRegion() != null && regionData != null) {
 			r.loadRegion(dirs.getRegion(), new ByteArrayPointer(regionData));
 		}
-		if (dirs.getPoi() != null) {
+		if (dirs.getPoi() != null && poiData != null) {
 			r.loadPOI(dirs.getPoi(), new ByteArrayPointer(poiData));
 		}
-		if (dirs.getEntities() != null) {
+		if (dirs.getEntities() != null && entitiesData != null) {
 			r.loadEntities(dirs.getEntities(), new ByteArrayPointer(entitiesData));
 		}
 		return r;
@@ -82,7 +82,7 @@ public class Region {
 		this.region = region;
 	}
 
-	public void setPOI(MCAFile poi) {
+	public void setPoi(MCAFile poi) {
 		this.poi = poi;
 	}
 

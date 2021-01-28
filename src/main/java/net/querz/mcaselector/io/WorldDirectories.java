@@ -62,26 +62,30 @@ public class WorldDirectories implements Serializable, Cloneable {
 			}
 		}
 
-		File[] p = this.entities.listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
-		if (p != null) {
-			for (File f : p) {
-				Point2i l = FileHelper.parseMCAFileName(f);
-				if (regionDirectories.containsKey(l)) {
-					regionDirectories.get(l).setEntities(f);
-				} else {
-					regionDirectories.put(l, new RegionDirectories(l, null, f, null));
+		if (this.entities != null) {
+			File[] p = this.entities.listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
+			if (p != null) {
+				for (File f : p) {
+					Point2i l = FileHelper.parseMCAFileName(f);
+					if (regionDirectories.containsKey(l)) {
+						regionDirectories.get(l).setEntities(f);
+					} else {
+						regionDirectories.put(l, new RegionDirectories(l, null, f, null));
+					}
 				}
 			}
 		}
 
-		File[] e = this.poi.listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
-		if (e != null) {
-			for (File f : e) {
-				Point2i l = FileHelper.parseMCAFileName(f);
-				if (regionDirectories.containsKey(l)) {
-					regionDirectories.get(l).setPoi(f);
-				} else {
-					regionDirectories.put(l, new RegionDirectories(l, null, null, f));
+		if (this.poi != null) {
+			File[] e = this.poi.listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
+			if (e != null) {
+				for (File f : e) {
+					Point2i l = FileHelper.parseMCAFileName(f);
+					if (regionDirectories.containsKey(l)) {
+						regionDirectories.get(l).setPoi(f);
+					} else {
+						regionDirectories.put(l, new RegionDirectories(l, null, null, f));
+					}
 				}
 			}
 		}

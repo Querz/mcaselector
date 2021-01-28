@@ -38,7 +38,7 @@ public class OptionBar extends MenuBar {
 	private final Label about = UIFactory.label(Translation.MENU_ABOUT);
 
 	private final MenuItem openWorld = UIFactory.menuItem(Translation.MENU_FILE_OPEN_WORLD);
-	private final MenuItem open = UIFactory.menuItem(Translation.MENU_FILE_OPEN);
+	private final MenuItem openRegion = UIFactory.menuItem(Translation.MENU_FILE_OPEN);
 	private final MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
 	private final MenuItem worldSettings = UIFactory.menuItem(Translation.MENU_FILE_WORLD_SETTINGS);
 	private final MenuItem quit = UIFactory.menuItem(Translation.MENU_FILE_QUIT);
@@ -71,7 +71,7 @@ public class OptionBar extends MenuBar {
 		tileMap.setOnUpdate(this::onUpdate);
 
 		file.getItems().addAll(
-				openWorld, open, UIFactory.separator(),
+				openWorld, openRegion, UIFactory.separator(),
 				settings, worldSettings, UIFactory.separator(),
 				quit);
 		view.getItems().addAll(
@@ -92,7 +92,7 @@ public class OptionBar extends MenuBar {
 		getMenus().addAll(file, view, selection, tools, aboutMenu);
 
 		openWorld.setOnAction(e -> DialogHelper.openWorld(tileMap, primaryStage, this));
-		open.setOnAction(e -> DialogHelper.openRegion(tileMap, primaryStage, this));
+		openRegion.setOnAction(e -> DialogHelper.openRegion(tileMap, primaryStage, this));
 		settings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage));
 		worldSettings.setOnAction(e -> DialogHelper.editWorldSettings(tileMap, primaryStage));
 		quit.setOnAction(e -> System.exit(0));
@@ -117,7 +117,7 @@ public class OptionBar extends MenuBar {
 		swapChunks.setOnAction(e -> DialogHelper.swapChunks(tileMap, primaryStage));
 
 
-		open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN));
+		openWorld.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN));
 		quit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCodeCombination.SHORTCUT_DOWN));
 		chunkGrid.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCodeCombination.SHORTCUT_DOWN));
 		regionGrid.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCodeCombination.SHORTCUT_DOWN));
@@ -156,6 +156,7 @@ public class OptionBar extends MenuBar {
 	}
 
 	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap) {
+		worldSettings.setDisable(!enabled);
 		filterChunks.setDisable(!enabled);
 		changeFields.setDisable(!enabled);
 		importChunks.setDisable(!enabled);

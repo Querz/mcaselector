@@ -394,6 +394,10 @@ public class ChunkImporter {
 
 					Debug.dumpf("merging region chunks from %s into %s", sourceData.getKey(), target);
 
+					if (targetRegion.getRegion() == null) {
+						targetRegion.setRegion(new MCAFile(getRegionDirectories().getRegion()));
+					}
+
 					source.mergeChunksInto(targetRegion.getRegion(), offset, overwrite, sourceChunks == null ? null : sourceChunks.get(sourceData.getKey()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
 				}
 
@@ -403,6 +407,10 @@ public class ChunkImporter {
 
 					Debug.dumpf("merging poi chunks from %s into %s", sourceData.getKey(), target);
 
+					if (targetRegion.getPoi() == null) {
+						targetRegion.setPoi(new MCAFile(getRegionDirectories().getPoi()));
+					}
+
 					source.mergeChunksInto(targetRegion.getPoi(), offset, overwrite, sourceChunks == null ? null : sourceChunks.get(sourceData.getKey()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
 				}
 
@@ -411,6 +419,10 @@ public class ChunkImporter {
 					source.load(new ByteArrayPointer(sourceData.getValue()));
 
 					Debug.dumpf("merging entities chunks from %s into %s", sourceData.getKey(), target);
+
+					if (targetRegion.getEntities() == null) {
+						targetRegion.setEntities(new MCAFile(getRegionDirectories().getEntities()));
+					}
 
 					source.mergeChunksInto(targetRegion.getEntities(), offset, overwrite, sourceChunks == null ? null : sourceChunks.get(sourceData.getKey()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
 				}
