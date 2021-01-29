@@ -426,7 +426,7 @@ public class DialogHelper {
 			} else {
 				new ErrorDialog(primaryStage, String.format("no mca files found in %s", file));
 			}
-		} else {
+		} else if (file != null) {
 			new ErrorDialog(primaryStage, String.format("%s is not a directory", file));
 		}
 	}
@@ -453,7 +453,7 @@ public class DialogHelper {
 				tileMap.disable(false);
 				optionBar.setWorldDependentMenuItemsEnabled(true, tileMap);
 			});
-		} else {
+		} else if (file != null) {
 			new ErrorDialog(primaryStage, String.format("%s is not a directory", file));
 		}
 	}
