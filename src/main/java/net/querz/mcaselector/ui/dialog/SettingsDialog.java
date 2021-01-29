@@ -14,8 +14,10 @@ import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.FileTextField;
 import net.querz.mcaselector.ui.UIFactory;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -51,7 +53,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private final Button pasteChunksColorPreview = new Button();
 	private final CheckBox shadeCheckBox = new CheckBox();
 	private final CheckBox shadeWaterCheckBox = new CheckBox();
-	private final TextField mcSavesDir = new TextField();
+	private final FileTextField mcSavesDir = new FileTextField();
 	private final CheckBox debugCheckBox = new CheckBox();
 
 	private Color regionSelectionColor = Config.getRegionSelectionColor().makeJavaFXColor();
@@ -82,7 +84,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			pasteChunksColorPreview.setBackground(new Background(new BackgroundFill(Config.DEFAULT_PASTE_CHUNKS_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
 			shadeCheckBox.setSelected(Config.DEFAULT_SHADE);
 			shadeWaterCheckBox.setSelected(Config.DEFAULT_SHADE_WATER);
-			mcSavesDir.setText(Config.DEFAULT_MC_SAVES_DIR);
+			mcSavesDir.setFile(Config.DEFAULT_MC_SAVES_DIR == null ? null : new File(Config.DEFAULT_MC_SAVES_DIR));
 			debugCheckBox.setSelected(Config.DEFAULT_DEBUG);
 		});
 
@@ -99,7 +101,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 						pasteChunksColor,
 						shadeCheckBox.isSelected(),
 						shadeWaterCheckBox.isSelected(),
-						mcSavesDir.getText(),
+						mcSavesDir.getFile(),
 						debugCheckBox.isSelected()
 				);
 			}
@@ -137,7 +139,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		pasteChunksColorPreview.setBackground(new Background(new BackgroundFill(pasteChunksColor, CornerRadii.EMPTY, Insets.EMPTY)));
 		shadeCheckBox.setSelected(Config.shade());
 		shadeWaterCheckBox.setSelected(Config.shadeWater());
-		mcSavesDir.setText(Config.getMCSavesDir());
+		mcSavesDir.setFile(Config.getMCSavesDir() == null ? null : new File(Config.getMCSavesDir()));
 		debugCheckBox.setSelected(Config.debug());
 
 		regionSelectionColorPreview.setOnMousePressed(e -> {
@@ -218,11 +220,11 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		private final Color regionColor, chunkColor, pasteColor;
 		private final boolean shadeWater;
 		private final boolean shade;
-		private final String mcSavesDir;
+		private final File mcSavesDir;
 		private final boolean debug;
 		private final Locale locale;
 
-		public Result(Locale locale, int readThreads, int processThreads, int writeThreads, int maxLoadedFiles, Color regionColor, Color chunkColor, Color pasteColor, boolean shade, boolean shadeWater, String mcSavesDir, boolean debug) {
+		public Result(Locale locale, int readThreads, int processThreads, int writeThreads, int maxLoadedFiles, Color regionColor, Color chunkColor, Color pasteColor, boolean shade, boolean shadeWater, File mcSavesDir, boolean debug) {
 			this.locale = locale;
 			this.readThreads = readThreads;
 			this.processThreads = processThreads;
@@ -233,7 +235,11 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			this.pasteColor = pasteColor;
 			this.shade = shade;
 			this.shadeWater = shadeWater;
-			this.mcSavesDir = mcSavesDir;
+			if (mcSavesDir == null) {
+				this.mcSavesDir = new File(Config.DEFAULT_MC_SAVES_DIR);
+			} else {
+				this.mcSavesDir = mcSavesDir;
+			}
 			this.debug = debug;
 		}
 
@@ -277,7 +283,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			return shadeWater;
 		}
 
-		public String getMcSavesDir() {
+		public File getMcSavesDir() {
 			return mcSavesDir;
 		}
 

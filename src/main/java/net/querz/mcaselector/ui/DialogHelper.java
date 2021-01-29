@@ -234,7 +234,7 @@ public class DialogHelper {
 			Config.setPasteChunksColor(new Color(r.getPasteColor()));
 			Config.setShade(r.getShade());
 			Config.setShadeWater(r.getShadeWater());
-			Config.setMCSavesDir(r.getMcSavesDir());
+			Config.setMCSavesDir(r.getMcSavesDir() + "");
 			Config.setDebug(r.getDebug());
 			tileMap.redrawOverlays();
 			tileMap.update();

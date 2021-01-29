@@ -396,16 +396,18 @@
 	-fx-padding: 5 10 5 0;
 }
 
-.world-settings-dialog-pane .grid-pane .h-box {
+.world-settings-dialog-pane .text-field {
+	-fx-pref-width: 300px;
+}
+
+/*---------- FILE TEXT FIELD ----------*/
+
+.file-text-field {
 	-fx-spacing: 5;
 }
 
-.world-settings-dialog-pane .grid-pane .button {
+.file-text-field .button {
 	-fx-padding: 0 10 0 10;
-}
-
-.world-settings-dialog-pane .grid-pane .text-field {
-	-fx-pref-width: 300px;
 }
 
 /*---------- PROGRESS DIALOG ----------*/
