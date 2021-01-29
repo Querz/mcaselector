@@ -229,7 +229,7 @@ public class MCAFile {
 			offset |= (raf.read() & 0xFF) << 8;
 			offset = offset | raf.read() & 0xFF;
 
-			raf.seek(offset);
+			raf.seek(offset * 4096);
 
 			Point2i absoluteChunkLocation = region.regionToChunk().add(rel);
 
