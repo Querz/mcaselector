@@ -292,19 +292,19 @@
 	-fx-background-color: -color-dialog-background;
 }
 
-.indexed-cell:even {
+.list-view .indexed-cell:even {
 	-fx-background-color: -color-field-cell-even;
 }
 
-.indexed-cell:odd {
+.list-view .indexed-cell:odd {
 	-fx-background-color: -color-field-cell-odd;
 }
 
-.cell {
+.list-view .cell {
 	-fx-text-fill: -color-text-light;
 }
 
-.list-cell:selected {
+.list-view .list-cell:selected {
 	-fx-background-color: -color-text-field-focused-shadow;
 }
 
