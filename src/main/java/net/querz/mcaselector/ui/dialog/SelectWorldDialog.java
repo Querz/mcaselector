@@ -33,7 +33,7 @@ public class SelectWorldDialog extends Dialog<File> {
 		worlds.getItems().addAll(worldDirectories);
 		worlds.getSelectionModel().selectFirst();
 
-		setResultConverter(p -> worlds.getSelectionModel().getSelectedItem());
+		setResultConverter(p -> p == ButtonType.OK ? worlds.getSelectionModel().getSelectedItem() : null);
 
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
 

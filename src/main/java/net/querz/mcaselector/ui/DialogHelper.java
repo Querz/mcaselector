@@ -242,7 +242,8 @@ public class DialogHelper {
 	}
 
 	public static void editWorldSettings(TileMap tileMap, Stage primaryStage) {
-		new WorldSettingsDialog(primaryStage).showAndWait();
+		Optional<WorldDirectories> result = new WorldSettingsDialog(primaryStage).showAndWait();
+		result.ifPresent(Config::setWorldDirs);
 	}
 
 	public static void editNBT(TileMap tileMap, Stage primaryStage) {

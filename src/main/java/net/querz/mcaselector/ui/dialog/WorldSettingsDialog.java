@@ -42,7 +42,7 @@ public class WorldSettingsDialog extends Dialog<WorldDirectories> {
 		// make sure that they are not equal to the region folder or to each other
 
 		worldDirectories = Config.getWorldDirs().clone();
-		setResultConverter(c -> worldDirectories);
+		setResultConverter(c -> c == ButtonType.OK ? worldDirectories : null);
 
 		openPoi.setOnAction(e -> {
 			File poi = openDirectory(poiDir);
