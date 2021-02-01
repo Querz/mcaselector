@@ -10,6 +10,7 @@ import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.io.NBTDeserializer;
 import net.querz.nbt.io.NBTSerializer;
 import net.querz.nbt.io.NamedTag;
+import net.querz.nbt.io.SNBTUtil;
 import net.querz.nbt.tag.CompoundTag;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -168,5 +169,16 @@ public class Chunk {
 		chunk.data = root;
 		chunk.compressionType = CompressionType.ZLIB;
 		return chunk;
+	}
+
+	@Override
+	public String toString() {
+		String s;
+		try {
+			 s = SNBTUtil.toSNBT(data);
+		} catch (IOException e) {
+			s = "error";
+		}
+		return "<absoluteLoaction=" + absoluteLocation + ", compressionType=" + compressionType + ", data=" + s + ">";
 	}
 }

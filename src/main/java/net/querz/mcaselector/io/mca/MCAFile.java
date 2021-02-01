@@ -5,6 +5,7 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.version.ChunkMerger;
 import net.querz.mcaselector.version.VersionController;
@@ -229,16 +230,36 @@ public class MCAFile {
 			offset |= (raf.read() & 0xFF) << 8;
 			offset = offset | raf.read() & 0xFF;
 
-			raf.seek(offset * 4096);
-
 			Point2i absoluteChunkLocation = region.regionToChunk().add(rel);
 
 			// read chunk data
 			Chunk chunkData = new Chunk(absoluteChunkLocation);
-			chunkData.load(raf);
+
+			if (offset > 0) {
+				raf.seek(offset * 4096);
+				chunkData.load(raf);
+			}
 
 			return chunkData;
 		}
+	}
+
+	public static void saveSingleChunk(File file, Point2i location, Chunk chunk) throws IOException {
+		MCAFile mcaFile = new MCAFile(file);
+		if (file.exists() && file.length() > 0) {
+			mcaFile.load();
+		} else if (chunk == null || chunk.isEmpty()) {
+			Debug.dumpf("nothing to save for and no existing file found for chunk %s", location);
+			return;
+		}
+
+		Point2i rel = location.mod(32);
+		rel.setX(rel.getX() < 0 ? 32 + rel.getX() : rel.getX());
+		rel.setZ(rel.getZ() < 0 ? 32 + rel.getZ() : rel.getZ());
+		int index = rel.getZ() * 32 + rel.getX();
+
+		mcaFile.setChunk(index, chunk);
+		mcaFile.saveWithTempFile();
 	}
 
 // END OF IO STUFF -----------------------------------------------------------------------------------------------------

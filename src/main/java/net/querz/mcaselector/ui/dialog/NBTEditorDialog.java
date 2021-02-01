@@ -5,6 +5,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -12,50 +14,87 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.CompressionType;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.MCAFile;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.ui.NBTTreeView;
 import net.querz.mcaselector.ui.UIFactory;
 import net.querz.nbt.tag.*;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 
-	private final Map<Integer, Label> addTagLabels = new LinkedHashMap<>();
-	private CompoundTag data;
-	private Point2i regionLocation;
-	private Point2i chunkLocation;
-
-	private final BorderPane treeViewHolder = new BorderPane();
 	private final Label treeViewPlaceHolder = UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_LOADING);
+	private final TabPane editors = new TabPane();
+
+	private CompoundTag regionData, poiData, entitiesData;
+	private final Point2i selectedChunk;
 
 	public NBTEditorDialog(TileMap tileMap, Stage primaryStage) {
 		titleProperty().bind(Translation.DIALOG_EDIT_NBT_TITLE.getProperty());
 		initStyle(StageStyle.UTILITY);
 		getDialogPane().getStyleClass().add("nbt-editor-dialog-pane");
-		setResultConverter(p -> p == ButtonType.APPLY ? new Result(data) : null);
+		setResultConverter(p -> p == ButtonType.APPLY ? new Result(regionData, poiData, entitiesData) : null);
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
 		getDialogPane().getButtonTypes().addAll(ButtonType.APPLY, ButtonType.CANCEL);
 		getDialogPane().lookupButton(ButtonType.APPLY).setDisable(true);
-		((Button) getDialogPane().lookupButton(ButtonType.APPLY)).setOnAction(e -> writeSingleChunk());
 
+		selectedChunk = getSelectedChunk(tileMap);
+
+		((Button) getDialogPane().lookupButton(ButtonType.APPLY)).setOnAction(e -> {
+			Timer t = new Timer();
+			writeSingleChunk(FileHelper.createRegionMCAFilePath(selectedChunk.chunkToRegion()), regionData);
+			writeSingleChunk(FileHelper.createPoiMCAFilePath(selectedChunk.chunkToRegion()), poiData);
+			writeSingleChunk(FileHelper.createEntitiesMCAFilePath(selectedChunk.chunkToRegion()), entitiesData);
+			Debug.dumpf("took %s to save chunk %s", t, selectedChunk);
+		});
+
+		Tab regionTab = createEditorTab("region", primaryStage, FileHelper.createRegionMCAFilePath(selectedChunk.chunkToRegion()), d -> regionData = d);
+		Tab poiTab = createEditorTab("poi", primaryStage, FileHelper.createPoiMCAFilePath(selectedChunk.chunkToRegion()), d -> poiData = d);
+		Tab entitiesTab = createEditorTab("entities", primaryStage, FileHelper.createEntitiesMCAFilePath(selectedChunk.chunkToRegion()), d -> entitiesData = d);
+
+		editors.getTabs().addAll(regionTab, poiTab, entitiesTab);
+
+		getDialogPane().setContent(editors);
+
+		Platform.runLater(editors::requestFocus);
+	}
+
+	private Point2i getSelectedChunk(TileMap tileMap) {
+		Map<Point2i, Set<Point2i>> selection = tileMap.getMarkedChunks();
+		if (selection.size() != 1) {
+			throw new RuntimeException("only one chunk can be selected, but found selection of " + selection.size() + " regions");
+		}
+		Point2i location = null;
+		for (Map.Entry<Point2i, Set<Point2i>> entry : selection.entrySet()) {
+			if (entry.getValue() == null) {
+				throw new RuntimeException("only one chunk can be selected, but found entire region " + entry.getKey() + " selected");
+			}
+			if (entry.getValue().size() != 1) {
+				throw new RuntimeException("only one chunk can be selected, but found selection of " + entry.getValue().size() + " chunks");
+			}
+			for (Point2i p : entry.getValue()) {
+				location = p;
+			}
+		}
+		if (location == null) {
+			throw new RuntimeException("no selected chunk found");
+		}
+		return location;
+	}
+
+	private Tab createEditorTab(String title, Stage primaryStage, File file, Consumer<CompoundTag> consumer) {
 		NBTTreeView nbtTreeView = new NBTTreeView(primaryStage);
 
 		ImageView deleteIcon = new ImageView(FileHelper.getIconFromResources("img/delete"));
@@ -83,33 +122,41 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 			}
 		});
 
-		delete.setOnMouseClicked(e -> nbtTreeView.deleteItem(nbtTreeView.getSelectionModel().getSelectedItem()));
-		nbtTreeView.setOnSelectionChanged((o, n) -> {
-			delete.setDisable(n == null || n.getParent() == null);
-			enableAddTagLabels(nbtTreeView.getPossibleChildTagTypes(n));
+		Map<Integer, Label> addTagLabels = new LinkedHashMap<>();
+
+		delete.setOnMouseClicked(e -> {
+			if (nbtTreeView.getSelectionModel().getSelectedItem().getParent() == null) {
+				consumer.accept(null);
+			}
+			nbtTreeView.deleteItem(nbtTreeView.getSelectionModel().getSelectedItem());
 		});
+		nbtTreeView.setOnSelectionChanged((o, n) -> {
+			delete.setDisable(n == null);
+			enableAddTagLabels(nbtTreeView.getPossibleChildTagTypes(n), addTagLabels);
+		});
+
+		BorderPane treeViewHolder = new BorderPane();
+		treeViewHolder.getStyleClass().add("nbt-tree-view-holder");
+		treeViewHolder.setCenter(treeViewPlaceHolder);
+		initAddTagLabels(nbtTreeView, addTagLabels, treeViewHolder, consumer);
 
 		HBox options = new HBox();
 		options.getStyleClass().add("nbt-editor-options");
-
-		treeViewHolder.getStyleClass().add("nbt-tree-view-holder");
-
-		initAddTagLabels(nbtTreeView);
 		options.getChildren().add(delete);
 		options.getChildren().addAll(addTagLabels.values());
 
 		VBox box = new VBox();
-
-		treeViewHolder.setCenter(treeViewPlaceHolder);
-
 		box.getChildren().addAll(treeViewHolder, options);
 
-		getDialogPane().setContent(box);
+		Tab tab = new Tab(title, box);
+		tab.setClosable(false);
 
-		readSingleChunkAsync(tileMap, nbtTreeView);
+		readSingleChunkAsync(file, nbtTreeView, treeViewHolder, addTagLabels, consumer);
+
+		return tab;
 	}
 
-	private void enableAddTagLabels(int[] ids) {
+	private void enableAddTagLabels(int[] ids, Map<Integer, Label> addTagLabels) {
 		for (Map.Entry<Integer, Label> label : addTagLabels.entrySet()) {
 			label.getValue().setDisable(true);
 		}
@@ -120,56 +167,54 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		}
 	}
 
-	private void initAddTagLabels(NBTTreeView nbtTreeView) {
-		addTagLabels.put(1, iconLabel("img/nbt/byte", ByteTag::new, nbtTreeView));
-		addTagLabels.put(2, iconLabel("img/nbt/short", ShortTag::new, nbtTreeView));
-		addTagLabels.put(3, iconLabel("img/nbt/int", IntTag::new, nbtTreeView));
-		addTagLabels.put(4, iconLabel("img/nbt/long", LongTag::new, nbtTreeView));
-		addTagLabels.put(5, iconLabel("img/nbt/float", FloatTag::new, nbtTreeView));
-		addTagLabels.put(6, iconLabel("img/nbt/double", DoubleTag::new, nbtTreeView));
-		addTagLabels.put(8, iconLabel("img/nbt/string", StringTag::new, nbtTreeView));
-		addTagLabels.put(9, iconLabel("img/nbt/list", () -> ListTag.createUnchecked(EndTag.class), nbtTreeView));
-		addTagLabels.put(10, iconLabel("img/nbt/compound", CompoundTag::new, nbtTreeView));
-		addTagLabels.put(7, iconLabel("img/nbt/byte_array", ByteArrayTag::new, nbtTreeView));
-		addTagLabels.put(11, iconLabel("img/nbt/int_array", IntArrayTag::new, nbtTreeView));
-		addTagLabels.put(12, iconLabel("img/nbt/long_array", LongArrayTag::new, nbtTreeView));
+	private void initAddTagLabels(NBTTreeView nbtTreeView, Map<Integer, Label> addTagLabels, BorderPane treeViewHolder, Consumer<CompoundTag> consumer) {
+		addTagLabels.put(1, iconLabel("img/nbt/byte", ByteTag::new, nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(2, iconLabel("img/nbt/short", ShortTag::new, nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(3, iconLabel("img/nbt/int", IntTag::new, nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(4, iconLabel("img/nbt/long", LongTag::new, nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(5, iconLabel("img/nbt/float", FloatTag::new, nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(6, iconLabel("img/nbt/double", DoubleTag::new, nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(8, iconLabel("img/nbt/string", StringTag::new, nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(9, iconLabel("img/nbt/list", () -> ListTag.createUnchecked(EndTag.class), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(10, iconLabel("img/nbt/compound", CompoundTag::new, nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(7, iconLabel("img/nbt/byte_array", ByteArrayTag::new, nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(11, iconLabel("img/nbt/int_array", IntArrayTag::new, nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(12, iconLabel("img/nbt/long_array", LongArrayTag::new, nbtTreeView, treeViewHolder, consumer));
 		// disable all add tag labels
-		enableAddTagLabels(null);
+		enableAddTagLabels(null, addTagLabels);
 	}
 
-	private Label iconLabel(String img, Supplier<Tag<?>> tagSupplier, NBTTreeView nbtTreeView) {
+	private Label iconLabel(String img, Supplier<Tag<?>> tagSupplier, NBTTreeView nbtTreeView, BorderPane treeViewHolder, Consumer<CompoundTag> consumer) {
 		ImageView icon = new ImageView(FileHelper.getIconFromResources(img));
 		Label label = new Label("", icon);
 		icon.setPreserveRatio(true);
 		label.setOnMouseEntered(e -> icon.setFitWidth(18));
 		label.setOnMouseExited(e -> icon.setFitWidth(16));
 		label.getStyleClass().add("nbt-editor-add-tag-label");
-		label.setOnMouseClicked(e -> nbtTreeView.addItem(nbtTreeView.getSelectionModel().getSelectedItem(), "Unknown", tagSupplier.get()));
+		label.setOnMouseClicked(e -> {
+			treeViewHolder.setCenter(nbtTreeView);
+			Tag<?> newTag = tagSupplier.get();
+			if (nbtTreeView.addItem(nbtTreeView.getSelectionModel().getSelectedItem(), "Unknown", newTag)) {
+				// if we created a root tag, it is always a compound tag
+				consumer.accept((CompoundTag) newTag);
+			}
+		});
 		return label;
 	}
 
-	private void readSingleChunkAsync(TileMap tileMap, NBTTreeView treeView) {
+	private void readSingleChunkAsync(File file, NBTTreeView treeView, BorderPane treeViewHolder, Map<Integer, Label> addTagLabels, Consumer<CompoundTag> consumer) {
 		new Thread(() -> {
-			Map<Point2i, Set<Point2i>> selection = tileMap.getMarkedChunks();
-			DataProperty<Point2i> region = new DataProperty<>();
-			DataProperty<Point2i> chunk = new DataProperty<>();
-			selection.forEach((k, v) -> {
-				region.set(k);
-				v.forEach(chunk::set);
-			});
-			regionLocation = region.get();
-			chunkLocation = chunk.get();
-			File file = FileHelper.createMCAFilePath(region.get());
-			Debug.dumpf("attempting to read single chunk from file: %s", chunk.get());
+			Debug.dumpf("attempting to read single chunk from file: %s", selectedChunk);
 			if (file.exists()) {
 				try {
-					Chunk chunkData = MCAFile.loadSingleChunk(file, chunk.get());
+					Chunk chunkData = MCAFile.loadSingleChunk(file, selectedChunk);
 					if (chunkData.getData() == null) {
-						Debug.dump("no chunk data found for:" + chunk.get());
+						Debug.dump("no chunk data found for:" + selectedChunk);
+						enableAddTagLabels(new int[]{10}, addTagLabels);
 						Platform.runLater(() -> treeViewHolder.setCenter(UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_NO_CHUNK_DATA)));
 						return;
 					}
-					data = chunkData.getData();
+					consumer.accept(chunkData.getData());
 					Platform.runLater(() -> {
 						treeView.setRoot(chunkData.getData());
 						treeViewHolder.setCenter(treeView);
@@ -179,60 +224,48 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 					Debug.dumpException("failed to load chunk", ex);
 				}
 			} else {
+				enableAddTagLabels(new int[]{10}, addTagLabels);
 				Platform.runLater(() -> treeViewHolder.setCenter(UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_NO_REGION_FILE)));
 			}
 		}).start();
 	}
 
-	private void writeSingleChunk() {
-		File file = FileHelper.createMCAFilePath(regionLocation);
-
-		byte[] data = new byte[(int) file.length()];
-		try (FileInputStream fis = new FileInputStream(file)) {
-			fis.read(data);
-		} catch (IOException ex) {
-			Debug.dumpException(String.format("failed to read MCAFile %s to write single chunk", file), ex);
-			return;
+	private void writeSingleChunk(File file, CompoundTag chunkData) {
+		Chunk chunk = null;
+		if (chunkData != null) {
+			chunk = new Chunk(selectedChunk);
+			chunk.setData(chunkData);
+			chunk.setCompressionType(CompressionType.ZLIB);
 		}
 
-		MCAFile dest = new MCAFile(file);
 		try {
-			dest.load(new ByteArrayPointer(data));
+			MCAFile.saveSingleChunk(file, selectedChunk, chunk);
+			Debug.dumpf("saved single chunk to %s", file);
 		} catch (IOException ex) {
-			Debug.dumpException("failed to load mca file", ex);
-		}
-
-		Point2i rel = chunkLocation.mod(32);
-		rel.setX(rel.getX() < 0 ? 32 + rel.getX() : rel.getX());
-		rel.setZ(rel.getZ() < 0 ? 32 + rel.getZ() : rel.getZ());
-		int index = rel.getZ() * Tile.SIZE_IN_CHUNKS + rel.getX();
-
-		Chunk chunkData = dest.getChunk(index);
-		chunkData.setData(this.data);
-		chunkData.setCompressionType(CompressionType.ZLIB);
-		dest.setChunk(index, chunkData);
-		dest.setTimestamp(index, (int) (System.currentTimeMillis() / 1000));
-		try {
-			File tmpFile = File.createTempFile(file.getName(), null, null);
-			try (RandomAccessFile raf = new RandomAccessFile(tmpFile, "rw")) {
-				dest.save(raf);
-			}
-			Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		} catch (Exception ex) {
-			Debug.dumpException(String.format("failed to write single chunk to MCAFile %s after editing", file), ex);
+			Debug.dumpException("failed to save single chunk to " + file, ex);
 		}
 	}
 
 	public static class Result {
 
-		private final CompoundTag data;
+		private final CompoundTag regionData, poiData, entitiesData;
 
-		private Result(CompoundTag data) {
-			this.data = data;
+		private Result(CompoundTag regionData, CompoundTag poiData, CompoundTag entitiesData) {
+			this.regionData = regionData;
+			this.poiData = poiData;
+			this.entitiesData = entitiesData;
 		}
 
-		public CompoundTag getData() {
-			return data;
+		public CompoundTag getRegionData() {
+			return regionData;
+		}
+
+		public CompoundTag getPoiData() {
+			return poiData;
+		}
+
+		public CompoundTag getEntitiesData() {
+			return entitiesData;
 		}
 	}
 }

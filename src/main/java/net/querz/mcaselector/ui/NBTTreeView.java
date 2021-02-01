@@ -89,6 +89,8 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				}
 				item.getParent().getChildren().remove(item);
 			}
+		} else {
+			setRoot((TreeItem<NamedTag>) null);
 		}
 	}
 
@@ -100,7 +102,14 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 	 * if the target is a compound, it adds the tag with a generic name.
 	 */
 	@SuppressWarnings("unchecked")
-	public void addItem(TreeItem<NamedTag> target, String name, Tag<?> tag) {
+	public boolean addItem(TreeItem<NamedTag> target, String name, Tag<?> tag) {
+		if (getRoot() == null && tag.getID() == CompoundTag.ID) {
+			setRoot((CompoundTag) tag);
+			layout();
+			getSelectionModel().select(0);
+			return true;
+		}
+
 		TreeItem<NamedTag> newItem = null;
 		if (target.getValue().tag.getID() == 9) {
 			ListTag<?> list = (ListTag<?>) target.getValue().tag;
@@ -141,6 +150,8 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		if (selectionChangedAction != null) {
 			selectionChangedAction.accept(getSelectionModel().getSelectedItem(), getSelectionModel().getSelectedItem());
 		}
+
+		return false;
 	}
 
 	private static String findNextPossibleName(CompoundTag comp, String name) {
@@ -164,6 +175,10 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 	public int[] getPossibleChildTagTypes(TreeItem<NamedTag> target) {
 		if (target == null) {
+			if (getRoot() == null) {
+				// when there is no root, we give the option to create a root compound tag
+				return new int[]{10};
+			}
 			return null;
 		}
 		if (target.getValue().tag.getID() == 9) {

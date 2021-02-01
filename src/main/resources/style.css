@@ -314,6 +314,24 @@
 	-fx-spacing: 5;
 }
 
+/*---------- TAB PANE ----------*/
+
+.tab-header-background {
+	-fx-background-color: -color-dialog-background;
+}
+
+.tab {
+	-fx-background-color: -color-button-background;
+}
+
+.tab:hover {
+	-fx-background-color: -color-button-hover-background;
+}
+
+.tab-label {
+	-fx-text-fill: -color-text-light;
+}
+
 /*---------- DIALOG ----------*/
 
 .dialog-pane {
