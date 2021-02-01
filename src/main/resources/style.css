@@ -680,6 +680,10 @@
 	-fx-pref-width: 240;
 }
 
+.settings-dialog-pane .file-text-field {
+	-fx-padding: 8 0 0 0;
+}
+
 /*---------- Transparent Stage ----------*/
 
 .transparent-stage-content {
