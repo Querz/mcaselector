@@ -424,6 +424,7 @@ public class DialogHelper {
 				tileMap.update();
 				tileMap.disable(false);
 				optionBar.setWorldDependentMenuItemsEnabled(true, tileMap);
+				tileMap.getWindow().setTitleSuffix(file.toString());
 			} else {
 				new ErrorDialog(primaryStage, String.format("no mca files found in %s", file));
 			}
@@ -453,6 +454,7 @@ public class DialogHelper {
 				tileMap.update();
 				tileMap.disable(false);
 				optionBar.setWorldDependentMenuItemsEnabled(true, tileMap);
+				tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent());
 			});
 		} else if (file != null) {
 			new ErrorDialog(primaryStage, String.format("%s is not a directory", file));

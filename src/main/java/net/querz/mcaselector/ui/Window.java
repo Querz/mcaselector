@@ -17,13 +17,18 @@ public class Window extends Application {
 
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
 
+	private Stage primaryStage;
+	private String title = "";
+
 	@Override
 	public void start(Stage primaryStage) {
+		this.primaryStage = primaryStage;
 		try {
-			primaryStage.setTitle("MCA Selector " + FileHelper.getManifestAttributes().getValue("Application-Version"));
+			title = "MCA Selector " + FileHelper.getManifestAttributes().getValue("Application-Version");
 		} catch (IOException ex) {
-			primaryStage.setTitle("MCA Selector - dev");
+			title = "MCA Selector - dev";
 		}
+		primaryStage.setTitle(title);
 		primaryStage.getIcons().add(FileHelper.getIconFromResources("img/icon"));
 
 		TileMap tileMap = new TileMap(this, width, height);
@@ -60,6 +65,14 @@ public class Window extends Application {
 		primaryStage.setOnCloseRequest(e -> System.exit(0));
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	public void setTitleSuffix(String suffix) {
+		if (suffix == null || suffix.isEmpty()) {
+			primaryStage.setTitle(title);
+		} else {
+			primaryStage.setTitle(title + "    " + suffix);
+		}
 	}
 
 	public boolean isKeyPressed(KeyCode keyCode) {

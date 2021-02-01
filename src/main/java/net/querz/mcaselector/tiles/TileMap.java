@@ -816,6 +816,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 	}
 
+	public Window getWindow() {
+		return window;
+	}
+
 	@Override
 	public void resize(double width, double height) {
 		setWidth(width);
