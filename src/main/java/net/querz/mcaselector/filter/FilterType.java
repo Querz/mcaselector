@@ -20,7 +20,7 @@ public enum FilterType {
 	TILE_ENTITY_AMOUNT("#TileEntities", TileEntityAmountFilter::new, Format.NUMBER),
 	STRUCTURES("Structures", StructureFilter::new, Format.TEXT);
 
-    private final String string;
+	private final String string;
 	private final Supplier<? extends Filter<?>> creator;
 	private final Format format;
 
