@@ -146,6 +146,7 @@ public enum Translation {
 	DIALOG_PROGRESS_TITLE_EXPORTING_FILTERED_CHUNKS("dialog.progress.title.exporting_filtered_chunks"),
 	DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS("dialog.progress.title.selecting_filtered_chunks"),
 	DIALOG_PROGRESS_TITLE_CHANGING_NBT_DATA("dialog.progress.title.changing_nbt_data"),
+	DIALOG_PROGRESS_TITLE_SAVING_CHUNK("dialog.progress.title.saving_chunk"),
 	DIALOG_ERROR_BUTTON_COPY_TO_CLIPBOARD("dialog.error.button.copy_to_clipboard"),
 	DIALOG_ERROR_TITLE("dialog.error.title"),
 	DIALOG_ERROR_HEADER("dialog.error.header"),

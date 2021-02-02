@@ -1,7 +1,7 @@
 package net.querz.mcaselector.ui.dialog;
 
 import javafx.application.Platform;
-import javafx.scene.control.Button;
+import javafx.event.ActionEvent;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -20,6 +20,7 @@ import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.MCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.ui.NBTTreeView;
@@ -47,17 +48,44 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		getDialogPane().getStyleClass().add("nbt-editor-dialog-pane");
 		setResultConverter(p -> p == ButtonType.APPLY ? new Result(regionData, poiData, entitiesData) : null);
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+		getDialogPane().getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
 		getDialogPane().getButtonTypes().addAll(ButtonType.APPLY, ButtonType.CANCEL);
 		getDialogPane().lookupButton(ButtonType.APPLY).setDisable(true);
 
 		selectedChunk = getSelectedChunk(tileMap);
 
-		((Button) getDialogPane().lookupButton(ButtonType.APPLY)).setOnAction(e -> {
+		getDialogPane().lookupButton(ButtonType.APPLY).addEventFilter(ActionEvent.ACTION, e -> {
+
 			Timer t = new Timer();
-			writeSingleChunk(FileHelper.createRegionMCAFilePath(selectedChunk.chunkToRegion()), regionData);
-			writeSingleChunk(FileHelper.createPoiMCAFilePath(selectedChunk.chunkToRegion()), poiData);
-			writeSingleChunk(FileHelper.createEntitiesMCAFilePath(selectedChunk.chunkToRegion()), entitiesData);
+
+			DataProperty<Exception> exception = new DataProperty<>();
+
+			new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SAVING_CHUNK, getDialogPane().getScene().getWindow()).showProgressBar(r -> {
+				try {
+					r.setMax(4);
+
+					r.updateProgress("region/" + FileHelper.createMCAFileName(selectedChunk.chunkToRegion()), 1);
+					writeSingleChunk(FileHelper.createRegionMCAFilePath(selectedChunk.chunkToRegion()), regionData);
+
+					r.incrementProgress("poi/" + FileHelper.createMCAFileName(selectedChunk.chunkToRegion()));
+					writeSingleChunk(FileHelper.createPoiMCAFilePath(selectedChunk.chunkToRegion()), poiData);
+
+					r.incrementProgress("entities/" + FileHelper.createMCAFileName(selectedChunk.chunkToRegion()));
+					writeSingleChunk(FileHelper.createEntitiesMCAFilePath(selectedChunk.chunkToRegion()), entitiesData);
+				} catch (Exception ex) {
+					exception.set(ex);
+					Debug.dumpException("failed to save chunk", ex);
+				} finally {
+					r.done("");
+				}
+			});
+
 			Debug.dumpf("took %s to save chunk %s", t, selectedChunk);
+
+			if (exception.get() != null) {
+				e.consume();
+				new ErrorDialog(primaryStage, exception.get());
+			}
 		});
 
 		Tab regionTab = createEditorTab("region", primaryStage, FileHelper.createRegionMCAFilePath(selectedChunk.chunkToRegion()), d -> regionData = d);
@@ -230,7 +258,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		}).start();
 	}
 
-	private void writeSingleChunk(File file, CompoundTag chunkData) {
+	private void writeSingleChunk(File file, CompoundTag chunkData) throws IOException {
 		Chunk chunk = null;
 		if (chunkData != null) {
 			chunk = new Chunk(selectedChunk);
@@ -243,6 +271,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 			Debug.dumpf("saved single chunk to %s", file);
 		} catch (IOException ex) {
 			Debug.dumpException("failed to save single chunk to " + file, ex);
+			throw ex;
 		}
 	}
 

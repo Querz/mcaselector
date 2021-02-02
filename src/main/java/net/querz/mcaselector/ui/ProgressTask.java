@@ -9,7 +9,7 @@ import net.querz.mcaselector.text.Translation;
 
 public abstract class ProgressTask extends Task<Void> implements Progress {
 
-	public int max;
+	private int max;
 	private int current = 0;
 	private final StringProperty infoProperty = new SimpleStringProperty(Translation.DIALOG_PROGRESS_RUNNING.toString());
 	private Runnable onFinish;
@@ -62,9 +62,11 @@ public abstract class ProgressTask extends Task<Void> implements Progress {
 
 	public void updateProgress(String info, double progress, int max) {
 		if (!locked) {
+			current = (int) progress;
 			Platform.runLater(() -> infoProperty.setValue(info));
 			updateProgress(progress, max);
 			if (progress == max && onFinish != null) {
+				System.out.println("GOING TO RUN ONFINISH");
 				Platform.runLater(onFinish);
 			}
 		}
