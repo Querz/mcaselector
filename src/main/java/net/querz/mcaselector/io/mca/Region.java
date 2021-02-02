@@ -3,7 +3,6 @@ package net.querz.mcaselector.io.mca;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.filter.Filter;
-import net.querz.mcaselector.filter.FilterData;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.point.Point2i;
@@ -148,7 +147,7 @@ public class Region {
 				continue;
 			}
 
-			FilterData filterData = new FilterData(this.region.getTimestamp(i), region, entities, poi);
+			ChunkData filterData = new ChunkData(this.region.getTimestamp(i), region, entities, poi);
 
 			if (filter.matches(filterData)) {
 				deleteChunkIndex(i);
@@ -166,7 +165,7 @@ public class Region {
 				continue;
 			}
 
-			FilterData filterData = new FilterData(this.region.getTimestamp(i), region, entities, poi);
+			ChunkData filterData = new ChunkData(this.region.getTimestamp(i), region, entities, poi);
 
 			// keep chunk if filter AND selection applies
 			// ignore selection if it's null
@@ -203,7 +202,7 @@ public class Region {
 				continue;
 			}
 
-			FilterData filterData = new FilterData(this.region.getTimestamp(i), region, entities, poi);
+			ChunkData filterData = new ChunkData(this.region.getTimestamp(i), region, entities, poi);
 
 			Point2i location = region.getAbsoluteLocation();
 			try {

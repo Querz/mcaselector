@@ -1,6 +1,7 @@
 package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.LongArrayTag;
@@ -44,7 +45,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 	}
 
 	@Override
-	public boolean contains(List<String> value, FilterData data) {
+	public boolean contains(List<String> value, ChunkData data) {
 		if (data.getEntities() == null) {
 			return false;
 		}
@@ -66,7 +67,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 	}
 
 	@Override
-	public boolean containsNot(List<String> value, FilterData data) {
+	public boolean containsNot(List<String> value, ChunkData data) {
 		return !contains(value, data);
 	}
 

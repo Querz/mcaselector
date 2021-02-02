@@ -1,5 +1,7 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.io.mca.ChunkData;
+
 public abstract class NumberFilter<T extends Number> extends Filter<T> {
 
 	private static final Comparator[] comparators = new Comparator[] {
@@ -56,7 +58,7 @@ public abstract class NumberFilter<T extends Number> extends Filter<T> {
 	}
 
 	@Override
-	public boolean matches(FilterData data) {
+	public boolean matches(ChunkData data) {
 		return matches(getFilterNumber(), getNumber(data));
 	}
 
@@ -71,7 +73,7 @@ public abstract class NumberFilter<T extends Number> extends Filter<T> {
 
 	abstract void setFilterNumber(T value);
 
-	abstract T getNumber(FilterData data);
+	abstract T getNumber(ChunkData data);
 
 	abstract boolean isEqual(T a, T b);
 

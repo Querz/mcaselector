@@ -1,5 +1,6 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.LongArrayTag;
 import net.querz.nbt.tag.Tag;
@@ -15,7 +16,7 @@ public class EntityAmountFilter extends IntFilter {
 	}
 
 	@Override
-	protected Integer getNumber(FilterData data) {
+	protected Integer getNumber(ChunkData data) {
 		if (data.getEntities() == null) {
 			return 0;
 		}

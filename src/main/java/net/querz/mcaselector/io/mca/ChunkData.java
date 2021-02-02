@@ -1,15 +1,13 @@
-package net.querz.mcaselector.filter;
+package net.querz.mcaselector.io.mca;
 
-import net.querz.mcaselector.io.mca.Chunk;
-
-public class FilterData {
+public class ChunkData {
 
 	private final int lastUpdated;
 	private final Chunk region;
 	private final Chunk entities;
 	private final Chunk poi;
 
-	public FilterData(int lastUpdated, Chunk region, Chunk entities, Chunk poi) {
+	public ChunkData(int lastUpdated, Chunk region, Chunk entities, Chunk poi) {
 		this.lastUpdated = lastUpdated;
 		this.region = region;
 		this.entities = entities;

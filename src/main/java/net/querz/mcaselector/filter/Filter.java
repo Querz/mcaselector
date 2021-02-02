@@ -1,5 +1,7 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.io.mca.ChunkData;
+
 import java.io.Serializable;
 
 public abstract class Filter<T> implements Serializable {
@@ -65,7 +67,7 @@ public abstract class Filter<T> implements Serializable {
 
 	public abstract void setComparator(Comparator comparator);
 
-	public abstract boolean matches(FilterData data);
+	public abstract boolean matches(ChunkData data);
 
 	public abstract Filter<T> clone();
 }

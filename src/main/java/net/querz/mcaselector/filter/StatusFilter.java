@@ -1,6 +1,7 @@
 package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.nbt.tag.StringTag;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class StatusFilter extends TextFilter<String> {
 	}
 
 	@Override
-	public boolean matches(FilterData data) {
+	public boolean matches(ChunkData data) {
 		switch (getComparator()) {
 			case EQUAL:
 				return isEqual(value, data);
@@ -59,7 +60,7 @@ public class StatusFilter extends TextFilter<String> {
 		return false;
 	}
 
-	public boolean isEqual(String value, FilterData data) {
+	public boolean isEqual(String value, ChunkData data) {
 		if (data.getRegion() == null) {
 			return false;
 		}
@@ -68,7 +69,7 @@ public class StatusFilter extends TextFilter<String> {
 	}
 
 	@Override
-	public boolean contains(String value, FilterData data) {
+	public boolean contains(String value, ChunkData data) {
 		if (data.getRegion() == null) {
 			return false;
 		}
@@ -77,7 +78,7 @@ public class StatusFilter extends TextFilter<String> {
 	}
 
 	@Override
-	public boolean containsNot(String value, FilterData data) {
+	public boolean containsNot(String value, ChunkData data) {
 		if (data.getRegion() == null) {
 			return true;
 		}

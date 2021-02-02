@@ -1,6 +1,7 @@
 package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.VersionController;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,7 +39,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 	}
 
 	@Override
-	public boolean contains(List<String> value, FilterData data) {
+	public boolean contains(List<String> value, ChunkData data) {
 		if (data.getRegion() == null) {
 			return false;
 		}
@@ -47,7 +48,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 	}
 
 	@Override
-	public boolean containsNot(List<String> value, FilterData data) {
+	public boolean containsNot(List<String> value, ChunkData data) {
 		return !contains(value, data);
 	}
 

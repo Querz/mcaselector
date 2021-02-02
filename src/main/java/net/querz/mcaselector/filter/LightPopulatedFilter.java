@@ -1,5 +1,7 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.io.mca.ChunkData;
+
 public class LightPopulatedFilter extends ByteFilter {
 
 	private static final Comparator[] comparators = {
@@ -21,7 +23,7 @@ public class LightPopulatedFilter extends ByteFilter {
 	}
 
 	@Override
-	Byte getNumber(FilterData data) {
+	Byte getNumber(ChunkData data) {
 		if (data.getRegion() == null) {
 			return 0;
 		}
