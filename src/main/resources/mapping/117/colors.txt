@@ -412,6 +412,7 @@ furnace;6e6d6d
 gilded_blackstone;382b26
 glass;afd5db
 glass_pane;d3eff4
+glow_lichen;708279
 glowstone;ab8354
 gold_block;f6d03d
 gold_ore;8f8c7d
@@ -472,7 +473,6 @@ iron_block;dcdcdc
 iron_door;c1c0c0
 iron_ore;88827f
 iron_trapdoor;cacaca
-item_frame;74432a
 jack_o_lantern;c67618
 jigsaw;2d262f
 jukebox;5d402f

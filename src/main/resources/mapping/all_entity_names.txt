@@ -38,6 +38,8 @@ fox
 furnace_minecart
 ghast
 giant
+glow_item_frame
+glow_squid
 guardian
 hoglin
 hopper_minecart
@@ -48,6 +50,7 @@ iron_golem
 item
 item_frame
 leash_knot
+lightning_bolt
 llama
 llama_spit
 magma_cube

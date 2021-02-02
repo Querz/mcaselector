@@ -410,7 +410,6 @@ iron_block;dcdcdc
 iron_door;c1c0c0
 iron_ore;88827f
 iron_trapdoor;cacaca
-item_frame;74432a
 jack_o_lantern;c67618
 jigsaw;504551
 jukebox;5d402f

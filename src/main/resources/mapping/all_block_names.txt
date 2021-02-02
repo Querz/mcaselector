@@ -289,6 +289,7 @@ furnace
 gilded_blackstone
 glass
 glass_pane
+glow_lichen
 glowstone
 gold_block
 gold_ore
@@ -350,7 +351,6 @@ iron_block
 iron_door
 iron_ore
 iron_trapdoor
-item_frame
 jack_o_lantern
 jigsaw
 jukebox

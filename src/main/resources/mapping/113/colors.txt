@@ -360,7 +360,6 @@ iron_block;dbdbdb
 iron_door;bababa
 iron_ore;87827e
 iron_trapdoor;c7c7c7
-item_frame;76442c
 jack_o_lantern;c07615
 jukebox;6b4937
 jungle_button;9a6e4d
