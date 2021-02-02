@@ -46,7 +46,7 @@
 
 ## Usage
 ### Video Tutorials
-For people who prefer watching a video to understand how the MCA Selector works, there is a very nice tutorial on Youtube explaining the basics:
+For people who prefer watching a video to understand how the MCA Selector works, there some very good tutorials on Youtube explaining the basics:
 
 * [How To Reset Chunks In Your Minecraft World!](https://www.youtube.com/watch?v=1xx8fwynlRs) by [Farzy](https://www.youtube.com/channel/UCVtz3s3FUxVxBgPl2OWtIJQ)
 * [How To Clear Unwanted Chunks In Minecraft 1.16 | MCASelector Tutorial](https://www.youtube.com/watch?v=ADDTXGRJo20) by [Muriako](https://www.youtube.com/channel/UCpt-MjKkc5X4W7bUFV3Dwrw)
@@ -94,6 +94,7 @@ Because the conditions use internal values used by Minecraft, the following tabl
 | LightPopulated | byte | Whether the light levels for the chunk have been calculated. If this is set to 0, converting a world from 1.12.x to 1.13 will omit that chunk. Allowed values are `0` and `1`. |
 | Biome | String/int | One or multiple biome names and IDs, separated by comma (,). For a reference of biome names and IDs, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Biomes). Custom biomes can be specified by using single quotes (') around a biome ID. |
 | Entities | String | One or multiple entity names, separated by comma (,). For a reference of entity names, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Entities). Custom entities are supported, though they must be declared in single quotes (') and with their namespace id. |
+| Structures | String | One or multiple structure names, separated by comma (,). A list of all valid structure names can be found [here](https://github.com/Querz/mcaselector/blob/master/src/main/resources/mapping/all_structures.txt). Custom structures are supported, though they must be declared in single quotes ('). |
 | #Entities | int | The total amount of entities in that chunk. |
 | #TileEntities | int | The total amount of tile entities in that chunk. |
 
