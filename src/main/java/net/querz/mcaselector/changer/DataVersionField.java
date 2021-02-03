@@ -1,7 +1,7 @@
 package net.querz.mcaselector.changer;
 
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.validation.ValidationHelper;
-import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.IntTag;
 
 public class DataVersionField extends Field<Integer> {
@@ -11,8 +11,8 @@ public class DataVersionField extends Field<Integer> {
 	}
 
 	@Override
-	public Integer getOldValue(CompoundTag root) {
-		return ValidationHelper.withDefault(() -> root.getInt("DataVersion"), null);
+	public Integer getOldValue(ChunkData data) {
+		return ValidationHelper.withDefault(() -> data.getRegion().getData().getInt("DataVersion"), null);
 	}
 
 	@Override
@@ -29,15 +29,37 @@ public class DataVersionField extends Field<Integer> {
 	}
 
 	@Override
-	public void change(CompoundTag root) {
-		IntTag tag = root.getIntTag("DataVersion");
+	public void change(ChunkData data) {
+		IntTag tag = data.getRegion().getData().getIntTag("DataVersion");
 		if (tag != null) {
 			tag.setValue(getNewValue());
+		}
+
+		if (data.getPOI() != null) {
+			tag = data.getPOI().getData().getIntTag("DataVersion");
+			if (tag != null) {
+				tag.setValue(getNewValue());
+			}
+		}
+
+		if (data.getEntities() != null) {
+			tag = data.getEntities().getData().getIntTag("DataVersion");
+			if (tag != null) {
+				tag.setValue(getNewValue());
+			}
 		}
 	}
 
 	@Override
-	public void force(CompoundTag root) {
-		root.putInt("DataVersion", getNewValue());
+	public void force(ChunkData data) {
+		data.getRegion().getData().putInt("DataVersion", getNewValue());
+
+		if (data.getPOI() != null) {
+			data.getPOI().getData().putInt("DataVersion", getNewValue());
+		}
+
+		if (data.getEntities() != null) {
+			data.getEntities().getData().putInt("DataVersion", getNewValue());
+		}
 	}
 }

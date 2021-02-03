@@ -117,10 +117,12 @@ public class Chunk {
 	public void change(List<Field<?>> fields, boolean force) {
 		for (Field<?> field : fields) {
 			try {
+
+				// TODO: fix this
 				if (force) {
-					field.force(data);
+//					field.force(data);
 				} else {
-					field.change(data);
+//					field.change(data);
 				}
 			} catch (Exception ex) {
 				Debug.dumpf("failed to change field %s in chunk %s: %s", field.getType(), absoluteLocation, ex);

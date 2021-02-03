@@ -1,4 +1,4 @@
-package net.querz.mcaselector.version.anvil117;
+package net.querz.mcaselector.version.anvil116;
 
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.point.Point2i;
@@ -10,32 +10,29 @@ import net.querz.nbt.tag.IntTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.LongArrayTag;
 import static net.querz.mcaselector.validation.ValidationHelper.catchClassCastException;
-import static net.querz.mcaselector.version.anvil117.Anvil117ChunkRelocator.*;
+import static net.querz.mcaselector.version.anvil116.Anvil116ChunkRelocator.*;
 
-public class Anvil117EntityRelocator implements EntityRelocator {
+public class Anvil116EntityRelocator implements EntityRelocator {
 
 	@Override
 	public boolean relocateEntities(ChunkData data, Point2i offset) {
-		if (data == null || data.getEntities() == null) {
+		if (data == null || data.getRegion() == null || data.getRegion().getData() == null || !data.getRegion().getData().containsKey("Level")) {
 			return false;
 		}
 
-		CompoundTag root = data.getEntities().getData();
-
-		int[] position = catchClassCastException(() -> root.getIntArray("Position"));
-		if (position == null || position.length != 2) {
-			return false;
+		CompoundTag level = catchClassCastException(() -> data.getRegion().getData().getCompoundTag("Level"));
+		if (level == null) {
+			return true;
 		}
 
-		position[0] += offset.getX();
-		position[1] += offset.getZ();
-
-		if (!root.containsKey("Entities") && root.get("Entities").getID() != LongArrayTag.ID) {
-			ListTag<CompoundTag> entities = catchClassCastException(() -> root.getListTag("Entities").asCompoundTagList());
+		// adjust entity positions
+		if (level.containsKey("Entities") && level.get("Entities").getID() != LongArrayTag.ID) {
+			ListTag<CompoundTag> entities = catchClassCastException(() -> level.getListTag("Entities").asCompoundTagList());
 			if (entities != null) {
 				entities.forEach(v -> applyOffsetToEntity(v, offset));
 			}
 		}
+
 		return true;
 	}
 

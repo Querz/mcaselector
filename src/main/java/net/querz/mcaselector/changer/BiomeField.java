@@ -1,10 +1,10 @@
 package net.querz.mcaselector.changer;
 
 import net.querz.mcaselector.filter.BiomeFilter;
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.tag.CompoundTag;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -83,17 +83,17 @@ public class BiomeField extends Field<Integer> {
 	}
 
 	@Override
-	public Integer getOldValue(CompoundTag root) {
+	public Integer getOldValue(ChunkData data) {
 		return null;
 	}
 
 	@Override
-	public void change(CompoundTag root) {
-		VersionController.getChunkFilter(root.getInt("DataVersion")).changeBiome(root, getNewValue());
+	public void change(ChunkData data) {
+		VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion")).changeBiome(data.getRegion().getData(), getNewValue());
 	}
 
 	@Override
-	public void force(CompoundTag root) {
-		VersionController.getChunkFilter(root.getInt("DataVersion")).forceBiome(root, getNewValue());
+	public void force(ChunkData data) {
+		VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion")).forceBiome(data.getRegion().getData(), getNewValue());
 	}
 }

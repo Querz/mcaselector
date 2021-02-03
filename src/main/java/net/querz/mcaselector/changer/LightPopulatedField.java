@@ -1,8 +1,8 @@
 package net.querz.mcaselector.changer;
 
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.nbt.tag.ByteTag;
-import net.querz.nbt.tag.CompoundTag;
 
 public class LightPopulatedField extends Field<Byte> {
 
@@ -11,8 +11,8 @@ public class LightPopulatedField extends Field<Byte> {
 	}
 
 	@Override
-	public Byte getOldValue(CompoundTag root) {
-		return ValidationHelper.withDefault(() -> root.getCompoundTag("Level").getByte("LightPopulated"), null);
+	public Byte getOldValue(ChunkData data) {
+		return ValidationHelper.withDefault(() -> data.getRegion().getData().getCompoundTag("Level").getByte("LightPopulated"), null);
 	}
 
 	@Override
@@ -29,15 +29,15 @@ public class LightPopulatedField extends Field<Byte> {
 	}
 
 	@Override
-	public void change(CompoundTag root) {
-		ByteTag tag = root.getCompoundTag("Level").getByteTag("LightPopulated");
+	public void change(ChunkData data) {
+		ByteTag tag = data.getRegion().getData().getCompoundTag("Level").getByteTag("LightPopulated");
 		if (tag != null) {
 			tag.setValue(getNewValue());
 		}
 	}
 
 	@Override
-	public void force(CompoundTag root) {
-		root.getCompoundTag("Level").putByte("LightPopulated", getNewValue());
+	public void force(ChunkData data) {
+		data.getRegion().getData().getCompoundTag("Level").putByte("LightPopulated", getNewValue());
 	}
 }

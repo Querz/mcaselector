@@ -1,26 +1,23 @@
 package net.querz.mcaselector.changer;
 
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.LongArrayTag;
 import net.querz.nbt.tag.Tag;
-
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.regex.Pattern;
 
 public class DeleteSectionsField extends Field<List<Range>> {
-
-	private static final Pattern rangePattern = Pattern.compile("^(?<from>-?\\d*)(?<divider>:?)(?<to>-?\\d*)$");
 
 	public DeleteSectionsField() {
 		super(FieldType.DELETE_SECTIONS);
 	}
 
 	@Override
-	public List<Range> getOldValue(CompoundTag root) {
+	public List<Range> getOldValue(ChunkData data) {
 		return null;
 	}
 
@@ -38,8 +35,8 @@ public class DeleteSectionsField extends Field<List<Range>> {
 	}
 
 	@Override
-	public void change(CompoundTag root) {
-		Tag<?> rawSections = root.getCompoundTag("Level").get("Sections");
+	public void change(ChunkData data) {
+		Tag<?> rawSections = data.getRegion().getData().getCompoundTag("Level").get("Sections");
 		if (rawSections == null || rawSections.getID() == LongArrayTag.ID) {
 			return;
 		}
@@ -56,8 +53,8 @@ public class DeleteSectionsField extends Field<List<Range>> {
 	}
 
 	@Override
-	public void force(CompoundTag root) {
-		change(root);
+	public void force(ChunkData data) {
+		change(data);
 	}
 
 	@Override

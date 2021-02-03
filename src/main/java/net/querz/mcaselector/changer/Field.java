@@ -1,6 +1,6 @@
 package net.querz.mcaselector.changer;
 
-import net.querz.nbt.tag.CompoundTag;
+import net.querz.mcaselector.io.mca.ChunkData;
 
 public abstract class Field<T> {
 
@@ -32,7 +32,7 @@ public abstract class Field<T> {
 		return type;
 	}
 
-	public abstract T getOldValue(CompoundTag root);
+	public abstract T getOldValue(ChunkData root);
 
 	@Override
 	public String toString() {
@@ -46,7 +46,7 @@ public abstract class Field<T> {
 		return false;
 	}
 
-	public abstract void change(CompoundTag root);
+	public abstract void change(ChunkData root);
 
-	public abstract void force(CompoundTag root);
+	public abstract void force(ChunkData root);
 }

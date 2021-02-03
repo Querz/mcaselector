@@ -115,12 +115,12 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 			if (file.exists()) {
 				try {
 					Chunk chunkData = MCAFile.loadSingleChunk(file, chunk.get());
-					fieldView.getChildren().forEach(child -> {
-						FieldCell cell = (FieldCell) child;
-						Object oldValue = cell.value.getOldValue(chunkData.getData());
-						String promptText = oldValue == null ? "" : oldValue.toString();
-						Platform.runLater(() -> cell.textField.setPromptText(promptText));
-					});
+//					fieldView.getChildren().forEach(child -> {
+//						FieldCell cell = (FieldCell) child;
+//						Object oldValue = cell.value.getOldValue(chunkData.getData());
+//						String promptText = oldValue == null ? "" : oldValue.toString();
+//						Platform.runLater(() -> cell.textField.setPromptText(promptText));
+//					});
 				} catch (IOException ex) {
 					Debug.dumpException("failed to load single chunk", ex);
 				}

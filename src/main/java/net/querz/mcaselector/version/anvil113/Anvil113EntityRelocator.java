@@ -1,4 +1,4 @@
-package net.querz.mcaselector.version.anvil117;
+package net.querz.mcaselector.version.anvil113;
 
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.point.Point2i;
@@ -10,32 +10,29 @@ import net.querz.nbt.tag.IntTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.LongArrayTag;
 import static net.querz.mcaselector.validation.ValidationHelper.catchClassCastException;
-import static net.querz.mcaselector.version.anvil117.Anvil117ChunkRelocator.*;
+import static net.querz.mcaselector.version.anvil113.Anvil113ChunkRelocator.*;
 
-public class Anvil117EntityRelocator implements EntityRelocator {
+public class Anvil113EntityRelocator implements EntityRelocator {
 
 	@Override
 	public boolean relocateEntities(ChunkData data, Point2i offset) {
-		if (data == null || data.getEntities() == null) {
+		if (data == null || data.getRegion() == null || data.getRegion().getData() == null || !data.getRegion().getData().containsKey("Level")) {
 			return false;
 		}
 
-		CompoundTag root = data.getEntities().getData();
-
-		int[] position = catchClassCastException(() -> root.getIntArray("Position"));
-		if (position == null || position.length != 2) {
-			return false;
+		CompoundTag level = catchClassCastException(() -> data.getRegion().getData().getCompoundTag("Level"));
+		if (level == null) {
+			return true;
 		}
 
-		position[0] += offset.getX();
-		position[1] += offset.getZ();
-
-		if (!root.containsKey("Entities") && root.get("Entities").getID() != LongArrayTag.ID) {
-			ListTag<CompoundTag> entities = catchClassCastException(() -> root.getListTag("Entities").asCompoundTagList());
+		// adjust entity positions
+		if (level.containsKey("Entities") && level.get("Entities").getID() != LongArrayTag.ID) {
+			ListTag<CompoundTag> entities = catchClassCastException(() -> level.getListTag("Entities").asCompoundTagList());
 			if (entities != null) {
 				entities.forEach(v -> applyOffsetToEntity(v, offset));
 			}
 		}
+
 		return true;
 	}
 
@@ -93,12 +90,6 @@ public class Anvil117EntityRelocator implements EntityRelocator {
 					applyIntIfPresent(entity, "BoundX", offset.getX());
 					applyIntIfPresent(entity, "BoundZ", offset.getZ());
 					break;
-				case "minecraft:wandering_trader":
-					if (entity.containsKey("WanderTarget")) {
-						CompoundTag wanderTarget = catchClassCastException(() -> entity.getCompoundTag("WanderTarget"));
-						applyIntOffsetIfRootPresent(wanderTarget, "X", "Z", offset);
-					}
-					break;
 				case "minecraft:shulker_bullet":
 					CompoundTag owner = catchClassCastException(() -> entity.getCompoundTag("Owner"));
 					applyIntOffsetIfRootPresent(owner, "X", "Z", offset);
@@ -154,10 +145,8 @@ public class Anvil117EntityRelocator implements EntityRelocator {
 						}
 					}
 					break;
-				case "minecraft:pillager":
 				case "minecraft:witch":
 				case "minecraft:vindicator":
-				case "minecraft:ravager":
 				case "minecraft:illusioner":
 				case "minecraft:evoker":
 					CompoundTag patrolTarget = catchClassCastException(() -> entity.getCompoundTag("PatrolTarget"));
@@ -172,36 +161,11 @@ public class Anvil117EntityRelocator implements EntityRelocator {
 		}
 
 		// recursively update passengers
+
 		if (entity.containsKey("Passengers")) {
 			ListTag<CompoundTag> passengers = catchClassCastException(() -> entity.getListTag("Passengers").asCompoundTagList());
 			if (passengers != null) {
 				passengers.forEach(p -> applyOffsetToEntity(p, offset));
-			}
-		}
-
-		if (entity.containsKey("Item")) {
-			CompoundTag item = catchClassCastException(() -> entity.getCompoundTag("Item"));
-			applyOffsetToItem(item, offset);
-		}
-
-		if (entity.containsKey("Items")) {
-			ListTag<CompoundTag> items = catchClassCastException(() -> entity.getListTag("Items").asCompoundTagList());
-			if (items != null) {
-				items.forEach(i -> applyOffsetToItem(i, offset));
-			}
-		}
-
-		if (entity.containsKey("HandItems")) {
-			ListTag<CompoundTag> items = catchClassCastException(() -> entity.getListTag("HandItems").asCompoundTagList());
-			if (items != null) {
-				items.forEach(i -> applyOffsetToItem(i, offset));
-			}
-		}
-
-		if (entity.containsKey("ArmorItems")) {
-			ListTag<CompoundTag> items = catchClassCastException(() -> entity.getListTag("ArmorItems").asCompoundTagList());
-			if (items != null) {
-				items.forEach(i -> applyOffsetToItem(i, offset));
 			}
 		}
 
@@ -214,14 +178,6 @@ public class Anvil117EntityRelocator implements EntityRelocator {
 		}
 		if (entity.containsKey("UUIDLeast")) {
 			entity.putLong("UUIDLeast", random.nextLong());
-		}
-		if (entity.containsKey("UUID")) {
-			int[] uuid = entity.getIntArray("UUID");
-			if (uuid.length == 4) {
-				for (int i = 0; i < 4; i++) {
-					uuid[i] = random.nextInt();
-				}
-			}
 		}
 	}
 }

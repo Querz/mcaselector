@@ -73,7 +73,7 @@ public class BiomeFilter extends TextFilter<List<Integer>> {
 			return false;
 		}
 		return VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"))
-				.matchBiomeIDs(data.getRegion().getData(), value.stream().mapToInt(i->i).toArray());
+				.matchBiomeIDs(data.getRegion().getData(), value.stream().mapToInt(i -> i).toArray());
 	}
 
 	@Override
