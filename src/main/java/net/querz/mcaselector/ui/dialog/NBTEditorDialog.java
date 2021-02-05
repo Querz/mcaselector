@@ -17,7 +17,13 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.CompressionType;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.Chunk;
+import net.querz.mcaselector.io.mca.EntitiesChunk;
+import net.querz.mcaselector.io.mca.EntitiesMCAFile;
 import net.querz.mcaselector.io.mca.MCAFile;
+import net.querz.mcaselector.io.mca.PoiChunk;
+import net.querz.mcaselector.io.mca.PoiMCAFile;
+import net.querz.mcaselector.io.mca.RegionChunk;
+import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.property.DataProperty;
@@ -26,7 +32,6 @@ import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.ui.NBTTreeView;
 import net.querz.mcaselector.ui.UIFactory;
 import net.querz.nbt.tag.*;
-import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -65,13 +70,13 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 					r.setMax(4);
 
 					r.updateProgress("region/" + FileHelper.createMCAFileName(selectedChunk.chunkToRegion()), 1);
-					writeSingleChunk(FileHelper.createRegionMCAFilePath(selectedChunk.chunkToRegion()), regionData);
+					writeSingleChunk(new RegionMCAFile(FileHelper.createRegionMCAFilePath(selectedChunk.chunkToRegion())), new RegionChunk(selectedChunk), regionData);
 
 					r.incrementProgress("poi/" + FileHelper.createMCAFileName(selectedChunk.chunkToRegion()));
-					writeSingleChunk(FileHelper.createPoiMCAFilePath(selectedChunk.chunkToRegion()), poiData);
+					writeSingleChunk(new PoiMCAFile(FileHelper.createPoiMCAFilePath(selectedChunk.chunkToRegion())), new PoiChunk(selectedChunk), poiData);
 
 					r.incrementProgress("entities/" + FileHelper.createMCAFileName(selectedChunk.chunkToRegion()));
-					writeSingleChunk(FileHelper.createEntitiesMCAFilePath(selectedChunk.chunkToRegion()), entitiesData);
+					writeSingleChunk(new EntitiesMCAFile(FileHelper.createEntitiesMCAFilePath(selectedChunk.chunkToRegion())), new EntitiesChunk(selectedChunk), entitiesData);
 				} catch (Exception ex) {
 					exception.set(ex);
 					Debug.dumpException("failed to save chunk", ex);
@@ -88,9 +93,9 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 			}
 		});
 
-		Tab regionTab = createEditorTab("region", primaryStage, FileHelper.createRegionMCAFilePath(selectedChunk.chunkToRegion()), d -> regionData = d);
-		Tab poiTab = createEditorTab("poi", primaryStage, FileHelper.createPoiMCAFilePath(selectedChunk.chunkToRegion()), d -> poiData = d);
-		Tab entitiesTab = createEditorTab("entities", primaryStage, FileHelper.createEntitiesMCAFilePath(selectedChunk.chunkToRegion()), d -> entitiesData = d);
+		Tab regionTab = createEditorTab("region", primaryStage, new RegionMCAFile(FileHelper.createRegionMCAFilePath(selectedChunk.chunkToRegion())), d -> regionData = d);
+		Tab poiTab = createEditorTab("poi", primaryStage, new PoiMCAFile(FileHelper.createPoiMCAFilePath(selectedChunk.chunkToRegion())), d -> poiData = d);
+		Tab entitiesTab = createEditorTab("entities", primaryStage, new EntitiesMCAFile(FileHelper.createEntitiesMCAFilePath(selectedChunk.chunkToRegion())), d -> entitiesData = d);
 
 		editors.getTabs().addAll(regionTab, poiTab, entitiesTab);
 
@@ -122,7 +127,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		return location;
 	}
 
-	private Tab createEditorTab(String title, Stage primaryStage, File file, Consumer<CompoundTag> consumer) {
+	private <T extends Chunk> Tab createEditorTab(String title, Stage primaryStage, MCAFile<T> mcaFile, Consumer<CompoundTag> consumer) {
 		NBTTreeView nbtTreeView = new NBTTreeView(primaryStage);
 
 		ImageView deleteIcon = new ImageView(FileHelper.getIconFromResources("img/delete"));
@@ -179,7 +184,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		Tab tab = new Tab(title, box);
 		tab.setClosable(false);
 
-		readSingleChunkAsync(file, nbtTreeView, treeViewHolder, addTagLabels, consumer);
+		readSingleChunkAsync(mcaFile, nbtTreeView, treeViewHolder, addTagLabels, consumer);
 
 		return tab;
 	}
@@ -230,12 +235,12 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		return label;
 	}
 
-	private void readSingleChunkAsync(File file, NBTTreeView treeView, BorderPane treeViewHolder, Map<Integer, Label> addTagLabels, Consumer<CompoundTag> consumer) {
+	private <T extends Chunk> void readSingleChunkAsync(MCAFile<T> mcaFile, NBTTreeView treeView, BorderPane treeViewHolder, Map<Integer, Label> addTagLabels, Consumer<CompoundTag> consumer) {
 		new Thread(() -> {
 			Debug.dumpf("attempting to read single chunk from file: %s", selectedChunk);
-			if (file.exists()) {
+			if (mcaFile.getFile().exists()) {
 				try {
-					Chunk chunkData = MCAFile.loadSingleChunk(file, selectedChunk);
+					T chunkData = mcaFile.loadSingleChunk(selectedChunk);
 					if (chunkData.getData() == null) {
 						Debug.dump("no chunk data found for:" + selectedChunk);
 						enableAddTagLabels(new int[]{10}, addTagLabels);
@@ -258,19 +263,19 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		}).start();
 	}
 
-	private void writeSingleChunk(File file, CompoundTag chunkData) throws IOException {
-		Chunk chunk = null;
+	private <T extends Chunk> void writeSingleChunk(MCAFile<T> mcaFile, T chunk, CompoundTag chunkData) throws IOException {
 		if (chunkData != null) {
-			chunk = new Chunk(selectedChunk);
 			chunk.setData(chunkData);
 			chunk.setCompressionType(CompressionType.ZLIB);
+		} else {
+			chunk = null;
 		}
 
 		try {
-			MCAFile.saveSingleChunk(file, selectedChunk, chunk);
-			Debug.dumpf("saved single chunk to %s", file);
+			mcaFile.saveSingleChunk(selectedChunk, chunk);
+			Debug.dumpf("saved single chunk to %s", mcaFile.getFile());
 		} catch (IOException ex) {
-			Debug.dumpException("failed to save single chunk to " + file, ex);
+			Debug.dumpException("failed to save single chunk to " + mcaFile.getFile(), ex);
 			throw ex;
 		}
 	}

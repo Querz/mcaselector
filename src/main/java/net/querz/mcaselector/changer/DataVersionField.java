@@ -35,8 +35,8 @@ public class DataVersionField extends Field<Integer> {
 			tag.setValue(getNewValue());
 		}
 
-		if (data.getPOI() != null) {
-			tag = data.getPOI().getData().getIntTag("DataVersion");
+		if (data.getPoi() != null) {
+			tag = data.getPoi().getData().getIntTag("DataVersion");
 			if (tag != null) {
 				tag.setValue(getNewValue());
 			}
@@ -54,8 +54,8 @@ public class DataVersionField extends Field<Integer> {
 	public void force(ChunkData data) {
 		data.getRegion().getData().putInt("DataVersion", getNewValue());
 
-		if (data.getPOI() != null) {
-			data.getPOI().getData().putInt("DataVersion", getNewValue());
+		if (data.getPoi() != null) {
+			data.getPoi().getData().putInt("DataVersion", getNewValue());
 		}
 
 		if (data.getEntities() != null) {

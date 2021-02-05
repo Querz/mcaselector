@@ -4,6 +4,7 @@ import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
@@ -17,76 +18,176 @@ import java.util.Set;
 // holds data for chunks, poi and entities
 public class Region {
 
-	private MCAFile region;
-	private MCAFile poi;
-	private MCAFile entities;
+	private RegionMCAFile region;
+	private PoiMCAFile poi;
+	private EntitiesMCAFile entities;
+
+	private RegionDirectories directories;
+
+	private Point2i location;
 
 	public static Region loadRegion(RegionDirectories dirs, byte[] regionData, byte[] poiData, byte[] entitiesData) throws IOException {
 		Region r = new Region();
 		if (dirs.getRegion() != null && regionData != null) {
 			r.loadRegion(dirs.getRegion(), new ByteArrayPointer(regionData));
+			r.location = FileHelper.parseMCAFileName(dirs.getRegion());
 		}
 		if (dirs.getPoi() != null && poiData != null) {
-			r.loadPOI(dirs.getPoi(), new ByteArrayPointer(poiData));
+			r.loadPoi(dirs.getPoi(), new ByteArrayPointer(poiData));
 		}
 		if (dirs.getEntities() != null && entitiesData != null) {
 			r.loadEntities(dirs.getEntities(), new ByteArrayPointer(entitiesData));
+		}
+		r.directories = dirs;
+		return r;
+	}
+
+	public static Region loadRegion(RegionDirectories dirs) throws IOException {
+		Region r = new Region();
+		if (dirs.getRegion() != null) {
+			r.loadRegion(dirs.getRegion());
+		}
+		if (dirs.getPoi() != null) {
+			r.loadPoi(dirs.getPoi());
+		}
+		if (dirs.getEntities() != null) {
+			r.loadEntities(dirs.getEntities());
+		}
+		r.directories = dirs;
+		return r;
+	}
+
+	public static Region loadOrCreateEmptyRegion(RegionDirectories dirs) throws IOException {
+		Region r = new Region();
+		if (dirs.getRegion() != null) {
+			if (dirs.getRegion().exists()) {
+				r.loadRegion(dirs.getRegion());
+			} else {
+				r.region = new RegionMCAFile(dirs.getRegion());
+			}
+		}
+		if (dirs.getPoi() != null) {
+			if (dirs.getPoi().exists()) {
+				r.loadPoi(dirs.getPoi());
+			} else {
+				r.poi = new PoiMCAFile(dirs.getPoi());
+			}
+		}
+		if (dirs.getEntities() != null) {
+			if (dirs.getEntities().exists()) {
+				r.loadEntities(dirs.getEntities());
+			} else {
+				r.entities = new EntitiesMCAFile(dirs.getEntities());
+			}
 		}
 		return r;
 	}
 
 	public void loadRegion(File src) throws IOException {
-		region = new MCAFile(src);
+		region = new RegionMCAFile(src);
 		region.load();
 	}
 
 	public void loadRegion(File src, ByteArrayPointer ptr) throws IOException {
-		region = new MCAFile(src);
+		region = new RegionMCAFile(src);
 		region.load(ptr);
 	}
 
-	public void loadPOI(File src) throws IOException {
-		poi = new MCAFile(src);
+	public void loadPoi(File src) throws IOException {
+		poi = new PoiMCAFile(src);
 		poi.load();
 	}
 
-	public void loadPOI(File src, ByteArrayPointer ptr) throws IOException {
-		poi = new MCAFile(src);
+	public void loadPoi(File src, ByteArrayPointer ptr) throws IOException {
+		poi = new PoiMCAFile(src);
 		poi.load(ptr);
 	}
 
 	public void loadEntities(File src) throws IOException {
-		entities = new MCAFile(src);
+		entities = new EntitiesMCAFile(src);
 		entities.load();
 	}
 
 	public void loadEntities(File src, ByteArrayPointer ptr) throws IOException {
-		entities = new MCAFile(src);
+		entities = new EntitiesMCAFile(src);
 		entities.load(ptr);
 	}
 
-	public MCAFile getRegion() {
+	public RegionMCAFile getRegion() {
 		return region;
 	}
 
-	public MCAFile getPoi() {
+	public PoiMCAFile getPoi() {
 		return poi;
 	}
 
-	public MCAFile getEntities() {
+	public EntitiesMCAFile getEntities() {
 		return entities;
 	}
 
-	public void setRegion(MCAFile region) {
+	public void setRegion(RegionMCAFile region) {
 		this.region = region;
 	}
 
-	public void setPoi(MCAFile poi) {
+	public void setPoi(PoiMCAFile poi) {
 		this.poi = poi;
 	}
 
-	public void setEntities(MCAFile entities) {
+	public void setEntities(EntitiesMCAFile entities) {
 		this.entities = entities;
+	}
+
+	public ChunkData getChunkDataAt(Point2i location) {
+		RegionChunk regionChunk = null;
+		PoiChunk poiChunk = null;
+		EntitiesChunk entitiesChunk = null;
+		if (region != null) {
+			regionChunk = region.getChunkAt(location);
+		}
+		if (poi != null) {
+			poiChunk = poi.getChunkAt(location);
+		}
+		if (entities != null) {
+			entitiesChunk = entities.getChunkAt(location);
+		}
+		return new ChunkData(regionChunk, poiChunk, entitiesChunk);
+	}
+
+	public ChunkData getChunkData(int index) {
+		RegionChunk regionChunk = null;
+		PoiChunk poiChunk = null;
+		EntitiesChunk entitiesChunk = null;
+		if (region != null) {
+			regionChunk = region.getChunk(index);
+		}
+		if (poi != null) {
+			poiChunk = poi.getChunk(index);
+		}
+		if (entities != null) {
+			entitiesChunk = entities.getChunk(index);
+		}
+		return new ChunkData(regionChunk, poiChunk, entitiesChunk);
+	}
+
+	public void setChunkDataAt(ChunkData chunkData, Point2i location) {
+		if (region == null && directories.getRegion() != null) {
+			region = new RegionMCAFile(directories.getRegion());
+		}
+		if (poi == null && directories.getPoi() != null) {
+			poi = new PoiMCAFile(directories.getPoi());
+		}
+		if (entities == null && directories.getEntities() != null) {
+			entities = new EntitiesMCAFile(directories.getEntities());
+		}
+		if (region != null) {
+			region.setChunkAt(location, chunkData.getRegion());
+		}
+		if (poi != null) {
+			poi.setChunkAt(location, chunkData.getPoi());
+		}
+		if (entities != null) {
+			entities.setChunkAt(location, chunkData.getEntities());
+		}
 	}
 
 	public void save() throws IOException {
@@ -139,15 +240,15 @@ public class Region {
 
 	public void deleteChunks(Filter<?> filter, Set<Point2i> selection) {
 		for (int i = 0; i < 1024; i++) {
-			Chunk region = this.region.getChunk(i);
-			Chunk entities = this.entities == null ? null : this.entities.getChunk(i);
-			Chunk poi = this.poi == null ? null : this.poi.getChunk(i);
+			RegionChunk region = this.region.getChunk(i);
+			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
+			PoiChunk poi = this.poi == null ? null : this.poi.getChunk(i);
 
 			if (region == null || region.isEmpty() || selection != null && !selection.contains(region.getAbsoluteLocation())) {
 				continue;
 			}
 
-			ChunkData filterData = new ChunkData(this.region.getTimestamp(i), region, entities, poi);
+			ChunkData filterData = new ChunkData(this.region.getTimestamp(i), region, poi, entities);
 
 			if (filter.matches(filterData)) {
 				deleteChunkIndex(i);
@@ -157,15 +258,15 @@ public class Region {
 
 	public void keepChunks(Filter<?> filter, Set<Point2i> selection) {
 		for (int i = 0; i < 1024; i++) {
-			Chunk region = this.region.getChunk(i);
-			Chunk entities = this.entities == null ? null : this.entities.getChunk(i);
-			Chunk poi = this.poi == null ? null : this.poi.getChunk(i);
+			RegionChunk region = this.region.getChunk(i);
+			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
+			PoiChunk poi = this.poi == null ? null : this.poi.getChunk(i);
 
 			if (region == null || region.isEmpty()) {
 				continue;
 			}
 
-			ChunkData filterData = new ChunkData(this.region.getTimestamp(i), region, entities, poi);
+			ChunkData filterData = new ChunkData(this.region.getTimestamp(i), region, poi, entities);
 
 			// keep chunk if filter AND selection applies
 			// ignore selection if it's null
@@ -194,15 +295,15 @@ public class Region {
 		Set<Point2i> chunks = new HashSet<>();
 
 		for (int i = 0; i < 1024; i++) {
-			Chunk region = this.region.getChunk(i);
-			Chunk entities = this.entities == null ? null : this.entities.getChunk(i);
-			Chunk poi = this.poi == null ? null : this.poi.getChunk(i);
+			RegionChunk region = this.region.getChunk(i);
+			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
+			PoiChunk poi = this.poi == null ? null : this.poi.getChunk(i);
 
 			if (region == null || region.isEmpty()) {
 				continue;
 			}
 
-			ChunkData filterData = new ChunkData(this.region.getTimestamp(i), region, entities, poi);
+			ChunkData filterData = new ChunkData(this.region.getTimestamp(i), region, poi, entities);
 
 			Point2i location = region.getAbsoluteLocation();
 			try {
@@ -220,32 +321,14 @@ public class Region {
 	}
 
 	public void applyFieldChanges(List<Field<?>> fields, boolean force, Set<Point2i> selection) {
-		if (region != null) {
-			List<Field<?>> regionFields = new ArrayList<>(fields.size());
-			for (Field<?> field : fields) {
-				if (field.getType().getRegionType() == RegionType.REGION) {
-					regionFields.add(field);
+		for (int x = 0; x < 32; x++) {
+			for (int z = 0; z < 32; z++) {
+				Point2i absoluteLocation = location.regionToChunk().add(x, z);
+				ChunkData chunkData = getChunkDataAt(absoluteLocation);
+				if (selection.contains(absoluteLocation)) {
+					chunkData.applyFieldChanges(fields, force);
 				}
 			}
-			region.applyFieldChanges(regionFields, force, selection);
-		}
-		if (entities != null) {
-			List<Field<?>> entitiesFields = new ArrayList<>(1);
-			for (Field<?> field : fields) {
-				if (field.getType().getRegionType() == RegionType.ENTITIES) {
-					entitiesFields.add(field);
-				}
-			}
-			entities.applyFieldChanges(entitiesFields, force, selection);
-		}
-		if (poi != null) {
-			List<Field<?>> poiFields = new ArrayList<>(1);
-			for (Field<?> field : fields) {
-				if (field.getType().getRegionType() == RegionType.POI) {
-					poiFields.add(field);
-				}
-			}
-			poi.applyFieldChanges(poiFields, force, selection);
 		}
 	}
 

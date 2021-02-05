@@ -1,17 +1,17 @@
-package net.querz.mcaselector.version.anvil112;
+package net.querz.mcaselector.version.anvil114;
 
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.version.POIRelocator;
+import net.querz.mcaselector.version.PoiRelocator;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.LongArrayTag;
 import net.querz.nbt.tag.Tag;
 import static net.querz.mcaselector.validation.ValidationHelper.catchClassCastException;
 
-public class Anvil112POIRelocator implements POIRelocator {
+public class Anvil114PoiRelocator implements PoiRelocator {
 
 	@Override
-	public boolean relocatePOI(CompoundTag root, Point2i offset) {
+	public boolean relocatePoi(CompoundTag root, Point2i offset) {
 		if (root == null || !root.containsKey("Sections")) {
 			return false;
 		}

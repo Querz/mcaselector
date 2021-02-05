@@ -19,8 +19,9 @@ import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.mca.Chunk;
-import net.querz.mcaselector.io.mca.MCAFile;
+import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.io.mca.RegionChunk;
+import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
@@ -114,13 +115,16 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 			Debug.dumpf("attempting to read single chunk from file: %s", chunk.get());
 			if (file.exists()) {
 				try {
-					Chunk chunkData = MCAFile.loadSingleChunk(file, chunk.get());
-//					fieldView.getChildren().forEach(child -> {
-//						FieldCell cell = (FieldCell) child;
-//						Object oldValue = cell.value.getOldValue(chunkData.getData());
-//						String promptText = oldValue == null ? "" : oldValue.toString();
-//						Platform.runLater(() -> cell.textField.setPromptText(promptText));
-//					});
+					// only load region for now, there is no field in entities or poi that we could display
+					RegionChunk regionChunk = new RegionMCAFile(file).loadSingleChunk(chunk.get());
+					ChunkData chunkData = new ChunkData(regionChunk, null, null);
+
+					fieldView.getChildren().forEach(child -> {
+						FieldCell cell = (FieldCell) child;
+						Object oldValue = cell.value.getOldValue(chunkData);
+						String promptText = oldValue == null ? "" : oldValue.toString();
+						Platform.runLater(() -> cell.textField.setPromptText(promptText));
+					});
 				} catch (IOException ex) {
 					Debug.dumpException("failed to load single chunk", ex);
 				}

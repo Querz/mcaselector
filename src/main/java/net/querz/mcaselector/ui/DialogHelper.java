@@ -7,8 +7,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.*;
-import net.querz.mcaselector.io.mca.Chunk;
-import net.querz.mcaselector.io.mca.MCAFile;
+import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.tiles.Selection;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.property.DataProperty;
@@ -31,7 +31,6 @@ import net.querz.mcaselector.ui.dialog.ProgressDialog;
 import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
 import net.querz.mcaselector.ui.dialog.SettingsDialog;
 import net.querz.mcaselector.ui.dialog.WorldSettingsDialog;
-
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -39,8 +38,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -269,45 +266,66 @@ public class DialogHelper {
 
 			t.incrementProgress(FileHelper.createMCAFileName(fromRegion));
 
+			Region from;
+			Region to;
+
 			// load from
-			MCAFile fromMCA = loadMCAFileOrCreateEmpty(FileHelper.createMCAFilePath(fromRegion));
-			if (fromMCA == null) {
+			try {
+				from = Region.loadOrCreateEmptyRegion(FileHelper.createRegionDirectories(fromRegion));
+			} catch (IOException ex) {
+				Debug.dumpException("failed to load region files", ex);
 				t.done(null);
+				new ErrorDialog(primaryStage, ex);
 				return;
 			}
 
-			// load to
-			MCAFile toMCA;
-			t.incrementProgress(FileHelper.createMCAFileName(toRegion));
 			if (fromRegion.equals(toRegion)) {
-				toMCA = fromMCA;
+				to = from;
 			} else {
-				toMCA = loadMCAFileOrCreateEmpty(FileHelper.createMCAFilePath(toRegion));
-				if (toMCA == null) {
+				try {
+					to = Region.loadOrCreateEmptyRegion(FileHelper.createRegionDirectories(fromRegion));
+				} catch (IOException ex) {
+					Debug.dumpException("failed to load region files", ex);
 					t.done(null);
+					new ErrorDialog(primaryStage, ex);
 					return;
 				}
 			}
 
-			// from --> to
+			// get, relocate and set
 			Point2i fromOffset = toChunk.sub(fromChunk);
 			Point2i toOffset = fromChunk.sub(toChunk);
 
-			Chunk fromData = getLoadedMCAChunkDataOrCreateNew(fromMCA, fromChunk);
+			ChunkData fromData = from.getChunkDataAt(fromChunk);
 			fromData.relocate(fromOffset.chunkToBlock());
 
-			Chunk toData = getLoadedMCAChunkDataOrCreateNew(toMCA, toChunk);
+			ChunkData toData = to.getChunkDataAt(toChunk);
 			toData.relocate(toOffset.chunkToBlock());
 
-			fromMCA.setChunkAt(fromChunk, toData.getData() == null ? null : toData);
-			toMCA.setChunkAt(toChunk, fromData.getData() == null ? null : fromData);
+			from.setChunkDataAt(toData, fromChunk);
+			to.setChunkDataAt(fromData, toChunk);
 
 			t.incrementProgress(FileHelper.createMCAFileName(toRegion));
-			saveMCAFileWithTempFile(toMCA);
-			if (fromMCA != toMCA) {
-				t.incrementProgress(FileHelper.createMCAFileName(fromRegion));
-				saveMCAFileWithTempFile(fromMCA);
+
+			try {
+				to.saveWithTempFiles();
+			} catch (IOException ex) {
+				Debug.dumpException("failed to save region files", ex);
+				t.done(null);
+				new ErrorDialog(primaryStage, ex);
+				return;
 			}
+			if (to != from) {
+				try {
+					from.saveWithTempFiles();
+				} catch (IOException ex) {
+					Debug.dumpException("failed to save region files", ex);
+					t.done(null);
+					new ErrorDialog(primaryStage, ex);
+					return;
+				}
+			}
+
 			t.done(Translation.DIALOG_PROGRESS_DONE.toString());
 
 			Platform.runLater(() -> CacheHelper.clearSelectionCache(tileMap));
@@ -375,38 +393,6 @@ public class DialogHelper {
 					Debug.errorf("failed to delete temp file %s", tempFile.getEntities());
 				}
 			}
-		}
-	}
-
-	private static MCAFile loadMCAFileOrCreateEmpty(File file) {
-		if (!file.exists()) {
-			return new MCAFile(file);
-		}
-		try {
-			MCAFile mca = new MCAFile(file);
-			mca.load();
-			return mca;
-		} catch (IOException ex) {
-			Debug.dumpException("failed to read MCAFile " + file, ex);
-		}
-		return null;
-	}
-
-	private static Chunk getLoadedMCAChunkDataOrCreateNew(MCAFile mcaFile, Point2i location) {
-		return mcaFile.getChunkAt(location);
-	}
-
-	private static void saveMCAFileWithTempFile(MCAFile mcaFile) {
-		try {
-			File tmpFrom = File.createTempFile(mcaFile.getFile().getName(), null, null);
-			if (mcaFile.save(tmpFrom)) {
-				Files.move(tmpFrom.toPath(), mcaFile.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
-			} else {
-				tmpFrom.delete();
-				mcaFile.getFile().delete();
-			}
-		} catch (IOException ex) {
-			Debug.dumpException(String.format("failed to save MCAFile %s using a temp file", mcaFile.getFile()), ex);
 		}
 	}
 

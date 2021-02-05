@@ -5,7 +5,6 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.version.ChunkMerger;
 import net.querz.mcaselector.version.VersionController;
@@ -16,26 +15,30 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
-public class MCAFile {
+public abstract class MCAFile<T extends Chunk> {
 
-	private Point2i location;
+	protected Point2i location;
 
-	private File file;
-	private int[] timestamps;
+	protected File file;
+	protected int[] timestamps;
 
-	private Chunk[] chunks;
+	protected T[] chunks;
+
+	protected Function<Point2i, T> chunkConstructor;
 
 	// file name must have well formed mca file format (r.<x>.<z>.mca)
-	public MCAFile(File file) {
+	public MCAFile(File file, Function<Point2i, T> chunkConstructor) {
 		Point2i location = FileHelper.parseMCAFileName(file);
 		if (location == null) {
 			throw new IllegalArgumentException("failed to parse region file name from " + file);
 		}
 		this.location = location;
 		this.file = file;
-		this.chunks = new Chunk[1024];
 		this.timestamps = new int[1024];
+		this.chunkConstructor = chunkConstructor;
 	}
 
 // IO STUFF ------------------------------------------------------------------------------------------------------------
@@ -82,7 +85,7 @@ public class MCAFile {
 		raf.seek(0);
 		for (int i = 0; i < 1024; i++) {
 			raf.seek(globalOffset * 4096);
-			Chunk chunk = chunks[i];
+			T chunk = chunks[i];
 
 			if (chunk == null || chunk.isEmpty()) {
 				continue;
@@ -130,7 +133,7 @@ public class MCAFile {
 				Point2i chunkLocation = origin.add(getChunkOffsetFromIndex(i));
 
 				try {
-					chunks[i] = new Chunk(chunkLocation);
+					chunks[i] = chunkConstructor.apply(chunkLocation);
 					chunks[i].load(raf);
 				} catch (Exception ex) {
 					chunks[i] = null;
@@ -156,7 +159,7 @@ public class MCAFile {
 			Point2i chunkLocation = origin.add(getChunkOffsetFromIndex(i));
 
 			try {
-				chunks[i] = new Chunk(chunkLocation);
+				chunks[i] = chunkConstructor.apply(chunkLocation);
 				chunks[i].load(ptr);
 			} catch (IOException ex) {
 				chunks[i] = null;
@@ -209,7 +212,7 @@ public class MCAFile {
 		return offsets;
 	}
 
-	public static Chunk loadSingleChunk(File file, Point2i chunk) throws IOException {
+	public T loadSingleChunk(Point2i chunk) throws IOException {
 		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
 			// read offset, sector count and timestamp for specific chunk
 
@@ -233,7 +236,7 @@ public class MCAFile {
 			Point2i absoluteChunkLocation = region.regionToChunk().add(rel);
 
 			// read chunk data
-			Chunk chunkData = new Chunk(absoluteChunkLocation);
+			T chunkData = chunkConstructor.apply(absoluteChunkLocation);
 
 			if (offset > 0) {
 				raf.seek(offset * 4096);
@@ -244,10 +247,9 @@ public class MCAFile {
 		}
 	}
 
-	public static void saveSingleChunk(File file, Point2i location, Chunk chunk) throws IOException {
-		MCAFile mcaFile = new MCAFile(file);
+	public void saveSingleChunk(Point2i location, T chunk) throws IOException {
 		if (file.exists() && file.length() > 0) {
-			mcaFile.load();
+			load();
 		} else if (chunk == null || chunk.isEmpty()) {
 			Debug.dumpf("nothing to save for and no existing file found for chunk %s", location);
 			return;
@@ -258,8 +260,8 @@ public class MCAFile {
 		rel.setZ(rel.getZ() < 0 ? 32 + rel.getZ() : rel.getZ());
 		int index = rel.getZ() * 32 + rel.getX();
 
-		mcaFile.setChunk(index, chunk);
-		mcaFile.saveWithTempFile();
+		setChunk(index, chunk);
+		saveWithTempFile();
 	}
 
 // END OF IO STUFF -----------------------------------------------------------------------------------------------------
@@ -274,18 +276,9 @@ public class MCAFile {
 		}
 	}
 
-	public void applyFieldChanges(List<Field<?>> fields, boolean force, Set<Point2i> selection) {
-		for (int i = 0; i < 1024; i++) {
-			Chunk chunk = chunks[i];
-			if (selection == null || selection.contains(chunk.getAbsoluteLocation())) {
-				if (chunk != null && !chunk.isEmpty()) {
-					chunk.change(fields, force);
-				}
-			}
-		}
-	}
+	public abstract void mergeChunksInto(MCAFile<T> destination, Point2i offset, boolean overwrite, Set<Point2i> sourceChunks, Set<Point2i> selection, List<Range> ranges);
 
-	public void mergeChunksInto(MCAFile destination, Point2i offset, boolean overwrite, Set<Point2i> sourceChunks, Set<Point2i> selection, List<Range> ranges) {
+	protected void mergeChunksInto(MCAFile<T> destination, Point2i offset, boolean overwrite, Set<Point2i> sourceChunks, Set<Point2i> selection, List<Range> ranges, BiFunction<Point2i, Integer, T> chunkCreator) {
 		Point2i relativeOffset = location.regionToChunk().add(offset).sub(destination.location.regionToChunk());
 		int startX = relativeOffset.getX() > 0 ? 0 : 32 - (32 + relativeOffset.getX());
 		int limitX = relativeOffset.getX() > 0 ? (32 - relativeOffset.getX()) : 32;
@@ -299,8 +292,8 @@ public class MCAFile {
 				int destZ = relativeOffset.getZ() > 0 ? relativeOffset.getZ() + z : z - startZ;
 				int destIndex = destZ * 32 + destX;
 
-				Chunk sourceChunk = chunks[sourceIndex];
-				Chunk destinationChunk = destination.chunks[destIndex];
+				T sourceChunk = chunks[sourceIndex];
+				T destinationChunk = destination.chunks[destIndex];
 
 				if (!overwrite && destinationChunk != null && !destinationChunk.isEmpty()) {
 					continue;
@@ -322,7 +315,7 @@ public class MCAFile {
 						if (sourceVersion != 0) {
 							int destinationVersion;
 							if (destinationChunk == null || destinationChunk.isEmpty()) {
-								destinationChunk = Chunk.newEmptyLevelMCAChunkData(destChunk, sourceVersion);
+								destinationChunk = chunkCreator.apply(destChunk, sourceVersion);
 								destination.chunks[destIndex] = destinationChunk;
 							} else if (sourceVersion != (destinationVersion = destinationChunk.getData().getInt("DataVersion"))) {
 								Point2i srcChunk = location.regionToChunk().add(x, z);
@@ -382,19 +375,19 @@ public class MCAFile {
 		return timestamps[index];
 	}
 
-	public Chunk getChunkAt(Point2i location) {
+	public T getChunkAt(Point2i location) {
 		return chunks[getChunkIndex(location)];
 	}
 
-	public Chunk getChunk(int index) {
+	public T getChunk(int index) {
 		return chunks[index];
 	}
 
-	public void setChunkAt(Point2i location, Chunk chunk) {
+	public void setChunkAt(Point2i location, T chunk) {
 		chunks[getChunkIndex(location)] = chunk;
 	}
 
-	public void setChunk(int index, Chunk chunk) {
+	public void setChunk(int index, T chunk) {
 		chunks[index] = chunk;
 	}
 }

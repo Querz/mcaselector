@@ -2,8 +2,11 @@ package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.mca.EntitiesMCAFile;
 import net.querz.mcaselector.io.mca.MCAFile;
+import net.querz.mcaselector.io.mca.PoiMCAFile;
 import net.querz.mcaselector.io.mca.Region;
+import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
@@ -389,39 +392,39 @@ public class ChunkImporter {
 				}
 
 				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMappingRegion.entrySet()) {
-					MCAFile source = new MCAFile(new File(sourceDirs.getRegion(), FileHelper.createMCAFileName(sourceData.getKey())));
+					RegionMCAFile source = new RegionMCAFile(new File(sourceDirs.getRegion(), FileHelper.createMCAFileName(sourceData.getKey())));
 					source.load(new ByteArrayPointer(sourceData.getValue()));
 
 					Debug.dumpf("merging region chunks from %s into %s", sourceData.getKey(), target);
 
 					if (targetRegion.getRegion() == null) {
-						targetRegion.setRegion(new MCAFile(getRegionDirectories().getRegion()));
+						targetRegion.setRegion(new RegionMCAFile(getRegionDirectories().getRegion()));
 					}
 
 					source.mergeChunksInto(targetRegion.getRegion(), offset, overwrite, sourceChunks == null ? null : sourceChunks.get(sourceData.getKey()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
 				}
 
 				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMappingPoi.entrySet()) {
-					MCAFile source = new MCAFile(new File(sourceDirs.getPoi(), FileHelper.createMCAFileName(sourceData.getKey())));
+					PoiMCAFile source = new PoiMCAFile(new File(sourceDirs.getPoi(), FileHelper.createMCAFileName(sourceData.getKey())));
 					source.load(new ByteArrayPointer(sourceData.getValue()));
 
 					Debug.dumpf("merging poi chunks from %s into %s", sourceData.getKey(), target);
 
 					if (targetRegion.getPoi() == null) {
-						targetRegion.setPoi(new MCAFile(getRegionDirectories().getPoi()));
+						targetRegion.setPoi(new PoiMCAFile(getRegionDirectories().getPoi()));
 					}
 
 					source.mergeChunksInto(targetRegion.getPoi(), offset, overwrite, sourceChunks == null ? null : sourceChunks.get(sourceData.getKey()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
 				}
 
 				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMappingEntities.entrySet()) {
-					MCAFile source = new MCAFile(new File(sourceDirs.getEntities(), FileHelper.createMCAFileName(sourceData.getKey())));
+					EntitiesMCAFile source = new EntitiesMCAFile(new File(sourceDirs.getEntities(), FileHelper.createMCAFileName(sourceData.getKey())));
 					source.load(new ByteArrayPointer(sourceData.getValue()));
 
 					Debug.dumpf("merging entities chunks from %s into %s", sourceData.getKey(), target);
 
 					if (targetRegion.getEntities() == null) {
-						targetRegion.setEntities(new MCAFile(getRegionDirectories().getEntities()));
+						targetRegion.setEntities(new EntitiesMCAFile(getRegionDirectories().getEntities()));
 					}
 
 					source.mergeChunksInto(targetRegion.getEntities(), offset, overwrite, sourceChunks == null ? null : sourceChunks.get(sourceData.getKey()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);

@@ -1,6 +1,5 @@
 package net.querz.mcaselector.version.anvil117;
 
-import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.version.EntityRelocator;
 import net.querz.nbt.tag.CompoundTag;
@@ -15,20 +14,20 @@ import static net.querz.mcaselector.version.anvil117.Anvil117ChunkRelocator.*;
 public class Anvil117EntityRelocator implements EntityRelocator {
 
 	@Override
-	public boolean relocateEntities(ChunkData data, Point2i offset) {
-		if (data == null || data.getEntities() == null) {
+	public boolean relocateEntities(CompoundTag root, Point2i offset) {
+		if (root == null) {
 			return false;
 		}
-
-		CompoundTag root = data.getEntities().getData();
 
 		int[] position = catchClassCastException(() -> root.getIntArray("Position"));
 		if (position == null || position.length != 2) {
 			return false;
 		}
 
-		position[0] += offset.getX();
-		position[1] += offset.getZ();
+		System.out.println("relocating entities");
+
+		position[0] += offset.blockToChunk().getX();
+		position[1] += offset.blockToChunk().getZ();
 
 		if (!root.containsKey("Entities") && root.get("Entities").getID() != LongArrayTag.ID) {
 			ListTag<CompoundTag> entities = catchClassCastException(() -> root.getListTag("Entities").asCompoundTagList());

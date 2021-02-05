@@ -25,11 +25,11 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-public class Chunk {
+public abstract class Chunk {
 
-	private CompoundTag data;
-	private CompressionType compressionType;
-	private final Point2i absoluteLocation;
+	protected CompoundTag data;
+	protected CompressionType compressionType;
+	protected final Point2i absoluteLocation;
 
 	public Chunk(Point2i absoluteLocation) {
 		this.absoluteLocation = absoluteLocation;
@@ -114,26 +114,7 @@ public class Chunk {
 		return baos.size() + 5; // data length + 1 compression type byte + 4 length bytes
 	}
 
-	public void change(List<Field<?>> fields, boolean force) {
-		for (Field<?> field : fields) {
-			try {
-
-				// TODO: fix this
-				if (force) {
-//					field.force(data);
-				} else {
-//					field.change(data);
-				}
-			} catch (Exception ex) {
-				Debug.dumpf("failed to change field %s in chunk %s: %s", field.getType(), absoluteLocation, ex);
-			}
-		}
-	}
-
-	public boolean relocate(Point2i offset) {
-		ChunkRelocator relocator = VersionController.getChunkRelocator(data.getInt("DataVersion"));
-		return relocator.relocateChunk(data, offset);
-	}
+	public abstract boolean relocate(Point2i offset);
 
 	public boolean isEmpty() {
 		return data == null;
@@ -157,20 +138,6 @@ public class Chunk {
 
 	public Point2i getAbsoluteLocation() {
 		return absoluteLocation;
-	}
-
-	static Chunk newEmptyLevelMCAChunkData(Point2i absoluteLocation, int dataVersion) {
-		Chunk chunk = new Chunk(absoluteLocation);
-		CompoundTag root = new CompoundTag();
-		CompoundTag level = new CompoundTag();
-		level.putInt("xPos", absoluteLocation.getX());
-		level.putInt("zPos", absoluteLocation.getZ());
-		level.putString("Status", "full");
-		root.put("Level", level);
-		root.putInt("DataVersion", dataVersion);
-		chunk.data = root;
-		chunk.compressionType = CompressionType.ZLIB;
-		return chunk;
 	}
 
 	@Override

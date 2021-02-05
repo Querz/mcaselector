@@ -25,6 +25,9 @@ public abstract class LoadDataJob extends Job {
 	}
 
 	protected byte[] load(File file) {
+		if (file == null) {
+			return null;
+		}
 		long length = file.length();
 		if (length > 0) {
 			return load(file, (int) length);

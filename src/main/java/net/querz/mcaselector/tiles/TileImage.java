@@ -15,6 +15,7 @@ import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.MCAFile;
+import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2f;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
@@ -109,7 +110,7 @@ public final class TileImage {
 
 		ByteArrayPointer ptr = new ByteArrayPointer(rawData);
 
-		MCAFile mcaFile = new MCAFile(file);
+		RegionMCAFile mcaFile = new RegionMCAFile(file);
 		int[] offsets;
 		try {
 			offsets = mcaFile.load(ptr);
