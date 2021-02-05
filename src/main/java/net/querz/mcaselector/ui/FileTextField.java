@@ -1,5 +1,6 @@
 package net.querz.mcaselector.ui;
 
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -8,6 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.property.DataProperty;
 import java.io.File;
 
 public class FileTextField extends HBox {
@@ -41,6 +43,12 @@ public class FileTextField extends HBox {
 				textField.setText(file + "");
 			}
 		});
+
+		DataProperty<Integer> location = new DataProperty<>();
+		textField.textProperty().addListener((observable, oldValue, newValue) ->
+				location.set(textField.getText().length()));
+		textField.focusedProperty().addListener((observable, oldValue, newValue) ->
+				Platform.runLater(() -> textField.positionCaret(location.get())));
 
 		getChildren().addAll(textField, openButton);
 	}
