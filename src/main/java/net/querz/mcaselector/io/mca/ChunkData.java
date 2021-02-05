@@ -45,19 +45,13 @@ public class ChunkData {
 	public boolean relocate(Point2i offset) {
 		boolean result = true;
 		if (region != null && region.getData() != null && region.getData().containsKey("DataVersion")) {
-			int version = region.getData().getInt("DataVersion");
-			result = VersionController.getChunkRelocator(version).relocateChunk(region.getData(), offset);
-			result = result && VersionController.getEntityRelocator(version).relocateEntities(region.getData(), offset);
+			result = region.relocate(offset);
 		}
 		if (poi != null && poi.getData() != null && poi.getData().containsKey("DataVersion")) {
-			int version = poi.getData().getInt("DataVersion");
-			result = result && VersionController.getChunkRelocator(version).relocateChunk(poi.getData(), offset);
-			result = result && VersionController.getEntityRelocator(version).relocateEntities(poi.getData(), offset);
+			result = result && poi.relocate(offset);
 		}
 		if (entities != null && entities.getData() != null && entities.getData().containsKey("DataVersion")) {
-			int version = entities.getData().getInt("DataVersion");
-			result = result && VersionController.getChunkRelocator(version).relocateChunk(entities.getData(), offset);
-			result = result && VersionController.getEntityRelocator(version).relocateEntities(entities.getData(), offset);
+			result = result && entities.relocate(offset);
 		}
 		return result;
 	}
