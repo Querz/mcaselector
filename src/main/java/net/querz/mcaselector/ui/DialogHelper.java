@@ -1,7 +1,10 @@
 package net.querz.mcaselector.ui;
 
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.WritableImage;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -31,6 +34,8 @@ import net.querz.mcaselector.ui.dialog.ProgressDialog;
 import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
 import net.querz.mcaselector.ui.dialog.SettingsDialog;
 import net.querz.mcaselector.ui.dialog.WorldSettingsDialog;
+
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -245,6 +250,25 @@ public class DialogHelper {
 
 	public static void editNBT(TileMap tileMap, Stage primaryStage) {
 		new NBTEditorDialog(tileMap, primaryStage).showAndWait();
+	}
+
+	public static void screenshot(TileMap tileMap, Stage primaryStage) {
+		SnapshotParameters params = new SnapshotParameters();
+		params.setFill(Color.TRANSPARENT.makeJavaFXColor());
+
+		WritableImage snapshot = tileMap.snapshot(params, null);
+
+		File file = createFileChooser(FileHelper.getLastOpenedDirectory("snapshot_save", null),
+				new FileChooser.ExtensionFilter("*.png Files", "*.png")).showSaveDialog(primaryStage);
+		if (file != null) {
+			try {
+				ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", file);
+				FileHelper.setLastOpenedDirectory("snapshot_save", file.getParent());
+			} catch (IOException ex) {
+				Debug.dumpException("failed to save screenshot", ex);
+				new ErrorDialog(primaryStage, ex);
+			}
+		}
 	}
 
 	public static void swapChunks(TileMap tileMap, Stage primaryStage) {

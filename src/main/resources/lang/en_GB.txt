@@ -23,6 +23,7 @@ menu.file.quit;Quit
 menu.view.chunk_grid;Chunk Grid
 menu.view.region_grid;Region Grid
 menu.view.goto;Goto
+menu.view.save_screenshot;Save screenshot
 menu.view.clear_cache;Clear cache
 menu.view.clear_all_cache;Clear all cache
 menu.selection.clear;Clear
