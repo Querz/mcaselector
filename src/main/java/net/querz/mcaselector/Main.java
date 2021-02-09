@@ -16,7 +16,7 @@ public class Main {
 		Debug.dumpf("java version: %s", System.getProperty("java.version"));
 		Debug.dumpf("jvm max mem:  %d", Runtime.getRuntime().maxMemory());
 
-		Future<Boolean> headless = new ParamExecutor(args).parseAndRun();
+		Future<Boolean> headless = new ParamExecutor(args).run();
 		if (headless != null && headless.get()) {
 			// we already ran headless mode, so we exit here
 			Debug.print("exiting");

@@ -2,138 +2,198 @@ package net.querz.mcaselector.headless;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.changer.Field;
-import net.querz.mcaselector.filter.GroupFilter;
-import net.querz.mcaselector.headless.ParamInterpreter.ActionKey;
-import net.querz.mcaselector.io.ChunkFilterDeleter;
-import net.querz.mcaselector.io.ChunkFilterExporter;
-import net.querz.mcaselector.io.ChunkFilterSelector;
-import net.querz.mcaselector.io.ChunkImporter;
-import net.querz.mcaselector.io.FieldChanger;
-import net.querz.mcaselector.io.RegionDirectories;
-import net.querz.mcaselector.io.SelectionData;
-import net.querz.mcaselector.io.SelectionDeleter;
-import net.querz.mcaselector.io.SelectionExporter;
-import net.querz.mcaselector.io.SelectionHelper;
-import net.querz.mcaselector.io.CacheHelper;
-import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.filter.GroupFilter;
+import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
 import net.querz.mcaselector.text.Translation;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
-import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ParamExecutor {
+public final class ParamExecutor {
 
 	private final String[] args;
+	private Map<String, String> params;
 
 	public ParamExecutor(String[] args) {
 		this.args = args;
 	}
 
-	public Future<Boolean> parseAndRun() {
+	public Future<Boolean> run() {
 
 		FutureTask<Boolean> future = new FutureTask<>(() -> {}, true);
 
-		DataProperty<Map<String, String>> params = new DataProperty<>();
-
 		try {
-			params.set(new ParamParser(args).parse());
-			ParamInterpreter pi = new ParamInterpreter(params.get());
+			params = new ParamParser(args).parse();
 
-			// register parameter dependencies and restrictions
-			pi.registerDependencies("headless", null, new ActionKey("mode", null));
-			pi.registerDependencies("mode", null, new ActionKey("headless", null));
-			pi.registerRestrictions("mode", "select", "export", "import", "delete", "change", "cache", "checkTranslations", "printTranslationWithAllKeys");
-			pi.registerDependencies("mode", "printTranslationWithAllKeys", new ActionKey("locale", null));
-			pi.registerDependencies("mode", "select", new ActionKey("output", null), new ActionKey("query", null));
-			pi.registerDependencies("mode", "export", new ActionKey("output-region", null), new ActionKey("output-poi", null), new ActionKey("output-entities", null), new ActionKey("region", null), new ActionKey("poi", null), new ActionKey("entities", null));
-			pi.registerDependencies("mode", "import", new ActionKey("input-region", null), new ActionKey("input-poi", null), new ActionKey("input-entities", null));
-			pi.registerDependencies("mode", "change", new ActionKey("query", null));
-			pi.registerDependencies("mode", "cache", new ActionKey("output", null));
-			pi.registerDependencies("region", null, new ActionKey("mode", null)); // region param needs mode param
-			pi.registerDependencies("poi", null, new ActionKey("mode", null));
-			pi.registerDependencies("entities", null, new ActionKey("mode", null));
-			pi.registerSoftDependencies("output", null, new ActionKey("mode", "select"), new ActionKey("mode", "cache"));
-			pi.registerSoftDependencies("input", null, new ActionKey("mode", "delete"), new ActionKey("mode", "change"));
-			pi.registerSoftDependencies("query", null, new ActionKey("mode", "select"), new ActionKey("mode", "export"), new ActionKey("mode", "delete"), new ActionKey("mode", "change"));
-			pi.registerSoftDependencies("radius", null, new ActionKey("mode", "select"));
-			pi.registerDependencies("force", null, new ActionKey("mode", "change"));
-			pi.registerDependencies("offset-x", null, new ActionKey("mode", "import"));
-			pi.registerDependencies("offset-z", null, new ActionKey("mode", "import"));
-			pi.registerDependencies("overwrite", null, new ActionKey("mode", "import"));
-			pi.registerDependencies("sections", null, new ActionKey("mode", "import"));
-			pi.registerDependencies("selection", null, new ActionKey("mode", "import"));
-			pi.registerDependencies("zoom-level", null, new ActionKey("mode", "cache"));
-			for (int z = Config.getMinZoomLevel(); z <= Config.getMaxZoomLevel(); z *= 2) {
-				pi.registerRestrictions("zoom-level", z + "");
-			}
-			pi.registerDependencies("debug", null, new ActionKey("headless", null));
-			pi.registerDependencies("read-threads", null, new ActionKey("headless", null));
-			pi.registerDependencies("process-threads", null, new ActionKey("headless", null));
-			pi.registerDependencies("write-threads", null, new ActionKey("headless", null));
-
-			parseConfig(params.get());
-
-			DataProperty<Boolean> isHeadless = new DataProperty<>();
-
-			pi.registerAction("headless", null, v -> runModeHeadless(isHeadless::set));
-			pi.registerAction("mode", "select", v -> runModeSelect(params.get(), future));
-			pi.registerAction("mode", "export", v -> runModeExport(params.get(), future));
-			pi.registerAction("mode", "import", v -> runModeImport(params.get(), future));
-			pi.registerAction("mode", "delete", v -> runModeDelete(params.get(), future));
-			pi.registerAction("mode", "change", v -> runModeChange(params.get(), future));
-			pi.registerAction("mode", "cache", v -> runModeCache(params.get(), future));
-			pi.registerAction("mode", "checkTranslations", v -> runModeCheckTranslations(future));
-			pi.registerAction("mode", "printTranslationWithAllKeys", v -> runModePrintTranslationWithAllKeys(params.get(), future));
-
-			pi.execute();
-
-			if (isHeadless.get() != null && isHeadless.get()) {
-				return future;
+			// do nothing if we don't have any params
+			if (params.size() == 0) {
+				return null;
 			}
 
-		} catch (Exception ex) {
-			Debug.error("Error: " + ex.getMessage());
-			if (params.get() != null && params.get().containsKey("debug")) {
-				Debug.dumpException("Error executing in headless mode", ex);
+			parseConfig();
+
+			switch (parseMode()) {
+				case "select":
+					printHeadlessSettings();
+					select(future);
+					break;
+				case "export":
+					printHeadlessSettings();
+					export(future);
+					break;
+				case "import":
+					printHeadlessSettings();
+					imp(future);
+					break;
+				case "delete":
+					printHeadlessSettings();
+					delete(future);
+					break;
+				case "change":
+					printHeadlessSettings();
+					change(future);
+					break;
+				case "cache":
+					printHeadlessSettings();
+					cache(future);
+					break;
+				case "printMissingTranslations":
+					printMissingTranslations(future);
+					break;
+				case "printTranslation":
+					printTranslation(future);
+					break;
+				case "printTranslationKeys":
+					printTranslationKeys(future);
+					break;
 			}
+		} catch (IOException ex) {
+			Debug.error("error: " + ex.getMessage());
+			if (Config.debug()) {
+				Debug.dumpException("an error occurred while running MCA Selector in headless mode", ex);
+			}
+			return null;
+		}
+
+		return future;
+	}
+
+	private void select(FutureTask<Boolean> future) throws IOException {
+		File output = parseFileAndCreateParentDirectories("output", "csv");
+		GroupFilter query = parseQuery();
+		int radius = parseRadius();
+
+		Map<Point2i, Set<Point2i>> selection = new HashMap<>();
+		ConsoleProgress progress = new ConsoleProgress();
+		progress.onDone(() -> {
+			SelectionHelper.exportSelection(new SelectionData(selection, false), output);
 			future.run();
-			return future;
+		});
+		ChunkFilterSelector.selectFilter(query, radius, (src) -> mergeSelections(src, selection), progress, true);
+	}
+
+	private void export(FutureTask<Boolean> future) throws IOException {
+		WorldDirectories outputDirectories = parseAndCreateWorldDirectories("output-region", "output-poi", "output-entities");
+		testWorldDirectoriesConnections(Config.getWorldDirs(), outputDirectories);
+		GroupFilter query = parseQuery();
+		SelectionData selection = loadSelection();
+
+		ConsoleProgress progress = new ConsoleProgress();
+		progress.onDone(future);
+
+		if (query != null) {
+			ChunkFilterExporter.exportFilter(query, selection, outputDirectories, progress, true);
+		} else if (selection != null) {
+			SelectionExporter.exportSelection(selection, outputDirectories, progress);
+		} else {
+			throw new ParseException("missing query and/or selection");
 		}
-		return null;
 	}
 
-	private static void runModeHeadless(Consumer<Boolean> isHeadless) {
-		isHeadless.accept(true);
-	}
+	private void imp(FutureTask<Boolean> future) throws IOException {
+		WorldDirectories inputDirectories = parseAndCreateWorldDirectories("input-region", "input-poi", "input-entities");
+		int offsetX = parseInt("x-offset", 0);
+		int offsetZ = parseInt("z-offset", 0);
+		boolean overwrite = params.containsKey("overwrite");
+		SelectionData sourceSelection = loadSelection("input-selection");
+		SelectionData targetSelection = loadSelection();
+		List<Range> sections = parseSections();
 
-	private void parseConfig(Map<String, String> params) throws IOException {
-		if (params.containsKey("debug")) {
-			Config.setDebug(true);
-			Debug.initLogWriter();
+		ConsoleProgress progress = new ConsoleProgress();
+		progress.onDone(future);
+
+		DataProperty<Map<Point2i, RegionDirectories>> tempFiles = new DataProperty<>();
+		ChunkImporter.importChunks(inputDirectories, progress, true, overwrite, sourceSelection, targetSelection, sections, new Point2i(offsetX, offsetZ), tempFiles);
+		if (tempFiles.get() != null) {
+			for (RegionDirectories tempFile : tempFiles.get().values()) {
+				if (!tempFile.getRegion().delete()) {
+					Debug.errorf("failed to delete temp file %s", tempFile.getRegion());
+				}
+				if (!tempFile.getPoi().delete()) {
+					Debug.errorf("failed to delete temp file %s", tempFile.getPoi());
+				}
+				if (!tempFile.getEntities().delete()) {
+					Debug.errorf("failed to delete temp file %s", tempFile.getEntities());
+				}
+			}
 		}
-		Config.setDebug(params.containsKey("debug"));
-		Config.setLoadThreads(parsePositiveInt(params.getOrDefault("read-threads", "" + Config.DEFAULT_LOAD_THREADS)));
-		Config.setProcessThreads(parsePositiveInt(params.getOrDefault("process-threads", "" + Config.DEFAULT_PROCESS_THREADS)));
-		Config.setWriteThreads(parsePositiveInt(params.getOrDefault("write-threads", "" + Config.DEFAULT_WRITE_THREADS)));
-		Config.setMaxLoadedFiles(parsePositiveInt(params.getOrDefault("max-loaded-files", "" + Config.DEFAULT_MAX_LOADED_FILES)));
 	}
 
-	private static void runModeCheckTranslations(FutureTask<Boolean> future) {
+	private void delete(FutureTask<Boolean> future) throws IOException {
+		GroupFilter query = parseQuery();
+		SelectionData selection = loadSelection();
+
+		ConsoleProgress progress = new ConsoleProgress();
+		progress.onDone(future);
+
+		if (query != null) {
+			ChunkFilterDeleter.deleteFilter(query, selection, progress, true);
+		} else if (selection != null) {
+			SelectionDeleter.deleteSelection(selection, progress);
+		} else {
+			throw new ParseException("missing query and/or selection");
+		}
+	}
+
+	private void change(FutureTask<Boolean> future) throws IOException {
+		SelectionData selection = loadSelection();
+		boolean force = params.containsKey("force");
+		List<Field<?>> fields = parseFields();
+		if (fields == null) {
+			throw new ParseException("no fields to change");
+		}
+
+		ConsoleProgress progress = new ConsoleProgress();
+		progress.onDone(future);
+
+		FieldChanger.changeNBTFields(fields, force, selection, progress, true);
+	}
+
+	private void cache(FutureTask<Boolean> future) throws IOException {
+		if (!HeadlessHelper.hasJavaFX()) {
+			throw new IOException("no JavaFX installation found");
+		}
+
+		File output = parseAndCreateDirectory("output");
+		Config.setCacheDir(output);
+		Integer zoomLevel = parseZoomLevel();
+
+		ConsoleProgress progress = new ConsoleProgress();
+		progress.onDone(future);
+
+		CacheHelper.forceGenerateCache(zoomLevel, progress);
+	}
+
+	private void printMissingTranslations(FutureTask<Boolean> future) {
 		Set<Locale> locales = Translation.getAvailableLanguages();
 		for (Locale locale : locales) {
 			Translation.load(locale);
@@ -151,23 +211,23 @@ public class ParamExecutor {
 		future.run();
 	}
 
-	private static void runModePrintTranslationWithAllKeys(Map<String, String> params, FutureTask<Boolean> future) {
+	private void printTranslation(FutureTask<Boolean> future) throws ParseException {
 		String l = params.get("locale");
 		if (l == null) {
-			throw new IllegalArgumentException("no locale");
+			throw new ParseException("no locale");
 		}
 
-		Pattern languangeFilePattern = Pattern.compile("^(?<locale>-?(?<language>-?[a-z]{2})_(?<country>-?[A-Z]{2}))$");
+		Pattern languageFilePattern = Pattern.compile("^(?<locale>-?(?<language>-?[a-z]{2})_(?<country>-?[A-Z]{2}))$");
 
 		Locale locale;
 
-		Matcher matcher = languangeFilePattern.matcher(l);
+		Matcher matcher = languageFilePattern.matcher(l);
 		if (matcher.matches()) {
 			String language = matcher.group("language");
 			String country = matcher.group("country");
 			locale = new Locale(language, country);
 		} else {
-			throw new IllegalArgumentException("invalid locale " + l);
+			throw new ParseException("invalid locale " + l);
 		}
 
 		Translation.load(locale);
@@ -179,202 +239,230 @@ public class ParamExecutor {
 		future.run();
 	}
 
-	private static void runModeCache(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
-		if (!HeadlessHelper.hasJavaFX()) {
-			throw new IOException("no JavaFX installation found");
+	private void printTranslationKeys(FutureTask<Boolean> future) {
+		for (Translation translation : Translation.values()) {
+			System.out.println(translation.getKey() + ";");
 		}
-
-		File region = parseDirectory(params.get("region"));
-		checkDirectoryForFiles(region, FileHelper.MCA_FILE_PATTERN);
-		Config.setWorldDir(region);
-
-		File output = parseDirectory(params.get("output"));
-		createDirectoryIfNotExists(output);
-		checkDirectoryIsEmpty(output);
-		Config.setCacheDir(output);
-
-		printHeadlessSettings();
-
-		Integer zoomLevel = params.containsKey("zoom-level") ? parseInt(params.get("zoom-level")) : null;
-
-		ConsoleProgress progress = new ConsoleProgress();
-		progress.onDone(future);
-
-		CacheHelper.forceGenerateCache(zoomLevel, progress);
+		future.run();
 	}
 
-	private static void runModeChange(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
-		File region = parseDirectory(params.get("world"));
-		checkDirectoryForFiles(region, FileHelper.MCA_FILE_PATTERN);
-		Config.setWorldDir(region);
+// ---------------------------------------------------------------------------------------------------------------------
 
-		List<Field<?>> fields = new ChangeParser(params.get("query")).parse();
+	private synchronized void mergeSelections(Map<Point2i, Set<Point2i>> src, Map<Point2i, Set<Point2i>> target) {
+		for (Map.Entry<Point2i, Set<Point2i>> entry : src.entrySet()) {
+			if (entry.getValue() == null) {
+				target.put(entry.getKey(), null);
+				continue;
+			}
 
-		SelectionData selection = loadSelection(params, "input");
-
-		printHeadlessSettings();
-
-		boolean force = params.containsKey("force");
-
-		ConsoleProgress progress = new ConsoleProgress();
-		progress.onDone(future);
-
-		FieldChanger.changeNBTFields(fields, force, selection, progress, true);
-	}
-
-
-
-	private static void runModeDelete(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
-		File world = parseDirectory(params.get("world"));
-		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
-		Config.setWorldDir(world);
-
-		printHeadlessSettings();
-
-		GroupFilter g = null;
-		if (params.containsKey("query")) {
-			g = new FilterParser(params.get("query")).parse();
-			Debug.print("filter set: " + g);
-		}
-
-		SelectionData selection = loadSelection(params, "input");
-
-		ConsoleProgress progress = new ConsoleProgress();
-		progress.onDone(future);
-
-		if (g != null) {
-			ChunkFilterDeleter.deleteFilter(g, selection, progress, true);
-		} else if (selection != null) {
-			SelectionDeleter.deleteSelection(selection, progress);
-		} else {
-			throw new ParseException("missing parameter --query and/or --selection");
-		}
-	}
-
-	private static void runModeImport(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
-		File world = parseDirectory(params.get("world"));
-		createDirectoryIfNotExists(world);
-		Config.setWorldDir(world);
-		// don't check for files, world dir can be empty.
-		// this might be used to just apply an offset to the input without merging anything.
-
-		File input = parseDirectory(params.get("input"));
-		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
-
-		Config.setWorldDir(world);
-
-		int offsetX = parseInt(params.get("offset-x"));
-		int offsetZ = parseInt(params.get("offset-z"));
-		boolean overwrite = params.containsKey("overwrite");
-		File selectionFile = null;
-		if (params.containsKey("selection")) {
-			 selectionFile = parseFile(params.get("selection"), "csv");
-		}
-		SelectionData selection = null;
-		if (selectionFile != null && selectionFile.exists()) {
-			selection = SelectionHelper.importSelection(selectionFile);
-		}
-
-		List<Range> ranges = null;
-		if (params.containsKey("sections")) {
-			ranges = RangeParser.parseRanges(params.get("sections"), ",");
-		}
-
-		printHeadlessSettings();
-
-		ConsoleProgress progress = new ConsoleProgress();
-		progress.onDone(future);
-
-		DataProperty<Map<Point2i, RegionDirectories>> tempFiles = new DataProperty<>();
-		ChunkImporter.importChunks(null, progress, true, overwrite, null, selection, ranges, new Point2i(offsetX, offsetZ), tempFiles);
-		if (tempFiles.get() != null) {
-			for (RegionDirectories tempFile : tempFiles.get().values()) {
-				if (!tempFile.getRegion().delete()) {
-					Debug.errorf("failed to delete temp file %s", tempFile.getRegion());
+			if (target.containsKey(entry.getKey())) {
+				Set<Point2i> targetRegionSelection = target.get(entry.getKey());
+				if (targetRegionSelection != null) {
+					targetRegionSelection.addAll(entry.getValue());
+					// select full region
+					if (targetRegionSelection.size() == 1024) {
+						target.put(entry.getKey(), null);
+					}
 				}
-				if (!tempFile.getPoi().delete()) {
-					Debug.errorf("failed to delete temp file %s", tempFile.getPoi());
-				}
-				if (!tempFile.getEntities().delete()) {
-					Debug.errorf("failed to delete temp file %s", tempFile.getEntities());
-				}
+			} else {
+				target.put(entry.getKey(), entry.getValue());
 			}
 		}
 	}
 
-	private static void runModeExport(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
-		File world = parseDirectory(params.get("world"));
-		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
-		Config.setWorldDir(world);
-
-		File output = parseDirectory(params.get("output"));
-		createDirectoryIfNotExists(output);
-		checkDirectoryIsEmpty(output);
-
-		printHeadlessSettings();
-
-		GroupFilter g = null;
-		if (params.containsKey("query")) {
-			g = new FilterParser(params.get("query")).parse();
-			Debug.print("filter set: " + g);
+	private String parseMode() throws ParseException {
+		String mode = params.get("mode");
+		if (mode == null || mode.isEmpty()) {
+			throw new ParseException("missing mode");
 		}
+		return mode;
+	}
 
-		SelectionData selection = loadSelection(params, "input");
+	private int parseRadius() throws ParseException {
+		String radius = params.get("radius");
+		if (radius == null || radius.isEmpty()) {
+			return 0;
+		}
+		int result;
+		try {
+			result = Integer.parseInt(radius);
+		} catch (NumberFormatException ex) {
+			throw new ParseException("invalid radius: " + ex.getMessage());
+		}
+		if (result < 0) {
+			throw new ParseException("radius is negative");
+		}
+		if (result > 32) {
+			throw new ParseException("radius is larger than 32");
+		}
+		return result;
+	}
 
-		Debug.print("exporting chunks...");
+	private GroupFilter parseQuery() throws ParseException {
+		String query = params.get("query");
+		if (query == null || query.isEmpty()) {
+			return null;
+		}
+		return new FilterParser(query).parse();
+	}
 
-		ConsoleProgress progress = new ConsoleProgress();
-		progress.onDone(future);
+	private List<Field<?>> parseFields() throws ParseException {
+		String fields = params.get("fields");
+		if (fields == null || fields.isEmpty()) {
+			return null;
+		}
+		return new ChangeParser(fields).parse();
+	}
 
-		if (g != null) {
-			ChunkFilterExporter.exportFilter(g, selection, output, progress, true);
-		} else if (selection != null) {
-			SelectionExporter.exportSelection(selection, output, progress);
-		} else {
-			throw new ParseException("missing parameter --query and/or --selection");
+	private WorldDirectories parseWorldDirectories(String regionKey, String poiKey, String entitiesKey) throws ParseException {
+		WorldDirectories worldDirectories = new WorldDirectories();
+		if (!params.containsKey(regionKey)) {
+			throw new ParseException("missing required " + regionKey + " directory");
+		}
+		worldDirectories.setRegion(parseDirectoryAndTestExistence(regionKey));
+		if (params.containsKey(poiKey)) {
+			worldDirectories.setPoi(parseDirectoryAndTestExistence(poiKey));
+		}
+		if (params.containsKey(entitiesKey)) {
+			worldDirectories.setEntities(parseDirectoryAndTestExistence(entitiesKey));
+		}
+		return worldDirectories;
+	}
+
+	private WorldDirectories parseAndCreateWorldDirectories(String regionKey, String poiKey, String entitiesKey) throws IOException {
+		WorldDirectories worldDirectories = new WorldDirectories();
+		if (!params.containsKey(regionKey)) {
+			throw new ParseException("missing required " + regionKey + " directory");
+		}
+		worldDirectories.setRegion(parseAndCreateDirectory(regionKey));
+		if (params.containsKey(poiKey)) {
+			worldDirectories.setPoi(parseAndCreateDirectory(poiKey));
+		}
+		if (params.containsKey(entitiesKey)) {
+			worldDirectories.setEntities(parseAndCreateDirectory(entitiesKey));
+		}
+		return worldDirectories;
+	}
+
+	// tests if 2 WorldDirectories have poi or entities
+	private void testWorldDirectoriesConnections(WorldDirectories a, WorldDirectories b) throws ParseException {
+		if (a.getPoi() != null && b.getPoi() == null) {
+			throw new ParseException("missing output poi directory");
+		}
+		if (a.getEntities() != null && b.getEntities() == null) {
+			throw new ParseException("missing output entities directory");
 		}
 	}
 
-	private static void runModeSelect(Map<String, String> params, FutureTask<Boolean> future) throws IOException {
-		File world = parseDirectory(params.get("world"));
-		checkDirectoryForFiles(world, FileHelper.MCA_FILE_PATTERN);
-		Config.setWorldDir(world);
-
-		File output = parseFile(params.get("output"), "csv");
-		createParentDirectoryIfNotExists(output);
-
-		printHeadlessSettings();
-
-		GroupFilter g = new FilterParser(params.get("query")).parse();
-
-		Debug.print("filter set: " + g);
-
-		int radius = 0;
-		if (params.containsKey("radius")) {
-			radius = parseInt(params.get("radius"));
-			Debug.print("radius set: " + radius);
+	private File parseFileAndTestExistence(String key, String ending) throws ParseException {
+		String f = params.get(key);
+		if (f == null) {
+			throw new ParseException("missing " + key + " file");
 		}
-
-		Debug.print("selecting chunks...");
-
-		Map<Point2i, Set<Point2i>> selection = new HashMap<>();
-
-		ConsoleProgress progress = new ConsoleProgress();
-		progress.onDone(() -> {
-			SelectionHelper.exportSelection(new SelectionData(selection, false), output);
-			future.run();
-		});
-
-		ChunkFilterSelector.selectFilter(g, radius, selection::putAll, progress, true);
+		File file = new File(f);
+		if (!file.isFile()) {
+			throw new ParseException(file + " is not a file");
+		}
+		if (!file.exists()) {
+			throw new ParseException(file + " does not exist");
+		}
+		testFileEnding(file, ending);
+		return file;
 	}
 
-	private static void printHeadlessSettings() {
-		Debug.print("read threads:    " + Config.getLoadThreads());
-		Debug.print("process threads: " + Config.getProcessThreads());
-		Debug.print("write threads:   " + Config.getWriteThreads());
+	private File parseFileAndCreateParentDirectories(String key, String ending) throws IOException {
+		String f = params.get(key);
+		if (f == null) {
+			throw new ParseException("missing " + key + " file");
+		}
+		File file = new File(f);
+		testFileEnding(file, ending);
+		File parent = file.getParentFile();
+		if (parent != null && !parent.exists() && !parent.mkdirs()) {
+			throw new IOException("failed to create directory " + parent);
+		}
+		return file;
 	}
 
-	private static int parseInt(String value) throws ParseException {
+	private void testFileEnding(File file, String ending) throws ParseException {
+		if (!file.getName().endsWith("." + ending)) {
+			String[] split = file.getName().split("\\.");
+			String end = split.length == 1 ? split[0] : ("." + split[split.length - 1]);
+			throw new ParseException("." + ending + " file required, but got " + end);
+		}
+	}
+
+	private File parseDirectoryAndTestExistence(String key) throws ParseException {
+		String f = params.get(key);
+		if (f == null) {
+			throw new ParseException("missing " + key + " directory");
+		}
+		File file = new File(f);
+		if (!file.isDirectory()) {
+			throw new ParseException(file + " is not a directory");
+		}
+		if (!file.exists()) {
+			throw new ParseException(file + " does not exist");
+		}
+		return file;
+	}
+
+	private File parseAndCreateDirectory(String key) throws IOException {
+		String f = params.get(key);
+		if (f == null) {
+			throw new ParseException("missing " + key + " directory");
+		}
+		File file = new File(f);
+		if (!file.isDirectory()) {
+			throw new ParseException(file + " is not a directory");
+		}
+		if (!file.exists() && !file.mkdirs()) {
+			throw new IOException("failed to create directory " + file);
+		}
+		return file;
+	}
+
+	private List<Range> parseSections() {
+		List<Range> ranges = null;
+		if (params.containsKey("sections")) {
+			ranges = RangeParser.parseRanges(params.get("sections"), ",");
+		}
+		return ranges;
+	}
+
+	private SelectionData loadSelection() throws ParseException {
+		return loadSelection("selection");
+	}
+
+	private SelectionData loadSelection(String key) throws ParseException {
+		if (params.containsKey(key)) {
+			File input = parseFileAndTestExistence(key, "csv");
+			return SelectionHelper.importSelection(input);
+		}
+		return null;
+	}
+
+	private Integer parseZoomLevel() throws ParseException {
+		String value = params.get("zoom-level");
+		if (value != null && !value.isEmpty()) {
+			int zoomLevel;
+			try {
+				zoomLevel = Integer.parseInt(value);
+			} catch (NumberFormatException ex) {
+				throw new ParseException(ex.getMessage());
+			}
+			for (int z = Config.getMinZoomLevel(); z <= Config.getMaxZoomLevel(); z *= 2) {
+				if (zoomLevel == z) {
+					return zoomLevel;
+				}
+			}
+			throw new ParseException("invalid zoom level");
+		}
+		return null;
+	}
+
+	private int parseInt(String key, int def) throws ParseException {
+		String value = params.getOrDefault(key, "" + def);
 		if (value != null && !value.isEmpty()) {
 			try {
 				return Integer.parseInt(value);
@@ -382,10 +470,11 @@ public class ParamExecutor {
 				throw new ParseException(ex.getMessage());
 			}
 		}
-		return 0;
+		return def;
 	}
 
-	private static int parsePositiveInt(String value) throws ParseException {
+	private int parsePositiveInt(String key, int def) throws ParseException {
+		String value = params.getOrDefault(key, "" + def);
 		if (value != null) {
 			try {
 				int i = Integer.parseInt(value);
@@ -394,65 +483,28 @@ public class ParamExecutor {
 				}
 				return i;
 			} catch (NumberFormatException ex) {
-				throw new ParseException(ex.getMessage());
+				throw new ParseException("invalid int: " + ex.getMessage());
 			}
 		}
 		return 1;
 	}
 
-	private static SelectionData loadSelection(Map<String, String> params, String key) throws ParseException {
-		if (params.containsKey(key)) {
-			Debug.print("loading selection...");
-
-			File input = parseFile(params.get(key), "csv");
-			fileMustExist(input);
-			return SelectionHelper.importSelection(input);
+	private void parseConfig() throws IOException {
+		Config.setWorldDirs(parseWorldDirectories("region", "poi", "entities"));
+		if (params.containsKey("debug")) {
+			Config.setDebug(true);
+			Debug.initLogWriter();
 		}
-		return null;
+		Config.setDebug(params.containsKey("debug"));
+		Config.setLoadThreads(parsePositiveInt("read-threads", Config.DEFAULT_LOAD_THREADS));
+		Config.setProcessThreads(parsePositiveInt("process-threads", Config.DEFAULT_PROCESS_THREADS));
+		Config.setWriteThreads(parsePositiveInt("write-threads",Config.DEFAULT_WRITE_THREADS));
+		Config.setMaxLoadedFiles(parsePositiveInt("max-loaded-files", Config.DEFAULT_MAX_LOADED_FILES));
 	}
 
-	private static File parseFile(String value, String ending) throws ParseException {
-		File file = new File(value);
-		if (file.getName().equals("." + ending) || !file.getName().endsWith("." + ending)) {
-			throw new ParseException("invalid file \"" + value + "\", expected ." + ending + " file");
-		}
-		return file;
-	}
-
-	private static File parseDirectory(String value) {
-		return new File(value);
-	}
-
-	private static void fileMustExist(File file) throws ParseException {
-		if (!file.exists()) {
-			throw new ParseException("file \"" + file + "\" does not exist");
-		}
-	}
-
-	private static void createDirectoryIfNotExists(File file) throws IOException {
-		if (!file.exists() && !file.mkdirs()) {
-			throw new IOException("unable to create directory \"" + file + "\"");
-		}
-	}
-
-	private static void checkDirectoryForFiles(File dir, String regexp) {
-		Pattern p = Pattern.compile(regexp);
-		File[] found = dir.listFiles((d, n) -> p.matcher(n).find());
-		if (found == null || found.length == 0) {
-			throw new IllegalArgumentException("no valid files found in \"" + dir + "\"");
-		}
-	}
-
-	private static void checkDirectoryIsEmpty(File dir) {
-		File[] found = dir.listFiles();
-		if (found != null && found.length > 0) {
-			throw new IllegalArgumentException("directory \"" + dir + "\" is not empty");
-		}
-	}
-
-	private static void createParentDirectoryIfNotExists(File file) throws IOException {
-		if (file.getParentFile() != null && !file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
-			throw new IOException("unable to create directory for \"" + file + "\"");
-		}
+	private void printHeadlessSettings() {
+		Debug.print("read threads:    " + Config.getLoadThreads());
+		Debug.print("process threads: " + Config.getProcessThreads());
+		Debug.print("write threads:   " + Config.getWriteThreads());
 	}
 }

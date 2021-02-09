@@ -120,11 +120,19 @@ public class DialogHelper {
 							if (confR == ButtonType.OK) {
 								FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
 								Debug.dump("exporting chunks to " + dir);
+
+								WorldDirectories worldDirectories = FileHelper.createWorldDirectories(dir);
+								if (worldDirectories == null) {
+									Debug.dump("failed to create world directories");
+									new ErrorDialog(primaryStage, "failed to create world directories");
+									return;
+								}
+
 								new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_FILTERED_CHUNKS, primaryStage)
 										.showProgressBar(t -> ChunkFilterExporter.exportFilter(
 												r.getFilter(),
 												r.isSelectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
-												dir,
+												worldDirectories,
 												t,
 												false
 										));
@@ -168,8 +176,16 @@ public class DialogHelper {
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
 					FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
+
+					WorldDirectories worldDirectories = FileHelper.createWorldDirectories(dir);
+					if (worldDirectories == null) {
+						Debug.dump("failed to create world directories");
+						new ErrorDialog(primaryStage, "failed to create world directories");
+						return;
+					}
+
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_SELECTION, primaryStage)
-							.showProgressBar(t -> SelectionExporter.exportSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), dir, t));
+							.showProgressBar(t -> SelectionExporter.exportSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), worldDirectories, t));
 				}
 			});
 		}

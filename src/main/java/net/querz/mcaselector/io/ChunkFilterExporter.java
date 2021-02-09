@@ -17,7 +17,7 @@ public class ChunkFilterExporter {
 
 	private ChunkFilterExporter() {}
 
-	public static void exportFilter(GroupFilter filter, SelectionData selection, File destination, Progress progressChannel, boolean headless) {
+	public static void exportFilter(GroupFilter filter, SelectionData selection, WorldDirectories destination, Progress progressChannel, boolean headless) {
 		WorldDirectories wd = Config.getWorldDirs();
 		RegionDirectories[] rd = wd.listRegions();
 		if (rd == null || rd.length == 0) {
@@ -26,16 +26,6 @@ public class ChunkFilterExporter {
 			} else {
 				progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
 			}
-			return;
-		}
-
-		// make sure that target directories exist
-		try {
-			createDirectoryOrThrowException(destination, "region");
-			createDirectoryOrThrowException(destination, "poi");
-			createDirectoryOrThrowException(destination, "entities");
-		} catch (IOException ex) {
-			Debug.dumpException("failed to create directories", ex);
 			return;
 		}
 
@@ -51,21 +41,14 @@ public class ChunkFilterExporter {
 		}
 	}
 
-	private static void createDirectoryOrThrowException(File dir, String folder) throws IOException {
-		File d = new File(dir, folder);
-		if (!d.exists() && !d.mkdirs()) {
-			throw new IOException("failed to create directory " + d);
-		}
-	}
-
 	private static class MCAExportFilterLoadJob extends LoadDataJob {
 
 		private final GroupFilter filter;
 		private final Map<Point2i, Set<Point2i>> selection;
 		private final Progress progressChannel;
-		private final File destination;
+		private final WorldDirectories destination;
 
-		private MCAExportFilterLoadJob(RegionDirectories dirs, GroupFilter filter, Map<Point2i, Set<Point2i>> selection, File destination, Progress progressChannel) {
+		private MCAExportFilterLoadJob(RegionDirectories dirs, GroupFilter filter, Map<Point2i, Set<Point2i>> selection, WorldDirectories destination, Progress progressChannel) {
 			super(dirs);
 			this.filter = filter;
 			this.selection = selection;
@@ -83,9 +66,9 @@ public class ChunkFilterExporter {
 				return;
 			}
 
-			File toRegion = new File(destination, "region/" + getRegionDirectories().getLocationAsFileName());
-			File toPoi = new File(destination, "region/" + getRegionDirectories().getLocationAsFileName());
-			File toEntities = new File(destination, "region/" + getRegionDirectories().getLocationAsFileName());
+			File toRegion = new File(destination.getRegion(), getRegionDirectories().getLocationAsFileName());
+			File toPoi = new File(destination.getPoi(), getRegionDirectories().getLocationAsFileName());
+			File toEntities = new File(destination.getEntities(), getRegionDirectories().getLocationAsFileName());
 			if (toRegion.exists() || toPoi.exists() || toEntities.exists()) {
 				Debug.dumpf("%s exists, not overwriting", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());

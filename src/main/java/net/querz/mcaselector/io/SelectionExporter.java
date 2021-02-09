@@ -17,19 +17,9 @@ public class SelectionExporter {
 
 	private SelectionExporter() {}
 
-	public static void exportSelection(SelectionData selection, File destination, Progress progressChannel) {
+	public static void exportSelection(SelectionData selection, WorldDirectories destination, Progress progressChannel) {
 		if (selection.getSelection().isEmpty() && !selection.isInverted()) {
 			progressChannel.done("no selection");
-			return;
-		}
-
-		// make sure that target directories exist
-		try {
-			createDirectoryOrThrowException(destination, "region");
-			createDirectoryOrThrowException(destination, "poi");
-			createDirectoryOrThrowException(destination, "entities");
-		} catch (IOException ex) {
-			Debug.dumpException("failed to create directories", ex);
 			return;
 		}
 
@@ -60,10 +50,10 @@ public class SelectionExporter {
 	private static class MCADeleteSelectionLoadJob extends LoadDataJob {
 
 		private final Set<Point2i> chunksToBeExported;
-		private final File destination;
+		private final WorldDirectories destination;
 		private final Progress progressChannel;
 
-		private MCADeleteSelectionLoadJob(RegionDirectories dirs, Set<Point2i> chunksToBeExported, File destination, Progress progressChannel) {
+		private MCADeleteSelectionLoadJob(RegionDirectories dirs, Set<Point2i> chunksToBeExported, WorldDirectories destination, Progress progressChannel) {
 			super(dirs);
 			this.chunksToBeExported = chunksToBeExported;
 			this.destination = destination;
@@ -72,9 +62,9 @@ public class SelectionExporter {
 
 		@Override
 		public void execute() {
-			File toRegion = new File(destination, "region/" + getRegionDirectories().getLocationAsFileName());
-			File toPoi = new File(destination, "region/" + getRegionDirectories().getLocationAsFileName());
-			File toEntities = new File(destination, "region/" + getRegionDirectories().getLocationAsFileName());
+			File toRegion = new File(destination.getRegion(), getRegionDirectories().getLocationAsFileName());
+			File toPoi = new File(destination.getPoi(), getRegionDirectories().getLocationAsFileName());
+			File toEntities = new File(destination.getEntities(), getRegionDirectories().getLocationAsFileName());
 			if (toRegion.exists() || toPoi.exists() || toEntities.exists()) {
 				Debug.dumpf("%s exists, not overwriting", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());

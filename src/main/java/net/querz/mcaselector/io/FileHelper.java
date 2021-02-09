@@ -2,6 +2,7 @@ package net.querz.mcaselector.io;
 
 import javafx.scene.image.Image;
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import java.io.File;
 import java.io.IOException;
@@ -192,5 +193,25 @@ public final class FileHelper {
 		Set<Point2i> regions = new HashSet<>(files.length);
 		Arrays.stream(files).forEach(f -> regions.add(FileHelper.parseMCAFileName(f)));
 		return regions;
+	}
+
+	public static WorldDirectories createWorldDirectories(File file) {
+		// make sure that target directories exist
+		try {
+			createDirectoryOrThrowException(file, "region");
+			createDirectoryOrThrowException(file, "poi");
+			createDirectoryOrThrowException(file, "entities");
+			return new WorldDirectories(new File(file, "region"), new File(file, "poi"), new File(file, "entities"));
+		} catch (IOException ex) {
+			Debug.dumpException("failed to create directories", ex);
+			return null;
+		}
+	}
+
+	private static void createDirectoryOrThrowException(File dir, String folder) throws IOException {
+		File d = new File(dir, folder);
+		if (!d.exists() && !d.mkdirs()) {
+			throw new IOException("failed to create directory " + d);
+		}
 	}
 }

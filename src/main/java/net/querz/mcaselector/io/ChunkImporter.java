@@ -3,7 +3,6 @@ package net.querz.mcaselector.io;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.mca.EntitiesMCAFile;
-import net.querz.mcaselector.io.mca.MCAFile;
 import net.querz.mcaselector.io.mca.PoiMCAFile;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
