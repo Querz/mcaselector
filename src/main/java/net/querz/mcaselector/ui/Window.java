@@ -7,6 +7,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.ui.dialog.PreviewDisclaimerDialog;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -23,11 +25,14 @@ public class Window extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
+		String version;
 		try {
-			title = "MCA Selector " + FileHelper.getManifestAttributes().getValue("Application-Version");
+			version = FileHelper.getManifestAttributes().getValue("Application-Version");
 		} catch (IOException ex) {
-			title = "MCA Selector - dev";
+			version = "dev";
 		}
+
+		title = "MCA Selector " + version;
 		primaryStage.setTitle(title);
 		primaryStage.getIcons().add(FileHelper.getIconFromResources("img/icon"));
 
@@ -64,6 +69,11 @@ public class Window extends Application {
 
 		primaryStage.setOnCloseRequest(e -> System.exit(0));
 		primaryStage.setScene(scene);
+
+		if (version.contains("pre")) {
+			new PreviewDisclaimerDialog(primaryStage).showAndWait();
+		}
+
 		primaryStage.show();
 	}
 
