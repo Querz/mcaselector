@@ -24,8 +24,6 @@ public class Anvil117EntityRelocator implements EntityRelocator {
 			return false;
 		}
 
-		System.out.println("relocating entities");
-
 		position[0] += offset.blockToChunk().getX();
 		position[1] += offset.blockToChunk().getZ();
 
