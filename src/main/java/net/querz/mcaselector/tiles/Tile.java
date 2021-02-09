@@ -16,7 +16,6 @@ public class Tile {
 
 	public static Color REGION_GRID_COLOR = Color.BLACK;
 	public static Color CHUNK_GRID_COLOR = Color.DARK_GRAY;
-	public static Color EMPTY_CHUNK_BACKGROUND_COLOR = Color.BLACK;
 	public static Color EMPTY_COLOR = new Color(0.2, 0.2, 0.2, 1);
 	public static double GRID_LINE_WIDTH = 0.5;
 

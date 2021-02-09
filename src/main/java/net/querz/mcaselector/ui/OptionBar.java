@@ -23,9 +23,9 @@ public class OptionBar extends MenuBar {
 	* - Open World		- Chunk Grid		- Clear selection			- Import chunks
 	* - Open Region		- Region Grid		- Invert selection			- Filter chunks
 	* - Settings		- Goto				- Copy chunks				- Change fields
-	* - World Settings	- Clear cache		- Paste chunks				- Edit NBT
-	* - Quit			- Clear all cache	- Export selected chunks	- Swap chunks
-	*										- Delete selected chunks
+	* - World Settings	- Save Screenshot	- Paste chunks				- Edit NBT
+	* - Quit			- Clear cache		- Export selected chunks	- Swap chunks
+	*					- Clear all cache	- Delete selected chunks
 	*										- Import selection
 	*										- Export selection
 	* 										- Clear cache
@@ -45,6 +45,7 @@ public class OptionBar extends MenuBar {
 	private final CheckMenuItem chunkGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_CHUNK_GRID, true);
 	private final CheckMenuItem regionGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_REGION_GRID, true);
 	private final MenuItem goTo = UIFactory.menuItem(Translation.MENU_VIEW_GOTO);
+	private final MenuItem saveScreenshot = UIFactory.menuItem(Translation.MENU_VIEW_SAVE_SCREENSHOT);
 	private final MenuItem clearViewCache = UIFactory.menuItem(Translation.MENU_VIEW_CLEAR_CACHE);
 	private final MenuItem clearAllCache = UIFactory.menuItem(Translation.MENU_VIEW_CLEAR_ALL_CACHE);
 	private final MenuItem clear = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR);
@@ -77,6 +78,7 @@ public class OptionBar extends MenuBar {
 		view.getItems().addAll(
 				chunkGrid, regionGrid, UIFactory.separator(),
 				goTo, UIFactory.separator(),
+				saveScreenshot, UIFactory.separator(),
 				clearViewCache, clearAllCache);
 		selection.getItems().addAll(
 				clear, invert, UIFactory.separator(),
@@ -99,6 +101,7 @@ public class OptionBar extends MenuBar {
 		chunkGrid.setOnAction(e -> tileMap.setShowChunkGrid(chunkGrid.isSelected()));
 		regionGrid.setOnAction(e -> tileMap.setShowRegionGrid(regionGrid.isSelected()));
 		goTo.setOnAction(e -> DialogHelper.gotoCoordinate(tileMap, primaryStage));
+		saveScreenshot.setOnAction(e -> DialogHelper.screenshot(tileMap, primaryStage));
 		clearAllCache.setOnAction(e -> CacheHelper.clearAllCache(tileMap));
 		clearViewCache.setOnAction(e -> CacheHelper.clearViewCache(tileMap));
 		clear.setOnAction(e -> tileMap.clearSelection());
@@ -122,6 +125,7 @@ public class OptionBar extends MenuBar {
 		chunkGrid.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCodeCombination.SHORTCUT_DOWN));
 		regionGrid.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCodeCombination.SHORTCUT_DOWN));
 		goTo.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCodeCombination.SHORTCUT_DOWN));
+		saveScreenshot.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCodeCombination.SHORTCUT_DOWN));
 		clearAllCache.setAccelerator(new KeyCodeCombination(KeyCode.K, KeyCodeCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
 		clearViewCache.setAccelerator(new KeyCodeCombination(KeyCode.K, KeyCodeCombination.SHORTCUT_DOWN));
 		clear.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCodeCombination.SHORTCUT_DOWN));
@@ -157,6 +161,7 @@ public class OptionBar extends MenuBar {
 
 	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap) {
 		worldSettings.setDisable(!enabled);
+		saveScreenshot.setDisable(!enabled);
 		filterChunks.setDisable(!enabled);
 		changeFields.setDisable(!enabled);
 		importChunks.setDisable(!enabled);

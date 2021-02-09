@@ -641,8 +641,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	private void draw(GraphicsContext ctx) {
-		ctx.setFill(Tile.EMPTY_CHUNK_BACKGROUND_COLOR.makeJavaFXColor());
-		ctx.fillRect(0, 0, getWidth(), getHeight());
+		ctx.clearRect(0, 0, getWidth(), getHeight());
 		runOnVisibleRegions(region -> {
 			if (!tiles.containsKey(region)) {
 				tiles.put(region, new Tile(region));
