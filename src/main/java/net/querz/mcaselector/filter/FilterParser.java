@@ -1,10 +1,7 @@
-package net.querz.mcaselector.headless;
+package net.querz.mcaselector.filter;
 
-import net.querz.mcaselector.filter.Comparator;
-import net.querz.mcaselector.filter.Filter;
-import net.querz.mcaselector.filter.FilterType;
-import net.querz.mcaselector.filter.GroupFilter;
-import net.querz.mcaselector.filter.Operator;
+import net.querz.mcaselector.exception.ParseException;
+import net.querz.mcaselector.io.StringPointer;
 
 public class FilterParser {
 

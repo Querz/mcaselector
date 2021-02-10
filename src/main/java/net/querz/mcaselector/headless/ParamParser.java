@@ -1,5 +1,6 @@
 package net.querz.mcaselector.headless;
 
+import net.querz.mcaselector.exception.ParseException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;

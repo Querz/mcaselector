@@ -1,4 +1,4 @@
-package net.querz.mcaselector.headless;
+package net.querz.mcaselector.exception;
 
 import java.io.IOException;
 

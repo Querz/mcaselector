@@ -1,5 +1,6 @@
-package net.querz.mcaselector.headless;
+package net.querz.mcaselector.io;
 
+import net.querz.mcaselector.exception.ParseException;
 import java.util.function.Function;
 
 public class StringPointer {

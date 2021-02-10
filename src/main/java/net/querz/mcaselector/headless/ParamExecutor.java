@@ -1,8 +1,11 @@
 package net.querz.mcaselector.headless;
 
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.changer.ChangeParser;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.exception.ParseException;
+import net.querz.mcaselector.filter.FilterParser;
 import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.point.Point2i;

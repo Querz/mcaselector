@@ -1,7 +1,7 @@
-package net.querz.mcaselector.headless;
+package net.querz.mcaselector.changer;
 
-import net.querz.mcaselector.changer.Field;
-import net.querz.mcaselector.changer.FieldType;
+import net.querz.mcaselector.exception.ParseException;
+import net.querz.mcaselector.io.StringPointer;
 import java.util.ArrayList;
 import java.util.List;
 
