@@ -44,7 +44,7 @@ public class FileTextField extends HBox {
 			}
 		});
 
-		DataProperty<Integer> location = new DataProperty<>();
+		DataProperty<Integer> location = new DataProperty<>(0);
 		textField.textProperty().addListener((observable, oldValue, newValue) ->
 				location.set(textField.getText().length()));
 		textField.focusedProperty().addListener((observable, oldValue, newValue) ->
