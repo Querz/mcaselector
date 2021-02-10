@@ -141,6 +141,7 @@ public final class Config {
 
 	public static void setWorldDir(File worldDir) {
 		Config.worldDir = worldDir;
+		Config.worldDirs = new WorldDirectories(worldDir, null, null);
 		worldUUID = UUID.nameUUIDFromBytes(worldDir.getAbsolutePath().getBytes());
 		cacheDir = new File(baseCacheDir, worldUUID.toString().replace("-", ""));
 	}
