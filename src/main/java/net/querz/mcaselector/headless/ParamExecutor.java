@@ -84,13 +84,15 @@ public final class ParamExecutor {
 			if (Config.debug()) {
 				Debug.dumpException("an error occurred while running MCA Selector in headless mode", ex);
 			}
-			return null;
+			future.run();
+			return future;
 		}
 
 		return future;
 	}
 
 	private void select(FutureTask<Boolean> future) throws IOException {
+		Config.setWorldDirs(parseWorldDirectories("region", "poi", "entities"));
 		File output = parseFileAndCreateParentDirectories("output", "csv");
 		GroupFilter query = parseQuery();
 		int radius = parseRadius();
@@ -105,6 +107,7 @@ public final class ParamExecutor {
 	}
 
 	private void export(FutureTask<Boolean> future) throws IOException {
+		Config.setWorldDirs(parseWorldDirectories("region", "poi", "entities"));
 		WorldDirectories outputDirectories = parseAndCreateWorldDirectories("output-region", "output-poi", "output-entities");
 		testWorldDirectoriesConnections(Config.getWorldDirs(), outputDirectories);
 		GroupFilter query = parseQuery();
@@ -123,6 +126,7 @@ public final class ParamExecutor {
 	}
 
 	private void imp(FutureTask<Boolean> future) throws IOException {
+		Config.setWorldDirs(parseWorldDirectories("region", "poi", "entities"));
 		WorldDirectories inputDirectories = parseAndCreateWorldDirectories("input-region", "input-poi", "input-entities");
 		int offsetX = parseInt("x-offset", 0);
 		int offsetZ = parseInt("z-offset", 0);
@@ -152,6 +156,7 @@ public final class ParamExecutor {
 	}
 
 	private void delete(FutureTask<Boolean> future) throws IOException {
+		Config.setWorldDirs(parseWorldDirectories("region", "poi", "entities"));
 		GroupFilter query = parseQuery();
 		SelectionData selection = loadSelection();
 
@@ -168,6 +173,7 @@ public final class ParamExecutor {
 	}
 
 	private void change(FutureTask<Boolean> future) throws IOException {
+		Config.setWorldDirs(parseWorldDirectories("region", "poi", "entities"));
 		SelectionData selection = loadSelection();
 		boolean force = params.containsKey("force");
 		List<Field<?>> fields = parseFields();
@@ -182,6 +188,7 @@ public final class ParamExecutor {
 	}
 
 	private void cache(FutureTask<Boolean> future) throws IOException {
+		Config.setWorldDirs(parseWorldDirectories("region", "poi", "entities"));
 		if (!HeadlessHelper.hasJavaFX()) {
 			throw new IOException("no JavaFX installation found");
 		}
@@ -493,7 +500,6 @@ public final class ParamExecutor {
 	}
 
 	private void parseConfig() throws IOException {
-		Config.setWorldDirs(parseWorldDirectories("region", "poi", "entities"));
 		if (params.containsKey("debug")) {
 			Config.setDebug(true);
 			Debug.initLogWriter();
