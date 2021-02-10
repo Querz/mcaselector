@@ -470,21 +470,30 @@ public class DialogHelper {
 				return;
 			}
 
+			// if there is only one dimension, open it instantly
+			if (dimensions.size() == 1) {
+				setWorld(detectWorldDirectories(dimensions.get(0)), tileMap, optionBar);
+				return;
+			}
+
 			// show world selection dialog
 			Optional<File> result = new SelectWorldDialog(dimensions, tileMap, primaryStage).showAndWait();
 			result.ifPresent(dim -> {
-				WorldDirectories worldDirectories = detectWorldDirectories(dim);
-				Config.setWorldDirs(worldDirectories);
-				CacheHelper.validateCacheVersion(tileMap);
-				tileMap.clear();
-				tileMap.update();
-				tileMap.disable(false);
-				optionBar.setWorldDependentMenuItemsEnabled(true, tileMap);
-				tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent());
+				setWorld(detectWorldDirectories(dim), tileMap, optionBar);
 			});
 		} else if (file != null) {
 			new ErrorDialog(primaryStage, String.format("%s is not a directory", file));
 		}
+	}
+
+	private static void setWorld(WorldDirectories worldDirectories, TileMap tileMap, OptionBar optionBar) {
+		Config.setWorldDirs(worldDirectories);
+		CacheHelper.validateCacheVersion(tileMap);
+		tileMap.clear();
+		tileMap.update();
+		tileMap.disable(false);
+		optionBar.setWorldDependentMenuItemsEnabled(true, tileMap);
+		tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent());
 	}
 
 	public static void importSelection(TileMap tileMap, Stage primaryStage) {
