@@ -107,16 +107,17 @@ public class ChunkFilterSelector {
 				Region region = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
 
 				Set<Point2i> chunks = region.getFilteredChunks(filter);
-				if (chunks.size() == Tile.CHUNKS) {
-					chunks = null;
+				if (chunks.size() > 0) {
+					if (chunks.size() == Tile.CHUNKS) {
+						chunks = null;
+					}
+					Map<Point2i, Set<Point2i>> selection = new HashMap<>();
+					selection.put(location, chunks);
+
+					selection = applyRadius(selection);
+
+					callback.accept(selection);
 				}
-				Map<Point2i, Set<Point2i>> selection = new HashMap<>();
-				selection.put(location, chunks);
-
-				selection = applyRadius(selection);
-
-				callback.accept(selection);
-
 				Debug.dumpf("took %s to select chunks in %s", t, getRegionDirectories().getLocationAsFileName());
 			} catch (Exception ex) {
 				Debug.dumpException("error selecting chunks in " + getRegionDirectories().getLocationAsFileName(), ex);

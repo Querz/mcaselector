@@ -1,6 +1,5 @@
 package net.querz.mcaselector.io.mca;
 
-import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;

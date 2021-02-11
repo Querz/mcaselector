@@ -1,12 +1,8 @@
 package net.querz.mcaselector.io.mca;
 
-import net.querz.mcaselector.changer.Field;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.CompressionType;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.version.ChunkRelocator;
-import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.io.NBTDeserializer;
 import net.querz.nbt.io.NBTSerializer;
 import net.querz.nbt.io.NamedTag;
@@ -18,7 +14,6 @@ import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
