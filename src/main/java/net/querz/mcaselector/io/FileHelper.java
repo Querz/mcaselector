@@ -186,6 +186,9 @@ public final class FileHelper {
 	}
 
 	public static Set<Point2i> parseAllMCAFileNames(File directory) {
+		if (directory == null) {
+			return Collections.emptySet();
+		}
 		File[] files = directory.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
 		if (files == null) {
 			return Collections.emptySet();

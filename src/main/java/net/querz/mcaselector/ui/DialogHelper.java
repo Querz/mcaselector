@@ -143,11 +143,16 @@ public class DialogHelper {
 					}
 					break;
 				case SELECT:
+					SelectionData selectionData = new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted());
 					tileMap.clearSelection();
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS, primaryStage)
-							.showProgressBar(t -> ChunkFilterSelector.selectFilter(r.getFilter(), r.getRadius(), selection -> Platform.runLater(() -> {
-								tileMap.addMarkedChunks(selection);
-								tileMap.update();
+							.showProgressBar(t -> ChunkFilterSelector.selectFilter(
+								r.getFilter(),
+								selectionData,
+								r.getRadius(),
+								selection -> Platform.runLater(() -> {
+									tileMap.addMarkedChunks(selection);
+									tileMap.update();
 							}), t, false));
 					break;
 				default:

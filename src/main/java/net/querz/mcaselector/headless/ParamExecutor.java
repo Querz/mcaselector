@@ -103,7 +103,7 @@ public final class ParamExecutor {
 			SelectionHelper.exportSelection(new SelectionData(selection, false), output);
 			future.run();
 		});
-		ChunkFilterSelector.selectFilter(query, radius, (src) -> mergeSelections(src, selection), progress, true);
+		ChunkFilterSelector.selectFilter(query, null, radius, (src) -> mergeSelections(src, selection), progress, true);
 	}
 
 	private void export(FutureTask<Boolean> future) throws IOException {

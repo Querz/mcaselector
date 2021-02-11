@@ -107,7 +107,7 @@ public class Tile {
 	public void mark(boolean marked) {
 		this.marked = marked;
 		if (marked) {
-			markedChunks.clear();
+			markedChunks = new HashSet<>();
 			markedChunksImage = null;
 		}
 	}
@@ -150,7 +150,7 @@ public class Tile {
 
 	public void clearMarks() {
 		mark(false);
-		markedChunks.clear();
+		markedChunks = new HashSet<>();
 	}
 
 	public Set<Point2i> getMarkedChunks() {

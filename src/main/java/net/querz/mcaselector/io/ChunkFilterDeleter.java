@@ -17,7 +17,7 @@ public class ChunkFilterDeleter {
 
 	public static void deleteFilter(GroupFilter filter, SelectionData selection, Progress progressChannel, boolean headless) {
 		WorldDirectories wd = Config.getWorldDirs();
-		RegionDirectories[] rd = wd.listRegions();
+		RegionDirectories[] rd = wd.listRegions(selection);
 		if (rd == null || rd.length == 0) {
 			if (headless) {
 				progressChannel.done("no files");

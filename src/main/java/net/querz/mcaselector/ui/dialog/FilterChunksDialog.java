@@ -72,12 +72,12 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		delete.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_DELETE_TOOLTIP));
 
 		toggleGroup.getToggles().addAll(select, export, delete);
-		toggleGroup.selectedToggleProperty().addListener(l -> {
-			selectionOnly.setDisable(select.isSelected());
-			selectionOnlyLabel.setDisable(select.isSelected());
-			selectionRadius.setDisable(!select.isSelected());
-			selectionRadiusLabel.setDisable(!select.isSelected());
-		});
+//		toggleGroup.selectedToggleProperty().addListener(l -> {
+//			selectionOnly.setDisable(select.isSelected());
+//			selectionOnlyLabel.setDisable(select.isSelected());
+//			selectionRadius.setDisable(!select.isSelected());
+//			selectionRadiusLabel.setDisable(!select.isSelected());
+//		});
 		select.fire();
 
 		setResizable(true);

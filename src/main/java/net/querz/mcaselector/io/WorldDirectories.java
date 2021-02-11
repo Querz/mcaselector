@@ -52,13 +52,15 @@ public class WorldDirectories implements Serializable, Cloneable {
 		return rd;
 	}
 
-	public RegionDirectories[] listRegions() {
+	public RegionDirectories[] listRegions(SelectionData selection) {
 		Map<Point2i, RegionDirectories> regionDirectories = new HashMap<>();
 		File[] r = this.region.listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
 		if (r != null) {
 			for (File f : r) {
 				Point2i l = FileHelper.parseMCAFileName(f);
-				regionDirectories.put(l, new RegionDirectories(l, f, null, null));
+				if (selection == null || selection.isRegionSelected(l)) {
+					regionDirectories.put(l, new RegionDirectories(l, f, null, null));
+				}
 			}
 		}
 
@@ -67,10 +69,12 @@ public class WorldDirectories implements Serializable, Cloneable {
 			if (p != null) {
 				for (File f : p) {
 					Point2i l = FileHelper.parseMCAFileName(f);
-					if (regionDirectories.containsKey(l)) {
-						regionDirectories.get(l).setEntities(f);
-					} else {
-						regionDirectories.put(l, new RegionDirectories(l, null, f, null));
+					if (selection == null || selection.isRegionSelected(l)) {
+						if (regionDirectories.containsKey(l)) {
+							regionDirectories.get(l).setEntities(f);
+						} else {
+							regionDirectories.put(l, new RegionDirectories(l, null, f, null));
+						}
 					}
 				}
 			}
@@ -81,10 +85,12 @@ public class WorldDirectories implements Serializable, Cloneable {
 			if (e != null) {
 				for (File f : e) {
 					Point2i l = FileHelper.parseMCAFileName(f);
-					if (regionDirectories.containsKey(l)) {
-						regionDirectories.get(l).setPoi(f);
-					} else {
-						regionDirectories.put(l, new RegionDirectories(l, null, null, f));
+					if (selection == null || selection.isRegionSelected(l)) {
+						if (regionDirectories.containsKey(l)) {
+							regionDirectories.get(l).setPoi(f);
+						} else {
+							regionDirectories.put(l, new RegionDirectories(l, null, null, f));
+						}
 					}
 				}
 			}

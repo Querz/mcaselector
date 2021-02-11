@@ -29,7 +29,7 @@ public class ChunkImporter {
 	public static void importChunks(WorldDirectories source, Progress progressChannel, boolean headless, boolean overwrite, SelectionData sourceSelection, SelectionData targetSelection, List<Range> ranges, Point2i offset, DataProperty<Map<Point2i, RegionDirectories>> tempFiles) {
 		try {
 			WorldDirectories wd = Config.getWorldDirs();
-			RegionDirectories[] rd = wd.listRegions();
+			RegionDirectories[] rd = wd.listRegions(targetSelection);
 			if (rd == null || rd.length == 0) {
 				if (headless) {
 					progressChannel.done("no files");

@@ -19,7 +19,7 @@ public class ChunkFilterExporter {
 
 	public static void exportFilter(GroupFilter filter, SelectionData selection, WorldDirectories destination, Progress progressChannel, boolean headless) {
 		WorldDirectories wd = Config.getWorldDirs();
-		RegionDirectories[] rd = wd.listRegions();
+		RegionDirectories[] rd = wd.listRegions(selection);
 		if (rd == null || rd.length == 0) {
 			if (headless) {
 				progressChannel.done("no files");

@@ -291,7 +291,7 @@ public class Region {
 		}
 	}
 
-	public Set<Point2i> getFilteredChunks(Filter<?> filter) {
+	public Set<Point2i> getFilteredChunks(Filter<?> filter, Set<Point2i> selection) {
 		Set<Point2i> chunks = new HashSet<>();
 
 		for (int i = 0; i < 1024; i++) {
@@ -311,7 +311,9 @@ public class Region {
 					if (location == null) {
 						continue;
 					}
-					chunks.add(location);
+					if (selection == null || selection.contains(location)) {
+						chunks.add(location);
+					}
 				}
 			} catch (Exception ex) {
 				Debug.dumpException(String.format("failed to select chunk %s", location), ex);

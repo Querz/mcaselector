@@ -88,6 +88,10 @@ public class SelectionHelper {
 		if (selection != null && selection.isInverted()) {
 			sel = new HashMap<>();
 			Set<Point2i> allRegions = FileHelper.parseAllMCAFileNames(Config.getWorldDir());
+			Set<Point2i> allPoi = FileHelper.parseAllMCAFileNames(Config.getWorldDirs().getPoi());
+			Set<Point2i> allEntities = FileHelper.parseAllMCAFileNames(Config.getWorldDirs().getEntities());
+			allRegions.addAll(allPoi);
+			allRegions.addAll(allEntities);
 			for (Point2i region : allRegions) {
 				if (selection.isRegionSelected(region)) {
 					if (!selection.getSelection().containsKey(region)) {
