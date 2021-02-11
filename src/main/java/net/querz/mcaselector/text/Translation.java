@@ -41,6 +41,7 @@ public enum Translation {
 	MENU_VIEW_CHUNK_GRID("menu.view.chunk_grid"),
 	MENU_VIEW_REGION_GRID("menu.view.region_grid"),
 	MENU_VIEW_GOTO("menu.view.goto"),
+	MENU_VIEW_RESET_ZOOM("menu.view.reset_zoom"),
 	MENU_VIEW_SAVE_SCREENSHOT("menu.view.save_screenshot"),
 	MENU_VIEW_CLEAR_CACHE("menu.view.clear_cache"),
 	MENU_VIEW_CLEAR_ALL_CACHE("menu.view.clear_all_cache"),

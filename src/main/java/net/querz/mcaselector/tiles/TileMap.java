@@ -132,6 +132,11 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 	}
 
+	public void setScale(float newScale) {
+		scale = newScale;
+		update();
+	}
+
 	public static Point2f getRegionGridMin(Point2f offset, float scale) {
 		Point2i min = offset.toPoint2i().blockToRegion();
 		Point2i regionOffset = min.regionToBlock().sub((int) offset.getX(), (int) offset.getY());
