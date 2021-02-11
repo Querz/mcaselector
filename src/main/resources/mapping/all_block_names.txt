@@ -676,6 +676,7 @@ shulker_box
 sign
 skeleton_skull
 skeleton_wall_skull
+skull
 slime_block
 small_amethyst_bud
 smithing_table
