@@ -66,7 +66,6 @@ public abstract class ProgressTask extends Task<Void> implements Progress {
 			Platform.runLater(() -> infoProperty.setValue(info));
 			updateProgress(progress, max);
 			if (progress == max && onFinish != null) {
-				System.out.println("GOING TO RUN ONFINISH");
 				Platform.runLater(onFinish);
 			}
 		}

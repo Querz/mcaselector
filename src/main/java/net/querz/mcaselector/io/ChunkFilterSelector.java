@@ -21,13 +21,11 @@ public class ChunkFilterSelector {
 
 	public static void selectFilter(GroupFilter filter, SelectionData selection, int radius, Consumer<Map<Point2i, Set<Point2i>>> callback, Progress progressChannel, boolean headless) {
 		WorldDirectories wd = Config.getWorldDirs();
-		System.out.println(selection);
 		RegionDirectories[] rd = wd.listRegions(selection);
 		if (rd == null || rd.length == 0) {
 			if (headless) {
 				progressChannel.done("no files");
 			} else {
-				System.out.println("no files");
 				progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
 			}
 			return;

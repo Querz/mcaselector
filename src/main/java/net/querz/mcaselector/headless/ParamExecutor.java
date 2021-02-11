@@ -95,6 +95,7 @@ public final class ParamExecutor {
 		Config.setWorldDirs(parseWorldDirectories("region", "poi", "entities"));
 		File output = parseFileAndCreateParentDirectories("output", "csv");
 		GroupFilter query = parseQuery();
+		SelectionData selectionData = loadSelection();
 		int radius = parseRadius();
 
 		Map<Point2i, Set<Point2i>> selection = new HashMap<>();
@@ -103,7 +104,7 @@ public final class ParamExecutor {
 			SelectionHelper.exportSelection(new SelectionData(selection, false), output);
 			future.run();
 		});
-		ChunkFilterSelector.selectFilter(query, null, radius, (src) -> mergeSelections(src, selection), progress, true);
+		ChunkFilterSelector.selectFilter(query, selectionData, radius, (src) -> mergeSelections(src, selection), progress, true);
 	}
 
 	private void export(FutureTask<Boolean> future) throws IOException {

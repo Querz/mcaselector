@@ -56,14 +56,12 @@ public class ProgressDialog extends Stage {
 			@Override
 			protected Void call() {
 				r.accept(this);
-				System.out.println("DONE CALLING");
 				return null;
 			}
 		};
 		progressBar.progressProperty().bind(currentTask.progressProperty());
 		label.textProperty().bind(currentTask.infoProperty());
 		currentTask.setOnFinish(() -> {
-			System.out.println("CLOSING PROGRESS DIALOG");
 			this.close();
 		});
 		Thread thread = new Thread(currentTask);
