@@ -62,7 +62,7 @@ public final class VersionController {
 		ANVIL114(1632, 2201, Anvil113ChunkFilter.class, Anvil113ChunkMerger.class, Anvil114ChunkRelocator.class, Anvil114PoiRelocator.class, Anvil112EntityRelocator.class, Anvil112EntityFilter.class, Anvil113ChunkRenderer.class, Anvil114ColorMapping.class),
 		ANVIL115(2202, 2526, Anvil115ChunkFilter.class, Anvil115ChunkMerger.class, Anvil115ChunkRelocator.class, Anvil114PoiRelocator.class, Anvil112EntityRelocator.class, Anvil112EntityFilter.class, Anvil115ChunkRenderer.class, Anvil115ColorMapping.class),
 		ANVIL116(2527, 2680, Anvil115ChunkFilter.class, Anvil115ChunkMerger.class, Anvil116ChunkRelocator.class, Anvil114PoiRelocator.class, Anvil112EntityRelocator.class, Anvil112EntityFilter.class, Anvil116ChunkRenderer.class, Anvil116ColorMapping.class),
-		ANVIL117(2681, Integer.MAX_VALUE, Anvil115ChunkFilter.class, Anvil115ChunkMerger.class, Anvil117ChunkRelocator.class, Anvil114PoiRelocator.class, Anvil117EntityRelocator.class, Anvil117EntityFilter.class, Anvil116ChunkRenderer.class, Anvil117ColorMapping.class);
+		ANVIL117(2681, Integer.MAX_VALUE, Anvil117ChunkFilter.class, Anvil115ChunkMerger.class, Anvil117ChunkRelocator.class, Anvil114PoiRelocator.class, Anvil117EntityRelocator.class, Anvil117EntityFilter.class, Anvil117ChunkRenderer.class, Anvil117ColorMapping.class);
 
 		private final int minVersion, maxVersion;
 		private final Class<? extends ChunkFilter> chunkFilter;
