@@ -2,10 +2,12 @@ buildscript {
 	repositories {
 		jcenter()
 		maven { url 'https://jitpack.io' }
+		maven { url "https://plugins.gradle.org/m2/" }
 	}
 	dependencies {
 		classpath 'com.github.eriwen:gradle-css-plugin:9fe88d7126'
 		classpath 'com.github.jengelman.gradle.plugins:shadow:6.0.0'
+		classpath 'edu.sc.seis.launch4j:launch4j:2.4.9'
 	}
 }
 
@@ -14,6 +16,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'css'
+apply plugin: 'edu.sc.seis.launch4j'
 
 group 'net.querz.mcaselector'
 version '1.14-pre'
@@ -60,6 +63,14 @@ compileJava {
 minifyCss {
 	source = "${sourceSets.main.resources.srcDirs[0]}/style.css"
 	dest = "${sourceSets.main.output.resourcesDir}/style.css"
+}
+
+createExe {
+	dontWrapJar true
+	jar project.name + '-' + project.version + '.jar'
+	outfile 'MCA Selector.exe'
+	icon '../../launch4j/icon.ico'
+	bundledJrePath 'jre'
 }
 
 jar.finalizedBy shadowJar
