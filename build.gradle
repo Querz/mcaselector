@@ -44,6 +44,7 @@ dependencies {
 jar {
 	archiveFileName = project.name + '-' + project.version + '-min.jar'
 	manifest.attributes 'Main-Class': 'net.querz.mcaselector.Main', 'Application-Version': project.version
+	exclude 'img/icon.ico'
 	from 'LICENSE'
 }
 
@@ -52,6 +53,7 @@ shadowJar {
 	archiveFileName = project.name + '-' + project.version + '.jar'
 	project.configurations.implementation.canBeResolved = true
 	configurations = [project.configurations.implementation]
+	exclude 'img/icon.ico'
 	from 'LICENSE'
 }
 
@@ -69,7 +71,7 @@ createExe {
 	dontWrapJar true
 	jar project.name + '-' + project.version + '.jar'
 	outfile 'MCA Selector.exe'
-	icon '../../launch4j/icon.ico'
+	icon '../../src/main/resources/img/icon.ico'
 	bundledJrePath 'jre'
 }
 
