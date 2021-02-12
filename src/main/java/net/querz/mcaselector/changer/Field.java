@@ -24,6 +24,15 @@ public abstract class Field<T> {
 		this.newValue = newValue;
 	}
 
+	@SuppressWarnings("unchecked")
+	public void setNewValueRaw(Object newValue) {
+		if (newValue == null) {
+			this.newValue = null;
+		} else {
+			this.newValue = (T) newValue;
+		}
+	}
+
 	public T getNewValue() {
 		return newValue;
 	}
@@ -36,7 +45,11 @@ public abstract class Field<T> {
 
 	@Override
 	public String toString() {
-		return type.toString() + " = " + newValue;
+		return type.toString() + " = " + valueToString();
+	}
+
+	public String valueToString() {
+		return newValue.toString();
 	}
 
 	//returns true if the value has been correctly parsed and value is not null

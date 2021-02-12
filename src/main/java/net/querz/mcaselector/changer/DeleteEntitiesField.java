@@ -11,7 +11,7 @@ public class DeleteEntitiesField extends Field<Boolean> {
 
 	@Override
 	public Boolean getOldValue(ChunkData data) {
-		return false;
+		return null;
 	}
 
 	@Override

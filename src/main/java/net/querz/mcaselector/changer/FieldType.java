@@ -12,6 +12,7 @@ public enum FieldType {
 	LAST_UPDATE("LastUpdate", LastUpdateField.class, false, false),
 	STATUS("Status", StatusField.class, false, true),
 	BIOME("Biome", BiomeField.class, false, false),
+	REPLACE_BLOCKS("ReplaceBlocks", ReplaceBlocksField.class, false, true),
 	DELETE_ENTITIES("DeleteEntities", DeleteEntitiesField.class, false, false),
 	DELETE_SECTIONS("DeleteSections", DeleteSectionsField.class, false, true),
 	STRUCTURE_REFERENCE("FixStructureReferences", ReferenceField.class, true, false);

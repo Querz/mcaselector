@@ -35,7 +35,12 @@ public class ChangeParser {
 
 			ptr.skipWhitespace();
 
-			String value = ptr.parseSimpleString(this::isValidCharacter);
+			String value;
+			if (ptr.currentChar() == '"') {
+				value = ptr.parseQuotedString();
+			} else {
+				value = ptr.parseSimpleString(this::isValidCharacter);
+			}
 
 			if (!field.parseNewValue(value)) {
 				throw ptr.parseException("invalid value");

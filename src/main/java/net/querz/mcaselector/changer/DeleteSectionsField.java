@@ -62,8 +62,18 @@ public class DeleteSectionsField extends Field<List<Range>> {
 		if (getNewValue().size() == 1 && getNewValue().get(0).isMaxRange()) {
 			return getType().toString() + " = true";
 		}
-		StringJoiner sj = new StringJoiner(",");
+		StringJoiner sj = new StringJoiner(", ");
 		getNewValue().forEach(r -> sj.add(r.toString()));
-		return getType().toString() + " = " + sj.toString();
+		return getType().toString() + " = \"" + sj.toString() + "\"";
+	}
+
+	@Override
+	public String valueToString() {
+		if (getNewValue().size() == 1 && getNewValue().get(0).isMaxRange()) {
+			return "true";
+		}
+		StringJoiner sj = new StringJoiner(", ");
+		getNewValue().forEach(r -> sj.add(r.toString()));
+		return sj.toString();
 	}
 }
