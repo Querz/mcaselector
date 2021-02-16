@@ -7,6 +7,7 @@ import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.range.Range;
 import java.io.File;
 import java.io.IOException;
@@ -322,11 +323,12 @@ public class Region {
 	}
 
 	public void applyFieldChanges(List<Field<?>> fields, boolean force, Set<Point2i> selection) {
+		Timer t = new Timer();
 		for (int x = 0; x < 32; x++) {
 			for (int z = 0; z < 32; z++) {
 				Point2i absoluteLocation = location.regionToChunk().add(x, z);
 				ChunkData chunkData = getChunkDataAt(absoluteLocation);
-				if (selection.contains(absoluteLocation)) {
+				if (selection == null || selection.contains(absoluteLocation)) {
 					try {
 						chunkData.applyFieldChanges(fields, force);
 					} catch (Exception ex) {
@@ -335,6 +337,7 @@ public class Region {
 				}
 			}
 		}
+		Debug.printf("took %s to replace blocks in region %s", t, location);
 	}
 
 	public void mergeInto(Region region, Point2i offset, boolean overwrite, Set<Point2i> sourceChunks, Set<Point2i> selection, List<Range> ranges) {

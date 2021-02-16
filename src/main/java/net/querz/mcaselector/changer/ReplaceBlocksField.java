@@ -133,9 +133,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 
 	@Override
 	public void change(ChunkData data) {
-		Timer t = new Timer();
 		VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion")).replaceBlocks(data.getRegion().getData(), getNewValue());
-		System.out.println("replacing blocks took " + t);
 	}
 
 	@Override
