@@ -108,6 +108,7 @@ public class FieldChanger {
 			} catch (Exception ex) {
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				Debug.errorf("error changing fields in %s", getRegionDirectories().getLocationAsFileName());
+				ex.printStackTrace();
 			}
 		}
 	}

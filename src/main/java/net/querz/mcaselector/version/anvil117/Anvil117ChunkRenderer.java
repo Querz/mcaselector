@@ -168,9 +168,9 @@ public class Anvil117ChunkRenderer implements ChunkRenderer {
 	}
 
 	private int getPaletteIndex(int index, long[] blockStates, int bits, int clean) {
-		int indicesPerLong = (int) (64D / bits);
-		int blockStatesIndex = index / indicesPerLong;
-		int startBit = (index % indicesPerLong) * bits;
+		double indicesPerLong = 64D / bits;
+		int blockStatesIndex = (int) (index / indicesPerLong);
+		int startBit = (index % (int) indicesPerLong) * bits;
 		return (int) (blockStates[blockStatesIndex] >> startBit) & clean;
 	}
 

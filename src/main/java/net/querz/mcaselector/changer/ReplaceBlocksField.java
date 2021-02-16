@@ -2,6 +2,8 @@ package net.querz.mcaselector.changer;
 
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +15,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ReplaceBlocksField extends Field<Map<String, String>> {
+public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockReplaceData>> {
 
 	private static final Set<String> validNames = new HashSet<>();
 	private static final Map<Integer, String> validIDs = new HashMap<>();
@@ -51,7 +53,7 @@ public class ReplaceBlocksField extends Field<Map<String, String>> {
 
 		// format: <from=to>[,<from=to>,...]
 
-		Map<String, String> newValue = new HashMap<>();
+		Map<String, ChunkFilter.BlockReplaceData> newValue = new HashMap<>();
 
 		String[] pairs = low.replaceAll(" ", "").split(",");
 		for (String pair : pairs) {
@@ -117,7 +119,7 @@ public class ReplaceBlocksField extends Field<Map<String, String>> {
 				}
 			}
 
-			newValue.put(key, value);
+			newValue.put(key, new ChunkFilter.BlockReplaceData(value));
 		}
 
 		setNewValue(newValue);
@@ -125,13 +127,15 @@ public class ReplaceBlocksField extends Field<Map<String, String>> {
 	}
 
 	@Override
-	public Map<String, String> getOldValue(ChunkData data) {
+	public Map<String, ChunkFilter.BlockReplaceData> getOldValue(ChunkData data) {
 		return null;
 	}
 
 	@Override
 	public void change(ChunkData data) {
+		Timer t = new Timer();
 		VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion")).replaceBlocks(data.getRegion().getData(), getNewValue());
+		System.out.println("replacing blocks took " + t);
 	}
 
 	@Override

@@ -87,7 +87,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 	}
 
 	@Override
-	public void replaceBlocks(CompoundTag data, Map<String, String> replace) {
+	public void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace) {
 		CompoundTag level = withDefault(() -> data.getCompoundTag("Level"), null);
 		if (level == null) {
 			return;
@@ -144,29 +144,49 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 			for (int i = 0; i < palette.size(); i++) {
 				CompoundTag blockState = palette.get(i);
-				String rep = replace.get(withDefault(() -> blockState.getString("Name"), null));
+				BlockReplaceData rep = replace.get(withDefault(() -> blockState.getString("Name"), null));
 				if (rep == null) {
 					continue;
 				}
 
-				CompoundTag newBlockState = new CompoundTag();
-				newBlockState.putString("Name", rep);
-				palette.set(i, newBlockState);
-			}
-		}
+				switch (rep.getType()) {
+					case NAME_TILE:
+						ListTag<CompoundTag> tileEntities = withDefault(() -> level.getListTag("TileEntities").asCompoundTagList(), new ListTag<>(CompoundTag.class));
+						tileEntities.add(rep.getTile());
+						level.put("TileEntities", tileEntities);
+						// fallthrough
+					case NAME:
+						CompoundTag newBlockState = new CompoundTag();
+						newBlockState.putString("Name", rep.getName());
+						palette.set(i, newBlockState);
+						break;
+					case STATE_TILE:
+						tileEntities = withDefault(() -> level.getListTag("TileEntities").asCompoundTagList(), new ListTag<>(CompoundTag.class));
+						tileEntities.add(rep.getTile());
+						level.put("TileEntities", tileEntities);
+						// fallthrough
+					case STATE:
+						palette.set(i, rep.getState());
+						break;
+					default:
+						// setting id and data is not supported
 
-		// delete tile entities with that name
-		ListTag<CompoundTag> tileEntities = catchClassCastException(() -> level.getListTag("TileEntities").asCompoundTagList());
-		if (tileEntities != null) {
-			for (int i = 0; i < tileEntities.size(); i++) {
-				CompoundTag tileEntity = tileEntities.get(i);
-				String id = catchClassCastException(() -> tileEntity.getString("id"));
-				if (replace.containsKey(id)) {
-					tileEntities.remove(i);
-					i--;
 				}
 			}
 		}
+
+//		// delete tile entities with that name
+//		ListTag<CompoundTag> tileEntities = catchClassCastException(() -> level.getListTag("TileEntities").asCompoundTagList());
+//		if (tileEntities != null) {
+//			for (int i = 0; i < tileEntities.size(); i++) {
+//				CompoundTag tileEntity = tileEntities.get(i);
+//				String id = catchClassCastException(() -> tileEntity.getString("id"));
+//				if (replace.containsKey(id)) {
+//					tileEntities.remove(i);
+//					i--;
+//				}
+//			}
+//		}
 	}
 
 	protected CompoundTag createEmptySection(int y) {

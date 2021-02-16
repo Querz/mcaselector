@@ -2,11 +2,7 @@ package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.version.VersionController;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class ChunkData {
 

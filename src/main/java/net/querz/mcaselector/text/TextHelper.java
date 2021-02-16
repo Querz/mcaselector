@@ -100,6 +100,19 @@ public final class TextHelper {
 		return s.toString();
 	}
 
+	public static String longToBinaryString(long l, int div) {
+		StringBuilder s = new StringBuilder(Long.toBinaryString(l));
+		for (int i = s.length(); i < 64; i++) {
+			s.insert(0, "0");
+		}
+
+		for (int i = 64 - div; i > 0; i -= div) {
+			s.insert(i, "_");
+		}
+
+		return s.toString();
+	}
+
 	public static String getStacktraceAsString(Exception ex) {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);

@@ -10,7 +10,6 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -328,7 +327,11 @@ public class Region {
 				Point2i absoluteLocation = location.regionToChunk().add(x, z);
 				ChunkData chunkData = getChunkDataAt(absoluteLocation);
 				if (selection.contains(absoluteLocation)) {
-					chunkData.applyFieldChanges(fields, force);
+					try {
+						chunkData.applyFieldChanges(fields, force);
+					} catch (Exception ex) {
+						Debug.dumpException("failed to apply fields to chunk " + absoluteLocation, ex);
+					}
 				}
 			}
 		}
