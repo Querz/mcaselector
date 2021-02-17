@@ -93,12 +93,12 @@ public interface ChunkFilter {
 					case STATE:
 						return SNBTUtil.toSNBT(state);
 					case STATE_TILE:
-						return SNBTUtil.toSNBT(state) + ";tile:" + SNBTUtil.toSNBT(tile);
+						return SNBTUtil.toSNBT(state) + ";" + SNBTUtil.toSNBT(tile);
 					case NAME_TILE:
 						if (name.startsWith("minecraft:")) {
-							return name + ";tile:" + SNBTUtil.toSNBT(tile);
+							return name + ";" + SNBTUtil.toSNBT(tile);
 						} else {
-							return "'" + name + "';tile:" + SNBTUtil.toSNBT(tile);
+							return "'" + name + "';" + SNBTUtil.toSNBT(tile);
 						}
 					default:
 						return null;

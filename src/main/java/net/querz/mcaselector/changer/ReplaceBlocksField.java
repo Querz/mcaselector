@@ -1,7 +1,6 @@
 package net.querz.mcaselector.changer;
 
 import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.io.StringPointer;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
@@ -9,7 +8,6 @@ import net.querz.nbt.io.ParseException;
 import net.querz.nbt.io.SNBTParser;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.Tag;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -49,115 +47,126 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 		// to format:   minecraft:<block-name>
 		//              <block-name>
 		//              '<custom-block-name-with-namespace>'
-		//              <snbt-string>
-		//              <to>;tile:<snbt-string>
+		//              <snbt-string-block-state>
+		//              <to>;<snbt-string-tile-entity>
 
 		Map<String, ChunkFilter.BlockReplaceData> newValue = new HashMap<>();
 
 		String trimmed = s.trim();
 
-
-
-		String[] fromTo = trimmed.split("=", 2);
-		if (fromTo.length != 2) {
-			return super.parseNewValue(s);
-		}
-
-		String from = fromTo[0].trim();
-		if (from.startsWith("'") && from.endsWith("'") && from.length() > 2) {
-			from = from.substring(1, from.length() - 1);
-		} else if (!from.startsWith("minecraft:")) {
-			from = "minecraft:" + from;
-			if (!validNames.contains(from)) {
+		while (trimmed.length() > 0) {
+			String[] fromTo = trimmed.split("=", 2);
+			if (fromTo.length != 2) {
 				return super.parseNewValue(s);
 			}
-		}
 
-		String to = fromTo[1].trim();
-		int read = 0;
-		CompoundTag toState = null;
-		String toName = null;
-		if (to.startsWith("{")) {
-			// block state
-			try {
-				SNBTParser parser = new SNBTParser(to);
-				toState = (CompoundTag) parser.parse(Tag.DEFAULT_MAX_DEPTH, true);
-				read += parser.getReadChars();
-			} catch (ParseException ex) {
-				super.parseNewValue(s);
+			String from = fromTo[0].trim();
+			if (from.startsWith("'") && from.endsWith("'") && from.length() > 2) {
+				from = from.substring(1, from.length() - 1);
+			} else if (!from.startsWith("minecraft:")) {
+				from = "minecraft:" + from;
+				if (!validNames.contains(from)) {
+					return super.parseNewValue(s);
+				}
 			}
-		} else if (to.startsWith("'")) {
-			// quoted
-			System.out.println("to is quoted");
-			int i = 1;
-			while (i < to.length() && to.charAt(i) != '\'') {
-				i++;
-			}
-			toName = to.substring(1, i == to.length() ? i : i + 1);
-			System.out.println("toName: \"" + toName + "\"");
-			if (!toName.endsWith("'")) {
-				System.out.println("doesn't end with '");
-				return super.parseNewValue(s);
-			}
-			toName = toName.substring(0, toName.length() - 1);
-			read += i + 1;
-		} else {
-			// minecraft block
-			// read everything until , or ;
-			int i = 0;
-			while (i < to.length() && to.charAt(i) != ',' && to.charAt(i) != ';') {
-				i++;
-			}
-			toName = to.substring(0, i == to.length() ? i : i + 1);
-			if (!toName.startsWith("minecraft:")) {
-				toName = "minecraft:" + toName;
-			}
-			if (!validNames.contains(toName)) {
-				return super.parseNewValue(s);
-			}
-			read += i + 1;
-		}
 
-		to = to.substring(read).trim();
-		CompoundTag toTile = null;
-		if (to.startsWith(";")) {
-			to = to.substring(1).trim();
-			if (to.startsWith("tile:")) {
-				to = to.substring(5).trim();
+			String to = fromTo[1].trim();
+			int read = 0;
+			CompoundTag toState = null;
+			String toName = null;
+			if (to.startsWith("{")) {
+				// block state
+				try {
+					SNBTParser parser = new SNBTParser(to);
+					toState = (CompoundTag) parser.parse(Tag.DEFAULT_MAX_DEPTH, true);
+					read += parser.getReadChars() - 1;
+				} catch (ParseException ex) {
+					return super.parseNewValue(s);
+				}
+			} else if (to.startsWith("'")) {
+				// quoted
+				int i = 1;
+				while (i < to.length() && to.charAt(i) != '\'') {
+					i++;
+				}
+				toName = to.substring(1, Math.max(i, to.length()));
+				if (!toName.endsWith("'")) {
+					return super.parseNewValue(s);
+				}
+				toName = toName.substring(0, toName.length() - 1);
+				if (toName.isEmpty()) {
+					return super.parseNewValue(s);
+				}
+				read += i + 1;
+			} else {
+				// minecraft block
+				// read everything until , or ;
+				int i = 0;
+				while (i < to.length()) {
+					if (to.charAt(i) == ',' || to.charAt(i) == ';') {
+						break;
+					}
+					i++;
+				}
+				toName = to.substring(0, i);
+				if (!toName.startsWith("minecraft:")) {
+					toName = "minecraft:" + toName;
+				}
+				if (!validNames.contains(toName)) {
+					return super.parseNewValue(s);
+				}
+				read += i;
+			}
+
+			to = to.substring(read).trim();
+
+			CompoundTag toTile = null;
+			if (to.startsWith(";")) {
+				to = to.substring(1).trim();
+				if (to.length() == 0) {
+					return super.parseNewValue(s);
+				}
 				try {
 					SNBTParser parser = new SNBTParser(to);
 					toTile = (CompoundTag) parser.parse(Tag.DEFAULT_MAX_DEPTH, true);
 					int readTile = parser.getReadChars();
-					to = to.substring(readTile);
+					to = to.substring(readTile - 1);
 				} catch (ParseException ex) {
-					super.parseNewValue(s);
+					return super.parseNewValue(s);
 				}
+			}
+
+			ChunkFilter.BlockReplaceData data;
+			if (toName != null && toTile != null) {
+				data = new ChunkFilter.BlockReplaceData(toName, toTile);
+			} else if (toName != null) {
+				data = new ChunkFilter.BlockReplaceData(toName);
+			} else if (toState != null && toTile != null) {
+				data = new ChunkFilter.BlockReplaceData(toState, toTile);
+			} else if (toState != null) {
+				data = new ChunkFilter.BlockReplaceData(toState);
+			} else {
+				return super.parseNewValue(s);
+			}
+			newValue.put(from, data);
+
+			to = to.trim();
+
+			if (to.startsWith(",")) {
+				trimmed = to.substring(1).trim();
+			} else if (to.length() != 0) {
+				return super.parseNewValue(s);
+			} else {
+				break;
 			}
 		}
 
-		ChunkFilter.BlockReplaceData data;
-		if (toName != null && toTile != null) {
-			data = new ChunkFilter.BlockReplaceData(toName, toTile);
-		} else if (toName != null) {
-			data = new ChunkFilter.BlockReplaceData(toName);
-		} else if (toState != null && toTile != null) {
-			data = new ChunkFilter.BlockReplaceData(toState, toTile);
-		} else if (toState != null) {
-			data = new ChunkFilter.BlockReplaceData(toState);
-		} else {
+		if (newValue.isEmpty()) {
 			return super.parseNewValue(s);
 		}
-		newValue.put(from, data);
-
 
 		setNewValue(newValue);
 		return true;
-	}
-
-	private CompoundTag nameToBlockState(String name) {
-		CompoundTag c = new CompoundTag();
-		c.putString("Name", name);
-		return c;
 	}
 
 	@Override
@@ -206,7 +215,6 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 			sb.append(entry.getKey()).append("=");
 			sb.append(entry.getValue().toString());
 		}
-		sb.append("\"");
 		return sb.toString();
 	}
 
