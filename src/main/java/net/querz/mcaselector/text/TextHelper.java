@@ -1,7 +1,6 @@
 package net.querz.mcaselector.text;
 
 import net.querz.mcaselector.debug.Debug;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;

@@ -2,7 +2,6 @@ package net.querz.mcaselector.changer;
 
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
 import java.io.BufferedReader;

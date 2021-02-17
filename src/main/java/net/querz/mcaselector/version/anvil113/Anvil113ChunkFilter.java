@@ -1,5 +1,8 @@
 package net.querz.mcaselector.version.anvil113;
 
+import net.querz.mcaselector.math.Bits;
+import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
@@ -101,6 +104,11 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 			return;
 		}
 
+		Point2i pos = withDefault(() -> new Point2i(level.getInt("xPos"), level.getInt("zPos")).chunkToBlock(), null);
+		if (pos == null) {
+			return;
+		}
+
 		// handle the special case when someone wants to replace air with something else
 		if (replace.containsKey("minecraft:air")) {
 			Map<Integer, CompoundTag> sectionMap = new HashMap<>();
@@ -130,6 +138,10 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 			}
 		}
 
+		ListTag<CompoundTag> tileEntities = catchClassCastException(() -> level.getListTag("TileEntities").asCompoundTagList());
+		if (tileEntities == null) {
+			tileEntities = new ListTag<>(CompoundTag.class);
+		}
 
 		for (CompoundTag section : sections) {
 			Tag<?> rawPalette = section.getListTag("Palette");
@@ -142,51 +154,185 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 				continue;
 			}
 
-			for (int i = 0; i < palette.size(); i++) {
-				CompoundTag blockState = palette.get(i);
-				BlockReplaceData rep = replace.get(withDefault(() -> blockState.getString("Name"), null));
-				if (rep == null) {
-					continue;
-				}
+			long[] blockStates = catchClassCastException(() -> section.getLongArray("BlockStates"));
+			if (blockStates == null) {
+				continue;
+			}
 
-				switch (rep.getType()) {
-					case NAME_TILE:
-						ListTag<CompoundTag> tileEntities = withDefault(() -> level.getListTag("TileEntities").asCompoundTagList(), new ListTag<>(CompoundTag.class));
-						tileEntities.add(rep.getTile());
-						level.put("TileEntities", tileEntities);
-						// fallthrough
-					case NAME:
-						CompoundTag newBlockState = new CompoundTag();
-						newBlockState.putString("Name", rep.getName());
-						palette.set(i, newBlockState);
-						break;
-					case STATE_TILE:
-						tileEntities = withDefault(() -> level.getListTag("TileEntities").asCompoundTagList(), new ListTag<>(CompoundTag.class));
-						tileEntities.add(rep.getTile());
-						level.put("TileEntities", tileEntities);
-						// fallthrough
-					case STATE:
-						palette.set(i, rep.getState());
-						break;
-					default:
-						// setting id and data is not supported
+			int y = section.getByte("Y");
 
+			for (int i = 0; i < 4096; i++) {
+				CompoundTag blockState = getBlockAt(i, blockStates, palette);
+
+				BlockReplaceData replacement = replace.get(blockState.getString("Name"));
+				if (replacement != null) {
+
+					try {
+						blockStates = setBlockAt(i, replacement.getState(), blockStates, palette);
+					} catch (Exception ex) {
+						throw new RuntimeException("failed to set block in section " + y, ex);
+					}
+
+					Point3i location = indexToLocation(i).add(pos.getX(), y * 16, pos.getZ());
+
+					if (replacement.getTile() != null) {
+						CompoundTag tile = replacement.getTile().clone();
+						tile.putInt("x", location.getX());
+						tile.putInt("y", location.getY());
+						tile.putInt("z", location.getZ());
+						tileEntities.add(tile);
+					} else if (tileEntities.size() != 0) {
+						for (int t = 0; t < tileEntities.size(); t++) {
+							CompoundTag tile = tileEntities.get(t);
+							if (tile.getInt("x") == location.getX()
+									&& tile.getInt("y") == location.getY()
+									&& tile.getInt("z") == location.getZ()) {
+								tileEntities.remove(t);
+								break;
+							}
+						}
+					}
 				}
+			}
+
+			try {
+				blockStates = cleanupPalette(blockStates, palette);
+			} catch (Exception ex) {
+				throw new RuntimeException("failed to cleanup section " + y, ex);
+			}
+
+			section.putLongArray("BlockStates", blockStates);
+		}
+
+		level.put("TileEntities", tileEntities);
+	}
+
+	protected Point3i indexToLocation(int i) {
+		int x = i % 16;
+		int z = (i - x) / 16 % 16;
+		int y = (i - z * 16 - x) / 256;
+		return new Point3i(x, y, z);
+	}
+
+	// returns the block state at the given index
+	protected CompoundTag getBlockAt(int index, long[] blockStates, ListTag<CompoundTag> palette) {
+		return palette.get(getPaletteIndex(index, blockStates));
+	}
+
+	// sets a new block state at the given index.
+	// if the length of blockStates changes, a new blockStates array is returned, otherwise blockStates is returned.
+	protected long[] setBlockAt(int index, CompoundTag blockState, long[] blockStates, ListTag<CompoundTag> palette) {
+		// search palette for block and add it if necessary
+		int paletteIndex = -1;
+		for (int i = 0; i < palette.size(); i++) {
+			if (palette.get(i).equals(blockState)) {
+				paletteIndex = i;
+				break;
 			}
 		}
 
-//		// delete tile entities with that name
-//		ListTag<CompoundTag> tileEntities = catchClassCastException(() -> level.getListTag("TileEntities").asCompoundTagList());
-//		if (tileEntities != null) {
-//			for (int i = 0; i < tileEntities.size(); i++) {
-//				CompoundTag tileEntity = tileEntities.get(i);
-//				String id = catchClassCastException(() -> tileEntity.getString("id"));
-//				if (replace.containsKey(id)) {
-//					tileEntities.remove(i);
-//					i--;
-//				}
-//			}
-//		}
+		if (paletteIndex == -1) {
+			palette.add(blockState);
+			paletteIndex = palette.size() - 1;
+
+			// test if we wil have to increase the blockStates array
+			if ((paletteIndex & (paletteIndex - 1)) == 0) {
+				blockStates = adjustBlockStateBits(palette, blockStates, null);
+			}
+		}
+
+		setPaletteIndex(index, paletteIndex, blockStates);
+		return blockStates;
+	}
+
+	protected int getPaletteIndex(int blockIndex, long[] blockStates) {
+		int bits = blockStates.length >> 6;
+		double blockStatesIndex = blockIndex / (4096D / blockStates.length);
+		int longIndex = (int) blockStatesIndex;
+		int startBit = (int) ((blockStatesIndex - Math.floor(blockStatesIndex)) * 64D);
+		if (startBit + bits > 64) {
+			long prev = Bits.bitRange(blockStates[longIndex], startBit, 64);
+			long next = Bits.bitRange(blockStates[longIndex + 1], 0, startBit + bits - 64);
+			return (int) ((next << 64 - startBit) + prev);
+		} else {
+			return (int) Bits.bitRange(blockStates[longIndex], startBit, startBit + bits);
+		}
+	}
+
+	protected void setPaletteIndex(int blockIndex, int paletteIndex, long[] blockStates) {
+		int bits = blockStates.length >> 6;
+		double blockStatesIndex = blockIndex / (4096D / blockStates.length);
+		int longIndex = (int) blockStatesIndex;
+		int startBit = (int) ((blockStatesIndex - Math.floor(longIndex)) * 64D);
+		if (startBit + bits > 64) {
+			blockStates[longIndex] = Bits.setBits(paletteIndex, blockStates[longIndex], startBit, 64);
+			blockStates[longIndex + 1] = Bits.setBits(paletteIndex, blockStates[longIndex + 1], startBit - 64, startBit + bits - 64);
+		} else {
+			blockStates[longIndex] = Bits.setBits(paletteIndex, blockStates[longIndex], startBit, startBit + bits);
+		}
+	}
+
+	protected long[] adjustBlockStateBits(ListTag<CompoundTag> palette, long[] blockStates, Map<Integer, Integer> oldToNewMapping) {
+		int newBits = 32 - Integer.numberOfLeadingZeros(palette.size() - 1);
+		newBits = Math.max(newBits, 4);
+
+		long[] newBlockStates;
+		if (newBits == blockStates.length / 64) {
+			newBlockStates = blockStates;
+		} else {
+			newBlockStates = new long[newBits * 64];
+		}
+
+		if (oldToNewMapping != null) {
+			for (int i = 0; i < 4096; i++) {
+				setPaletteIndex(i, oldToNewMapping.get(getPaletteIndex(i, blockStates)), newBlockStates);
+			}
+		} else {
+			for (int i = 0; i < 4096; i++) {
+				setPaletteIndex(i, getPaletteIndex(i, blockStates), newBlockStates);
+			}
+		}
+
+		return newBlockStates;
+	}
+
+	protected long[] cleanupPalette(long[] blockStates, ListTag<CompoundTag> palette) {
+		// create mapping of old --> new indices
+		Map<Integer, Integer> allIndices = new HashMap<>(palette.size());
+		for (int i = 0; i < 4096; i++) {
+			int paletteIndex = getPaletteIndex(i, blockStates);
+			allIndices.put(paletteIndex, paletteIndex);
+		}
+
+		// remove unused indices from palette
+		int oldIndex = 0;
+		for (int i = 0; i < palette.size(); i++) {
+			if (!allIndices.containsKey(oldIndex)) {
+				palette.remove(i);
+				i--;
+			} else {
+				allIndices.put(oldIndex, i);
+			}
+			oldIndex++;
+		}
+
+		// add air to the palette if it doesn't contain air
+		if (!paletteContainsAir(palette)) {
+			CompoundTag air = new CompoundTag();
+			air.putString("Name", "minecraft:air");
+			palette.add(air);
+		}
+
+		return adjustBlockStateBits(palette, blockStates, allIndices);
+	}
+
+	protected boolean paletteContainsAir(ListTag<CompoundTag> palette) {
+		for (int i = 0; i < palette.size(); i++) {
+			if (palette.get(i).getString("Name").equals("minecraft:air")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	protected CompoundTag createEmptySection(int y) {
