@@ -1,9 +1,15 @@
 package net.querz.mcaselector.changer;
 
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.StringPointer;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
+import net.querz.nbt.io.ParseException;
+import net.querz.nbt.io.SNBTParser;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.Tag;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,12 +18,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockReplaceData>> {
 
 	private static final Set<String> validNames = new HashSet<>();
-	private static final Map<Integer, String> validIDs = new HashMap<>();
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
@@ -29,17 +33,6 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 		} catch (IOException ex) {
 			Debug.dumpException("error reading mapping/all_block_names.txt", ex);
 		}
-
-		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Objects.requireNonNull(ReplaceBlocksField.class.getClassLoader().getResourceAsStream("mapping/block_name_to_id.txt"))))) {
-			String line;
-			while ((line = bis.readLine()) != null) {
-				String[] split = line.split(";");
-				validIDs.put(Integer.parseInt(split[1]), "minecraft:" + split[0]);
-			}
-		} catch (IOException ex) {
-			Debug.dumpException("error reading mapping/block_name_to_id.txt", ex);
-		}
 	}
 
 	public ReplaceBlocksField() {
@@ -48,81 +41,123 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 
 	@Override
 	public boolean parseNewValue(String s) {
-		String low = s.toLowerCase();
 
 		// format: <from=to>[,<from=to>,...]
+		// from format: minecraft:<block-name>
+		//              <block-name>
+		//              '<custom-block-name-with-namespace>'
+		// to format:   minecraft:<block-name>
+		//              <block-name>
+		//              '<custom-block-name-with-namespace>'
+		//              <snbt-string>
+		//              <to>;tile:<snbt-string>
 
 		Map<String, ChunkFilter.BlockReplaceData> newValue = new HashMap<>();
 
-		String[] pairs = low.replaceAll(" ", "").split(",");
-		for (String pair : pairs) {
-			String[] fromTo = pair.split("=");
-			if (fromTo.length != 2) {
+		String trimmed = s.trim();
+
+
+
+		String[] fromTo = trimmed.split("=", 2);
+		if (fromTo.length != 2) {
+			return super.parseNewValue(s);
+		}
+
+		String from = fromTo[0].trim();
+		if (from.startsWith("'") && from.endsWith("'") && from.length() > 2) {
+			from = from.substring(1, from.length() - 1);
+		} else if (!from.startsWith("minecraft:")) {
+			from = "minecraft:" + from;
+			if (!validNames.contains(from)) {
 				return super.parseNewValue(s);
 			}
-			String from = fromTo[0];
-			String to = fromTo[1];
-			boolean fromQuoted = false, toQuoted = false;
-			if (from.startsWith("'") && from.endsWith("'") && from.length() > 1) {
-				from = from.substring(1, from.length() - 1);
-				fromQuoted = true;
-			}
-			if (to.startsWith("'") && to.endsWith("'") && to.length() > 1) {
-				to = to.substring(1, to.length() - 1);
-				toQuoted = true;
-			}
-
-			String key = "", value = "";
-
-			if (from.matches("^[0-9]+$")) {
-				try {
-					int id = Integer.parseInt(from);
-					if (fromQuoted || validIDs.containsKey(id)) {
-						key = validIDs.get(id);
-					}
-				} catch (NumberFormatException ex) {
-					return super.parseNewValue(s);
-				}
-			} else if (fromQuoted) {
-				key = from;
-			} else {
-				if (!from.startsWith("minecraft:")) {
-					from = "minecraft:" + from;
-				}
-				if (validNames.contains(from)) {
-					key = from;
-				} else {
-					return super.parseNewValue(s);
-				}
-			}
-
-			if (to.matches("^[0-9]+$")) {
-				try {
-					int id = Integer.parseInt(to);
-					if (toQuoted || validIDs.containsKey(id)) {
-						value = validIDs.get(id);
-					}
-				} catch (NumberFormatException ex) {
-					return super.parseNewValue(s);
-				}
-			} else if (toQuoted) {
-				value = to;
-			} else {
-				if (!to.startsWith("minecraft:")) {
-					to = "minecraft:" + to;
-				}
-				if (validNames.contains(to)) {
-					value = to;
-				} else {
-					return super.parseNewValue(s);
-				}
-			}
-
-			newValue.put(key, new ChunkFilter.BlockReplaceData(value));
 		}
+
+		String to = fromTo[1].trim();
+		int read = 0;
+		CompoundTag toState = null;
+		String toName = null;
+		if (to.startsWith("{")) {
+			// block state
+			try {
+				SNBTParser parser = new SNBTParser(to);
+				toState = (CompoundTag) parser.parse(Tag.DEFAULT_MAX_DEPTH, true);
+				read += parser.getReadChars();
+			} catch (ParseException ex) {
+				super.parseNewValue(s);
+			}
+		} else if (to.startsWith("'")) {
+			// quoted
+			System.out.println("to is quoted");
+			int i = 1;
+			while (i < to.length() && to.charAt(i) != '\'') {
+				i++;
+			}
+			toName = to.substring(1, i == to.length() ? i : i + 1);
+			System.out.println("toName: \"" + toName + "\"");
+			if (!toName.endsWith("'")) {
+				System.out.println("doesn't end with '");
+				return super.parseNewValue(s);
+			}
+			toName = toName.substring(0, toName.length() - 1);
+			read += i + 1;
+		} else {
+			// minecraft block
+			// read everything until , or ;
+			int i = 0;
+			while (i < to.length() && to.charAt(i) != ',' && to.charAt(i) != ';') {
+				i++;
+			}
+			toName = to.substring(0, i == to.length() ? i : i + 1);
+			if (!toName.startsWith("minecraft:")) {
+				toName = "minecraft:" + toName;
+			}
+			if (!validNames.contains(toName)) {
+				return super.parseNewValue(s);
+			}
+			read += i + 1;
+		}
+
+		to = to.substring(read).trim();
+		CompoundTag toTile = null;
+		if (to.startsWith(";")) {
+			to = to.substring(1).trim();
+			if (to.startsWith("tile:")) {
+				to = to.substring(5).trim();
+				try {
+					SNBTParser parser = new SNBTParser(to);
+					toTile = (CompoundTag) parser.parse(Tag.DEFAULT_MAX_DEPTH, true);
+					int readTile = parser.getReadChars();
+					to = to.substring(readTile);
+				} catch (ParseException ex) {
+					super.parseNewValue(s);
+				}
+			}
+		}
+
+		ChunkFilter.BlockReplaceData data;
+		if (toName != null && toTile != null) {
+			data = new ChunkFilter.BlockReplaceData(toName, toTile);
+		} else if (toName != null) {
+			data = new ChunkFilter.BlockReplaceData(toName);
+		} else if (toState != null && toTile != null) {
+			data = new ChunkFilter.BlockReplaceData(toState, toTile);
+		} else if (toState != null) {
+			data = new ChunkFilter.BlockReplaceData(toState);
+		} else {
+			return super.parseNewValue(s);
+		}
+		newValue.put(from, data);
+
 
 		setNewValue(newValue);
 		return true;
+	}
+
+	private CompoundTag nameToBlockState(String name) {
+		CompoundTag c = new CompoundTag();
+		c.putString("Name", name);
+		return c;
 	}
 
 	@Override
@@ -142,11 +177,40 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 
 	@Override
 	public String toString() {
-		return getType().toString() + " = \"" + getNewValue().entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(", ")) + "\"";
+		StringBuilder sb = new StringBuilder(getType().toString());
+		sb.append(" = \"");
+		boolean first = true;
+		for (Map.Entry<String, ChunkFilter.BlockReplaceData> entry : getNewValue().entrySet()) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(", ");
+			}
+			sb.append(entry.getKey()).append("=");
+			sb.append(escapeString(entry.getValue().toString()));
+		}
+		sb.append("\"");
+		return sb.toString();
 	}
 
 	@Override
 	public String valueToString() {
-		return getNewValue().entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(", "));
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (Map.Entry<String, ChunkFilter.BlockReplaceData> entry : getNewValue().entrySet()) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(", ");
+			}
+			sb.append(entry.getKey()).append("=");
+			sb.append(entry.getValue().toString());
+		}
+		sb.append("\"");
+		return sb.toString();
+	}
+
+	private String escapeString(String s) {
+		return s.replace("\\", "\\\\").replace("\"", "\\\"");
 	}
 }

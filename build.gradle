@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.github.Querz:NBT:6.0'
+	implementation 'com.github.Querz:NBT:766dd9ca00'
 	implementation 'org.json:json:20201115'
 	testImplementation 'junit:junit:4.12'
 	testImplementation 'commons-io:commons-io:2.6'

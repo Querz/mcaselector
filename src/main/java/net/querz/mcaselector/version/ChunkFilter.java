@@ -19,25 +19,10 @@ public interface ChunkFilter {
 
 	class BlockReplaceData {
 
-		private Integer id;
-		private Integer data;
 		private String name;
 		private CompoundTag state;
 		private CompoundTag tile;
 		private final BlockReplaceType type;
-
-		public BlockReplaceData(int id, int data) {
-			type = BlockReplaceType.ID_DATA;
-			this.id = id;
-			this.data = data;
-		}
-
-		public BlockReplaceData(int id, int data, CompoundTag tile) {
-			type = BlockReplaceType.ID_DATA_TILE;
-			this.id = id;
-			this.data = data;
-			this.tile = tile;
-		}
 
 		public BlockReplaceData(String name) {
 			type = BlockReplaceType.NAME;
@@ -71,22 +56,6 @@ public interface ChunkFilter {
 			return type;
 		}
 
-		public void setId(int id) {
-			this.id = id;
-		}
-
-		public Integer getId() {
-			return id;
-		}
-
-		public void setData(int data) {
-			this.data = data;
-		}
-
-		public Integer getData() {
-			return data;
-		}
-
 		public void setName(String name) {
 			this.name = name;
 		}
@@ -114,14 +83,33 @@ public interface ChunkFilter {
 		@Override
 		public String toString() {
 			try {
-				return "name:" + name + ", state:" + SNBTUtil.toSNBT(state) + (tile != null ? ", tile:" + SNBTUtil.toSNBT(tile) : "");
-			} catch (IOException e) {
+				switch (type) {
+					case NAME:
+						if (name.startsWith("minecraft:")) {
+							return name;
+						} else {
+							return "'" + name + "'";
+						}
+					case STATE:
+						return SNBTUtil.toSNBT(state);
+					case STATE_TILE:
+						return SNBTUtil.toSNBT(state) + ";tile:" + SNBTUtil.toSNBT(tile);
+					case NAME_TILE:
+						if (name.startsWith("minecraft:")) {
+							return name + ";tile:" + SNBTUtil.toSNBT(tile);
+						} else {
+							return "'" + name + "';tile:" + SNBTUtil.toSNBT(tile);
+						}
+					default:
+						return null;
+				}
+			} catch (IOException ex) {
 				return null;
 			}
 		}
 	}
 
 	enum BlockReplaceType {
-		ID_DATA, NAME, STATE, STATE_TILE, ID_DATA_TILE, NAME_TILE
+		NAME, STATE, STATE_TILE, NAME_TILE
 	}
 }
