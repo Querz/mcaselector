@@ -70,7 +70,7 @@ minifyCss {
 
 createExe {
 	dontWrapJar true
-	jar "${project.name}-${project.version}.jar"
+	jar "${project.name}.jar"
 	outfile 'MCA Selector.exe'
 	icon "${rootProject.projectDir}/inno/icon.ico"
 	bundledJrePath 'jre'
