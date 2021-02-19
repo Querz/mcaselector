@@ -40,8 +40,8 @@ Source: "jre\\*"; DestDir: "{app}\\jre"; Flags: ignoreversion recursesubdirs cre
 Source: "${applicationJar}"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{autoprograms}\\${ApplicationName}"; Filename: "{app}\\${applicationName}.exe"
-Name: "{autodesktop}\\${ApplicationName}"; Filename: "{app}\\${applicationName}.exe"; Tasks: desktopicon
+Name: "{autoprograms}\\${applicationName}"; Filename: "{app}\\${applicationName}.exe"
+Name: "{autodesktop}\\${applicationName}"; Filename: "{app}\\${applicationName}.exe"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\\${applicationName}.exe"; Description: "{cm:LaunchProgram,${applicationName}}"; Flags: nowait postinstall skipifsilent
