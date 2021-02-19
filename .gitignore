@@ -15,6 +15,7 @@ test113/
 *.patch
 import_test/
 *.log
+/*_rsa
 export/
 !src/test/resources/import/source/*.mca
 !src/test/resources/import/target/*.mca

@@ -30,7 +30,7 @@ script:
 
 after-success:
   # decrypt deployment key
-  - openssl aes-256-cbc -K $encrypted_db2095f63ba3_key -iv $encrypted_db2095f63ba3_iv -in travis/deploy/deploy_rsa.enc -out travis/deploy/deploy_rsa -d
+  - openssl aes-256-cbc -K $encrypted_db2095f63ba3_key -iv $encrypted_db2095f63ba3_iv -in deploy_rsa.enc -out deploy_rsa -d
   - eval "$(ssh-agent -s)"
   - chmod 600 travis/deploy/deploy_rsa
   - ssh-add travis/deploy/deploy_rsa
