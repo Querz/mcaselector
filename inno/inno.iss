@@ -17,6 +17,8 @@ SetupIconFile=icon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
+WizardSmallImageFile=small.bmp
+WizardImageFile=large.bmp
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

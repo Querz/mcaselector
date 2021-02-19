@@ -86,6 +86,8 @@ task installer {
 
 		copy {
 			from("${rootProject.projectDir}/inno/icon.ico")
+			from("${rootProject.projectDir}/inno/small.bmp")
+			from("${rootProject.projectDir}/inno/large.bmp")
 			from("${buildDir}/libs/${project.name}-${project.version}.jar")
 			from("${buildDir}/launch4j/${appName}.exe")
 			from("${rootProject.projectDir}/LICENSE")
