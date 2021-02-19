@@ -104,4 +104,44 @@ public class SelectionHelper {
 		}
 		return sel;
 	}
+
+	public static Point2i getSizeInChunks(Map<Point2i, Set<Point2i>> selection) {
+		int minX, maxX, minZ, maxZ;
+		minX = minZ = Integer.MAX_VALUE;
+		maxX = maxZ = Integer.MIN_VALUE;
+		for (Map.Entry<Point2i, Set<Point2i>> entry : selection.entrySet()) {
+			if (entry.getValue() == null) {
+				Point2i min = entry.getKey().regionToChunk();
+				Point2i max = entry.getKey().regionToChunk().add(31);
+				if (min.getX() < minX) {
+					minX = min.getX();
+				}
+				if (min.getZ() < minZ) {
+					minZ = min.getZ();
+				}
+				if (max.getX() > maxX) {
+					maxX = max.getX();
+				}
+				if (max.getZ() > maxZ) {
+					maxZ = max.getZ();
+				}
+			} else {
+				for (Point2i chunk : entry.getValue()) {
+					if (chunk.getX() < minX) {
+						minX = chunk.getX();
+					}
+					if (chunk.getZ() < minZ) {
+						minZ = chunk.getZ();
+					}
+					if (chunk.getX() > maxX) {
+						maxX = chunk.getX();
+					}
+					if (chunk.getZ() > maxZ) {
+						maxZ = chunk.getZ();
+					}
+				}
+			}
+		}
+		return new Point2i(maxX - minX + 1, maxZ - minZ + 1);
+	}
 }
