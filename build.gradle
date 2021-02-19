@@ -20,6 +20,9 @@ apply plugin: 'edu.sc.seis.launch4j'
 
 group 'net.querz.mcaselector'
 version '1.14-pre'
+def appName = 'MCA Selector'
+def appUrl = 'https://github.com/Querz/mcaselector'
+def appAuthor = 'Querz'
 
 sourceCompatibility = 1.8
 
@@ -42,18 +45,16 @@ dependencies {
 }
 
 jar {
-	archiveFileName = project.name + '-' + project.version + '-min.jar'
+	archiveFileName = "${project.name}-${project.version}-min.jar"
 	manifest.attributes 'Main-Class': 'net.querz.mcaselector.Main', 'Application-Version': project.version
-	exclude 'img/icon.ico'
 	from 'LICENSE'
 }
 
 shadowJar {
 	minimize()
-	archiveFileName = project.name + '-' + project.version + '.jar'
+	archiveFileName = "${project.name}-${project.version}.jar"
 	project.configurations.implementation.canBeResolved = true
 	configurations = [project.configurations.implementation]
-	exclude 'img/icon.ico'
 	from 'LICENSE'
 }
 
@@ -69,10 +70,46 @@ minifyCss {
 
 createExe {
 	dontWrapJar true
-	jar project.name + '-' + project.version + '.jar'
+	jar "${project.name}-${project.version}.jar"
 	outfile 'MCA Selector.exe'
-	icon '../../src/main/resources/img/icon.ico'
+	icon "${rootProject.projectDir}/inno/icon.ico"
 	bundledJrePath 'jre'
+	maxHeapSize 4096
+}
+
+task installer {
+	doLast {
+		def innoSetupDir = new File("${buildDir}/inno")
+
+		delete innoSetupDir
+		innoSetupDir.mkdir()
+
+		copy {
+			from("${rootProject.projectDir}/inno/icon.ico")
+			from("${buildDir}/libs/${project.name}-${project.version}.jar")
+			from("${buildDir}/launch4j/${appName}.exe")
+			from("${rootProject.projectDir}/LICENSE")
+			into(innoSetupDir)
+			rename("${project.name}-${project.version}.jar", "${project.name}.jar")
+		}
+
+		copy {
+			from("${rootProject.projectDir}/jre")
+			into("${innoSetupDir}/jre")
+		}
+
+		copy {
+			from("${rootProject.projectDir}/inno/inno.iss")
+			expand([
+					applicationVersion: project.version,
+					applicationName: appName,
+					applicationUrl: appUrl,
+					applicationAuthor: appAuthor,
+					applicationJar: "${project.name}.jar"
+			])
+			into(innoSetupDir)
+		}
+	}
 }
 
 jar.finalizedBy shadowJar
