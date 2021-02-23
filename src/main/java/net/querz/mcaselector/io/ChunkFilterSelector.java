@@ -110,7 +110,7 @@ public class ChunkFilterSelector {
 			try {
 				Region region = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
 
-				Set<Point2i> chunks = region.getFilteredChunks(filter, selection.get(getRegionDirectories().getLocation()));
+				Set<Point2i> chunks = region.getFilteredChunks(filter, selection == null ? null : selection.get(getRegionDirectories().getLocation()));
 				if (chunks.size() > 0) {
 					if (chunks.size() == Tile.CHUNKS) {
 						chunks = null;

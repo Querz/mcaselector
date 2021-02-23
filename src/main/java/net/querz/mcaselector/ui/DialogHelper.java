@@ -28,13 +28,13 @@ import net.querz.mcaselector.ui.dialog.ErrorDialog;
 import net.querz.mcaselector.ui.dialog.ExportConfirmationDialog;
 import net.querz.mcaselector.ui.dialog.FilterChunksDialog;
 import net.querz.mcaselector.ui.dialog.GotoDialog;
+import net.querz.mcaselector.ui.dialog.ImageExportConfirmationDialog;
 import net.querz.mcaselector.ui.dialog.ImportConfirmationDialog;
 import net.querz.mcaselector.ui.dialog.NBTEditorDialog;
 import net.querz.mcaselector.ui.dialog.ProgressDialog;
 import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
 import net.querz.mcaselector.ui.dialog.SettingsDialog;
 import net.querz.mcaselector.ui.dialog.WorldSettingsDialog;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -148,7 +148,7 @@ public class DialogHelper {
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkFilterSelector.selectFilter(
 								r.getFilter(),
-								selectionData,
+								r.isSelectionOnly() ? selectionData : (selectionData.isEmpty() ? null : selectionData),
 								r.getRadius(),
 								selection -> Platform.runLater(() -> {
 									tileMap.addMarkedChunks(selection);
@@ -290,6 +290,40 @@ public class DialogHelper {
 				new ErrorDialog(primaryStage, ex);
 			}
 		}
+	}
+
+	public static void generateImageFromSelection(TileMap tileMap, Stage primaryStage) {
+		SelectionData selection = new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted());
+		SelectionImageExporter.SelectionDataInfo info = SelectionImageExporter.calculateSelectionInfo(selection);
+
+		File file = createFileChooser(FileHelper.getLastOpenedDirectory("snapshot_save", null),
+				new FileChooser.ExtensionFilter("*.png Files", "*.png")).showSaveDialog(primaryStage);
+		if (file == null) {
+			return;
+		}
+
+		Optional<ButtonType> result = new ImageExportConfirmationDialog(tileMap, info.getSelectionInfo(), primaryStage).showAndWait();
+		result.ifPresent(b -> {
+			if (b == ButtonType.OK) {
+				DataProperty<int[]> pixels = new DataProperty<>();
+				new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_CREATING_IMAGE, primaryStage)
+					.showProgressBar(t -> {
+						pixels.set(SelectionImageExporter.exportSelectionImage(info, t));
+					});
+				if (pixels.get() != null) {
+					new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SAVING_IMAGE, primaryStage)
+					.showProgressBar(t -> {
+						try {
+							ImageHelper.saveImageData(pixels.get(), info.getSelectionInfo().getWidth() * 16, info.getSelectionInfo().getHeight() * 16, file, t);
+							FileHelper.setLastOpenedDirectory("snapshot_save", file.getParent());
+						} catch (IOException ex) {
+							Debug.dumpException("failed to save image", ex);
+							new ErrorDialog(primaryStage, ex);
+						}
+					});
+				}
+			}
+		});
 	}
 
 	public static void swapChunks(TileMap tileMap, Stage primaryStage) {

@@ -40,6 +40,7 @@ repositories {
 dependencies {
 	implementation 'com.github.Querz:NBT:766dd9ca00'
 	implementation 'org.json:json:20201115'
+	implementation 'ar.com.hjg:pngj:2.1.0'
 	testImplementation 'junit:junit:4.12'
 	testImplementation 'commons-io:commons-io:2.6'
 }
@@ -56,6 +57,8 @@ shadowJar {
 	project.configurations.implementation.canBeResolved = true
 	configurations = [project.configurations.implementation]
 	from 'LICENSE'
+	exclude 'LICENSE.txt'
+	exclude 'NOTICE.txt'
 }
 
 compileJava {
@@ -116,6 +119,7 @@ task installer {
 
 jar.finalizedBy shadowJar
 jar.dependsOn minifyCss
+assemble.dependsOn shadowJar
 
 task updateReadme {
 	doLast {

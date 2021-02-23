@@ -105,7 +105,7 @@ public class SelectionHelper {
 		return sel;
 	}
 
-	public static Point2i getSizeInChunks(Map<Point2i, Set<Point2i>> selection) {
+	public static SelectionInfo getSelectionInfo(Map<Point2i, Set<Point2i>> selection) {
 		int minX, maxX, minZ, maxZ;
 		minX = minZ = Integer.MAX_VALUE;
 		maxX = maxZ = Integer.MIN_VALUE;
@@ -142,6 +142,6 @@ public class SelectionHelper {
 				}
 			}
 		}
-		return new Point2i(maxX - minX + 1, maxZ - minZ + 1);
+		return new SelectionInfo(new Point2i(minX, minZ), new Point2i(maxX, maxZ));
 	}
 }

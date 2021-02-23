@@ -58,6 +58,7 @@ public class OptionBar extends MenuBar {
 	private final MenuItem delete = UIFactory.menuItem(Translation.MENU_SELECTION_DELETE_CHUNKS);
 	private final MenuItem importSelection = UIFactory.menuItem(Translation.MENU_SELECTION_IMPORT_SELECTION);
 	private final MenuItem exportSelection = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_SELECTION);
+	private final MenuItem exportImage = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_IMAGE);
 	private final MenuItem clearSelectionCache = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR_CACHE);
 	private final MenuItem filterChunks = UIFactory.menuItem(Translation.MENU_TOOLS_FILTER_CHUNKS);
 	private final MenuItem changeFields = UIFactory.menuItem(Translation.MENU_TOOLS_CHANGE_FIELDS);
@@ -86,6 +87,7 @@ public class OptionBar extends MenuBar {
 				copy, paste, UIFactory.separator(),
 				exportChunks, delete, UIFactory.separator(),
 				importSelection, exportSelection, UIFactory.separator(),
+				exportImage, UIFactory.separator(),
 				clearSelectionCache);
 		tools.getItems().addAll(importChunks, filterChunks, changeFields, editNBT, UIFactory.separator(), swapChunks);
 		about.setOnMouseClicked(e -> DialogHelper.showAboutDialog(primaryStage));
@@ -115,6 +117,7 @@ public class OptionBar extends MenuBar {
 		delete.setOnAction(e -> DialogHelper.deleteSelection(tileMap, primaryStage));
 		importSelection.setOnAction(e -> DialogHelper.importSelection(tileMap, primaryStage));
 		exportSelection.setOnAction(e -> DialogHelper.exportSelection(tileMap, primaryStage));
+		exportImage.setOnAction(e -> DialogHelper.generateImageFromSelection(tileMap, primaryStage));
 		clearSelectionCache.setOnAction(e -> CacheHelper.clearSelectionCache(tileMap));
 		filterChunks.setOnAction(e -> DialogHelper.filterChunks(tileMap, primaryStage));
 		changeFields.setOnAction(e -> DialogHelper.changeFields(tileMap, primaryStage));
@@ -176,6 +179,7 @@ public class OptionBar extends MenuBar {
 		clear.setDisable(selected == 0 && !inverted);
 		exportChunks.setDisable(selected == 0 && !inverted);
 		exportSelection.setDisable(selected == 0 && !inverted);
+		exportImage.setDisable(selected == 0 && !inverted);
 		delete.setDisable(selected == 0 && !inverted);
 		clearSelectionCache.setDisable(selected == 0 && !inverted);
 		editNBT.setDisable(selected != 1 || inverted);

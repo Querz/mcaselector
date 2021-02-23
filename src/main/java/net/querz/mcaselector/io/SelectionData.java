@@ -25,6 +25,10 @@ public class SelectionData {
 		return inverted;
 	}
 
+	public boolean isEmpty() {
+		return !inverted && selection.isEmpty();
+	}
+
 	public boolean isRegionSelected(Point2i region) {
 		// a region is selected if:
 		// - the selection contains the region and it's not inverted

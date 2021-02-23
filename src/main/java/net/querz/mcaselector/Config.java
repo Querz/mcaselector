@@ -148,12 +148,17 @@ public final class Config {
 
 	public static void setWorldDirs(File regionDir, File poiDir, File entitiesDir) {
 		Config.worldDirs = new WorldDirectories(regionDir, poiDir, entitiesDir);
-		setWorldDir(regionDir);
+		Config.worldDir = regionDir;
+		worldUUID = UUID.nameUUIDFromBytes(worldDir.getAbsolutePath().getBytes());
+		cacheDir = new File(baseCacheDir, worldUUID.toString().replace("-", ""));
 	}
 
 	public static void setWorldDirs(WorldDirectories dirs) {
+		Debug.dumpf("setting world directories to %s", dirs);
 		Config.worldDirs = dirs;
-		setWorldDir(dirs.getRegion());
+		Config.worldDir = dirs.getRegion();
+		worldUUID = UUID.nameUUIDFromBytes(worldDir.getAbsolutePath().getBytes());
+		cacheDir = new File(baseCacheDir, worldUUID.toString().replace("-", ""));
 	}
 
 	public static File getCacheDirForWorldUUID(UUID world, int zoomLevel) {

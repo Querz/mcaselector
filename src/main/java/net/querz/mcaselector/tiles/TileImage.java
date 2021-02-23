@@ -111,9 +111,8 @@ public final class TileImage {
 		ByteArrayPointer ptr = new ByteArrayPointer(rawData);
 
 		RegionMCAFile mcaFile = new RegionMCAFile(file);
-		int[] offsets;
 		try {
-			offsets = mcaFile.load(ptr);
+			mcaFile.load(ptr);
 		} catch (IOException ex) {
 			Debug.errorf("failed to read mca file header from %s", file);
 			tile.loaded = true;
@@ -124,7 +123,7 @@ public final class TileImage {
 
 		t.reset();
 
-		Image image = createMCAImage(mcaFile, offsets, ptr);
+		Image image = createMCAImage(mcaFile);
 
 		if (image != null) {
 			BufferedImage img = SwingFXUtils.fromFXImage(image, null);
@@ -143,7 +142,7 @@ public final class TileImage {
 		return image;
 	}
 
-	private static Image createMCAImage(MCAFile mcaFile, int[] offsets, ByteArrayPointer ptr) {
+	public static Image createMCAImage(RegionMCAFile mcaFile) {
 		try {
 			WritableImage finalImage = new WritableImage(Tile.SIZE, Tile.SIZE);
 			PixelWriter writer = finalImage.getPixelWriter();
@@ -161,13 +160,6 @@ public final class TileImage {
 					if (data == null) {
 						continue;
 					}
-
-//					try {
-//						ptr.seek(offsets[index] * 4096 + 4);
-//						data.load(ptr);
-//					} catch (Exception ex) {
-//						Debug.dumpException(String.format("failed to load chunk %s from raw data in %s", new Point2i(cx, cz), mcaFile.getFile().getName()), ex);
-//					}
 
 					drawChunkImage(data, cx * Tile.CHUNK_SIZE, cz * Tile.CHUNK_SIZE, pixelBuffer, waterPixels, terrainHeights, waterHeights);
 				}
