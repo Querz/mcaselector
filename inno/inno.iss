@@ -19,6 +19,7 @@ SolidCompression=yes
 WizardStyle=modern
 WizardSmallImageFile=small.bmp
 WizardImageFile=large.bmp
+ExtraDiskSpaceRequired=178204672
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
