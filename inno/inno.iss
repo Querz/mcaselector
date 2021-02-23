@@ -38,13 +38,59 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "${applicationName}.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "jre\\*"; DestDir: "{app}\\jre"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "7za.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 Source: "${applicationJar}"; DestDir: "{app}"; Flags: ignoreversion
+
+[UninstallDelete]
+Type: filesandordirs; Name: "{app}\\jre"
 
 [Icons]
 Name: "{autoprograms}\\${applicationName}"; Filename: "{app}\\${applicationName}.exe"
 Name: "{autodesktop}\\${applicationName}"; Filename: "{app}\\${applicationName}.exe"; Tasks: desktopicon
 
 [Run]
+Filename: "{tmp}\\7za.exe"; Parameters: "x -y {tmp}\\jre.zip"; WorkingDir: "{app}"; AfterInstall: RenameJRE; Flags: runhidden
 Filename: "{app}\\${applicationName}.exe"; Description: "{cm:LaunchProgram,${applicationName}}"; Flags: nowait postinstall skipifsilent
 
+[Code]
+
+var DownloadPage: TDownloadWizardPage;
+
+function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;
+begin
+	if Progress = ProgressMax then
+		Log(Format('Successfully downloaded file to {tmp}: %s', [FileName]));
+	Result := True;
+end;
+
+procedure InitializeWizard;
+begin
+	DownloadPage := CreateDownloadPage(SetupMessage(msgWizardPreparing), SetupMessage(msgPreparingDesc), @OnDownloadProgress);
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+begin
+	if CurPageID = wpReady then begin
+		DownloadPage.Clear;
+		DownloadPage.Add('https://cdn.azul.com/zulu/bin/zulu8.52.0.23-ca-fx-jre8.0.282-win_x64.zip', 'jre.zip', '');
+		DownloadPage.Show;
+		try
+			try
+				DownloadPage.Download;
+				Result := True;
+			except
+				SuppressibleMsgBox(AddPeriod(GetExceptionMessage), mbCriticalError, MB_OK, IDOK);
+				Result := False;
+			end;
+		finally
+			DownloadPage.Hide;
+		end;
+	end else
+		Result := True;
+end;
+
+procedure RenameJRE;
+begin
+	Log('Renaming jre directory');
+	RenameFile(ExpandConstant('{app}\\zulu8.52.0.23-ca-fx-jre8.0.282-win_x64'), ExpandConstant('{app}\\jre'));
+end;

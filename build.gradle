@@ -93,13 +93,9 @@ task installer {
 			from("${buildDir}/libs/${project.name}-${project.version}.jar")
 			from("${buildDir}/launch4j/${appName}.exe")
 			from("${rootProject.projectDir}/LICENSE")
+			from("${rootProject.projectDir}/7za.exe")
 			into(innoSetupDir)
 			rename("${project.name}-${project.version}.jar", "${project.name}.jar")
-		}
-
-		copy {
-			from("${rootProject.projectDir}/jre")
-			into("${innoSetupDir}/jre")
 		}
 
 		copy {

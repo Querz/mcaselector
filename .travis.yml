@@ -6,16 +6,16 @@ addons:
   ssh_known_hosts: deploy.querz.net
 
 before_install:
-  # download jre
-  - sudo sh travis/inno/jredownload.sh
-
   # update apt-get
   - sudo apt-get update
 
   # inno setup
-  - sudo apt-get install -y -q wine
+  - sudo apt-get install -y -q wine unzip
   - wine --version
   - sudo sh travis/inno/innoinstall.sh
+
+  # download 7zip
+  - sudo sh travis/inno/7zipdownload.sh
 
 install:
   # disable default travis behavior 'gradle assemble'
