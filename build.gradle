@@ -56,9 +56,8 @@ shadowJar {
 	archiveFileName = "${project.name}-${project.version}.jar"
 	project.configurations.implementation.canBeResolved = true
 	configurations = [project.configurations.implementation]
+	exclude 'LICENSE.txt', 'NOTICE.txt'
 	from 'LICENSE'
-	exclude 'LICENSE.txt'
-	exclude 'NOTICE.txt'
 }
 
 compileJava {

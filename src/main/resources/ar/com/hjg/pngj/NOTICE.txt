@@ -1,0 +1,12 @@
+﻿PNGJ : PNG image IO Java library
+Copyright 2009-2012 Hernán J. González
+
+This product includes software developed by: 
+Hernán J. González  
+(Buenos Aires, Argentina) 
+hgonzalez@gmail.com  
+http://hjg.com.ar/  
+http://stackexchange.com/users/103559/leonbloy
+
+
+
