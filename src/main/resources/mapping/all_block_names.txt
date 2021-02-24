@@ -142,6 +142,7 @@ chain
 chain_command_block
 chest
 chipped_anvil
+chiseled_grimstone
 chiseled_nether_bricks
 chiseled_polished_blackstone
 chiseled_quartz_block
@@ -341,6 +342,18 @@ green_stained_glass_pane
 green_terracotta
 green_wall_banner
 green_wool
+grimstone
+grimstone_brick_slab
+grimstone_brick_stairs
+grimstone_brick_wall
+grimstone_bricks
+grimstone_slab
+grimstone_stairs
+grimstone_tile_slab
+grimstone_tile_stairs
+grimstone_tile_wall
+grimstone_tiles
+grimstone_wall
 grindstone
 hanging_roots
 hay_block
@@ -569,6 +582,10 @@ polished_diorite_stairs
 polished_granite
 polished_granite_slab
 polished_granite_stairs
+polished_grimstone
+polished_grimstone_slab
+polished_grimstone_stairs
+polished_grimstone_wall
 poppy
 potatoes
 potted_acacia_sapling
