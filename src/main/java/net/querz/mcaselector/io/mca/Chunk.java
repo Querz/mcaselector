@@ -3,6 +3,7 @@ package net.querz.mcaselector.io.mca;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.CompressionType;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.nbt.io.NBTDeserializer;
 import net.querz.nbt.io.NBTSerializer;
 import net.querz.nbt.io.NamedTag;
@@ -128,6 +129,15 @@ public abstract class Chunk {
 
 		// save mcc file if chunk doesn't fit in mca file
 		if (baos.size() > 1048576) {
+			// if the chunk's version is below 2203, we throw an exception instead
+			Integer dataVersion = ValidationHelper.withDefault(() -> data.getInt("DataVersion"), null);
+			if (dataVersion == null) {
+				throw new RuntimeException("no DataVersion for oversized chunk");
+			}
+			if (dataVersion < 2203) {
+				throw new RuntimeException("chunk at " + absoluteLocation + " is oversized and can't be saved when DataVersion is below 2203");
+			}
+
 			raf.writeInt(1);
 			raf.writeByte(compressionType.getExternal().getByte());
 			try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(getMCCFile()), baos.size())) {
