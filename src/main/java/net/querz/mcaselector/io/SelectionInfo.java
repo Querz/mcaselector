@@ -6,8 +6,8 @@ import java.util.function.Consumer;
 
 public class SelectionInfo {
 
-	private int width;
-	private int height;
+	private long width;
+	private long height;
 	private Point2i min;
 	private Point2i max;
 
@@ -16,11 +16,11 @@ public class SelectionInfo {
 		setMax(max);
 	}
 
-	public int getWidth() {
+	public long getWidth() {
 		return width;
 	}
 
-	public int getHeight() {
+	public long getHeight() {
 		return height;
 	}
 
@@ -30,8 +30,8 @@ public class SelectionInfo {
 
 	public void setMin(Point2i min) {
 		this.min = min;
-		width = Math.abs(max.getX() - min.getX()) + 1;
-		height = Math.abs(max.getZ() - min.getZ()) + 1;
+		width = Math.abs((long) max.getX() - (long) min.getX()) + 1L;
+		height = Math.abs((long) max.getZ() - (long) min.getZ()) + 1L;
 	}
 
 	public Point2i getMax() {
@@ -40,8 +40,8 @@ public class SelectionInfo {
 
 	public void setMax(Point2i max) {
 		this.max = max;
-		width = Math.abs(max.getX() - min.getX()) + 1;
-		height = Math.abs(max.getZ() - min.getZ()) + 1;
+		width = Math.abs((long) max.getX() - (long) min.getX()) + 1L;
+		height = Math.abs((long) max.getZ() - (long) min.getZ()) + 1L;
 	}
 
 	public void iterateRegionChunks(Point2i region, Consumer<Point2i> chunkConsumer) {
