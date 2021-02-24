@@ -117,6 +117,18 @@ public final class FileHelper {
 		return new File(Config.getWorldDirs().getEntities(), createMCAFileName(r));
 	}
 
+	public static File createRegionMCCFilePath(Point2i c) {
+		return new File(Config.getWorldDirs().getRegion(), createMCCFileName(c));
+	}
+
+	public static File createPoiMCCFilePath(Point2i c) {
+		return new File(Config.getWorldDirs().getPoi(), createMCCFileName(c));
+	}
+
+	public static File createEntitiesMCCFilePath(Point2i c) {
+		return new File(Config.getWorldDirs().getEntities(), createMCCFileName(c));
+	}
+
 	public static WorldDirectories validateWorldDirectories(File dir) {
 		File region = new File(dir, "region");
 		File poi = new File(dir, "poi");
@@ -138,6 +150,10 @@ public final class FileHelper {
 		return new File(Config.getWorldDir(), createMCAFileName(r));
 	}
 
+	public static File createMCCFilePath(Point2i c) {
+		return new File(Config.getWorldDir(), createMCCFileName(c));
+	}
+
 	public static File createPNGFilePath(File cacheDir, Point2i r) {
 		return new File(cacheDir, createPNGFileName(r));
 	}
@@ -148,6 +164,10 @@ public final class FileHelper {
 
 	public static String createMCAFileName(Point2i r) {
 		return String.format("r.%d.%d.mca", r.getX(), r.getZ());
+	}
+
+	public static String createMCCFileName(Point2i c) {
+		return String.format("c.%d.%d.mcc", c.getX(), c.getZ());
 	}
 
 	public static String createPNGFileName(Point2i r) {

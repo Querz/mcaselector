@@ -9,9 +9,12 @@ import net.querz.nbt.io.NamedTag;
 import net.querz.nbt.io.SNBTUtil;
 import net.querz.nbt.tag.CompoundTag;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.zip.DeflaterOutputStream;
@@ -45,6 +48,15 @@ public abstract class Chunk {
 			case NONE:
 				nbtIn = new DataInputStream(ptr);
 				break;
+			case GZIP_EXT:
+				nbtIn = new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(getMCCFile()))));
+				break;
+			case ZLIB_EXT:
+				nbtIn = new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(getMCCFile()))));
+				break;
+			case NONE_EXT:
+				nbtIn = new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile())));
+				break;
 		}
 		NamedTag tag = new NBTDeserializer(false).fromStream(nbtIn);
 
@@ -70,6 +82,15 @@ public abstract class Chunk {
 			case NONE:
 				nbtIn = new DataInputStream(new BufferedInputStream(new FileInputStream(raf.getFD()), length - 1));
 				break;
+			case GZIP_EXT:
+				nbtIn = new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(getMCCFile()))));
+				break;
+			case ZLIB_EXT:
+				nbtIn = new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(getMCCFile()))));
+				break;
+			case NONE_EXT:
+				nbtIn = new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile())));
+				break;
 		}
 
 		NamedTag tag = new NBTDeserializer(false).fromStream(nbtIn);
@@ -87,12 +108,15 @@ public abstract class Chunk {
 
 		switch (compressionType) {
 			case GZIP:
+			case GZIP_EXT:
 				nbtOut = new DataOutputStream(new GZIPOutputStream(baos = new ExposedByteArrayOutputStream(4096)));
 				break;
 			case ZLIB:
+			case ZLIB_EXT:
 				nbtOut = new DataOutputStream(new DeflaterOutputStream(baos = new ExposedByteArrayOutputStream(4096)));
 				break;
 			case NONE:
+			case NONE_EXT:
 				nbtOut = new DataOutputStream(baos = new ExposedByteArrayOutputStream(4096));
 				break;
 			default:
@@ -102,14 +126,26 @@ public abstract class Chunk {
 		new NBTSerializer(false).toStream(new NamedTag(null, data), nbtOut);
 		nbtOut.close();
 
-		raf.writeInt(baos.size() + 1); // length includes the compression type byte
-		raf.writeByte(compressionType.getByte());
-		raf.write(baos.getBuffer(), 0, baos.size());
+		// save mcc file if chunk doesn't fit in mca file
+		if (baos.size() > 1048576) {
+			raf.writeInt(1);
+			raf.writeByte(compressionType.getExternal().getByte());
+			try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(getMCCFile()), baos.size())) {
+				bos.write(baos.getBuffer(), 0, baos.size());
+			}
+			return 5;
+		} else {
 
-		return baos.size() + 5; // data length + 1 compression type byte + 4 length bytes
+			raf.writeInt(baos.size() + 1); // length includes the compression type byte
+			raf.writeByte(compressionType.getByte());
+			raf.write(baos.getBuffer(), 0, baos.size());
+			return baos.size() + 5; // data length + 1 compression type byte + 4 length bytes
+		}
 	}
 
 	public abstract boolean relocate(Point2i offset);
+
+	public abstract File getMCCFile();
 
 	public boolean isEmpty() {
 		return data == null;
