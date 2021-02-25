@@ -148,7 +148,7 @@ public class DialogHelper {
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkFilterSelector.selectFilter(
 								r.getFilter(),
-								r.isSelectionOnly() ? selectionData : (selectionData.isEmpty() ? null : selectionData),
+								r.isSelectionOnly() ? (selectionData.isEmpty() ? null : selectionData) : null,
 								r.getRadius(),
 								selection -> Platform.runLater(() -> {
 									tileMap.addMarkedChunks(selection);
@@ -296,6 +296,13 @@ public class DialogHelper {
 		SelectionData selection = new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted());
 		SelectionImageExporter.SelectionDataInfo info = SelectionImageExporter.calculateSelectionInfo(selection);
 
+		if (info.getSelectionInfo().getWidth() *  16 * info.getSelectionInfo().getHeight() * 16 > Integer.MAX_VALUE) {
+			String error = String.format("dimensions are too large to generate an image: %dx%d", info.getSelectionInfo().getWidth() * 16, info.getSelectionInfo().getHeight() * 16);
+			Debug.dumpf(error);
+			new ErrorDialog(primaryStage, error);
+			return;
+		}
+
 		File file = createFileChooser(FileHelper.getLastOpenedDirectory("snapshot_save", null),
 				new FileChooser.ExtensionFilter("*.png Files", "*.png")).showSaveDialog(primaryStage);
 		if (file == null) {
@@ -306,15 +313,13 @@ public class DialogHelper {
 		result.ifPresent(b -> {
 			if (b == ButtonType.OK) {
 				DataProperty<int[]> pixels = new DataProperty<>();
-				new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_CREATING_IMAGE, primaryStage)
-					.showProgressBar(t -> {
-						pixels.set(SelectionImageExporter.exportSelectionImage(info, t));
-					});
-				if (pixels.get() != null) {
-					new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SAVING_IMAGE, primaryStage)
+				CancellableProgressDialog cpd = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_CREATING_IMAGE, primaryStage);
+				cpd.showProgressBar(t -> pixels.set(SelectionImageExporter.exportSelectionImage(info, t)));
+				if (!cpd.cancelled() && pixels.get() != null) {
+					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SAVING_IMAGE, primaryStage)
 					.showProgressBar(t -> {
 						try {
-							ImageHelper.saveImageData(pixels.get(), info.getSelectionInfo().getWidth() * 16, info.getSelectionInfo().getHeight() * 16, file, t);
+							ImageHelper.saveImageData(pixels.get(), (int) info.getSelectionInfo().getWidth() * 16, (int) info.getSelectionInfo().getHeight() * 16, file, t);
 							FileHelper.setLastOpenedDirectory("snapshot_save", file.getParent());
 						} catch (IOException ex) {
 							Debug.dumpException("failed to save image", ex);

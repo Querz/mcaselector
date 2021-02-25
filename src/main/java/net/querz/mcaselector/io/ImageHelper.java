@@ -64,7 +64,7 @@ public final class ImageHelper {
 			PngWriter png = new PngWriter(bos, imi);
 			png.setFilterType(FilterType.FILTER_ADAPTIVE_FAST);
 
-			for (int row = 0; row < png.imgInfo.rows; row++) {
+			for (int row = 0; row < png.imgInfo.rows && !progressChannel.taskCancelled(); row++) {
 				ImageLineInt iline = new ImageLineInt(imi);
 				int[] copy = Arrays.copyOfRange(data, row * width, row * width + width);
 				ImageLineHelper.setPixelsRGBA8(iline, copy);

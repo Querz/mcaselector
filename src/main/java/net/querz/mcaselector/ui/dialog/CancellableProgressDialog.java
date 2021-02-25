@@ -11,6 +11,7 @@ import net.querz.mcaselector.ui.UIFactory;
 public class CancellableProgressDialog extends ProgressDialog {
 
 	private final Button cancel = UIFactory.button(Translation.BUTTON_CANCEL);
+	private boolean cancelled = false;
 
 	public CancellableProgressDialog(Translation title, Stage primaryStage) {
 		super(title, primaryStage);
@@ -21,12 +22,18 @@ public class CancellableProgressDialog extends ProgressDialog {
 
 		getBox().getChildren().add(cancelBox);
 		cancel.setOnAction(e -> {
+			cancelled = true;
 			getCurrentTask().setLocked(true);
 			getCurrentTask().setIndeterminate(Translation.DIALOG_PROGRESS_CANCELLING.toString());
 			MCAFilePipe.cancelAllJobs(() -> Platform.runLater(() -> {
+				getCurrentTask().cancelTask();
 				getCurrentTask().done(Translation.DIALOG_PROGRESS_DONE.toString());
 				close();
 			}));
 		});
+	}
+
+	public boolean cancelled() {
+		return cancelled;
 	}
 }

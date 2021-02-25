@@ -30,7 +30,7 @@ public class SelectionImageExporter {
 
 		Debug.dumpf("creating image generation jobs for image: %s", selection.selectionInfo);
 
-		int[] pixels = new int[selection.selectionInfo.getWidth() * 16 * selection.selectionInfo.getHeight() * 16];
+		int[] pixels = new int[(int) selection.selectionInfo.getWidth() * 16 * (int) selection.selectionInfo.getHeight() * 16];
 
 		for (Map.Entry<Point2i, Set<Point2i>> entry : selection.selection.entrySet()) {
 			MCAFilePipe.addJob(new ExportSelectionImageLoadJob(entry.getKey(), entry.getValue(), selection.selectionInfo, pixels, progressChannel));
@@ -156,7 +156,7 @@ public class SelectionImageExporter {
 				for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 					for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
 						int srcIndex = cz * Tile.CHUNK_SIZE + cx;
-						int dstIndex = (blockInSelection.getZ() + cz) * selectionInfo.getWidth() * 16 + (blockInSelection.getX() + cx);
+						int dstIndex = (blockInSelection.getZ() + cz) * (int) selectionInfo.getWidth() * 16 + (blockInSelection.getX() + cx);
 						pixels[dstIndex] = pixelData[srcIndex];
 					}
 				}
