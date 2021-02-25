@@ -208,8 +208,7 @@ public class DialogHelper {
 
 					WorldDirectories wd = FileHelper.validateWorldDirectories(dir);
 					if (wd == null) {
-						// TODO: show error dialog
-
+						new ErrorDialog(primaryStage, "invalid world directory, missing 'region' directory");
 						return;
 					}
 

@@ -201,7 +201,7 @@ public class ChunkImporter {
 					allCopied = false;
 				}
 
-				if (!getRegionDirectories().getPoi().exists()) {
+				if (!getRegionDirectories().getPoi().exists() && sourceDirs.getPoi() != null) {
 					File source = new File(sourceDirs.getPoi(), getRegionDirectories().getLocationAsFileName());
 					try {
 						Files.copy(source.toPath(), getRegionDirectories().getPoi().toPath());
@@ -212,7 +212,7 @@ public class ChunkImporter {
 					allCopied = false;
 				}
 
-				if (!getRegionDirectories().getEntities().exists()) {
+				if (!getRegionDirectories().getEntities().exists() && sourceDirs.getEntities() != null) {
 					File source = new File(sourceDirs.getEntities(), getRegionDirectories().getLocationAsFileName());
 					try {
 						Files.copy(source.toPath(), getRegionDirectories().getEntities().toPath());

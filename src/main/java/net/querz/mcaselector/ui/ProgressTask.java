@@ -76,7 +76,6 @@ public abstract class ProgressTask extends Task<Void> implements Progress {
 
 	public void updateProgress(String info, double progress, int max) {
 		if (!locked) {
-			System.out.printf("updating progress: %f / %d\n", progress, max);
 			Platform.runLater(() -> infoProperty.setValue(info));
 			updateProgress(progress, max);
 			if (progress == max && onFinish != null) {

@@ -133,10 +133,10 @@ public final class FileHelper {
 		File region = new File(dir, "region");
 		File poi = new File(dir, "poi");
 		File entities = new File(dir, "entities");
-		if (!region.exists() || !poi.exists() || !entities.exists()) {
+		if (!region.exists()) {
 			return null;
 		}
-		return new WorldDirectories(region, poi, entities);
+		return new WorldDirectories(region, poi.exists() ? poi : null, entities.exists() ? entities : null);
 	}
 
 	public static RegionDirectories createRegionDirectories(Point2i r) {
