@@ -106,10 +106,8 @@ public class Tile {
 
 	public void mark(boolean marked) {
 		this.marked = marked;
-		if (marked) {
-			markedChunks = new HashSet<>();
-			markedChunksImage = null;
-		}
+		markedChunks = new HashSet<>();
+		markedChunksImage = null;
 	}
 
 	public void mark(Point2i chunk) {
@@ -136,13 +134,13 @@ public class Tile {
 
 	public void unMark(Point2i chunkBlock) {
 		if (isMarked()) {
+			mark(false);
 			Point2i regionChunk = location.regionToChunk();
 			for (int x = 0; x < SIZE_IN_CHUNKS; x++) {
 				for (int z = 0; z < SIZE_IN_CHUNKS; z++) {
 					markedChunks.add(regionChunk.add(x, z));
 				}
 			}
-			mark(false);
 		}
 		markedChunks.remove(chunkBlock);
 		markedChunksImage = null; //reset markedChunksImage

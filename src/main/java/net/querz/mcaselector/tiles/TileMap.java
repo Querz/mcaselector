@@ -610,6 +610,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 							selectedChunks -= Tile.CHUNKS;
 						} else if (!tile.isMarked() && marked) {
 							selectedChunks += Tile.CHUNKS - tile.getMarkedChunks().size();
+						} else if (!tile.isMarked() && !marked) {
+							selectedChunks -= tile.getMarkedChunks().size();
 						}
 						tile.mark(marked);
 					}
