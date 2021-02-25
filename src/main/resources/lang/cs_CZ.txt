@@ -15,12 +15,16 @@ menu.view;Pohled
 menu.selection;Výběr
 menu.tools;Nástroje
 menu.about;O aplikaci
-menu.file.open;Otevřít
+menu.file.open_world;Otevřete svět
+menu.file.open;Otevřete region
 menu.file.settings;Nastavení
+menu.file.world_settings;Nastavení světa
 menu.file.quit;Opustit
 menu.view.chunk_grid;Mřížka chunků
 menu.view.region_grid;Mřížka regionů
 menu.view.goto;Přejít
+menu.view.reset_zoom;Obnovit přiblížení
+menu.view.save_screenshot;Uložit snímek obrazovky
 menu.view.clear_cache;Smazat keš
 menu.view.clear_all_cache;Smazat všechny keše
 menu.selection.clear;Vyčistit
@@ -31,12 +35,14 @@ menu.selection.export_chunks;Exportovat vybrané chunky
 menu.selection.delete_chunks;Smazat vybrané chunky
 menu.selection.import_selection;Importovat výběr
 menu.selection.export_selection;Exportovat výběr
+menu.selection.export_image;Exportovat jako obrázek
 menu.selection.clear_cache;Smazat keš
 menu.tools.import_chunks;Importovat chunky
 menu.tools.filter_chunks;Filtrovat chunky
 menu.tools.change_fields;Změnit pole
 menu.tools.edit_nbt;Upravit chunků
 menu.tools.swap_chunks;Vyměňovat chunky
+dialog.select_world.title;Vyberte kótu
 dialog.settings.title;Nastavení
 dialog.settings.language;Jazyk
 dialog.settings.read_threads;Vláken pro načítání
@@ -47,14 +53,21 @@ dialog.settings.region_color;Barva vybraného regionu
 dialog.settings.chunk_color;Barva vybraného chunku
 dialog.settings.shade;Odstín
 dialog.settings.shade_water;Hloubka vody
+dialog.settings.mc_saves_dir;Adresář Minecraft
 dialog.settings.print_debug;Vypisovat ladící zprávy
 dialog.settings.show_log_file;Zobrazit soubor protokolu
 dialog.settings.reset;Obnovit
+dialog.world_settings.title;Nastavení světa
+dialog.world_settings.poi;POI
+dialog.world_settings.entities;Subjekty
 dialog.goto.title;Přejít na pozici
 dialog.confirmation.question;Jste si jisti?
 dialog.delete_chunks_confirmation.title;Smazat chunky
 dialog.delete_chunks_confirmation.header_short;Chcete smazat neznámý počet chunků vybraného světa.
 dialog.delete_chunks_confirmation.header_verbose;Chcete smazat  %d chunků vybraného světa.
+dialog.image_export_confirmation.title;Exportovat obrázek
+dialog.image_export_confirmation.header_short;Chystáte se vytvořit obraz neznámých rozměrů.
+dialog.image_export_confirmation.header_verbose;Chystáte se vytvořit obrázek s rozměry %dx%d.
 dialog.import_chunks_confirmation.title;Importovat chunky
 dialog.import_chunks_confirmation.header;Chcete importovat neznámý počet chunků do vybraného světa.
 dialog.import_chunks_confirmation.options;Volby
@@ -115,11 +128,18 @@ dialog.progress.cancelling;rušení...
 dialog.progress.collecting_data;sběr dat...
 dialog.progress.done;hotovo.
 dialog.progress.title.deleting_selection;Mazání výběru...
+dialog.progress.title.creating_image;Vytváření obrázku...
+dialog.progress.title.saving_image;Ukládání obrázku...
 dialog.progress.title.exporting_selection;Exportování výběru...
 dialog.progress.title.importing_chunks;Importování chunků...
 dialog.progress.title.deleting_filtered_chunks;Mazání filtrovaných chunků...
 dialog.progress.title.exporting_filtered_chunks;Exporování filtrovaných chunků...
 dialog.progress.title.selecting_filtered_chunks;Vybírání filtrovaných chunků...
 dialog.progress.title.changing_nbt_data;Měním NBT data...
+dialog.progress.title.saving_chunk;Ukládání chunků do souboru...
+dialog.error.button.copy_to_clipboard;Zkopírovat do schránky
+dialog.error.title;Chyba
+dialog.error.header;Vyskytla se chyba
+dialog.error.copied_to_clipboard;Zkopírováno do schránky!
 button.cancel;Zrušit
 button.ok;OK

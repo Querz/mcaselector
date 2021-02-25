@@ -15,12 +15,16 @@ menu.view;檢視
 menu.selection;選擇
 menu.tools;工具
 menu.about;關於
-menu.file.open;開啟
+menu.file.open_world;打開世界
+menu.file.open;打開區域
 menu.file.settings;設置
+menu.file.world_settings;世界設置
 menu.file.quit;退出
 menu.view.chunk_grid;區塊網格
 menu.view.region_grid;區域網格
 menu.view.goto;轉到
+menu.view.reset_zoom;重設縮放
+menu.view.save_screenshot;保存截圖
 menu.view.clear_cache;清除緩存
 menu.view.clear_all_cache;清除所有緩存
 menu.selection.clear;清除
@@ -31,12 +35,14 @@ menu.selection.export_chunks;匯出已選擇的區塊
 menu.selection.delete_chunks;刪除已選擇的區塊
 menu.selection.import_selection;匯入已選擇的內容
 menu.selection.export_selection;匯出已選擇的內容
+menu.selection.export_image;導出為圖像
 menu.selection.clear_cache;清除緩存
 menu.tools.import_chunks;匯入區塊
 menu.tools.filter_chunks;篩選區塊
 menu.tools.change_fields;變更欄位
 menu.tools.edit_nbt;編輯區塊
 menu.tools.swap_chunks;交換塊
+dialog.select_world.title;選擇一個尺寸
 dialog.settings.title;設置
 dialog.settings.language;語言
 dialog.settings.read_threads;讀取執行緒
@@ -47,14 +53,21 @@ dialog.settings.region_color;已選擇區域的顏色標示
 dialog.settings.chunk_color;已選擇區塊的顏色標示
 dialog.settings.shade;陰影
 dialog.settings.shade_water;水深
+dialog.settings.mc_saves_dir;我的世界目錄
 dialog.settings.print_debug;列印偵錯訊息
 dialog.settings.show_log_file;顯示日誌文件
 dialog.settings.reset;重置
+dialog.world_settings.title;世界設置
+dialog.world_settings.poi;興趣點
+dialog.world_settings.entities;實體
 dialog.goto.title;轉到位置
 dialog.confirmation.question;你確定嗎？
 dialog.delete_chunks_confirmation.title;刪除區塊
 dialog.delete_chunks_confirmation.header_short;你將要從這個世界中刪除未知數量的區塊。
 dialog.delete_chunks_confirmation.header_verbose;你將要從這個世界中刪除 %d 個區塊。
+dialog.image_export_confirmation.title;匯出圖片
+dialog.image_export_confirmation.header_short;您將要創建比例未知的圖像。
+dialog.image_export_confirmation.header_verbose;您將要創建尺寸為 %dx%d 的圖像。
 dialog.import_chunks_confirmation.title;匯入區塊
 dialog.import_chunks_confirmation.header;你將要向這個世界匯入未知數量的區塊。
 dialog.import_chunks_confirmation.options;選項
@@ -115,11 +128,18 @@ dialog.progress.cancelling;正在取消…
 dialog.progress.collecting_data;收集資料中…
 dialog.progress.done;完成。
 dialog.progress.title.deleting_selection;正在刪除選擇…
+dialog.progress.title.creating_image;正在創建圖片…
+dialog.progress.title.saving_image;正在保存圖片…
 dialog.progress.title.exporting_selection;正在匯出選擇…
 dialog.progress.title.importing_chunks;正在匯入區塊…
 dialog.progress.title.deleting_filtered_chunks;正在刪除篩選區塊…
 dialog.progress.title.exporting_filtered_chunks;正在匯出篩選區塊…
 dialog.progress.title.selecting_filtered_chunks;正在選擇篩選區塊…
 dialog.progress.title.changing_nbt_data;正在變更 NBT 資料…
+dialog.progress.title.saving_chunk;正在將塊保存到文件…
+dialog.error.button.copy_to_clipboard;複製到剪貼板
+dialog.error.title;錯誤
+dialog.error.header;發生錯誤
+dialog.error.copied_to_clipboard;複製到剪貼板!
 button.cancel;取消
 button.ok;確定
