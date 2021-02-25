@@ -69,6 +69,10 @@ public final class ParamExecutor {
 					printHeadlessSettings();
 					cache(future);
 					break;
+				case "image":
+					printHeadlessSettings();
+					image(future);
+					break;
 				case "printMissingTranslations":
 					printMissingTranslations(future);
 					break;
@@ -79,7 +83,7 @@ public final class ParamExecutor {
 					printTranslationKeys(future);
 					break;
 			}
-		} catch (IOException ex) {
+		} catch (Exception ex) {
 			Debug.error("error: " + ex.getMessage());
 			if (Config.debug()) {
 				Debug.dumpException("an error occurred while running MCA Selector in headless mode", ex);
@@ -202,6 +206,48 @@ public final class ParamExecutor {
 		progress.onDone(future);
 
 		CacheHelper.forceGenerateCache(zoomLevel, progress);
+	}
+
+	private void image(FutureTask<Boolean> future) throws IOException {
+		Config.setWorldDirs(parseWorldDirectories("region", "poi", "entities"));
+		if (!HeadlessHelper.hasJavaFX()) {
+			throw new IOException("no JavaFX installation found");
+		}
+
+		File output = parseFileAndCreateParentDirectories("output", "png");
+		SelectionData selection = loadSelection();
+
+		SelectionImageExporter.SelectionDataInfo info = SelectionImageExporter.calculateSelectionInfo(selection);
+		if (info.getSelectionInfo().getWidth() * 16 * info.getSelectionInfo().getHeight() * 16 > Integer.MAX_VALUE) {
+			throw new IOException(String.format("dimensions are too large to generate an image: %dx%d",
+					info.getSelectionInfo().getWidth() * 16, info.getSelectionInfo().getHeight() * 16));
+		}
+
+		DataProperty<int[]> pixels = new DataProperty<>();
+		DataProperty<IOException> saveException = new DataProperty<>();
+		ConsoleProgress saveProgress = new ConsoleProgress();
+		saveProgress.onDone(() -> {
+			if (saveException.get() != null) {
+				throw new RuntimeException(saveException.get());
+			}
+			future.run();
+		});
+		ConsoleProgress generateProgress = new ConsoleProgress();
+		generateProgress.onDone(() -> {
+			if (!generateProgress.taskCancelled() && pixels.get() != null) {
+				try {
+					ImageHelper.saveImageData(
+							pixels.get(),
+							(int) info.getSelectionInfo().getWidth() * 16,
+							(int) info.getSelectionInfo().getHeight() * 16,
+							output, saveProgress);
+				} catch (IOException e) {
+					saveException.set(e);
+				}
+			}
+		});
+
+		pixels.set(SelectionImageExporter.exportSelectionImage(info, generateProgress));
 	}
 
 	private void printMissingTranslations(FutureTask<Boolean> future) {

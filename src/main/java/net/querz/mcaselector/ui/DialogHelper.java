@@ -295,7 +295,7 @@ public class DialogHelper {
 		SelectionData selection = new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted());
 		SelectionImageExporter.SelectionDataInfo info = SelectionImageExporter.calculateSelectionInfo(selection);
 
-		if (info.getSelectionInfo().getWidth() *  16 * info.getSelectionInfo().getHeight() * 16 > Integer.MAX_VALUE) {
+		if (info.getSelectionInfo().getWidth() * 16 * info.getSelectionInfo().getHeight() * 16 > Integer.MAX_VALUE) {
 			String error = String.format("dimensions are too large to generate an image: %dx%d", info.getSelectionInfo().getWidth() * 16, info.getSelectionInfo().getHeight() * 16);
 			Debug.dumpf(error);
 			new ErrorDialog(primaryStage, error);
