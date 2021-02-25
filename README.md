@@ -192,14 +192,15 @@ The MCA Selector currently supports the following Minecraft versions:
 | 1.13 - 1.13.2     | 1444 - 1631 |
 | 1.14 - 1.14.4     | 1901 - 1976 |
 | 1.15 - 1.15.2     | 2200 - 2230 |
-| 1.16 - 1.16.3     | 2566 - 2580 |
+| 1.16 - 1.16.5     | 2566 - 2586 |
+| Snapshot 21w08a   | 2697 |
 
 There is no guarantee for worlds generated in a Snapshot version to work, even if it is specified in the table above. This only represents the current development status towards the next Minecraft release. Old Snapshots of past Minecraft releases are not supported.
 
 ---
 ## Headless mode
 
-The MCA Selector can be run in a headless mode without showing the UI. Use the program parameter `--headless` to do so.
+MCA Selector can be run in a headless mode without showing the UI. Use the program parameter `--headless` to do so.
 Headless mode can be run in different modes:
 
 | Mode | Parameter | Description |
@@ -344,9 +345,20 @@ If you would like to contribute a translation, you can find the language files i
 
 ## Download and installation
 
-[**Download Version 1.13.3**](https://github.com/Querz/mcaselector/releases/download/1.13.3/mcaselector-1.13.3.jar)
-
 **MCA Selector modifies and deletes chunks in your Minecraft world. Please make backups of your world before using.**
+
+---
+
+[**Download Version 1.13.3 (Windows Installer)**](https://github.com/Querz/mcaselector/releases/download/1.13.3/MCA_Selector_Setup.exe)
+
+"Requirements":
+* Windows 7-10 64bit
+* At least 6 GB of RAM
+
+---
+
+[**Download Version 1.13.3 (Universal)**](https://github.com/Querz/mcaselector/releases/download/1.13.3/mcaselector-1.13.3.jar)
+
 
 "Requirements":
 * Either:
