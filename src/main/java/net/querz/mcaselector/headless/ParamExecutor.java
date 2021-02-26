@@ -551,7 +551,6 @@ public final class ParamExecutor {
 			Config.setDebug(true);
 			Debug.initLogWriter();
 		}
-		Config.setDebug(params.containsKey("debug"));
 		Config.setLoadThreads(parsePositiveInt("read-threads", Config.DEFAULT_LOAD_THREADS));
 		Config.setProcessThreads(parsePositiveInt("process-threads", Config.DEFAULT_PROCESS_THREADS));
 		Config.setWriteThreads(parsePositiveInt("write-threads",Config.DEFAULT_WRITE_THREADS));
