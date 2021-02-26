@@ -57,8 +57,8 @@ public class Anvil117ChunkFilter extends Anvil116ChunkFilter {
 			Map<Integer, CompoundTag> sectionMap = new HashMap<>();
 			List<Integer> heights = new ArrayList<>(26);
 			for (CompoundTag section : sections) {
-				sectionMap.put((int) section.getByte("Y"), section);
-				heights.add((int) section.getByte("Y"));
+				sectionMap.put(section.getNumber("Y").intValue(), section);
+				heights.add(section.getNumber("Y").intValue());
 			}
 
 			for (int y = -4; y < 20; y++) {
@@ -102,7 +102,7 @@ public class Anvil117ChunkFilter extends Anvil116ChunkFilter {
 				continue;
 			}
 
-			int y = section.getByte("Y");
+			int y = section.getNumber("Y").intValue();
 
 			for (int i = 0; i < 4096; i++) {
 				CompoundTag blockState = getBlockAt(i, blockStates, palette);

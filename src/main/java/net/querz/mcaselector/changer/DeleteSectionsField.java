@@ -44,7 +44,7 @@ public class DeleteSectionsField extends Field<List<Range>> {
 		for (int i = 0; i < sections.size(); i++) {
 			CompoundTag section = sections.get(i);
 			for (Range range : getNewValue()) {
-				if (range.contains(section.getByte("Y"))) {
+				if (range.contains(section.getNumber("Y").intValue())) {
 					sections.remove(i);
 					i--;
 				}

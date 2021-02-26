@@ -19,7 +19,7 @@ apply plugin: 'css'
 apply plugin: 'edu.sc.seis.launch4j'
 
 group 'net.querz.mcaselector'
-version '1.14-pre3'
+version '1.14'
 def appName = 'MCA Selector'
 def appUrl = 'https://github.com/Querz/mcaselector'
 def appAuthor = 'Querz'
@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.github.Querz:NBT:766dd9ca00'
+	implementation 'com.github.Querz:NBT:4192a95c9d'
 	implementation 'org.json:json:20201115'
 	implementation 'ar.com.hjg:pngj:2.1.0'
 	testImplementation 'junit:junit:4.12'

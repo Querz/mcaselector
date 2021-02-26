@@ -59,8 +59,8 @@ public class Anvil117ChunkRenderer implements ChunkRenderer {
 						continue;
 					}
 
-					Byte height = withDefault(() -> sections.get(si).getByte("Y"), null);
-					if (height == null) {
+					Integer height = withDefault(() -> sections.get(si).getNumber("Y").intValue(), null);
+					if (height == null || height > 20 || height < -4) {
 						continue;
 					}
 
@@ -175,6 +175,6 @@ public class Anvil117ChunkRenderer implements ChunkRenderer {
 	}
 
 	private int filterSections(CompoundTag sectionA, CompoundTag sectionB) {
-		return withDefault(() -> sectionB.getByte("Y"), (byte) -5) - withDefault(() -> sectionA.getByte("Y"), (byte) -5);
+		return withDefault(() -> sectionB.getNumber("Y").intValue(), -5) - withDefault(() -> sectionA.getNumber("Y").intValue(), -5);
 	}
 }

@@ -179,8 +179,8 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 			Map<Integer, CompoundTag> sectionMap = new HashMap<>();
 			List<Integer> heights = new ArrayList<>(18);
 			for (CompoundTag section : sections) {
-				sectionMap.put((int) section.getByte("Y"), section);
-				heights.add((int) section.getByte("Y"));
+				sectionMap.put(section.getNumber("Y").intValue(), section);
+				heights.add(section.getNumber("Y").intValue());
 			}
 
 			for (int y = 0; y < 16; y++) {
