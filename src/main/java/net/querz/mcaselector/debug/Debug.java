@@ -178,6 +178,7 @@ public final class Debug {
 			}
 		}
 
+		@SuppressWarnings("BusyWait")
 		private void repeatedFlush() {
 			while (br != null) {
 				try {

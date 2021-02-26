@@ -88,6 +88,10 @@ public class SelectionHelper {
 		if (selection != null && selection.isInverted()) {
 			sel = new HashMap<>();
 			Set<Point2i> allRegions = FileHelper.parseAllMCAFileNames(Config.getWorldDir());
+			Set<Point2i> allPoi = FileHelper.parseAllMCAFileNames(Config.getWorldDirs().getPoi());
+			Set<Point2i> allEntities = FileHelper.parseAllMCAFileNames(Config.getWorldDirs().getEntities());
+			allRegions.addAll(allPoi);
+			allRegions.addAll(allEntities);
 			for (Point2i region : allRegions) {
 				if (selection.isRegionSelected(region)) {
 					if (!selection.getSelection().containsKey(region)) {
@@ -99,5 +103,45 @@ public class SelectionHelper {
 			}
 		}
 		return sel;
+	}
+
+	public static SelectionInfo getSelectionInfo(Map<Point2i, Set<Point2i>> selection) {
+		int minX, maxX, minZ, maxZ;
+		minX = minZ = Integer.MAX_VALUE;
+		maxX = maxZ = Integer.MIN_VALUE;
+		for (Map.Entry<Point2i, Set<Point2i>> entry : selection.entrySet()) {
+			if (entry.getValue() == null) {
+				Point2i min = entry.getKey().regionToChunk();
+				Point2i max = entry.getKey().regionToChunk().add(31);
+				if (min.getX() < minX) {
+					minX = min.getX();
+				}
+				if (min.getZ() < minZ) {
+					minZ = min.getZ();
+				}
+				if (max.getX() > maxX) {
+					maxX = max.getX();
+				}
+				if (max.getZ() > maxZ) {
+					maxZ = max.getZ();
+				}
+			} else {
+				for (Point2i chunk : entry.getValue()) {
+					if (chunk.getX() < minX) {
+						minX = chunk.getX();
+					}
+					if (chunk.getZ() < minZ) {
+						minZ = chunk.getZ();
+					}
+					if (chunk.getX() > maxX) {
+						maxX = chunk.getX();
+					}
+					if (chunk.getZ() > maxZ) {
+						maxZ = chunk.getZ();
+					}
+				}
+			}
+		}
+		return new SelectionInfo(new Point2i(minX, minZ), new Point2i(maxX, maxZ));
 	}
 }

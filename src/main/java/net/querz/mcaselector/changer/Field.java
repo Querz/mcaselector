@@ -1,6 +1,6 @@
 package net.querz.mcaselector.changer;
 
-import net.querz.nbt.tag.CompoundTag;
+import net.querz.mcaselector.io.mca.ChunkData;
 
 public abstract class Field<T> {
 
@@ -24,6 +24,15 @@ public abstract class Field<T> {
 		this.newValue = newValue;
 	}
 
+	@SuppressWarnings("unchecked")
+	public void setNewValueRaw(Object newValue) {
+		if (newValue == null) {
+			this.newValue = null;
+		} else {
+			this.newValue = (T) newValue;
+		}
+	}
+
 	public T getNewValue() {
 		return newValue;
 	}
@@ -32,11 +41,15 @@ public abstract class Field<T> {
 		return type;
 	}
 
-	public abstract T getOldValue(CompoundTag root);
+	public abstract T getOldValue(ChunkData root);
 
 	@Override
 	public String toString() {
-		return type.toString() + " = " + newValue;
+		return type.toString() + " = " + valueToString();
+	}
+
+	public String valueToString() {
+		return newValue.toString();
 	}
 
 	//returns true if the value has been correctly parsed and value is not null
@@ -46,7 +59,7 @@ public abstract class Field<T> {
 		return false;
 	}
 
-	public abstract void change(CompoundTag root);
+	public abstract void change(ChunkData root);
 
-	public abstract void force(CompoundTag root);
+	public abstract void force(ChunkData root);
 }

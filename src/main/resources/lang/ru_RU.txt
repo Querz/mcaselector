@@ -15,12 +15,16 @@ menu.view;Вид
 menu.selection;Выбор
 menu.tools;Инструменты
 menu.about;О программе
-menu.file.open;Открыть
+menu.file.open_world;Открой мир
+menu.file.open;Открыть регион
 menu.file.settings;Настройки
+menu.file.world_settings;Мировые настройки
 menu.file.quit;Выход
 menu.view.chunk_grid;Сетка чанков
 menu.view.region_grid;Сетка областей
 menu.view.goto;Перейти по координатам
+menu.view.reset_zoom;Сбросить масштаб
+menu.view.save_screenshot;Сохранить снимок экрана
 menu.view.clear_cache;Отчистить кэш
 menu.view.clear_all_cache;Отчистить весь кэш
 menu.selection.clear;Сбросить
@@ -31,12 +35,14 @@ menu.selection.export_chunks;Экспортировать выбранные ч�
 menu.selection.delete_chunks;Удалить выбранные чанки
 menu.selection.import_selection;Выбрать импорт
 menu.selection.export_selection;Выбрать экспорт
+menu.selection.export_image;Экспорт как изображение
 menu.selection.clear_cache;Отчистить кэш
 menu.tools.import_chunks;Импортировать чанки
 menu.tools.filter_chunks;Отфильтровать чанки
 menu.tools.change_fields;Изменить параметры
 menu.tools.edit_nbt;Редактировать чанк
 menu.tools.swap_chunks;поменять чанки
+dialog.select_world.title;Выберите размер
 dialog.settings.title;Настройки
 dialog.settings.language;Язык
 dialog.settings.read_threads;Чтение потоков
@@ -47,14 +53,21 @@ dialog.settings.region_color;Цвет выделяемых областей
 dialog.settings.chunk_color;Цвет выделяемых чанков
 dialog.settings.shade;тень
 dialog.settings.shade_water;Глубина воды
+dialog.settings.mc_saves_dir;Каталог Minecraft
 dialog.settings.print_debug;Отображать системные сообщения
 dialog.settings.show_log_file;Показать файл журнала
 dialog.settings.reset;Сбросить
+dialog.world_settings.title;Мировые настройки
+dialog.world_settings.poi;POI
+dialog.world_settings.entities;Сущности
 dialog.goto.title;Перейти по координатам
 dialog.confirmation.question;Вы уверены?
 dialog.delete_chunks_confirmation.title;Удалить чанки
 dialog.delete_chunks_confirmation.header_short;Вы удаляете неизвестное число чанков из этого мира.
 dialog.delete_chunks_confirmation.header_verbose;Вы удаляете %d чанков из этого мира.
+dialog.image_export_confirmation.title;Экспорт изображения
+dialog.image_export_confirmation.header_short;Вы собираетесь создать изображение неизвестных пропорций.
+dialog.image_export_confirmation.header_verbose;Вы собираетесь создать изображение с размерами %dx%d.
 dialog.import_chunks_confirmation.title;Импорт чанков
 dialog.import_chunks_confirmation.header;Вы импортируете неизвестное число чанков в этот мир.
 dialog.import_chunks_confirmation.options;Опции
@@ -115,11 +128,18 @@ dialog.progress.cancelling;отмена...
 dialog.progress.collecting_data;сбор информации...
 dialog.progress.done;выполнено.
 dialog.progress.title.deleting_selection;Удаление выбора...
+dialog.progress.title.creating_image;Создание изображения...
+dialog.progress.title.saving_image;Сохранение изображения...
 dialog.progress.title.exporting_selection;Экспорт выбора...
 dialog.progress.title.importing_chunks;Импорт чанков...
 dialog.progress.title.deleting_filtered_chunks;Удаление указаных чанков...
 dialog.progress.title.exporting_filtered_chunks;Экспорт указанных чанков...
 dialog.progress.title.selecting_filtered_chunks;Выбор указанных чанков...
 dialog.progress.title.changing_nbt_data;изменение NBT параметров...
+dialog.progress.title.saving_chunk;Сохранение фрагмента в файл...
+dialog.error.button.copy_to_clipboard;Скопировать в буфер обмена
+dialog.error.title;Ошибка
+dialog.error.header;Произошла ошибка
+dialog.error.copied_to_clipboard;Скопировано в буфер обмена!
 button.cancel;Отменить
 button.ok;OK

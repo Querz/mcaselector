@@ -1,5 +1,6 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.text.TextHelper;
 
 public class InhabitedTimeFilter extends LongFilter {
@@ -13,8 +14,11 @@ public class InhabitedTimeFilter extends LongFilter {
 	}
 
 	@Override
-	protected Long getNumber(FilterData data) {
-		return data.getChunk().getCompoundTag("Level").getLong("InhabitedTime");
+	protected Long getNumber(ChunkData data) {
+		if (data.getRegion() == null) {
+			return 0L;
+		}
+		return data.getRegion().getData().getCompoundTag("Level").getLong("InhabitedTime");
 	}
 
 	@Override

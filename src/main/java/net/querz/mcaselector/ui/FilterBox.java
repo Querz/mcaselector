@@ -347,8 +347,8 @@ public abstract class FilterBox extends BorderPane {
 				parent.addFilterAfter(Objects.requireNonNull(f), filter);
 				parent.getFilterValue().remove(filter);
 
-				// use the same value and comparator if the filter format is equal
-				if (filter.getType().getFormat() == type.getFormat()) {
+				// use the same value and comparator if the filter format is equal, but not if it's a custom text format
+				if (filter.getType().getFormat() == type.getFormat() && filter.getType().getFormat() != FilterType.Format.TEXT) {
 					f.setFilterValue(filter.getRawValue());
 					f.setComparator(filter.getComparator());
 				}

@@ -1,14 +1,10 @@
 package net.querz.mcaselector.io;
 
-import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
-import java.io.File;
-import java.io.RandomAccessFile;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,7 +29,7 @@ public class SelectionDeleter {
 		progressChannel.updateProgress(FileHelper.createMCAFileName(first), 0);
 
 		for (Map.Entry<Point2i, Set<Point2i>> entry : sel.entrySet()) {
-			MCAFilePipe.addJob(new MCADeleteSelectionLoadJob(FileHelper.createMCAFilePath(entry.getKey()), entry.getValue(), progressChannel));
+			MCAFilePipe.addJob(new MCADeleteSelectionLoadJob(FileHelper.createRegionDirectories(entry.getKey()), entry.getValue(), progressChannel));
 		}
 	}
 
@@ -42,29 +38,51 @@ public class SelectionDeleter {
 		private final Set<Point2i> selection;
 		private final Progress progressChannel;
 
-		private MCADeleteSelectionLoadJob(File file, Set<Point2i> selection, Progress progressChannel) {
-			super(file);
+		private MCADeleteSelectionLoadJob(RegionDirectories dirs, Set<Point2i> selection, Progress progressChannel) {
+			super(dirs);
 			this.selection = selection;
 			this.progressChannel = progressChannel;
 		}
 
 		@Override
 		public void execute() {
+			// delete whole files if everything is selected
 			if (selection == null) {
-				if (getFile().delete()) {
-					Debug.dumpf("deleted file %s", getFile().getName());
+				// delete region
+				if (getRegionDirectories().getRegion().delete()) {
+					Debug.dumpf("deleted file %s", getRegionDirectories().getRegion());
 				} else {
-					Debug.errorf("could not delete file %s", getFile().getName());
+					Debug.errorf("failed to delete file %s", getRegionDirectories().getRegion());
 				}
-				progressChannel.incrementProgress(getFile().getName());
+
+				// delete poi
+				if (getRegionDirectories().getPoi().delete()) {
+					Debug.dumpf("deleted file %s", getRegionDirectories().getPoi());
+				} else {
+					Debug.errorf("failed to delete file %s", getRegionDirectories().getPoi());
+				}
+
+				// delete entities
+				if (getRegionDirectories().getEntities().delete()) {
+					Debug.dumpf("deleted file %s", getRegionDirectories().getEntities());
+				} else {
+					Debug.errorf("failed to delete file %s", getRegionDirectories().getEntities());
+				}
+
+				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return;
 			}
-			byte[] data = load(MCAFile.SECTION_SIZE * 2); //load header only
-			if (data != null) {
-				MCAFilePipe.executeProcessData(new MCADeleteSelectionProcessJob(getFile(), data, selection, progressChannel));
+
+			byte[] regionData = loadRegion();
+			byte[] poiData = loadPOI();
+			byte[] entitiesData = loadEntities();
+
+			if (regionData == null && poiData == null && entitiesData == null) {
+				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
+				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 			} else {
-				Debug.errorf("error loading mca file %s", getFile().getName());
-				progressChannel.incrementProgress(getFile().getName());
+				MCAFilePipe.executeProcessData(new MCADeleteSelectionProcessJob(getRegionDirectories(), regionData, poiData, entitiesData, selection, progressChannel));
+
 			}
 		}
 	}
@@ -74,8 +92,8 @@ public class SelectionDeleter {
 		private final Progress progressChannel;
 		private final Set<Point2i> selection;
 
-		private MCADeleteSelectionProcessJob(File file, byte[] data, Set<Point2i> selection, Progress progressChannel) {
-			super(file, data);
+		private MCADeleteSelectionProcessJob(RegionDirectories dirs, byte[] regionData, byte[] poiData, byte[] entitiesData, Set<Point2i> selection, Progress progressChannel) {
+			super(dirs, regionData, poiData, entitiesData);
 			this.selection = selection;
 			this.progressChannel = progressChannel;
 		}
@@ -83,27 +101,26 @@ public class SelectionDeleter {
 		@Override
 		public void execute() {
 			//load MCAFile
-			Timer t = new Timer();
 			try {
-				MCAFile mca = MCAFile.readHeader(getFile(), new ByteArrayPointer(getData()));
-				if (mca != null) {
-					mca.deleteChunkIndices(selection);
-					Debug.dumpf("took %s to delete chunk indices in %s", t, getFile().getName());
-					MCAFilePipe.executeSaveData(new MCADeleteSelectionSaveJob(getFile(), mca, progressChannel));
-				}
+				Region region = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
+
+				region.deleteChunks(selection);
+
+				MCAFilePipe.executeSaveData(new MCADeleteSelectionSaveJob(getRegionDirectories(), region, progressChannel));
+
 			} catch (Exception ex) {
-				progressChannel.incrementProgress(getFile().getName());
-				Debug.errorf("error deleting chunk indices in %s", getFile().getName());
+				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
+				Debug.errorf("error deleting chunk indices in %s", getRegionDirectories().getLocationAsFileName());
 			}
 		}
 	}
 
-	private static class MCADeleteSelectionSaveJob extends SaveDataJob<MCAFile> {
+	private static class MCADeleteSelectionSaveJob extends SaveDataJob<Region> {
 
 		private final Progress progressChannel;
 
-		private MCADeleteSelectionSaveJob(File file, MCAFile data, Progress progressChannel) {
-			super(file, data);
+		private MCADeleteSelectionSaveJob(RegionDirectories dirs, Region region, Progress progressChannel) {
+			super(dirs, region);
 			this.progressChannel = progressChannel;
 		}
 
@@ -111,25 +128,12 @@ public class SelectionDeleter {
 		public void execute() {
 			Timer t = new Timer();
 			try {
-				File tmpFile;
-				try (RandomAccessFile raf = new RandomAccessFile(getFile(), "r")) {
-					tmpFile = getData().deFragment(raf);
-				}
-
-				if (tmpFile == null) {
-					if (getFile().delete()) {
-						Debug.dumpf("deleted empty region file %s", getFile().getAbsolutePath());
-					} else {
-						Debug.dumpf("could not delete empty region file %s", getFile().getAbsolutePath());
-					}
-				} else {
-					Files.move(tmpFile.toPath(), getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
-				}
+				getData().saveWithTempFiles();
 			} catch (Exception ex) {
-				Debug.dumpException("failed to delete selected chunk from " + getFile().getName(), ex);
+				Debug.dumpException("failed to delete selected chunks from " + getRegionDirectories().getLocationAsFileName(), ex);
 			}
-			progressChannel.incrementProgress(getFile().getName());
-			Debug.dumpf("took %s to save data to %s", t, getFile().getName());
+			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
+			Debug.dumpf("took %s to save data for %s", t, getRegionDirectories().getLocationAsFileName());
 		}
 	}
 }

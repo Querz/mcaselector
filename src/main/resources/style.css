@@ -274,10 +274,62 @@
 	-fx-padding: 0;
 }
 
+/*---------- TEXT AREA ----------*/
+
+.text-area {
+	-fx-text-fill: -color-text-light;
+	-fx-pref-height: 200px;
+	-fx-pref-width: 600px;
+}
+
+.text-area .content {
+	-fx-background-color: -color-text-field-background;
+}
+
+/*---------- LISTVIEW ----------*/
+
+.list-view {
+	-fx-background-color: -color-dialog-background;
+}
+
+.list-view .indexed-cell:even {
+	-fx-background-color: -color-field-cell-even;
+}
+
+.list-view .indexed-cell:odd {
+	-fx-background-color: -color-field-cell-odd;
+}
+
+.list-view .cell {
+	-fx-text-fill: -color-text-light;
+}
+
+.list-view .list-cell:selected {
+	-fx-background-color: -color-text-field-focused-shadow;
+}
+
 /*---------- LOCATION INPUT ----------*/
 
 .location-input {
 	-fx-spacing: 5;
+}
+
+/*---------- TAB PANE ----------*/
+
+.tab-header-background {
+	-fx-background-color: -color-dialog-background;
+}
+
+.tab {
+	-fx-background-color: -color-button-background;
+}
+
+.tab:hover {
+	-fx-background-color: -color-button-hover-background;
+}
+
+.tab-label {
+	-fx-text-fill: -color-text-light;
 }
 
 /*---------- DIALOG ----------*/
@@ -350,6 +402,32 @@
 	-fx-text-fill: -color-text-light;
 }
 
+/*---------- ERROR DIALOG ----------*/
+
+.error-dialog-pane .copied-to-clipboard-label {
+	-fx-padding: 10 0 -10 0;
+}
+
+/*---------- WORLD SETTINGS DIALOG ----------*/
+
+.world-settings-dialog-pane .grid-pane .label {
+	-fx-padding: 5 10 5 0;
+}
+
+.world-settings-dialog-pane .text-field {
+	-fx-pref-width: 300px;
+}
+
+/*---------- FILE TEXT FIELD ----------*/
+
+.file-text-field {
+	-fx-spacing: 5;
+}
+
+.file-text-field .button {
+	-fx-padding: 0 10 0 10;
+}
+
 /*---------- PROGRESS DIALOG ----------*/
 
 .progress-dialog {
@@ -406,10 +484,10 @@
 
 .tile-map-box {
 	-fx-effect: innershadow(gaussian, -color-tilemap-shadow, 8, 0, 0, 0);
+	-fx-background-color: black;
 	-region-grid-color: black;
 	-chunk-grid-color: darkgray;
 	-grid-line-width: 0.5;
-	-empty-chunk-background-color: black;
 	-empty-color: rgba(51, 51, 51, 1);
 }
 
@@ -600,6 +678,10 @@
 .languages-combo-box {
 	-fx-alignment: center;
 	-fx-pref-width: 240;
+}
+
+.settings-dialog-pane .file-text-field {
+	-fx-padding: 8 0 0 0;
 }
 
 /*---------- Transparent Stage ----------*/

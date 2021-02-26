@@ -18,6 +18,7 @@ deep_warm_ocean;47
 desert;2
 desert_hills;17
 desert_lakes;130
+dripstone_caves;174
 end_barrens;43
 end_highlands;42
 end_midlands;41

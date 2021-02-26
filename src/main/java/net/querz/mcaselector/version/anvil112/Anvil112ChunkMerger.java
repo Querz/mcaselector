@@ -12,7 +12,7 @@ public class Anvil112ChunkMerger implements ChunkMerger {
 
 	@Override
 	public void mergeChunks(CompoundTag source, CompoundTag destination, List<Range> ranges) {
-		mergeCompoundTagLists(source, destination, ranges, "Sections", c -> (int) c.getByte("Y"));
+		mergeCompoundTagLists(source, destination, ranges, "Sections", c -> c.getNumber("Y").intValue());
 		mergeCompoundTagLists(source, destination, ranges, "Entities", c -> c.getListTag("Pos").asDoubleTagList().get(1).asInt() >> 4);
 		mergeCompoundTagLists(source, destination, ranges, "TileEntities", c -> c.getInt("y") >> 4);
 		mergeCompoundTagLists(source, destination, ranges, "TileTicks", c -> c.getInt("y") >> 4);

@@ -11,6 +11,7 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.RegionImageGenerator;
 import net.querz.mcaselector.io.SelectionData;
+import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.debug.Debug;
@@ -21,7 +22,6 @@ import net.querz.mcaselector.progress.Timer;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,7 +71,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private Map<Point2i, Set<Point2i>> pastedChunks;
 	private boolean pastedChunksInverted;
-	private File pastedWorld;
+	private WorldDirectories pastedWorld;
 	private Map<Point2i, Image> pastedChunksCache;
 	private Point2i pastedChunksOffset;
 	private Point2i firstPastedChunksOffset;
@@ -129,6 +129,11 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			}
 			update();
 		}
+	}
+
+	public void setScale(float newScale) {
+		scale = newScale;
+		update();
 	}
 
 	public static Point2f getRegionGridMin(Point2f offset, float scale) {
@@ -529,7 +534,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 	}
 
-	public void setPastedChunks(Map<Point2i, Set<Point2i>> chunks, boolean inverted, Point2i min, Point2i max, File pastedWorld) {
+	public void setPastedChunks(Map<Point2i, Set<Point2i>> chunks, boolean inverted, Point2i min, Point2i max, WorldDirectories pastedWorld) {
 		pastedChunks = chunks;
 		pastedChunksInverted = inverted;
 		this.pastedWorld = pastedWorld;
@@ -558,7 +563,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		return pastedChunks != null;
 	}
 
-	public File getPastedWorld() {
+	public WorldDirectories getPastedWorld() {
 		return pastedWorld;
 	}
 
@@ -605,6 +610,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 							selectedChunks -= Tile.CHUNKS;
 						} else if (!tile.isMarked() && marked) {
 							selectedChunks += Tile.CHUNKS - tile.getMarkedChunks().size();
+						} else if (!tile.isMarked() && !marked) {
+							selectedChunks -= tile.getMarkedChunks().size();
 						}
 						tile.mark(marked);
 					}
@@ -640,8 +647,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	private void draw(GraphicsContext ctx) {
-		ctx.setFill(Tile.EMPTY_CHUNK_BACKGROUND_COLOR.makeJavaFXColor());
-		ctx.fillRect(0, 0, getWidth(), getHeight());
+		ctx.clearRect(0, 0, getWidth(), getHeight());
 		runOnVisibleRegions(region -> {
 			if (!tiles.containsKey(region)) {
 				tiles.put(region, new Tile(region));
@@ -813,6 +819,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			}
 			steps++;
 		}
+	}
+
+	public Window getWindow() {
+		return window;
 	}
 
 	@Override

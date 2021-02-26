@@ -7,9 +7,11 @@ import net.querz.nbt.tag.ListTag;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import static net.querz.mcaselector.validation.ValidationHelper.*;
@@ -163,5 +165,87 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 			Arrays.fill(biomes, (byte) id);
 			data.getCompoundTag("Level").putByteArray("Biomes", biomes);
 		}
+	}
+
+	@Override
+	public void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace) {
+		ListTag<CompoundTag> sections = withDefault(() -> data.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
+		if (sections == null) {
+			return;
+		}
+
+		// handle the special case when someone wants to replace air with something else
+		if (replace.containsKey("minecraft:air")) {
+			Map<Integer, CompoundTag> sectionMap = new HashMap<>();
+			List<Integer> heights = new ArrayList<>(18);
+			for (CompoundTag section : sections) {
+				sectionMap.put(section.getNumber("Y").intValue(), section);
+				heights.add(section.getNumber("Y").intValue());
+			}
+
+			for (int y = 0; y < 16; y++) {
+				if (!sectionMap.containsKey(y)) {
+					sectionMap.put(y, createEmptySection(y));
+					heights.add(y);
+				} else {
+					CompoundTag section = sectionMap.get(y);
+					if (!section.containsKey("Blocks") || !section.containsKey("Data")) {
+						sectionMap.put(y, createEmptySection(y));
+					}
+				}
+			}
+
+			heights.sort(Integer::compareTo);
+			sections.clear();
+
+			for (int height : heights) {
+				sections.add(sectionMap.get(height));
+			}
+		}
+
+		for (CompoundTag section : sections) {
+			for (Map.Entry<String, BlockReplaceData> entry : replace.entrySet()) {
+				BlockData[] bd = mapping.get(entry.getKey());
+				BlockData bdr = mapping.get(entry.getValue().getName())[0];
+
+				byte[] blocks = section.getByteArray("Blocks");
+				byte[] blockData = section.getByteArray("Data");
+
+				blockLoop:
+				for (int i = 0; i < blocks.length; i++) {
+					byte dataByte = blockData[i / 2];
+					byte dataBits = (byte) (i % 2 == 0 ? dataByte & 0x0F : (dataByte >> 4) & 0x0F);
+					for (BlockData d : bd) {
+						if (d.id == blocks[i] && d.data.contains(dataBits)) {
+							blocks[i] = (byte) bdr.id;
+							byte newDataBits = bdr.data.iterator().next();
+							blockData[i / 2] = (byte) (i % 2 == 0 ? (dataByte & 0xF0) + newDataBits : (dataByte & 0x0F) + (newDataBits << 4));
+							continue blockLoop;
+						}
+					}
+				}
+			}
+		}
+
+		// delete tile entities with that name
+		ListTag<CompoundTag> tileEntities = catchClassCastException(() -> data.getCompoundTag("Level").getListTag("TileEntities").asCompoundTagList());
+		if (tileEntities != null) {
+			for (int i = 0; i < tileEntities.size(); i++) {
+				CompoundTag tileEntity = tileEntities.get(i);
+				String id = catchClassCastException(() -> tileEntity.getString("id"));
+				if (replace.containsKey(id)) {
+					tileEntities.remove(i);
+					i--;
+				}
+			}
+		}
+	}
+
+	protected CompoundTag createEmptySection(int y) {
+		CompoundTag newSection = new CompoundTag();
+		newSection.putByte("Y", (byte) y);
+		newSection.putByteArray("Blocks", new byte[4096]);
+		newSection.putByteArray("Data", new byte[2048]);
+		return newSection;
 	}
 }

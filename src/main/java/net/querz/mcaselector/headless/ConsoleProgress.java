@@ -11,6 +11,14 @@ public class ConsoleProgress implements Progress {
 	private Runnable doneAction;
 
 	@Override
+	public void cancelTask() {}
+
+	@Override
+	public boolean taskCancelled() {
+		return false;
+	}
+
+	@Override
 	public void setMax(int max) {
 		this.max = max;
 	}

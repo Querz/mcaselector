@@ -33,12 +33,16 @@ public enum Translation {
 	MENU_SELECTION("menu.selection"),
 	MENU_TOOLS("menu.tools"),
 	MENU_ABOUT("menu.about"),
+	MENU_FILE_OPEN_WORLD("menu.file.open_world"),
 	MENU_FILE_OPEN("menu.file.open"),
 	MENU_FILE_SETTINGS("menu.file.settings"),
+	MENU_FILE_WORLD_SETTINGS("menu.file.world_settings"),
 	MENU_FILE_QUIT("menu.file.quit"),
 	MENU_VIEW_CHUNK_GRID("menu.view.chunk_grid"),
 	MENU_VIEW_REGION_GRID("menu.view.region_grid"),
 	MENU_VIEW_GOTO("menu.view.goto"),
+	MENU_VIEW_RESET_ZOOM("menu.view.reset_zoom"),
+	MENU_VIEW_SAVE_SCREENSHOT("menu.view.save_screenshot"),
 	MENU_VIEW_CLEAR_CACHE("menu.view.clear_cache"),
 	MENU_VIEW_CLEAR_ALL_CACHE("menu.view.clear_all_cache"),
 	MENU_SELECTION_CLEAR("menu.selection.clear"),
@@ -49,12 +53,14 @@ public enum Translation {
 	MENU_SELECTION_DELETE_CHUNKS("menu.selection.delete_chunks"),
 	MENU_SELECTION_IMPORT_SELECTION("menu.selection.import_selection"),
 	MENU_SELECTION_EXPORT_SELECTION("menu.selection.export_selection"),
+	MENU_SELECTION_EXPORT_IMAGE("menu.selection.export_image"),
 	MENU_SELECTION_CLEAR_CACHE("menu.selection.clear_cache"),
 	MENU_TOOLS_IMPORT_CHUNKS("menu.tools.import_chunks"),
 	MENU_TOOLS_FILTER_CHUNKS("menu.tools.filter_chunks"),
 	MENU_TOOLS_CHANGE_FIELDS("menu.tools.change_fields"),
 	MENU_TOOLS_EDIT_NBT("menu.tools.edit_nbt"),
 	MENU_TOOLS_SWAP_CHUNKS("menu.tools.swap_chunks"),
+	DIALOG_SELECT_WORLD_TITLE("dialog.select_world.title"),
 	DIALOG_SETTINGS_TITLE("dialog.settings.title"),
 	DIALOG_SETTINGS_LANGUAGE("dialog.settings.language"),
 	DIALOG_SETTINGS_READ_THREADS("dialog.settings.read_threads"),
@@ -65,14 +71,21 @@ public enum Translation {
 	DIALOG_SETTINGS_CHUNK_COLOR("dialog.settings.chunk_color"),
 	DIALOG_SETTINGS_SHADE("dialog.settings.shade"),
 	DIALOG_SETTINGS_SHADE_WATER("dialog.settings.shade_water"),
+	DIALOG_SETTINGS_MC_SAVES_DIR("dialog.settings.mc_saves_dir"),
 	DIALOG_SETTINGS_PRINT_DEBUG("dialog.settings.print_debug"),
 	DIALOG_SETTINGS_SHOW_LOG_FILE("dialog.settings.show_log_file"),
 	DIALOG_SETTINGS_RESET("dialog.settings.reset"),
+	DIALOG_WORLD_SETTINGS_TITLE("dialog.world_settings.title"),
+	DIALOG_WORLD_SETTINGS_POI("dialog.world_settings.poi"),
+	DIALOG_WORLD_SETTINGS_ENTITIES("dialog.world_settings.entities"),
 	DIALOG_GOTO_TITLE("dialog.goto.title"),
 	DIALOG_CONFIRMATION_QUESTION("dialog.confirmation.question"),
 	DIALOG_DELETE_CHUNKS_CONFIRMATION_TITLE("dialog.delete_chunks_confirmation.title"),
 	DIALOG_DELETE_CHUNKS_CONFIRMATION_HEADER_SHORT("dialog.delete_chunks_confirmation.header_short"),
 	DIALOG_DELETE_CHUNKS_CONFIRMATION_HEADER_VERBOSE("dialog.delete_chunks_confirmation.header_verbose"),
+	DIALOG_IMAGE_EXPORT_CONFIRMATION_TITLE("dialog.image_export_confirmation.title"),
+	DIALOG_IMAGE_EXPORT_CONFIRMATION_HEADER_SHORT("dialog.image_export_confirmation.header_short"),
+	DIALOG_IMAGE_EXPORT_CONFIRMATION_HEADER_VERBOSE("dialog.image_export_confirmation.header_verbose"),
 	DIALOG_IMPORT_CHUNKS_CONFIRMATION_TITLE("dialog.import_chunks_confirmation.title"),
 	DIALOG_IMPORT_CHUNKS_CONFIRMATION_HEADER("dialog.import_chunks_confirmation.header"),
 	DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS("dialog.import_chunks_confirmation.options"),
@@ -133,12 +146,19 @@ public enum Translation {
 	DIALOG_PROGRESS_COLLECTING_DATA("dialog.progress.collecting_data"),
 	DIALOG_PROGRESS_DONE("dialog.progress.done"),
 	DIALOG_PROGRESS_TITLE_DELETING_SELECTION("dialog.progress.title.deleting_selection"),
+	DIALOG_PROGRESS_TITLE_CREATING_IMAGE("dialog.progress.title.creating_image"),
+	DIALOG_PROGRESS_TITLE_SAVING_IMAGE("dialog.progress.title.saving_image"),
 	DIALOG_PROGRESS_TITLE_EXPORTING_SELECTION("dialog.progress.title.exporting_selection"),
 	DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS("dialog.progress.title.importing_chunks"),
 	DIALOG_PROGRESS_TITLE_DELETING_FILTERED_CHUNKS("dialog.progress.title.deleting_filtered_chunks"),
 	DIALOG_PROGRESS_TITLE_EXPORTING_FILTERED_CHUNKS("dialog.progress.title.exporting_filtered_chunks"),
 	DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS("dialog.progress.title.selecting_filtered_chunks"),
 	DIALOG_PROGRESS_TITLE_CHANGING_NBT_DATA("dialog.progress.title.changing_nbt_data"),
+	DIALOG_PROGRESS_TITLE_SAVING_CHUNK("dialog.progress.title.saving_chunk"),
+	DIALOG_ERROR_BUTTON_COPY_TO_CLIPBOARD("dialog.error.button.copy_to_clipboard"),
+	DIALOG_ERROR_TITLE("dialog.error.title"),
+	DIALOG_ERROR_HEADER("dialog.error.header"),
+	DIALOG_ERROR_COPIED_TO_CLIPBOARD("dialog.error.copied_to_clipboard"),
 	BUTTON_CANCEL("button.cancel"),
 	BUTTON_OK("button.ok");
 
@@ -190,6 +210,10 @@ public enum Translation {
 			return super.getValue();
 		}
 
+		public boolean isTranslated() {
+			return super.getValue() != null;
+		}
+
 		public String format(Object... values) {
 			String value = super.getValue();
 			if (value == null) {
@@ -201,6 +225,14 @@ public enum Translation {
 		public String getKey() {
 			return key;
 		}
+	}
+
+	public boolean isTranslated() {
+		return translationProperty.isTranslated();
+	}
+
+	public String getKey() {
+		return translationProperty.key;
 	}
 
 	public StringProperty getProperty() {

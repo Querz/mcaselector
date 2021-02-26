@@ -15,12 +15,16 @@ menu.view;View
 menu.selection;Selection
 menu.tools;Tools
 menu.about;About
-menu.file.open;Open
+menu.file.open_world;Open World
+menu.file.open;Open Region
 menu.file.settings;Settings
+menu.file.world_settings;World Settings
 menu.file.quit;Quit
 menu.view.chunk_grid;Chunk Grid
 menu.view.region_grid;Region Grid
 menu.view.goto;Goto
+menu.view.reset_zoom;Reset zoom
+menu.view.save_screenshot;Save screenshot
 menu.view.clear_cache;Clear cache
 menu.view.clear_all_cache;Clear all cache
 menu.selection.clear;Clear
@@ -31,12 +35,14 @@ menu.selection.export_chunks;Export selected chunks
 menu.selection.delete_chunks;Delete selected chunks
 menu.selection.import_selection;Import selection
 menu.selection.export_selection;Export selection
+menu.selection.export_image;Export as image
 menu.selection.clear_cache;Clear cache
 menu.tools.import_chunks;Import chunks
 menu.tools.filter_chunks;Filter chunks
 menu.tools.change_fields;Change fields
 menu.tools.edit_nbt;Edit chunk
 menu.tools.swap_chunks;Swap chunks
+dialog.select_world.title;Select Dimension
 dialog.settings.title;Settings
 dialog.settings.language;Language
 dialog.settings.read_threads;Read Threads
@@ -47,14 +53,21 @@ dialog.settings.region_color;Region selection color
 dialog.settings.chunk_color;Chunk selection color
 dialog.settings.shade;Shade
 dialog.settings.shade_water;Shade water
+dialog.settings.mc_saves_dir;MC Saves Directory
 dialog.settings.print_debug;Print debug messages
 dialog.settings.show_log_file;Show log file
 dialog.settings.reset;Reset
+dialog.world_settings.title;World Settings
+dialog.world_settings.poi;POI
+dialog.world_settings.entities;Entities
 dialog.goto.title;Goto location
 dialog.confirmation.question;Are you sure?
 dialog.delete_chunks_confirmation.title;Delete chunks
 dialog.delete_chunks_confirmation.header_short;You are about to delete an unknown number of chunks from this world.
 dialog.delete_chunks_confirmation.header_verbose;You are about to delete %d chunks from this world.
+dialog.image_export_confirmation.title;Export image
+dialog.image_export_confirmation.header_short;You are about to create an image of unknown proportions.
+dialog.image_export_confirmation.header_verbose;You are about to create an image with the dimensions %dx%d.
 dialog.import_chunks_confirmation.title;Import chunks
 dialog.import_chunks_confirmation.header;You are about to import an unknown number of chunks to this world.
 dialog.import_chunks_confirmation.options;Options
@@ -115,11 +128,18 @@ dialog.progress.cancelling;cancelling...
 dialog.progress.collecting_data;collecting data...
 dialog.progress.done;done.
 dialog.progress.title.deleting_selection;Deleting selection...
+dialog.progress.title.creating_image;Creating image...
+dialog.progress.title.saving_image;Saving image...
 dialog.progress.title.exporting_selection;Exporting selection...
 dialog.progress.title.importing_chunks;Importing chunks...
 dialog.progress.title.deleting_filtered_chunks;Deleting filtered chunks...
 dialog.progress.title.exporting_filtered_chunks;Exporting filtered chunks...
 dialog.progress.title.selecting_filtered_chunks;Selecting filtered chunks...
 dialog.progress.title.changing_nbt_data;Changing NBT data...
+dialog.progress.title.saving_chunk;Saving chunk...
+dialog.error.button.copy_to_clipboard;Copy to Clipboard
+dialog.error.title;Error
+dialog.error.header;An Error occurred
+dialog.error.copied_to_clipboard;Copied to clipboard!
 button.cancel;Cancel
 button.ok;OK

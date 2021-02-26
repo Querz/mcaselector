@@ -1,12 +1,25 @@
 package net.querz.mcaselector.io;
 
+import ar.com.hjg.pngj.FilterType;
+import ar.com.hjg.pngj.ImageInfo;
+import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.ImageLineInt;
+import ar.com.hjg.pngj.PngWriter;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.progress.Progress;
+import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.tiles.Tile;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
 
 public final class ImageHelper {
 
@@ -37,5 +50,34 @@ public final class ImageHelper {
 
 	public static Image getEmptyTileImage() {
 		return empty;
+	}
+
+	public static void saveImageData(int[] data, int width, int height, File file, Progress progressChannel) throws IOException {
+		progressChannel.setMax(height);
+		progressChannel.updateProgress("", 0);
+
+		Timer t = new Timer();
+
+		ImageInfo imi = new ImageInfo(width, height, 8, true); // 8 bits per channel, alpha
+
+		try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file), 65536)) {
+			PngWriter png = new PngWriter(bos, imi);
+			png.setFilterType(FilterType.FILTER_ADAPTIVE_FAST);
+
+			for (int row = 0; row < png.imgInfo.rows && !progressChannel.taskCancelled(); row++) {
+				ImageLineInt iline = new ImageLineInt(imi);
+				int[] copy = Arrays.copyOfRange(data, row * width, row * width + width);
+				ImageLineHelper.setPixelsRGBA8(iline, copy);
+				png.writeRow(iline);
+
+				progressChannel.incrementProgress("");
+			}
+
+			png.end();
+
+		} finally {
+			progressChannel.done("done");
+			Debug.dumpf("took %s to save image %s", t, file);
+		}
 	}
 }

@@ -72,133 +72,6 @@ public class Anvil114ChunkRelocator implements ChunkRelocator {
 		return true;
 	}
 
-	private void applyOffsetToStructures(CompoundTag structures, Point2i offset) { // 1.13
-		Point2i chunkOffset = offset.blockToChunk();
-
-		// update references
-		if (structures.containsKey("References")) {
-			CompoundTag references = catchClassCastException(() -> structures.getCompoundTag("References"));
-			if (references != null) {
-				for (Map.Entry<String, Tag<?>> entry : references) {
-					long[] reference = catchClassCastException(() -> ((LongArrayTag) entry.getValue()).getValue());
-					if (reference != null) {
-						for (int i = 0; i < reference.length; i++) {
-							int x = (int) (reference[i]);
-							int z = (int) (reference[i] >> 32);
-							reference[i] = ((long) (z + chunkOffset.getZ()) & 0xFFFFFFFFL) << 32 | (long) (x + chunkOffset.getX()) & 0xFFFFFFFFL;
-						}
-					}
-				}
-			}
-		}
-
-		// update starts
-		if (structures.containsKey("Starts")) {
-			CompoundTag starts = catchClassCastException(() -> structures.getCompoundTag("Starts"));
-			if (starts != null) {
-				for (Map.Entry<String, Tag<?>> entry : starts) {
-					CompoundTag structure = catchClassCastException(() -> (CompoundTag) entry.getValue());
-					if (structure == null || "INVALID".equals(catchClassCastException(() -> structure.getString("id")))) {
-						continue;
-					}
-					applyIntIfPresent(structure, "ChunkX", chunkOffset.getX());
-					applyIntIfPresent(structure, "ChunkZ", chunkOffset.getZ());
-					applyOffsetToBB(catchClassCastException(() -> structure.getIntArray("BB")), offset);
-
-					if (structure.containsKey("Processed")) {
-						ListTag<CompoundTag> processed = catchClassCastException(() -> structure.getListTag("Processed").asCompoundTagList());
-						if (processed != null) {
-							for (CompoundTag chunk : processed) {
-								applyIntIfPresent(chunk, "X", chunkOffset.getX());
-								applyIntIfPresent(chunk, "Z", chunkOffset.getZ());
-							}
-						}
-					}
-
-					if (structure.containsKey("Children")) {
-						ListTag<CompoundTag> children = catchClassCastException(() -> structure.getListTag("Children").asCompoundTagList());
-						if (children != null) {
-							for (CompoundTag child : children) {
-								applyIntIfPresent(child, "TPX", offset.getX());
-								applyIntIfPresent(child, "TPZ", offset.getZ());
-								applyIntIfPresent(child, "PosX", offset.getX());
-								applyIntIfPresent(child, "PosZ", offset.getZ());
-								applyOffsetToBB(catchClassCastException(() -> child.getIntArray("BB")), offset);
-
-								if (child.containsKey("Entrances")) {
-									ListTag<IntArrayTag> entrances = catchClassCastException(() -> child.getListTag("Entrances").asIntArrayTagList());
-									if (entrances != null) {
-										entrances.forEach(e -> applyOffsetToBB(e.getValue(), offset));
-									}
-								}
-
-								if (child.containsKey("junctions")) {
-									ListTag<CompoundTag> junctions = catchClassCastException(() -> child.getListTag("junctions").asCompoundTagList());
-									if (junctions != null) {
-										for (CompoundTag junction : junctions) {
-											applyIntIfPresent(junction, "source_x", offset.getX());
-											applyIntIfPresent(junction, "source_z", offset.getZ());
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	private void applyOffsetToBB(int[] bb, Point2i offset) {
-		if (bb == null || bb.length != 6) {
-			return;
-		}
-		bb[0] += offset.getX();
-		bb[2] += offset.getZ();
-		bb[3] += offset.getX();
-		bb[5] += offset.getZ();
-	}
-
-	private void applyOffsetToTick(CompoundTag tick, Point2i offset) {
-		applyIntIfPresent(tick, "x", offset.getX());
-		applyIntIfPresent(tick, "z", offset.getZ());
-	}
-
-	private void applyOffsetToTileEntity(CompoundTag tileEntity, Point2i offset) {
-		if (tileEntity == null) {
-			return;
-		}
-
-		applyIntIfPresent(tileEntity, "x", offset.getX());
-		applyIntIfPresent(tileEntity, "z", offset.getZ());
-
-		String id = catchClassCastException(() -> tileEntity.getString("id"));
-		if (id != null) {
-			switch (id) {
-				case "minecraft:end_gateway":
-					CompoundTag exitPortal = catchClassCastException(() -> tileEntity.getCompoundTag("ExitPortal"));
-					applyIntOffsetIfRootPresent(exitPortal, "X", "Z", offset);
-					break;
-				case "minecraft:structure_block":
-					applyIntIfPresent(tileEntity, "posX", offset.getX());
-					applyIntIfPresent(tileEntity, "posX", offset.getZ());
-					break;
-				case "minecraft:mob_spawner":
-					if (tileEntity.containsKey("SpawnPotentials")) {
-						ListTag<CompoundTag> spawnPotentials = catchClassCastException(() -> tileEntity.getListTag("SpawnPotentials").asCompoundTagList());
-						if (spawnPotentials != null) {
-							for (CompoundTag spawnPotential : spawnPotentials) {
-								CompoundTag entity = catchClassCastException(() -> spawnPotential.getCompoundTag("Entity"));
-								if (entity != null) {
-									applyOffsetToEntity(entity, offset);
-								}
-							}
-						}
-					}
-			}
-		}
-	}
-
 	private void applyOffsetToEntity(CompoundTag entity, Point2i offset) {
 		if (entity == null) {
 			return;
@@ -355,6 +228,133 @@ public class Anvil114ChunkRelocator implements ChunkRelocator {
 				for (int i = 0; i < 4; i++) {
 					uuid[i] = random.nextInt();
 				}
+			}
+		}
+	}
+
+	private void applyOffsetToStructures(CompoundTag structures, Point2i offset) { // 1.13
+		Point2i chunkOffset = offset.blockToChunk();
+
+		// update references
+		if (structures.containsKey("References")) {
+			CompoundTag references = catchClassCastException(() -> structures.getCompoundTag("References"));
+			if (references != null) {
+				for (Map.Entry<String, Tag<?>> entry : references) {
+					long[] reference = catchClassCastException(() -> ((LongArrayTag) entry.getValue()).getValue());
+					if (reference != null) {
+						for (int i = 0; i < reference.length; i++) {
+							int x = (int) (reference[i]);
+							int z = (int) (reference[i] >> 32);
+							reference[i] = ((long) (z + chunkOffset.getZ()) & 0xFFFFFFFFL) << 32 | (long) (x + chunkOffset.getX()) & 0xFFFFFFFFL;
+						}
+					}
+				}
+			}
+		}
+
+		// update starts
+		if (structures.containsKey("Starts")) {
+			CompoundTag starts = catchClassCastException(() -> structures.getCompoundTag("Starts"));
+			if (starts != null) {
+				for (Map.Entry<String, Tag<?>> entry : starts) {
+					CompoundTag structure = catchClassCastException(() -> (CompoundTag) entry.getValue());
+					if (structure == null || "INVALID".equals(catchClassCastException(() -> structure.getString("id")))) {
+						continue;
+					}
+					applyIntIfPresent(structure, "ChunkX", chunkOffset.getX());
+					applyIntIfPresent(structure, "ChunkZ", chunkOffset.getZ());
+					applyOffsetToBB(catchClassCastException(() -> structure.getIntArray("BB")), offset);
+
+					if (structure.containsKey("Processed")) {
+						ListTag<CompoundTag> processed = catchClassCastException(() -> structure.getListTag("Processed").asCompoundTagList());
+						if (processed != null) {
+							for (CompoundTag chunk : processed) {
+								applyIntIfPresent(chunk, "X", chunkOffset.getX());
+								applyIntIfPresent(chunk, "Z", chunkOffset.getZ());
+							}
+						}
+					}
+
+					if (structure.containsKey("Children")) {
+						ListTag<CompoundTag> children = catchClassCastException(() -> structure.getListTag("Children").asCompoundTagList());
+						if (children != null) {
+							for (CompoundTag child : children) {
+								applyIntIfPresent(child, "TPX", offset.getX());
+								applyIntIfPresent(child, "TPZ", offset.getZ());
+								applyIntIfPresent(child, "PosX", offset.getX());
+								applyIntIfPresent(child, "PosZ", offset.getZ());
+								applyOffsetToBB(catchClassCastException(() -> child.getIntArray("BB")), offset);
+
+								if (child.containsKey("Entrances")) {
+									ListTag<IntArrayTag> entrances = catchClassCastException(() -> child.getListTag("Entrances").asIntArrayTagList());
+									if (entrances != null) {
+										entrances.forEach(e -> applyOffsetToBB(e.getValue(), offset));
+									}
+								}
+
+								if (child.containsKey("junctions")) {
+									ListTag<CompoundTag> junctions = catchClassCastException(() -> child.getListTag("junctions").asCompoundTagList());
+									if (junctions != null) {
+										for (CompoundTag junction : junctions) {
+											applyIntIfPresent(junction, "source_x", offset.getX());
+											applyIntIfPresent(junction, "source_z", offset.getZ());
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void applyOffsetToBB(int[] bb, Point2i offset) {
+		if (bb == null || bb.length != 6) {
+			return;
+		}
+		bb[0] += offset.getX();
+		bb[2] += offset.getZ();
+		bb[3] += offset.getX();
+		bb[5] += offset.getZ();
+	}
+
+	private void applyOffsetToTick(CompoundTag tick, Point2i offset) {
+		applyIntIfPresent(tick, "x", offset.getX());
+		applyIntIfPresent(tick, "z", offset.getZ());
+	}
+
+	private void applyOffsetToTileEntity(CompoundTag tileEntity, Point2i offset) {
+		if (tileEntity == null) {
+			return;
+		}
+
+		applyIntIfPresent(tileEntity, "x", offset.getX());
+		applyIntIfPresent(tileEntity, "z", offset.getZ());
+
+		String id = catchClassCastException(() -> tileEntity.getString("id"));
+		if (id != null) {
+			switch (id) {
+				case "minecraft:end_gateway":
+					CompoundTag exitPortal = catchClassCastException(() -> tileEntity.getCompoundTag("ExitPortal"));
+					applyIntOffsetIfRootPresent(exitPortal, "X", "Z", offset);
+					break;
+				case "minecraft:structure_block":
+					applyIntIfPresent(tileEntity, "posX", offset.getX());
+					applyIntIfPresent(tileEntity, "posX", offset.getZ());
+					break;
+				case "minecraft:mob_spawner":
+					if (tileEntity.containsKey("SpawnPotentials")) {
+						ListTag<CompoundTag> spawnPotentials = catchClassCastException(() -> tileEntity.getListTag("SpawnPotentials").asCompoundTagList());
+						if (spawnPotentials != null) {
+							for (CompoundTag spawnPotential : spawnPotentials) {
+								CompoundTag entity = catchClassCastException(() -> spawnPotential.getCompoundTag("Entity"));
+								if (entity != null) {
+									applyOffsetToEntity(entity, offset);
+								}
+							}
+						}
+					}
 			}
 		}
 	}

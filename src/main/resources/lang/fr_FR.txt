@@ -15,12 +15,16 @@ menu.view;Vue
 menu.selection;Sélection
 menu.tools;Outils
 menu.about;À propos
-menu.file.open;Ouvrir
+menu.file.open_world;Ouvrir un monde
+menu.file.open;Ouvrir une région
 menu.file.settings;Options
+menu.file.world_settings;Paramètres du monde
 menu.file.quit;Quitter
 menu.view.chunk_grid;Grille des chunks
 menu.view.region_grid;Grille des régions
 menu.view.goto;Aller à
+menu.view.reset_zoom;Réinitialiser le zoom
+menu.view.save_screenshot;Enregistrer une capture d'écran
 menu.view.clear_cache;Vider le cache
 menu.view.clear_all_cache;Nettoyer tout le cache
 menu.selection.clear;Nettoyer
@@ -31,12 +35,14 @@ menu.selection.export_chunks;Exporter les chunks sélectionnés
 menu.selection.delete_chunks;Supprimer les chunks sélectionnés
 menu.selection.import_selection;Importer la selection
 menu.selection.export_selection;Exporter la selection
+menu.selection.export_image;Exporter l'image
 menu.selection.clear_cache;Nettoyer le cache
 menu.tools.import_chunks;Importer les chunks
 menu.tools.filter_chunks;Filtrer les chunks
 menu.tools.change_fields;Changer les champs
 menu.tools.edit_nbt;Modifier le chunk
 menu.tools.swap_chunks;Échanger les chunks
+dialog.select_world.title;Sélectionnez un monde
 dialog.settings.title;Options
 dialog.settings.language;Langage
 dialog.settings.read_threads;Threads de lecture
@@ -47,14 +53,21 @@ dialog.settings.region_color;Couleur de sélection des régions
 dialog.settings.chunk_color;Couleur de sélection des chunks
 dialog.settings.shade;Ombre
 dialog.settings.shade_water;Profondeur d'eau
+dialog.settings.mc_saves_dir;Directoire de MC
 dialog.settings.print_debug;Logger des messages de debug
 dialog.settings.show_log_file;Afficher le fichier journal
 dialog.settings.reset;Réinitialiser
+dialog.world_settings.title;Paramètres du monde
+dialog.world_settings.poi;POI
+dialog.world_settings.entities;Entités
 dialog.goto.title;Aller à une position
-dialog.confirmation.question;Êtes-vous sur ?
+dialog.confirmation.question;Êtes-vous sur?
 dialog.delete_chunks_confirmation.title;Supprimer des chunks
 dialog.delete_chunks_confirmation.header_short;Vous êtes sur le point de supprimer un nombre de chunks inconnu de ce monde.
 dialog.delete_chunks_confirmation.header_verbose;Vous êtes sur le point de supprimer %d chunks de ce monde.
+dialog.image_export_confirmation.title;Exporter l'image
+dialog.image_export_confirmation.header_short;Vous êtes sur le point de créer une image aux proportions inconnues.
+dialog.image_export_confirmation.header_verbose;Vous êtes sur le point de créer une image aux dimensions %dx%d.
 dialog.import_chunks_confirmation.title;Importer des chunks
 dialog.import_chunks_confirmation.header;Vous êtes sur le point d'importer un nombre de chunks inconnu sur ce monde.
 dialog.import_chunks_confirmation.options;Options
@@ -115,11 +128,18 @@ dialog.progress.cancelling;annulation...
 dialog.progress.collecting_data;collecte de données...
 dialog.progress.done;terminé.
 dialog.progress.title.deleting_selection;Suppression de la sélection...
+dialog.progress.title.creating_image;Créer l'image...
+dialog.progress.title.saving_image;Enregistrer l'image...
 dialog.progress.title.exporting_selection;Export de la sélection...
 dialog.progress.title.importing_chunks;Import des chunks...
 dialog.progress.title.deleting_filtered_chunks;Suppression des chunks filtrés...
 dialog.progress.title.exporting_filtered_chunks;Export des chunks filtrés...
 dialog.progress.title.selecting_filtered_chunks;Sélection des chunks filtrés...
 dialog.progress.title.changing_nbt_data;Modification des données NBT...
+dialog.progress.title.saving_chunk;Enregistrer des chunks...
+dialog.error.button.copy_to_clipboard;Copier dans le presse-papier
+dialog.error.title;Erreur
+dialog.error.header;Une erreur s'est produite
+dialog.error.copied_to_clipboard;Copié dans le presse-papier!
 button.cancel;Annuler
 button.ok;OK

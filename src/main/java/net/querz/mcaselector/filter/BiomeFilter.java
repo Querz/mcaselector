@@ -1,5 +1,6 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.version.VersionController;
@@ -67,12 +68,16 @@ public class BiomeFilter extends TextFilter<List<Integer>> {
 	}
 
 	@Override
-	public boolean contains(List<Integer> value, FilterData data) {
-		return VersionController.getChunkFilter(data.getChunk().getInt("DataVersion")).matchBiomeIDs(data.getChunk(), value.stream().mapToInt(i->i).toArray());
+	public boolean contains(List<Integer> value, ChunkData data) {
+		if (data.getRegion() == null) {
+			return false;
+		}
+		return VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"))
+				.matchBiomeIDs(data.getRegion().getData(), value.stream().mapToInt(i -> i).toArray());
 	}
 
 	@Override
-	public boolean containsNot(List<Integer> value, FilterData data) {
+	public boolean containsNot(List<Integer> value, ChunkData data) {
 		return !contains(value, data);
 	}
 

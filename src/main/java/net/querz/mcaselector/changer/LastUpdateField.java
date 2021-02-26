@@ -1,7 +1,7 @@
 package net.querz.mcaselector.changer;
 
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.validation.ValidationHelper;
-import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.LongTag;
 
 public class LastUpdateField extends Field<Long> {
@@ -11,8 +11,8 @@ public class LastUpdateField extends Field<Long> {
 	}
 
 	@Override
-	public Long getOldValue(CompoundTag root) {
-		return ValidationHelper.withDefault(() -> root.getCompoundTag("Level").getLong("LastUpdate"), null);
+	public Long getOldValue(ChunkData data) {
+		return ValidationHelper.withDefault(() -> data.getRegion().getData().getCompoundTag("Level").getLong("LastUpdate"), null);
 	}
 
 	@Override
@@ -26,15 +26,15 @@ public class LastUpdateField extends Field<Long> {
 	}
 
 	@Override
-	public void change(CompoundTag root) {
-		LongTag tag = root.getCompoundTag("Level").getLongTag("LastUpdate");
+	public void change(ChunkData data) {
+		LongTag tag = data.getRegion().getData().getCompoundTag("Level").getLongTag("LastUpdate");
 		if (tag != null) {
 			tag.setValue(getNewValue());
 		}
 	}
 
 	@Override
-	public void force(CompoundTag root) {
-		root.getCompoundTag("Level").putLong("LastUpdate", getNewValue());
+	public void force(ChunkData data) {
+		data.getRegion().getData().getCompoundTag("Level").putLong("LastUpdate", getNewValue());
 	}
 }

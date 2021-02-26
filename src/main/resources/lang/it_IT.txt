@@ -15,12 +15,16 @@ menu.view;Vista
 menu.selection;Selezione
 menu.tools;Strumenti
 menu.about;Info
-menu.file.open;Apri
+menu.file.open_world;Apri un mondo
+menu.file.open;Apri una regione
 menu.file.settings;Impostazioni
+menu.file.world_settings;Impostazioni del mondo
 menu.file.quit;Esci
 menu.view.chunk_grid;Griglia dei chunk
 menu.view.region_grid;Griglia della regione
 menu.view.goto;Vai a
+menu.view.reset_zoom;Ripristina lo zoom
+menu.view.save_screenshot;Salva screenshot
 menu.view.clear_cache;Svuota la cache
 menu.view.clear_all_cache;Svuota tutta la cache
 menu.selection.clear;Svuota
@@ -31,12 +35,14 @@ menu.selection.export_chunks;Esporta i chunk selezionati
 menu.selection.delete_chunks;Elimina i chunk selezionati
 menu.selection.import_selection;Importa selezione
 menu.selection.export_selection;Esporta selezione
+menu.selection.export_image;Esporta come immagine
 menu.selection.clear_cache;Svuota la cache
 menu.tools.import_chunks;Importa dei chunk
 menu.tools.filter_chunks;Filtra i chunk
 menu.tools.change_fields;Cambia l'area
 menu.tools.edit_nbt;Modifica chunk
 menu.tools.swap_chunks;Scambia i chunk
+dialog.select_world.title;Seleziona una dimensione
 dialog.settings.title;Impostazioni
 dialog.settings.language;Lingua
 dialog.settings.read_threads;Leggi i thread
@@ -47,14 +53,21 @@ dialog.settings.region_color;Colore della regione selezionata
 dialog.settings.chunk_color;Colore del chunk selezionato
 dialog.settings.shade;Ombra
 dialog.settings.shade_water;Sfumatura dell'acqua
+dialog.settings.mc_saves_dir;Directory di Minecraft
 dialog.settings.print_debug;Scrivi il messaggio di debug
 dialog.settings.show_log_file;Mostra il file dei log
 dialog.settings.reset;Reset
+dialog.world_settings.title;Impostazioni del mondo
+dialog.world_settings.poi;POI
+dialog.world_settings.entities;Entità
 dialog.goto.title;Vai in un posto
 dialog.confirmation.question;Sei sicuro
 dialog.delete_chunks_confirmation.title;Elimina chunk
 dialog.delete_chunks_confirmation.header_short;Stai per eleminare un numero ignoto di chunk da questo mondo.
 dialog.delete_chunks_confirmation.header_verbose;Sei sicuro di voler eliminare %d chunk da questo mondo.
+dialog.image_export_confirmation.title;Esporta immagine
+dialog.image_export_confirmation.header_short;Stai per creare un'immagine di proporzioni sconosciute.
+dialog.image_export_confirmation.header_verbose;Stai per creare un'immagine con le dimensioni %dx%d.
 dialog.import_chunks_confirmation.title;Importa chunk
 dialog.import_chunks_confirmation.header;Stai per importare un numero ignoto di chunk in questo mondo.
 dialog.import_chunks_confirmation.options;Opzioni
@@ -115,11 +128,18 @@ dialog.progress.cancelling;cancellando...
 dialog.progress.collecting_data;collezionando dati...
 dialog.progress.done;fatto.
 dialog.progress.title.deleting_selection;Annullando selezione...
+dialog.progress.title.creating_image;Creazione dell'immagine...
+dialog.progress.title.saving_image;Salvataggio immagine...
 dialog.progress.title.exporting_selection;Exporting selection...
 dialog.progress.title.importing_chunks;Importing chunks...
 dialog.progress.title.deleting_filtered_chunks;Eliminando i chunk filtrati...
 dialog.progress.title.exporting_filtered_chunks;Esportando i chunk filtrati...
 dialog.progress.title.selecting_filtered_chunks;Selezionando i chunk filtrati...
 dialog.progress.title.changing_nbt_data;Cambiando dati NBT...
+dialog.progress.title.saving_chunk;Salvataggio i chunk...
+dialog.error.button.copy_to_clipboard;Copia negli appunti
+dialog.error.title;Errore
+dialog.error.header;Si è verificato un errore
+dialog.error.copied_to_clipboard;Copiato negli appunti!
 button.cancel;Annulla
 button.ok;Va bene

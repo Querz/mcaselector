@@ -375,7 +375,7 @@ farmland:moisture=4;8f6646
 farmland:moisture=5;8f6646
 farmland:moisture=6;8f6646
 farmland:moisture=7;512c0f
-fern;334947
+fern;344934
 fire;d38c35
 fire_coral;a6252e
 fire_coral_block;a3232e
@@ -398,8 +398,8 @@ granite;956755
 granite_slab;956755
 granite_stairs;956755
 granite_wall;956755
-grass;3c5553
-grass_block;3d5654
+grass;3d553d
+grass_block;3e563e
 grass_path;947941
 gravel;837f7e
 gray_banner;a2824e
@@ -448,7 +448,6 @@ iron_block;dcdcdc
 iron_door;c1c0c0
 iron_ore;88827f
 iron_trapdoor;cacaca
-item_frame;74432a
 jack_o_lantern;c67618
 jigsaw;2d262f
 jukebox;5d402f
@@ -473,8 +472,8 @@ ladder;7c6036
 lantern;6a5b53
 lapis_block;1e438c
 lapis_ore;636e84
-large_fern:half=lower;364d4b
-large_fern:half=upper;344a47
+large_fern:half=lower;374d37
+large_fern:half=upper;354a35
 lava;d45a12
 lectern;ad8953
 lever;6f5d43
@@ -950,8 +949,8 @@ sweet_berry_bush:age=0;2a5938
 sweet_berry_bush:age=1;2f5e39
 sweet_berry_bush:age=2;3b5838
 sweet_berry_bush:age=3;444d32
-tall_grass:half=lower;354b49
-tall_grass:half=upper;3f5756
+tall_grass:half=lower;364b36
+tall_grass:half=upper;405740
 tall_seagrass:half=lower;2d7504
 tall_seagrass:half=upper;3b8b0e
 target;e2aa9d

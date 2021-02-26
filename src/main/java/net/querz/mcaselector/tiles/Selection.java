@@ -1,5 +1,6 @@
 package net.querz.mcaselector.tiles;
 
+import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.point.Point2i;
 import java.io.File;
 import java.io.Serializable;
@@ -11,9 +12,9 @@ public class Selection implements Serializable {
 	private final Map<Point2i, Set<Point2i>> selection;
 	private final boolean inverted;
 	private Point2i min, max;
-	private final File world;
+	private final WorldDirectories world;
 
-	public Selection(Map<Point2i, Set<Point2i>> selection, boolean inverted, File world) {
+	public Selection(Map<Point2i, Set<Point2i>> selection, boolean inverted, WorldDirectories world) {
 		this.selection = selection;
 		this.inverted = inverted;
 		this.world = world;
@@ -42,7 +43,7 @@ public class Selection implements Serializable {
 		return max;
 	}
 
-	public File getWorld() {
+	public WorldDirectories getWorld() {
 		return world;
 	}
 

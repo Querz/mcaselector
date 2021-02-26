@@ -15,12 +15,16 @@ menu.view;Visão
 menu.selection;Seleção
 menu.tools;Ferramentas
 menu.about;Sobre
-menu.file.open;Abrir
+menu.file.open_world;Abra um mundo
+menu.file.open;Abra uma região
 menu.file.settings;Configuração
+menu.file.world_settings;Configurações do mundo
 menu.file.quit;Sair
 menu.view.chunk_grid;Grade de chunks
 menu.view.region_grid;Grade de regiões
 menu.view.goto;Ir para
+menu.view.reset_zoom;Redefinir zoom
+menu.view.save_screenshot;Salvar captura de tela
 menu.view.clear_cache;Limpar cache
 menu.view.clear_all_cache;Limpar todo o cache
 menu.selection.clear;Deselecionar tudo
@@ -31,12 +35,14 @@ menu.selection.export_chunks;Exportar chunks selecionados
 menu.selection.delete_chunks;Apagar chunks selecionados
 menu.selection.import_selection;Importar seleção
 menu.selection.export_selection;Exportar seleção
+menu.selection.export_image;Exportar como imagem
 menu.selection.clear_cache;Apagar cache
 menu.tools.import_chunks;Importar chunks
 menu.tools.filter_chunks;Filtrar chunks
 menu.tools.change_fields;Alterar os campos
 menu.tools.edit_nbt;Editar chunk
 menu.tools.swap_chunks;Trocar chunks
+dialog.select_world.title;Selecione uma dimensão
 dialog.settings.title;Configuração
 dialog.settings.language;Idioma
 dialog.settings.read_threads;Ler threads
@@ -47,14 +53,21 @@ dialog.settings.region_color;Cor das regiões
 dialog.settings.chunk_color;Cor dos chunks
 dialog.settings.shade;Sombra
 dialog.settings.shade_water;Profundidade da água
+dialog.settings.mc_saves_dir;Diretório Minecraft
 dialog.settings.print_debug;Mostrar mensagens de desenvolvedor
 dialog.settings.show_log_file;Mostrar arquivo de log
 dialog.settings.reset;Resetar
+dialog.world_settings.title;Configurações mundiais
+dialog.world_settings.poi;POI
+dialog.world_settings.entities;Entidades
 dialog.goto.title;Ir para coordenadas
 dialog.confirmation.question;Tem certeza?
 dialog.delete_chunks_confirmation.title;Apagar chunks
 dialog.delete_chunks_confirmation.header_short;Você está prestes a remover um número desconhecido de chunks deste mundo.
 dialog.delete_chunks_confirmation.header_verbose;Serão removidos %d chunks deste mundo.
+dialog.image_export_confirmation.title;Exportar imagem
+dialog.image_export_confirmation.header_short;Você está prestes a criar uma imagem de proporções desconhecidas.
+dialog.image_export_confirmation.header_verbose;Você está prestes a criar uma imagem com as dimensões %dx%d.
 dialog.import_chunks_confirmation.title;Importar chunks
 dialog.import_chunks_confirmation.header;Você está prestes a importar um número desconhecido de chunks neste mundo.
 dialog.import_chunks_confirmation.options;Opções
@@ -98,7 +111,7 @@ dialog.edit_nbt.placeholder.no_region_file;region file does not exist
 dialog.edit_array.index;Índice
 dialog.edit_array.value;Valor
 dialog.about.title;Sobre
-dialog.about.header;Sobre o Seletor de MCA 
+dialog.about.header;Sobre o Seletor de MCA
 dialog.about.version;Versão:
 dialog.about.version.unknown;Desconhecido
 dialog.about.version.check;Analizar
@@ -115,11 +128,18 @@ dialog.progress.cancelling;Cancelando...
 dialog.progress.collecting_data;Recopilando dados...
 dialog.progress.done;Concluido.
 dialog.progress.title.deleting_selection;Apagando seleção...
+dialog.progress.title.creating_image;Criando imagem...
+dialog.progress.title.saving_image;Salvando imagem...
 dialog.progress.title.exporting_selection;Exportando seleção...
 dialog.progress.title.importing_chunks;Importando chunks...
 dialog.progress.title.deleting_filtered_chunks;Apagando chunks filtrados...
 dialog.progress.title.exporting_filtered_chunks;Exportando chunks filtrados...
 dialog.progress.title.selecting_filtered_chunks;Selecionando chunks filtrados...
 dialog.progress.title.changing_nbt_data;Alterando dados do NBT...
+dialog.progress.title.saving_chunk;Salvando chunk no arquivo...
+dialog.error.button.copy_to_clipboard;Copiar para área de transferência
+dialog.error.title;Erro
+dialog.error.header;Um erro ocorreu
+dialog.error.copied_to_clipboard;Copiado para a área de transferência!
 button.cancel;Cancelar
 button.ok;OK

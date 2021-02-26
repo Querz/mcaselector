@@ -1,4 +1,4 @@
-package net.querz.mcaselector.headless;
+package net.querz.mcaselector.exception;
 
 @FunctionalInterface
 public interface ExceptionConsumer<T, E extends Exception> {

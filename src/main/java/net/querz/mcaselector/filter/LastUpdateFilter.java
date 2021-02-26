@@ -1,5 +1,6 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.text.TextHelper;
 
 public class LastUpdateFilter extends IntFilter {
@@ -13,7 +14,7 @@ public class LastUpdateFilter extends IntFilter {
 	}
 
 	@Override
-	Integer getNumber(FilterData data) {
+	Integer getNumber(ChunkData data) {
 		return data.getLastUpdated();
 	}
 

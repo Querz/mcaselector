@@ -1,13 +1,11 @@
 package net.querz.mcaselector.io;
 
-import java.io.File;
-
 public abstract class SaveDataJob<T> extends Job {
 
 	private final T data;
 
-	public SaveDataJob(File file, T data) {
-		super(file);
+	public SaveDataJob(RegionDirectories dirs, T data) {
+		super(dirs);
 		this.data = data;
 	}
 

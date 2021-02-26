@@ -1,5 +1,6 @@
 package net.querz.mcaselector.headless;
 
+import net.querz.mcaselector.exception.ParseException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +20,7 @@ public class ParamParser {
 		for (String s : args) {
 			if (s.startsWith("--")) {
 				if (values.containsKey(s)) {
-					throw new ParseException("duplicate paramter " + s);
+					throw new ParseException("duplicate parameter " + s);
 				}
 				currentKey = s.substring(2);
 				values.put(currentKey, null);

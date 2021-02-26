@@ -2,6 +2,7 @@ package net.querz.mcaselector.changer;
 
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.filter.BiomeFilter;
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.StringTag;
@@ -33,8 +34,8 @@ public class StatusField extends Field<String> {
 	}
 
 	@Override
-	public String getOldValue(CompoundTag root) {
-		return ValidationHelper.withDefault(() -> root.getCompoundTag("Level").getString("Status"), null);
+	public String getOldValue(ChunkData data) {
+		return ValidationHelper.withDefault(() -> data.getRegion().getData().getCompoundTag("Level").getString("Status"), null);
 	}
 
 	@Override
@@ -47,15 +48,15 @@ public class StatusField extends Field<String> {
 	}
 
 	@Override
-	public void change(CompoundTag root) {
-		StringTag tag = root.getCompoundTag("Level").getStringTag("Status");
+	public void change(ChunkData data) {
+		StringTag tag = data.getRegion().getData().getCompoundTag("Level").getStringTag("Status");
 		if (tag != null) {
 			tag.setValue(getNewValue());
 		}
 	}
 
 	@Override
-	public void force(CompoundTag root) {
-		root.getCompoundTag("Level").putString("Status", getNewValue());
+	public void force(ChunkData data) {
+		data.getRegion().getData().getCompoundTag("Level").putString("Status", getNewValue());
 	}
 }

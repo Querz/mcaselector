@@ -1,5 +1,7 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.io.mca.ChunkData;
+
 public class DataVersionFilter extends IntFilter {
 
 	public DataVersionFilter() {
@@ -11,8 +13,11 @@ public class DataVersionFilter extends IntFilter {
 	}
 
 	@Override
-	protected Integer getNumber(FilterData data) {
-		return data.getChunk().getInt("DataVersion");
+	protected Integer getNumber(ChunkData data) {
+		if (data.getRegion() == null) {
+			return 0;
+		}
+		return data.getRegion().getData().getInt("DataVersion");
 	}
 
 	@Override

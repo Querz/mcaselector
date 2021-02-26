@@ -1,5 +1,6 @@
 package net.querz.mcaselector.changer;
 
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.LongArrayTag;
 import net.querz.nbt.tag.Tag;
@@ -21,21 +22,21 @@ public class ReferenceField extends Field<Boolean> {
 	}
 
 	@Override
-	public Boolean getOldValue(CompoundTag root) {
+	public Boolean getOldValue(ChunkData data) {
 		return null;
 	}
 
 	@Override
-	public void change(CompoundTag root) {
+	public void change(ChunkData data) {
 		if (!getNewValue()) {
 			return;
 		}
 
 		// attempt to fix chunk coordinates of structure references
 
-		CompoundTag references = root.getCompoundTag("Level").getCompoundTag("Structures").getCompoundTag("References");
-		int xPos = root.getCompoundTag("Level").getInt("xPos");
-		int zPos = root.getCompoundTag("Level").getInt("zPos");
+		CompoundTag references = data.getRegion().getData().getCompoundTag("Level").getCompoundTag("Structures").getCompoundTag("References");
+		int xPos = data.getRegion().getData().getCompoundTag("Level").getInt("xPos");
+		int zPos = data.getRegion().getData().getCompoundTag("Level").getInt("zPos");
 		for (Map.Entry<String, Tag<?>> entry : references) {
 			if (entry.getValue() instanceof LongArrayTag) {
 				long[] structureReferences = ((LongArrayTag) entry.getValue()).getValue();
@@ -52,7 +53,7 @@ public class ReferenceField extends Field<Boolean> {
 	}
 
 	@Override
-	public void force(CompoundTag root) {
-		change(root);
+	public void force(ChunkData data) {
+		change(data);
 	}
 }

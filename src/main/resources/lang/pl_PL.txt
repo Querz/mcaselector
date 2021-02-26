@@ -15,12 +15,16 @@ menu.view;Widok
 menu.selection;Zaznaczenie
 menu.tools;Narzędzia
 menu.about;O programie...
-menu.file.open;Otwórz...
+menu.file.open_world;Otwórz świat...
+menu.file.open;Otwórz region...
 menu.file.settings;Ustawienia
+menu.file.world_settings;Ustawienia świata
 menu.file.quit;Wyjdź
 menu.view.chunk_grid;Siatka chunków
 menu.view.region_grid;Siatka regionów
 menu.view.goto;Idź do...
+menu.view.reset_zoom;Resetuj powiększenie
+menu.view.save_screenshot;Zapisz zrzut ekranu
 menu.view.clear_cache;Wyczyść cache
 menu.view.clear_all_cache;Wyczyść cały cache
 menu.selection.clear;Brak
@@ -31,12 +35,14 @@ menu.selection.export_chunks;Eksportuj zaznaczone chunki
 menu.selection.delete_chunks;Usuń zaznaczone chunki
 menu.selection.import_selection;Importuj zaznaczenie
 menu.selection.export_selection;Eksportuj zaznaczenie
+menu.selection.export_image;Eksportuj jako obraz
 menu.selection.clear_cache;Wyczyść cache
 menu.tools.import_chunks;Importuj chunki
 menu.tools.filter_chunks;Filtruj chunki
 menu.tools.change_fields;Zmień dane NBT
 menu.tools.edit_nbt;Edytuj chunk
 menu.tools.swap_chunks;Zamień chunki
+dialog.select_world.title;Wybierz wymiar
 dialog.settings.title;Ustawienia
 dialog.settings.language;Język
 dialog.settings.read_threads;Read Threads
@@ -47,14 +53,21 @@ dialog.settings.region_color;Kolor zaznaczenia regionu
 dialog.settings.chunk_color;Kolor zaznaczenia chunku
 dialog.settings.shade;Cieniuj
 dialog.settings.shade_water;Cieniuj wodę
+dialog.settings.mc_saves_dir;Katalog Minecraft
 dialog.settings.print_debug;Wyświetlaj zaawansowane informacje
 dialog.settings.show_log_file;Pokaż plik dziennika
 dialog.settings.reset;Resetuj
+dialog.world_settings.title;Ustawienia świata
+dialog.world_settings.poi;POI
+dialog.world_settings.entities;Podmioty
 dialog.goto.title;Idź do miejsca
 dialog.confirmation.question;Jesteś pewien?
 dialog.delete_chunks_confirmation.title;Usuń chunki
 dialog.delete_chunks_confirmation.header_short;Zamierzasz usunąć nieokreśloną liczbę chunków z tego świata.
 dialog.delete_chunks_confirmation.header_verbose;Zamierzasz usunąć %d chunków z tego świata.
+dialog.image_export_confirmation.title;Eksportuj obraz
+dialog.image_export_confirmation.header_short;Masz zamiar stworzyć obraz o nieznanych proporcjach.
+dialog.image_export_confirmation.header_verbose;Masz zamiar utworzyć obraz o wymiarach %dx%d.
 dialog.import_chunks_confirmation.title;Importuj chunki
 dialog.import_chunks_confirmation.header;Zamierzasz zaimportować nieokreśloną liczbę chunków do tego świata.
 dialog.import_chunks_confirmation.options;Opcje
@@ -115,11 +128,18 @@ dialog.progress.cancelling;anulowanie...
 dialog.progress.collecting_data;zbieranie informacji...
 dialog.progress.done;Gotowe.
 dialog.progress.title.deleting_selection;Usuwanie zaznaczenia...
+dialog.progress.title.creating_image;Tworzę obraz...
+dialog.progress.title.saving_image;Zapisywanie obrazu...
 dialog.progress.title.exporting_selection;Eksportowanie zaznaczenia...
 dialog.progress.title.importing_chunks;Importowanie chunków...
 dialog.progress.title.deleting_filtered_chunks;Filtrowanie i usuwanie...
 dialog.progress.title.exporting_filtered_chunks;Filtrowanie i eksportowanie...
 dialog.progress.title.selecting_filtered_chunks;Filtrowanie i zaznaczanie...
 dialog.progress.title.changing_nbt_data;Zmienianie danych NBT...
+dialog.progress.title.saving_chunk;Zapisywanie fragmentu do pliku...
+dialog.error.button.copy_to_clipboard;Skopiuj do schowka
+dialog.error.title;Błąd
+dialog.error.header;Wystąpił błąd
+dialog.error.copied_to_clipboard;Skopiowane do schowka!
 button.cancel;Anuluj
 button.ok;OK

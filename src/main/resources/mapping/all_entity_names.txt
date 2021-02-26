@@ -1,6 +1,7 @@
 area_effect_cloud
 armor_stand
 arrow
+axolotl
 bat
 bee
 blaze
@@ -32,10 +33,13 @@ eye_of_ender
 falling_block
 fireball
 firework_rocket
+fishing_bobber
 fox
 furnace_minecart
 ghast
 giant
+glow_item_frame
+glow_squid
 guardian
 hoglin
 hopper_minecart
@@ -46,6 +50,7 @@ iron_golem
 item
 item_frame
 leash_knot
+lightning_bolt
 llama
 llama_spit
 magma_cube

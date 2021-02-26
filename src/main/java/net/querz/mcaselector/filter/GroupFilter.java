@@ -1,5 +1,6 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.point.Point2i;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +86,7 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 	public void setComparator(Comparator comparator) {}
 
 	@Override
-	public boolean matches(FilterData data) {
+	public boolean matches(ChunkData data) {
 		boolean currentResult = true;
 		for (int i = 0; i < children.size(); i++) {
 			//skip all condition in this AND block if it is already false

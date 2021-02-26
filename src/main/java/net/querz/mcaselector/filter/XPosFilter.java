@@ -1,5 +1,6 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.point.Point2i;
 
 public class XPosFilter extends IntFilter implements RegionMatcher {
@@ -13,8 +14,11 @@ public class XPosFilter extends IntFilter implements RegionMatcher {
 	}
 
 	@Override
-	protected Integer getNumber(FilterData data) {
-		return data.getChunk().getCompoundTag("Level").getInt("xPos");
+	protected Integer getNumber(ChunkData data) {
+		if (data.getRegion() == null) {
+			return null;
+		}
+		return data.getRegion().getData().getCompoundTag("Level").getInt("xPos");
 	}
 
 	@Override

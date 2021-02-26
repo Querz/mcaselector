@@ -1,5 +1,7 @@
 package net.querz.mcaselector;
 
+import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.debug.Debug;
@@ -100,8 +102,10 @@ public final class Config {
 	public static final boolean DEFAULT_SHADE = true;
 	public static final boolean DEFAULT_SHADE_WATER = true;
 	public static final boolean DEFAULT_DEBUG = false;
+	public static final String DEFAULT_MC_SAVES_DIR = FileHelper.getMCSavesDir();
 
 	private static File worldDir = null;
+	private static WorldDirectories worldDirs = null;
 	private static UUID worldUUID = null;
 	private static File baseCacheDir = DEFAULT_BASE_CACHE_DIR;
 	private static File logFile = DEFAULT_BASE_LOG_FILE;
@@ -117,10 +121,11 @@ public final class Config {
 	private static int maxLoadedFiles = DEFAULT_MAX_LOADED_FILES;
 	private static boolean shade = DEFAULT_SHADE;
 	private static boolean shadeWater = DEFAULT_SHADE_WATER;
+	private static String mcSavesDir = DEFAULT_MC_SAVES_DIR;
 
 	private static boolean debug = DEFAULT_DEBUG;
 
-	public static final float MAX_SCALE = 7.9999f;
+	public static final float MAX_SCALE = 15.9999f;
 	public static final float MIN_SCALE = 0.2f;
 	public static final double IMAGE_POOL_SIZE = 2.5;
 
@@ -130,8 +135,28 @@ public final class Config {
 		return worldDir;
 	}
 
+	public static WorldDirectories getWorldDirs() {
+		return worldDirs;
+	}
+
 	public static void setWorldDir(File worldDir) {
 		Config.worldDir = worldDir;
+		Config.worldDirs = new WorldDirectories(worldDir, null, null);
+		worldUUID = UUID.nameUUIDFromBytes(worldDir.getAbsolutePath().getBytes());
+		cacheDir = new File(baseCacheDir, worldUUID.toString().replace("-", ""));
+	}
+
+	public static void setWorldDirs(File regionDir, File poiDir, File entitiesDir) {
+		Config.worldDirs = new WorldDirectories(regionDir, poiDir, entitiesDir);
+		Config.worldDir = regionDir;
+		worldUUID = UUID.nameUUIDFromBytes(worldDir.getAbsolutePath().getBytes());
+		cacheDir = new File(baseCacheDir, worldUUID.toString().replace("-", ""));
+	}
+
+	public static void setWorldDirs(WorldDirectories dirs) {
+		Debug.dumpf("setting world directories to %s", dirs);
+		Config.worldDirs = dirs;
+		Config.worldDir = dirs.getRegion();
 		worldUUID = UUID.nameUUIDFromBytes(worldDir.getAbsolutePath().getBytes());
 		cacheDir = new File(baseCacheDir, worldUUID.toString().replace("-", ""));
 	}
@@ -191,6 +216,14 @@ public final class Config {
 
 	public static boolean shadeWater() {
 		return Config.shadeWater;
+	}
+
+	public static void setMCSavesDir(String mcSavesDir) {
+		Config.mcSavesDir = mcSavesDir;
+	}
+
+	public static String getMCSavesDir() {
+		return Config.mcSavesDir;
 	}
 
 	public static void setDebug(boolean debug) {
@@ -270,6 +303,10 @@ public final class Config {
 			maxLoadedFiles = Integer.parseInt(config.getOrDefault("MaxLoadedFiles", DEFAULT_MAX_LOADED_FILES + ""));
 			shade = Boolean.parseBoolean(config.getOrDefault("Shade", DEFAULT_SHADE + ""));
 			shadeWater = Boolean.parseBoolean(config.getOrDefault("ShadeWater", DEFAULT_SHADE_WATER + ""));
+			mcSavesDir = config.getOrDefault("MCSavesDir", DEFAULT_MC_SAVES_DIR);
+			if (!new File(mcSavesDir).exists()) {
+				mcSavesDir = DEFAULT_MC_SAVES_DIR;
+			}
 			debug = Boolean.parseBoolean(config.getOrDefault("Debug", DEFAULT_DEBUG + ""));
 		} catch (Exception ex) {
 			Debug.dumpException("error loading settings", ex);
@@ -297,6 +334,7 @@ public final class Config {
 		addSettingsLine("MaxLoadedFiles", maxLoadedFiles, DEFAULT_MAX_LOADED_FILES, lines);
 		addSettingsLine("Shade", shade, DEFAULT_SHADE, lines);
 		addSettingsLine("ShadeWater", shadeWater, DEFAULT_SHADE_WATER, lines);
+		addSettingsLine("MCSavesDir", mcSavesDir, DEFAULT_MC_SAVES_DIR, lines);
 		addSettingsLine("Debug", debug, DEFAULT_DEBUG, lines);
 		if (lines.size() == 0) {
 			if (DEFAULT_BASE_CONFIG_FILE.exists() && !DEFAULT_BASE_CONFIG_FILE.delete()) {

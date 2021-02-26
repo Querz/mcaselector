@@ -13,8 +13,8 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.MCAChunkData;
-import net.querz.mcaselector.io.MCAFile;
+import net.querz.mcaselector.io.mca.Chunk;
+import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2f;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
@@ -23,6 +23,7 @@ import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.version.VersionController;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -108,18 +109,20 @@ public final class TileImage {
 
 		ByteArrayPointer ptr = new ByteArrayPointer(rawData);
 
-		MCAFile mcaFile = MCAFile.readHeader(file, ptr);
-		if (mcaFile == null) {
-			Debug.error("error reading mca file " + file);
-			//mark as loaded, we won't try to load this again
+		RegionMCAFile mcaFile = new RegionMCAFile(file);
+		try {
+			mcaFile.load(ptr);
+		} catch (IOException ex) {
+			Debug.errorf("failed to read mca file header from %s", file);
 			tile.loaded = true;
 			return tile.image;
 		}
-		Debug.dumpf("took %s to read mca file header of %s", t, file.getName());
+
+		Debug.dumpf("took %s to read mca file %s", t, file.getName());
 
 		t.reset();
 
-		Image image = createMCAImage(mcaFile, ptr);
+		Image image = createMCAImage(mcaFile);
 
 		if (image != null) {
 			BufferedImage img = SwingFXUtils.fromFXImage(image, null);
@@ -138,7 +141,7 @@ public final class TileImage {
 		return image;
 	}
 
-	private static Image createMCAImage(MCAFile mcaFile, ByteArrayPointer ptr) {
+	public static Image createMCAImage(RegionMCAFile mcaFile) {
 		try {
 			WritableImage finalImage = new WritableImage(Tile.SIZE, Tile.SIZE);
 			PixelWriter writer = finalImage.getPixelWriter();
@@ -151,13 +154,10 @@ public final class TileImage {
 				for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
 					int index = cz  * Tile.SIZE_IN_CHUNKS + cx;
 
-					MCAChunkData data = mcaFile.getChunkData(index);
+					Chunk data = mcaFile.getChunk(index);
 
-					try {
-						data.readHeader(ptr);
-						data.loadData(ptr);
-					} catch (Exception ex) {
-						Debug.dumpException(String.format("failed to load chunk %s from raw data in %s", new Point2i(cx, cz), mcaFile.getFile().getName()), ex);
+					if (data == null) {
+						continue;
 					}
 
 					drawChunkImage(data, cx * Tile.CHUNK_SIZE, cz * Tile.CHUNK_SIZE, pixelBuffer, waterPixels, terrainHeights, waterHeights);
@@ -177,7 +177,7 @@ public final class TileImage {
 		return null;
 	}
 
-	private static void drawChunkImage(MCAChunkData chunkData, int x, int z, int[] pixelBuffer, int[] waterPixels, byte[] terrainHeights, byte[] waterHeights) {
+	private static void drawChunkImage(Chunk chunkData, int x, int z, int[] pixelBuffer, int[] waterPixels, byte[] terrainHeights, byte[] waterHeights) {
 		if (chunkData.getData() == null) {
 			return;
 		}

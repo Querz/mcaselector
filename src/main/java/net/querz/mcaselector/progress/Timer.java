@@ -18,7 +18,10 @@ public class Timer {
 
 	@Override
 	public String toString() {
-		long nano = getNano();
+		return formatNano(getNano());
+	}
+
+	public static String formatNano(long nano) {
 		return String.format("%d.%06dms", nano / 1_000_000, nano % 1_000_000);
 	}
 }

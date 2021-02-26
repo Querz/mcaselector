@@ -2,10 +2,12 @@ buildscript {
 	repositories {
 		jcenter()
 		maven { url 'https://jitpack.io' }
+		maven { url "https://plugins.gradle.org/m2/" }
 	}
 	dependencies {
 		classpath 'com.github.eriwen:gradle-css-plugin:9fe88d7126'
 		classpath 'com.github.jengelman.gradle.plugins:shadow:6.0.0'
+		classpath 'edu.sc.seis.launch4j:launch4j:2.4.9'
 	}
 }
 
@@ -14,9 +16,13 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'css'
+apply plugin: 'edu.sc.seis.launch4j'
 
 group 'net.querz.mcaselector'
-version '1.13.3'
+version '1.14'
+def appName = 'MCA Selector'
+def appUrl = 'https://github.com/Querz/mcaselector'
+def appAuthor = 'Querz'
 
 sourceCompatibility = 1.8
 
@@ -32,23 +38,25 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.github.Querz:NBT:little-endian-io-SNAPSHOT'
+	implementation 'com.github.Querz:NBT:4192a95c9d'
 	implementation 'org.json:json:20201115'
+	implementation 'ar.com.hjg:pngj:2.1.0'
 	testImplementation 'junit:junit:4.12'
 	testImplementation 'commons-io:commons-io:2.6'
 }
 
 jar {
-	archiveFileName = project.name + '-' + project.version + '-min.jar'
+	archiveFileName = "${project.name}-${project.version}-min.jar"
 	manifest.attributes 'Main-Class': 'net.querz.mcaselector.Main', 'Application-Version': project.version
 	from 'LICENSE'
 }
 
 shadowJar {
 	minimize()
-	archiveFileName = project.name + '-' + project.version + '.jar'
+	archiveFileName = "${project.name}-${project.version}.jar"
 	project.configurations.implementation.canBeResolved = true
 	configurations = [project.configurations.implementation]
+	exclude 'LICENSE.txt', 'NOTICE.txt'
 	from 'LICENSE'
 }
 
@@ -62,8 +70,51 @@ minifyCss {
 	dest = "${sourceSets.main.output.resourcesDir}/style.css"
 }
 
+createExe {
+	dontWrapJar true
+	jar "${project.name}.jar"
+	outfile "${appName}.exe"
+	icon "${rootProject.projectDir}/inno/icon.ico"
+	bundledJrePath 'jre'
+	maxHeapSize 8192
+}
+
+task installer {
+	doLast {
+		def innoSetupDir = new File("${buildDir}/inno")
+
+		delete innoSetupDir
+		innoSetupDir.mkdir()
+
+		copy {
+			from("${rootProject.projectDir}/inno/icon.ico")
+			from("${rootProject.projectDir}/inno/small.bmp")
+			from("${rootProject.projectDir}/inno/large.bmp")
+			from("${buildDir}/libs/${project.name}-${project.version}.jar")
+			from("${buildDir}/launch4j/${appName}.exe")
+			from("${rootProject.projectDir}/LICENSE")
+			from("${rootProject.projectDir}/7za.exe")
+			into(innoSetupDir)
+			rename("${project.name}-${project.version}.jar", "${project.name}.jar")
+		}
+
+		copy {
+			from("${rootProject.projectDir}/inno/inno.iss")
+			expand([
+					applicationVersion: project.version,
+					applicationName: appName,
+					applicationUrl: appUrl,
+					applicationAuthor: appAuthor,
+					applicationJar: "${project.name}.jar"
+			])
+			into(innoSetupDir)
+		}
+	}
+}
+
 jar.finalizedBy shadowJar
 jar.dependsOn minifyCss
+assemble.dependsOn shadowJar
 
 task updateReadme {
 	doLast {

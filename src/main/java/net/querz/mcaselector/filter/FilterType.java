@@ -16,9 +16,9 @@ public enum FilterType {
 	STATUS("Status", StatusFilter::new, Format.TEXT),
 	LIGHT_POPULATED("LightPopulated", LightPopulatedFilter::new, Format.NUMBER),
 	ENTITIES("Entities", EntityFilter::new, Format.TEXT),
+	STRUCTURES("Structures", StructureFilter::new, Format.TEXT),
 	ENTITY_AMOUNT("#Entities", EntityAmountFilter::new, Format.NUMBER),
-	TILE_ENTITY_AMOUNT("#TileEntities", TileEntityAmountFilter::new, Format.NUMBER),
-	STRUCTURES("Structures", StructureFilter::new, Format.TEXT);
+	TILE_ENTITY_AMOUNT("#TileEntities", TileEntityAmountFilter::new, Format.NUMBER);
 
 	private final String string;
 	private final Supplier<? extends Filter<?>> creator;

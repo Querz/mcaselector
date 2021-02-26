@@ -1,5 +1,10 @@
-package net.querz.mcaselector.headless;
+package net.querz.mcaselector.io;
 
+import net.querz.mcaselector.exception.ParseException;
+import net.querz.nbt.io.SNBTUtil;
+import net.querz.nbt.tag.Tag;
+
+import java.io.IOException;
 import java.util.function.Function;
 
 public class StringPointer {
@@ -76,6 +81,18 @@ public class StringPointer {
 			return;
 		}
 		throw parseException("expected '" + c + "' but got " + (hasNext ? "'" + currentChar() + "'" : "EOF"));
+	}
+
+	public void expectString(String s) throws ParseException {
+		skipWhitespace();
+		int index = 0;
+		while (hasNext() && index < s.length() && currentChar() == s.charAt(index)) {
+			index++;
+			this.index++;
+		}
+		if (index != s.length()) {
+			throw parseException("expected \"" + s + "\" but got " + (hasNext() ? "\"" + value.substring(this.index - index, this.index) + "\"" : "EOF"));
+		}
 	}
 
 	public void skipWhitespace() {

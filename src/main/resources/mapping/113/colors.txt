@@ -295,7 +295,7 @@ farmland:moisture=4;734b2d
 farmland:moisture=5;734b2d
 farmland:moisture=6;734b2d
 farmland:moisture=7;4b280d
-fern;314644
+fern;324632
 fire;d38c35
 fire_coral;a6252e
 fire_coral_block;a3232e
@@ -313,8 +313,8 @@ glowstone;8f7645
 gold_block;f9ec4e
 gold_ore;8f8b7c
 granite;997162
-grass;384f4d
-grass_block;3d5654
+grass;394f39
+grass_block;3e563e
 grass_path;957c47
 gravel;7e7c7a
 gray_banner;9c7f4e
@@ -360,7 +360,6 @@ iron_block;dbdbdb
 iron_door;bababa
 iron_ore;87827e
 iron_trapdoor;c7c7c7
-item_frame;76442c
 jack_o_lantern;c07615
 jukebox;6b4937
 jungle_button;9a6e4d
@@ -381,8 +380,8 @@ kelp_plant;56822a
 ladder;795f34
 lapis_block;264389
 lapis_ore;667086
-large_fern:half=lower;334846
-large_fern:half=upper;344947
+large_fern:half=lower;344834
+large_fern:half=upper;354935
 lava;d45a12
 lever;6a5940
 light_blue_banner;9c7f4e
@@ -770,8 +769,8 @@ structure_void;1e5a60
 sugar_cane;94c065
 sunflower:half=lower;416d2b
 sunflower:half=upper;436f2d
-tall_grass:half=lower;3a5250
-tall_grass:half=upper;3d5654
+tall_grass:half=lower;3b523b
+tall_grass:half=upper;3e563e
 tall_seagrass;327e08
 terracotta;965c42
 tnt;82412f

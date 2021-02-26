@@ -1,9 +1,7 @@
 package net.querz.mcaselector.changer;
 
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.LongArrayTag;
-import net.querz.nbt.tag.Tag;
+import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.version.VersionController;
 
 public class DeleteEntitiesField extends Field<Boolean> {
 
@@ -12,8 +10,8 @@ public class DeleteEntitiesField extends Field<Boolean> {
 	}
 
 	@Override
-	public Boolean getOldValue(CompoundTag root) {
-		return false;
+	public Boolean getOldValue(ChunkData data) {
+		return null;
 	}
 
 	@Override
@@ -26,16 +24,12 @@ public class DeleteEntitiesField extends Field<Boolean> {
 	}
 
 	@Override
-	public void change(CompoundTag root) {
-		Tag<?> rawEntities = root.getCompoundTag("Level").get("Entities");
-		if (rawEntities == null || rawEntities.getID() == LongArrayTag.ID) {
-			return;
-		}
-		((ListTag<?>) rawEntities).asCompoundTagList().clear();
+	public void change(ChunkData data) {
+		VersionController.getEntityFilter(data.getRegion().getData().getInt("DataVersion")).deleteEntities(data);
 	}
 
 	@Override
-	public void force(CompoundTag root) {
-		change(root);
+	public void force(ChunkData data) {
+		change(data);
 	}
 }

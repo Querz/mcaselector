@@ -16,7 +16,6 @@ public class Tile {
 
 	public static Color REGION_GRID_COLOR = Color.BLACK;
 	public static Color CHUNK_GRID_COLOR = Color.DARK_GRAY;
-	public static Color EMPTY_CHUNK_BACKGROUND_COLOR = Color.BLACK;
 	public static Color EMPTY_COLOR = new Color(0.2, 0.2, 0.2, 1);
 	public static double GRID_LINE_WIDTH = 0.5;
 
@@ -107,10 +106,8 @@ public class Tile {
 
 	public void mark(boolean marked) {
 		this.marked = marked;
-		if (marked) {
-			markedChunks.clear();
-			markedChunksImage = null;
-		}
+		markedChunks = new HashSet<>();
+		markedChunksImage = null;
 	}
 
 	public void mark(Point2i chunk) {
@@ -137,13 +134,13 @@ public class Tile {
 
 	public void unMark(Point2i chunkBlock) {
 		if (isMarked()) {
+			mark(false);
 			Point2i regionChunk = location.regionToChunk();
 			for (int x = 0; x < SIZE_IN_CHUNKS; x++) {
 				for (int z = 0; z < SIZE_IN_CHUNKS; z++) {
 					markedChunks.add(regionChunk.add(x, z));
 				}
 			}
-			mark(false);
 		}
 		markedChunks.remove(chunkBlock);
 		markedChunksImage = null; //reset markedChunksImage
@@ -151,7 +148,7 @@ public class Tile {
 
 	public void clearMarks() {
 		mark(false);
-		markedChunks.clear();
+		markedChunks = new HashSet<>();
 	}
 
 	public Set<Point2i> getMarkedChunks() {

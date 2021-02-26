@@ -1,8 +1,9 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.version.EntityFilter;
+import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.LongArrayTag;
-import net.querz.nbt.tag.Tag;
 
 public class EntityAmountFilter extends IntFilter {
 
@@ -15,12 +16,17 @@ public class EntityAmountFilter extends IntFilter {
 	}
 
 	@Override
-	protected Integer getNumber(FilterData data) {
-		Tag<?> rawEntities = data.getChunk().getCompoundTag("Level").get("Entities");
-		if (rawEntities == null || rawEntities.getID() == LongArrayTag.ID) {
+	protected Integer getNumber(ChunkData data) {
+		if (data.getEntities() == null) {
 			return 0;
 		}
-		return ((ListTag<?>) rawEntities).asCompoundTagList().size();
+
+		EntityFilter entityFilter = VersionController.getEntityFilter(data.getRegion().getData().getInt("DataVersion"));
+		ListTag<?> entities = entityFilter.getEntities(data);
+		if (entities == null) {
+			return 0;
+		}
+		return entities.size();
 	}
 
 	@Override

@@ -62,46 +62,6 @@ public class Anvil112ChunkRelocator implements ChunkRelocator {
 		return true;
 	}
 
-	private void applyOffsetToTick(CompoundTag tick, Point2i offset) {
-		applyIntIfPresent(tick, "x", offset.getX());
-		applyIntIfPresent(tick, "z", offset.getZ());
-	}
-
-	private void applyOffsetToTileEntity(CompoundTag tileEntity, Point2i offset) {
-		if (tileEntity == null) {
-			return;
-		}
-
-		applyIntIfPresent(tileEntity, "x", offset.getX());
-		applyIntIfPresent(tileEntity, "z", offset.getZ());
-
-		String id = catchClassCastException(() -> tileEntity.getString("id"));
-		if (id != null) {
-			switch (id) {
-				case "minecraft:end_gateway":
-					CompoundTag exitPortal = catchClassCastException(() -> tileEntity.getCompoundTag("ExitPortal"));
-					applyIntOffsetIfRootPresent(exitPortal, "X", "Z", offset);
-					break;
-				case "minecraft:structure_block":
-					applyIntIfPresent(tileEntity, "posX", offset.getX());
-					applyIntIfPresent(tileEntity, "posZ", offset.getZ());
-					break;
-				case "minecraft:mob_spawner":
-					if (tileEntity.containsKey("SpawnPotentials")) {
-						ListTag<CompoundTag> spawnPotentials = catchClassCastException(() -> tileEntity.getListTag("SpawnPotentials").asCompoundTagList());
-						if (spawnPotentials != null) {
-							for (CompoundTag spawnPotential : spawnPotentials) {
-								CompoundTag entity = catchClassCastException(() -> spawnPotential.getCompoundTag("Entity"));
-								if (entity != null) {
-									applyOffsetToEntity(entity, offset);
-								}
-							}
-						}
-					}
-			}
-		}
-	}
-
 	private void applyOffsetToEntity(CompoundTag entity, Point2i offset) {
 		if (entity == null) {
 			return;
@@ -227,6 +187,46 @@ public class Anvil112ChunkRelocator implements ChunkRelocator {
 		}
 		if (entity.containsKey("UUIDLeast")) {
 			entity.putLong("UUIDLeast", random.nextLong());
+		}
+	}
+
+	private void applyOffsetToTick(CompoundTag tick, Point2i offset) {
+		applyIntIfPresent(tick, "x", offset.getX());
+		applyIntIfPresent(tick, "z", offset.getZ());
+	}
+
+	private void applyOffsetToTileEntity(CompoundTag tileEntity, Point2i offset) {
+		if (tileEntity == null) {
+			return;
+		}
+
+		applyIntIfPresent(tileEntity, "x", offset.getX());
+		applyIntIfPresent(tileEntity, "z", offset.getZ());
+
+		String id = catchClassCastException(() -> tileEntity.getString("id"));
+		if (id != null) {
+			switch (id) {
+				case "minecraft:end_gateway":
+					CompoundTag exitPortal = catchClassCastException(() -> tileEntity.getCompoundTag("ExitPortal"));
+					applyIntOffsetIfRootPresent(exitPortal, "X", "Z", offset);
+					break;
+				case "minecraft:structure_block":
+					applyIntIfPresent(tileEntity, "posX", offset.getX());
+					applyIntIfPresent(tileEntity, "posZ", offset.getZ());
+					break;
+				case "minecraft:mob_spawner":
+					if (tileEntity.containsKey("SpawnPotentials")) {
+						ListTag<CompoundTag> spawnPotentials = catchClassCastException(() -> tileEntity.getListTag("SpawnPotentials").asCompoundTagList());
+						if (spawnPotentials != null) {
+							for (CompoundTag spawnPotential : spawnPotentials) {
+								CompoundTag entity = catchClassCastException(() -> spawnPotential.getCompoundTag("Entity"));
+								if (entity != null) {
+									applyOffsetToEntity(entity, offset);
+								}
+							}
+						}
+					}
+			}
 		}
 	}
 

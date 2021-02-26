@@ -1,6 +1,7 @@
 package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.nbt.tag.StringTag;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class StatusFilter extends TextFilter<String> {
 	}
 
 	@Override
-	public boolean matches(FilterData data) {
+	public boolean matches(ChunkData data) {
 		switch (getComparator()) {
 			case EQUAL:
 				return isEqual(value, data);
@@ -59,20 +60,29 @@ public class StatusFilter extends TextFilter<String> {
 		return false;
 	}
 
-	public boolean isEqual(String value, FilterData data) {
-		StringTag tag = data.getChunk().getCompoundTag("Level").getStringTag("Status");
+	public boolean isEqual(String value, ChunkData data) {
+		if (data.getRegion() == null) {
+			return false;
+		}
+		StringTag tag = data.getRegion().getData().getCompoundTag("Level").getStringTag("Status");
 		return tag != null && value.equals(tag.getValue());
 	}
 
 	@Override
-	public boolean contains(String value, FilterData data) {
-		StringTag tag = data.getChunk().getCompoundTag("Level").getStringTag("Status");
+	public boolean contains(String value, ChunkData data) {
+		if (data.getRegion() == null) {
+			return false;
+		}
+		StringTag tag = data.getRegion().getData().getCompoundTag("Level").getStringTag("Status");
 		return tag != null && validStatus.contains(tag.getValue());
 	}
 
 	@Override
-	public boolean containsNot(String value, FilterData data) {
-		StringTag tag = data.getChunk().getCompoundTag("Level").getStringTag("Status");
+	public boolean containsNot(String value, ChunkData data) {
+		if (data.getRegion() == null) {
+			return true;
+		}
+		StringTag tag = data.getRegion().getData().getCompoundTag("Level").getStringTag("Status");
 		return tag == null || !validStatus.contains(tag.getValue());
 	}
 

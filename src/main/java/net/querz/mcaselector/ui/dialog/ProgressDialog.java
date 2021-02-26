@@ -8,6 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.ui.UIFactory;
@@ -24,7 +25,7 @@ public class ProgressDialog extends Stage {
 
 	private final VBox box = new VBox();
 
-	public ProgressDialog(Translation title, Stage primaryStage) {
+	public ProgressDialog(Translation title, Window primaryStage) {
 		initStyle(StageStyle.TRANSPARENT);
 		setResizable(false);
 		initModality(Modality.APPLICATION_MODAL);

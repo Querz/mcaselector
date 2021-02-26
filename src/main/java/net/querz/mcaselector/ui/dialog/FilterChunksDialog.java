@@ -23,8 +23,8 @@ import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.filter.XPosFilter;
 import net.querz.mcaselector.filter.ZPosFilter;
-import net.querz.mcaselector.headless.FilterParser;
-import net.querz.mcaselector.headless.ParseException;
+import net.querz.mcaselector.filter.FilterParser;
+import net.querz.mcaselector.exception.ParseException;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.GroupFilterBox;
 import net.querz.mcaselector.ui.UIFactory;
@@ -51,7 +51,8 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 	private final CheckBox selectionOnly = new CheckBox();
 	private final TextField selectionRadius = new TextField();
 
-	private int radius;
+	private static int radius;
+	private static boolean applyToSelectionOnly;
 
 	public FilterChunksDialog(Stage primaryStage) {
 		titleProperty().bind(Translation.DIALOG_FILTER_CHUNKS_TITLE.getProperty());
@@ -60,7 +61,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 		getDialogPane().getStyleClass().add("filter-dialog-pane");
 
-		setResultConverter(p -> p == ButtonType.OK ? new Result(value, getHandleType(), selectionOnly.isSelected(), radius) : null);
+		setResultConverter(p -> p == ButtonType.OK ? new Result(value, getHandleType(), applyToSelectionOnly, radius) : null);
 
 		//apply same stylesheets to this dialog
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
@@ -72,13 +73,10 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		delete.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_DELETE_TOOLTIP));
 
 		toggleGroup.getToggles().addAll(select, export, delete);
-		toggleGroup.selectedToggleProperty().addListener(l -> {
-			selectionOnly.setDisable(select.isSelected());
-			selectionOnlyLabel.setDisable(select.isSelected());
-			selectionRadius.setDisable(!select.isSelected());
-			selectionRadiusLabel.setDisable(!select.isSelected());
-		});
 		select.fire();
+
+		selectionOnly.setSelected(applyToSelectionOnly);
+		selectionOnly.setOnAction(e -> applyToSelectionOnly = selectionOnly.isSelected());
 
 		setResizable(true);
 
@@ -108,6 +106,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 			}
 		});
 
+		selectionRadius.setText(radius == 0 ? "" : ("" + radius));
 		selectionRadius.textProperty().addListener((a, o, n) -> onSelectionRadiusInput(o, n));
 
 		VBox actionBox = new VBox();

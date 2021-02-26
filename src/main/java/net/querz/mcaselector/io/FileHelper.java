@@ -2,6 +2,7 @@ package net.querz.mcaselector.io;
 
 import javafx.scene.image.Image;
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import java.io.File;
 import java.io.IOException;
@@ -104,8 +105,53 @@ public final class FileHelper {
 		FileHelper.lastOpenedDirectoryMap.put(key, lastOpenedDirectory);
 	}
 
+	public static File createRegionMCAFilePath(Point2i r) {
+		return new File(Config.getWorldDirs().getRegion(), createMCAFileName(r));
+	}
+
+	public static File createPoiMCAFilePath(Point2i r) {
+		return new File(Config.getWorldDirs().getPoi(), createMCAFileName(r));
+	}
+
+	public static File createEntitiesMCAFilePath(Point2i r) {
+		return new File(Config.getWorldDirs().getEntities(), createMCAFileName(r));
+	}
+
+	public static File createRegionMCCFilePath(Point2i c) {
+		return new File(Config.getWorldDirs().getRegion(), createMCCFileName(c));
+	}
+
+	public static File createPoiMCCFilePath(Point2i c) {
+		return new File(Config.getWorldDirs().getPoi(), createMCCFileName(c));
+	}
+
+	public static File createEntitiesMCCFilePath(Point2i c) {
+		return new File(Config.getWorldDirs().getEntities(), createMCCFileName(c));
+	}
+
+	public static WorldDirectories validateWorldDirectories(File dir) {
+		File region = new File(dir, "region");
+		File poi = new File(dir, "poi");
+		File entities = new File(dir, "entities");
+		if (!region.exists()) {
+			return null;
+		}
+		return new WorldDirectories(region, poi.exists() ? poi : null, entities.exists() ? entities : null);
+	}
+
+	public static RegionDirectories createRegionDirectories(Point2i r) {
+		File region = createRegionMCAFilePath(r);
+		File poi = createPoiMCAFilePath(r);
+		File entities = createEntitiesMCAFilePath(r);
+		return new RegionDirectories(r, region, poi, entities);
+	}
+
 	public static File createMCAFilePath(Point2i r) {
 		return new File(Config.getWorldDir(), createMCAFileName(r));
+	}
+
+	public static File createMCCFilePath(Point2i c) {
+		return new File(Config.getWorldDir(), createMCCFileName(c));
 	}
 
 	public static File createPNGFilePath(File cacheDir, Point2i r) {
@@ -118,6 +164,10 @@ public final class FileHelper {
 
 	public static String createMCAFileName(Point2i r) {
 		return String.format("r.%d.%d.mca", r.getX(), r.getZ());
+	}
+
+	public static String createMCCFileName(Point2i c) {
+		return String.format("c.%d.%d.mcc", c.getX(), c.getZ());
 	}
 
 	public static String createPNGFileName(Point2i r) {
@@ -156,6 +206,9 @@ public final class FileHelper {
 	}
 
 	public static Set<Point2i> parseAllMCAFileNames(File directory) {
+		if (directory == null) {
+			return Collections.emptySet();
+		}
 		File[] files = directory.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
 		if (files == null) {
 			return Collections.emptySet();
@@ -163,5 +216,25 @@ public final class FileHelper {
 		Set<Point2i> regions = new HashSet<>(files.length);
 		Arrays.stream(files).forEach(f -> regions.add(FileHelper.parseMCAFileName(f)));
 		return regions;
+	}
+
+	public static WorldDirectories createWorldDirectories(File file) {
+		// make sure that target directories exist
+		try {
+			createDirectoryOrThrowException(file, "region");
+			createDirectoryOrThrowException(file, "poi");
+			createDirectoryOrThrowException(file, "entities");
+			return new WorldDirectories(new File(file, "region"), new File(file, "poi"), new File(file, "entities"));
+		} catch (IOException ex) {
+			Debug.dumpException("failed to create directories", ex);
+			return null;
+		}
+	}
+
+	private static void createDirectoryOrThrowException(File dir, String folder) throws IOException {
+		File d = new File(dir, folder);
+		if (!d.exists() && !d.mkdirs()) {
+			throw new IOException("failed to create directory " + d);
+		}
 	}
 }

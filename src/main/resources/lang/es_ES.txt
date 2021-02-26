@@ -15,12 +15,16 @@ menu.view;Vista
 menu.selection;Selección
 menu.tools;Herramientas
 menu.about;Acerca de
-menu.file.open;Abrir
+menu.file.open_world;Abrir un mundo
+menu.file.open;Abrir una región
 menu.file.settings;Configuración
+menu.file.world_settings;Configuración mundial
 menu.file.quit;Salir
 menu.view.chunk_grid;Cuadrícula de Chunks
 menu.view.region_grid;Cuadrícula de Regiones
 menu.view.goto;Ir a
+menu.view.reset_zoom;Restablecer zoom
+menu.view.save_screenshot;Guardar captura de pantalla
 menu.view.clear_cache;Limpiar caché
 menu.view.clear_all_cache;Limpiar toda la caché
 menu.selection.clear;Deseleccionar todo
@@ -31,12 +35,14 @@ menu.selection.export_chunks;Exportar chunks seleccionados
 menu.selection.delete_chunks;Borrar chunks seleccionados
 menu.selection.import_selection;Importar una selección
 menu.selection.export_selection;Exportar selección
+menu.selection.export_image;Exportar como imagen
 menu.selection.clear_cache;Vaciar la caché
 menu.tools.import_chunks;Importar chunks
 menu.tools.filter_chunks;Filtrar chunks
 menu.tools.change_fields;Cambiar los campos
 menu.tools.edit_nbt;Editar chunk
 menu.tools.swap_chunks;Intercambiar chunks
+dialog.select_world.title;Seleccione una dimensión
 dialog.settings.title;Configuración
 dialog.settings.language;Idioma
 dialog.settings.read_threads;Leer hilos
@@ -47,14 +53,21 @@ dialog.settings.region_color;Color de las Regiones
 dialog.settings.chunk_color;Color de los Chunks
 dialog.settings.shade;Volumen 3D
 dialog.settings.shade_water;Profundidad del agua
+dialog.settings.mc_saves_dir;Directorio de Minecraft
 dialog.settings.print_debug;Mostrar mensajes de desarrolador
 dialog.settings.show_log_file;Mostrar archivo de registro
 dialog.settings.reset;Resetear
+dialog.world_settings.title;Configuración mundial
+dialog.world_settings.poi;POI
+dialog.world_settings.entities;Entidades
 dialog.goto.title;Ir a coordenadas
 dialog.confirmation.question;¿Está seguro?
 dialog.delete_chunks_confirmation.title;Borrar chunks
 dialog.delete_chunks_confirmation.header_short;Está a punto de borrar un número desconocido de Chunks de este mundo.
 dialog.delete_chunks_confirmation.header_verbose;Se borrarán %d chunks de este mundo.
+dialog.image_export_confirmation.title;Exportar imagen
+dialog.image_export_confirmation.header_short;Estás a punto de crear una imagen de proporciones desconocidas.
+dialog.image_export_confirmation.header_verbose;Estás a punto de crear una imagen con las dimensiones %dx%d.
 dialog.import_chunks_confirmation.title;Importar chunks
 dialog.import_chunks_confirmation.header;Está a punto de importar un número desconocido de Chunks a este mundo.
 dialog.import_chunks_confirmation.options;Opciones
@@ -115,11 +128,18 @@ dialog.progress.cancelling;cancelando...
 dialog.progress.collecting_data;recopilando datos...
 dialog.progress.done;Hecho.
 dialog.progress.title.deleting_selection;Borrando selección...
+dialog.progress.title.creating_image;Creando imagen...
+dialog.progress.title.saving_image;Guardando imagen...
 dialog.progress.title.exporting_selection;Exportando selección...
 dialog.progress.title.importing_chunks;Importando chunks...
 dialog.progress.title.deleting_filtered_chunks;Borrando chunks filtrados...
 dialog.progress.title.exporting_filtered_chunks;Exportando chunks filtrados...
 dialog.progress.title.selecting_filtered_chunks;Seleccionando chunks filtrados...
 dialog.progress.title.changing_nbt_data;Cambiando datos NBT...
+dialog.progress.title.saving_chunk;Guardando fragmento en archivo...
+dialog.error.button.copy_to_clipboard;Copiar al portapapeles
+dialog.error.title;Error
+dialog.error.header;Ocurrió un error
+dialog.error.copied_to_clipboard;¡Copiado al portapapeles!
 button.cancel;Cancelar
 button.ok;OK

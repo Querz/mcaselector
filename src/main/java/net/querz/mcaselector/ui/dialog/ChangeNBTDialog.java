@@ -2,6 +2,7 @@ package net.querz.mcaselector.ui.dialog;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
@@ -15,20 +16,24 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import net.querz.mcaselector.changer.ChangeParser;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.exception.ParseException;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.MCAChunkData;
-import net.querz.mcaselector.io.MCAFile;
+import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.io.mca.RegionChunk;
+import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.ui.UIFactory;
-
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,6 +41,7 @@ import java.util.Set;
 public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 	private final List<Field<?>> fields = new ArrayList<>();
+	private final TextField changeQuery = new TextField();
 	private final ToggleGroup toggleGroup = new ToggleGroup();
 	private final RadioButton change = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_CHANGE);
 	private final RadioButton force = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_FORCE);
@@ -93,11 +99,26 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		selectionOnly.setSelected(true);
 		optionBox.getChildren().add(selectionOnly);
 
+		changeQuery.setOnAction(e -> {
+			String text = changeQuery.getText();
+			int caret = changeQuery.getCaretPosition();
+			ChangeParser cp = new ChangeParser(text);
+			try {
+				List<Field<?>> f = cp.parse();
+				fieldView.updateFields(f);
+			} catch (Exception ex) {
+				Debug.dumpf("failed to parse change query from: %s, error: %s", changeQuery.getText(), ex.getMessage());
+				fieldView.updateFields(Collections.emptyList());
+			}
+			changeQuery.setText(text);
+			changeQuery.positionCaret(caret);
+		});
+
 		HBox selectionBox = new HBox();
 		selectionBox.getChildren().addAll(actionBox, optionBox);
 
 		VBox box = new VBox();
-		box.getChildren().addAll(scrollPane, new Separator(), selectionBox);
+		box.getChildren().addAll(scrollPane, new Separator(), changeQuery, new Separator(), selectionBox);
 		getDialogPane().setContent(box);
 	}
 
@@ -113,16 +134,20 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 			File file = FileHelper.createMCAFilePath(region.get());
 			Debug.dumpf("attempting to read single chunk from file: %s", chunk.get());
 			if (file.exists()) {
-				MCAChunkData chunkData = MCAFile.readSingleChunk(file, chunk.get());
-				if (chunkData == null) {
-					return;
+				try {
+					// only load region for now, there is no field in entities or poi that we could display
+					RegionChunk regionChunk = new RegionMCAFile(file).loadSingleChunk(chunk.get());
+					ChunkData chunkData = new ChunkData(regionChunk, null, null);
+
+					fieldView.getChildren().forEach(child -> {
+						FieldCell cell = (FieldCell) child;
+						Object oldValue = cell.value.getOldValue(chunkData);
+						String promptText = oldValue == null ? "" : oldValue.toString();
+						Platform.runLater(() -> cell.textField.setPromptText(promptText));
+					});
+				} catch (IOException ex) {
+					Debug.dumpException("failed to load single chunk", ex);
 				}
-				fieldView.getChildren().forEach(child -> {
-					FieldCell cell = (FieldCell) child;
-					Object oldValue = cell.value.getOldValue(chunkData.getData());
-					String promptText = oldValue == null ? "" : oldValue.toString();
-					Platform.runLater(() -> cell.textField.setPromptText(promptText));
-				});
 			}
 		}).start();
 	}
@@ -135,6 +160,24 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 		public void addField(Field<?> field) {
 			getChildren().add(new FieldCell(field, getChildren().size()));
+		}
+
+		public void updateFields(List<Field<?>> fields) {
+			childLoop:
+			for (Node child : getChildren()) {
+				if (child instanceof FieldCell) {
+					FieldCell fieldCell = (FieldCell) child;
+					for (Field<?> newField : fields) {
+						if (newField.getType() == fieldCell.value.getType()) {
+							fieldCell.value.setNewValueRaw(newField.getNewValue());
+							fieldCell.textField.setText(newField.valueToString());
+							fieldCell.textField.positionCaret(fieldCell.textField.getText().length());
+							continue childLoop;
+						}
+					}
+					fieldCell.textField.setText("");
+				}
+			}
 		}
 	}
 
@@ -159,20 +202,25 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 				if (!textField.getStyleClass().contains("field-cell-valid")) {
 					textField.getStyleClass().add("field-cell-valid");
 				}
-
-				StringBuilder sb = new StringBuilder();
-				boolean first = true;
-				for (Field<?> field : fields) {
-					if (field.needsChange()) {
-						sb.append(first ? "" : ", ").append(field);
-						first = false;
-					}
-				}
-				if (sb.length() > 0) {
-					Debug.dump(sb);
-				}
 			} else {
 				textField.getStyleClass().remove("field-cell-valid");
+			}
+
+			StringBuilder sb = new StringBuilder();
+			boolean first = true;
+			for (Field<?> field : fields) {
+				if (field.needsChange()) {
+					sb.append(first ? "" : ", ").append(field);
+					first = false;
+				}
+			}
+			if (sb.length() > 0) {
+				if (result) {
+					Debug.dump(sb);
+				}
+				changeQuery.setText(sb.toString());
+			} else {
+				changeQuery.setText(null);
 			}
 		}
 	}

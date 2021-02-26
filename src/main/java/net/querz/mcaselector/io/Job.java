@@ -1,16 +1,14 @@
 package net.querz.mcaselector.io;
 
-import java.io.File;
-
 public abstract class Job implements Runnable {
 
-	private final File file;
+	private final RegionDirectories rd;
 
-	public Job(File file) {
-		this.file = file;
+	public Job(RegionDirectories rd) {
+		this.rd = rd;
 	}
 
-	public File getFile() {
-		return file;
+	public RegionDirectories getRegionDirectories() {
+		return rd;
 	}
 }

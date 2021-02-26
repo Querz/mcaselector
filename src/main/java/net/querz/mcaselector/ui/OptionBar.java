@@ -19,16 +19,16 @@ import java.awt.datatransfer.Transferable;
 
 public class OptionBar extends MenuBar {
 	/*
-	* File			View				Selection					Tools				About
-	* - Open		- Chunk Grid		- Clear selection			- Import chunks
-	* - Settings	- Region Grid		- Invert selection			- Filter chunks
-	* - Quit		- Goto				- Copy chunks				- Change fields
-	*				- Clear cache		- Paste chunks				- Edit NBT
-	*				- Clear all cache	- Export selected chunks	- Swap chunks
-	*									- Delete selected chunks
-	*									- Import selection
-	*									- Export selection
-	* 									- Clear cache
+	* File				View				Selection					Tools				About
+	* - Open World		- Chunk Grid		- Clear selection			- Import chunks
+	* - Open Region		- Region Grid		- Invert selection			- Filter chunks
+	* - Settings		- Goto				- Copy chunks				- Change fields
+	* - World Settings	- Save Screenshot	- Paste chunks				- Edit NBT
+	* - Quit			- Clear cache		- Export selected chunks	- Swap chunks
+	*					- Clear all cache	- Delete selected chunks
+	*										- Import selection
+	*										- Export selection
+	* 										- Clear cache
 	* */
 
 	private final Menu file = UIFactory.menu(Translation.MENU_FILE);
@@ -37,12 +37,16 @@ public class OptionBar extends MenuBar {
 	private final Menu tools = UIFactory.menu(Translation.MENU_TOOLS);
 	private final Label about = UIFactory.label(Translation.MENU_ABOUT);
 
-	private final MenuItem open = UIFactory.menuItem(Translation.MENU_FILE_OPEN);
+	private final MenuItem openWorld = UIFactory.menuItem(Translation.MENU_FILE_OPEN_WORLD);
+	private final MenuItem openRegion = UIFactory.menuItem(Translation.MENU_FILE_OPEN);
 	private final MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
+	private final MenuItem worldSettings = UIFactory.menuItem(Translation.MENU_FILE_WORLD_SETTINGS);
 	private final MenuItem quit = UIFactory.menuItem(Translation.MENU_FILE_QUIT);
 	private final CheckMenuItem chunkGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_CHUNK_GRID, true);
 	private final CheckMenuItem regionGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_REGION_GRID, true);
 	private final MenuItem goTo = UIFactory.menuItem(Translation.MENU_VIEW_GOTO);
+	private final MenuItem resetZoom = UIFactory.menuItem(Translation.MENU_VIEW_RESET_ZOOM);
+	private final MenuItem saveScreenshot = UIFactory.menuItem(Translation.MENU_VIEW_SAVE_SCREENSHOT);
 	private final MenuItem clearViewCache = UIFactory.menuItem(Translation.MENU_VIEW_CLEAR_CACHE);
 	private final MenuItem clearAllCache = UIFactory.menuItem(Translation.MENU_VIEW_CLEAR_ALL_CACHE);
 	private final MenuItem clear = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR);
@@ -54,6 +58,7 @@ public class OptionBar extends MenuBar {
 	private final MenuItem delete = UIFactory.menuItem(Translation.MENU_SELECTION_DELETE_CHUNKS);
 	private final MenuItem importSelection = UIFactory.menuItem(Translation.MENU_SELECTION_IMPORT_SELECTION);
 	private final MenuItem exportSelection = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_SELECTION);
+	private final MenuItem exportImage = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_IMAGE);
 	private final MenuItem clearSelectionCache = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR_CACHE);
 	private final MenuItem filterChunks = UIFactory.menuItem(Translation.MENU_TOOLS_FILTER_CHUNKS);
 	private final MenuItem changeFields = UIFactory.menuItem(Translation.MENU_TOOLS_CHANGE_FIELDS);
@@ -68,16 +73,21 @@ public class OptionBar extends MenuBar {
 
 		tileMap.setOnUpdate(this::onUpdate);
 
-		file.getItems().addAll(open, settings, UIFactory.separator(), quit);
+		file.getItems().addAll(
+				openWorld, openRegion, UIFactory.separator(),
+				settings, worldSettings, UIFactory.separator(),
+				quit);
 		view.getItems().addAll(
 				chunkGrid, regionGrid, UIFactory.separator(),
-				goTo, UIFactory.separator(),
+				goTo, resetZoom, UIFactory.separator(),
+				saveScreenshot, UIFactory.separator(),
 				clearViewCache, clearAllCache);
 		selection.getItems().addAll(
 				clear, invert, UIFactory.separator(),
 				copy, paste, UIFactory.separator(),
 				exportChunks, delete, UIFactory.separator(),
 				importSelection, exportSelection, UIFactory.separator(),
+				exportImage, UIFactory.separator(),
 				clearSelectionCache);
 		tools.getItems().addAll(importChunks, filterChunks, changeFields, editNBT, UIFactory.separator(), swapChunks);
 		about.setOnMouseClicked(e -> DialogHelper.showAboutDialog(primaryStage));
@@ -86,12 +96,16 @@ public class OptionBar extends MenuBar {
 
 		getMenus().addAll(file, view, selection, tools, aboutMenu);
 
-		open.setOnAction(e -> DialogHelper.openWorld(tileMap, primaryStage, this));
+		openWorld.setOnAction(e -> DialogHelper.openWorld(tileMap, primaryStage, this));
+		openRegion.setOnAction(e -> DialogHelper.openRegion(tileMap, primaryStage, this));
 		settings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage));
+		worldSettings.setOnAction(e -> DialogHelper.editWorldSettings(tileMap, primaryStage));
 		quit.setOnAction(e -> System.exit(0));
 		chunkGrid.setOnAction(e -> tileMap.setShowChunkGrid(chunkGrid.isSelected()));
 		regionGrid.setOnAction(e -> tileMap.setShowRegionGrid(regionGrid.isSelected()));
 		goTo.setOnAction(e -> DialogHelper.gotoCoordinate(tileMap, primaryStage));
+		resetZoom.setOnAction(e -> tileMap.setScale(1));
+		saveScreenshot.setOnAction(e -> DialogHelper.screenshot(tileMap, primaryStage));
 		clearAllCache.setOnAction(e -> CacheHelper.clearAllCache(tileMap));
 		clearViewCache.setOnAction(e -> CacheHelper.clearViewCache(tileMap));
 		clear.setOnAction(e -> tileMap.clearSelection());
@@ -103,6 +117,7 @@ public class OptionBar extends MenuBar {
 		delete.setOnAction(e -> DialogHelper.deleteSelection(tileMap, primaryStage));
 		importSelection.setOnAction(e -> DialogHelper.importSelection(tileMap, primaryStage));
 		exportSelection.setOnAction(e -> DialogHelper.exportSelection(tileMap, primaryStage));
+		exportImage.setOnAction(e -> DialogHelper.generateImageFromSelection(tileMap, primaryStage));
 		clearSelectionCache.setOnAction(e -> CacheHelper.clearSelectionCache(tileMap));
 		filterChunks.setOnAction(e -> DialogHelper.filterChunks(tileMap, primaryStage));
 		changeFields.setOnAction(e -> DialogHelper.changeFields(tileMap, primaryStage));
@@ -110,11 +125,13 @@ public class OptionBar extends MenuBar {
 		swapChunks.setOnAction(e -> DialogHelper.swapChunks(tileMap, primaryStage));
 
 
-		open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN));
+		openWorld.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN));
 		quit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCodeCombination.SHORTCUT_DOWN));
 		chunkGrid.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCodeCombination.SHORTCUT_DOWN));
 		regionGrid.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCodeCombination.SHORTCUT_DOWN));
 		goTo.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCodeCombination.SHORTCUT_DOWN));
+		resetZoom.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT0, KeyCodeCombination.SHORTCUT_DOWN));
+		saveScreenshot.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCodeCombination.SHORTCUT_DOWN));
 		clearAllCache.setAccelerator(new KeyCodeCombination(KeyCode.K, KeyCodeCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
 		clearViewCache.setAccelerator(new KeyCodeCombination(KeyCode.K, KeyCodeCombination.SHORTCUT_DOWN));
 		clear.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCodeCombination.SHORTCUT_DOWN));
@@ -149,6 +166,8 @@ public class OptionBar extends MenuBar {
 	}
 
 	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap) {
+		worldSettings.setDisable(!enabled);
+		saveScreenshot.setDisable(!enabled);
 		filterChunks.setDisable(!enabled);
 		changeFields.setDisable(!enabled);
 		importChunks.setDisable(!enabled);
@@ -160,6 +179,7 @@ public class OptionBar extends MenuBar {
 		clear.setDisable(selected == 0 && !inverted);
 		exportChunks.setDisable(selected == 0 && !inverted);
 		exportSelection.setDisable(selected == 0 && !inverted);
+		exportImage.setDisable(selected == 0 && !inverted);
 		delete.setDisable(selected == 0 && !inverted);
 		clearSelectionCache.setDisable(selected == 0 && !inverted);
 		editNBT.setDisable(selected != 1 || inverted);

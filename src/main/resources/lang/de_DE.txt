@@ -15,12 +15,16 @@ menu.view;Ansicht
 menu.selection;Selektion
 menu.tools;Werkzeuge
 menu.about;Info
-menu.file.open;Öffnen
+menu.file.open_world;Welt öffnen
+menu.file.open;Region öffnen
 menu.file.settings;Einstellungen
+menu.file.world_settings;Welteinstellungen
 menu.file.quit;Beenden
 menu.view.chunk_grid;Chunk Gitter
 menu.view.region_grid;Region Gitter
 menu.view.goto;Gehe zu
+menu.view.reset_zoom;Zoom zurücksetzen
+menu.view.save_screenshot;Bildschirmfoto erstellen
 menu.view.clear_cache;Cache leeren
 menu.view.clear_all_cache;Gesamten Cache leeren
 menu.selection.clear;Zurücksetzen
@@ -31,12 +35,14 @@ menu.selection.export_chunks;Selektierte Chunks exportieren
 menu.selection.delete_chunks;Selektierte Chunks löschen
 menu.selection.import_selection;Selektion importieren
 menu.selection.export_selection;Selektion exportieren
+menu.selection.export_image;Als Bild exportieren
 menu.selection.clear_cache;Cache leeren
 menu.tools.import_chunks;Chunks importieren
 menu.tools.filter_chunks;Chunks filtern
 menu.tools.change_fields;Werte ändern
 menu.tools.edit_nbt;Chunk editieren
 menu.tools.swap_chunks;Chunks tauschen
+dialog.select_world.title;Dimension auswählen
 dialog.settings.title;Einstellungen
 dialog.settings.language;Sprache
 dialog.settings.read_threads;Threads (lesen)
@@ -47,14 +53,21 @@ dialog.settings.region_color;Farbe selektierte Region
 dialog.settings.chunk_color;Farbe selektierter Chunk
 dialog.settings.shade;Schatten
 dialog.settings.shade_water;Wassertiefe
+dialog.settings.mc_saves_dir;MC Speicherort
 dialog.settings.print_debug;Debug
 dialog.settings.show_log_file;Log-Datei anzeigen
 dialog.settings.reset;Zurücksetzen
+dialog.world_settings.title;Welteinstellungen
+dialog.world_settings.poi;POI
+dialog.world_settings.entities;Entities
 dialog.goto.title;Gehe zu Koordinaten
 dialog.confirmation.question;Bist Du dir sicher?
 dialog.delete_chunks_confirmation.title;Chunks löschen
 dialog.delete_chunks_confirmation.header_short;Diese Aktion löscht eine unbekannte Anzahl von Chunks aus dieser Welt.
 dialog.delete_chunks_confirmation.header_verbose;Diese Aktion löscht %d Chunks aus dieser Welt.
+dialog.image_export_confirmation.title;Bild exportieren
+dialog.image_export_confirmation.header_short;Diese Aktion erzeugt ein Bild unbekannter Größe.
+dialog.image_export_confirmation.header_verbose;Diese Aktion erzeugt ein Bild der Größe %dx%d.
 dialog.import_chunks_confirmation.title;Chunks importieren
 dialog.import_chunks_confirmation.header;Diese Aktion importiert eine ungekannt Anzahl von Chunks in diese Welt.
 dialog.import_chunks_confirmation.options;Optionen
@@ -115,11 +128,18 @@ dialog.progress.cancelling;Abbrechen...
 dialog.progress.collecting_data;Sammelt Daten...
 dialog.progress.done;Fertig.
 dialog.progress.title.deleting_selection;Lösche Selektion
+dialog.progress.title.creating_image;Erstelle Bild...
+dialog.progress.title.saving_image;Speichere Bild...
 dialog.progress.title.exporting_selection;Exportiere Selektion...
 dialog.progress.title.importing_chunks;Importiere Chunks...
 dialog.progress.title.deleting_filtered_chunks;Lösche gefilterte Chunks...
 dialog.progress.title.exporting_filtered_chunks;Exportiere gefilterte Chunks...
 dialog.progress.title.selecting_filtered_chunks;Selektiere gefilterte Chunks...
-dialog.progress.title.changing_nbt_data;Ändere NBT-Daten
+dialog.progress.title.changing_nbt_data;Ändere NBT-Daten...
+dialog.progress.title.saving_chunk;Speichere Chunk...
+dialog.error.button.copy_to_clipboard;In die Zwischenablage
+dialog.error.title;Fehler
+dialog.error.header;Fehler
+dialog.error.copied_to_clipboard;In die Zwischenablage kopiert!
 button.cancel;Abbrechen
 button.ok;OK

@@ -1,7 +1,7 @@
-package net.querz.mcaselector.headless;
+package net.querz.mcaselector.changer;
 
-import net.querz.mcaselector.changer.Field;
-import net.querz.mcaselector.changer.FieldType;
+import net.querz.mcaselector.exception.ParseException;
+import net.querz.mcaselector.io.StringPointer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +35,12 @@ public class ChangeParser {
 
 			ptr.skipWhitespace();
 
-			String value = ptr.parseSimpleString(this::isValidCharacter);
+			String value;
+			if (ptr.currentChar() == '"') {
+				value = ptr.parseQuotedString();
+			} else {
+				value = ptr.parseSimpleString(this::isValidCharacter);
+			}
 
 			if (!field.parseNewValue(value)) {
 				throw ptr.parseException("invalid value");

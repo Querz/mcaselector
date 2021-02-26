@@ -15,12 +15,16 @@ menu.view;Beeld
 menu.selection;Selectie
 menu.tools;Gereedschap
 menu.about;Over
-menu.file.open;Open
+menu.file.open_world;Open een wereld
+menu.file.open;Open een regio
 menu.file.settings;Instellingen
+menu.file.world_settings;Wereldinstellingen
 menu.file.quit;Stoppen
 menu.view.chunk_grid;Chunk Raster
 menu.view.region_grid;Region Raster
 menu.view.goto;Ga naar
+menu.view.reset_zoom;Zoom resetten
+menu.view.save_screenshot;Bewaar screenshot
 menu.view.clear_cache;Cache wissen
 menu.view.clear_all_cache;Wis alle cache
 menu.selection.clear;Wissen
@@ -31,12 +35,14 @@ menu.selection.export_chunks;Geselecteerde chunks exporteren
 menu.selection.delete_chunks;Geselcteerde chunks verwijderen
 menu.selection.import_selection;Selectie importeren
 menu.selection.export_selection;Selectie exporteren
+menu.selection.export_image;Exporteer als afbeelding
 menu.selection.clear_cache;Cache wissen
 menu.tools.import_chunks;Chunks importeren
 menu.tools.filter_chunks;Chunks filteren
 menu.tools.change_fields;Velden veranderen
 menu.tools.edit_nbt;Chunk aanpassen
 menu.tools.swap_chunks;Chunks omwisselen
+dialog.select_world.title;Selecteer een dimensie
 dialog.settings.title;Instellingen
 dialog.settings.language;Taal
 dialog.settings.read_threads;Lees Threads
@@ -47,14 +53,21 @@ dialog.settings.region_color;Region selectie kleur
 dialog.settings.chunk_color;Chunk selectie kleur
 dialog.settings.shade;Schaduw
 dialog.settings.shade_water;Shaduw water
+dialog.settings.mc_saves_dir;Minecraft-map
 dialog.settings.print_debug;Print foutopsporingsberichten
 dialog.settings.show_log_file;Toon logbestand
 dialog.settings.reset;Reset
+dialog.world_settings.title;Wereldinstellingen
+dialog.world_settings.poi;POI
+dialog.world_settings.entities;Entiteiten
 dialog.goto.title;Ga naar locatie
 dialog.confirmation.question;Weet je het zeker?
 dialog.delete_chunks_confirmation.title;Chunks verwijderen
 dialog.delete_chunks_confirmation.header_short;Je staat op het punt een onbekend aantal chunks uit deze wereld te verwijderen.
 dialog.delete_chunks_confirmation.header_verbose;Je staat op het punt %d chunks uit deze wereld te verwijderen.
+dialog.image_export_confirmation.title;Exporteer afbeelding
+dialog.image_export_confirmation.header_short;U staat op het punt een afbeelding van onbekende proporties te creëren.
+dialog.image_export_confirmation.header_verbose;U staat op het punt een afbeelding te maken met de afmetingen %dx%d.
 dialog.import_chunks_confirmation.title;Chunks importeren
 dialog.import_chunks_confirmation.header;Je staat op het punt een onbekend aantal chunks in deze wereld te importeren.
 dialog.import_chunks_confirmation.options;Opties
@@ -115,11 +128,18 @@ dialog.progress.cancelling;wordt geannuleerd...
 dialog.progress.collecting_data;gegevens verzamelen...
 dialog.progress.done;klaar.
 dialog.progress.title.deleting_selection;Selectie verwijderen...
+dialog.progress.title.creating_image;Afbeelding maken...
+dialog.progress.title.saving_image;Afbeelding opslaan...
 dialog.progress.title.exporting_selection;Selectie exporteren...
 dialog.progress.title.importing_chunks;Chunks importeren...
 dialog.progress.title.deleting_filtered_chunks;Gefilterde chunks verwijderen...
 dialog.progress.title.exporting_filtered_chunks;Gefilterde chunks exporteren...
 dialog.progress.title.selecting_filtered_chunks;Gefilterde chunks selecteren...
 dialog.progress.title.changing_nbt_data;NBT gegevens aanpassen...
+dialog.progress.title.saving_chunk;Chunk opslaan in bestand...
+dialog.error.button.copy_to_clipboard;Kopieer naar klembord
+dialog.error.title;Fout
+dialog.error.header;Er is een fout opgetreden
+dialog.error.copied_to_clipboard;Gekopieerd naar het klembord!
 button.cancel;Annuleren
 button.ok;OK

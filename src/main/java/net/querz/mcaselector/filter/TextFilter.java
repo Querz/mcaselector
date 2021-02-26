@@ -1,5 +1,7 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.io.mca.ChunkData;
+
 public abstract class TextFilter<T> extends Filter<T> {
 
 	private static final Comparator[] comparators = {
@@ -32,7 +34,7 @@ public abstract class TextFilter<T> extends Filter<T> {
 	}
 
 	@Override
-	public boolean matches(FilterData data) {
+	public boolean matches(ChunkData data) {
 		switch (comparator) {
 		case CONTAINS:
 			return contains(value, data);
@@ -53,7 +55,7 @@ public abstract class TextFilter<T> extends Filter<T> {
 
 	public abstract String getFormatText();
 
-	public abstract boolean contains(T value, FilterData data);
+	public abstract boolean contains(T value, ChunkData data);
 
-	public abstract boolean containsNot(T value, FilterData data);
+	public abstract boolean containsNot(T value, ChunkData data);
 }
