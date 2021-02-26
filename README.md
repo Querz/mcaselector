@@ -55,7 +55,7 @@ For people who prefer watching a video to understand how the MCA Selector works,
 Executing the tool, it shows an empty window with a chunk and a region grid. To actually show a world, open a folder containing Minecraft Anvil (\*.mca) files. The tool will then render a top-down view of this world that you can zoom into and zoom out of by scrolling up and down and that you can move around using the middle mouse button (`Cmd+LMB` on Mac OS) or using `WASD`.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/306b90aa139a9c029705570393178266d7117b6b/default.png" alt="MCA Selector window showing chunk and region grid">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/88e1887eb441c1f0f60af6eb3dfcf7917b16544a/default.png" alt="MCA Selector window showing chunk and region grid">
 </p>
 
 Zooming out far enough disables the selection of single chunks but lets you select entire regions.
@@ -64,7 +64,7 @@ Zooming out far enough disables the selection of single chunks but lets you sele
 Upon finishing selecting chunks and regions, they can be deleted or exported using the `Selection`-menu. Exported chunks and regions are not deleted from the original world.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/f17333764e8b3ab281c707587db7c73b23b589b1/selections.png" alt="MCA Selector window showing chunk and region selection export">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/88e1887eb441c1f0f60af6eb3dfcf7917b16544a/selections.png" alt="MCA Selector window showing chunk and region selection export">
 </p>
 
 A selection (not the chunks and regions themselves) can also be exported or imported and even be applied to different worlds.
@@ -73,7 +73,7 @@ A selection (not the chunks and regions themselves) can also be exported or impo
 The MCA Selector also contains a powerful tool to delete or export chunks and regions by conditions like the data version, the time it was last updated, how much time players have spent in this chunk and some more. Multiple of these conditions can be used to create a very specific query describing what chunks and regions should be deleted or exported.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/306b90aa139a9c029705570393178266d7117b6b/filter_chunks.png" alt="MCA Selector window showing the chunk filter">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/88e1887eb441c1f0f60af6eb3dfcf7917b16544a/filter_chunks.png" alt="MCA Selector window showing the chunk filter">
 </p>
 
 Because the conditions use internal values used by Minecraft, the following table gives a brief explanation on what they do:
@@ -107,7 +107,7 @@ Running the query will check the `.mca`-file's name first if the query would eve
 The NBT Changer modifies the world files directly by changing specific values.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/306b90aa139a9c029705570393178266d7117b6b/change_nbt.png" alt="MCA Selector window showing the nbt changer">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/88e1887eb441c1f0f60af6eb3dfcf7917b16544a/change_nbt.png" alt="MCA Selector window showing the nbt changer">
 </p>
 
 You can change the following values:
@@ -134,7 +134,7 @@ For more information about the fields have a look at the chunk format descriptio
 When selecting a single chunk, the menu "Edit chunks" becomes available. It allows precise editing of the entire NBT structure of that chunk, including poi and entities data. Names and values can be changed, added, deleted or moved (via drag & drop).
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/306b90aa139a9c029705570393178266d7117b6b/edit_chunk.png" alt="MCA Selector window showing the NBT editor">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/88e1887eb441c1f0f60af6eb3dfcf7917b16544a/edit_chunk.png" alt="MCA Selector window showing the NBT editor">
 </p>
 
 **Notice** When the NBT editor does not show any data, the cached top-down view might be outdated, and the chunk might not exist anymore in the mca files. In that case, clearing the cache will re-render the regions from scratch and show the up-to-date top-down view.
@@ -143,7 +143,7 @@ When selecting a single chunk, the menu "Edit chunks" becomes available. It allo
 Importing chunks can be easily done by opening the target world first using `File --> Open` and then merging the chunks of a second world using `Tools --> Import chunks`. After selecting a folder containing region files, it is possible to import the chunks with a bunch of additional options.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/306b90aa139a9c029705570393178266d7117b6b/import_chunks.png" alt="MCA Selector window showing the chunk import">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/88e1887eb441c1f0f60af6eb3dfcf7917b16544a/import_chunks.png" alt="MCA Selector window showing the chunk import">
 </p>
 
 Options:
@@ -162,7 +162,7 @@ After making a selection, use `Selection --> Copy chunks` or press `Ctrl+C` (`Cm
 Copying can be cancelled by pressing `Esc`.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/f17333764e8b3ab281c707587db7c73b23b589b1/copy_paste.png" alt="MCA Selector window showing copy-paste overlay">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/88e1887eb441c1f0f60af6eb3dfcf7917b16544a/copy_paste.png" alt="MCA Selector window showing copy-paste overlay">
 </p>
 
 ### Swapping chunks
@@ -205,6 +205,7 @@ There is no guarantee for worlds generated in a Snapshot version to work, even i
 ## Headless mode
 
 MCA Selector can be run in a headless mode without showing the UI. Using any command line parameter automatically switches to headless mode.
+A cheat-sheet with all commands can be found [here](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/efc4b6990bce79ed4512e9a0a363c64afd7b7444/commands-diagram.png).
 
 | Mode | Parameter | Description |
 | ---- | --------- | ----------- |
@@ -419,7 +420,7 @@ For MacOS:
 "When I run `mcaselector-1.14.jar`, an error dialog appears that looks like this:"
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/84ccd7e9b8e70b885a36f8bdf8fce62953be00b2/missing_javafx.png" alt="Popup dialog stating a missing JavaFX installation">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/88e1887eb441c1f0f60af6eb3dfcf7917b16544a/missing_javafx.png" alt="Popup dialog stating a missing JavaFX installation">
 </p>
 
 Open the console or terminal on your OS.
