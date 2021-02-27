@@ -160,7 +160,7 @@ public abstract class MCAFile<T extends Chunk> {
 			try {
 				chunks[i] = chunkConstructor.apply(chunkLocation);
 				chunks[i].load(ptr);
-			} catch (IOException ex) {
+			} catch (Exception ex) {
 				chunks[i] = null;
 				Debug.dumpException("failed to load chunk at " + chunkLocation, ex);
 			}
