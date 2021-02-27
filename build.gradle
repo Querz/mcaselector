@@ -76,7 +76,7 @@ createExe {
 	outfile "${appName}.exe"
 	icon "${rootProject.projectDir}/inno/icon.ico"
 	bundledJrePath 'jre'
-	maxHeapSize 8192
+	jvmOptions ['-Xmx8G']
 }
 
 task installer {
