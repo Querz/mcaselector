@@ -55,6 +55,7 @@ public final class CacheHelper {
 				}
 			}
 		}
+		MCAFilePipe.clearQueues();
 		updateVersionFile();
 		tileMap.clear();
 		tileMap.update();

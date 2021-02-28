@@ -6,6 +6,8 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoField;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
@@ -37,7 +39,7 @@ public final class Debug {
 						if (logWriter != null) {
 							appendLogFile(o.toString());
 						}
-						System.out.println(o);
+//						System.out.println(timestamp() + o);
 					}
 				}
 			}
@@ -52,7 +54,7 @@ public final class Debug {
 				if (logWriter != null) {
 					appendLogFile(String.format(format, objects));
 				}
-				System.out.printf(format + "\n", objects);
+//				System.out.printf(timestamp() + format + "\n", objects);
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -78,12 +80,17 @@ public final class Debug {
 					if (logWriter != null) {
 						appendLogFile(o.toString());
 					}
-					System.out.println(o);
+					System.out.println(timestamp() + o);
 				}
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	private static String timestamp() {
+		LocalDateTime now = LocalDateTime.now();
+		return String.format("[%02d:%02d:%02d.%03d] ", now.getHour(), now.getMinute(), now.getSecond(), now.get(ChronoField.MILLI_OF_SECOND));
 	}
 
 	public static void dumpException(String msg, Exception ex) {
@@ -95,7 +102,7 @@ public final class Debug {
 			if (logWriter != null) {
 				appendLogFile(String.format(format, objects));
 			}
-			System.out.printf(format + "\n", objects);
+//			System.out.printf(timestamp() + format + "\n", objects);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -106,7 +113,7 @@ public final class Debug {
 			if (logWriter != null) {
 				Arrays.stream(objects).forEach(o -> appendLogFile(o.toString()));
 			}
-			Arrays.stream(objects).forEach(System.out::println);
+			Arrays.stream(objects).forEach(x -> System.out.println(timestamp() + x));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -117,7 +124,7 @@ public final class Debug {
 			if (logWriter != null) {
 				appendLogFile(String.format(format, objects));
 			}
-			System.out.printf(format + "\n", objects);
+//			System.out.printf(timestamp() + format + "\n", objects);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -126,7 +133,7 @@ public final class Debug {
 	public static void dumpfToConsoleOnly(String format, Object... objects) {
 		try {
 			if (Config.debug()) {
-				System.out.printf(format + "\n", objects);
+				System.out.printf(timestamp() + format + "\n", objects);
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -235,7 +242,7 @@ public final class Debug {
 
 	private static void appendLogFile(String s) {
 		try {
-			logWriter.br.write(s);
+			logWriter.br.write(timestamp() + s);
 			logWriter.br.newLine();
 		} catch (IOException e) {
 			e.printStackTrace();

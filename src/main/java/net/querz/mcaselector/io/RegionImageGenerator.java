@@ -108,14 +108,13 @@ public class RegionImageGenerator {
 		public void execute() {
 			Debug.dumpf("generating image for %s", file.getAbsolutePath());
 			Image image = TileImage.generateImage(tile, world, callback, scaleSupplier, getRegionData());
+			setLoading(tile, false);
 			if (image != null) {
 				MCAFilePipe.executeSaveData(new MCAImageSaveCacheJob(image, tile, world, scaleSupplier, scaleOnly, progressChannel));
 			} else {
-				setLoading(tile, false);
 				if (progressChannel != null) {
 					progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 				}
-
 			}
 		}
 

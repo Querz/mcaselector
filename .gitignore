@@ -21,3 +21,4 @@ export/
 !src/test/resources/import/target/*.mca
 !src/test/resources/anvil*/*.mca
 7za.exe
+/test

@@ -163,6 +163,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			pastedChunksOffset = null;
 			update();
 		}
+
+		if (event.getCode() == KeyCode.NUMPAD5) {
+			dumpMetrics();
+		}
 	}
 
 	private void onKeyTyped(KeyEvent event) {
@@ -338,7 +342,21 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 		draw(context);
 		totalUpdates++;
-		Debug.dumpfToConsoleOnly("map update #%d: %s ", totalUpdates, t);
+		Debug.dumpf("map update #%d: %s", totalUpdates, t);
+	}
+
+	public void dumpMetrics() {
+		Debug.dumpf("TileMap: width=%.2f, height=%.2f, tiles=%d, visibleTiles=%d, scale=%.5f, offset=%s", getWidth(), getHeight(), tiles.size(), visibleTiles.size(), scale, offset);
+		Debug.dump("Tiles:");
+		for (Map.Entry<Point2i, Tile> tile : tiles.entrySet()) {
+			Debug.dumpf("  %s: loaded=%s, loading=%s, image=%s, marked=%s",
+				tile.getKey(),
+				tile.getValue().isLoaded(),
+				tile.getValue().isLoading(),
+				tile.getValue().getImage() == null ? null : (tile.getValue().getImage().getWidth() + "x" + tile.getValue().getImage().getHeight()),
+				tile.getValue().isMarked() ? true : (tile.getValue().getMarkedChunks() != null && !tile.getValue().getMarkedChunks().isEmpty() ? tile.getValue().getMarkedChunks().size() : false)
+			);
+		}
 	}
 
 	public void disable(boolean disabled) {

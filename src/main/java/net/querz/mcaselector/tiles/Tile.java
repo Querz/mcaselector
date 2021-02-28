@@ -1,16 +1,14 @@
 package net.querz.mcaselector.tiles;
 
 import javafx.scene.image.Image;
-import net.querz.mcaselector.Config;
-import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.io.ImageHelper;
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Supplier;
 
 public class Tile {
 
@@ -82,10 +80,12 @@ public class Tile {
 	}
 
 	public void setLoaded(boolean loaded) {
+		Debug.dumpf("set tile %s to loaded=%s", location, loaded);
 		this.loaded = loaded;
 	}
 
 	public void setLoading(boolean loading) {
+		Debug.dumpf("set tile %s to loading=%s", location, loading);
 		this.loading = loading;
 	}
 
@@ -155,39 +155,11 @@ public class Tile {
 		return markedChunks;
 	}
 
-
-
 	public File getMCAFile() {
 		return FileHelper.createMCAFilePath(location);
 	}
 
 	public void setImage(Image image) {
 		this.image = image;
-	}
-
-	public void loadFromCache(Runnable callback, Supplier<Float> scaleSupplier) {
-		if (loaded) {
-			Debug.dump("region at " + location + " already loaded");
-			return;
-		}
-
-		if (Config.getCacheDir() == null) {
-			//load empty map (start screen)
-			loaded = true;
-			callback.run();
-			return;
-		}
-
-		String res = String.format(Config.getCacheDir().getAbsolutePath() + "/" + getZoomLevel(scaleSupplier.get()) + "/r.%d.%d.png", location.getX(), location.getZ());
-
-		Debug.dump("loading region " + location + " from cache: " + res);
-
-		try (InputStream inputStream = new FileInputStream(res)) {
-			image = new Image(inputStream);
-			loaded = true;
-			callback.run();
-		} catch (IOException ex) {
-			Debug.dump("region " + location + " not cached");
-		}
 	}
 }

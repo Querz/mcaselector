@@ -40,7 +40,12 @@ public final class ImagePool {
 			return;
 		}
 
-		tile.setLoading(true);
+		if (RegionImageGenerator.isLoading(tile)) {
+			// skip if we are already loading this tile
+			return;
+		}
+
+		Debug.dumpf("requesting image for tile %s with scale %d (contains=%s, value=%s)", tile.location, scale, pool.get(scale).containsKey(tile.location), pool.get(scale).get(tile.location));
 
 		// check if image exists in pool
 		Image img = pool.get(scale).get(tile.location);
@@ -56,6 +61,8 @@ public final class ImagePool {
 		File cachedImgFile = FileHelper.createPNGFilePath(Config.getCacheDir(), scale, tile.location);
 		if (cachedImgFile.exists()) {
 			// load cached file
+
+			tile.setLoading(true);
 
 			Image cachedImg = new Image(cachedImgFile.toURI().toString(), true);
 			cachedImg.progressProperty().addListener((v, o, n) -> {
@@ -81,7 +88,11 @@ public final class ImagePool {
 				synchronized (Config.getWorldUUID()) {
 					if (u.equals(Config.getWorldUUID())) {
 						push(scale, tile.location, i);
-						Platform.runLater(tileMap::update);
+						Debug.dumpf("pushed image for %s with scale %d to pool (contains=%s, value=%s)", tile.location, scale, pool.get(scale).containsKey(tile.location), pool.get(scale).get(tile.location));
+						Platform.runLater(() -> {
+							Debug.dumpf("running update for %s", tile.location);
+							tileMap.update();
+						});
 					}
 				}
 			}, () -> (float) scale, false, null);
@@ -100,8 +111,9 @@ public final class ImagePool {
 		}
 		Iterator<Point2i> it = scaleEntry.keySet().iterator();
 		while (it.hasNext() && scaleEntry.size() > tileMap.getVisibleTiles() * poolSize) {
-			it.next();
+			Point2i removed = it.next();
 			it.remove();
+			Debug.dumpf("removed %s for scale %d from pool", removed, scale);
 		}
 	}
 
@@ -110,12 +122,14 @@ public final class ImagePool {
 			scale.getValue().clear();
 		}
 		clearNoMCACache();
+		Debug.dumpf("cleared pool");
 	}
 
 	public void discardImage(Point2i region) {
 		for (Map.Entry<Integer, LinkedHashMap<Point2i, Image>> scale : pool.entrySet()) {
 			scale.getValue().remove(region);
 		}
+		Debug.dumpf("removed images for %s from image pool", region);
 		noMCA.remove(region);
 	}
 

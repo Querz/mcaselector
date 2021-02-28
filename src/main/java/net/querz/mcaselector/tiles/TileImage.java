@@ -114,7 +114,7 @@ public final class TileImage {
 			mcaFile.load(ptr);
 		} catch (IOException ex) {
 			Debug.errorf("failed to read mca file header from %s", file);
-			tile.loaded = true;
+			tile.setLoaded(true);
 			return tile.image;
 		}
 
@@ -131,7 +131,7 @@ public final class TileImage {
 			Image scaledImage = SwingFXUtils.toFXImage(scaled, null);
 
 			tile.image = scaledImage;
-			tile.loaded = true;
+			tile.setLoaded(true);
 
 			callback.accept(scaledImage, world);
 
