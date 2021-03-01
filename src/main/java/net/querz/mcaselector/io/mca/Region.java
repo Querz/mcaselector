@@ -344,12 +344,12 @@ public class Region {
 					try {
 						chunkData.applyFieldChanges(fields, force);
 					} catch (Exception ex) {
-						Debug.dumpException("failed to apply fields to chunk " + absoluteLocation, ex);
+						Debug.dumpException("failed to apply field changes to chunk " + absoluteLocation, ex);
 					}
 				}
 			}
 		}
-		Debug.printf("took %s to replace blocks in region %s", t, location);
+		Debug.printf("took %s to apply field changes to region %s", t, location);
 	}
 
 	public void mergeInto(Region region, Point2i offset, boolean overwrite, Set<Point2i> sourceChunks, Set<Point2i> selection, List<Range> ranges) {
