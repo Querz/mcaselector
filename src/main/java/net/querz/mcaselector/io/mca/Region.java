@@ -250,7 +250,8 @@ public class Region {
 		}
 	}
 
-	public void deleteChunks(Filter<?> filter, Set<Point2i> selection) {
+	public boolean deleteChunks(Filter<?> filter, Set<Point2i> selection) {
+		boolean deleted = false;
 		for (int i = 0; i < 1024; i++) {
 			RegionChunk region = this.region.getChunk(i);
 			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
@@ -264,11 +265,14 @@ public class Region {
 
 			if (filter.matches(filterData)) {
 				deleteChunkIndex(i);
+				deleted = true;
 			}
 		}
+		return deleted;
 	}
 
-	public void keepChunks(Filter<?> filter, Set<Point2i> selection) {
+	public boolean keepChunks(Filter<?> filter, Set<Point2i> selection) {
+		boolean deleted = false;
 		for (int i = 0; i < 1024; i++) {
 			RegionChunk region = this.region.getChunk(i);
 			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
@@ -284,8 +288,10 @@ public class Region {
 			// ignore selection if it's null
 			if (!filter.matches(filterData) || selection != null && !selection.contains(region.getAbsoluteLocation())) {
 				deleteChunkIndex(i);
+				deleted = true;
 			}
 		}
+		return deleted;
 	}
 
 	private void deleteChunkIndex(int index) {

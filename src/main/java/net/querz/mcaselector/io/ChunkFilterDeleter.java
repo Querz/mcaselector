@@ -95,10 +95,13 @@ public class ChunkFilterDeleter {
 				// parse raw data
 				Region region = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
 
-				region.deleteChunks(filter, selection);
-
-				MCAFilePipe.executeSaveData(new MCADeleteFilterSaveJob(getRegionDirectories(), region, progressChannel));
-
+				if (region.deleteChunks(filter, selection)) {
+					// only save file if we actually deleted something
+					MCAFilePipe.executeSaveData(new MCADeleteFilterSaveJob(getRegionDirectories(), region, progressChannel));
+				} else {
+					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
+					Debug.dumpf("nothing to delete in %s, not saving", getRegionDirectories().getLocationAsFileName());
+				}
 			} catch (Exception ex) {
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				Debug.errorf("error deleting chunk indices in %s", getRegionDirectories().getLocationAsFileName());
