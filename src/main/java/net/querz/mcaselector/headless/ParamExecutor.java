@@ -44,7 +44,9 @@ public final class ParamExecutor {
 
 			if (params.containsKey("enablePrinting")) {
 				Debug.enablePrinting = true;
-				return null;
+				if (params.size() == 1) {
+					return null;
+				}
 			}
 
 			parseConfig();
