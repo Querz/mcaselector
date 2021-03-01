@@ -23,6 +23,8 @@ public class SelectionExporter {
 			return;
 		}
 
+		System.out.println("copying selected chunks to " + destination);
+
 		MCAFilePipe.clearQueues();
 
 		Map<Point2i, Set<Point2i>> sel = SelectionHelper.getTrueSelection(selection);
@@ -37,13 +39,6 @@ public class SelectionExporter {
 					entry.getValue(),
 					destination,
 					progressChannel));
-		}
-	}
-
-	private static void createDirectoryOrThrowException(File dir, String folder) throws IOException {
-		File d = new File(dir, folder);
-		if (!d.exists() && !d.mkdirs()) {
-			throw new IOException("failed to create directory " + d);
 		}
 	}
 
@@ -72,6 +67,8 @@ public class SelectionExporter {
 			}
 
 			RegionDirectories to = new RegionDirectories(getRegionDirectories().getLocation(), toRegion, toPoi, toEntities);
+
+			System.out.println("created target region directories: " + to);
 
 			if (chunksToBeExported == null) {
 
@@ -134,6 +131,7 @@ public class SelectionExporter {
 			//load MCAFile
 			try {
 				Region region = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
+				region.setDirectories(destinations);
 
 				Set<Point2i> inverted = new HashSet<>(Tile.CHUNKS - chunksToBeExported.size());
 				Point2i origin = chunksToBeExported.iterator().next().chunkToRegion().regionToChunk();

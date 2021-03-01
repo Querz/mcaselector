@@ -137,6 +137,18 @@ public class Region {
 		this.entities = entities;
 	}
 
+	public void setDirectories(RegionDirectories dirs) {
+		if (region != null) {
+			region.setFile(dirs.getRegion());
+		}
+		if (poi != null) {
+			poi.setFile(dirs.getPoi());
+		}
+		if (entities != null) {
+			entities.setFile(dirs.getEntities());
+		}
+	}
+
 	public ChunkData getChunkDataAt(Point2i location) {
 		RegionChunk regionChunk = null;
 		PoiChunk poiChunk = null;

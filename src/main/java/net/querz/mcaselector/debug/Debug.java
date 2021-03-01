@@ -17,6 +17,8 @@ public final class Debug {
 
 	private static final Map<ExceptionInfo, ExceptionInfo> lastExceptions = new ConcurrentHashMap<>();
 
+	public static boolean enablePrinting = false;
+
 	private Debug() {}
 
 	public static void dump(Object... objects) {
@@ -39,7 +41,9 @@ public final class Debug {
 						if (logWriter != null) {
 							appendLogFile(o.toString());
 						}
-//						System.out.println(timestamp() + o);
+						if (enablePrinting) {
+							System.out.println(timestamp() + o);
+						}
 					}
 				}
 			}
@@ -54,7 +58,9 @@ public final class Debug {
 				if (logWriter != null) {
 					appendLogFile(String.format(format, objects));
 				}
-//				System.out.printf(timestamp() + format + "\n", objects);
+				if (enablePrinting) {
+					System.out.printf(timestamp() + format + "\n", objects);
+				}
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -102,7 +108,7 @@ public final class Debug {
 			if (logWriter != null) {
 				appendLogFile(String.format(format, objects));
 			}
-//			System.out.printf(timestamp() + format + "\n", objects);
+			System.out.printf(timestamp() + format + "\n", objects);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -113,7 +119,9 @@ public final class Debug {
 			if (logWriter != null) {
 				Arrays.stream(objects).forEach(o -> appendLogFile(o.toString()));
 			}
-			Arrays.stream(objects).forEach(x -> System.out.println(timestamp() + x));
+			if (enablePrinting) {
+				Arrays.stream(objects).forEach(x -> System.out.println(timestamp() + x));
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -124,7 +132,9 @@ public final class Debug {
 			if (logWriter != null) {
 				appendLogFile(String.format(format, objects));
 			}
-//			System.out.printf(timestamp() + format + "\n", objects);
+			if (enablePrinting) {
+				System.out.printf(timestamp() + format + "\n", objects);
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
