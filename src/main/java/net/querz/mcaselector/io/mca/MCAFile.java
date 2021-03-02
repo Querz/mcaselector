@@ -389,4 +389,13 @@ public abstract class MCAFile<T extends Chunk> {
 	public void setChunk(int index, T chunk) {
 		chunks[index] = chunk;
 	}
+
+	public boolean isEmpty() {
+		for (T chunk : chunks) {
+			if (chunk != null) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

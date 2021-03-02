@@ -137,6 +137,20 @@ public class Region {
 		this.entities = entities;
 	}
 
+	public boolean isEmpty() {
+		boolean empty = true;
+		if (region != null) {
+			empty = region.isEmpty();
+		}
+		if (poi != null && empty) {
+			empty = poi.isEmpty();
+		}
+		if (entities != null && empty) {
+			empty = entities.isEmpty();
+		}
+		return empty;
+	}
+
 	public void setDirectories(RegionDirectories dirs) {
 		if (region != null) {
 			region.setFile(dirs.getRegion());
@@ -235,6 +249,18 @@ public class Region {
 		}
 		if (entities != null) {
 			entities.saveWithTempFile(dest.getEntities());
+		}
+	}
+
+	public void deleteFiles() {
+		if (directories.getRegion() != null && directories.getRegion().exists()) {
+			directories.getRegion().delete();
+		}
+		if (directories.getPoi() != null && directories.getPoi().exists()) {
+			directories.getPoi().delete();
+		}
+		if (directories.getEntities() != null && directories.getEntities().exists()) {
+			directories.getEntities().delete();
 		}
 	}
 
