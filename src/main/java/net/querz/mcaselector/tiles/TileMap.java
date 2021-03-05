@@ -12,6 +12,7 @@ import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.RegionImageGenerator;
 import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
+import net.querz.mcaselector.tiles.overlay.OverlayType;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.debug.Debug;
@@ -68,6 +69,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private boolean trackpadScrolling = false;
 
 	private final ImagePool imgPool;
+	private final OverlayDataPool overlayDataPool;
+
+	private OverlayType overlayType = null;
 
 	private Map<Point2i, Set<Point2i>> pastedChunks;
 	private boolean pastedChunksInverted;
@@ -106,7 +110,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		this.setOnKeyTyped(this::onKeyTyped);
 		offset = new Point2f(-(double) width / 2, -(double) height / 2);
 
-		imgPool = new ImagePool(this, Config.IMAGE_POOL_SIZE);
+		overlayDataPool = new OverlayDataPool(this, Config.IMAGE_POOL_SIZE);
+		overlayDataPool.setType(null);
+		imgPool = new ImagePool(this, overlayDataPool, Config.IMAGE_POOL_SIZE);
 
 		update();
 	}
@@ -129,6 +135,17 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			}
 			update();
 		}
+	}
+
+	public void setOverlayType(OverlayType type) {
+		this.overlayType = type;
+		this.overlayDataPool.setType(type);
+		for (Tile tile : visibleTiles) {
+			tile.overlay = null;
+			tile.overlayLoading = false;
+			tile.overlayLoaded = false;
+		}
+		update();
 	}
 
 	public void setScale(float newScale) {
@@ -164,8 +181,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			update();
 		}
 
-		if (event.getCode() == KeyCode.NUMPAD5) {
-			dumpMetrics();
+		if (event.getCode() == KeyCode.M) {
+			setOverlayType(overlayType == null ? OverlayType.INHABITED_TIME : null);
+//			dumpMetrics();
 		}
 	}
 
@@ -436,6 +454,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		tiles.clear();
 		visibleTiles.clear();
 		imgPool.clear();
+		overlayDataPool.clear();
 		selectedChunks = 0;
 		selectionInverted = false;
 
@@ -678,6 +697,11 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			if (Config.getWorldDir() != null && !tile.isLoaded() && !tile.isLoading()) {
 				imgPool.requestImage(tile, getZoomLevel());
 			}
+
+			if (overlayType != null && !tile.overlayLoading && !tile.isOverlayLoaded()) {
+				overlayDataPool.requestImage(tile, tile.location, 0, 100000);
+			}
+
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getZ() / scale);
 
 			TileImage.draw(tile, ctx, scale, p, selectionInverted);

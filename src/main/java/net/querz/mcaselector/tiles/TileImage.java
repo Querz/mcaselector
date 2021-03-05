@@ -47,6 +47,12 @@ public final class TileImage {
 			ctx.drawImage(ImageHelper.getEmptyTileImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		}
 
+		if (tile.overlay != null) {
+			ctx.setGlobalAlpha(0.5);
+			ctx.drawImage(tile.getOverlay(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
+			ctx.setGlobalAlpha(1);
+		}
+
 		if (tile.marked && tile.markedChunks.isEmpty() && !selectionInverted || !tile.marked && tile.markedChunks.isEmpty() && selectionInverted) {
 			//draw marked region
 			ctx.setFill(Config.getRegionSelectionColor().makeJavaFXColor());
@@ -97,30 +103,13 @@ public final class TileImage {
 		tile.markedChunksImage = wImage;
 	}
 
-	public static Image generateImage(Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, byte[] rawData) {
+	public static Image generateImage(Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, RegionMCAFile mcaFile) {
 		if (tile.loaded) {
 			Debug.dump("region at " + tile.location + " already loaded");
 			return tile.image;
 		}
 
 		Timer t = new Timer();
-
-		File file = tile.getMCAFile();
-
-		ByteArrayPointer ptr = new ByteArrayPointer(rawData);
-
-		RegionMCAFile mcaFile = new RegionMCAFile(file);
-		try {
-			mcaFile.load(ptr);
-		} catch (IOException ex) {
-			Debug.errorf("failed to read mca file header from %s", file);
-			tile.setLoaded(true);
-			return tile.image;
-		}
-
-		Debug.dumpf("took %s to read mca file %s", t, file.getName());
-
-		t.reset();
 
 		Image image = createMCAImage(mcaFile);
 
@@ -135,7 +124,7 @@ public final class TileImage {
 
 			callback.accept(scaledImage, world);
 
-			Debug.dumpf("took %s to generate image of %s", t, file.getName());
+			Debug.dumpf("took %s to generate image of %s", t, mcaFile.getFile().getName());
 		}
 
 		return image;

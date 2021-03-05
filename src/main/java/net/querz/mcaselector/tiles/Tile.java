@@ -27,10 +27,13 @@ public class Tile {
 
 	Image image;
 	Image markedChunksImage;
+	Image overlay;
 
 	boolean loading = false;
 	boolean loaded = false;
 	boolean marked = false;
+	boolean overlayLoading = false;
+	boolean overlayLoaded = false;
 	//a set of all marked chunks in the tile in block locations
 	Set<Point2i> markedChunks = new HashSet<>();
 
@@ -67,6 +70,14 @@ public class Tile {
 		return image;
 	}
 
+	public Image getOverlay() {
+		return overlay;
+	}
+
+	public boolean isOverlayLoaded() {
+		return overlayLoaded;
+	}
+
 	public Point2i getLocation() {
 		return location;
 	}
@@ -101,6 +112,11 @@ public class Tile {
 			markedChunksImage.cancel();
 			markedChunksImage = null;
 		}
+		if (overlay != null) {
+			overlay.cancel();
+			overlay = null;
+		}
+		overlayLoaded = false;
 		loaded = false;
 	}
 

@@ -36,25 +36,13 @@ public final class CacheHelper {
 				int z = Integer.parseInt(m.group("regionZ"));
 				boolean scaleOnly = zoomLevel != null;
 				float zoomLevelSupplier = scaleOnly ? zoomLevel : 1;
-				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), null, (i, u) -> {}, () -> zoomLevelSupplier, scaleOnly, progressChannel);
+				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), null, (i, u) -> {}, null, () -> zoomLevelSupplier, scaleOnly, progressChannel);
 			}
 		}
 	}
 
 	public static void clearAllCache(TileMap tileMap) {
-		for (File cacheDir : Config.getCacheDirs()) {
-			File[] files = cacheDir.listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.png$"));
-			if (files != null) {
-				for (File file : files) {
-					if (!file.isDirectory()) {
-						Debug.dump("deleting " + file);
-						if (!file.delete()) {
-							Debug.error("could not delete file " + file);
-						}
-					}
-				}
-			}
-		}
+		FileHelper.deleteDirectory(Config.getCacheDir());
 		MCAFilePipe.clearQueues();
 		updateVersionFile();
 		tileMap.clear();

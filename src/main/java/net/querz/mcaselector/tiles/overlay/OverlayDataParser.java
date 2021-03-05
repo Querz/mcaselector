@@ -1,4 +1,4 @@
-package net.querz.mcaselector.tiles;
+package net.querz.mcaselector.tiles.overlay;
 
 import net.querz.mcaselector.io.mca.ChunkData;
 

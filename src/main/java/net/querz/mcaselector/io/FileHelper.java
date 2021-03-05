@@ -241,4 +241,14 @@ public final class FileHelper {
 			throw new IOException("failed to create directory " + d);
 		}
 	}
+
+	public static boolean deleteDirectory(File dir) {
+		File[] files = dir.listFiles();
+		if (files != null) {
+			for (File file : files) {
+				deleteDirectory(file);
+			}
+		}
+		return dir.delete();
+	}
 }
