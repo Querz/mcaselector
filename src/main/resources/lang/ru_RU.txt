@@ -51,6 +51,7 @@ dialog.settings.write_threads;Написание потоков
 dialog.settings.max_files;Максимум загружаемых файлов
 dialog.settings.region_color;Цвет выделяемых областей
 dialog.settings.chunk_color;Цвет выделяемых чанков
+dialog.settings.pasted_chunks_color;Цвет вставленных чанков
 dialog.settings.shade;тень
 dialog.settings.shade_water;Глубина воды
 dialog.settings.mc_saves_dir;Каталог Minecraft

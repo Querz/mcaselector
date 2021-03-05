@@ -51,6 +51,7 @@ dialog.settings.write_threads;Threads (schreiben)
 dialog.settings.max_files;Max. geladene Dateien
 dialog.settings.region_color;Farbe selektierte Region
 dialog.settings.chunk_color;Farbe selektierter Chunk
+dialog.settings.pasted_chunks_color;Farbe eingefügter Chunks
 dialog.settings.shade;Schatten
 dialog.settings.shade_water;Wassertiefe
 dialog.settings.mc_saves_dir;MC Speicherort

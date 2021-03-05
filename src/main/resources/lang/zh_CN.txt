@@ -51,6 +51,7 @@ dialog.settings.write_threads;写入线程
 dialog.settings.max_files;最大加载文件数
 dialog.settings.region_color;区域选择颜色
 dialog.settings.chunk_color;区块选择颜色
+dialog.settings.pasted_chunks_color;插入的块的颜色
 dialog.settings.shade;阴影
 dialog.settings.shade_water;水影
 dialog.settings.mc_saves_dir;我的世界目录

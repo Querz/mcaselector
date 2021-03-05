@@ -181,7 +181,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_MAX_FILES), 0, 4, 1, 1);
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_REGION_COLOR), 0, 5, 1, 1);
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_CHUNK_COLOR), 0, 6, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_REGION_COLOR), 0, 7, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_PASTED_CHUNKS_COLOR), 0, 7, 1, 1);
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SHADE), 0, 8, 1, 1);
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SHADE_WATER), 0, 9, 1, 1);
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_MC_SAVES_DIR), 0, 10, 1, 1);

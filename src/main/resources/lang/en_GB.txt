@@ -51,6 +51,7 @@ dialog.settings.write_threads;Write Threads
 dialog.settings.max_files;Max loaded files
 dialog.settings.region_color;Region selection color
 dialog.settings.chunk_color;Chunk selection color
+dialog.settings.pasted_chunks_color;Pasted chunks color
 dialog.settings.shade;Shade
 dialog.settings.shade_water;Shade water
 dialog.settings.mc_saves_dir;MC Saves Directory
