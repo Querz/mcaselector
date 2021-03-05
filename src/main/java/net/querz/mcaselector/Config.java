@@ -165,6 +165,10 @@ public final class Config {
 		return new File(baseCacheDir, world.toString().replace("-", "") + "/" + zoomLevel);
 	}
 
+	public static File getCacheDirForWorldUUID(UUID world) {
+		return new File(baseCacheDir, world.toString().replace("-", ""));
+	}
+
 	public static UUID getWorldUUID() {
 		return worldUUID;
 	}

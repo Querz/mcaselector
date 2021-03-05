@@ -185,17 +185,19 @@ public class ChunkImporter {
 		@Override
 		public void execute() {
 
-			boolean allCopied = true;
-
 			// try to copy files directly if there is no offset, no selection and the target file does not exist
 			if (offset.getX() == 0 && offset.getZ() == 0 && (selection == null || selection.size() == 0)) {
+				boolean allCopied = true;
+
 				if (!getRegionDirectories().getRegion().exists()) {
 					//if the entire mca file doesn't exist, just copy it over
 					File source = new File(sourceDirs.getRegion(), getRegionDirectories().getLocationAsFileName());
-					try {
-						Files.copy(source.toPath(), getRegionDirectories().getRegion().toPath());
-					} catch (IOException ex) {
-						Debug.dumpException(String.format("failed to copy file %s to %s", source, getRegionDirectories().getRegion()), ex);
+					if (source.exists()) {
+						try {
+							Files.copy(source.toPath(), getRegionDirectories().getRegion().toPath());
+						} catch (IOException ex) {
+							Debug.dumpException(String.format("failed to copy file %s to %s", source, getRegionDirectories().getRegion()), ex);
+						}
 					}
 				} else {
 					allCopied = false;
@@ -203,10 +205,12 @@ public class ChunkImporter {
 
 				if (!getRegionDirectories().getPoi().exists() && sourceDirs.getPoi() != null) {
 					File source = new File(sourceDirs.getPoi(), getRegionDirectories().getLocationAsFileName());
-					try {
-						Files.copy(source.toPath(), getRegionDirectories().getPoi().toPath());
-					} catch (IOException ex) {
-						Debug.dumpException(String.format("failed to copy file %s to %s", source, getRegionDirectories().getPoi()), ex);
+					if (source.exists()) {
+						try {
+							Files.copy(source.toPath(), getRegionDirectories().getPoi().toPath());
+						} catch (IOException ex) {
+							Debug.dumpException(String.format("failed to copy file %s to %s", source, getRegionDirectories().getPoi()), ex);
+						}
 					}
 				} else {
 					allCopied = false;
@@ -214,21 +218,22 @@ public class ChunkImporter {
 
 				if (!getRegionDirectories().getEntities().exists() && sourceDirs.getEntities() != null) {
 					File source = new File(sourceDirs.getEntities(), getRegionDirectories().getLocationAsFileName());
-					try {
-						Files.copy(source.toPath(), getRegionDirectories().getEntities().toPath());
-					} catch (IOException ex) {
-						Debug.dumpException(String.format("failed to copy file %s to %s", source, getRegionDirectories().getEntities()), ex);
+					if (source.exists()) {
+						try {
+							Files.copy(source.toPath(), getRegionDirectories().getEntities().toPath());
+						} catch (IOException ex) {
+							Debug.dumpException(String.format("failed to copy file %s to %s", source, getRegionDirectories().getEntities()), ex);
+						}
 					}
 				} else {
 					allCopied = false;
 				}
-			}
 
-			if (!allCopied) {
-				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				if (allCopied) {
+					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
+					return;
+				}
 			}
-
 
 			// ---------------------------------------------------------------------------------------------------------
 

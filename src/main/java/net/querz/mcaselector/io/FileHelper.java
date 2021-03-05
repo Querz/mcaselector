@@ -170,6 +170,10 @@ public final class FileHelper {
 		return String.format("c.%d.%d.mcc", c.getX(), c.getZ());
 	}
 
+	public static String createDATFileName(Point2i p) {
+		return String.format("r.%d.%d.dat", p.getX(), p.getZ());
+	}
+
 	public static String createPNGFileName(Point2i r) {
 		return String.format("r.%d.%d.png", r.getX(), r.getZ());
 	}
