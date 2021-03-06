@@ -472,6 +472,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			selectedChunks -= tile.getMarkedChunks().size();
 			selectedChunks -= tile.isMarked() ? Tile.CHUNKS : 0;
 			imgPool.discardImage(tile.getLocation());
+			overlayDataPool.discardData(tile.getLocation());
 			tile.unload();
 		}
 	}

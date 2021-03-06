@@ -132,4 +132,9 @@ public class OverlayDataPool {
 	public void clear() {
 		dataCache.clear();
 	}
+
+	public void discardData(Point2i region) {
+		dataCache.remove(region);
+		Debug.dumpf("removed data for %s from data pool", region);
+	}
 }

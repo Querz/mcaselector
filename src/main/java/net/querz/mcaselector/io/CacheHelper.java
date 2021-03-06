@@ -6,6 +6,8 @@ import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.progress.Progress;
+import net.querz.mcaselector.tiles.overlay.OverlayType;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -59,6 +61,14 @@ public final class CacheHelper {
 					}
 				}
 			}
+			for (OverlayType type : OverlayType.values()) {
+				File typeFile = FileHelper.createDATFilePath(type, regionBlock);
+				if (typeFile.exists()) {
+					if (!typeFile.delete()) {
+						Debug.error("could not delete file " + typeFile);
+					}
+				}
+			}
 		}
 		tileMap.clear();
 		tileMap.update();
@@ -84,6 +94,21 @@ public final class CacheHelper {
 					}
 				}
 			}
+			for (OverlayType type : OverlayType.values()) {
+				File typeDir = new File(Config.getCacheDir(), type.instance().name());
+				File[] typeFiles = typeDir.listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.dat$"));
+				if (typeFiles == null) {
+					continue;
+				}
+				for (File file : typeFiles) {
+					Point2i typeRegion = FileHelper.parseMCAFileName(file);
+					if (selection.isRegionSelected(typeRegion) && file.exists()) {
+						if (!file.delete()) {
+							Debug.error("could not delete file " + file);
+						}
+					}
+				}
+			}
 		} else {
 			for (Map.Entry<Point2i, Set<Point2i>> entry : tileMap.getMarkedChunks().entrySet()) {
 				for (File cacheDir : Config.getCacheDirs()) {
@@ -94,6 +119,14 @@ public final class CacheHelper {
 						}
 					}
 					tileMap.clearTile(entry.getKey());
+				}
+				for (OverlayType type : OverlayType.values()) {
+					File typeFile = FileHelper.createDATFilePath(type, entry.getKey());
+					if (typeFile.exists()) {
+						if (!typeFile.delete()) {
+							Debug.error("could not delete file " + typeFile);
+						}
+					}
 				}
 			}
 		}

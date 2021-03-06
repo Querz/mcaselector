@@ -4,6 +4,8 @@ import javafx.scene.image.Image;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.tiles.overlay.OverlayType;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -29,6 +31,7 @@ public final class FileHelper {
 
 	public static final String MCA_FILE_PATTERN = "^r\\.-?\\d+\\.-?\\d+\\.mca$";
 	public static final Pattern REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
+	public static final Pattern DAT_REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.dat$");
 	public static final Pattern CACHE_REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.png$");
 
 	private static final Map<String, String> lastOpenedDirectoryMap = new HashMap<>();
@@ -61,6 +64,20 @@ public final class FileHelper {
 
 	public static Point2i parseMCAFileName(File file) {
 		return parseMCAFileName(file.getName());
+	}
+
+	public static Point2i parseDATFileName(File file) {
+		return parseMCAFileName(file.getName());
+	}
+
+	public static Point2i parseDATFileName(String name) {
+		Matcher m = FileHelper.DAT_REGION_GROUP_PATTERN.matcher(name);
+		if (m.find()) {
+			int x = Integer.parseInt(m.group("regionX"));
+			int z = Integer.parseInt(m.group("regionZ"));
+			return new Point2i(x, z);
+		}
+		return null;
 	}
 
 	public static Point2i parseMCAFileName(String name) {
@@ -160,6 +177,10 @@ public final class FileHelper {
 
 	public static File createPNGFilePath(File cacheDir, int zoomLevel, Point2i r) {
 		return new File(cacheDir, zoomLevel + "/" + createPNGFileName(r));
+	}
+
+	public static File createDATFilePath(OverlayType type, Point2i r) {
+		return new File(Config.getCacheDir(), type.instance().name() + "/" + createDATFileName(r));
 	}
 
 	public static String createMCAFileName(Point2i r) {
