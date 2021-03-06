@@ -42,6 +42,9 @@ Source: "${applicationName}.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "7za.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 Source: "${applicationJar}"; DestDir: "{app}"; Flags: ignoreversion
 
+[InstallDelete]
+Type: filesandordirs; Name: "{app}\\jre"
+
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\\jre"
 
@@ -93,9 +96,5 @@ end;
 procedure RenameJRE;
 begin
 	Log('Renaming jre directory');
-	if FileExists(ExpandConstant('{app}\\jre')) then begin
-		Log('Deleting previous jre directory');
-		DelTree(ExpandConstant('{app}\\jre'), True, True, True);
-	end;
 	RenameFile(ExpandConstant('{app}\\zulu8.52.0.23-ca-fx-jre8.0.282-win_x64'), ExpandConstant('{app}\\jre'));
 end;
