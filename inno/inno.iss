@@ -93,5 +93,9 @@ end;
 procedure RenameJRE;
 begin
 	Log('Renaming jre directory');
+	if FileExists(ExpandConstant('{app}\\jre')) then begin
+		Log('Deleting previous jre directory');
+		DelTree(ExpandConstant('{app}\\jre'), True, True, True);
+	end;
 	RenameFile(ExpandConstant('{app}\\zulu8.52.0.23-ca-fx-jre8.0.282-win_x64'), ExpandConstant('{app}\\jre'));
 end;
