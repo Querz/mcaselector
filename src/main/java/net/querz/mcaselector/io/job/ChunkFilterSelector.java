@@ -1,7 +1,12 @@
-package net.querz.mcaselector.io;
+package net.querz.mcaselector.io.job;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.filter.GroupFilter;
+import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.RegionDirectories;
+import net.querz.mcaselector.io.SelectionData;
+import net.querz.mcaselector.io.SelectionHelper;
+import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.debug.Debug;

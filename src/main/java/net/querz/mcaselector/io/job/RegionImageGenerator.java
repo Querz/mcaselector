@@ -1,11 +1,14 @@
-package net.querz.mcaselector.io;
+package net.querz.mcaselector.io.job;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.io.ImageHelper;
+import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
-import net.querz.mcaselector.tiles.overlay.OverlayDataParser;
-import net.querz.mcaselector.tiles.overlay.OverlayType;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileImage;
 import net.querz.mcaselector.debug.Debug;
@@ -14,17 +17,13 @@ import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
-import java.util.zip.GZIPOutputStream;
 
 public class RegionImageGenerator {
 

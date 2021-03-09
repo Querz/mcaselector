@@ -9,7 +9,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.MCAFilePipe;
-import net.querz.mcaselector.io.RegionImageGenerator;
+import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.tiles.overlay.OverlayType;

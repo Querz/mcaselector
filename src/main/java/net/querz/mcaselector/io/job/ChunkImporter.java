@@ -1,7 +1,13 @@
-package net.querz.mcaselector.io;
+package net.querz.mcaselector.io.job;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.RegionDirectories;
+import net.querz.mcaselector.io.SelectionData;
+import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.EntitiesMCAFile;
 import net.querz.mcaselector.io.mca.PoiMCAFile;
 import net.querz.mcaselector.io.mca.Region;

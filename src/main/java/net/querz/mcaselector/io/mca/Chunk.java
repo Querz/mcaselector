@@ -1,7 +1,6 @@
 package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.io.ByteArrayPointer;
-import net.querz.mcaselector.io.CompressionType;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.nbt.io.NBTDeserializer;

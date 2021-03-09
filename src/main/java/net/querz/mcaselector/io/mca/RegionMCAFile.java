@@ -1,7 +1,6 @@
 package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.io.CompressionType;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.tiles.overlay.OverlayDataParser;

@@ -1,6 +1,7 @@
 package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;

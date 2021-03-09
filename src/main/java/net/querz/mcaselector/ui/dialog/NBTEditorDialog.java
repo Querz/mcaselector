@@ -14,7 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.io.CompressionType;
+import net.querz.mcaselector.io.mca.CompressionType;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.EntitiesChunk;

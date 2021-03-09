@@ -2,6 +2,11 @@ package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.job.LoadDataJob;
+import net.querz.mcaselector.io.job.ParseDataJob;
+import net.querz.mcaselector.io.job.ProcessDataJob;
+import net.querz.mcaselector.io.job.SaveDataJob;
+
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -69,7 +74,7 @@ public final class MCAFilePipe {
 		Debug.dumpf("created data parser ThreadPoolExecutor with %d threads", Config.getWriteThreads());
 	}
 
-	static void refillDataLoadExecutorQueue() {
+	public static void refillDataLoadExecutorQueue() {
 		// should only refill if processDataExecutor and loadDataExecutor don't have more than MAX_LOADED_FILES
 		// should only refill if saveDataExecutor is not jamming the other executors
 		// --> loadDataExecutor waits for processDataExecutor AND saveDataExecutor
@@ -95,15 +100,15 @@ public final class MCAFilePipe {
 		}
 	}
 
-	static void executeProcessData(ProcessDataJob job) {
+	public static void executeProcessData(ProcessDataJob job) {
 		processDataExecutor.execute(job);
 	}
 
-	static void executeSaveData(SaveDataJob<?> job) {
+	public static void executeSaveData(SaveDataJob<?> job) {
 		saveDataExecutor.execute(job);
 	}
 
-	static void executeParseData(ParseDataJob job) {
+	public static void executeParseData(ParseDataJob job) {
 		dataParsingExecutor.execute(job);
 	}
 

@@ -5,7 +5,7 @@ import javafx.scene.image.Image;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.RegionImageGenerator;
+import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.point.Point2i;
 import java.io.File;
 import java.util.HashMap;

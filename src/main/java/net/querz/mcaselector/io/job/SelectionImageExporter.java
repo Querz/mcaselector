@@ -1,10 +1,17 @@
-package net.querz.mcaselector.io;
+package net.querz.mcaselector.io.job;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.RegionDirectories;
+import net.querz.mcaselector.io.SelectionData;
+import net.querz.mcaselector.io.SelectionHelper;
+import net.querz.mcaselector.io.SelectionInfo;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;

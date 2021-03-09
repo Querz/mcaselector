@@ -1,6 +1,9 @@
-package net.querz.mcaselector.io;
+package net.querz.mcaselector.io.job;
 
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.Job;
+import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.progress.Timer;
 import java.io.File;
 import java.io.FileInputStream;
