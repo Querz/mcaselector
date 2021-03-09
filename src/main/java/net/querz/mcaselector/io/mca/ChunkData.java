@@ -2,6 +2,8 @@ package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.tiles.overlay.OverlayDataParser;
+
 import java.util.List;
 
 public class ChunkData {
@@ -60,5 +62,9 @@ public class ChunkData {
 				field.change(this);
 			}
 		}
+	}
+
+	public long parseData(OverlayDataParser parser) {
+		return parser.parseValue(this);
 	}
 }

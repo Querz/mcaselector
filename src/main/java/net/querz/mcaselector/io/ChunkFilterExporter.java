@@ -9,7 +9,6 @@ import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.text.Translation;
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -78,7 +77,7 @@ public class ChunkFilterExporter {
 			RegionDirectories to = new RegionDirectories(getRegionDirectories().getLocation(), toRegion, toPoi, toEntities);
 
 			byte[] regionData = loadRegion();
-			byte[] poiData = loadPOI();
+			byte[] poiData = loadPoi();
 			byte[] entitiesData = loadEntities();
 
 			if (regionData == null && poiData == null && entitiesData == null) {

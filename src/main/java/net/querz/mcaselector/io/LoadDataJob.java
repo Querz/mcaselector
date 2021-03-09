@@ -12,7 +12,7 @@ public abstract class LoadDataJob extends Job {
 		super(rd);
 	}
 
-	public byte[] loadPOI() {
+	public byte[] loadPoi() {
 		return load(getRegionDirectories().getPoi());
 	}
 

@@ -211,22 +211,7 @@ public class RegionImageGenerator {
 			}
 
 			if (dataCallback != null) {
-				for (OverlayType parserType : OverlayType.values()) {
-					OverlayDataParser parser = parserType.instance();
-					File cacheFile = new File(Config.getCacheDirForWorldUUID(world), parser.name() + "/" + FileHelper.createDATFileName(tile.getLocation()));
-					if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
-						Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
-					}
-					long[] data = mcaFile.parseData(parser);
-					dataCallback.accept(data, world);
-					try (DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(cacheFile)), 8192))) {
-						for (long d : data) {
-							dos.writeLong(d);
-						}
-					} catch (IOException ex) {
-						Debug.dumpException("failed to write data cache file " + cacheFile, ex);
-					}
-				}
+				MCAFilePipe.executeParseData(new ParseDataJob(getRegionDirectories(), tile.getLocation(), world, mcaFile, dataCallback));
 			}
 
 			setLoading(tile, false);

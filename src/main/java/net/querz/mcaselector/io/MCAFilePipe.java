@@ -10,14 +10,17 @@ import java.util.function.Predicate;
 
 public final class MCAFilePipe {
 
-	//loading mca files into memory should occur single threaded
+	// loading mca files into memory should occur single threaded
 	private static ThreadPoolExecutor loadDataExecutor;
 
-	//calculating the image from the data should be distributed to multiple threads
+	// calculating the image from the data should be distributed to multiple threads
 	private static ThreadPoolExecutor processDataExecutor;
 
-	//saving the cache files may take relatively long, so we do this separately but still single threaded because it's a hdd access
+	// saving the cache files may take relatively long, so we do this separately but still single threaded because it's a hdd access
 	private static ThreadPoolExecutor saveDataExecutor;
+
+	// a separate thread pool to parse data independently from the other thread pools
+	private static ThreadPoolExecutor dataParsingExecutor;
 
 	private static final Queue<LoadDataJob> waitingForLoad = new LinkedBlockingQueue<>();
 
@@ -26,10 +29,11 @@ public final class MCAFilePipe {
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> loadDataExecutor.shutdownNow()));
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> processDataExecutor.shutdownNow()));
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> saveDataExecutor.shutdownNow()));
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> dataParsingExecutor.shutdownNow()));
 	}
 
 	public static void init() {
-		//first shutdown everything if there were Threads initialized already
+		// first shutdown everything if there were Threads initialized already
 		clearQueues();
 		if (loadDataExecutor != null) {
 			loadDataExecutor.shutdownNow();
@@ -39,6 +43,9 @@ public final class MCAFilePipe {
 		}
 		if (saveDataExecutor != null) {
 			saveDataExecutor.shutdownNow();
+		}
+		if (dataParsingExecutor != null) {
+			dataParsingExecutor.shutdownNow();
 		}
 		loadDataExecutor = new ThreadPoolExecutor(
 				Config.getLoadThreads(), Config.getLoadThreads(),
@@ -55,12 +62,17 @@ public final class MCAFilePipe {
 				0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<>());
 		Debug.dumpf("created data save ThreadPoolExecutor with %d threads", Config.getWriteThreads());
+		dataParsingExecutor = new ThreadPoolExecutor(
+				Config.getWriteThreads(), Config.getWriteThreads(),
+				0L, TimeUnit.MILLISECONDS,
+				new LinkedBlockingQueue<>());
+		Debug.dumpf("created data parser ThreadPoolExecutor with %d threads", Config.getWriteThreads());
 	}
 
 	static void refillDataLoadExecutorQueue() {
-		//should only refill if processDataExecutor and loadDataExecutor don't have more than MAX_LOADED_FILES
-		//should only refill if saveDataExecutor is not jamming the other executors
-		//--> loadDataExecutor waits for processDataExecutor AND saveDataExecutor
+		// should only refill if processDataExecutor and loadDataExecutor don't have more than MAX_LOADED_FILES
+		// should only refill if saveDataExecutor is not jamming the other executors
+		// --> loadDataExecutor waits for processDataExecutor AND saveDataExecutor
 		while (!waitingForLoad.isEmpty()
 				&& processDataExecutor.getQueue().size() + loadDataExecutor.getQueue().size() < Config.getMaxLoadedFiles()
 				&& saveDataExecutor.getQueue().size() < Config.getMaxLoadedFiles()) {
@@ -89,6 +101,10 @@ public final class MCAFilePipe {
 
 	static void executeSaveData(SaveDataJob<?> job) {
 		saveDataExecutor.execute(job);
+	}
+
+	static void executeParseData(ParseDataJob job) {
+		dataParsingExecutor.execute(job);
 	}
 
 	public static void validateJobs(Predicate<LoadDataJob> p) {

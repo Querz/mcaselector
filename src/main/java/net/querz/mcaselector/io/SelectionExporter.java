@@ -97,7 +97,7 @@ public class SelectionExporter {
 			}
 
 			byte[] regionData = loadRegion();
-			byte[] poiData = loadPOI();
+			byte[] poiData = loadPoi();
 			byte[] entitiesData = loadEntities();
 
 			if (regionData == null && poiData == null && entitiesData == null) {
