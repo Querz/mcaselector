@@ -182,7 +182,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 
 		if (event.getCode() == KeyCode.M) {
-			setOverlayType(overlayType == null ? OverlayType.INHABITED_TIME : null);
+			setOverlayType(overlayType == null ? OverlayType.ENTITY_AMOUNT : null);
 //			dumpMetrics();
 		}
 	}
@@ -696,11 +696,11 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			Point2i regionOffset = region.regionToBlock().sub((int) offset.getX(), (int) offset.getY());
 
 			if (Config.getWorldDir() != null && !tile.isLoaded() && !tile.isLoading()) {
-				imgPool.requestImage(tile, getZoomLevel());
+				imgPool.requestImage(tile, getZoomLevel(), 0, 20);
 			}
 
 			if (overlayType != null && !tile.overlayLoading && !tile.isOverlayLoaded()) {
-				overlayDataPool.requestImage(tile, tile.location, 0, 100000);
+				overlayDataPool.requestImage(tile, tile.location, 0, 20);
 			}
 
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getZ() / scale);

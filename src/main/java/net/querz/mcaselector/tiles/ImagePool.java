@@ -37,7 +37,7 @@ public final class ImagePool {
 		this.poolSize = poolSize;
 	}
 
-	public void requestImage(Tile tile, int scale) {
+	public void requestImage(Tile tile, int scale, long min, long max) {
 		if (noMCA.contains(tile.location)) {
 			return;
 		}
@@ -102,7 +102,7 @@ public final class ImagePool {
 				synchronized (Config.getWorldUUID()) {
 					if (u.equals(Config.getWorldUUID())) {
 						dataPool.push(tile.location, l);
-						dataPool.requestImage(tile, tile.location, 0, 100000);
+						dataPool.requestImage(tile, tile.location, min, max);
 						Debug.dumpf("pushed data for %s to pool", tile.location);
 						Platform.runLater(tileMap::update);
 					}

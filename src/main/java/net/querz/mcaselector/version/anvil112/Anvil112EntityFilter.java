@@ -18,7 +18,7 @@ public class Anvil112EntityFilter implements EntityFilter {
 
 	@Override
 	public ListTag<?> getEntities(ChunkData data) {
-		Tag<?> rawEntities = data.getEntities().getData().getCompoundTag("Level").get("Entities");
+		Tag<?> rawEntities = data.getRegion().getData().getCompoundTag("Level").get("Entities");
 		if (rawEntities == null || rawEntities.getID() != ListTag.ID) {
 			return null;
 		}
