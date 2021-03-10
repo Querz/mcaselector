@@ -3,11 +3,11 @@ package net.querz.mcaselector.tiles.overlay;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.validation.ValidationHelper;
 
-public class InhabitedTimeParser implements OverlayDataParser {
+public class InhabitedTimeParser extends OverlayDataParser {
 
 	@Override
-	public long parseValue(ChunkData chunkData) {
-		return ValidationHelper.withDefaultSilent(() -> chunkData.getRegion().getData().getCompoundTag("Level").getLong("InhabitedTime"), 0L);
+	public int parseValue(ChunkData chunkData) {
+		return ValidationHelper.withDefaultSilent(() -> chunkData.getRegion().getData().getCompoundTag("Level").getNumber("InhabitedTime").intValue(), 0);
 	}
 
 	@Override

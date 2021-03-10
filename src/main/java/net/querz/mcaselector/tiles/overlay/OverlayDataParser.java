@@ -2,9 +2,14 @@ package net.querz.mcaselector.tiles.overlay;
 
 import net.querz.mcaselector.io.mca.ChunkData;
 
-public interface OverlayDataParser {
+public abstract class OverlayDataParser {
 
-	long parseValue(ChunkData chunkData);
+	public abstract int parseValue(ChunkData chunkData);
 
-	String name();
+	public abstract String name();
+
+	// can be overwritten to supply multiple data points for a single overlay
+	public String[] multiValues() {
+		return null;
+	}
 }

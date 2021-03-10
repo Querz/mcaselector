@@ -64,7 +64,7 @@ public class ChunkData {
 		}
 	}
 
-	public long parseData(OverlayDataParser parser) {
+	public int parseData(OverlayDataParser parser) {
 		return parser.parseValue(this);
 	}
 }

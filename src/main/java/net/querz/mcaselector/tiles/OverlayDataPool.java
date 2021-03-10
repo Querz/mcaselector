@@ -7,40 +7,46 @@ import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.db.CacheDBController;
+import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.tiles.overlay.OverlayDataParser;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.zip.GZIPInputStream;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class OverlayDataPool {
 
 	private final TileMap tileMap;
+	private final Set<Point2i> noData = new HashSet<>();
+	private final ThreadPoolExecutor overlayDataCacheLoaders = new ThreadPoolExecutor(
+			4, 4,
+			0L, TimeUnit.MILLISECONDS,
+			new LinkedBlockingQueue<>());;
 
 	// when key present, but value null: no cache file
 	// when key not present: look if region exists
-	private final Map<Point2i, long[]> dataCache = new LinkedHashMap<>();
-	private final double poolSize;
+	private final CacheDBController dataCache = new CacheDBController();
 	private OverlayDataParser parser;
 
-	public OverlayDataPool(TileMap tileMap, double poolSize) {
+	public OverlayDataPool(TileMap tileMap) {
 		this.tileMap = tileMap;
-		this.poolSize = poolSize;
 	}
 
 	public void setType(OverlayType type) {
 		this.parser = type == null ? null : type.instance();
 	}
 
-	public void requestImage(Tile tile, Point2i region, long min, long max) {
+	public void requestImage(Tile tile, int min, int max) {
 		// check if data for this region exists
+		if (noData.contains(tile.location)) {
+			return;
+		}
 
 		if (parser == null) {
 			return;
@@ -48,41 +54,48 @@ public class OverlayDataPool {
 
 		tile.overlayLoading = true;
 
-		if (dataCache.containsKey(region)) {
-			if (dataCache.get(region) != null) {
-				// get data from cache
+		OverlayDataParser parser = tileMap.getOverlayType().instance();
 
-				long[] data = dataCache.get(region);
+		overlayDataCacheLoaders.execute(() -> {
+			int[] data = null;
+			try {
+				data = dataCache.getData(parser, null, tile.location);
+			} catch (Exception ex) {
+				Debug.dumpException("failed to load cached overlay data for region " + tile.location, ex);
+			}
 
+			if (data != null) {
 				tile.overlay = parseColorGrades(data, min, max);
+				tile.overlayLoaded = true;
+				tile.overlayLoading = false;
 				Platform.runLater(tileMap::update);
-			}
-			// else: no data
-		} else {
-			// try to get data from disk
-			// look if we already have the cache file
-			File cacheFile = new File(Config.getCacheDir(), parser.name() + "/" + FileHelper.createDATFileName(tile.getLocation()));
-			if (cacheFile.exists()) {
-				// load cache file
-				long[] data = new long[1024];
-				try (DataInputStream dis = new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(cacheFile)), 8192))) {
-					for (int i = 0; i < 1024; i++) {
-						data[i] = dis.readLong();
+			} else {
+				// calculate data
+				// TODO: only generate data we need
+				MCAFilePipe.executeParseData(new ParseDataJob(FileHelper.createRegionDirectories(tile.location), Config.getWorldUUID(), (d, u) -> {
+					if (d == null) {
+						System.out.println("DATA IS NULL FOR " + tile.location);
+						noData.add(tile.location);
+						tile.overlayLoaded = true;
+						tile.overlayLoading = false;
+						return;
 					}
-					dataCache.put(region, data);
-					tile.overlay = parseColorGrades(data, min, max);
-					Platform.runLater(tileMap::update);
-				} catch (IOException ex) {
-					Debug.dumpException("failed to load data cache file " + cacheFile, ex);
-				}
+					System.out.println("DATA IS NOT NULL FOR " + tile.location);
+					synchronized (Config.getWorldUUID()) {
+						if (u.equals(Config.getWorldUUID())) {
+							push(tile.location, d);
+							tile.overlay = parseColorGrades(d, min, max);
+							tile.overlayLoaded = true;
+							tile.overlayLoading = false;
+							Platform.runLater(tileMap::update);
+						}
+					}
+				}));
 			}
-			// else: do nothing
-		}
-		tile.overlayLoaded = true;
-		tile.overlayLoading = false;
+		});
 	}
 
-	private Image parseColorGrades(long[] data, long min, long max) {
+	private Image parseColorGrades(int[] data, int min, int max) {
 		int[] colors = new int[1024];
 		for (int i = 0; i < 1024; i++) {
 			colors[i] = getColorGrade(data[i], min, max);
@@ -94,7 +107,7 @@ public class OverlayDataPool {
 		return image;
 	}
 
-	private static int getColorGrade(long value, long min, long max) {
+	private static int getColorGrade(int value, int min, int max) {
 		if (value <= min) {
 			return 0xFF00FF00; // green
 		}
@@ -112,29 +125,38 @@ public class OverlayDataPool {
 		}
 	}
 
-	public void push(Point2i location, long[] data) {
-		dataCache.put(location, data);
-		trim();
+	public void push(Point2i location, int[] data) {
+		try {
+			dataCache.setData(tileMap.getOverlayType().instance(), null, location, data);
+		} catch (Exception ex) {
+			Debug.dumpException("failed to cache data for region " + location, ex);
+		}
 	}
 
-	private void trim() {
-		if (dataCache.size() <= tileMap.getVisibleTiles() * poolSize) {
-			return;
-		}
-		Iterator<Point2i> it = dataCache.keySet().iterator();
-		while (it.hasNext() && dataCache.size() > tileMap.getVisibleTiles() * poolSize) {
-			Point2i removed = it.next();
-			it.remove();
-			Debug.dumpf("removed %s from data pool", removed);
+	public void switchTo(String dbPath) {
+		try {
+			dataCache.switchTo(dbPath);
+		} catch (SQLException ex) {
+			Debug.dumpException("failed to switch cache db", ex);
 		}
 	}
 
 	public void clear() {
-		dataCache.clear();
+		try {
+			dataCache.clear();
+		} catch (Exception ex) {
+			Debug.dumpException("failed to clear data cache", ex);
+		}
+		noData.clear();
 	}
 
 	public void discardData(Point2i region) {
-		dataCache.remove(region);
-		Debug.dumpf("removed data for %s from data pool", region);
+		try {
+			dataCache.deleteData(region);
+			Debug.dumpf("removed data for %s from data pool", region);
+		} catch (SQLException ex) {
+			Debug.dumpException("failed to remove data from cache", ex);
+		}
+		noData.remove(region);
 	}
 }

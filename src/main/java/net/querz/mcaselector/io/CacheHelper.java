@@ -8,7 +8,6 @@ import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -39,13 +38,15 @@ public final class CacheHelper {
 				int z = Integer.parseInt(m.group("regionZ"));
 				boolean scaleOnly = zoomLevel != null;
 				float zoomLevelSupplier = scaleOnly ? zoomLevel : 1;
-				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), null, (i, u) -> {}, null, () -> zoomLevelSupplier, scaleOnly, progressChannel);
+				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), null, (i, u) -> {}, () -> zoomLevelSupplier, scaleOnly, progressChannel);
 			}
 		}
 	}
 
 	public static void clearAllCache(TileMap tileMap) {
-		FileHelper.deleteDirectory(Config.getCacheDir());
+		for (File cacheDir : Config.getCacheDirs()) {
+			FileHelper.deleteDirectory(cacheDir);
+		}
 		MCAFilePipe.clearQueues();
 		updateVersionFile();
 		tileMap.clear();

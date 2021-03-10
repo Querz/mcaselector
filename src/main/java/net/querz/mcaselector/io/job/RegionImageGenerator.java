@@ -31,9 +31,9 @@ public class RegionImageGenerator {
 
 	private RegionImageGenerator() {}
 
-	public static void generate(Tile tile, UUID world, BiConsumer<Image, UUID> callback, BiConsumer<long[], UUID> dataCallback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
+	public static void generate(Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
 		setLoading(tile, true);
-		MCAFilePipe.addJob(new MCAImageLoadJob(tile, world, callback, dataCallback, scaleSupplier, scaleOnly, progressChannel));
+		MCAFilePipe.addJob(new MCAImageLoadJob(tile, world, callback, scaleSupplier, scaleOnly, progressChannel));
 	}
 
 	public static boolean isLoading(Tile tile) {
@@ -54,17 +54,15 @@ public class RegionImageGenerator {
 		private final Tile tile;
 		private final UUID world;
 		private final BiConsumer<Image, UUID> callback;
-		private final BiConsumer<long[], UUID> dataCallback;
 		private final Supplier<Float> scaleSupplier;
 		private final boolean scaleOnly;
 		private final Progress progressChannel;
 
-		private MCAImageLoadJob(Tile tile, UUID world, BiConsumer<Image, UUID> callback, BiConsumer<long[], UUID> dataCallback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
+		private MCAImageLoadJob(Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null));
 			this.tile = tile;
 			this.world = world;
 			this.callback = callback;
-			this.dataCallback = dataCallback;
 			this.scaleSupplier = scaleSupplier;
 			this.scaleOnly = scaleOnly;
 			this.progressChannel = progressChannel;
@@ -75,7 +73,7 @@ public class RegionImageGenerator {
 			if (!tile.isLoaded()) {
 				byte[] data = load(tile.getMCAFile());
 				if (data != null) {
-					MCAFilePipe.executeProcessData(new MCAImageProcessJob(tile.getMCAFile(), data, tile, world, callback, dataCallback, scaleSupplier, scaleOnly, progressChannel));
+					MCAFilePipe.executeProcessData(new MCAImageProcessJob(tile.getMCAFile(), data, tile, world, callback, scaleSupplier, scaleOnly, progressChannel));
 					return;
 				}
 			}
@@ -97,18 +95,16 @@ public class RegionImageGenerator {
 		private final Tile tile;
 		private final UUID world;
 		private final BiConsumer<Image, UUID> callback;
-		private final BiConsumer<long[], UUID> dataCallback;
 		private final Supplier<Float> scaleSupplier;
 		private final boolean scaleOnly;
 		private final Progress progressChannel;
 
-		private MCAImageProcessJob(File file, byte[] data, Tile tile, UUID world, BiConsumer<Image, UUID> callback, BiConsumer<long[], UUID> dataCallback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
+		private MCAImageProcessJob(File file, byte[] data, Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null), data, null, null);
 			this.file = file;
 			this.tile = tile;
 			this.world = world;
 			this.callback = callback;
-			this.dataCallback = dataCallback;
 			this.scaleSupplier = scaleSupplier;
 			this.scaleOnly = scaleOnly;
 			this.progressChannel = progressChannel;
@@ -141,7 +137,7 @@ public class RegionImageGenerator {
 
 
 			if (image != null) {
-				MCAFilePipe.executeSaveData(new MCAImageSaveCacheJob(image, mcaFile, tile, world, dataCallback, scaleSupplier, scaleOnly, progressChannel));
+				MCAFilePipe.executeSaveData(new MCAImageSaveCacheJob(image, mcaFile, tile, world, scaleSupplier, scaleOnly, progressChannel));
 			} else {
 				if (progressChannel != null) {
 					progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
@@ -159,17 +155,15 @@ public class RegionImageGenerator {
 		private final Tile tile;
 		private final RegionMCAFile mcaFile;
 		private final UUID world;
-		private final BiConsumer<long[], UUID> dataCallback;
 		private final Supplier<Float> scaleSupplier;
 		private final boolean scaleOnly;
 		private final Progress progressChannel;
 
-		private MCAImageSaveCacheJob(Image data, RegionMCAFile mcaFile, Tile tile, UUID world, BiConsumer<long[], UUID> dataCallback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
+		private MCAImageSaveCacheJob(Image data, RegionMCAFile mcaFile, Tile tile, UUID world, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null), data);
 			this.tile = tile;
 			this.mcaFile = mcaFile;
 			this.world = world;
-			this.dataCallback = dataCallback;
 			this.scaleSupplier = scaleSupplier;
 			this.scaleOnly = scaleOnly;
 			this.progressChannel = progressChannel;
@@ -207,10 +201,6 @@ public class RegionImageGenerator {
 				}
 			} catch (IOException ex) {
 				Debug.dumpException("failed to save images to cache for " + tile.getLocation(), ex);
-			}
-
-			if (dataCallback != null) {
-				MCAFilePipe.executeParseData(new ParseDataJob(getRegionDirectories(), tile.getLocation(), world, mcaFile, dataCallback));
 			}
 
 			setLoading(tile, false);

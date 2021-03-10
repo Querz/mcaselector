@@ -68,10 +68,10 @@ public final class MCAFilePipe {
 				new LinkedBlockingQueue<>());
 		Debug.dumpf("created data save ThreadPoolExecutor with %d threads", Config.getWriteThreads());
 		dataParsingExecutor = new ThreadPoolExecutor(
-				Config.getWriteThreads(), Config.getWriteThreads(),
+				1, 1,
 				0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<>());
-		Debug.dumpf("created data parser ThreadPoolExecutor with %d threads", Config.getWriteThreads());
+		Debug.dumpf("created data parser ThreadPoolExecutor with %d threads", 1);
 	}
 
 	public static void refillDataLoadExecutorQueue() {
@@ -126,6 +126,12 @@ public final class MCAFilePipe {
 		}
 		if (saveDataExecutor != null) {
 			saveDataExecutor.getQueue().clear();
+		}
+	}
+
+	public static void clearParserQueue() {
+		if (dataParsingExecutor != null) {
+			dataParsingExecutor.getQueue().clear();
 		}
 	}
 

@@ -1,38 +1,27 @@
 package net.querz.mcaselector.io.job;
 
-import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
-import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.EntitiesMCAFile;
 import net.querz.mcaselector.io.mca.PoiMCAFile;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
-import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.tiles.overlay.OverlayDataParser;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.function.BiConsumer;
-import java.util.zip.GZIPOutputStream;
 
 public class ParseDataJob extends LoadDataJob {
 
-	private final RegionMCAFile regionMCAFile;
-	private final BiConsumer<long[], UUID> dataCallback;
-	private final Point2i region;
+	private final BiConsumer<int[], UUID> dataCallback;
 	private final UUID world;
 
-	public ParseDataJob(RegionDirectories dirs, Point2i region, UUID world, RegionMCAFile regionMCAFile, BiConsumer<long[], UUID> dataCallback) {
+	public ParseDataJob(RegionDirectories dirs, UUID world, BiConsumer<int[], UUID> dataCallback) {
 		super(dirs);
-		this.regionMCAFile = regionMCAFile;
 		this.dataCallback = dataCallback;
-		this.region = region;
 		this.world = world;
 	}
 
@@ -43,8 +32,25 @@ public class ParseDataJob extends LoadDataJob {
 
 	@Override
 	public void execute() {
+		Timer t = new Timer();
+
+		RegionMCAFile regionMCAFile = null;
+		if (getRegionDirectories().getRegion() != null && getRegionDirectories().getRegion().exists() && getRegionDirectories().getRegion().length() > 0) {
+			byte[] regionData = loadRegion();
+			regionMCAFile = new RegionMCAFile(getRegionDirectories().getRegion());
+			if (regionData != null) {
+				// load EntitiesMCAFile
+				ByteArrayPointer ptr = new ByteArrayPointer(regionData);
+				try {
+					regionMCAFile.load(ptr);
+				} catch (IOException ex) {
+					Debug.errorf("failed to read mca file header from %s", getRegionDirectories().getRegion());
+				}
+			}
+		}
+
 		EntitiesMCAFile entitiesMCAFile = null;
-		if (getRegionDirectories().getEntities() != null) {
+		if (getRegionDirectories().getEntities() != null && getRegionDirectories().getEntities().exists() && getRegionDirectories().getEntities().length() > 0) {
 			byte[] entitiesData = loadEntities();
 			entitiesMCAFile = new EntitiesMCAFile(getRegionDirectories().getEntities());
 			if (entitiesData != null) {
@@ -59,7 +65,7 @@ public class ParseDataJob extends LoadDataJob {
 		}
 
 		PoiMCAFile poiMCAFile = null;
-		if (getRegionDirectories().getPoi() != null) {
+		if (getRegionDirectories().getPoi() != null && getRegionDirectories().getPoi().exists() && getRegionDirectories().getPoi().length() > 0) {
 			byte[] poiData = loadPoi();
 			poiMCAFile = new PoiMCAFile(getRegionDirectories().getPoi());
 			if (poiData != null) {
@@ -73,18 +79,19 @@ public class ParseDataJob extends LoadDataJob {
 			}
 		}
 
+		if (regionMCAFile == null && poiMCAFile == null && entitiesMCAFile == null) {
+			dataCallback.accept(null, world);
+			Debug.dumpf("no data to load and parse for region %s", getRegionDirectories().getLocation());
+			return;
+		}
+
 		for (OverlayType parserType : OverlayType.values()) {
 			OverlayDataParser parser = parserType.instance();
-			File cacheFile = new File(Config.getCacheDirForWorldUUID(world), parser.name() + "/" + FileHelper.createDATFileName(region));
-			if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
-				Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
-				continue;
-			}
 
-			long[] data = new long[1024];
+			int[] data = new int[1024];
 			for (int i = 0; i < 1024; i++) {
 				ChunkData chunkData = new ChunkData(
-						regionMCAFile.getChunk(i),
+						regionMCAFile == null ? null : regionMCAFile.getChunk(i),
 						poiMCAFile == null ? null : poiMCAFile.getChunk(i),
 						entitiesMCAFile == null ? null : entitiesMCAFile.getChunk(i));
 				try {
@@ -95,13 +102,8 @@ public class ParseDataJob extends LoadDataJob {
 			}
 
 			dataCallback.accept(data, world);
-			try (DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(cacheFile)), 8192))) {
-				for (long d : data) {
-					dos.writeLong(d);
-				}
-			} catch (IOException ex) {
-				Debug.dumpException("failed to write data cache file " + cacheFile, ex);
-			}
 		}
+
+		Debug.dumpf("took %s to load and parse data for region %s", t, getRegionDirectories().getLocation());
 	}
 }

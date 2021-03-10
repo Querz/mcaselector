@@ -20,12 +20,11 @@ public final class ImagePool {
 	private final Map<Integer, LinkedHashMap<Point2i, Image>> pool = new HashMap<>();
 	private final Set<Point2i> noMCA = new HashSet<>();
 	private final TileMap tileMap;
-	private final OverlayDataPool dataPool;
 
 	private final double poolSize;
 
 	// poolSize is a percentage indicating the amount of images cached in relation to the visible region
-	public ImagePool(TileMap tileMap, OverlayDataPool dataPool, double poolSize) {
+	public ImagePool(TileMap tileMap, double poolSize) {
 		// initialize pool
 		int maxZoomLevel = Config.getMaxZoomLevel();
 		for (int i = 0; i < maxZoomLevel; i++) {
@@ -33,11 +32,10 @@ public final class ImagePool {
 		}
 
 		this.tileMap = tileMap;
-		this.dataPool = dataPool;
 		this.poolSize = poolSize;
 	}
 
-	public void requestImage(Tile tile, int scale, long min, long max) {
+	public void requestImage(Tile tile, int scale) {
 		if (noMCA.contains(tile.location)) {
 			return;
 		}
@@ -91,19 +89,6 @@ public final class ImagePool {
 					if (u.equals(Config.getWorldUUID())) {
 						push(scale, tile.location, i);
 						Debug.dumpf("pushed image for %s with scale %d to pool (contains=%s, value=%s)", tile.location, scale, pool.get(scale).containsKey(tile.location), pool.get(scale).get(tile.location));
-						Platform.runLater(tileMap::update);
-					}
-				}
-			},
-			(l, u) -> {
-				if (l == null) {
-					return;
-				}
-				synchronized (Config.getWorldUUID()) {
-					if (u.equals(Config.getWorldUUID())) {
-						dataPool.push(tile.location, l);
-						dataPool.requestImage(tile, tile.location, min, max);
-						Debug.dumpf("pushed data for %s to pool", tile.location);
 						Platform.runLater(tileMap::update);
 					}
 				}

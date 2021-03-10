@@ -12,6 +12,7 @@ import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
+import net.querz.mcaselector.io.mca.MCAFile;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.Window;
@@ -110,9 +111,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		this.setOnKeyTyped(this::onKeyTyped);
 		offset = new Point2f(-(double) width / 2, -(double) height / 2);
 
-		overlayDataPool = new OverlayDataPool(this, Config.IMAGE_POOL_SIZE);
+		overlayDataPool = new OverlayDataPool(this);
 		overlayDataPool.setType(null);
-		imgPool = new ImagePool(this, overlayDataPool, Config.IMAGE_POOL_SIZE);
+		imgPool = new ImagePool(this, Config.IMAGE_POOL_SIZE);
 
 		update();
 	}
@@ -146,6 +147,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			tile.overlayLoaded = false;
 		}
 		update();
+	}
+
+	public OverlayType getOverlayType() {
+		return overlayType;
 	}
 
 	public void setScale(float newScale) {
@@ -182,7 +187,14 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 
 		if (event.getCode() == KeyCode.M) {
-			setOverlayType(overlayType == null ? OverlayType.ENTITY_AMOUNT : null);
+			if (overlayType == null) {
+				setOverlayType(OverlayType.ENTITY_AMOUNT);
+			} else if (overlayType == OverlayType.ENTITY_AMOUNT) {
+				setOverlayType(OverlayType.INHABITED_TIME);
+			} else {
+				setOverlayType(null);
+				MCAFilePipe.clearParserQueue();
+			}
 //			dumpMetrics();
 		}
 	}
@@ -477,6 +489,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 	}
 
+	public OverlayDataPool getOverlayDataPool() {
+		return overlayDataPool;
+	}
+
 	public void clearSelection() {
 		for (Map.Entry<Point2i, Tile> entry : tiles.entrySet()) {
 			entry.getValue().clearMarks();
@@ -696,16 +712,16 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			Point2i regionOffset = region.regionToBlock().sub((int) offset.getX(), (int) offset.getY());
 
 			if (Config.getWorldDir() != null && !tile.isLoaded() && !tile.isLoading()) {
-				imgPool.requestImage(tile, getZoomLevel(), 0, 20);
+				imgPool.requestImage(tile, getZoomLevel());
 			}
 
 			if (overlayType != null && !tile.overlayLoading && !tile.isOverlayLoaded()) {
-				overlayDataPool.requestImage(tile, tile.location, 0, 20);
+				overlayDataPool.requestImage(tile, 0, 20);
 			}
 
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getZ() / scale);
 
-			TileImage.draw(tile, ctx, scale, p, selectionInverted);
+			TileImage.draw(tile, ctx, scale, p, selectionInverted, overlayType != null);
 
 		}, new Point2f());
 

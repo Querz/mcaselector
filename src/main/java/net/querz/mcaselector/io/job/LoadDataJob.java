@@ -8,6 +8,9 @@ import net.querz.mcaselector.progress.Timer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 public abstract class LoadDataJob extends Job {
 
@@ -42,8 +45,8 @@ public abstract class LoadDataJob extends Job {
 		Timer t = new Timer();
 		int read;
 		byte[] data = new byte[length];
-		try (FileInputStream fis = new FileInputStream(file)) {
-			read = fis.read(data);
+		try (InputStream is = Files.newInputStream(file.toPath(), StandardOpenOption.READ)) {
+			read = is.read(data);
 		} catch (IOException ex) {
 			Debug.dumpException("failed to read data from " + file, ex);
 			return null;
