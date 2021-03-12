@@ -19,6 +19,7 @@
 	-color-combo-box-list-border: #020202;
 	-color-combo-box-focused-shadow: #00bfff;
 	-color-text-field-background: #45494a;
+	-color-text-field-background-disabled: #3e4142;
 	-color-text-field-border: #646464;
 	-color-text-field-focused-shadow: #00bfff;
 	-color-filter-box-invalid-background: #9e494a;
@@ -504,6 +505,39 @@
 
 .status-bar-grid {
     -fx-hgap: 5px;
+}
+
+/*---------- OVERLAY ----------*/
+
+.overlay-input-grid {
+	-fx-hgap: 5;
+	-fx-padding: 0 5 0 0;
+}
+
+.overlay-options-grid {
+	-fx-hgap: 5;
+	-fx-padding: 0 2 0 5;
+}
+
+.overlay-box {
+	-fx-padding: 6 0 6 10;
+	-fx-background-color: -color-dialog-background;
+	-fx-border-width: 1 0 0 1;
+	-fx-border-color: -color-dialog-separator;
+}
+
+.overlay-box-invalid .text-field {
+	-fx-background-color: -color-filter-box-invalid-background;
+	-fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
+}
+
+.overlay-box .text-field:disabled {
+	-fx-background-color: -color-text-field-background-disabled;
+	-fx-effect: null;
+}
+
+.additional-data {
+ -fx-background-color: red;
 }
 
 /*---------- FILTER ----------*/

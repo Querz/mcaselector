@@ -39,6 +39,7 @@ import net.querz.mcaselector.ui.dialog.GotoDialog;
 import net.querz.mcaselector.ui.dialog.ImageExportConfirmationDialog;
 import net.querz.mcaselector.ui.dialog.ImportConfirmationDialog;
 import net.querz.mcaselector.ui.dialog.NBTEditorDialog;
+import net.querz.mcaselector.ui.dialog.OverlayEditorDialog;
 import net.querz.mcaselector.ui.dialog.ProgressDialog;
 import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
 import net.querz.mcaselector.ui.dialog.SettingsDialog;
@@ -167,6 +168,11 @@ public class DialogHelper {
 					Debug.dump("i have no idea how you got no selection there...");
 			}
 		});
+	}
+
+	public static void editOverlays(TileMap tileMap, Stage primaryStage) {
+		Optional<OverlayEditorDialog.Result> result = new OverlayEditorDialog(primaryStage).showAndWait();
+		result.ifPresent(System.out::println);
 	}
 
 	public static void deleteSelection(TileMap tileMap, Stage primaryStage) {

@@ -5,7 +5,11 @@ import net.querz.mcaselector.version.EntityFilter;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.ListTag;
 
-public class EntityAmountParser extends OverlayDataParser {
+public class EntityAmountParser extends AmountParser {
+
+	public EntityAmountParser() {
+		super(OverlayType.ENTITY_AMOUNT);
+	}
 
 	@Override
 	public int parseValue(ChunkData chunkData) {

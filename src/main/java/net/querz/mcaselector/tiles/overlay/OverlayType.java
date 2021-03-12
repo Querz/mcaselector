@@ -1,17 +1,26 @@
 package net.querz.mcaselector.tiles.overlay;
 
+import java.util.function.Supplier;
+
 public enum OverlayType {
 
-	INHABITED_TIME(new InhabitedTimeParser()),
-	ENTITY_AMOUNT(new EntityAmountParser());
+	INHABITED_TIME("InhabitedTime", InhabitedTimeParser::new),
+	ENTITY_AMOUNT("#Entities", EntityAmountParser::new);
 
-	private final OverlayDataParser instance;
+	private final String name;
+	private final Supplier<OverlayDataParser> supplier;
 
-	OverlayType(OverlayDataParser instance) {
-		this.instance = instance;
+	OverlayType(String name, Supplier<OverlayDataParser> supplier) {
+		this.name = name;
+		this.supplier = supplier;
 	}
 
 	public OverlayDataParser instance() {
-		return instance;
+		return supplier.get();
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 }
