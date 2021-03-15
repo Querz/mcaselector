@@ -6,8 +6,8 @@ public abstract class OverlayDataParser {
 
 	private final OverlayType type;
 	private boolean active;
-	private int min;
-	private int max;
+	private Integer min;
+	private Integer max;
 
 	public OverlayDataParser(OverlayType type) {
 		this.type = type;
@@ -25,30 +25,34 @@ public abstract class OverlayDataParser {
 		return active;
 	}
 
-	public int min() {
+	public Integer min() {
 		return min;
 	}
 
-	public int max() {
+	public Integer max() {
 		return max;
 	}
 
-	protected boolean setMin(int min) {
-		if (min > max) {
-			return false;
-		} else {
-			this.min = min;
-			return true;
-		}
+	public String minString() {
+		return min == null ? "" : min + "";
 	}
 
-	protected boolean setMax(int max) {
-		if (max < min) {
-			return false;
-		} else {
-			this.max = max;
-			return true;
-		}
+	public String maxString() {
+		return max == null ? "" : max + "";
+	}
+
+	public boolean isValid() {
+		return min != null && max != null && min < max;
+	}
+
+	protected boolean setMin(Integer min) {
+		this.min = min;
+		return isValid();
+	}
+
+	protected boolean setMax(Integer max) {
+		this.max = max;
+		return isValid();
 	}
 
 	public abstract int parseValue(ChunkData chunkData);
@@ -67,5 +71,10 @@ public abstract class OverlayDataParser {
 	// can be overwritten to supply additional data points for a single overlay
 	public String[] multiValues() {
 		return null;
+	}
+
+	@Override
+	public String toString() {
+		return type + "{min=" + minString() + ", max=" + maxString() + ", active=" + active + "}";
 	}
 }

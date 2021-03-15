@@ -511,7 +511,7 @@
 
 .overlay-input-grid {
 	-fx-hgap: 5;
-	-fx-padding: 0 5 0 0;
+	-fx-padding: 1 5 0 0;
 }
 
 .overlay-options-grid {
@@ -536,8 +536,8 @@
 	-fx-effect: null;
 }
 
-.additional-data {
- -fx-background-color: red;
+.overlay-dialog-pane {
+    -fx-padding: 10 10 0 10;
 }
 
 /*---------- FILTER ----------*/

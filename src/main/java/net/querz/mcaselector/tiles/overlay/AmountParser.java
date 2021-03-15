@@ -8,6 +8,9 @@ public abstract class AmountParser extends OverlayDataParser {
 
 	@Override
 	public boolean setMin(String raw) {
+		if (raw.isEmpty()) {
+			return setMin(0);
+		}
 		try {
 			return setMin(Integer.parseInt(raw));
 		} catch (NumberFormatException ex) {
@@ -17,6 +20,9 @@ public abstract class AmountParser extends OverlayDataParser {
 
 	@Override
 	public boolean setMax(String raw) {
+		if (raw.isEmpty()) {
+			return setMax(0);
+		}
 		try {
 			return setMax(Integer.parseInt(raw));
 		} catch (NumberFormatException ex) {

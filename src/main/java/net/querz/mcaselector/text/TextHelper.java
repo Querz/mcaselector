@@ -30,6 +30,7 @@ public final class TextHelper {
 		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:seconds?|secs?|s)"), 1L);
 	}
 
+	// parses a duration string and returns the duration in seconds
 	public static long parseDuration(String d) {
 		boolean result = false;
 		int duration = 0;

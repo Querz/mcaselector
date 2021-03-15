@@ -43,12 +43,19 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		// right: active, delete
 
 		for (OverlayDataParser parser : overlays) {
-			overlaysList.getChildren().add(new OverlayBox(parser));
+			OverlayBox box = new OverlayBox(parser);
+			box.setOnTypeChange(this::onTypeChange);
+			overlaysList.getChildren().add(box);
 		}
 
 		overlaysScrollPane.setContent(overlaysList);
 
 		getDialogPane().setContent(overlaysScrollPane);
+	}
+
+	private void onTypeChange(OverlayDataParser oldValue, OverlayDataParser newValue) {
+		int index = overlays.indexOf(oldValue);
+		overlays.set(index, newValue);
 	}
 
 	public static class Result {

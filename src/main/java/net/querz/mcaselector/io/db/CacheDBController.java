@@ -44,6 +44,12 @@ public final class CacheDBController {
 		removeCloseShutdownHook();
 		close();
 
+		File dbFile = new File(dbPath);
+
+		if (dbFile.getParentFile() != null && !dbFile.getParentFile().exists()) {
+			dbFile.getParentFile().mkdirs();
+		}
+
 		try {
 			connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 		} catch (SQLException ex) {

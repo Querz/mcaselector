@@ -13,11 +13,17 @@ import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.tiles.overlay.OverlayDataParser;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 public class OverlayBox extends BorderPane {
 
 	private static final Image deleteIcon = FileHelper.getIconFromResources("img/delete");
 
 	private OverlayDataParser value;
+
+	private BiConsumer<OverlayDataParser, OverlayDataParser> onTypeChange;
 
 	private final GridPane inputs = new GridPane();
 	private final GridPane options = new GridPane();
@@ -36,17 +42,12 @@ public class OverlayBox extends BorderPane {
 
 		type.getItems().addAll(OverlayType.values());
 		type.getSelectionModel().select(value.getType());
+		type.setOnAction(e -> update(type.getSelectionModel().getSelectedItem()));
 
-		minimum.textProperty().addListener((a, b, c) -> onMinimumInput(value, c));
-		maximum.textProperty().addListener((a, b, c) -> onMaximumInput(value, c));
+		minimum.textProperty().addListener((a, b, c) -> onMinimumInput(c));
+		maximum.textProperty().addListener((a, b, c) -> onMaximumInput(c));
 		minimum.setAlignment(Pos.CENTER);
 		maximum.setAlignment(Pos.CENTER);
-
-		additionalData.setDisable(value.multiValues() == null);
-
-		additionalData.getStyleClass().add("additional-data");
-
-		active.setSelected(value.isActive());
 
 		inputs.getStyleClass().add("overlay-input-grid");
 
@@ -61,33 +62,63 @@ public class OverlayBox extends BorderPane {
 
 		options.getStyleClass().add("overlay-options-grid");
 
+		active.selectedProperty().addListener((v, o, n) -> value.setActive(n));
+
 		options.add(active, 0, 0, 1, 1);
 		options.add(delete, 1, 0, 1, 1);
 
 		setRight(options);
+
+		additionalData.setDisable(value.multiValues() == null);
+		minimum.setText(value.minString());
+		maximum.setText(value.maxString());
+		active.setSelected(value.isActive());
+
+		onMinimumInput(value.minString());
+		onMaximumInput(value.maxString());
 	}
 
-	private void onMinimumInput(OverlayDataParser parser, String newValue) {
-		System.out.println("parsing minimum input");
-		if (parser.setMin(newValue)) {
-			getStyleClass().remove("overlay-box-invalid");
-		} else {
-			if (!getStyleClass().contains("overlay-box-invalid")) {
-				getStyleClass().add("overlay-box-invalid");
-			}
-		}
-		// TODO: update
+	public void setOnTypeChange(BiConsumer<OverlayDataParser, OverlayDataParser> consumer) {
+		onTypeChange = consumer;
 	}
 
-	private void onMaximumInput(OverlayDataParser parser, String newValue) {
-		System.out.println("parsing maximum input");
-		if (parser.setMax(newValue)) {
-			getStyleClass().remove("overlay-box-invalid");
-		} else {
-			if (!getStyleClass().contains("overlay-box-invalid")) {
-				getStyleClass().add("overlay-box-invalid");
-			}
+	private void update(OverlayType type) {
+		if (type == null || type == value.getType()) {
+			return;
 		}
-		// TODO: update
+
+		System.out.println("switching from " + value.getType() + " to " + type);
+
+		// create new data parser and fill with min / max values
+		OverlayDataParser oldValue = value;
+		OverlayDataParser newValue = type.instance();
+
+		newValue.setActive(value.isActive());
+
+		value = newValue;
+
+		// initialize new value and show parsing errors in ui
+		onMinimumInput(minimum.getText());
+		onMaximumInput(maximum.getText());
+
+		additionalData.setDisable(newValue.multiValues() == null);
+
+		onTypeChange.accept(oldValue, newValue);
+	}
+
+	private void onMinimumInput(String newValue) {
+		displayValid(value.setMin(newValue));
+	}
+
+	private void onMaximumInput(String newValue) {
+		displayValid(value.setMax(newValue));
+	}
+
+	private void displayValid(boolean valid) {
+		if (valid) {
+			getStyleClass().remove("overlay-box-invalid");
+		} else if (!getStyleClass().contains("overlay-box-invalid")) {
+			getStyleClass().add("overlay-box-invalid");
+		}
 	}
 }
