@@ -8,8 +8,8 @@ import net.querz.mcaselector.io.mca.EntitiesMCAFile;
 import net.querz.mcaselector.io.mca.PoiMCAFile;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
-import net.querz.mcaselector.tiles.overlay.OverlayType;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -18,11 +18,19 @@ public class ParseDataJob extends LoadDataJob {
 
 	private final BiConsumer<int[], UUID> dataCallback;
 	private final UUID world;
+	private final OverlayParser parser;
+	private final Tile tile;
 
-	public ParseDataJob(RegionDirectories dirs, UUID world, BiConsumer<int[], UUID> dataCallback) {
+	public ParseDataJob(Tile tile, RegionDirectories dirs, UUID world, BiConsumer<int[], UUID> dataCallback, OverlayParser parser) {
 		super(dirs);
+		this.tile = tile;
 		this.dataCallback = dataCallback;
 		this.world = world;
+		this.parser = parser;
+	}
+
+	public Tile getTile() {
+		return tile;
 	}
 
 	@Override
@@ -85,24 +93,20 @@ public class ParseDataJob extends LoadDataJob {
 			return;
 		}
 
-		for (OverlayType parserType : OverlayType.values()) {
-			OverlayParser parser = parserType.instance();
-
-			int[] data = new int[1024];
-			for (int i = 0; i < 1024; i++) {
-				ChunkData chunkData = new ChunkData(
-						regionMCAFile == null ? null : regionMCAFile.getChunk(i),
-						poiMCAFile == null ? null : poiMCAFile.getChunk(i),
-						entitiesMCAFile == null ? null : entitiesMCAFile.getChunk(i));
-				try {
-					data[i] = chunkData.parseData(parser);
-				} catch (Exception ex) {
-					Debug.dumpException("failed to parse chunk data at index " + i, ex);
-				}
+		int[] data = new int[1024];
+		for (int i = 0; i < 1024; i++) {
+			ChunkData chunkData = new ChunkData(
+					regionMCAFile == null ? null : regionMCAFile.getChunk(i),
+					poiMCAFile == null ? null : poiMCAFile.getChunk(i),
+					entitiesMCAFile == null ? null : entitiesMCAFile.getChunk(i));
+			try {
+				data[i] = chunkData.parseData(parser);
+			} catch (Exception ex) {
+				Debug.dumpException("failed to parse chunk data at index " + i, ex);
 			}
-
-			dataCallback.accept(data, world);
 		}
+
+		dataCallback.accept(data, world);
 
 		Debug.dumpf("took %s to load and parse data for region %s", t, getRegionDirectories().getLocation());
 	}

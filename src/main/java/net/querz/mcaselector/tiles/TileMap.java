@@ -9,9 +9,13 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
+import net.querz.mcaselector.tiles.overlay.EntityAmountParser;
+import net.querz.mcaselector.tiles.overlay.InhabitedTimeParser;
+import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.Window;
@@ -71,7 +75,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private final ImagePool imgPool;
 	private final OverlayPool overlayPool;
 
-	private OverlayType overlayType = null;
+	private OverlayParser overlayParser = null;
 
 	private Map<Point2i, Set<Point2i>> pastedChunks;
 	private boolean pastedChunksInverted;
@@ -111,7 +115,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		offset = new Point2f(-(double) width / 2, -(double) height / 2);
 
 		overlayPool = new OverlayPool(this);
-		overlayPool.setType(null);
+		overlayPool.setParser(null);
 		imgPool = new ImagePool(this, Config.IMAGE_POOL_SIZE);
 
 		update();
@@ -128,7 +132,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 			if (Tile.getZoomLevel(oldScale) != Tile.getZoomLevel(scale)) {
 				Debug.dumpf("zoom level changed from %d to %d", Tile.getZoomLevel(oldScale), Tile.getZoomLevel(scale));
-				unloadTiles();
+				unloadTiles(false);
 				if (pastedChunksCache != null) {
 					pastedChunksCache.clear();
 				}
@@ -137,9 +141,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 	}
 
-	public void setOverlayType(OverlayType type) {
-		this.overlayType = type;
-		this.overlayPool.setType(type);
+	public void setOverlay(OverlayParser overlay) {
+		this.overlayParser = overlay;
+		this.overlayPool.setParser(overlay);
 		for (Tile tile : visibleTiles) {
 			tile.overlay = null;
 			tile.overlayLoading = false;
@@ -148,8 +152,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		update();
 	}
 
-	public OverlayType getOverlayType() {
-		return overlayType;
+	public OverlayParser getOverlay() {
+		return overlayParser;
 	}
 
 	public void setScale(float newScale) {
@@ -186,14 +190,14 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 
 		if (event.getCode() == KeyCode.M) {
-			if (overlayType == null) {
-				setOverlayType(OverlayType.ENTITY_AMOUNT);
-			} else if (overlayType == OverlayType.ENTITY_AMOUNT) {
-				setOverlayType(OverlayType.INHABITED_TIME);
+			if (overlayParser == null || overlayParser.getType() == null) {
+				setOverlay(new InhabitedTimeParser(0, 1_000_000));
+			} else if (overlayParser != null && overlayParser.getType() == OverlayType.INHABITED_TIME) {
+				setOverlay(new EntityAmountParser(0, 50));
 			} else {
-				setOverlayType(null);
-				MCAFilePipe.clearParserQueue();
+				setOverlay(null);
 			}
+			MCAFilePipe.clearParserQueue();
 //			dumpMetrics();
 		}
 	}
@@ -330,11 +334,17 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 		// removes jobs from queue that are no longer needed
 		MCAFilePipe.validateJobs(j -> {
-			if (j instanceof  RegionImageGenerator.MCAImageLoadJob) {
+			if (j instanceof RegionImageGenerator.MCAImageLoadJob) {
 				RegionImageGenerator.MCAImageLoadJob job = (RegionImageGenerator.MCAImageLoadJob) j;
 				if (!job.getTile().isVisible(this)) {
 					Debug.dumpf("removing %s for tile %s from queue", job.getClass().getSimpleName(), job.getTile().getLocation());
 					RegionImageGenerator.setLoading(job.getTile(), false);
+					return true;
+				}
+			} else if (j instanceof ParseDataJob) {
+				ParseDataJob job = (ParseDataJob) j;
+				if (!job.getTile().isVisible(this)) {
+					Debug.dumpf("removing %s for tile %s from queue", job.getClass().getSimpleName(), job.getTile().getLocation());
 					return true;
 				}
 			}
@@ -346,7 +356,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			if (!tile.isVisible(this, TILE_VISIBILITY_THRESHOLD)) {
 				visibleTiles.remove(tile);
 				if (!RegionImageGenerator.isLoading(tile)) {
-					tile.unload();
+					tile.unload(true);
 					if (!tile.isMarked() && tile.getMarkedChunks().size() == 0) {
 						tiles.remove(tile.getLocation());
 					}
@@ -484,7 +494,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			selectedChunks -= tile.isMarked() ? Tile.CHUNKS : 0;
 			imgPool.discardImage(tile.getLocation());
 			overlayPool.discardData(tile.getLocation());
-			tile.unload();
+			tile.unload(true);
 		}
 	}
 
@@ -515,9 +525,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		return selectionInverted;
 	}
 
-	public void unloadTiles() {
+	public void unloadTiles(boolean overlay) {
 		for (Tile tile : visibleTiles) {
-			tile.unload();
+			tile.unload(overlay);
 		}
 	}
 
@@ -714,13 +724,13 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				imgPool.requestImage(tile, getZoomLevel());
 			}
 
-			if (overlayType != null && !tile.overlayLoading && !tile.isOverlayLoaded()) {
-				overlayPool.requestImage(tile, 0, 20);
+			if (overlayParser != null && !tile.overlayLoading && !tile.isOverlayLoaded()) {
+				overlayPool.requestImage(tile, overlayParser);
 			}
 
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getZ() / scale);
 
-			TileImage.draw(tile, ctx, scale, p, selectionInverted, overlayType != null);
+			TileImage.draw(tile, ctx, scale, p, selectionInverted, overlayParser != null);
 
 		}, new Point2f());
 

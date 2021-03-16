@@ -11,6 +11,13 @@ public class EntityAmountParser extends AmountParser {
 		super(OverlayType.ENTITY_AMOUNT);
 	}
 
+	public EntityAmountParser(int min, int max) {
+		super(OverlayType.ENTITY_AMOUNT);
+		setMin(min);
+		setMax(max);
+		setActive(true);
+	}
+
 	@Override
 	public int parseValue(ChunkData chunkData) {
 		EntityFilter entityFilter = VersionController.getEntityFilter(chunkData.getRegion().getData().getInt("DataVersion"));

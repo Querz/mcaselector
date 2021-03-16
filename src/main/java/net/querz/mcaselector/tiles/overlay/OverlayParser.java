@@ -2,6 +2,8 @@ package net.querz.mcaselector.tiles.overlay;
 
 import net.querz.mcaselector.io.mca.ChunkData;
 
+import java.util.Arrays;
+
 public abstract class OverlayParser {
 
 	private final OverlayType type;
@@ -94,5 +96,23 @@ public abstract class OverlayParser {
 	@Override
 	public String toString() {
 		return type + "{min=" + minString() + ", max=" + maxString() + ", active=" + active + ", valid=" + isValid() + "}";
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof OverlayParser)) {
+			return false;
+		}
+		OverlayParser o = (OverlayParser) other;
+				// type is equal
+		return type == o.type
+				// min are both null or equal
+				&& (min == null && o.min == null || min != null && o.min != null && min.intValue() == o.min.intValue())
+				// max are both null or equal
+				&& (max == null && o.max == null || max != null && o.max != null && max.intValue() == o.max.intValue()
+				// active is equal
+				&& active == o.active
+				// their multiValues are equal
+				&& Arrays.equals(multiValues(), o.multiValues()));
 	}
 }

@@ -12,7 +12,7 @@ import net.querz.mcaselector.io.db.CacheDBController;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
-import net.querz.mcaselector.tiles.overlay.OverlayType;
+import java.awt.*;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,11 +38,11 @@ public class OverlayPool {
 		this.tileMap = tileMap;
 	}
 
-	public void setType(OverlayType type) {
-		this.parser = type == null ? null : type.instance();
+	public void setParser(OverlayParser overlay) {
+		this.parser = overlay;
 	}
 
-	public void requestImage(Tile tile, int min, int max) {
+	public void requestImage(Tile tile, OverlayParser parser) {
 		// check if data for this region exists
 		if (noData.contains(tile.location)) {
 			return;
@@ -54,8 +54,6 @@ public class OverlayPool {
 
 		tile.overlayLoading = true;
 
-		OverlayParser parser = tileMap.getOverlayType().instance();
-
 		overlayCacheLoaders.execute(() -> {
 			int[] data = null;
 			try {
@@ -65,32 +63,31 @@ public class OverlayPool {
 			}
 
 			if (data != null) {
-				tile.overlay = parseColorGrades(data, min, max);
+				tile.overlay = parseColorGrades(data, parser.min(), parser.max());
 				tile.overlayLoaded = true;
 				tile.overlayLoading = false;
 				Platform.runLater(tileMap::update);
 			} else {
 				// calculate data
-				// TODO: only generate data we need
-				MCAFilePipe.executeParseData(new ParseDataJob(FileHelper.createRegionDirectories(tile.location), Config.getWorldUUID(), (d, u) -> {
+				MCAFilePipe.executeParseData(new ParseDataJob(tile, FileHelper.createRegionDirectories(tile.location), Config.getWorldUUID(), (d, u) -> {
 					if (d == null) {
-						System.out.println("DATA IS NULL FOR " + tile.location);
 						noData.add(tile.location);
 						tile.overlayLoaded = true;
 						tile.overlayLoading = false;
 						return;
 					}
-					System.out.println("DATA IS NOT NULL FOR " + tile.location);
 					synchronized (Config.getWorldUUID()) {
-						if (u.equals(Config.getWorldUUID())) {
-							push(tile.location, d);
-							tile.overlay = parseColorGrades(d, min, max);
-							tile.overlayLoaded = true;
-							tile.overlayLoading = false;
-							Platform.runLater(tileMap::update);
+						synchronized (parser) {
+							if (u.equals(Config.getWorldUUID()) && parser.equals(this.parser)) {
+								push(tile.location, d);
+								tile.overlay = parseColorGrades(d, parser.min(), parser.max());
+								tile.overlayLoaded = true;
+								tile.overlayLoading = false;
+								Platform.runLater(tileMap::update);
+							}
 						}
 					}
-				}));
+				}, parser));
 			}
 		});
 	}
@@ -98,7 +95,7 @@ public class OverlayPool {
 	private Image parseColorGrades(int[] data, int min, int max) {
 		int[] colors = new int[1024];
 		for (int i = 0; i < 1024; i++) {
-			colors[i] = getColorGrade(data[i], min, max);
+			colors[i] = getColorGrade(data[i], min, max, 0xFF0000FF, 0xFFFF0000);
 		}
 
 		WritableImage image = new WritableImage(32, 32);
@@ -107,27 +104,51 @@ public class OverlayPool {
 		return image;
 	}
 
-	private static int getColorGrade(int value, int min, int max) {
+	private static int getColorGrade(int value, int min, int max, int minColor, int maxColor) {
 		if (value <= min) {
-			return 0xFF00FF00; // green
+			return minColor;
 		}
 		if (value >= max) {
-			return 0xFFFF0000; // red
+			return maxColor;
 		}
 
-		long middle = (min + max) / 2;
-		double scale = 255D / (middle - min);
+		float hue1 = getHue(minColor >> 16 & 0xFF, minColor >> 8 & 0xFF, minColor & 0xFF);
+		float hue2 = getHue(maxColor >> 16 & 0xFF, maxColor >> 8 & 0xFF, maxColor & 0xFF);
 
-		if (value < middle) {
-			return 0xFF00FF00 | (int) ((value - min) * scale) << 16;
+		float percent = (float) (value - min) / (max - min);
+		float hue = hue1 + percent * (hue2 - hue1);
+
+		return Color.HSBtoRGB(hue, 1, 1);
+	}
+
+	private static float getHue(float r, float g, float b) {
+		float min = Math.min(Math.min(r, g), b);
+		float max = Math.max(Math.max(r, g), b);
+
+		if (min == max) {
+			return 0f;
+		}
+
+		float hue;
+		if (r == max) {
+			hue = (g - b) / (max - min);
+		} else if (g == max) {
+			hue = 2f + (b - r) / (max - min);
 		} else {
-			return 0xFFFF0000 | (int) (255 - (( value - middle) * scale)) << 8;
+			hue = 4f + (r - g) / (max - min);
 		}
+
+		hue *= 60f;
+		if (hue < 0f) {
+			hue += 360f;
+		}
+
+		return hue / 360f;
 	}
 
 	public void push(Point2i location, int[] data) {
 		try {
-			dataCache.setData(tileMap.getOverlayType().instance(), null, location, data);
+			dataCache.setData(tileMap.getOverlay(), null, location, data);
 		} catch (Exception ex) {
 			Debug.dumpException("failed to cache data for region " + location, ex);
 		}

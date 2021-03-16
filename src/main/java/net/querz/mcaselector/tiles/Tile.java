@@ -104,7 +104,7 @@ public class Tile {
 		return loading;
 	}
 
-	public void unload() {
+	public void unload(boolean overlay) {
 		if (image != null) {
 			image.cancel();
 		}
@@ -112,9 +112,9 @@ public class Tile {
 			markedChunksImage.cancel();
 			markedChunksImage = null;
 		}
-		if (overlay != null) {
-			overlay.cancel();
-			overlay = null;
+		if (overlay && this.overlay != null) {
+			this.overlay.cancel();
+			this.overlay = null;
 		}
 		overlayLoaded = false;
 		loaded = false;

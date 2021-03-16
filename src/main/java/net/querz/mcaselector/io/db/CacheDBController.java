@@ -2,6 +2,8 @@ package net.querz.mcaselector.io.db;
 
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.tiles.overlay.EntityAmountParser;
+import net.querz.mcaselector.tiles.overlay.InhabitedTimeParser;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
 
@@ -18,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -68,7 +71,7 @@ public final class CacheDBController {
 		this.dbPath = dbPath;
 		addCloseShutdownHook();
 
-		initTables(Collections.singletonList(OverlayType.ENTITY_AMOUNT.instance()));
+		initTables(Arrays.asList(new InhabitedTimeParser(0, 1_000_000), new EntityAmountParser(0, 50)));
 	}
 
 	public void initTables(List<OverlayParser> parsers) throws SQLException {

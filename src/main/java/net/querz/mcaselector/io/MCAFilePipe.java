@@ -114,6 +114,7 @@ public final class MCAFilePipe {
 
 	public static void validateJobs(Predicate<LoadDataJob> p) {
 		waitingForLoad.removeIf(p);
+		dataParsingExecutor.getQueue().removeIf(r -> p.test((LoadDataJob) r));
 	}
 
 	public static void clearQueues() {

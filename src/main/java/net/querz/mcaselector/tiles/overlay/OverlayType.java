@@ -4,8 +4,8 @@ import java.util.function.Supplier;
 
 public enum OverlayType {
 
-	INHABITED_TIME("InhabitedTime", InhabitedTimeParser::new),
-	ENTITY_AMOUNT("#Entities", EntityAmountParser::new);
+	ENTITY_AMOUNT("#Entities", EntityAmountParser::new),
+	INHABITED_TIME("InhabitedTime", InhabitedTimeParser::new);
 
 	private final String name;
 	private final Supplier<OverlayParser> supplier;
