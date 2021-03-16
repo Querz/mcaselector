@@ -8,6 +8,8 @@ public abstract class OverlayParser {
 	private boolean active;
 	private Integer min;
 	private Integer max;
+	private String rawMin;
+	private String rawMax;
 
 	public OverlayParser(OverlayType type) {
 		this.type = type;
@@ -45,6 +47,22 @@ public abstract class OverlayParser {
 		return min != null && max != null && min < max;
 	}
 
+	public String getRawMin() {
+		return rawMin;
+	}
+
+	public String getRawMax() {
+		return rawMax;
+	}
+
+	public void setRawMin(String rawMin) {
+		this.rawMin = rawMin;
+	}
+
+	public void setRawMax(String rawMax) {
+		this.rawMax = rawMax;
+	}
+
 	protected boolean setMin(Integer min) {
 		this.min = min;
 		return isValid();
@@ -75,6 +93,6 @@ public abstract class OverlayParser {
 
 	@Override
 	public String toString() {
-		return type + "{min=" + minString() + ", max=" + maxString() + ", active=" + active + "}";
+		return type + "{min=" + minString() + ", max=" + maxString() + ", active=" + active + ", valid=" + isValid() + "}";
 	}
 }

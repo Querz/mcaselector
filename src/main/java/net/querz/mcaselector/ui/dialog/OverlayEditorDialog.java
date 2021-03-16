@@ -2,10 +2,14 @@ package net.querz.mcaselector.ui.dialog;
 
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.overlay.InhabitedTimeParser;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
@@ -17,6 +21,8 @@ import java.util.List;
 
 public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
+	private static final Image addIcon = FileHelper.getIconFromResources("img/add");
+
 	private static List<OverlayParser> overlays = new ArrayList<>();
 
 	static {
@@ -25,6 +31,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
 	private final ScrollPane overlaysScrollPane = new ScrollPane();
 	private final VBox overlaysList = new VBox();
+	private final Label add = new Label("", new ImageView(addIcon));
 
 	public OverlayEditorDialog(Stage primaryStage) {
 		titleProperty().bind(Translation.DIALOG_EDIT_OVERLAYS_TITLE.getProperty());
@@ -43,19 +50,40 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		// right: active, delete
 
 		for (OverlayParser parser : overlays) {
-			OverlayBox box = new OverlayBox(parser);
-			box.setOnTypeChange(this::onTypeChange);
-			overlaysList.getChildren().add(box);
+			add(parser);
 		}
 
 		overlaysScrollPane.setContent(overlaysList);
 
-		getDialogPane().setContent(overlaysScrollPane);
+		add.getStyleClass().add("overlay-add-label");
+		add.setOnMouseReleased(e -> {
+			InhabitedTimeParser newParser = new InhabitedTimeParser();
+			overlays.add(newParser);
+			add(newParser);
+		});
+
+		VBox content = new VBox();
+		content.getChildren().addAll(overlaysScrollPane, add);
+
+		getDialogPane().setContent(content);
 	}
 
 	private void onTypeChange(OverlayParser oldValue, OverlayParser newValue) {
 		int index = overlays.indexOf(oldValue);
 		overlays.set(index, newValue);
+	}
+
+	private void onDelete(OverlayParser deleted) {
+		int index = overlays.indexOf(deleted);
+		overlays.remove(index);
+		overlaysList.getChildren().remove(index);
+	}
+
+	private void add(OverlayParser parser) {
+		OverlayBox box = new OverlayBox(parser);
+		box.setOnTypeChange(this::onTypeChange);
+		box.setOnDelete(this::onDelete);
+		overlaysList.getChildren().add(box);
 	}
 
 	public static class Result {

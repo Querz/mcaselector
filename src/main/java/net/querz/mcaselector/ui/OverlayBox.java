@@ -12,8 +12,8 @@ import javafx.scene.layout.GridPane;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
-
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class OverlayBox extends BorderPane {
 
@@ -22,6 +22,7 @@ public class OverlayBox extends BorderPane {
 	private OverlayParser value;
 
 	private BiConsumer<OverlayParser, OverlayParser> onTypeChange;
+	private Consumer<OverlayParser> onDelete;
 
 	private final GridPane inputs = new GridPane();
 	private final GridPane options = new GridPane();
@@ -66,12 +67,13 @@ public class OverlayBox extends BorderPane {
 		options.add(delete, 1, 0, 1, 1);
 
 		delete.getStyleClass().add("control-label");
+		delete.setOnMouseReleased(e -> onDelete.accept(value));
 
 		setRight(options);
 
 		additionalData.setDisable(value.multiValues() == null);
-		minimum.setText(value.minString());
-		maximum.setText(value.maxString());
+		minimum.setText(value.getRawMin());
+		maximum.setText(value.getRawMax());
 		active.setSelected(value.isActive());
 
 		onMinimumInput(value.minString());
@@ -80,6 +82,10 @@ public class OverlayBox extends BorderPane {
 
 	public void setOnTypeChange(BiConsumer<OverlayParser, OverlayParser> consumer) {
 		onTypeChange = consumer;
+	}
+
+	public void setOnDelete(Consumer<OverlayParser> consumer) {
+		onDelete = consumer;
 	}
 
 	private void update(OverlayType type) {
@@ -117,8 +123,10 @@ public class OverlayBox extends BorderPane {
 	private void displayValid(boolean valid) {
 		if (valid) {
 			getStyleClass().remove("overlay-box-invalid");
+			active.setDisable(false);
 		} else if (!getStyleClass().contains("overlay-box-invalid")) {
 			getStyleClass().add("overlay-box-invalid");
+			active.setDisable(true);
 		}
 	}
 }

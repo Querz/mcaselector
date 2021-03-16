@@ -35,8 +35,9 @@ public class InhabitedTimeParser extends OverlayParser {
 
 	@Override
 	public boolean setMin(String raw) {
+		setRawMin(raw);
 		minDuration = null;
-		if (raw.isEmpty()) {
+		if (raw == null || raw.isEmpty()) {
 			return setMin(0);
 		}
 		try {
@@ -60,8 +61,9 @@ public class InhabitedTimeParser extends OverlayParser {
 
 	@Override
 	public boolean setMax(String raw) {
+		setRawMax(raw);
 		maxDuration = null;
-		if (raw.isEmpty()) {
+		if (raw == null || raw.isEmpty()) {
 			return setMax(0);
 		}
 		try {

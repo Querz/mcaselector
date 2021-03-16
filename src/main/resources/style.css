@@ -544,6 +544,10 @@
     -fx-padding: 10 10 0 10;
 }
 
+.overlay-add-label:hover {
+	-fx-background-color: -color-filter-box-control-hover-background
+}
+
 /*---------- FILTER ----------*/
 
 .filter-operators-grid {
