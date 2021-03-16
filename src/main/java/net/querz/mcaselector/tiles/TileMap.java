@@ -12,7 +12,6 @@ import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
-import net.querz.mcaselector.io.mca.MCAFile;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.Window;
@@ -70,7 +69,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private boolean trackpadScrolling = false;
 
 	private final ImagePool imgPool;
-	private final OverlayDataPool overlayDataPool;
+	private final OverlayPool overlayPool;
 
 	private OverlayType overlayType = null;
 
@@ -111,8 +110,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		this.setOnKeyTyped(this::onKeyTyped);
 		offset = new Point2f(-(double) width / 2, -(double) height / 2);
 
-		overlayDataPool = new OverlayDataPool(this);
-		overlayDataPool.setType(null);
+		overlayPool = new OverlayPool(this);
+		overlayPool.setType(null);
 		imgPool = new ImagePool(this, Config.IMAGE_POOL_SIZE);
 
 		update();
@@ -140,7 +139,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	public void setOverlayType(OverlayType type) {
 		this.overlayType = type;
-		this.overlayDataPool.setType(type);
+		this.overlayPool.setType(type);
 		for (Tile tile : visibleTiles) {
 			tile.overlay = null;
 			tile.overlayLoading = false;
@@ -466,7 +465,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		tiles.clear();
 		visibleTiles.clear();
 		imgPool.clear();
-		overlayDataPool.clear();
+		overlayPool.clear();
 		selectedChunks = 0;
 		selectionInverted = false;
 
@@ -484,13 +483,13 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			selectedChunks -= tile.getMarkedChunks().size();
 			selectedChunks -= tile.isMarked() ? Tile.CHUNKS : 0;
 			imgPool.discardImage(tile.getLocation());
-			overlayDataPool.discardData(tile.getLocation());
+			overlayPool.discardData(tile.getLocation());
 			tile.unload();
 		}
 	}
 
-	public OverlayDataPool getOverlayDataPool() {
-		return overlayDataPool;
+	public OverlayPool getOverlayPool() {
+		return overlayPool;
 	}
 
 	public void clearSelection() {
@@ -716,7 +715,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			}
 
 			if (overlayType != null && !tile.overlayLoading && !tile.isOverlayLoaded()) {
-				overlayDataPool.requestImage(tile, 0, 20);
+				overlayPool.requestImage(tile, 0, 20);
 			}
 
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getZ() / scale);

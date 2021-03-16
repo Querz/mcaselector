@@ -511,7 +511,7 @@
 
 .overlay-input-grid {
 	-fx-hgap: 5;
-	-fx-padding: 1 5 0 0;
+	-fx-padding: 2 5 0 0;
 }
 
 .overlay-options-grid {
@@ -534,6 +534,10 @@
 .overlay-box .text-field:disabled {
 	-fx-background-color: -color-text-field-background-disabled;
 	-fx-effect: null;
+}
+
+.overlay-box .control-label:hover {
+	-fx-background-color: -color-filter-box-control-hover-background
 }
 
 .overlay-dialog-pane {

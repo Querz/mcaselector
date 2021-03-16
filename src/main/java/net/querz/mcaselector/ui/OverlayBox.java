@@ -10,20 +10,18 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.tiles.overlay.OverlayDataParser;
+import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class OverlayBox extends BorderPane {
 
 	private static final Image deleteIcon = FileHelper.getIconFromResources("img/delete");
 
-	private OverlayDataParser value;
+	private OverlayParser value;
 
-	private BiConsumer<OverlayDataParser, OverlayDataParser> onTypeChange;
+	private BiConsumer<OverlayParser, OverlayParser> onTypeChange;
 
 	private final GridPane inputs = new GridPane();
 	private final GridPane options = new GridPane();
@@ -35,7 +33,7 @@ public class OverlayBox extends BorderPane {
 	private final CheckBox active = new CheckBox();
 	private final Label delete = new Label("", new ImageView(deleteIcon));
 
-	public OverlayBox(OverlayDataParser value) {
+	public OverlayBox(OverlayParser value) {
 		this.value = value;
 
 		getStyleClass().add("overlay-box");
@@ -67,6 +65,8 @@ public class OverlayBox extends BorderPane {
 		options.add(active, 0, 0, 1, 1);
 		options.add(delete, 1, 0, 1, 1);
 
+		delete.getStyleClass().add("control-label");
+
 		setRight(options);
 
 		additionalData.setDisable(value.multiValues() == null);
@@ -78,7 +78,7 @@ public class OverlayBox extends BorderPane {
 		onMaximumInput(value.maxString());
 	}
 
-	public void setOnTypeChange(BiConsumer<OverlayDataParser, OverlayDataParser> consumer) {
+	public void setOnTypeChange(BiConsumer<OverlayParser, OverlayParser> consumer) {
 		onTypeChange = consumer;
 	}
 
@@ -90,8 +90,8 @@ public class OverlayBox extends BorderPane {
 		System.out.println("switching from " + value.getType() + " to " + type);
 
 		// create new data parser and fill with min / max values
-		OverlayDataParser oldValue = value;
-		OverlayDataParser newValue = type.instance();
+		OverlayParser oldValue = value;
+		OverlayParser newValue = type.instance();
 
 		newValue.setActive(value.isActive());
 

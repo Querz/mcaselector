@@ -8,7 +8,7 @@ import net.querz.mcaselector.io.mca.EntitiesMCAFile;
 import net.querz.mcaselector.io.mca.PoiMCAFile;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.progress.Timer;
-import net.querz.mcaselector.tiles.overlay.OverlayDataParser;
+import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
 import java.io.IOException;
 import java.util.UUID;
@@ -86,7 +86,7 @@ public class ParseDataJob extends LoadDataJob {
 		}
 
 		for (OverlayType parserType : OverlayType.values()) {
-			OverlayDataParser parser = parserType.instance();
+			OverlayParser parser = parserType.instance();
 
 			int[] data = new int[1024];
 			for (int i = 0; i < 1024; i++) {

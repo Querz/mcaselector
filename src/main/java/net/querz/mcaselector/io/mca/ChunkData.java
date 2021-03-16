@@ -2,7 +2,7 @@ package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.tiles.overlay.OverlayDataParser;
+import net.querz.mcaselector.tiles.overlay.OverlayParser;
 
 import java.util.List;
 
@@ -64,7 +64,7 @@ public class ChunkData {
 		}
 	}
 
-	public int parseData(OverlayDataParser parser) {
+	public int parseData(OverlayParser parser) {
 		return parser.parseValue(this);
 	}
 }

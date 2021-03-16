@@ -2,7 +2,7 @@ package net.querz.mcaselector.io.db;
 
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.tiles.overlay.OverlayDataParser;
+import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
 
 import java.io.ByteArrayInputStream;
@@ -71,9 +71,9 @@ public final class CacheDBController {
 		initTables(Collections.singletonList(OverlayType.ENTITY_AMOUNT.instance()));
 	}
 
-	public void initTables(List<OverlayDataParser> parsers) throws SQLException {
+	public void initTables(List<OverlayParser> parsers) throws SQLException {
 		Statement statement = connection.createStatement();
-		for (OverlayDataParser parser : parsers) {
+		for (OverlayParser parser : parsers) {
 
 			if (parser.multiValues() == null) {
 				statement.executeUpdate(String.format(
@@ -134,7 +134,7 @@ public final class CacheDBController {
 		}
 	}
 
-	public int[] getData(OverlayDataParser parser, String suffix, Point2i region) throws IOException, SQLException {
+	public int[] getData(OverlayParser parser, String suffix, Point2i region) throws IOException, SQLException {
 		Statement statement = connection.createStatement();
 		ResultSet result = statement.executeQuery(String.format(
 				"SELECT d FROM %s WHERE p=%s;", parser.name() + (suffix == null ? "" : "_" + suffix), pointToLong(region)));
@@ -151,7 +151,7 @@ public final class CacheDBController {
 		return data;
 	}
 
-	public void setData(OverlayDataParser parser, String suffix, Point2i region, int[] data) throws IOException, SQLException {
+	public void setData(OverlayParser parser, String suffix, Point2i region, int[] data) throws IOException, SQLException {
 		PreparedStatement ps = connection.prepareStatement(String.format(
 				"INSERT INTO %s (p, d) " +
 						"VALUES (?, ?) " +
@@ -171,7 +171,7 @@ public final class CacheDBController {
 		ps.executeBatch();
 	}
 
-	public void deleteData(OverlayDataParser parser, String suffix, Point2i region) throws SQLException {
+	public void deleteData(OverlayParser parser, String suffix, Point2i region) throws SQLException {
 		PreparedStatement ps = connection.prepareStatement(String.format(
 				"DELETE FROM %s WHERE p=?;", parser.name() + (suffix == null ? "" : "_" + suffix)));
 		ps.setLong(1, pointToLong(region));

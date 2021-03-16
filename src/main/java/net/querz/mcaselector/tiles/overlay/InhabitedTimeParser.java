@@ -4,7 +4,7 @@ import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.validation.ValidationHelper;
 
-public class InhabitedTimeParser extends OverlayDataParser {
+public class InhabitedTimeParser extends OverlayParser {
 
 	private static final int MIN_VALUE = 0;
 	private static final int MAX_VALUE = Integer.MAX_VALUE / 20;

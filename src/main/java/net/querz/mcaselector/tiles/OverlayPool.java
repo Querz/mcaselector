@@ -11,7 +11,7 @@ import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.db.CacheDBController;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.tiles.overlay.OverlayDataParser;
+import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
 import java.sql.SQLException;
 import java.util.HashSet;
@@ -20,11 +20,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class OverlayDataPool {
+public class OverlayPool {
 
 	private final TileMap tileMap;
 	private final Set<Point2i> noData = new HashSet<>();
-	private final ThreadPoolExecutor overlayDataCacheLoaders = new ThreadPoolExecutor(
+	private final ThreadPoolExecutor overlayCacheLoaders = new ThreadPoolExecutor(
 			4, 4,
 			0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<>());;
@@ -32,9 +32,9 @@ public class OverlayDataPool {
 	// when key present, but value null: no cache file
 	// when key not present: look if region exists
 	private final CacheDBController dataCache = new CacheDBController();
-	private OverlayDataParser parser;
+	private OverlayParser parser;
 
-	public OverlayDataPool(TileMap tileMap) {
+	public OverlayPool(TileMap tileMap) {
 		this.tileMap = tileMap;
 	}
 
@@ -54,9 +54,9 @@ public class OverlayDataPool {
 
 		tile.overlayLoading = true;
 
-		OverlayDataParser parser = tileMap.getOverlayType().instance();
+		OverlayParser parser = tileMap.getOverlayType().instance();
 
-		overlayDataCacheLoaders.execute(() -> {
+		overlayCacheLoaders.execute(() -> {
 			int[] data = null;
 			try {
 				data = dataCache.getData(parser, null, tile.location);

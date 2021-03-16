@@ -3,7 +3,7 @@ package net.querz.mcaselector.io.mca;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
-import net.querz.mcaselector.tiles.overlay.OverlayDataParser;
+import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.nbt.tag.CompoundTag;
 import java.io.File;
 import java.util.List;
@@ -35,7 +35,7 @@ public class RegionMCAFile extends MCAFile<RegionChunk> {
 		mergeChunksInto(destination, offset, overwrite, sourceChunks, selection, ranges, RegionMCAFile::newEmptyChunk);
 	}
 
-	public long[] parseData(OverlayDataParser parser) {
+	public long[] parseData(OverlayParser parser) {
 		long[] data = new long[1024];
 		for (int i = 0; i < 1024; i++) {
 			RegionChunk chunk = getChunk(i);

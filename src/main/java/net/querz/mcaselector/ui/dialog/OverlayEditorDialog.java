@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.overlay.InhabitedTimeParser;
-import net.querz.mcaselector.tiles.overlay.OverlayDataParser;
+import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.ui.OverlayBox;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.List;
 
 public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
-	private static List<OverlayDataParser> overlays = new ArrayList<>();
+	private static List<OverlayParser> overlays = new ArrayList<>();
 
 	static {
 		overlays.add(new InhabitedTimeParser());
@@ -42,7 +42,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		// center: additional data
 		// right: active, delete
 
-		for (OverlayDataParser parser : overlays) {
+		for (OverlayParser parser : overlays) {
 			OverlayBox box = new OverlayBox(parser);
 			box.setOnTypeChange(this::onTypeChange);
 			overlaysList.getChildren().add(box);
@@ -53,26 +53,26 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		getDialogPane().setContent(overlaysScrollPane);
 	}
 
-	private void onTypeChange(OverlayDataParser oldValue, OverlayDataParser newValue) {
+	private void onTypeChange(OverlayParser oldValue, OverlayParser newValue) {
 		int index = overlays.indexOf(oldValue);
 		overlays.set(index, newValue);
 	}
 
 	public static class Result {
 
-		private final List<OverlayDataParser> overlays;
+		private final List<OverlayParser> overlays;
 
-		public Result(List<OverlayDataParser> overlays) {
+		public Result(List<OverlayParser> overlays) {
 			this.overlays = overlays;
 		}
 
-		public List<OverlayDataParser> getOverlays() {
+		public List<OverlayParser> getOverlays() {
 			return overlays;
 		}
 
 		@Override
 		public String toString() {
-			return Arrays.toString(overlays.toArray(new OverlayDataParser[0]));
+			return Arrays.toString(overlays.toArray(new OverlayParser[0]));
 		}
 	}
 }

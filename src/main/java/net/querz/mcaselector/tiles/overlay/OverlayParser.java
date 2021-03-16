@@ -2,14 +2,14 @@ package net.querz.mcaselector.tiles.overlay;
 
 import net.querz.mcaselector.io.mca.ChunkData;
 
-public abstract class OverlayDataParser {
+public abstract class OverlayParser {
 
 	private final OverlayType type;
 	private boolean active;
 	private Integer min;
 	private Integer max;
 
-	public OverlayDataParser(OverlayType type) {
+	public OverlayParser(OverlayType type) {
 		this.type = type;
 	}
 

@@ -8,14 +8,14 @@ public enum OverlayType {
 	ENTITY_AMOUNT("#Entities", EntityAmountParser::new);
 
 	private final String name;
-	private final Supplier<OverlayDataParser> supplier;
+	private final Supplier<OverlayParser> supplier;
 
-	OverlayType(String name, Supplier<OverlayDataParser> supplier) {
+	OverlayType(String name, Supplier<OverlayParser> supplier) {
 		this.name = name;
 		this.supplier = supplier;
 	}
 
-	public OverlayDataParser instance() {
+	public OverlayParser instance() {
 		return supplier.get();
 	}
 

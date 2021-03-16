@@ -508,7 +508,7 @@ public class DialogHelper {
 				tileMap.disable(false);
 				optionBar.setWorldDependentMenuItemsEnabled(true, tileMap);
 				tileMap.getWindow().setTitleSuffix(file.toString());
-				tileMap.getOverlayDataPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString());
+				tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString());
 			} else {
 				new ErrorDialog(primaryStage, String.format("no mca files found in %s", file));
 			}
@@ -552,7 +552,7 @@ public class DialogHelper {
 		tileMap.disable(false);
 		optionBar.setWorldDependentMenuItemsEnabled(true, tileMap);
 		tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent());
-		tileMap.getOverlayDataPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString());
+		tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString());
 	}
 
 	public static void importSelection(TileMap tileMap, Stage primaryStage) {
