@@ -37,15 +37,15 @@ public final class ImagePool {
 
 	public void requestImage(Tile tile, int scale) {
 		if (noMCA.contains(tile.location)) {
+			tile.setImage(null);
+			tile.setLoaded(true);
 			return;
 		}
 
+		// skip if this tile is already loading
 		if (RegionImageGenerator.isLoading(tile)) {
-			// skip if we are already loading this tile
 			return;
 		}
-
-		Debug.dumpf("requesting image for tile %s with scale %d (contains=%s, value=%s)", tile.location, scale, pool.get(scale).containsKey(tile.location), pool.get(scale).get(tile.location));
 
 		// check if image exists in pool
 		Image img = pool.get(scale).get(tile.location);
@@ -53,7 +53,6 @@ public final class ImagePool {
 			Debug.dumpf("image was cached in image pool: %d/%s", scale, tile.location);
 			tile.setImage(img);
 			tile.setLoaded(true);
-			tile.setLoading(false);
 			return;
 		}
 
@@ -61,40 +60,61 @@ public final class ImagePool {
 		File cachedImgFile = FileHelper.createPNGFilePath(Config.getCacheDir(), scale, tile.location);
 		if (cachedImgFile.exists()) {
 			// load cached file
+			loadImageFromDiskCache(tile, cachedImgFile, scale);
 
-			tile.setLoading(true);
+		} else if (RegionImageGenerator.isSaving(tile) && !RegionImageGenerator.hasActionOnSave(tile)) {
+			// wait for saving to finish, then pull cached image from disk
+			RegionImageGenerator.setOnSaved(tile, () -> loadImageFromDiskCache(tile, cachedImgFile, scale));
 
-			Image cachedImg = new Image(cachedImgFile.toURI().toString(), true);
-			cachedImg.progressProperty().addListener((v, o, n) -> {
-				if (n.intValue() == 1 && !cachedImg.isError()) {
+		} else {
+			Debug.dump("image does not exist: " + cachedImgFile.getAbsolutePath());
+
+			RegionImageGenerator.setLoading(tile, true);
+			RegionImageGenerator.generate(tile, Config.getWorldUUID(), (i, u) -> Platform.runLater(() -> {
+				RegionImageGenerator.setLoading(tile, false);
+				if (u.equals(Config.getWorldUUID())) {
+					// check if scale is still correct
+					tile.setImage(i);
+					tile.setLoaded(true);
+					if (i == null) {
+						Debug.dumpf("image of %s is null", tile.getLocation());
+						noMCA.add(tile.location);
+						return;
+					}
+					push(scale, tile.location, i);
+					Debug.dumpf("pushed image for %s with scale %d to pool (contains=%s, value=%s)", tile.location, scale, pool.get(scale).containsKey(tile.location), pool.get(scale).get(tile.location));
+					tileMap.update();
+				}
+			}),
+			() -> (float) scale, false, null);
+		}
+	}
+
+	private void loadImageFromDiskCache(Tile tile, File cachedImgFile, int scale) {
+		RegionImageGenerator.setLoading(tile, true);
+
+		Image cachedImg = new Image(cachedImgFile.toURI().toString(), true);
+		cachedImg.progressProperty().addListener((v, o, n) -> {
+			if (n.intValue() == 1) {
+				// run the following on the JavaFX main thread because concurrency
+				Platform.runLater(() -> {
+					RegionImageGenerator.setLoading(tile, false);
+					if (cachedImg.isError()) {
+						tile.setImage(null);
+						tile.setLoaded(true);
+						Debug.dump("failed to load image from cache: " + cachedImgFile.getAbsolutePath());
+						return;
+					}
 
 					Debug.dump("image loaded: " + cachedImgFile.getAbsolutePath());
 
 					tile.setImage(cachedImg);
 					tile.setLoaded(true);
-					tile.setLoading(false);
 					push(scale, tile.location, cachedImg);
 					tileMap.update();
-				}
-			});
-		} else {
-			Debug.dump("image does not exist: " + cachedImgFile.getAbsolutePath());
-
-			RegionImageGenerator.generate(tile, Config.getWorldUUID(), (i, u) -> {
-				if (i == null) {
-					noMCA.add(tile.location);
-					return;
-				}
-				synchronized (Config.getWorldUUID()) {
-					if (u.equals(Config.getWorldUUID())) {
-						push(scale, tile.location, i);
-						Debug.dumpf("pushed image for %s with scale %d to pool (contains=%s, value=%s)", tile.location, scale, pool.get(scale).containsKey(tile.location), pool.get(scale).get(tile.location));
-						Platform.runLater(tileMap::update);
-					}
-				}
-			},
-			() -> (float) scale, false, null);
-		}
+				});
+			}
+		});
 	}
 
 	private void push(int scale, Point2i location, Image img) {
@@ -133,5 +153,9 @@ public final class ImagePool {
 
 	public void clearNoMCACache() {
 		noMCA.clear();
+	}
+
+	public boolean hasNoMCA(Point2i p) {
+		return noMCA.contains(p);
 	}
 }

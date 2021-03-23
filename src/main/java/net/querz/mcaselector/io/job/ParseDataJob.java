@@ -7,14 +7,19 @@ import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.EntitiesMCAFile;
 import net.querz.mcaselector.io.mca.PoiMCAFile;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
+import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import java.io.IOException;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
 public class ParseDataJob extends LoadDataJob {
+
+	private static final Set<Point2i> loading = ConcurrentHashMap.newKeySet();
 
 	private final BiConsumer<int[], UUID> dataCallback;
 	private final UUID world;
@@ -27,6 +32,19 @@ public class ParseDataJob extends LoadDataJob {
 		this.dataCallback = dataCallback;
 		this.world = world;
 		this.parser = parser;
+		setLoading(tile, true);
+	}
+
+	public static boolean isLoading(Tile tile) {
+		return loading.contains(tile.getLocation());
+	}
+
+	public static synchronized void setLoading(Tile tile, boolean loading) {
+		if (loading) {
+			ParseDataJob.loading.add(tile.getLocation());
+		} else {
+			ParseDataJob.loading.remove(tile.getLocation());
+		}
 	}
 
 	public Tile getTile() {
@@ -90,6 +108,7 @@ public class ParseDataJob extends LoadDataJob {
 		if (regionMCAFile == null && poiMCAFile == null && entitiesMCAFile == null) {
 			dataCallback.accept(null, world);
 			Debug.dumpf("no data to load and parse for region %s", getRegionDirectories().getLocation());
+			setLoading(tile, false);
 			return;
 		}
 
@@ -107,7 +126,13 @@ public class ParseDataJob extends LoadDataJob {
 		}
 
 		dataCallback.accept(data, world);
+		setLoading(tile, false);
 
 		Debug.dumpf("took %s to load and parse data for region %s", t, getRegionDirectories().getLocation());
+	}
+
+	@Override
+	public void cancel() {
+		setLoading(tile, false);
 	}
 }

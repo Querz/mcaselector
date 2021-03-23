@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,11 +29,12 @@ import java.util.function.Supplier;
 public class RegionImageGenerator {
 
 	private static final Set<Point2i> loading = ConcurrentHashMap.newKeySet();
+	private static final Set<Point2i> saving = ConcurrentHashMap.newKeySet();
+	private static final Map<Point2i, Runnable> onSaved = new ConcurrentHashMap<>();
 
 	private RegionImageGenerator() {}
 
 	public static void generate(Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
-		setLoading(tile, true);
 		MCAFilePipe.addJob(new MCAImageLoadJob(tile, world, callback, scaleSupplier, scaleOnly, progressChannel));
 	}
 
@@ -41,12 +43,31 @@ public class RegionImageGenerator {
 	}
 
 	public static void setLoading(Tile tile, boolean loading) {
-		tile.setLoading(loading);
 		if (loading) {
 			RegionImageGenerator.loading.add(tile.getLocation());
 		} else {
 			RegionImageGenerator.loading.remove(tile.getLocation());
 		}
+	}
+
+	private static void setSaving(Tile tile, boolean saving) {
+		if (saving) {
+			RegionImageGenerator.saving.add(tile.getLocation());
+		} else {
+			RegionImageGenerator.saving.remove(tile.getLocation());
+		}
+	}
+
+	public static boolean isSaving(Tile tile) {
+		return saving.contains(tile.getLocation());
+	}
+
+	public static void setOnSaved(Tile tile, Runnable action) {
+		onSaved.put(tile.getLocation(), action);
+	}
+
+	public static boolean hasActionOnSave(Tile tile) {
+		return onSaved.containsKey(tile.getLocation());
 	}
 
 	public static class MCAImageLoadJob extends LoadDataJob {
@@ -70,18 +91,20 @@ public class RegionImageGenerator {
 
 		@Override
 		public void execute() {
-			if (!tile.isLoaded()) {
-				byte[] data = load(tile.getMCAFile());
-				if (data != null) {
-					MCAFilePipe.executeProcessData(new MCAImageProcessJob(tile.getMCAFile(), data, tile, world, callback, scaleSupplier, scaleOnly, progressChannel));
-					return;
-				}
+			byte[] data = load(tile.getMCAFile());
+			if (data != null) {
+				MCAFilePipe.executeProcessData(new MCAImageProcessJob(tile.getMCAFile(), data, tile, world, callback, scaleSupplier, scaleOnly, progressChannel));
+				return;
 			}
-			setLoading(tile, false);
 			callback.accept(null, world);
 			if (progressChannel != null) {
 				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 			}
+		}
+
+		@Override
+		public void cancel() {
+			setLoading(tile, false);
 		}
 
 		public Tile getTile() {
@@ -119,7 +142,7 @@ public class RegionImageGenerator {
 			File file = tile.getMCAFile();
 			ByteArrayPointer ptr = new ByteArrayPointer(getRegionData());
 			RegionMCAFile mcaFile = new RegionMCAFile(file);
-			Image image;
+			Image image = null;
 			try {
 				mcaFile.load(ptr);
 				Debug.dumpf("took %s to read mca file %s", t, mcaFile.getFile().getName());
@@ -127,22 +150,37 @@ public class RegionImageGenerator {
 				t.reset();
 
 				image = TileImage.generateImage(tile, world, callback, scaleSupplier, mcaFile);
-				setLoading(tile, false);
+
+				if (image != null) {
+					BufferedImage img = SwingFXUtils.fromFXImage(image, null);
+					int zoomLevel = Tile.getZoomLevel(scaleSupplier.get());
+					BufferedImage scaled = ImageHelper.scaleImage(img, (double) Tile.SIZE / zoomLevel);
+					Image scaledImage = SwingFXUtils.toFXImage(scaled, null);
+					callback.accept(scaledImage, world);
+				} else {
+					callback.accept(null, world);
+				}
+
 
 			} catch (IOException ex) {
 				Debug.errorf("failed to read mca file header from %s", file);
-				tile.setLoaded(true);
-				image = tile.getImage();
+				callback.accept(null, world);
 			}
 
 
 			if (image != null) {
+				setSaving(tile, true);
 				MCAFilePipe.executeSaveData(new MCAImageSaveCacheJob(image, mcaFile, tile, world, scaleSupplier, scaleOnly, progressChannel));
 			} else {
 				if (progressChannel != null) {
 					progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 				}
 			}
+		}
+
+		@Override
+		public void cancel() {
+			setLoading(tile, false);
 		}
 
 		public Tile getTile() {
@@ -203,12 +241,24 @@ public class RegionImageGenerator {
 				Debug.dumpException("failed to save images to cache for " + tile.getLocation(), ex);
 			}
 
-			setLoading(tile, false);
+			setSaving(tile, false);
+
+			Runnable r = onSaved.get(tile.getLocation());
+			if (r != null) {
+				r.run();
+				onSaved.remove(tile.getLocation());
+			}
+
 			if (progressChannel != null) {
 				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 			}
 
 			Debug.dumpf("took %s to cache image of %s to %s", t, tile.getMCAFile().getName(), FileHelper.createPNGFileName(tile.getLocation()));
+		}
+
+		@Override
+		public void cancel() {
+			setSaving(tile, false);
 		}
 	}
 }

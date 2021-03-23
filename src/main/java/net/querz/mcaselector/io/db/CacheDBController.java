@@ -142,7 +142,6 @@ public final class CacheDBController {
 		ResultSet result = statement.executeQuery(String.format(
 				"SELECT d FROM %s WHERE p=%s;", parser.name() + (suffix == null ? "" : "_" + suffix), pointToLong(region)));
 		if (!result.next()) {
-			System.out.println("NOTHING FOUND FOR " + region);
 			return null;
 		}
 		int[] data = new int[1024];

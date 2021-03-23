@@ -7,6 +7,7 @@ import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.ProcessDataJob;
 import net.querz.mcaselector.io.job.SaveDataJob;
 
+import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -113,26 +114,63 @@ public final class MCAFilePipe {
 	}
 
 	public static void validateJobs(Predicate<LoadDataJob> p) {
-		waitingForLoad.removeIf(p);
-		dataParsingExecutor.getQueue().removeIf(r -> p.test((LoadDataJob) r));
+		waitingForLoad.removeIf(r -> {
+			if (p.test(r)) {
+				r.cancel();
+				return true;
+			}
+			return false;
+		});
+		dataParsingExecutor.getQueue().removeIf(r -> {
+			if (p.test((LoadDataJob) r)) {
+				((Job) r).cancel();
+				return true;
+			}
+			return false;
+		});
 	}
 
 	public static void clearQueues() {
-		waitingForLoad.clear();
+		synchronized (waitingForLoad) {
+			waitingForLoad.removeIf(j -> {
+				j.cancel();
+				return true;
+			});
+		}
 		if (loadDataExecutor != null) {
-			loadDataExecutor.getQueue().clear();
+			synchronized (loadDataExecutor.getQueue()) {
+				loadDataExecutor.getQueue().removeIf(j -> {
+					((Job) j).cancel();
+					return true;
+				});
+			}
 		}
 		if (processDataExecutor != null) {
-			processDataExecutor.getQueue().clear();
+			synchronized (processDataExecutor.getQueue()) {
+				processDataExecutor.getQueue().removeIf(j -> {
+					((Job) j).cancel();
+					return true;
+				});
+			}
 		}
 		if (saveDataExecutor != null) {
-			saveDataExecutor.getQueue().clear();
+			synchronized (saveDataExecutor.getQueue()) {
+				saveDataExecutor.getQueue().removeIf(j -> {
+					((Job) j).cancel();
+					return true;
+				});
+			}
 		}
 	}
 
 	public static void clearParserQueue() {
 		if (dataParsingExecutor != null) {
-			dataParsingExecutor.getQueue().clear();
+			synchronized (dataParsingExecutor.getQueue()) {
+				dataParsingExecutor.getQueue().removeIf(j -> {
+					((Job) j).cancel();
+					return true;
+				});
+			}
 		}
 	}
 

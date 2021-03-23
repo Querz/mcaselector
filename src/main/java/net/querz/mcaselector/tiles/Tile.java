@@ -23,19 +23,19 @@ public class Tile {
 	public static final int CHUNKS = 1024;
 	public static final int PIXELS = SIZE * SIZE;
 
-	Point2i location;
+	final Point2i location;
+
+	Image markedChunksImage;
 
 	Image image;
-	Image markedChunksImage;
-	Image overlay;
-
-	boolean loading = false;
 	boolean loaded = false;
+
 	boolean marked = false;
-	boolean overlayLoading = false;
-	boolean overlayLoaded = false;
-	//a set of all marked chunks in the tile in block locations
+	// a set of all marked chunks in the tile in chunk locations
 	Set<Point2i> markedChunks = new HashSet<>();
+
+	Image overlay;
+	boolean overlayLoaded = false;
 
 	public Tile(Point2i location) {
 		this.location = location;
@@ -95,13 +95,12 @@ public class Tile {
 		this.loaded = loaded;
 	}
 
-	public void setLoading(boolean loading) {
-		Debug.dumpf("set tile %s to loading=%s", location, loading);
-		this.loading = loading;
-	}
-
-	public boolean isLoading() {
-		return loading;
+	public boolean matchesZoomLevel(int zoomLevel) {
+		if (image == null) {
+			return true;
+		} else {
+			return (int) (Tile.SIZE * (1D / image.getWidth())) == zoomLevel;
+		}
 	}
 
 	public void unload(boolean overlay) {
@@ -116,7 +115,6 @@ public class Tile {
 			this.overlay.cancel();
 			this.overlay = null;
 		}
-		overlayLoaded = false;
 		loaded = false;
 	}
 

@@ -48,11 +48,16 @@ public class OverlayPool {
 			return;
 		}
 
+		if (ParseDataJob.isLoading(tile)) {
+			// skip if we are already loading this tile
+			return;
+		}
+
 		if (parser == null) {
 			return;
 		}
 
-		tile.overlayLoading = true;
+		ParseDataJob.setLoading(tile, true);
 
 		overlayCacheLoaders.execute(() -> {
 			int[] data = null;
@@ -65,28 +70,26 @@ public class OverlayPool {
 			if (data != null) {
 				tile.overlay = parseColorGrades(data, parser.min(), parser.max());
 				tile.overlayLoaded = true;
-				tile.overlayLoading = false;
+				ParseDataJob.setLoading(tile, false);
 				Platform.runLater(tileMap::update);
 			} else {
 				// calculate data
 				MCAFilePipe.executeParseData(new ParseDataJob(tile, FileHelper.createRegionDirectories(tile.location), Config.getWorldUUID(), (d, u) -> {
-					if (d == null) {
-						noData.add(tile.location);
-						tile.overlayLoaded = true;
-						tile.overlayLoading = false;
-						return;
-					}
-					synchronized (Config.getWorldUUID()) {
-						synchronized (parser) {
-							if (u.equals(Config.getWorldUUID()) && parser.equals(this.parser)) {
+					Platform.runLater(() -> {
+						if (u.equals(Config.getWorldUUID())) {
+							if (d == null) {
+								noData.add(tile.location);
+								tile.overlayLoaded = true;
+								return;
+							}
+							if (parser.equals(this.parser)) {
 								push(tile.location, d);
 								tile.overlay = parseColorGrades(d, parser.min(), parser.max());
 								tile.overlayLoaded = true;
-								tile.overlayLoading = false;
-								Platform.runLater(tileMap::update);
+								tileMap.update();
 							}
 						}
-					}
+					});
 				}, parser));
 			}
 		});

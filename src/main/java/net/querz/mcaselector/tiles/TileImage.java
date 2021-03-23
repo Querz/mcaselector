@@ -104,28 +104,9 @@ public final class TileImage {
 	}
 
 	public static Image generateImage(Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, RegionMCAFile mcaFile) {
-		if (tile.loaded) {
-			Debug.dump("region at " + tile.location + " already loaded");
-			return tile.image;
-		}
-
 		Timer t = new Timer();
 
 		Image image = createMCAImage(mcaFile);
-
-		if (image != null) {
-			BufferedImage img = SwingFXUtils.fromFXImage(image, null);
-			int zoomLevel = Tile.getZoomLevel(scaleSupplier.get());
-			BufferedImage scaled = ImageHelper.scaleImage(img, (double) Tile.SIZE / zoomLevel);
-			Image scaledImage = SwingFXUtils.toFXImage(scaled, null);
-
-			tile.image = scaledImage;
-			tile.setLoaded(true);
-
-			callback.accept(scaledImage, world);
-
-			Debug.dumpf("took %s to generate image of %s", t, mcaFile.getFile().getName());
-		}
 
 		return image;
 	}

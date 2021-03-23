@@ -146,7 +146,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		this.overlayPool.setParser(overlay);
 		for (Tile tile : visibleTiles) {
 			tile.overlay = null;
-			tile.overlayLoading = false;
 			tile.overlayLoaded = false;
 		}
 		update();
@@ -198,7 +197,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				setOverlay(null);
 			}
 			MCAFilePipe.clearParserQueue();
-//			dumpMetrics();
+		}
+
+		if (event.getCode() == KeyCode.N) {
+			dumpMetrics();
 		}
 	}
 
@@ -344,6 +346,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			} else if (j instanceof ParseDataJob) {
 				ParseDataJob job = (ParseDataJob) j;
 				if (!job.getTile().isVisible(this)) {
+					ParseDataJob.setLoading(job.getTile(), false);
 					Debug.dumpf("removing %s for tile %s from queue", job.getClass().getSimpleName(), job.getTile().getLocation());
 					return true;
 				}
@@ -351,11 +354,12 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			return false;
 		});
 
-		// removes tiles from visibleTiles if they are no longer visible
+		// remove tiles from visibleTiles if they are no longer visible
 		for (Tile tile : visibleTiles) {
 			if (!tile.isVisible(this, TILE_VISIBILITY_THRESHOLD)) {
 				visibleTiles.remove(tile);
-				if (!RegionImageGenerator.isLoading(tile)) {
+				// unload tile if it is currently loading neither the image nor the overlay
+				if (!RegionImageGenerator.isLoading(tile) && !ParseDataJob.isLoading(tile)) {
 					tile.unload(true);
 					if (!tile.isMarked() && tile.getMarkedChunks().size() == 0) {
 						tiles.remove(tile.getLocation());
@@ -388,12 +392,16 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		Debug.dumpf("TileMap: width=%.2f, height=%.2f, tiles=%d, visibleTiles=%d, scale=%.5f, offset=%s", getWidth(), getHeight(), tiles.size(), visibleTiles.size(), scale, offset);
 		Debug.dump("Tiles:");
 		for (Map.Entry<Point2i, Tile> tile : tiles.entrySet()) {
-			Debug.dumpf("  %s: loaded=%s, loading=%s, image=%s, marked=%s",
+			Debug.dumpf("  %s: loaded=%s, image=%s, marked=%s, overlay=%s, overlayLoaded=%s, overlayImgLoading=%s, visible=%s, noMCA=%s",
 				tile.getKey(),
 				tile.getValue().isLoaded(),
-				tile.getValue().isLoading(),
 				tile.getValue().getImage() == null ? null : (tile.getValue().getImage().getWidth() + "x" + tile.getValue().getImage().getHeight()),
-				tile.getValue().isMarked() ? true : (tile.getValue().getMarkedChunks() != null && !tile.getValue().getMarkedChunks().isEmpty() ? tile.getValue().getMarkedChunks().size() : false)
+				tile.getValue().isMarked() ? true : (tile.getValue().getMarkedChunks() != null && !tile.getValue().getMarkedChunks().isEmpty() ? tile.getValue().getMarkedChunks().size() : false),
+				tile.getValue().overlay == null ? null : (tile.getValue().overlay.getWidth() + "x" + tile.getValue().overlay.getHeight()),
+				tile.getValue().overlayLoaded,
+				ParseDataJob.isLoading(tile.getValue()),
+				tile.getValue().isVisible(this),
+				imgPool.hasNoMCA(tile.getKey())
 			);
 		}
 	}
@@ -711,6 +719,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private void draw(GraphicsContext ctx) {
 		ctx.clearRect(0, 0, getWidth(), getHeight());
+		int zoomLevel = getZoomLevel();
 		runOnVisibleRegions(region -> {
 			if (!tiles.containsKey(region)) {
 				tiles.put(region, new Tile(region));
@@ -720,12 +729,14 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 			Point2i regionOffset = region.regionToBlock().sub((int) offset.getX(), (int) offset.getY());
 
-			if (Config.getWorldDir() != null && !tile.isLoaded() && !tile.isLoading()) {
-				imgPool.requestImage(tile, getZoomLevel());
-			}
+			if (Config.getWorldDir() != null) {
+				if (!tile.isLoaded() || !tile.matchesZoomLevel(zoomLevel)) {
+					imgPool.requestImage(tile, zoomLevel);
+				}
 
-			if (overlayParser != null && !tile.overlayLoading && !tile.isOverlayLoaded()) {
-				overlayPool.requestImage(tile, overlayParser);
+				if (overlayParser != null && !tile.isOverlayLoaded()) {
+					overlayPool.requestImage(tile, overlayParser);
+				}
 			}
 
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getZ() / scale);
