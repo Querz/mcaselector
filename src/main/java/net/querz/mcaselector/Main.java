@@ -5,6 +5,8 @@ import net.querz.mcaselector.headless.ParamExecutor;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.validation.ShutdownHooks;
+
 import javax.swing.*;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
@@ -29,7 +31,7 @@ public class Main {
 		}
 
 		Config.loadFromIni();
-		Runtime.getRuntime().addShutdownHook(new Thread(Config::exportConfig));
+		ShutdownHooks.addShutdownHook(Config::exportConfig);
 		if (Config.debug()) {
 			Debug.initLogWriter();
 		}

@@ -13,10 +13,7 @@ import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
-import net.querz.mcaselector.tiles.overlay.EntityAmountParser;
-import net.querz.mcaselector.tiles.overlay.InhabitedTimeParser;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
-import net.querz.mcaselector.tiles.overlay.OverlayType;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.debug.Debug;
@@ -28,6 +25,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -63,6 +62,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private final List<Consumer<TileMap>> updateListener = new ArrayList<>(1);
 	private final List<Consumer<TileMap>> hoverListener = new ArrayList<>(1);
+	private final List<Consumer<TileMap>> overlayChangeListener = new ArrayList<>(1);
 
 	private final KeyActivator keyActivator = new KeyActivator();
 
@@ -75,6 +75,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private final ImagePool imgPool;
 	private final OverlayPool overlayPool;
 
+	private List<OverlayParser> overlayParsers = Collections.singletonList(null);
 	private OverlayParser overlayParser = null;
 
 	private Map<Point2i, Set<Point2i>> pastedChunks;
@@ -141,6 +142,31 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 	}
 
+	public void nextOverlay() {
+		int index = overlayParsers.indexOf(overlayParser);
+
+		OverlayParser parser;
+		do {
+			index++;
+			if (index == overlayParsers.size()) {
+				index = 0;
+			}
+
+		// try until we find either null or a parser that is active and valid
+		} while ((parser = overlayParsers.get(index)) != null && (!parser.isActive() || !parser.isValid()));
+
+		setOverlay(parser);
+		MCAFilePipe.clearParserQueue();
+	}
+
+	public void setOverlays(List<OverlayParser> overlays) {
+		overlayParsers = new ArrayList<>(overlays.size() + 1);
+		overlayParsers.addAll(overlays);
+		overlayParsers.add(null);
+		setOverlay(null);
+		MCAFilePipe.clearParserQueue();
+	}
+
 	public void setOverlay(OverlayParser overlay) {
 		this.overlayParser = overlay;
 		this.overlayPool.setParser(overlay);
@@ -149,6 +175,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			tile.overlayLoaded = false;
 		}
 		update();
+		runOverlayChangeListeners();
 	}
 
 	public OverlayParser getOverlay() {
@@ -189,14 +216,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 
 		if (event.getCode() == KeyCode.M) {
-			if (overlayParser == null || overlayParser.getType() == null) {
-				setOverlay(new InhabitedTimeParser(0, 1_000_000));
-			} else if (overlayParser != null && overlayParser.getType() == OverlayType.INHABITED_TIME) {
-				setOverlay(new EntityAmountParser(0, 50));
-			} else {
-				setOverlay(null);
-			}
-			MCAFilePipe.clearParserQueue();
+			nextOverlay();
 		}
 
 		if (event.getCode() == KeyCode.N) {
@@ -422,12 +442,20 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		hoverListener.add(listener);
 	}
 
+	public void setOnOverlayChange(Consumer<TileMap> listener) {
+		overlayChangeListener.add(listener);
+	}
+
 	private void runUpdateListeners() {
 		updateListener.forEach(c -> c.accept(this));
 	}
 
 	private void runHoverListeners() {
 		hoverListener.forEach(c -> c.accept(this));
+	}
+
+	private void runOverlayChangeListeners() {
+		overlayChangeListener.forEach(c -> c.accept(this));
 	}
 
 	public Point2f getOffset() {

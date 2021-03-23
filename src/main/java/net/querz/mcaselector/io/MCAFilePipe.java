@@ -6,6 +6,7 @@ import net.querz.mcaselector.io.job.LoadDataJob;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.ProcessDataJob;
 import net.querz.mcaselector.io.job.SaveDataJob;
+import net.querz.mcaselector.validation.ShutdownHooks;
 
 import java.util.Iterator;
 import java.util.Queue;
@@ -32,10 +33,10 @@ public final class MCAFilePipe {
 
 	static {
 		init();
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> loadDataExecutor.shutdownNow()));
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> processDataExecutor.shutdownNow()));
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> saveDataExecutor.shutdownNow()));
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> dataParsingExecutor.shutdownNow()));
+		ShutdownHooks.addShutdownHook(() -> loadDataExecutor.shutdownNow());
+		ShutdownHooks.addShutdownHook(() -> processDataExecutor.shutdownNow());
+		ShutdownHooks.addShutdownHook(() -> saveDataExecutor.shutdownNow());
+		ShutdownHooks.addShutdownHook(() -> dataParsingExecutor.shutdownNow());
 	}
 
 	public static void init() {

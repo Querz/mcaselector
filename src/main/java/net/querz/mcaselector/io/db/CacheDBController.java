@@ -5,7 +5,7 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.tiles.overlay.EntityAmountParser;
 import net.querz.mcaselector.tiles.overlay.InhabitedTimeParser;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
-import net.querz.mcaselector.tiles.overlay.OverlayType;
+import net.querz.mcaselector.validation.ShutdownHooks;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -30,7 +29,7 @@ public final class CacheDBController {
 
 	private Connection connection;
 	private String dbPath;
-	private Thread closeShutdownHook;
+	private ShutdownHooks.ShutdownJob closeShutdownHook;
 	private List<String> allTables;
 
 	static {
@@ -123,8 +122,7 @@ public final class CacheDBController {
 
 	public void addCloseShutdownHook() {
 		if (closeShutdownHook == null) {
-			closeShutdownHook = new Thread(this::closeOnShutdown);
-			Runtime.getRuntime().addShutdownHook(closeShutdownHook);
+			closeShutdownHook = ShutdownHooks.addShutdownHook(this::closeOnShutdown, 100);
 		} else {
 			throw new RuntimeException("attempted to add a shutdown hook for db connection while one was already present");
 		}
@@ -132,7 +130,7 @@ public final class CacheDBController {
 
 	public void removeCloseShutdownHook() {
 		if (closeShutdownHook != null) {
-			Runtime.getRuntime().removeShutdownHook(closeShutdownHook);
+			ShutdownHooks.removeShutdownHook(closeShutdownHook);
 			closeShutdownHook = null;
 		}
 	}
@@ -140,7 +138,7 @@ public final class CacheDBController {
 	public int[] getData(OverlayParser parser, String suffix, Point2i region) throws IOException, SQLException {
 		Statement statement = connection.createStatement();
 		ResultSet result = statement.executeQuery(String.format(
-				"SELECT d FROM %s WHERE p=%s;", parser.name() + (suffix == null ? "" : "_" + suffix), pointToLong(region)));
+				"SELECT d FROM %s WHERE p=%s;", parser.name() + (suffix == null ? "" : "_" + suffix), region.asLong()));
 		if (!result.next()) {
 			return null;
 		}
@@ -159,7 +157,7 @@ public final class CacheDBController {
 						"VALUES (?, ?) " +
 						"ON CONFLICT(p) DO UPDATE " +
 						"SET d=?;", parser.name() + (suffix == null ? "" : "_" + suffix)));
-		ps.setLong(1, pointToLong(region));
+		ps.setLong(1, region.asLong());
 		ByteArrayOutputStream baos;
 		try (DataOutputStream dos = new DataOutputStream(new GZIPOutputStream(baos = new ByteArrayOutputStream()))) {
 			for (int i = 0; i < 1024; i++) {
@@ -176,7 +174,7 @@ public final class CacheDBController {
 	public void deleteData(OverlayParser parser, String suffix, Point2i region) throws SQLException {
 		PreparedStatement ps = connection.prepareStatement(String.format(
 				"DELETE FROM %s WHERE p=?;", parser.name() + (suffix == null ? "" : "_" + suffix)));
-		ps.setLong(1, pointToLong(region));
+		ps.setLong(1, region.asLong());
 		ps.execute();
 	}
 
@@ -184,7 +182,7 @@ public final class CacheDBController {
 		for (String table : allTables) {
 			PreparedStatement ps = connection.prepareStatement(String.format(
 					"DELETE FROM %s WHERE p=?;", table));
-			ps.setLong(1, pointToLong(region));
+			ps.setLong(1, region.asLong());
 			ps.execute();
 		}
 	}
@@ -201,9 +199,5 @@ public final class CacheDBController {
 			throw new IOException(String.format("failed to delete cache db %s", dbFile.getCanonicalPath()));
 		}
 		switchTo(dbFile.getPath());
-	}
-
-	private long pointToLong(Point2i p) {
-		return (long) p.getX() << 32 | p.getZ() & 0xFFFFFFFFL;
 	}
 }

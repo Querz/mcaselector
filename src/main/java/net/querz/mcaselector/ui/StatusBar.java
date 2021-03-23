@@ -16,6 +16,8 @@ import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.tiles.overlay.OverlayParser;
+import net.querz.mcaselector.validation.ShutdownHooks;
 
 public class StatusBar extends StackPane {
 
@@ -26,6 +28,7 @@ public class StatusBar extends StackPane {
 	private final Label hoveredBlock = new Label(Translation.STATUS_BLOCK + ": -, -");
 	private final Label visibleRegions = new Label(Translation.STATUS_VISIBLE + ": 0");
 	private final Label totalRegions = new Label(Translation.STATUS_TOTAL + ": 0");
+	private final Label overlay = new Label(Translation.STATUS_TOTAL + ": -");
 
 	ImageView loadIcon = new ImageView(FileHelper.getIconFromResources("img/load"));
 	BorderPane bp = new BorderPane();
@@ -37,6 +40,7 @@ public class StatusBar extends StackPane {
 
 		tileMap.setOnUpdate(this::update);
 		tileMap.setOnHover(this::update);
+		tileMap.setOnOverlayChange(this::updateOverlay);
 		for (int i = 0; i < 6; i++) {
 			ColumnConstraints constraints = new ColumnConstraints();
 			constraints.setMinWidth(140);
@@ -55,6 +59,7 @@ public class StatusBar extends StackPane {
 		grid.add(selectedChunks, 3, 0, 1, 1);
 		grid.add(visibleRegions, 4, 0, 1, 1);
 		grid.add(totalRegions, 5, 0, 1, 1);
+		grid.add(overlay, 6, 0, 1, 1);
 
 		StackPane.setAlignment(grid, Pos.CENTER_LEFT);
 		getChildren().add(grid);
@@ -91,10 +96,10 @@ public class StatusBar extends StackPane {
 				before.set(activeJobs);
 			}
 		});
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+		ShutdownHooks.addShutdownHook(() -> {
 			b.set(false);
 			t.interrupt();
-		}));
+		});
 		t.start();
 	}
 
@@ -113,6 +118,15 @@ public class StatusBar extends StackPane {
 			hoveredBlock.setText(Translation.STATUS_BLOCK + ": -, -");
 			hoveredChunk.setText(Translation.STATUS_CHUNK + ": -, -");
 			hoveredRegion.setText(Translation.STATUS_REGION + ": -, -");
+		}
+	}
+
+	private void updateOverlay(TileMap tileMap) {
+		OverlayParser p = tileMap.getOverlay();
+		if (p != null) {
+			overlay.setText(Translation.STATUS_TOTAL + ": " + p.getType() + "(" + p.min() + "," + p.max() + ")");
+		} else {
+			overlay.setText(Translation.STATUS_TOTAL + ": -");
 		}
 	}
 }

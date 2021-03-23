@@ -2,6 +2,8 @@ package net.querz.mcaselector.debug;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.text.TextHelper;
+import net.querz.mcaselector.validation.ShutdownHooks;
+
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -152,7 +154,7 @@ public final class Debug {
 
 	private static class LogWriter {
 		BufferedWriter br;
-		Thread shutdownHook;
+		ShutdownHooks.ShutdownJob shutdownHook;
 
 		LogWriter() {
 			try {
@@ -161,7 +163,8 @@ public final class Debug {
 				ex.printStackTrace();
 				System.exit(0);
 			}
-			Runtime.getRuntime().addShutdownHook(shutdownHook = new Thread(this::close));
+			// logs need to be closed last, because other shutdown hooks might need logs
+			shutdownHook = ShutdownHooks.addShutdownHook(this::close, 0);
 			new Thread(this::repeatedFlush).start();
 		}
 
@@ -183,7 +186,7 @@ public final class Debug {
 					}
 				}
 				try {
-					Runtime.getRuntime().removeShutdownHook(shutdownHook);
+					ShutdownHooks.removeShutdownHook(shutdownHook);
 				} catch (IllegalStateException ex) {
 					// do nothing, we are already shutting down
 				} catch (Exception ex) {
