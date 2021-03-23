@@ -6,7 +6,6 @@ import net.querz.mcaselector.tiles.overlay.EntityAmountParser;
 import net.querz.mcaselector.tiles.overlay.InhabitedTimeParser;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.validation.ShutdownHooks;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -20,7 +19,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -42,7 +40,7 @@ public final class CacheDBController {
 		}
 	}
 
-	public void switchTo(String dbPath) throws SQLException {
+	public void switchTo(String dbPath, List<OverlayParser> parsers) throws SQLException {
 		removeCloseShutdownHook();
 		close();
 
@@ -70,7 +68,7 @@ public final class CacheDBController {
 		this.dbPath = dbPath;
 		addCloseShutdownHook();
 
-		initTables(Arrays.asList(new InhabitedTimeParser(0, 1_000_000), new EntityAmountParser(0, 50)));
+		initTables(parsers);
 	}
 
 	public void initTables(List<OverlayParser> parsers) throws SQLException {
@@ -187,7 +185,7 @@ public final class CacheDBController {
 		}
 	}
 
-	public void clear() throws IOException, SQLException {
+	public void clear(List<OverlayParser> parsers) throws IOException, SQLException {
 		if (dbPath == null) {
 			return;
 		}
@@ -198,6 +196,6 @@ public final class CacheDBController {
 		} else {
 			throw new IOException(String.format("failed to delete cache db %s", dbFile.getCanonicalPath()));
 		}
-		switchTo(dbFile.getPath());
+		switchTo(dbFile.getPath(), parsers);
 	}
 }

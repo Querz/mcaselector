@@ -14,6 +14,7 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import java.awt.*;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -40,6 +41,13 @@ public class OverlayPool {
 
 	public void setParser(OverlayParser overlay) {
 		this.parser = overlay;
+		if (overlay != null) {
+			try {
+				dataCache.initTables(Collections.singletonList(overlay));
+			} catch (SQLException ex) {
+				Debug.dumpException("failed to create table for overlay " + overlay, ex);
+			}
+		}
 	}
 
 	public void requestImage(Tile tile, OverlayParser parser) {
@@ -159,7 +167,7 @@ public class OverlayPool {
 
 	public void switchTo(String dbPath) {
 		try {
-			dataCache.switchTo(dbPath);
+			dataCache.switchTo(dbPath, tileMap.getOverlayParsers());
 		} catch (SQLException ex) {
 			Debug.dumpException("failed to switch cache db", ex);
 		}
@@ -167,7 +175,7 @@ public class OverlayPool {
 
 	public void clear() {
 		try {
-			dataCache.clear();
+			dataCache.clear(tileMap.getOverlayParsers());
 		} catch (Exception ex) {
 			Debug.dumpException("failed to clear data cache", ex);
 		}

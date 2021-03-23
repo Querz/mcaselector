@@ -25,7 +25,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -116,7 +115,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		offset = new Point2f(-(double) width / 2, -(double) height / 2);
 
 		overlayPool = new OverlayPool(this);
-		overlayPool.setParser(null);
 		imgPool = new ImagePool(this, Config.IMAGE_POOL_SIZE);
 
 		update();
@@ -180,6 +178,16 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	public OverlayParser getOverlay() {
 		return overlayParser;
+	}
+
+	public List<OverlayParser> getOverlayParsers() {
+		List<OverlayParser> parsers = new ArrayList<>(overlayParsers.size() - 1);
+		for (OverlayParser parser : overlayParsers) {
+			if (parser != null) {
+				parsers.add(parser);
+			}
+		}
+		return parsers;
 	}
 
 	public void setScale(float newScale) {

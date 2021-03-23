@@ -93,8 +93,6 @@ public class OverlayBox extends BorderPane {
 			return;
 		}
 
-		System.out.println("switching from " + value.getType() + " to " + type);
-
 		// create new data parser and fill with min / max values
 		OverlayParser oldValue = value;
 		OverlayParser newValue = type.instance();
