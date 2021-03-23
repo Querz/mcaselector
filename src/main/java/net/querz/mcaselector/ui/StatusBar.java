@@ -28,7 +28,7 @@ public class StatusBar extends StackPane {
 	private final Label hoveredBlock = new Label(Translation.STATUS_BLOCK + ": -, -");
 	private final Label visibleRegions = new Label(Translation.STATUS_VISIBLE + ": 0");
 	private final Label totalRegions = new Label(Translation.STATUS_TOTAL + ": 0");
-	private final Label overlay = new Label(Translation.STATUS_TOTAL + ": -");
+	private final Label overlay = new Label(Translation.STATUS_OVERLAY + ": -");
 
 	ImageView loadIcon = new ImageView(FileHelper.getIconFromResources("img/load"));
 	BorderPane bp = new BorderPane();
@@ -124,9 +124,9 @@ public class StatusBar extends StackPane {
 	private void updateOverlay(TileMap tileMap) {
 		OverlayParser p = tileMap.getOverlay();
 		if (p != null) {
-			overlay.setText(Translation.STATUS_TOTAL + ": " + p.getType() + "(" + p.min() + "," + p.max() + ")");
+			overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + "," + p.max() + ")");
 		} else {
-			overlay.setText(Translation.STATUS_TOTAL + ": -");
+			overlay.setText(Translation.STATUS_OVERLAY + ": -");
 		}
 	}
 }

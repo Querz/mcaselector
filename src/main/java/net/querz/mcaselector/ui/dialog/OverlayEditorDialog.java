@@ -1,5 +1,6 @@
 package net.querz.mcaselector.ui.dialog;
 
+import javafx.application.Platform;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -14,7 +15,6 @@ import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.overlay.InhabitedTimeParser;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.ui.OverlayBox;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,17 +23,17 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
 	private static final Image addIcon = FileHelper.getIconFromResources("img/add");
 
-	private static List<OverlayParser> overlays = new ArrayList<>();
-
-	static {
-		overlays.add(new InhabitedTimeParser());
-	}
+	private List<OverlayParser> overlays;
 
 	private final ScrollPane overlaysScrollPane = new ScrollPane();
 	private final VBox overlaysList = new VBox();
 	private final Label add = new Label("", new ImageView(addIcon));
 
-	public OverlayEditorDialog(Stage primaryStage) {
+	public OverlayEditorDialog(Stage primaryStage, List<OverlayParser> values) {
+		if (values == null) {
+			this.overlays = new ArrayList<>();
+		}
+		this.overlays = values;
 		titleProperty().bind(Translation.DIALOG_EDIT_OVERLAYS_TITLE.getProperty());
 		initStyle(StageStyle.UTILITY);
 		getDialogPane().getStyleClass().add("overlay-dialog-pane");
@@ -63,9 +63,12 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		});
 
 		VBox content = new VBox();
+		content.getStyleClass().add("overlay-list");
 		content.getChildren().addAll(overlaysScrollPane, add);
 
 		getDialogPane().setContent(content);
+
+		Platform.runLater(() -> System.out.println(content.getWidth()));
 	}
 
 	private void onTypeChange(OverlayParser oldValue, OverlayParser newValue) {

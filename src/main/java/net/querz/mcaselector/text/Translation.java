@@ -28,6 +28,7 @@ public enum Translation {
 	STATUS_VISIBLE_TOOLTIP("status.visible.tooltip"),
 	STATUS_TOTAL("status.total"),
 	STATUS_TOTAL_TOOLTIP("status.total.tooltip"),
+	STATUS_OVERLAY("status.overlay"),
 	MENU_FILE("menu.file"),
 	MENU_VIEW("menu.view"),
 	MENU_SELECTION("menu.selection"),

@@ -180,11 +180,12 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		return overlayParser;
 	}
 
+	// returns a NEW copy of all current parsers
 	public List<OverlayParser> getOverlayParsers() {
 		List<OverlayParser> parsers = new ArrayList<>(overlayParsers.size() - 1);
 		for (OverlayParser parser : overlayParsers) {
 			if (parser != null) {
-				parsers.add(parser);
+				parsers.add(parser.clone());
 			}
 		}
 		return parsers;
@@ -223,8 +224,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			update();
 		}
 
-		if (event.getCode() == KeyCode.M) {
-			nextOverlay();
+		if (event.getCode() == KeyCode.O) {
+			if (!disabled) {
+				nextOverlay();
+			}
 		}
 
 		if (event.getCode() == KeyCode.N) {

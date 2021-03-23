@@ -4,7 +4,7 @@ import net.querz.mcaselector.io.mca.ChunkData;
 
 import java.util.Arrays;
 
-public abstract class OverlayParser {
+public abstract class OverlayParser implements Cloneable {
 
 	private final OverlayType type;
 	private boolean active;
@@ -12,6 +12,7 @@ public abstract class OverlayParser {
 	private Integer max;
 	private String rawMin;
 	private String rawMax;
+	protected String[] multiValues = null;
 
 	public OverlayParser(OverlayType type) {
 		this.type = type;
@@ -90,7 +91,7 @@ public abstract class OverlayParser {
 
 	// can be overwritten to supply additional data points for a single overlay
 	public String[] multiValues() {
-		return null;
+		return multiValues;
 	}
 
 	@Override
@@ -114,5 +115,17 @@ public abstract class OverlayParser {
 				&& active == o.active
 				// their multiValues are equal
 				&& Arrays.equals(multiValues(), o.multiValues()));
+	}
+
+	@Override
+	public OverlayParser clone() {
+		OverlayParser clone = type.instance();
+		clone.min = min;
+		clone.max = max;
+		clone.multiValues = multiValues == null ? null : Arrays.copyOf(multiValues, multiValues.length);
+		clone.active = active;
+		clone.rawMin = rawMin;
+		clone.rawMax = rawMax;
+		return clone;
 	}
 }

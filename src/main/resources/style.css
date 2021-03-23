@@ -542,10 +542,15 @@
 
 .overlay-dialog-pane {
     -fx-padding: 10 10 0 10;
+    -fx-min-width: 700;
 }
 
 .overlay-add-label:hover {
 	-fx-background-color: -color-filter-box-control-hover-background
+}
+
+.overlay-list {
+	-fx-min-width: 700;
 }
 
 /*---------- FILTER ----------*/
