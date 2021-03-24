@@ -7,6 +7,7 @@ import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.db.CacheDBController;
 import net.querz.mcaselector.io.job.ParseDataJob;
@@ -28,7 +29,7 @@ public class OverlayPool {
 	private final ThreadPoolExecutor overlayCacheLoaders = new ThreadPoolExecutor(
 			4, 4,
 			0L, TimeUnit.MILLISECONDS,
-			new LinkedBlockingQueue<>());;
+			new LinkedBlockingQueue<>());
 
 	// when key present, but value null: no cache file
 	// when key not present: look if region exists
@@ -76,7 +77,7 @@ public class OverlayPool {
 			}
 
 			if (data != null) {
-				tile.overlay = parseColorGrades(data, parser.min(), parser.max());
+				tile.overlay = parseColorGrades(data, parser.min(), parser.max(), parser.getMinHue(), parser.getMaxHue());
 				tile.overlayLoaded = true;
 				ParseDataJob.setLoading(tile, false);
 				Platform.runLater(tileMap::update);
@@ -92,7 +93,7 @@ public class OverlayPool {
 							}
 							if (parser.equals(this.parser)) {
 								push(tile.location, d);
-								tile.overlay = parseColorGrades(d, parser.min(), parser.max());
+								tile.overlay = parseColorGrades(d, parser.min(), parser.max(), parser.getMinHue(), parser.getMaxHue());
 								tile.overlayLoaded = true;
 								tileMap.update();
 							}
@@ -103,10 +104,10 @@ public class OverlayPool {
 		});
 	}
 
-	private Image parseColorGrades(int[] data, int min, int max) {
+	private Image parseColorGrades(int[] data, int min, int max, float minHue, float maxHue) {
 		int[] colors = new int[1024];
 		for (int i = 0; i < 1024; i++) {
-			colors[i] = getColorGrade(data[i], min, max, 0xFF0000FF, 0xFFFF0000);
+			colors[i] = getColorGrade(data[i], min, max, minHue, maxHue);
 		}
 
 		WritableImage image = new WritableImage(32, 32);
@@ -115,46 +116,18 @@ public class OverlayPool {
 		return image;
 	}
 
-	private static int getColorGrade(int value, int min, int max, int minColor, int maxColor) {
+	private static int getColorGrade(int value, int min, int max, float minHue, float maxHue) {
 		if (value <= min) {
-			return minColor;
+			return Color.HSBtoRGB(minHue, 1, 1);
 		}
 		if (value >= max) {
-			return maxColor;
+			return Color.HSBtoRGB(maxHue, 1, 1);
 		}
-
-		float hue1 = getHue(minColor >> 16 & 0xFF, minColor >> 8 & 0xFF, minColor & 0xFF);
-		float hue2 = getHue(maxColor >> 16 & 0xFF, maxColor >> 8 & 0xFF, maxColor & 0xFF);
 
 		float percent = (float) (value - min) / (max - min);
-		float hue = hue1 + percent * (hue2 - hue1);
+		float hue = minHue + percent * (maxHue - minHue);
 
 		return Color.HSBtoRGB(hue, 1, 1);
-	}
-
-	private static float getHue(float r, float g, float b) {
-		float min = Math.min(Math.min(r, g), b);
-		float max = Math.max(Math.max(r, g), b);
-
-		if (min == max) {
-			return 0f;
-		}
-
-		float hue;
-		if (r == max) {
-			hue = (g - b) / (max - min);
-		} else if (g == max) {
-			hue = 2f + (b - r) / (max - min);
-		} else {
-			hue = 4f + (r - g) / (max - min);
-		}
-
-		hue *= 60f;
-		if (hue < 0f) {
-			hue += 360f;
-		}
-
-		return hue / 360f;
 	}
 
 	public void push(Point2i location, int[] data) {

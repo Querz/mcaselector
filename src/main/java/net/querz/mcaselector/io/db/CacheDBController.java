@@ -2,8 +2,6 @@ package net.querz.mcaselector.io.db;
 
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.tiles.overlay.EntityAmountParser;
-import net.querz.mcaselector.tiles.overlay.InhabitedTimeParser;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.validation.ShutdownHooks;
 import java.io.ByteArrayInputStream;
@@ -32,6 +30,7 @@ public final class CacheDBController {
 
 	static {
 		try {
+			new org.sqlite.JDBC();
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException ex) {
 			System.err.println("failed to load jdbc driver");

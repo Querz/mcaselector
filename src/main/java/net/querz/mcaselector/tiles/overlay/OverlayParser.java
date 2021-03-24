@@ -13,6 +13,8 @@ public abstract class OverlayParser implements Cloneable {
 	private String rawMin;
 	private String rawMax;
 	protected String[] multiValues = null;
+	private float minHue = 0;
+	private float maxHue = 0.85f;
 
 	public OverlayParser(OverlayType type) {
 		this.type = type;
@@ -76,6 +78,22 @@ public abstract class OverlayParser implements Cloneable {
 		return isValid();
 	}
 
+	public float getMinHue() {
+		return minHue;
+	}
+
+	public float getMaxHue() {
+		return maxHue;
+	}
+
+	public void setMinHue(float minHue) {
+		this.minHue = minHue;
+	}
+
+	public void setMaxHue(float maxHue) {
+		this.maxHue = maxHue;
+	}
+
 	public abstract int parseValue(ChunkData chunkData);
 
 	public abstract String name();
@@ -96,7 +114,7 @@ public abstract class OverlayParser implements Cloneable {
 
 	@Override
 	public String toString() {
-		return type + "{min=" + minString() + ", max=" + maxString() + ", active=" + active + ", valid=" + isValid() + "}";
+		return String.format("{min=%s, max=%s, active=%s, valid=%s, minHue=%f, maHue=%f", minString(), maxString(), active, isValid(), minHue, maxHue);
 	}
 
 	@Override
@@ -113,6 +131,8 @@ public abstract class OverlayParser implements Cloneable {
 				&& (max == null && o.max == null || max != null && o.max != null && max.intValue() == o.max.intValue()
 				// active is equal
 				&& active == o.active
+				// color range is equal
+				&& minHue == o.minHue && maxHue == o.maxHue
 				// their multiValues are equal
 				&& Arrays.equals(multiValues(), o.multiValues()));
 	}
@@ -126,6 +146,8 @@ public abstract class OverlayParser implements Cloneable {
 		clone.active = active;
 		clone.rawMin = rawMin;
 		clone.rawMax = rawMax;
+		clone.minHue = minHue;
+		clone.maxHue = maxHue;
 		return clone;
 	}
 }
