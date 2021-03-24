@@ -39,25 +39,19 @@ public final class ImageHelper {
 		return scaleOp.filter(before, after);
 	}
 
-	public static void main(String[] args) throws IOException {
-		Image image = renderGradient(50, 0.3f, 0.83f, 3.0f, 0.83f, false);
-		ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", new File("test.png"));
-
-		System.out.println(ImageHelper.getHue(0xFFFF00FF));
-	}
-
 	public static Image renderGradient(int width, float min, float max, float low, float high, boolean inverted) {
 		WritableImage image = new WritableImage(width, 50);
 		PixelWriter pixelWriter = image.getPixelWriter();
 		for (int i = 0; i < width; i++) {
 			float hue = (max - min) * ((float) i / width) + min;
 			float saturation = 1, brightness = 1;
+
 			if (hue < low || hue > high) {
 				saturation = 0.3f;
 				brightness = 0.6f;
 			}
 			if (inverted) {
-				hue = max - hue;
+				hue = max - hue + min;
 			}
 
 			for (int j = 0; j < 50; j++) {

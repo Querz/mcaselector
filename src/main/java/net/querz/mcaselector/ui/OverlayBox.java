@@ -32,6 +32,7 @@ import java.util.function.Consumer;
 public class OverlayBox extends BorderPane {
 
 	private static final Image deleteIcon = FileHelper.getIconFromResources("img/delete");
+	private static final Image flipIcon = FileHelper.getIconFromResources("img/flip");
 
 	private OverlayParser value;
 
@@ -78,36 +79,42 @@ public class OverlayBox extends BorderPane {
 
 		active.selectedProperty().addListener((v, o, n) -> value.setActive(n));
 
-		float minHue = value.getMinHue();
-		float maxHue = value.getMaxHue();
-
 		gradient.getStyleClass().add("gradient-label");
-		gradient.setBackground(new Background((new BackgroundImage(ImageHelper.renderGradient(50, minHue, maxHue, minHue, maxHue, minHue > maxHue), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT))));
 
 		ContextMenu gradientMenu = new ContextMenu();
-		HueRangeSlider hueSlider = new HueRangeSlider(0, 0.85f, 400);
-		Button invert = new Button("invert");
-		invert.setOnAction(a -> hueSlider.setInverted(!hueSlider.isInverted()));
+		HueRangeSlider hueSlider = new HueRangeSlider(0, 0.85f, 400, value.getMinHue() > value.getMaxHue());
+		hueSlider.setLowValue(Math.min(value.getMinHue(), value.getMaxHue()));
+		hueSlider.setHighValue(Math.max(value.getMinHue(), value.getMaxHue()));
+		setGradientBackground(hueSlider);
+		Label flip = new Label("", new ImageView(flipIcon));
+		flip.getStyleClass().add("flip-label");
+		flip.setOnMouseReleased(a -> {
+			hueSlider.setInverted(!hueSlider.isInverted());
+			value.setMinHue(hueSlider.getMinHue());
+			value.setMaxHue(hueSlider.getMaxHue());
+			setGradientBackground(hueSlider);
+		});
 
 		hueSlider.lowValueProperty().addListener((v, o, n) -> {
 			value.setMinHue(hueSlider.getMinHue());
 			value.setMaxHue(hueSlider.getMaxHue());
-			gradient.setBackground(new Background((new BackgroundImage(ImageHelper.renderGradient(50, hueSlider.getMinHue(), hueSlider.getMaxHue(), hueSlider.getMinHue(), hueSlider.getMaxHue(), hueSlider.isInverted()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT))));
+			setGradientBackground(hueSlider);
 		});
 
 		hueSlider.highValueProperty().addListener((v, o, n) -> {
 			value.setMinHue(hueSlider.getMinHue());
 			value.setMaxHue(hueSlider.getMaxHue());
+			setGradientBackground(hueSlider);
 		});
 
 		HBox slider = new HBox();
-		slider.getChildren().addAll(hueSlider, invert);
+		slider.getStyleClass().add("slider-box");
+		slider.setAlignment(Pos.CENTER_LEFT);
+		slider.getChildren().addAll(hueSlider, flip);
 
 		CustomMenuItem menuItem = new CustomMenuItem(slider, false);
 		menuItem.getStyleClass().add("custom-menu-item");
 		gradientMenu.getItems().add(menuItem);
-
-		hueSlider.setInverted(minHue > maxHue);
 
 		gradient.setOnMouseClicked(e -> {
 			Bounds screenBounds = gradient.localToScreen(gradient.getBoundsInLocal());
@@ -134,6 +141,21 @@ public class OverlayBox extends BorderPane {
 
 		onMinimumInput(value.minString());
 		onMaximumInput(value.maxString());
+	}
+
+	private void setGradientBackground(HueRangeSlider hueSlider) {
+		float min = hueSlider.getMinHue();
+		float max = hueSlider.getMaxHue();
+		if (min > max) {
+			max = min;
+			min = hueSlider.getMaxHue();
+		}
+
+		gradient.setBackground(new Background((new BackgroundImage(ImageHelper.renderGradient(
+			50,
+			min, max, min, max,
+			hueSlider.isInverted()),
+			BackgroundRepeat.NO_REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT))));
 	}
 
 	public void setOnTypeChange(BiConsumer<OverlayParser, OverlayParser> consumer) {

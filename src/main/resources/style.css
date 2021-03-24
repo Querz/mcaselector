@@ -559,28 +559,36 @@
 
 .hue-range-slider {
 	-fx-pref-width: 400;
-	-fx-pref-height: 50;
+	-fx-pref-height: 32;
 }
 
 .hue-range-slider .high-thumb, .hue-range-slider .low-thumb {
 	-fx-background-radius: 0;
 	-fx-pref-width: 6;
-	-fx-pref-height: 50;
+	-fx-pref-height: 32;
 	-fx-cursor: h-resize;
 }
 
 .hue-range-slider .track {
 	-fx-background-color: transparent;
-	-fx-pref-height: 50;
+	-fx-pref-height: 32;
 }
 
 .hue-range-slider .range-bar {
-	-fx-pref-height: 50;
+	-fx-pref-height: 32;
 	-fx-background-color: transparent;
 }
 
 .gradient-label {
 	-fx-pref-width: 50;
+}
+
+.slider-box {
+    -fx-spacing: 10;
+}
+
+.flip-label:hover {
+	-fx-background-color: -color-filter-box-control-hover-background
 }
 
 /*---------- FILTER ----------*/

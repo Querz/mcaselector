@@ -153,8 +153,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		// try until we find either null or a parser that is active and valid
 		} while ((parser = overlayParsers.get(index)) != null && (!parser.isActive() || !parser.isValid()));
 
-		System.out.println("switching to parser index " + index + ": " + parser);
-
 		setOverlay(parser);
 		MCAFilePipe.clearParserQueue();
 	}
