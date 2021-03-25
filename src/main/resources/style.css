@@ -715,6 +715,11 @@
 	-fx-hgap: 10;
 }
 
+.range-text-field-invalid {
+	-fx-background-color: -color-filter-box-invalid-background;
+	-fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
+}
+
 /*---------- Slider ----------*/
 
 .slider {
