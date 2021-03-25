@@ -14,8 +14,8 @@ public abstract class OverlayParser implements Cloneable {
 	private String rawMin;
 	private String rawMax;
 	protected String[] multiValues = null;
-	private float minHue = 0;
-	private float maxHue = 0.85f;
+	private float minHue = 0.66666667f; // blue
+	private float maxHue = 0f; // red
 
 	public OverlayParser(OverlayType type) {
 		this.type = type;

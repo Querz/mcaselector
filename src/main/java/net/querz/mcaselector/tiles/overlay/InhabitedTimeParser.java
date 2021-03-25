@@ -45,7 +45,7 @@ public class InhabitedTimeParser extends OverlayParser {
 		setRawMin(raw);
 		minDuration = null;
 		if (raw == null || raw.isEmpty()) {
-			return setMin(0);
+			return setMin((Integer) null);
 		}
 		try {
 			return setMin(Integer.parseInt(raw));
@@ -71,7 +71,7 @@ public class InhabitedTimeParser extends OverlayParser {
 		setRawMax(raw);
 		maxDuration = null;
 		if (raw == null || raw.isEmpty()) {
-			return setMax(0);
+			return setMax((Integer) null);
 		}
 		try {
 			return setMax(Integer.parseInt(raw));

@@ -10,7 +10,7 @@ public abstract class AmountParser extends OverlayParser {
 	public boolean setMin(String raw) {
 		setRawMin(raw);
 		if (raw == null || raw.isEmpty()) {
-			return setMin(0);
+			return setMin((Integer) null);
 		}
 		try {
 			return setMin(Integer.parseInt(raw));
@@ -23,7 +23,7 @@ public abstract class AmountParser extends OverlayParser {
 	public boolean setMax(String raw) {
 		setRawMax(raw);
 		if (raw == null || raw.isEmpty()) {
-			return setMax(0);
+			return setMax((Integer) null);
 		}
 		try {
 			return setMax(Integer.parseInt(raw));
