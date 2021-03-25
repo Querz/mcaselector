@@ -27,21 +27,22 @@ public class OverlayPool {
 
 	private final TileMap tileMap;
 	private final Set<Point2i> noData = new HashSet<>();
+
+	// used to load and render data asynchronously from db
 	private final ThreadPoolExecutor overlayCacheLoaders = new ThreadPoolExecutor(
 			4, 4,
 			0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<>());
+
+	// used to load region data from db asynchronously to be displayed in the status bar
 	private final ThreadPoolExecutor overlayValueLoader = new ThreadPoolExecutor(
 			1, 1,
 			0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<>());
 
-	// when key present, but value null: no cache file
-	// when key not present: look if region exists
 	private final CacheDBController dataCache = new CacheDBController();
 	private OverlayParser parser;
 
-	private final Object hoveredRegionLock = new Object();
 	private Point2i hoveredRegion;
 	private int[] hoveredRegionData;
 
@@ -54,6 +55,8 @@ public class OverlayPool {
 		if (overlay != null) {
 			try {
 				dataCache.initTables(Collections.singletonList(overlay));
+				hoveredRegion = null;
+				hoveredRegionData = null;
 			} catch (SQLException ex) {
 				Debug.dumpException("failed to create table for overlay " + overlay, ex);
 			}
@@ -92,23 +95,22 @@ public class OverlayPool {
 				Platform.runLater(tileMap::update);
 			} else {
 				// calculate data
-				MCAFilePipe.executeParseData(new ParseDataJob(tile, FileHelper.createRegionDirectories(tile.location), Config.getWorldUUID(), (d, u) -> {
-					Platform.runLater(() -> {
-						if (u.equals(Config.getWorldUUID())) {
-							if (d == null) {
-								noData.add(tile.location);
-								tile.overlayLoaded = true;
-								return;
-							}
-							if (parser.equals(this.parser)) {
-								push(tile.location, d);
-								tile.overlay = parseColorGrades(d, parser.min(), parser.max(), parser.getMinHue(), parser.getMaxHue());
-								tile.overlayLoaded = true;
-								tileMap.update();
-							}
+				MCAFilePipe.executeParseData(new ParseDataJob(tile, FileHelper.createRegionDirectories(tile.location), Config.getWorldUUID(),
+						(d, u) -> Platform.runLater(() -> {
+					if (u.equals(Config.getWorldUUID())) {
+						if (d == null) {
+							noData.add(tile.location);
+							tile.overlayLoaded = true;
+							return;
 						}
-					});
-				}, parser));
+						if (parser.equals(this.parser)) {
+							push(tile.location, d);
+							tile.overlay = parseColorGrades(d, parser.min(), parser.max(), parser.getMinHue(), parser.getMaxHue());
+							tile.overlayLoaded = true;
+							tileMap.update();
+						}
+					}
+				}), parser));
 			}
 		});
 	}
@@ -150,6 +152,8 @@ public class OverlayPool {
 	public void switchTo(String dbPath) {
 		try {
 			dataCache.switchTo(dbPath, tileMap.getOverlayParsers());
+			hoveredRegion = null;
+			hoveredRegionData = null;
 		} catch (SQLException ex) {
 			Debug.dumpException("failed to switch cache db", ex);
 		}
@@ -158,6 +162,8 @@ public class OverlayPool {
 	public void clear() {
 		try {
 			dataCache.clear(tileMap.getOverlayParsers());
+			hoveredRegion = null;
+			hoveredRegionData = null;
 		} catch (Exception ex) {
 			Debug.dumpException("failed to clear data cache", ex);
 		}
@@ -167,6 +173,10 @@ public class OverlayPool {
 	public void discardData(Point2i region) {
 		try {
 			dataCache.deleteData(region);
+			if (region.equals(hoveredRegion)) {
+				hoveredRegion = null;
+				hoveredRegionData = null;
+			}
 			Debug.dumpf("removed data for %s from data pool", region);
 		} catch (SQLException ex) {
 			Debug.dumpException("failed to remove data from cache", ex);
@@ -182,7 +192,7 @@ public class OverlayPool {
 		Point2i normalizedChunk = chunk.normalizeChunkInRegion();
 		if (region.equals(hoveredRegion)) {
 			if (hoveredRegionData != null) {
-				callback.accept(hoveredRegionData[normalizedChunk.getX() * 32 + normalizedChunk.getZ()]);
+				callback.accept(hoveredRegionData[normalizedChunk.getZ() * 32 + normalizedChunk.getX()]);
 			} else {
 				callback.accept(null);
 			}
@@ -197,7 +207,7 @@ public class OverlayPool {
 						Platform.runLater(() -> callback.accept(null));
 						return;
 					}
-					Platform.runLater(() -> callback.accept(regionData[normalizedChunk.getX() * 32 + normalizedChunk.getZ()]));
+					Platform.runLater(() -> callback.accept(regionData[normalizedChunk.getZ() * 32 + normalizedChunk.getX()]));
 				} catch (IOException | SQLException ex) {
 					Debug.dumpException("failed to load data for overlay value", ex);
 					Platform.runLater(() -> callback.accept(null));

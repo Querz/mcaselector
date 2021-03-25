@@ -77,33 +77,31 @@ public class OverlayBox extends BorderPane {
 
 		options.getStyleClass().add("overlay-options-grid");
 
-		active.selectedProperty().addListener((v, o, n) -> value.setActive(n));
+		active.selectedProperty().addListener((v, o, n) -> getValue().setActive(n));
 
 		gradient.getStyleClass().add("gradient-label");
 
 		ContextMenu gradientMenu = new ContextMenu();
-		HueRangeSlider hueSlider = new HueRangeSlider(0, 0.85f, 400, value.getMinHue() > value.getMaxHue());
-		hueSlider.setLowValue(Math.min(value.getMinHue(), value.getMaxHue()));
-		hueSlider.setHighValue(Math.max(value.getMinHue(), value.getMaxHue()));
+		HueRangeSlider hueSlider = new HueRangeSlider(0, 0.85f, value.getMinHue(), value.getMaxHue(), 400);
 		setGradientBackground(hueSlider);
 		Label flip = new Label("", new ImageView(flipIcon));
 		flip.getStyleClass().add("flip-label");
 		flip.setOnMouseReleased(a -> {
 			hueSlider.setInverted(!hueSlider.isInverted());
-			value.setMinHue(hueSlider.getMinHue());
-			value.setMaxHue(hueSlider.getMaxHue());
+			getValue().setMinHue(hueSlider.getMinHue());
+			getValue().setMaxHue(hueSlider.getMaxHue());
 			setGradientBackground(hueSlider);
 		});
 
 		hueSlider.lowValueProperty().addListener((v, o, n) -> {
-			value.setMinHue(hueSlider.getMinHue());
-			value.setMaxHue(hueSlider.getMaxHue());
+			getValue().setMinHue(hueSlider.getMinHue());
+			getValue().setMaxHue(hueSlider.getMaxHue());
 			setGradientBackground(hueSlider);
 		});
 
 		hueSlider.highValueProperty().addListener((v, o, n) -> {
-			value.setMinHue(hueSlider.getMinHue());
-			value.setMaxHue(hueSlider.getMaxHue());
+			getValue().setMinHue(hueSlider.getMinHue());
+			getValue().setMaxHue(hueSlider.getMaxHue());
 			setGradientBackground(hueSlider);
 		});
 
@@ -143,12 +141,17 @@ public class OverlayBox extends BorderPane {
 		onMaximumInput(value.maxString());
 	}
 
+	private OverlayParser getValue() {
+		return value;
+	}
+
 	private void setGradientBackground(HueRangeSlider hueSlider) {
-		float min = hueSlider.getMinHue();
-		float max = hueSlider.getMaxHue();
-		if (min > max) {
-			max = min;
-			min = hueSlider.getMaxHue();
+		float min = (float) hueSlider.getLowValue();
+		float max = (float) hueSlider.getHighValue();
+
+		if (hueSlider.isInverted()) {
+			min = 0.85f - max;
+			max = 0.85f - (float) hueSlider.getLowValue();
 		}
 
 		gradient.setBackground(new Background((new BackgroundImage(ImageHelper.renderGradient(
@@ -184,6 +187,8 @@ public class OverlayBox extends BorderPane {
 		onMaximumInput(maximum.getText());
 
 		additionalData.setDisable(newValue.multiValues() == null);
+
+		active.setSelected(newValue.isActive());
 
 		onTypeChange.accept(oldValue, newValue);
 	}

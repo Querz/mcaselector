@@ -172,7 +172,11 @@ public class DialogHelper {
 
 	public static void editOverlays(TileMap tileMap, Stage primaryStage) {
 		Optional<OverlayEditorDialog.Result> result = new OverlayEditorDialog(primaryStage, tileMap.getOverlayParsers()).showAndWait();
-		result.ifPresent(r -> tileMap.setOverlays(r.getOverlays()));
+		result.ifPresent(r -> {
+			System.out.println(r.getOverlays());
+			Config.setOverlays(r.getOverlays());
+			tileMap.setOverlays(r.getOverlays());
+		});
 	}
 
 	public static void deleteSelection(TileMap tileMap, Stage primaryStage) {

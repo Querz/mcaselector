@@ -117,6 +117,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		overlayPool = new OverlayPool(this);
 		imgPool = new ImagePool(this, Config.IMAGE_POOL_SIZE);
 
+		setOverlays(Config.getOverlays());
+
 		update();
 	}
 
@@ -158,6 +160,12 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	public void setOverlays(List<OverlayParser> overlays) {
+		if (overlays == null) {
+			overlayParsers = Collections.singletonList(null);
+			setOverlay(null);
+			MCAFilePipe.clearParserQueue();
+			return;
+		}
 		overlayParsers = new ArrayList<>(overlays.size() + 1);
 		overlayParsers.addAll(overlays);
 		overlayParsers.add(null);

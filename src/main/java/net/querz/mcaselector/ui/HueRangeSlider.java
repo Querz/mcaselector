@@ -16,10 +16,18 @@ public class HueRangeSlider extends RangeSlider {
 	private BooleanProperty invertedProperty = new SimpleBooleanProperty(false);
 	private final int width;
 
-	public HueRangeSlider(float minHue, float maxHue, int width, boolean inverted) {
+	public HueRangeSlider(float minHue, float maxHue, float low, float high, int width) {
 		super(minHue, maxHue, minHue, maxHue);
 		this.width = width;
-		invertedProperty.set(inverted);
+
+		if (low > high) {
+			invertedProperty.set(true);
+			low = maxHue - low;
+			high = maxHue - high;
+		}
+
+		setLowValue(low);
+		setHighValue(high);
 
 		getStyleClass().add("hue-range-slider");
 
@@ -30,9 +38,15 @@ public class HueRangeSlider extends RangeSlider {
 		lowValueProperty().addListener((v, o, n) -> renderBackground());
 
 		invertedProperty.addListener((v, o, n) -> {
-			double low = getLowValue();
-			setLowValue(maxHue - getHighValue());
-			setHighValue(maxHue - low);
+			double l = getLowValue();
+			double h = getHighValue();
+			if (n) {
+				setHighValue(getMax() - l);
+				setLowValue(getMax() - h);
+			} else {
+				setLowValue(getMax() - h);
+				setHighValue(getMax() - l);
+			}
 			renderBackground();
 		});
 	}

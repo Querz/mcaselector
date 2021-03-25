@@ -1,7 +1,8 @@
 package net.querz.mcaselector.tiles.overlay;
 
 import net.querz.mcaselector.io.mca.ChunkData;
-
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.util.Arrays;
 
 public abstract class OverlayParser implements Cloneable {
@@ -112,9 +113,49 @@ public abstract class OverlayParser implements Cloneable {
 		return multiValues;
 	}
 
+	public JSONObject toJSON() {
+		JSONObject object = new JSONObject();
+		object.put("type", type.name());
+		object.put("active", active);
+		object.put("min", min);
+		object.put("max", max);
+		object.put("rawMin", rawMin);
+		object.put("rawMax", rawMax);
+		object.put("multiValues", multiValues);
+		object.put("minHue", minHue);
+		object.put("maxHue", maxHue);
+		return object;
+	}
+
+	public static OverlayParser fromJSON(JSONObject object) {
+		OverlayType type = OverlayType.valueOf(object.getString("type"));
+		OverlayParser parser = type.instance();
+		parser.active = object.getBoolean("active");
+		parser.min = object.getInt("min");
+		parser.max = object.getInt("max");
+		parser.rawMin = object.getString("rawMin");
+		parser.rawMax = object.getString("rawMax");
+		if (object.has("multiValues")) {
+			JSONArray multiValues = object.getJSONArray("multiValues");
+			if (multiValues != null) {
+				parser.multiValues = new String[multiValues.length()];
+				for (int i = 0; i < multiValues.length(); i++) {
+					Object o = multiValues.get(i);
+					if (!(o instanceof String)) {
+						throw new IllegalArgumentException("multiValues only allows strings");
+					}
+					parser.multiValues[i] = (String) o;
+				}
+			}
+		}
+		parser.minHue = object.getFloat("minHue");
+		parser.maxHue = object.getFloat("maxHue");
+		return parser;
+	}
+
 	@Override
 	public String toString() {
-		return String.format("{min=%s, max=%s, active=%s, valid=%s, minHue=%f, maHue=%f", minString(), maxString(), active, isValid(), minHue, maxHue);
+		return String.format("{min=%s, max=%s, active=%s, valid=%s, minHue=%f, maxHue=%f}", minString(), maxString(), active, isValid(), minHue, maxHue);
 	}
 
 	@Override
