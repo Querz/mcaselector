@@ -40,7 +40,6 @@ public class StatusBar extends StackPane {
 
 		tileMap.setOnUpdate(this::update);
 		tileMap.setOnHover(this::update);
-		tileMap.setOnOverlayChange(this::updateOverlay);
 		for (int i = 0; i < 6; i++) {
 			ColumnConstraints constraints = new ColumnConstraints();
 			constraints.setMinWidth(140);
@@ -114,19 +113,28 @@ public class StatusBar extends StackPane {
 			hoveredChunk.setText(Translation.STATUS_CHUNK + ": " + c.getX() + ", " + c.getZ());
 			Point2i r = b.blockToRegion();
 			hoveredRegion.setText(Translation.STATUS_REGION + ": " + r.getX() + ", " + r.getZ());
+			updateOverlay(tileMap, c);
 		} else {
 			hoveredBlock.setText(Translation.STATUS_BLOCK + ": -, -");
 			hoveredChunk.setText(Translation.STATUS_CHUNK + ": -, -");
 			hoveredRegion.setText(Translation.STATUS_REGION + ": -, -");
+			updateOverlay(tileMap, null);
 		}
 	}
 
-	private void updateOverlay(TileMap tileMap) {
-		OverlayParser p = tileMap.getOverlay();
-		if (p != null) {
-			overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + "," + p.max() + ")");
+	private void updateOverlay(TileMap tileMap, Point2i chunk) {
+		if (tileMap.getOverlay() != null) {
+			if (chunk != null) {
+				tileMap.getOverlayPool().getHoveredChunkValue(chunk, v -> {
+					OverlayParser p = tileMap.getOverlay();
+					overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + ", " + p.max() + "), " + (v == null ? "-" : v));
+				});
+			} else {
+				OverlayParser p = tileMap.getOverlay();
+				overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + ", " + p.max() + "), -");
+			}
 		} else {
-			overlay.setText(Translation.STATUS_OVERLAY + ": -");
+			overlay.setText(Translation.STATUS_OVERLAY + ": -, -");
 		}
 	}
 }

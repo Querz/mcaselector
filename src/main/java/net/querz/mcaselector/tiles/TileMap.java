@@ -54,6 +54,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private final Set<Tile> visibleTiles = ConcurrentHashMap.newKeySet();
 
 	private int selectedChunks = 0;
+	private Point2f mouseHoverLocation = null;
 	private Point2i hoveredBlock = null;
 
 	private boolean showChunkGrid = true;
@@ -61,7 +62,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private final List<Consumer<TileMap>> updateListener = new ArrayList<>(1);
 	private final List<Consumer<TileMap>> hoverListener = new ArrayList<>(1);
-	private final List<Consumer<TileMap>> overlayChangeListener = new ArrayList<>(1);
 
 	private final KeyActivator keyActivator = new KeyActivator();
 
@@ -173,7 +173,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			tile.overlayLoaded = false;
 		}
 		update();
-		runOverlayChangeListeners();
 	}
 
 	public OverlayParser getOverlay() {
@@ -263,11 +262,13 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private void onMouseMoved(MouseEvent event) {
 		hoveredBlock = getMouseBlock(event.getX(), event.getY());
+		mouseHoverLocation = new Point2f(event.getX(), event.getY());
 		runHoverListeners();
 	}
 
 	private void onMouseExited() {
 		hoveredBlock = null;
+		mouseHoverLocation = null;
 		runHoverListeners();
 	}
 
@@ -363,7 +364,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	public void update() {
 		Timer t = new Timer();
-		runUpdateListeners();
 
 		// removes jobs from queue that are no longer needed
 		MCAFilePipe.validateJobs(j -> {
@@ -416,6 +416,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 		draw(context);
 		totalUpdates++;
+		if (mouseHoverLocation != null) {
+			hoveredBlock = getMouseBlock(mouseHoverLocation.getX(), mouseHoverLocation.getY());
+		}
+		runUpdateListeners();
 		Debug.dumpf("map update #%d: %s", totalUpdates, t);
 	}
 
@@ -453,20 +457,12 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		hoverListener.add(listener);
 	}
 
-	public void setOnOverlayChange(Consumer<TileMap> listener) {
-		overlayChangeListener.add(listener);
-	}
-
 	private void runUpdateListeners() {
 		updateListener.forEach(c -> c.accept(this));
 	}
 
 	private void runHoverListeners() {
 		hoverListener.forEach(c -> c.accept(this));
-	}
-
-	private void runOverlayChangeListeners() {
-		overlayChangeListener.forEach(c -> c.accept(this));
 	}
 
 	public Point2f getOffset() {

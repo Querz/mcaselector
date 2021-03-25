@@ -7,13 +7,13 @@ import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.db.CacheDBController;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import java.awt.*;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public class OverlayPool {
 
@@ -30,11 +31,19 @@ public class OverlayPool {
 			4, 4,
 			0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue<>());
+	private final ThreadPoolExecutor overlayValueLoader = new ThreadPoolExecutor(
+			1, 1,
+			0L, TimeUnit.MILLISECONDS,
+			new LinkedBlockingQueue<>());
 
 	// when key present, but value null: no cache file
 	// when key not present: look if region exists
 	private final CacheDBController dataCache = new CacheDBController();
 	private OverlayParser parser;
+
+	private final Object hoveredRegionLock = new Object();
+	private Point2i hoveredRegion;
+	private int[] hoveredRegionData;
 
 	public OverlayPool(TileMap tileMap) {
 		this.tileMap = tileMap;
@@ -163,5 +172,37 @@ public class OverlayPool {
 			Debug.dumpException("failed to remove data from cache", ex);
 		}
 		noData.remove(region);
+	}
+
+	public void getHoveredChunkValue(Point2i chunk, Consumer<Integer> callback) {
+		if (parser == null) {
+			callback.accept(null);
+		}
+		Point2i region = chunk.chunkToRegion();
+		Point2i normalizedChunk = chunk.normalizeChunkInRegion();
+		if (region.equals(hoveredRegion)) {
+			if (hoveredRegionData != null) {
+				callback.accept(hoveredRegionData[normalizedChunk.getX() * 32 + normalizedChunk.getZ()]);
+			} else {
+				callback.accept(null);
+			}
+		} else {
+			overlayValueLoader.getQueue().clear(); // no need to load anything else
+			overlayValueLoader.execute(() -> {
+				try {
+					int[] regionData = dataCache.getData(parser, null, region);
+					hoveredRegion = region;
+					hoveredRegionData = regionData;
+					if (regionData == null) {
+						Platform.runLater(() -> callback.accept(null));
+						return;
+					}
+					Platform.runLater(() -> callback.accept(regionData[normalizedChunk.getX() * 32 + normalizedChunk.getZ()]));
+				} catch (IOException | SQLException ex) {
+					Debug.dumpException("failed to load data for overlay value", ex);
+					Platform.runLater(() -> callback.accept(null));
+				}
+			});
+		}
 	}
 }
