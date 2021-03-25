@@ -117,11 +117,11 @@ public abstract class OverlayParser implements Cloneable {
 		JSONObject object = new JSONObject();
 		object.put("type", type.name());
 		object.put("active", active);
-		object.put("min", min);
-		object.put("max", max);
-		object.put("rawMin", rawMin);
-		object.put("rawMax", rawMax);
-		object.put("multiValues", multiValues);
+		object.put("min", min == null ? JSONObject.NULL : min);
+		object.put("max", max == null ? JSONObject.NULL : max);
+		object.put("rawMin", rawMin == null ? JSONObject.NULL : rawMin);
+		object.put("rawMax", rawMax == null ? JSONObject.NULL : rawMax);
+		object.put("multiValues", multiValues == null ? JSONObject.NULL : multiValues);
 		object.put("minHue", minHue);
 		object.put("maxHue", maxHue);
 		return object;
@@ -131,11 +131,11 @@ public abstract class OverlayParser implements Cloneable {
 		OverlayType type = OverlayType.valueOf(object.getString("type"));
 		OverlayParser parser = type.instance();
 		parser.active = object.getBoolean("active");
-		parser.min = object.getInt("min");
-		parser.max = object.getInt("max");
-		parser.rawMin = object.getString("rawMin");
-		parser.rawMax = object.getString("rawMax");
-		if (object.has("multiValues")) {
+		parser.min = object.get("min") == JSONObject.NULL ? null : object.getInt("min");
+		parser.max = object.get("max") == JSONObject.NULL ? null : object.getInt("max");
+		parser.rawMin = object.get("rawMin") == JSONObject.NULL ? null : object.getString("rawMin");
+		parser.rawMax = object.get("rawMax") == JSONObject.NULL ? null : object.getString("rawMax");
+		if (object.has("multiValues") && object.get("multiValues") instanceof JSONArray) {
 			JSONArray multiValues = object.getJSONArray("multiValues");
 			if (multiValues != null) {
 				parser.multiValues = new String[multiValues.length()];
