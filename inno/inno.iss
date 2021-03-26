@@ -41,6 +41,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "${applicationName}.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "7za.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 Source: "${applicationJar}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "lib\\*"; DestDir: "{app}\\lib"; Flags: ignoreversion
 
 [InstallDelete]
 Type: filesandordirs; Name: "{app}\\jre"
