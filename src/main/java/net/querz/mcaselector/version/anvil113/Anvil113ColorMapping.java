@@ -61,9 +61,6 @@ public class Anvil113ColorMapping implements ColorMapping {
 
 	@Override
 	public int getRGB(Object o) {
-		if (isWaterlogged((CompoundTag) o)) {
-			return (int) mapping.get("minecraft:water");
-		}
 		Object value = mapping.get(withDefault(() -> ((CompoundTag) o).getString("Name"), ""));
 		if (value instanceof Integer) {
 			return (int) value;
@@ -71,10 +68,6 @@ public class Anvil113ColorMapping implements ColorMapping {
 			return ((BlockStateMapping) value).getColor(withDefault(() -> ((CompoundTag) o).getCompoundTag("Properties"), null));
 		}
 		return 0x000000;
-	}
-
-	private boolean isWaterlogged(CompoundTag data) {
-		return data.get("Properties") != null && "true".equals(withDefault(() -> data.getCompoundTag("Properties").getString("waterlogged"), null));
 	}
 
 	private static class BlockStateMapping {

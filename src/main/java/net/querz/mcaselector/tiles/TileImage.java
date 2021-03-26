@@ -117,8 +117,8 @@ public final class TileImage {
 			PixelWriter writer = finalImage.getPixelWriter();
 			int[] pixelBuffer = new int[Tile.PIXELS];
 			int[] waterPixels = Config.shade() && Config.shadeWater() ? new int[Tile.PIXELS] : null;
-			byte[] terrainHeights = new byte[Tile.PIXELS];
-			byte[] waterHeights = Config.shade() && Config.shadeWater() ? new byte[Tile.PIXELS] : null;
+			short[] terrainHeights = new short[Tile.PIXELS];
+			short[] waterHeights = Config.shade() && Config.shadeWater() ? new short[Tile.PIXELS] : null;
 
 			for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
 				for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
@@ -147,7 +147,7 @@ public final class TileImage {
 		return null;
 	}
 
-	private static void drawChunkImage(Chunk chunkData, int x, int z, int[] pixelBuffer, int[] waterPixels, byte[] terrainHeights, byte[] waterHeights) {
+	private static void drawChunkImage(Chunk chunkData, int x, int z, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights) {
 		if (chunkData.getData() == null) {
 			return;
 		}
@@ -178,7 +178,7 @@ public final class TileImage {
 		}
 	}
 
-	private static void shade(int[] pixelBuffer, int[] waterPixels, byte[] terrainHeights, byte[] waterHeights) {
+	private static void shade(int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights) {
 		if (!Config.shadeWater() || !Config.shade()) {
 			waterHeights = terrainHeights;
 		}
@@ -193,23 +193,23 @@ public final class TileImage {
 				}
 
 				if (terrainHeights[index] != waterHeights[index]) {
-					float ratio = 0.5f - 0.5f / 40f * (float) ((waterHeights[index] & 0xFF) - (terrainHeights[index] & 0xFF));
+					float ratio = 0.5f - 0.5f / 40f * (float) ((waterHeights[index]) - (terrainHeights[index]));
 					pixelBuffer[index] = Color.blend(pixelBuffer[index], waterPixels[index], ratio);
 				} else {
 					if (z == 0) {
-						zShade = (waterHeights[index + Tile.SIZE] & 0xFF) - (waterHeights[index] & 0xFF);
+						zShade = (waterHeights[index + Tile.SIZE]) - (waterHeights[index]);
 					} else if (z == Tile.SIZE - 1) {
-						zShade = (waterHeights[index] & 0xFF) - (waterHeights[index - Tile.SIZE] & 0xFF);
+						zShade = (waterHeights[index]) - (waterHeights[index - Tile.SIZE]);
 					} else {
-						zShade = ((waterHeights[index + Tile.SIZE] & 0xFF) - (waterHeights[index - Tile.SIZE] & 0xFF)) * 2;
+						zShade = ((waterHeights[index + Tile.SIZE]) - (waterHeights[index - Tile.SIZE])) * 2;
 					}
 
 					if (x == 0) {
-						xShade = (waterHeights[index + 1] & 0xFF) - (waterHeights[index] & 0xFF);
+						xShade = (waterHeights[index + 1]) - (waterHeights[index]);
 					} else if (x == Tile.SIZE - 1) {
-						xShade = (waterHeights[index] & 0xFF) - (waterHeights[index - 1] & 0xFF);
+						xShade = (waterHeights[index]) - (waterHeights[index - 1]);
 					} else {
-						xShade = ((waterHeights[index + 1] & 0xFF) - (waterHeights[index - 1] & 0xFF)) * 2;
+						xShade = ((waterHeights[index + 1]) - (waterHeights[index - 1])) * 2;
 					}
 
 					float shade = xShade + zShade;
@@ -220,7 +220,7 @@ public final class TileImage {
 						shade = 8;
 					}
 
-					int altitudeShade = 16 * ((waterHeights[index] & 0xFF) - 64) / 255;
+					int altitudeShade = 16 * ((waterHeights[index]) - 64) / 255;
 					if (altitudeShade < -4) {
 						altitudeShade = -4;
 					}
