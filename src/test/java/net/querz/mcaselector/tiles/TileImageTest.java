@@ -32,6 +32,7 @@ public class TileImageTest {
 				() -> 1.0f,
 				data
 		);
+
 		assertImageEquals("anvil112/r.0.0.png", image);
 
 		Config.setShadeWater(false);
@@ -67,6 +68,7 @@ public class TileImageTest {
 				() -> 1.0f,
 				data
 		);
+
 		assertImageEquals("anvil113/r.0.0.png", image);
 
 		Config.setShadeWater(false);
@@ -204,6 +206,7 @@ public class TileImageTest {
 	}
 
 	private void assertImageEquals(String expected, Image actual) throws IOException {
+//		writeImage(actual, new File("actual/" + expected));
 		Image expectedImage = SwingFXUtils.toFXImage(ImageIO.read(getResourceFile(expected)), null);
 		assertArrayEquals(getImageData(expectedImage), getImageData(actual));
 	}
