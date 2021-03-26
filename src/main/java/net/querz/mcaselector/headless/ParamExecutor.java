@@ -50,6 +50,13 @@ public final class ParamExecutor {
 				return null;
 			}
 
+			if (params.containsKey("version")) {
+				String applicationVersion = FileHelper.getManifestAttributes().getValue("Application-Version");
+				System.out.println(applicationVersion);
+				future.run();
+				return future;
+			}
+
 			if (params.containsKey("enablePrinting")) {
 				Debug.enablePrinting = true;
 				if (params.size() == 1) {
