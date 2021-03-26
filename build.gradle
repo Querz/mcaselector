@@ -116,7 +116,8 @@ task installer {
 		}
 
 		copy {
-			from("${buildDir}/libs/lib/*.jar")
+			from("${buildDir}/libs/lib/")
+			include('*.jar')
 			into(innoSetupLibDir)
 		}
 
@@ -138,6 +139,7 @@ jar.finalizedBy shadowJar
 jar.dependsOn minifyCss
 jar.dependsOn copyRuntimeLibs
 assemble.dependsOn shadowJar
+installer.dependsOn jar
 
 task updateReadme {
 	doLast {
