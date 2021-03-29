@@ -16,6 +16,7 @@
   * [Chunk import](#chunk-import)
   * [Copy and Paste](#copy-and-paste)
   * [Swapping chunks](#swapping-chunks)
+  * [Overlays](#overlays)
   * [Caching](#caching)
   * [Generating an image](#generating-an-image)
   * [Debugging](#debugging)
@@ -55,7 +56,7 @@ For people who prefer watching a video to understand how the MCA Selector works,
 Executing the tool, it shows an empty window with a chunk and a region grid. To actually show a world, open a folder containing Minecraft Anvil (\*.mca) files. The tool will then render a top-down view of this world that you can zoom into and zoom out of by scrolling up and down and that you can move around using the middle mouse button (`Cmd+LMB` on Mac OS) or using `WASD`.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/88e1887eb441c1f0f60af6eb3dfcf7917b16544a/default.png" alt="MCA Selector window showing chunk and region grid">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/default.png" alt="MCA Selector window showing chunk and region grid">
 </p>
 
 Zooming out far enough disables the selection of single chunks but lets you select entire regions.
@@ -64,7 +65,7 @@ Zooming out far enough disables the selection of single chunks but lets you sele
 Upon finishing selecting chunks and regions, they can be deleted or exported using the `Selection`-menu. Exported chunks and regions are not deleted from the original world.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/88e1887eb441c1f0f60af6eb3dfcf7917b16544a/selections.png" alt="MCA Selector window showing chunk and region selection export">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/selections.png" alt="MCA Selector window showing chunk and region selection export">
 </p>
 
 A selection (not the chunks and regions themselves) can also be exported or imported and even be applied to different worlds.
@@ -73,7 +74,7 @@ A selection (not the chunks and regions themselves) can also be exported or impo
 The MCA Selector also contains a powerful tool to delete or export chunks and regions by conditions like the data version, the time it was last updated, how much time players have spent in this chunk and some more. Multiple of these conditions can be used to create a very specific query describing what chunks and regions should be deleted or exported.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/88e1887eb441c1f0f60af6eb3dfcf7917b16544a/filter_chunks.png" alt="MCA Selector window showing the chunk filter">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/filter_chunks.png" alt="MCA Selector window showing the chunk filter">
 </p>
 
 Because the conditions use internal values used by Minecraft, the following table gives a brief explanation on what they do:
@@ -107,7 +108,7 @@ Running the query will check the `.mca`-file's name first if the query would eve
 The NBT Changer modifies the world files directly by changing specific values.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/88e1887eb441c1f0f60af6eb3dfcf7917b16544a/change_nbt.png" alt="MCA Selector window showing the nbt changer">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/change_nbt.png" alt="MCA Selector window showing the nbt changer">
 </p>
 
 You can change the following values:
@@ -135,7 +136,7 @@ For more information about the fields have a look at the chunk format descriptio
 When selecting a single chunk, the menu "Edit chunks" becomes available. It allows precise editing of the entire NBT structure of that chunk, including poi and entities data. Names and values can be changed, added, deleted or moved (via drag & drop).
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/88e1887eb441c1f0f60af6eb3dfcf7917b16544a/edit_chunk.png" alt="MCA Selector window showing the NBT editor">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/edit_chunk.png" alt="MCA Selector window showing the NBT editor">
 </p>
 
 **Notice** When the NBT editor does not show any data, the cached top-down view might be outdated, and the chunk might not exist anymore in the mca files. In that case, clearing the cache will re-render the regions from scratch and show the up-to-date top-down view.
@@ -144,7 +145,7 @@ When selecting a single chunk, the menu "Edit chunks" becomes available. It allo
 Importing chunks can be easily done by opening the target world first using `File --> Open` and then merging the chunks of a second world using `Tools --> Import chunks`. After selecting a folder containing region files, it is possible to import the chunks with a bunch of additional options.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/88e1887eb441c1f0f60af6eb3dfcf7917b16544a/import_chunks.png" alt="MCA Selector window showing the chunk import">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/import_chunks.png" alt="MCA Selector window showing the chunk import">
 </p>
 
 Options:
@@ -163,11 +164,20 @@ After making a selection, use `Selection --> Copy chunks` or press `Ctrl+C` (`Cm
 Copying can be cancelled by pressing `Esc`.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/88e1887eb441c1f0f60af6eb3dfcf7917b16544a/copy_paste.png" alt="MCA Selector window showing copy-paste overlay">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/copy_paste.png" alt="MCA Selector window showing copy-paste overlay">
 </p>
 
 ### Swapping chunks
 When exactly two chunks are selected, they can be swapped using `Tools --> Swap chunks`. This is useful for corrupted region files when Minecraft failed to correctly save the region file index, resulting in scrambled chunks.
+
+### Overlays
+To have a better overview of what's happening in your world, MCA Selector gives the option to enable customizable overlays. Overlays can display single values per chunk in the form of a color gradient with a minimum and maximum value.
+
+<p align="center">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/overlays.png" alt="MCA Selector window showing InhabitedTime overlay for Hermitcraft Season 6">
+</p>
+
+Overlays can be con figured using `Tools --> Edit overlays`. Only when all values of an overlay are valid (e.g. minimum < maximum) and it is set to active, it can be toggled on and off in the map view using the `O` key. Overlays are globally persistent and can be reused for all worlds.
 
 ### Caching
 The tool creates an image for each region from the provided mca-files. These images are saved separately inside the respective operating system's specific cache folders. Experience showed that a Minecraft world with a size of 10GB resulted in cached image files with a total size of 80-100MB. Caching as many regions as possible significantly improves loading times.
@@ -421,7 +431,7 @@ For MacOS:
 "When I run `mcaselector-1.15.jar`, an error dialog appears that looks like this:"
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/88e1887eb441c1f0f60af6eb3dfcf7917b16544a/missing_javafx.png" alt="Popup dialog stating a missing JavaFX installation">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/missing_javafx.png" alt="Popup dialog stating a missing JavaFX installation">
 </p>
 
 Open the console or terminal on your OS.
