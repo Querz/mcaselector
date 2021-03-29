@@ -1,23 +1,11 @@
 package net.querz.mcaselector.ui.dialog;
 
-import javafx.application.Platform;
-import javafx.geometry.Bounds;
-import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -25,11 +13,7 @@ import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.overlay.InhabitedTimeParser;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
-import net.querz.mcaselector.ui.HueRangeSlider;
 import net.querz.mcaselector.ui.OverlayBox;
-import org.controlsfx.control.RangeSlider;
-
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

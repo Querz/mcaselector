@@ -3,7 +3,6 @@ package net.querz.mcaselector.ui;
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
@@ -22,10 +21,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
+import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
-
-import java.awt.Color;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -63,6 +61,8 @@ public class OverlayBox extends BorderPane {
 		maximum.textProperty().addListener((a, b, c) -> onMaximumInput(c));
 		minimum.setAlignment(Pos.CENTER);
 		maximum.setAlignment(Pos.CENTER);
+		minimum.setPromptText("<min>");
+		maximum.setPromptText("<max>");
 
 		inputs.getStyleClass().add("overlay-input-grid");
 
@@ -78,6 +78,7 @@ public class OverlayBox extends BorderPane {
 		options.getStyleClass().add("overlay-options-grid");
 
 		active.selectedProperty().addListener((v, o, n) -> getValue().setActive(n));
+		active.setTooltip(UIFactory.tooltip(Translation.DIALOG_EDIT_OVERLAYS_OVERLAY_ACTIVE_TOOLTIP));
 
 		gradient.getStyleClass().add("gradient-label");
 
@@ -129,6 +130,7 @@ public class OverlayBox extends BorderPane {
 
 		delete.getStyleClass().add("control-label");
 		delete.setOnMouseReleased(e -> onDelete.accept(value));
+		delete.setTooltip(UIFactory.tooltip(Translation.DIALOG_EDIT_OVERLAYS_DELETE_TOOLTIP));
 
 		setRight(options);
 

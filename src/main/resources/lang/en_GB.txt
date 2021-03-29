@@ -99,6 +99,8 @@ dialog.filter_chunks.selection_only;Apply to selection only
 dialog.filter_chunks.selection_radius;Selection radius
 dialog.filter_chunks.selection_only.tooltip;If this filter should only apply to the current selection.
 dialog.edit_overlays.title;Edit overlays
+dialog.edit_overlays.overlay_active.tooltip;Active
+dialog.edit_overlays.delete.tooltip;Delete
 dialog.change_nbt.title;Change NBT
 dialog.change_nbt.change;Change
 dialog.change_nbt.change.tooltip;Changes the value only if its key exists.
