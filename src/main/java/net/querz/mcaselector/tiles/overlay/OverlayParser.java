@@ -4,6 +4,7 @@ import net.querz.mcaselector.io.mca.ChunkData;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.Arrays;
+import java.util.UUID;
 
 public abstract class OverlayParser implements Cloneable {
 
@@ -13,9 +14,12 @@ public abstract class OverlayParser implements Cloneable {
 	private Integer max;
 	private String rawMin;
 	private String rawMax;
-	protected String[] multiValues = null;
+	private String[] multiValues = null;
+	private String rawMultiValues;
 	private float minHue = 0.66666667f; // blue
 	private float maxHue = 0f; // red
+
+	private String multiValuesID = "";
 
 	public OverlayParser(OverlayType type) {
 		this.type = type;
@@ -61,12 +65,20 @@ public abstract class OverlayParser implements Cloneable {
 		return rawMax;
 	}
 
+	public String getRawMultiValues() {
+		return rawMultiValues;
+	}
+
 	public void setRawMin(String rawMin) {
 		this.rawMin = rawMin;
 	}
 
 	public void setRawMax(String rawMax) {
 		this.rawMax = rawMax;
+	}
+
+	public void setRawMultiValues(String rawMultiValues) {
+		this.rawMultiValues = rawMultiValues;
 	}
 
 	protected boolean setMin(Integer min) {
@@ -93,6 +105,15 @@ public abstract class OverlayParser implements Cloneable {
 
 	public void setMaxHue(float maxHue) {
 		this.maxHue = maxHue;
+	}
+
+	public void setMultiValues(String[] multiValues) {
+		this.multiValues = multiValues;
+		multiValuesID = UUID.nameUUIDFromBytes(String.join("", multiValues).getBytes()).toString().replace("-", "");
+	}
+
+	public String getMultiValuesID() {
+		return multiValuesID;
 	}
 
 	public abstract int parseValue(ChunkData chunkData);
@@ -122,6 +143,7 @@ public abstract class OverlayParser implements Cloneable {
 		object.put("rawMin", rawMin == null ? JSONObject.NULL : rawMin);
 		object.put("rawMax", rawMax == null ? JSONObject.NULL : rawMax);
 		object.put("multiValues", multiValues == null ? JSONObject.NULL : multiValues);
+		object.put("rawMultiValues", rawMultiValues == null ? JSONObject.NULL : rawMultiValues);
 		object.put("minHue", minHue);
 		object.put("maxHue", maxHue);
 		return object;
@@ -138,16 +160,18 @@ public abstract class OverlayParser implements Cloneable {
 		if (object.has("multiValues") && object.get("multiValues") instanceof JSONArray) {
 			JSONArray multiValues = object.getJSONArray("multiValues");
 			if (multiValues != null) {
-				parser.multiValues = new String[multiValues.length()];
+				String[] mv = new String[multiValues.length()];
 				for (int i = 0; i < multiValues.length(); i++) {
 					Object o = multiValues.get(i);
 					if (!(o instanceof String)) {
 						throw new IllegalArgumentException("multiValues only allows strings");
 					}
-					parser.multiValues[i] = (String) o;
+					mv[i] = (String) o;
 				}
+				parser.setMultiValues(mv);
 			}
 		}
+		parser.rawMultiValues = object.get("rawMultiValues") == JSONObject.NULL ? null : object.getString("rawMultiValues");
 		parser.minHue = object.getFloat("minHue");
 		parser.maxHue = object.getFloat("maxHue");
 		return parser;
@@ -184,11 +208,13 @@ public abstract class OverlayParser implements Cloneable {
 		clone.min = min;
 		clone.max = max;
 		clone.multiValues = multiValues == null ? null : Arrays.copyOf(multiValues, multiValues.length);
+		clone.rawMultiValues = rawMultiValues;
 		clone.active = active;
 		clone.rawMin = rawMin;
 		clone.rawMax = rawMax;
 		clone.minHue = minHue;
 		clone.maxHue = maxHue;
+		clone.multiValuesID = multiValuesID;
 		return clone;
 	}
 }

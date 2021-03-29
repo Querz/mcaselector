@@ -15,13 +15,6 @@ public class InhabitedTimeParser extends OverlayParser {
 		super(OverlayType.INHABITED_TIME);
 	}
 
-	public InhabitedTimeParser(int min, int max) {
-		super(OverlayType.INHABITED_TIME);
-		setMin(min);
-		setMax(max);
-		setActive(true);
-	}
-
 	@Override
 	public int parseValue(ChunkData chunkData) {
 		return ValidationHelper.withDefaultSilent(() -> chunkData.getRegion().getData().getCompoundTag("Level").getNumber("InhabitedTime").intValue(), 0);

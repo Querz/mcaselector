@@ -248,4 +248,14 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		newSection.putByteArray("Data", new byte[2048]);
 		return newSection;
 	}
+
+	@Override
+	public int getAverageHeight(CompoundTag data) {
+		return 0;
+	}
+
+	@Override
+	public int getBlockAmount(CompoundTag data, String[] blocks) {
+		return 0;
+	}
 }

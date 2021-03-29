@@ -1,7 +1,6 @@
 package net.querz.mcaselector.tiles;
 
 import javafx.scene.image.Image;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;

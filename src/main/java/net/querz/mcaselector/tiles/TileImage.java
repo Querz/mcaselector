@@ -1,6 +1,5 @@
 package net.querz.mcaselector.tiles;
 
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -11,7 +10,6 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
@@ -21,9 +19,6 @@ import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.version.VersionController;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;

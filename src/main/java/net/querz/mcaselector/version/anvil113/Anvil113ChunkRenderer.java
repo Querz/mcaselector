@@ -80,7 +80,7 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 							continue;
 						}
 
-						if (!isEmpty(paletteIndex, blockData)) {
+						if (!isEmpty(blockData)) {
 							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
 							if (water) {
 								if (!waterDepth) {
@@ -145,10 +145,7 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 		return false;
 	}
 
-	private boolean isEmpty(int paletteIndex, CompoundTag blockData) {
-		if (paletteIndex == 0) {
-			return true;
-		}
+	private boolean isEmpty(CompoundTag blockData) {
 		switch (withDefault(() -> blockData.getString("Name"), "")) {
 			case "minecraft:air":
 			case "minecraft:cave_air":

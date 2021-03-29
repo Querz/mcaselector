@@ -73,6 +73,7 @@ public class OverlayBox extends BorderPane {
 		setLeft(inputs);
 
 		additionalData.setAlignment(Pos.CENTER);
+		additionalData.textProperty().addListener((a, b, c) -> onAdditionalDataInput(c));
 		setCenter(additionalData);
 
 		options.getStyleClass().add("overlay-options-grid");
@@ -137,6 +138,9 @@ public class OverlayBox extends BorderPane {
 		additionalData.setDisable(value.multiValues() == null);
 		minimum.setText(value.getRawMin());
 		maximum.setText(value.getRawMax());
+		if (value.multiValues() != null) {
+			additionalData.setText(value.getRawMultiValues());
+		}
 		active.setSelected(value.isActive());
 
 		onMinimumInput(value.minString());
@@ -201,6 +205,10 @@ public class OverlayBox extends BorderPane {
 
 	private void onMaximumInput(String newValue) {
 		displayValid(value.setMax(newValue));
+	}
+
+	private void onAdditionalDataInput(String newValue) {
+		displayValid(value.setMultiValues(newValue));
 	}
 
 	private void displayValid(boolean valid) {

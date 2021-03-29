@@ -73,20 +73,10 @@ public final class CacheDBController {
 	public void initTables(List<OverlayParser> parsers) throws SQLException {
 		Statement statement = connection.createStatement();
 		for (OverlayParser parser : parsers) {
-
-			if (parser.multiValues() == null) {
-				statement.executeUpdate(String.format(
-						"CREATE TABLE IF NOT EXISTS %s (" +
-								"p BIGINT PRIMARY KEY, " +
-								"d BLOB);", parser.name()));
-			} else {
-				for (String suffix : parser.multiValues()) {
-					statement.executeUpdate(String.format(
-							"CREATE TABLE IF NOT EXISTS %s_%s (" +
-									"p BIGINT PRIMARY KEY, " +
-									"d BLOB);", parser.name(), suffix));
-				}
-			}
+			statement.executeUpdate(String.format(
+					"CREATE TABLE IF NOT EXISTS %s%s (" +
+							"p BIGINT PRIMARY KEY, " +
+							"d BLOB);", parser.name(), parser.getMultiValuesID()));
 		}
 
 		allTables = new ArrayList<>();
@@ -132,10 +122,10 @@ public final class CacheDBController {
 		}
 	}
 
-	public int[] getData(OverlayParser parser, String suffix, Point2i region) throws IOException, SQLException {
+	public int[] getData(OverlayParser parser, Point2i region) throws IOException, SQLException {
 		Statement statement = connection.createStatement();
 		ResultSet result = statement.executeQuery(String.format(
-				"SELECT d FROM %s WHERE p=%s;", parser.name() + (suffix == null ? "" : "_" + suffix), region.asLong()));
+				"SELECT d FROM %s%s WHERE p=%s;", parser.name(), parser.getMultiValuesID(), region.asLong()));
 		if (!result.next()) {
 			return null;
 		}
@@ -148,12 +138,12 @@ public final class CacheDBController {
 		return data;
 	}
 
-	public void setData(OverlayParser parser, String suffix, Point2i region, int[] data) throws IOException, SQLException {
+	public void setData(OverlayParser parser, Point2i region, int[] data) throws IOException, SQLException {
 		PreparedStatement ps = connection.prepareStatement(String.format(
-				"INSERT INTO %s (p, d) " +
+				"INSERT INTO %s%s (p, d) " +
 						"VALUES (?, ?) " +
 						"ON CONFLICT(p) DO UPDATE " +
-						"SET d=?;", parser.name() + (suffix == null ? "" : "_" + suffix)));
+						"SET d=?;", parser.name(), parser.getMultiValuesID()));
 		ps.setLong(1, region.asLong());
 		ByteArrayOutputStream baos;
 		try (DataOutputStream dos = new DataOutputStream(new GZIPOutputStream(baos = new ByteArrayOutputStream()))) {
@@ -168,9 +158,9 @@ public final class CacheDBController {
 		ps.executeBatch();
 	}
 
-	public void deleteData(OverlayParser parser, String suffix, Point2i region) throws SQLException {
+	public void deleteData(OverlayParser parser, Point2i region) throws SQLException {
 		PreparedStatement ps = connection.prepareStatement(String.format(
-				"DELETE FROM %s WHERE p=?;", parser.name() + (suffix == null ? "" : "_" + suffix)));
+				"DELETE FROM %s%s WHERE p=?;", parser.name(), parser.getMultiValuesID()));
 		ps.setLong(1, region.asLong());
 		ps.execute();
 	}

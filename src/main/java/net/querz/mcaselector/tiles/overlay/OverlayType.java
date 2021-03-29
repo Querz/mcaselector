@@ -7,7 +7,9 @@ public enum OverlayType {
 	INHABITED_TIME("InhabitedTime", InhabitedTimeParser::new),
 	ENTITY_AMOUNT("#Entities", EntityAmountParser::new),
 	TILE_ENTITY_AMOUNT("#TileEntityAmount", TileEntityAmountParser::new),
-	DATA_VERSION("DataVersion", DataVersionParser::new);
+	DATA_VERSION("DataVersion", DataVersionParser::new),
+	AVERAGE_HEIGHT("AverageHeight", AverageHeightParser::new),
+	BLOCK_AMOUNT("#Blocks", BlockAmountParser::new);
 
 	private final String name;
 	private final Supplier<OverlayParser> supplier;

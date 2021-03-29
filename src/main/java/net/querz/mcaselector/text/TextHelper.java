@@ -1,6 +1,11 @@
 package net.querz.mcaselector.text;
 
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.filter.PaletteFilter;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
@@ -11,7 +16,10 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +36,34 @@ public final class TextHelper {
 		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:hours?|h)"), 3600L);
 		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:minutes?|mins?)"), 60L);
 		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:seconds?|secs?|s)"), 1L);
+	}
+
+	private static final Set<String> validBLockNames = new HashSet<>();
+
+	static {
+		try (BufferedReader bis = new BufferedReader(
+				new InputStreamReader(Objects.requireNonNull(PaletteFilter.class.getClassLoader().getResourceAsStream("mapping/all_block_names.txt"))))) {
+			String line;
+			while ((line = bis.readLine()) != null) {
+				validBLockNames.add(line);
+			}
+		} catch (IOException ex) {
+			Debug.dumpException("error reading mapping/all_block_names.txt", ex);
+		}
+	}
+
+	public static String parseBlockName(String raw) {
+		raw = raw.replace(" ", "");
+		if (raw.startsWith("minecraft:")) {
+			if (validBLockNames.contains(raw.substring(11))) {
+				return raw;
+			}
+		} else if (validBLockNames.contains(raw)) {
+			return raw;
+		} else if (raw.startsWith("'") && raw.endsWith("'")) {
+			return raw.substring(1, raw.length() - 1);
+		}
+		return null;
 	}
 
 	// parses a duration string and returns the duration in seconds

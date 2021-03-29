@@ -83,7 +83,7 @@ public class OverlayPool {
 		overlayCacheLoaders.execute(() -> {
 			int[] data = null;
 			try {
-				data = dataCache.getData(parser, null, tile.location);
+				data = dataCache.getData(parser, tile.location);
 			} catch (Exception ex) {
 				Debug.dumpException("failed to load cached overlay data for region " + tile.location, ex);
 			}
@@ -143,7 +143,7 @@ public class OverlayPool {
 
 	public void push(Point2i location, int[] data) {
 		try {
-			dataCache.setData(tileMap.getOverlay(), null, location, data);
+			dataCache.setData(tileMap.getOverlay(), location, data);
 		} catch (Exception ex) {
 			Debug.dumpException("failed to cache data for region " + location, ex);
 		}
@@ -200,7 +200,7 @@ public class OverlayPool {
 			overlayValueLoader.getQueue().clear(); // no need to load anything else
 			overlayValueLoader.execute(() -> {
 				try {
-					int[] regionData = dataCache.getData(parser, null, region);
+					int[] regionData = dataCache.getData(parser, region);
 					hoveredRegion = region;
 					hoveredRegionData = regionData;
 					if (regionData == null) {

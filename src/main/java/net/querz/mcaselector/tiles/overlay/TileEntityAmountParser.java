@@ -11,13 +11,6 @@ public class TileEntityAmountParser extends AmountParser {
 		super(OverlayType.TILE_ENTITY_AMOUNT);
 	}
 
-	public TileEntityAmountParser(int min, int max) {
-		super(OverlayType.TILE_ENTITY_AMOUNT);
-		setMin(min);
-		setMax(max);
-		setActive(true);
-	}
-
 	@Override
 	public int parseValue(ChunkData chunkData) {
 		if (chunkData.getRegion() == null) {
