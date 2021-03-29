@@ -91,7 +91,6 @@ public class Tile {
 	}
 
 	public void setLoaded(boolean loaded) {
-		Debug.dumpf("set tile %s to loaded=%s", location, loaded);
 		this.loaded = loaded;
 	}
 

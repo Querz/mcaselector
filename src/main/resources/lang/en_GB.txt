@@ -41,9 +41,10 @@ menu.selection.clear_cache;Clear cache
 menu.tools.import_chunks;Import chunks
 menu.tools.filter_chunks;Filter chunks
 menu.tools.change_fields;Change fields
-menu.tools.edit_overlays;Edit overlays
 menu.tools.edit_nbt;Edit chunk
 menu.tools.swap_chunks;Swap chunks
+menu.tools.edit_overlays;Edit overlays
+menu.tools.next_overlay;Next overlay
 dialog.select_world.title;Select Dimension
 dialog.settings.title;Settings
 dialog.settings.language;Language

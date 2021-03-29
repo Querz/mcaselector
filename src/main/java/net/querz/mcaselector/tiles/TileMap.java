@@ -143,6 +143,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	public void nextOverlay() {
+		if (disabled) {
+			return;
+		}
+
 		int index = overlayParsers.indexOf(overlayParser);
 
 		OverlayParser parser;
@@ -229,12 +233,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			pastedChunksCache = null;
 			pastedChunksOffset = null;
 			update();
-		}
-
-		if (event.getCode() == KeyCode.O) {
-			if (!disabled) {
-				nextOverlay();
-			}
 		}
 
 		if (event.getCode() == KeyCode.N) {

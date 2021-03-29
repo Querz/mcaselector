@@ -25,8 +25,8 @@ public class OptionBar extends MenuBar {
 	* - Settings		- Goto				- Copy chunks				- Change fields
 	* - World Settings	- Save Screenshot	- Paste chunks				- Edit NBT
 	* - Quit			- Clear cache		- Export selected chunks	- Swap chunks
-	*					- Clear all cache	- Delete selected chunks
-	*										- Import selection
+	*					- Clear all cache	- Delete selected chunks	- Edit overlays
+	*										- Import selection			- Next overlay
 	*										- Export selection
 	* 										- Clear cache
 	* */
@@ -62,9 +62,10 @@ public class OptionBar extends MenuBar {
 	private final MenuItem clearSelectionCache = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR_CACHE);
 	private final MenuItem filterChunks = UIFactory.menuItem(Translation.MENU_TOOLS_FILTER_CHUNKS);
 	private final MenuItem changeFields = UIFactory.menuItem(Translation.MENU_TOOLS_CHANGE_FIELDS);
-	private final MenuItem editOverlays = UIFactory.menuItem(Translation.MENU_TOOLS_EDIT_OVERLAYS);
 	private final MenuItem editNBT = UIFactory.menuItem(Translation.MENU_TOOLS_EDIT_NBT);
 	private final MenuItem swapChunks = UIFactory.menuItem(Translation.MENU_TOOLS_SWAP_CHUNKS);
+	private final MenuItem editOverlays = UIFactory.menuItem(Translation.MENU_TOOLS_EDIT_OVERLAYS);
+	private final MenuItem nextOverlay = UIFactory.menuItem(Translation.MENU_TOOLS_NEXT_OVERLAY);
 
 	private int previousSelectedChunks = 0;
 	private boolean previousInvertedSelection = false;
@@ -91,8 +92,9 @@ public class OptionBar extends MenuBar {
 				exportImage, UIFactory.separator(),
 				clearSelectionCache);
 		tools.getItems().addAll(
-				importChunks, filterChunks, editOverlays, changeFields, editNBT, UIFactory.separator(),
-				swapChunks);
+				importChunks, filterChunks, changeFields, editNBT, UIFactory.separator(),
+				swapChunks, UIFactory.separator(),
+				editOverlays, nextOverlay);
 		about.setOnMouseClicked(e -> DialogHelper.showAboutDialog(primaryStage));
 		Menu aboutMenu = new Menu();
 		aboutMenu.setGraphic(about);
@@ -123,10 +125,11 @@ public class OptionBar extends MenuBar {
 		exportImage.setOnAction(e -> DialogHelper.generateImageFromSelection(tileMap, primaryStage));
 		clearSelectionCache.setOnAction(e -> CacheHelper.clearSelectionCache(tileMap));
 		filterChunks.setOnAction(e -> DialogHelper.filterChunks(tileMap, primaryStage));
-		editOverlays.setOnAction(e -> DialogHelper.editOverlays(tileMap, primaryStage));
 		changeFields.setOnAction(e -> DialogHelper.changeFields(tileMap, primaryStage));
 		editNBT.setOnAction(e -> DialogHelper.editNBT(tileMap, primaryStage));
 		swapChunks.setOnAction(e -> DialogHelper.swapChunks(tileMap, primaryStage));
+		editOverlays.setOnAction(e -> DialogHelper.editOverlays(tileMap, primaryStage));
+		nextOverlay.setOnAction(e -> tileMap.nextOverlay());
 
 
 		openWorld.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN));
@@ -152,6 +155,8 @@ public class OptionBar extends MenuBar {
 		changeFields.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCodeCombination.SHORTCUT_DOWN));
 		editNBT.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCodeCombination.SHORTCUT_DOWN));
 		swapChunks.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCodeCombination.SHORTCUT_DOWN));
+		editOverlays.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCodeCombination.SHORTCUT_DOWN));
+		nextOverlay.setAccelerator(new KeyCodeCombination(KeyCode.O));
 
 		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks(), tileMap.isSelectionInverted());
 		setWorldDependentMenuItemsEnabled(false, tileMap);
@@ -177,6 +182,7 @@ public class OptionBar extends MenuBar {
 		importChunks.setDisable(!enabled);
 		invert.setDisable(!enabled);
 		paste.setDisable(!enabled || !hasValidClipboardContent(tileMap));
+		nextOverlay.setDisable(!enabled);
 	}
 
 	private void setSelectionDependentMenuItemsEnabled(int selected, boolean inverted) {
