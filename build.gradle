@@ -63,6 +63,7 @@ jar {
 		'Application-Version': project.version,
 		'Class-Path': configurations.implementation.files.collect{"lib/$it.name"}.join(' ')
 	)
+	exclude 'licenses/'
 	from 'LICENSE'
 }
 
