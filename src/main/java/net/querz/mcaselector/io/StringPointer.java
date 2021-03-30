@@ -33,13 +33,17 @@ public class StringPointer {
 	}
 
 	public String parseQuotedString() throws ParseException {
+		return parseQuotedString('"');
+	}
+
+	public String parseQuotedString(char quote) throws ParseException {
 		int oldIndex = ++index; //ignore beginning quotes
 		StringBuilder sb = null;
 		boolean escape = false;
 		while (hasNext()) {
 			char c = next();
 			if (escape) {
-				if (c != '\\' && c != '"') {
+				if (c != '\\' && c != quote) {
 					throw parseException("invalid escape of '" + c + "'");
 				}
 				escape = false;
@@ -52,7 +56,7 @@ public class StringPointer {
 					sb = new StringBuilder(value.substring(oldIndex, index - 1));
 					continue;
 				}
-				if (c == '"') {
+				if (c == quote) {
 					return sb == null ? value.substring(oldIndex, index - 1) : sb.toString();
 				}
 			}

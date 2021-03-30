@@ -1,37 +1,13 @@
 package net.querz.mcaselector.tiles.overlay;
 
-import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.filter.PaletteFilter;
 import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.version.VersionController;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 public class BlockAmountParser extends OverlayParser {
 
 	private static final int MIN_VALUE = 0;
 	private static final int MAX_VALUE = 98304; // 384 * 16 * 16
-
-	private static final Set<String> validNames = new HashSet<>();
-
-	static {
-		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Objects.requireNonNull(PaletteFilter.class.getClassLoader().getResourceAsStream("mapping/all_block_names.txt"))))) {
-			String line;
-			while ((line = bis.readLine()) != null) {
-				validNames.add(line);
-			}
-		} catch (IOException ex) {
-			Debug.dumpException("error reading mapping/all_block_names.txt", ex);
-		}
-	}
 
 	public BlockAmountParser() {
 		super(OverlayType.BLOCK_AMOUNT);
@@ -83,16 +59,13 @@ public class BlockAmountParser extends OverlayParser {
 			return false;
 		}
 		setRawMultiValues(raw);
-		String[] split = raw.split(",");
-		List<String> result = new ArrayList<>(split.length);
-		for (String s : split) {
-			String block = s.trim();
-			if (!block.startsWith("minecraft:")) {
-				block = "minecraft:" + block;
-			}
-			result.add(block);
+		String[] blocks = TextHelper.parseBlockNames(raw);
+		if (blocks == null) {
+			setMultiValues(new String[0]);
+			return false;
+		} else {
+			setMultiValues(blocks);
+			return true;
 		}
-		setMultiValues(result.toArray(new String[0]));
-		return true;
 	}
 }
