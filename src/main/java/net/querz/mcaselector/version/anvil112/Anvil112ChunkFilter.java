@@ -1,6 +1,7 @@
 package net.querz.mcaselector.version.anvil112;
 
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
@@ -251,7 +252,49 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public int getAverageHeight(CompoundTag data) {
-		return 0;
+		ListTag<CompoundTag> sections = withDefault(() -> data.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
+		if (sections == null) {
+			return 0;
+		}
+
+		sections.sort(this::filterSections);
+
+		int totalHeight = 0;
+
+		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
+			zLoop:
+			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+				for (int i = 0; i < sections.size(); i++) {
+					CompoundTag section = sections.get(i);
+					byte[] blocks = withDefault(() -> section.getByteArray("Blocks"), null);
+					if (blocks == null) {
+						continue;
+					}
+
+					Byte height = withDefault(() -> section.getByte("Y"), null);
+					if (height == null) {
+						continue;
+					}
+
+					for (int cy = Tile.CHUNK_SIZE - 1; cy >= 0; cy--) {
+						int index = cy * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + cz * Tile.CHUNK_SIZE + cx;
+						if (!isEmpty(blocks[index])) {
+							totalHeight += height * 16 + cy;
+							continue zLoop;
+						}
+					}
+				}
+			}
+		}
+		return totalHeight / (Tile.CHUNK_SIZE * Tile.CHUNK_SIZE);
+	}
+
+	private boolean isEmpty(int blockID) {
+		return blockID == 0 || blockID == 166 || blockID == 217;
+	}
+
+	private int filterSections(CompoundTag sectionA, CompoundTag sectionB) {
+		return withDefault(() -> sectionB.getNumber("Y").intValue(), -1) - withDefault(() -> sectionA.getNumber("Y").intValue(), -1);
 	}
 
 	@Override

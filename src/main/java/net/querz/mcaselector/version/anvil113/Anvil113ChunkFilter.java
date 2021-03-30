@@ -372,21 +372,20 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
 				for (int i = 0; i < sections.size(); i++) {
-					final int si = i;
 					CompoundTag section;
 					ListTag<?> rawPalette;
 					ListTag<CompoundTag> palette;
-					if ((section = sections.get(si)) == null
+					if ((section = sections.get(i)) == null
 							|| (rawPalette = section.getListTag("Palette")) == null
 							|| (palette = rawPalette.asCompoundTagList()) == null) {
 						continue;
 					}
-					long[] blockStates = withDefault(() -> sections.get(si).getLongArray("BlockStates"), null);
+					long[] blockStates = withDefault(() -> section.getLongArray("BlockStates"), null);
 					if (blockStates == null) {
 						continue;
 					}
 
-					Byte height = withDefault(() -> sections.get(si).getByte("Y"), null);
+					Byte height = withDefault(() -> section.getByte("Y"), null);
 					if (height == null) {
 						continue;
 					}
