@@ -4,7 +4,11 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.progress.Timer;
 import org.junit.Test;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -20,7 +24,7 @@ public class TileImageTest {
 	public void testGenerateImage112() throws IOException {
 		Config.setShade(true);
 		Config.setShadeWater(true);
-		byte[] data = loadDataFromResource("anvil112/r.0.0.mca");
+		RegionMCAFile data = loadRegionMCAFileFromResource("anvil112/r.0.0.mca");
 		Image image = TileImage.generateImage(
 				new Tile(new Point2i(0, 0)),
 				UUID.randomUUID(),
@@ -28,6 +32,7 @@ public class TileImageTest {
 				() -> 1.0f,
 				data
 		);
+
 		assertImageEquals("anvil112/r.0.0.png", image);
 
 		Config.setShadeWater(false);
@@ -55,7 +60,7 @@ public class TileImageTest {
 	public void testGenerateImage113() throws IOException {
 		Config.setShade(true);
 		Config.setShadeWater(true);
-		byte[] data = loadDataFromResource("anvil113/r.0.0.mca");
+		RegionMCAFile data = loadRegionMCAFileFromResource("anvil113/r.0.0.mca");
 		Image image = TileImage.generateImage(
 				new Tile(new Point2i(0, 0)),
 				UUID.randomUUID(),
@@ -63,6 +68,7 @@ public class TileImageTest {
 				() -> 1.0f,
 				data
 		);
+
 		assertImageEquals("anvil113/r.0.0.png", image);
 
 		Config.setShadeWater(false);
@@ -90,7 +96,7 @@ public class TileImageTest {
 	public void testGenerateImage114() throws IOException {
 		Config.setShade(true);
 		Config.setShadeWater(true);
-		byte[] data = loadDataFromResource("anvil114/r.0.0.mca");
+		RegionMCAFile data = loadRegionMCAFileFromResource("anvil114/r.0.0.mca");
 		Image image = TileImage.generateImage(
 				new Tile(new Point2i(0, 0)),
 				UUID.randomUUID(),
@@ -125,7 +131,7 @@ public class TileImageTest {
 	public void testGenerateImage115() throws IOException {
 		Config.setShade(true);
 		Config.setShadeWater(true);
-		byte[] data = loadDataFromResource("anvil115/r.0.0.mca");
+		RegionMCAFile data = loadRegionMCAFileFromResource("anvil115/r.0.0.mca");
 		Image image = TileImage.generateImage(
 				new Tile(new Point2i(0, 0)),
 				UUID.randomUUID(),
@@ -160,7 +166,7 @@ public class TileImageTest {
 	public void testGenerateImage116() throws IOException {
 		Config.setShade(true);
 		Config.setShadeWater(true);
-		byte[] data = loadDataFromResource("anvil116/r.0.0.mca");
+		RegionMCAFile data = loadRegionMCAFileFromResource("anvil116/r.0.0.mca");
 		Image image = TileImage.generateImage(
 				new Tile(new Point2i(0, 0)),
 				UUID.randomUUID(),
@@ -200,6 +206,7 @@ public class TileImageTest {
 	}
 
 	private void assertImageEquals(String expected, Image actual) throws IOException {
+//		writeImage(actual, new File("actual/" + expected));
 		Image expectedImage = SwingFXUtils.toFXImage(ImageIO.read(getResourceFile(expected)), null);
 		assertArrayEquals(getImageData(expectedImage), getImageData(actual));
 	}

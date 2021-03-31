@@ -1,9 +1,13 @@
 package net.querz.mcaselector.version.anvil112;
 
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.LongArrayTag;
+import net.querz.nbt.tag.Tag;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -216,7 +220,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 					byte dataByte = blockData[i / 2];
 					byte dataBits = (byte) (i % 2 == 0 ? dataByte & 0x0F : (dataByte >> 4) & 0x0F);
 					for (BlockData d : bd) {
-						if (d.id == blocks[i] && d.data.contains(dataBits)) {
+						if (d.id == (blocks[i] & 0xFF) && d.data.contains(dataBits)) {
 							blocks[i] = (byte) bdr.id;
 							byte newDataBits = bdr.data.iterator().next();
 							blockData[i / 2] = (byte) (i % 2 == 0 ? (dataByte & 0xF0) + newDataBits : (dataByte & 0x0F) + (newDataBits << 4));
@@ -247,5 +251,95 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		newSection.putByteArray("Blocks", new byte[4096]);
 		newSection.putByteArray("Data", new byte[2048]);
 		return newSection;
+	}
+
+	@Override
+	public int getAverageHeight(CompoundTag data) {
+		ListTag<CompoundTag> sections = withDefault(() -> data.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
+		if (sections == null) {
+			return 0;
+		}
+
+		sections.sort(this::filterSections);
+
+		int totalHeight = 0;
+
+		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
+			zLoop:
+			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+				for (int i = 0; i < sections.size(); i++) {
+					CompoundTag section = sections.get(i);
+					byte[] blocks = withDefault(() -> section.getByteArray("Blocks"), null);
+					if (blocks == null) {
+						continue;
+					}
+
+					Byte height = withDefault(() -> section.getByte("Y"), null);
+					if (height == null) {
+						continue;
+					}
+
+					for (int cy = Tile.CHUNK_SIZE - 1; cy >= 0; cy--) {
+						int index = cy * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + cz * Tile.CHUNK_SIZE + cx;
+						if (!isEmpty(blocks[index])) {
+							totalHeight += height * 16 + cy;
+							continue zLoop;
+						}
+					}
+				}
+			}
+		}
+		return totalHeight / (Tile.CHUNK_SIZE * Tile.CHUNK_SIZE);
+	}
+
+	private boolean isEmpty(int blockID) {
+		return blockID == 0 || blockID == 166 || blockID == 217;
+	}
+
+	private int filterSections(CompoundTag sectionA, CompoundTag sectionB) {
+		return withDefault(() -> sectionB.getNumber("Y").intValue(), -1) - withDefault(() -> sectionA.getNumber("Y").intValue(), -1);
+	}
+
+	@Override
+	public int getBlockAmount(CompoundTag data, String[] blocks) {
+		ListTag<CompoundTag> sections = withDefault(() -> data.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
+		if (sections == null) {
+			return 0;
+		}
+
+		int result = 0;
+
+		// map block names to block ids
+		for (String blockName : blocks) {
+			if (!mapping.containsKey(blockName)) {
+				continue;
+			}
+
+			BlockData[] blockData = mapping.get(blockName);
+
+			for (CompoundTag section : sections) {
+				byte[] blockIDs = withDefault(() -> section.getByteArray("Blocks"), null);
+				if (blockIDs == null) {
+					continue;
+				}
+
+				byte[] blockIDsData = withDefault(() -> section.getByteArray("Data"), null);
+				if (blockIDsData == null) {
+					continue;
+				}
+
+				for (int i = 0; i < blockIDs.length; i++) {
+					int blockID = blockIDs[i] & 0xFF;
+					byte dataByte = blockIDsData[i / 2];
+					byte dataBits = (byte) (i % 2 == 0 ? dataByte & 0x0F : (dataByte >> 4) & 0x0F);
+					for (BlockData bd : blockData) {
+						if (blockID == bd.id && bd.data.contains(dataBits)) {
+							result++;
+						}
+					}
+				}
+			}
+		}
+		return result;
 	}
 }

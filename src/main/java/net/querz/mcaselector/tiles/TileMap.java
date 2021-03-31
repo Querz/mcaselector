@@ -9,9 +9,11 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.MCAFilePipe;
-import net.querz.mcaselector.io.RegionImageGenerator;
+import net.querz.mcaselector.io.job.ParseDataJob;
+import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
+import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.debug.Debug;
@@ -23,6 +25,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -51,6 +54,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private final Set<Tile> visibleTiles = ConcurrentHashMap.newKeySet();
 
 	private int selectedChunks = 0;
+	private Point2f mouseHoverLocation = null;
 	private Point2i hoveredBlock = null;
 
 	private boolean showChunkGrid = true;
@@ -68,6 +72,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private boolean trackpadScrolling = false;
 
 	private final ImagePool imgPool;
+	private final OverlayPool overlayPool;
+
+	private List<OverlayParser> overlayParsers = Collections.singletonList(null);
+	private OverlayParser overlayParser = null;
 
 	private Map<Point2i, Set<Point2i>> pastedChunks;
 	private boolean pastedChunksInverted;
@@ -106,7 +114,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		this.setOnKeyTyped(this::onKeyTyped);
 		offset = new Point2f(-(double) width / 2, -(double) height / 2);
 
+		overlayPool = new OverlayPool(this);
 		imgPool = new ImagePool(this, Config.IMAGE_POOL_SIZE);
+
+		setOverlays(Config.getOverlays());
 
 		update();
 	}
@@ -122,13 +133,73 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 			if (Tile.getZoomLevel(oldScale) != Tile.getZoomLevel(scale)) {
 				Debug.dumpf("zoom level changed from %d to %d", Tile.getZoomLevel(oldScale), Tile.getZoomLevel(scale));
-				unloadTiles();
+				unloadTiles(false);
 				if (pastedChunksCache != null) {
 					pastedChunksCache.clear();
 				}
 			}
 			update();
 		}
+	}
+
+	public void nextOverlay() {
+		if (disabled) {
+			return;
+		}
+
+		int index = overlayParsers.indexOf(overlayParser);
+
+		OverlayParser parser;
+		do {
+			index++;
+			if (index == overlayParsers.size()) {
+				index = 0;
+			}
+
+		// try until we find either null or a parser that is active and valid
+		} while ((parser = overlayParsers.get(index)) != null && (!parser.isActive() || !parser.isValid()));
+
+		setOverlay(parser);
+		MCAFilePipe.clearParserQueue();
+	}
+
+	public void setOverlays(List<OverlayParser> overlays) {
+		if (overlays == null) {
+			overlayParsers = Collections.singletonList(null);
+			setOverlay(null);
+			MCAFilePipe.clearParserQueue();
+			return;
+		}
+		overlayParsers = new ArrayList<>(overlays.size() + 1);
+		overlayParsers.addAll(overlays);
+		overlayParsers.add(null);
+		setOverlay(null);
+		MCAFilePipe.clearParserQueue();
+	}
+
+	public void setOverlay(OverlayParser overlay) {
+		this.overlayParser = overlay;
+		this.overlayPool.setParser(overlay);
+		for (Tile tile : visibleTiles) {
+			tile.overlay = null;
+			tile.overlayLoaded = false;
+		}
+		update();
+	}
+
+	public OverlayParser getOverlay() {
+		return overlayParser;
+	}
+
+	// returns a NEW copy of all current parsers
+	public List<OverlayParser> getOverlayParsers() {
+		List<OverlayParser> parsers = new ArrayList<>(overlayParsers.size() - 1);
+		for (OverlayParser parser : overlayParsers) {
+			if (parser != null) {
+				parsers.add(parser.clone());
+			}
+		}
+		return parsers;
 	}
 
 	public void setScale(float newScale) {
@@ -164,7 +235,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			update();
 		}
 
-		if (event.getCode() == KeyCode.NUMPAD5) {
+		if (event.getCode() == KeyCode.N) {
 			dumpMetrics();
 		}
 	}
@@ -197,11 +268,13 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private void onMouseMoved(MouseEvent event) {
 		hoveredBlock = getMouseBlock(event.getX(), event.getY());
+		mouseHoverLocation = new Point2f(event.getX(), event.getY());
 		runHoverListeners();
 	}
 
 	private void onMouseExited() {
 		hoveredBlock = null;
+		mouseHoverLocation = null;
 		runHoverListeners();
 	}
 
@@ -297,27 +370,34 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	public void update() {
 		Timer t = new Timer();
-		runUpdateListeners();
 
 		// removes jobs from queue that are no longer needed
 		MCAFilePipe.validateJobs(j -> {
-			if (j instanceof  RegionImageGenerator.MCAImageLoadJob) {
+			if (j instanceof RegionImageGenerator.MCAImageLoadJob) {
 				RegionImageGenerator.MCAImageLoadJob job = (RegionImageGenerator.MCAImageLoadJob) j;
 				if (!job.getTile().isVisible(this)) {
 					Debug.dumpf("removing %s for tile %s from queue", job.getClass().getSimpleName(), job.getTile().getLocation());
 					RegionImageGenerator.setLoading(job.getTile(), false);
 					return true;
 				}
+			} else if (j instanceof ParseDataJob) {
+				ParseDataJob job = (ParseDataJob) j;
+				if (!job.getTile().isVisible(this)) {
+					ParseDataJob.setLoading(job.getTile(), false);
+					Debug.dumpf("removing %s for tile %s from queue", job.getClass().getSimpleName(), job.getTile().getLocation());
+					return true;
+				}
 			}
 			return false;
 		});
 
-		// removes tiles from visibleTiles if they are no longer visible
+		// remove tiles from visibleTiles if they are no longer visible
 		for (Tile tile : visibleTiles) {
 			if (!tile.isVisible(this, TILE_VISIBILITY_THRESHOLD)) {
 				visibleTiles.remove(tile);
-				if (!RegionImageGenerator.isLoading(tile)) {
-					tile.unload();
+				// unload tile if it is currently loading neither the image nor the overlay
+				if (!RegionImageGenerator.isLoading(tile) && !ParseDataJob.isLoading(tile)) {
+					tile.unload(true);
 					if (!tile.isMarked() && tile.getMarkedChunks().size() == 0) {
 						tiles.remove(tile.getLocation());
 					}
@@ -342,6 +422,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 		draw(context);
 		totalUpdates++;
+		if (mouseHoverLocation != null) {
+			hoveredBlock = getMouseBlock(mouseHoverLocation.getX(), mouseHoverLocation.getY());
+		}
+		runUpdateListeners();
 		Debug.dumpf("map update #%d: %s", totalUpdates, t);
 	}
 
@@ -349,12 +433,16 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		Debug.dumpf("TileMap: width=%.2f, height=%.2f, tiles=%d, visibleTiles=%d, scale=%.5f, offset=%s", getWidth(), getHeight(), tiles.size(), visibleTiles.size(), scale, offset);
 		Debug.dump("Tiles:");
 		for (Map.Entry<Point2i, Tile> tile : tiles.entrySet()) {
-			Debug.dumpf("  %s: loaded=%s, loading=%s, image=%s, marked=%s",
+			Debug.dumpf("  %s: loaded=%s, image=%s, marked=%s, overlay=%s, overlayLoaded=%s, overlayImgLoading=%s, visible=%s, noMCA=%s",
 				tile.getKey(),
 				tile.getValue().isLoaded(),
-				tile.getValue().isLoading(),
 				tile.getValue().getImage() == null ? null : (tile.getValue().getImage().getWidth() + "x" + tile.getValue().getImage().getHeight()),
-				tile.getValue().isMarked() ? true : (tile.getValue().getMarkedChunks() != null && !tile.getValue().getMarkedChunks().isEmpty() ? tile.getValue().getMarkedChunks().size() : false)
+				tile.getValue().isMarked() ? true : (tile.getValue().getMarkedChunks() != null && !tile.getValue().getMarkedChunks().isEmpty() ? tile.getValue().getMarkedChunks().size() : false),
+				tile.getValue().overlay == null ? null : (tile.getValue().overlay.getWidth() + "x" + tile.getValue().overlay.getHeight()),
+				tile.getValue().overlayLoaded,
+				ParseDataJob.isLoading(tile.getValue()),
+				tile.getValue().isVisible(this),
+				imgPool.hasNoMCA(tile.getKey())
 			);
 		}
 	}
@@ -436,6 +524,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		tiles.clear();
 		visibleTiles.clear();
 		imgPool.clear();
+		overlayPool.clear();
 		selectedChunks = 0;
 		selectionInverted = false;
 
@@ -453,8 +542,13 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			selectedChunks -= tile.getMarkedChunks().size();
 			selectedChunks -= tile.isMarked() ? Tile.CHUNKS : 0;
 			imgPool.discardImage(tile.getLocation());
-			tile.unload();
+			overlayPool.discardData(tile.getLocation());
+			tile.unload(true);
 		}
+	}
+
+	public OverlayPool getOverlayPool() {
+		return overlayPool;
 	}
 
 	public void clearSelection() {
@@ -480,9 +574,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		return selectionInverted;
 	}
 
-	public void unloadTiles() {
+	public void unloadTiles(boolean overlay) {
 		for (Tile tile : visibleTiles) {
-			tile.unload();
+			tile.unload(overlay);
 		}
 	}
 
@@ -666,6 +760,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private void draw(GraphicsContext ctx) {
 		ctx.clearRect(0, 0, getWidth(), getHeight());
+		int zoomLevel = getZoomLevel();
 		runOnVisibleRegions(region -> {
 			if (!tiles.containsKey(region)) {
 				tiles.put(region, new Tile(region));
@@ -675,12 +770,19 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 			Point2i regionOffset = region.regionToBlock().sub((int) offset.getX(), (int) offset.getY());
 
-			if (Config.getWorldDir() != null && !tile.isLoaded() && !tile.isLoading()) {
-				imgPool.requestImage(tile, getZoomLevel());
+			if (Config.getWorldDir() != null) {
+				if (!tile.isLoaded() || !tile.matchesZoomLevel(zoomLevel)) {
+					imgPool.requestImage(tile, zoomLevel);
+				}
+
+				if (overlayParser != null && !tile.isOverlayLoaded()) {
+					overlayPool.requestImage(tile, overlayParser);
+				}
 			}
+
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getZ() / scale);
 
-			TileImage.draw(tile, ctx, scale, p, selectionInverted);
+			TileImage.draw(tile, ctx, scale, p, selectionInverted, overlayParser != null);
 
 		}, new Point2f());
 

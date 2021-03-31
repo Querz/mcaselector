@@ -15,6 +15,7 @@ public enum FieldType {
 	REPLACE_BLOCKS("ReplaceBlocks", ReplaceBlocksField.class, false, true),
 	DELETE_ENTITIES("DeleteEntities", DeleteEntitiesField.class, false, false),
 	DELETE_SECTIONS("DeleteSections", DeleteSectionsField.class, false, true),
+	FIX_STATUS("FixStatus", FixStatusField.class, false, true),
 	STRUCTURE_REFERENCE("FixStructureReferences", ReferenceField.class, true, false);
 
 	private final String name;

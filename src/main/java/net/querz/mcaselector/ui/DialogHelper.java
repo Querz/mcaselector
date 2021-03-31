@@ -10,6 +10,14 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.*;
+import net.querz.mcaselector.io.job.ChunkFilterDeleter;
+import net.querz.mcaselector.io.job.ChunkFilterExporter;
+import net.querz.mcaselector.io.job.ChunkFilterSelector;
+import net.querz.mcaselector.io.job.ChunkImporter;
+import net.querz.mcaselector.io.job.FieldChanger;
+import net.querz.mcaselector.io.job.SelectionDeleter;
+import net.querz.mcaselector.io.job.SelectionExporter;
+import net.querz.mcaselector.io.job.SelectionImageExporter;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.tiles.Selection;
@@ -31,6 +39,7 @@ import net.querz.mcaselector.ui.dialog.GotoDialog;
 import net.querz.mcaselector.ui.dialog.ImageExportConfirmationDialog;
 import net.querz.mcaselector.ui.dialog.ImportConfirmationDialog;
 import net.querz.mcaselector.ui.dialog.NBTEditorDialog;
+import net.querz.mcaselector.ui.dialog.OverlayEditorDialog;
 import net.querz.mcaselector.ui.dialog.ProgressDialog;
 import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
 import net.querz.mcaselector.ui.dialog.SettingsDialog;
@@ -158,6 +167,14 @@ public class DialogHelper {
 				default:
 					Debug.dump("i have no idea how you got no selection there...");
 			}
+		});
+	}
+
+	public static void editOverlays(TileMap tileMap, Stage primaryStage) {
+		Optional<OverlayEditorDialog.Result> result = new OverlayEditorDialog(primaryStage, tileMap.getOverlayParsers()).showAndWait();
+		result.ifPresent(r -> {
+			Config.setOverlays(r.getOverlays());
+			tileMap.setOverlays(r.getOverlays());
 		});
 	}
 
@@ -494,6 +511,7 @@ public class DialogHelper {
 				tileMap.disable(false);
 				optionBar.setWorldDependentMenuItemsEnabled(true, tileMap);
 				tileMap.getWindow().setTitleSuffix(file.toString());
+				tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString());
 			} else {
 				new ErrorDialog(primaryStage, String.format("no mca files found in %s", file));
 			}
@@ -537,6 +555,7 @@ public class DialogHelper {
 		tileMap.disable(false);
 		optionBar.setWorldDependentMenuItemsEnabled(true, tileMap);
 		tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent());
+		tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString());
 	}
 
 	public static void importSelection(TileMap tileMap, Stage primaryStage) {

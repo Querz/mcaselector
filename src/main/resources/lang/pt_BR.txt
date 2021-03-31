@@ -51,6 +51,7 @@ dialog.settings.write_threads;Escrever threads
 dialog.settings.max_files;Carga máxima de arquivos
 dialog.settings.region_color;Cor das regiões
 dialog.settings.chunk_color;Cor dos chunks
+dialog.settings.pasted_chunks_color;Cor dos chunks inseridos
 dialog.settings.shade;Sombra
 dialog.settings.shade_water;Profundidade da água
 dialog.settings.mc_saves_dir;Diretório Minecraft

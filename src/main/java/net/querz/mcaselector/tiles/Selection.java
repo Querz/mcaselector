@@ -2,7 +2,6 @@ package net.querz.mcaselector.tiles;
 
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.point.Point2i;
-import java.io.File;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;

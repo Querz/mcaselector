@@ -136,8 +136,8 @@ carrots
 cartography_table
 carved_pumpkin
 cauldron
-cave_vines_body
-cave_vines_head
+cave_vines
+cave_vines_plant
 chain
 chain_command_block
 chest
@@ -172,6 +172,8 @@ conduit
 copper_block
 copper_ore
 cornflower
+cracked_deepslate_bricks
+cracked_deepslate_tiles
 cracked_nether_bricks
 cracked_polished_blackstone_bricks
 cracked_stone_bricks
@@ -263,7 +265,10 @@ deepslate_brick_slab
 deepslate_brick_stairs
 deepslate_brick_wall
 deepslate_bricks
+deepslate_coal_ore
+deepslate_copper_ore
 deepslate_diamond_ore
+deepslate_emerald_ore
 deepslate_gold_ore
 deepslate_iron_ore
 deepslate_lapis_ore
@@ -375,6 +380,7 @@ ice
 infested_chiseled_stone_bricks
 infested_cobblestone
 infested_cracked_stone_bricks
+infested_deepslate
 infested_mossy_stone_bricks
 infested_stone
 infested_stone_bricks

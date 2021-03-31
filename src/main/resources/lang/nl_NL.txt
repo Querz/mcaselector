@@ -51,6 +51,7 @@ dialog.settings.write_threads;Schrijf Threads
 dialog.settings.max_files;Maximaal geladen bestanden
 dialog.settings.region_color;Region selectie kleur
 dialog.settings.chunk_color;Chunk selectie kleur
+dialog.settings.pasted_chunks_color;Kleur van ingevoegde chunks
 dialog.settings.shade;Schaduw
 dialog.settings.shade_water;Shaduw water
 dialog.settings.mc_saves_dir;Minecraft-map

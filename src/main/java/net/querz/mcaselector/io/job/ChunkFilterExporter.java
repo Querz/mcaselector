@@ -1,15 +1,19 @@
-package net.querz.mcaselector.io;
+package net.querz.mcaselector.io.job;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.RegionDirectories;
+import net.querz.mcaselector.io.SelectionData;
+import net.querz.mcaselector.io.SelectionHelper;
+import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.text.Translation;
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -78,7 +82,7 @@ public class ChunkFilterExporter {
 			RegionDirectories to = new RegionDirectories(getRegionDirectories().getLocation(), toRegion, toPoi, toEntities);
 
 			byte[] regionData = loadRegion();
-			byte[] poiData = loadPOI();
+			byte[] poiData = loadPoi();
 			byte[] entitiesData = loadEntities();
 
 			if (regionData == null && poiData == null && entitiesData == null) {

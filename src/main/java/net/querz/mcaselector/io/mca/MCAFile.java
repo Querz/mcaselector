@@ -72,7 +72,7 @@ public abstract class MCAFile<T extends Chunk> {
 
 			tempFile.delete();
 		} else {
-			Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			Files.move(tempFile.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}
 		return result;
 	}
@@ -388,5 +388,14 @@ public abstract class MCAFile<T extends Chunk> {
 
 	public void setChunk(int index, T chunk) {
 		chunks[index] = chunk;
+	}
+
+	public boolean isEmpty() {
+		for (T chunk : chunks) {
+			if (chunk != null) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

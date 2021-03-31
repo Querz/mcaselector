@@ -19,6 +19,7 @@
 	-color-combo-box-list-border: #020202;
 	-color-combo-box-focused-shadow: #00bfff;
 	-color-text-field-background: #45494a;
+	-color-text-field-background-disabled: #3e4142;
 	-color-text-field-border: #646464;
 	-color-text-field-focused-shadow: #00bfff;
 	-color-filter-box-invalid-background: #9e494a;
@@ -506,6 +507,90 @@
     -fx-hgap: 5px;
 }
 
+/*---------- OVERLAY ----------*/
+
+.overlay-input-grid {
+	-fx-hgap: 5;
+	-fx-padding: 2 5 0 0;
+}
+
+.overlay-options-grid {
+	-fx-hgap: 5;
+	-fx-padding: 0 2 0 5;
+}
+
+.overlay-box {
+	-fx-padding: 6 0 6 10;
+	-fx-background-color: -color-dialog-background;
+	-fx-border-width: 1 0 0 1;
+	-fx-border-color: -color-dialog-separator;
+}
+
+.overlay-box-invalid .text-field {
+	-fx-background-color: -color-filter-box-invalid-background;
+	-fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
+}
+
+.overlay-box .text-field:disabled {
+	-fx-background-color: -color-text-field-background-disabled;
+	-fx-effect: null;
+}
+
+.overlay-box .control-label:hover {
+	-fx-background-color: -color-filter-box-control-hover-background
+}
+
+.overlay-dialog-pane {
+    -fx-padding: 10 10 0 10;
+    -fx-min-width: 700;
+}
+
+.overlay-add-label:hover {
+	-fx-background-color: -color-filter-box-control-hover-background
+}
+
+.overlay-list {
+	-fx-min-width: 700;
+}
+
+.overlay-dialog-pane .custom-menu-item:hover {
+	-fx-background-color: -color-menu-background;
+}
+
+.hue-range-slider {
+	-fx-pref-width: 400;
+	-fx-pref-height: 32;
+}
+
+.hue-range-slider .high-thumb, .hue-range-slider .low-thumb {
+	-fx-background-radius: 0;
+	-fx-pref-width: 6;
+	-fx-pref-height: 32;
+	-fx-cursor: h-resize;
+}
+
+.hue-range-slider .track {
+	-fx-background-color: transparent;
+	-fx-pref-height: 32;
+}
+
+.hue-range-slider .range-bar {
+	-fx-pref-height: 32;
+	-fx-background-color: transparent;
+}
+
+.gradient-label {
+	-fx-pref-width: 50;
+}
+
+.slider-box {
+    -fx-spacing: 10;
+}
+
+.flip-label:hover {
+	-fx-background-color: -color-filter-box-control-hover-background
+}
+
 /*---------- FILTER ----------*/
 
 .filter-operators-grid {
@@ -628,6 +713,11 @@
 .import-chunks-options-grid {
 	-fx-vgap: 15;
 	-fx-hgap: 10;
+}
+
+.range-text-field-invalid {
+	-fx-background-color: -color-filter-box-invalid-background;
+	-fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
 }
 
 /*---------- Slider ----------*/

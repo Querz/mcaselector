@@ -65,12 +65,17 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		TextField range = new TextField();
 		range.textProperty().addListener((obs, o, n) -> {
 			if (n.isEmpty()) {
+				range.getStyleClass().remove("range-text-field-invalid");
 				data.ranges = null;
 			} else {
 				List<Range> ranges = RangeParser.parseRanges(n, ",");
 				if (ranges == null) {
-					range.setText(o);
+					if (!range.getStyleClass().contains("range-text-field-invalid")) {
+						range.getStyleClass().add("range-text-field-invalid");
+					}
+					data.ranges = null;
 				} else {
+					range.getStyleClass().remove("range-text-field-invalid");
 					data.ranges = ranges;
 				}
 			}

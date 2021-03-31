@@ -11,4 +11,7 @@ public abstract class Job implements Runnable {
 	public RegionDirectories getRegionDirectories() {
 		return rd;
 	}
+
+	// can be overwritten by individual jobs when something has to be done when this job is cancelled
+	public void cancel() {}
 }

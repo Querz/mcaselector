@@ -8,6 +8,14 @@ import net.querz.mcaselector.exception.ParseException;
 import net.querz.mcaselector.filter.FilterParser;
 import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.io.*;
+import net.querz.mcaselector.io.job.ChunkFilterDeleter;
+import net.querz.mcaselector.io.job.ChunkFilterExporter;
+import net.querz.mcaselector.io.job.ChunkFilterSelector;
+import net.querz.mcaselector.io.job.ChunkImporter;
+import net.querz.mcaselector.io.job.FieldChanger;
+import net.querz.mcaselector.io.job.SelectionDeleter;
+import net.querz.mcaselector.io.job.SelectionExporter;
+import net.querz.mcaselector.io.job.SelectionImageExporter;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.range.Range;
@@ -40,6 +48,13 @@ public final class ParamExecutor {
 			// do nothing if we don't have any params
 			if (params.size() == 0) {
 				return null;
+			}
+
+			if (params.containsKey("version")) {
+				String applicationVersion = FileHelper.getManifestAttributes().getValue("Application-Version");
+				System.out.println(applicationVersion);
+				future.run();
+				return future;
 			}
 
 			if (params.containsKey("enablePrinting")) {

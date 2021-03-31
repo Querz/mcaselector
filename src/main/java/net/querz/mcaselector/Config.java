@@ -3,9 +3,14 @@ package net.querz.mcaselector;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.Window;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
@@ -35,6 +40,7 @@ public final class Config {
 	public static final File DEFAULT_BASE_CACHE_DIR;
 	public static final File DEFAULT_BASE_LOG_FILE;
 	public static final File DEFAULT_BASE_CONFIG_FILE;
+	public static final File DEFAULT_BASE_OVERLAYS_FILE;
 
 	static {
 		String osName = System.getProperty("os.name").toLowerCase();
@@ -42,14 +48,17 @@ public final class Config {
 			DEFAULT_BASE_CACHE_DIR = new File(System.getProperty("user.home"), "Library/Caches/mcaselector");
 			DEFAULT_BASE_LOG_FILE = new File(System.getProperty("user.home"), "Library/Logs/mcaselector/debug.log");
 			DEFAULT_BASE_CONFIG_FILE = new File(System.getProperty("user.home"), "Library/Application Support/mcaselector/settings.ini");
+			DEFAULT_BASE_OVERLAYS_FILE = new File(System.getProperty("user.home"), "Library/Application Support/mcaselector/overlays.json");
 		} else if (osName.contains("windows")) {
 			DEFAULT_BASE_CACHE_DIR = getEnvFilesWithDefault(DEFAULT_BASE_DIR.getAbsolutePath(), "mcaselector/cache", ';', "LOCALAPPDATA");
 			DEFAULT_BASE_LOG_FILE = getEnvFilesWithDefault(DEFAULT_BASE_DIR.getAbsolutePath(), "mcaselector/debug.log", ';', "LOCALAPPDATA");
 			DEFAULT_BASE_CONFIG_FILE = getEnvFilesWithDefault(DEFAULT_BASE_DIR.getAbsolutePath(), "mcaselector/settings.ini", ';', "LOCALAPPDATA");
+			DEFAULT_BASE_OVERLAYS_FILE = getEnvFilesWithDefault(DEFAULT_BASE_DIR.getAbsolutePath(), "mcaselector/overlays.json", ';', "LOCALAPPDATA");
 		} else {
 			DEFAULT_BASE_CACHE_DIR = getEnvFilesWithDefault("~/.cache", "mcaselector", ':', "XDG_CACHE_HOME", "XDG_CACHE_DIRS");
 			DEFAULT_BASE_LOG_FILE = getEnvFilesWithDefault("~/.local/share", "mcaselector/debug.log", ';', "XDG_DATA_HOME", "XDG_DATA_DIRS");
 			DEFAULT_BASE_CONFIG_FILE = getEnvFilesWithDefault("~/.mcaselector", "mcaselector/settings.ini", ';', "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
+			DEFAULT_BASE_OVERLAYS_FILE = getEnvFilesWithDefault("~/.mcaselector", "mcaselector/overlays.json", ';', "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
 		}
 
 		if (!DEFAULT_BASE_CACHE_DIR.exists()) {
@@ -60,6 +69,9 @@ public final class Config {
 		}
 		if (!DEFAULT_BASE_CONFIG_FILE.getParentFile().exists()) {
 			DEFAULT_BASE_CONFIG_FILE.getParentFile().mkdirs();
+		}
+		if (!DEFAULT_BASE_OVERLAYS_FILE.getParentFile().exists()) {
+			DEFAULT_BASE_OVERLAYS_FILE.getParentFile().mkdirs();
 		}
 	}
 
@@ -129,6 +141,8 @@ public final class Config {
 	public static final float MIN_SCALE = 0.2f;
 	public static final double IMAGE_POOL_SIZE = 2.5;
 
+	private static List<OverlayParser> overlays = null;
+
 	private Config() {}
 
 	public static File getWorldDir() {
@@ -163,6 +177,10 @@ public final class Config {
 
 	public static File getCacheDirForWorldUUID(UUID world, int zoomLevel) {
 		return new File(baseCacheDir, world.toString().replace("-", "") + "/" + zoomLevel);
+	}
+
+	public static File getCacheDirForWorldUUID(UUID world) {
+		return new File(baseCacheDir, world.toString().replace("-", ""));
 	}
 
 	public static UUID getWorldUUID() {
@@ -249,6 +267,14 @@ public final class Config {
 		Translation.load(locale);
 	}
 
+	public static void setOverlays(List<OverlayParser> overlays) {
+		Config.overlays = overlays;
+	}
+
+	public static List<OverlayParser> getOverlays() {
+		return Config.overlays;
+	}
+
 	public static Color getRegionSelectionColor() {
 		return regionSelectionColor;
 	}
@@ -258,58 +284,79 @@ public final class Config {
 	}
 
 	public static void loadFromIni() {
-		if (!DEFAULT_BASE_CONFIG_FILE.exists()) {
-			return;
-		}
-		String userDir = DEFAULT_BASE_DIR.getAbsolutePath();
-		Map<String, String> config = new HashMap<>();
-		try {
-			Files.lines(DEFAULT_BASE_CONFIG_FILE.toPath()).forEach(l -> {
-				if (l.charAt(0) == ';') {
-					return;
-				}
-				String[] elements = l.split("=", 2);
-				if (elements.length != 2) {
-					Debug.errorf("invalid line in settings: \"%s\"", l);
-					return;
-				}
-				config.put(elements[0], elements[1]);
-			});
-		} catch (IOException ex) {
-			Debug.dumpException("failed to read settings", ex);
-		}
-
-		try {
-			//set values
-			baseCacheDir = new File(config.getOrDefault(
-					"BaseCacheDir",
-					DEFAULT_BASE_CACHE_DIR.getAbsolutePath()).replace("{user.dir}", userDir)
-			);
-			logFile = new File(config.getOrDefault(
-					"LogFile",
-					DEFAULT_BASE_LOG_FILE.getAbsolutePath()).replace("{user.dir}", userDir)
-			);
-
-			String localeString = config.getOrDefault("Locale", DEFAULT_LOCALE.toString());
-			String[] localeSplit = localeString.split("_");
-			setLocale(new Locale(localeSplit[0], localeSplit[1]));
-
-			regionSelectionColor = new Color(config.getOrDefault("RegionSelectionColor", DEFAULT_REGION_SELECTION_COLOR.toString()));
-			chunkSelectionColor = new Color(config.getOrDefault("ChunkSelectionColor", DEFAULT_CHUNK_SELECTION_COLOR.toString()));
-			pasteChunksColor = new Color(config.getOrDefault("PasteChunksColor", DEFAULT_PASTE_CHUNKS_COLOR.toString()));
-			loadThreads = Integer.parseInt(config.getOrDefault("LoadThreads", DEFAULT_LOAD_THREADS + ""));
-			processThreads = Integer.parseInt(config.getOrDefault("ProcessThreads", DEFAULT_PROCESS_THREADS + ""));
-			writeThreads = Integer.parseInt(config.getOrDefault("WriteThreads", DEFAULT_WRITE_THREADS + ""));
-			maxLoadedFiles = Integer.parseInt(config.getOrDefault("MaxLoadedFiles", DEFAULT_MAX_LOADED_FILES + ""));
-			shade = Boolean.parseBoolean(config.getOrDefault("Shade", DEFAULT_SHADE + ""));
-			shadeWater = Boolean.parseBoolean(config.getOrDefault("ShadeWater", DEFAULT_SHADE_WATER + ""));
-			mcSavesDir = config.getOrDefault("MCSavesDir", DEFAULT_MC_SAVES_DIR);
-			if (!new File(mcSavesDir).exists()) {
-				mcSavesDir = DEFAULT_MC_SAVES_DIR;
+		if (DEFAULT_BASE_CONFIG_FILE.exists()) {
+			String userDir = DEFAULT_BASE_DIR.getAbsolutePath();
+			Map<String, String> config = new HashMap<>();
+			try {
+				Files.lines(DEFAULT_BASE_CONFIG_FILE.toPath()).forEach(l -> {
+					if (l.charAt(0) == ';') {
+						return;
+					}
+					String[] elements = l.split("=", 2);
+					if (elements.length != 2) {
+						Debug.errorf("invalid line in settings: \"%s\"", l);
+						return;
+					}
+					config.put(elements[0], elements[1]);
+				});
+			} catch (IOException ex) {
+				Debug.dumpException("failed to read settings", ex);
 			}
-			debug = Boolean.parseBoolean(config.getOrDefault("Debug", DEFAULT_DEBUG + ""));
-		} catch (Exception ex) {
-			Debug.dumpException("error loading settings", ex);
+
+			try {
+				//set values
+				baseCacheDir = new File(config.getOrDefault(
+						"BaseCacheDir",
+						DEFAULT_BASE_CACHE_DIR.getAbsolutePath()).replace("{user.dir}", userDir)
+				);
+				logFile = new File(config.getOrDefault(
+						"LogFile",
+						DEFAULT_BASE_LOG_FILE.getAbsolutePath()).replace("{user.dir}", userDir)
+				);
+
+				String localeString = config.getOrDefault("Locale", DEFAULT_LOCALE.toString());
+				String[] localeSplit = localeString.split("_");
+				setLocale(new Locale(localeSplit[0], localeSplit[1]));
+
+				regionSelectionColor = new Color(config.getOrDefault("RegionSelectionColor", DEFAULT_REGION_SELECTION_COLOR.toString()));
+				chunkSelectionColor = new Color(config.getOrDefault("ChunkSelectionColor", DEFAULT_CHUNK_SELECTION_COLOR.toString()));
+				pasteChunksColor = new Color(config.getOrDefault("PasteChunksColor", DEFAULT_PASTE_CHUNKS_COLOR.toString()));
+				loadThreads = Integer.parseInt(config.getOrDefault("LoadThreads", DEFAULT_LOAD_THREADS + ""));
+				processThreads = Integer.parseInt(config.getOrDefault("ProcessThreads", DEFAULT_PROCESS_THREADS + ""));
+				writeThreads = Integer.parseInt(config.getOrDefault("WriteThreads", DEFAULT_WRITE_THREADS + ""));
+				maxLoadedFiles = Integer.parseInt(config.getOrDefault("MaxLoadedFiles", DEFAULT_MAX_LOADED_FILES + ""));
+				shade = Boolean.parseBoolean(config.getOrDefault("Shade", DEFAULT_SHADE + ""));
+				shadeWater = Boolean.parseBoolean(config.getOrDefault("ShadeWater", DEFAULT_SHADE_WATER + ""));
+				mcSavesDir = config.getOrDefault("MCSavesDir", DEFAULT_MC_SAVES_DIR);
+				if (!new File(mcSavesDir).exists()) {
+					mcSavesDir = DEFAULT_MC_SAVES_DIR;
+				}
+				debug = Boolean.parseBoolean(config.getOrDefault("Debug", DEFAULT_DEBUG + ""));
+			} catch (Exception ex) {
+				Debug.dumpException("error loading settings", ex);
+			}
+		}
+
+
+		// load overlays
+		if (DEFAULT_BASE_OVERLAYS_FILE.exists()) {
+			JSONArray overlayArray = null;
+			try {
+				overlayArray = new JSONArray(new String(Files.readAllBytes(DEFAULT_BASE_OVERLAYS_FILE.toPath())));
+			} catch (IOException ex) {
+				Debug.dumpException("failed to read overlays", ex);
+			}
+			if (overlayArray != null) {
+				List<OverlayParser> overlays = new ArrayList<>();
+				for (Object o : overlayArray) {
+					try {
+						overlays.add(OverlayParser.fromJSON((JSONObject) o));
+					} catch (Exception ex) {
+						Debug.dumpException("failed to parse overlay", ex);
+					}
+				}
+				Config.overlays = overlays;
+			}
 		}
 	}
 
@@ -346,6 +393,23 @@ public final class Config {
 			Files.write(DEFAULT_BASE_CONFIG_FILE.toPath(), lines);
 		} catch (IOException ex) {
 			Debug.dumpException("error writing settings", ex);
+		}
+
+		// save overlays
+		if (overlays == null) {
+			if (DEFAULT_BASE_OVERLAYS_FILE.exists() && !DEFAULT_BASE_OVERLAYS_FILE.delete()) {
+				Debug.errorf("could not delete %s", DEFAULT_BASE_OVERLAYS_FILE.getAbsolutePath());
+			}
+		} else {
+			JSONArray overlayArray = new JSONArray();
+			for (OverlayParser parser : overlays) {
+				overlayArray.put(parser.toJSON());
+			}
+			try {
+				Files.write(DEFAULT_BASE_OVERLAYS_FILE.toPath(), Collections.singleton(overlayArray.toString()));
+			} catch (IOException ex) {
+				Debug.dumpException("error writing overlays", ex);
+			}
 		}
 	}
 

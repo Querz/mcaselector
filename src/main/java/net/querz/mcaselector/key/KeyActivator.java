@@ -1,6 +1,8 @@
 package net.querz.mcaselector.key;
 
 import javafx.scene.input.KeyCode;
+import net.querz.mcaselector.validation.ShutdownHooks;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +23,7 @@ public class KeyActivator extends TimerTask {
 
 	public KeyActivator() {
 		timer.schedule(this, 0L, 33L);
-		Runtime.getRuntime().addShutdownHook(new Thread(timer::cancel));
+		ShutdownHooks.addShutdownHook(timer::cancel);
 	}
 
 	@Override

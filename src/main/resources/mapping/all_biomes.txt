@@ -37,6 +37,7 @@ jungle;21
 jungle_edge;23
 jungle_hills;22
 lukewarm_ocean;45
+lush_caves;175
 modified_badlands_plateau;167
 modified_gravelly_mountains;162
 modified_jungle;149

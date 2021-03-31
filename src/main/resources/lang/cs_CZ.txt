@@ -51,6 +51,7 @@ dialog.settings.write_threads;Vláken pro zápis
 dialog.settings.max_files;Max nahraných souborů
 dialog.settings.region_color;Barva vybraného regionu
 dialog.settings.chunk_color;Barva vybraného chunku
+dialog.settings.pasted_chunks_color;Barva vložených chunku
 dialog.settings.shade;Odstín
 dialog.settings.shade_water;Hloubka vody
 dialog.settings.mc_saves_dir;Adresář Minecraft

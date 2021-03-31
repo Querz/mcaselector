@@ -3,6 +3,8 @@ package net.querz.mcaselector.version.anvil113;
 import net.querz.mcaselector.math.Bits;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
+import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
@@ -345,5 +347,127 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		newPalette.add(newBlockState);
 		newSection.put("Palette", newPalette);
 		return newSection;
+	}
+
+	@Override
+	public int getAverageHeight(CompoundTag data) {
+		CompoundTag level = withDefault(() -> data.getCompoundTag("Level"), null);
+		if (level == null) {
+			return 0;
+		}
+		Tag<?> rawSections = level.get("Sections");
+		if (rawSections == null || rawSections.getID() == LongArrayTag.ID) {
+			return 0;
+		}
+		ListTag<CompoundTag> sections = catchClassCastException(((ListTag<?>) rawSections)::asCompoundTagList);
+		if (sections == null) {
+			return 0;
+		}
+
+		sections.sort(this::filterSections);
+
+		int totalHeight = 0;
+
+		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
+			zLoop:
+			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+				for (int i = 0; i < sections.size(); i++) {
+					CompoundTag section;
+					ListTag<?> rawPalette;
+					ListTag<CompoundTag> palette;
+					if ((section = sections.get(i)) == null
+							|| (rawPalette = section.getListTag("Palette")) == null
+							|| (palette = rawPalette.asCompoundTagList()) == null) {
+						continue;
+					}
+					long[] blockStates = withDefault(() -> section.getLongArray("BlockStates"), null);
+					if (blockStates == null) {
+						continue;
+					}
+
+					Byte height = withDefault(() -> section.getByte("Y"), null);
+					if (height == null) {
+						continue;
+					}
+
+					for (int cy = Tile.CHUNK_SIZE - 1; cy >= 0; cy--) {
+						int index = cy * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + cz * Tile.CHUNK_SIZE + cx;
+						CompoundTag block = getBlockAt(index, blockStates, palette);
+						if (!isEmpty(block)){
+							totalHeight += height * 16 + cy;
+							continue zLoop;
+						}
+					}
+				}
+			}
+		}
+		return totalHeight / (Tile.CHUNK_SIZE * Tile.CHUNK_SIZE);
+	}
+
+	protected boolean isEmpty(CompoundTag blockData) {
+		switch (withDefault(() -> blockData.getString("Name"), "")) {
+			case "minecraft:air":
+			case "minecraft:cave_air":
+			case "minecraft:barrier":
+			case "minecraft:structure_void":
+				return blockData.size() == 1;
+		}
+		return false;
+	}
+
+	protected int filterSections(CompoundTag sectionA, CompoundTag sectionB) {
+		return withDefault(() -> sectionB.getNumber("Y").intValue(), -1) - withDefault(() -> sectionA.getNumber("Y").intValue(), -1);
+	}
+
+	@Override
+	public int getBlockAmount(CompoundTag data, String[] blocks) {
+		CompoundTag level = withDefault(() -> data.getCompoundTag("Level"), null);
+		if (level == null) {
+			return 0;
+		}
+		Tag<?> rawSections = level.get("Sections");
+		if (rawSections == null || rawSections.getID() == LongArrayTag.ID) {
+			return 0;
+		}
+		ListTag<CompoundTag> sections = catchClassCastException(((ListTag<?>) rawSections)::asCompoundTagList);
+		if (sections == null) {
+			return 0;
+		}
+
+		int result = 0;
+
+		for (CompoundTag section : sections) {
+			ListTag<CompoundTag> palette = ValidationHelper.withDefaultSilent(() -> section.getListTag("Palette").asCompoundTagList(), null);
+			if (palette == null) {
+				continue;
+			}
+
+			for (int i = 0; i < palette.size(); i++) {
+				CompoundTag blockState = palette.get(i);
+				String name = ValidationHelper.withDefaultSilent(() -> blockState.getString("Name"), null);
+				if (name == null) {
+					continue;
+				}
+
+				for (String block : blocks) {
+					if (name.equals(block)) {
+						// count blocks of this type
+
+						long[] blockStates = withDefault(() -> section.getLongArray("BlockStates"), null);
+						if (blockStates == null) {
+							break;
+						}
+
+						for (int k = 0; k < 4096; k++) {
+							if (blockState == getBlockAt(k, blockStates, palette)) {
+								result++;
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+		return result;
 	}
 }

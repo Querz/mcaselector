@@ -4,6 +4,8 @@ import javafx.scene.image.Image;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.tiles.overlay.OverlayType;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -29,6 +31,7 @@ public final class FileHelper {
 
 	public static final String MCA_FILE_PATTERN = "^r\\.-?\\d+\\.-?\\d+\\.mca$";
 	public static final Pattern REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
+	public static final Pattern DAT_REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.dat$");
 	public static final Pattern CACHE_REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.png$");
 
 	private static final Map<String, String> lastOpenedDirectoryMap = new HashMap<>();
@@ -61,6 +64,20 @@ public final class FileHelper {
 
 	public static Point2i parseMCAFileName(File file) {
 		return parseMCAFileName(file.getName());
+	}
+
+	public static Point2i parseDATFileName(File file) {
+		return parseMCAFileName(file.getName());
+	}
+
+	public static Point2i parseDATFileName(String name) {
+		Matcher m = FileHelper.DAT_REGION_GROUP_PATTERN.matcher(name);
+		if (m.find()) {
+			int x = Integer.parseInt(m.group("regionX"));
+			int z = Integer.parseInt(m.group("regionZ"));
+			return new Point2i(x, z);
+		}
+		return null;
 	}
 
 	public static Point2i parseMCAFileName(String name) {
@@ -162,12 +179,20 @@ public final class FileHelper {
 		return new File(cacheDir, zoomLevel + "/" + createPNGFileName(r));
 	}
 
+	public static File createDATFilePath(OverlayType type, Point2i r) {
+		return new File(Config.getCacheDir(), type.instance().name() + "/" + createDATFileName(r));
+	}
+
 	public static String createMCAFileName(Point2i r) {
 		return String.format("r.%d.%d.mca", r.getX(), r.getZ());
 	}
 
 	public static String createMCCFileName(Point2i c) {
 		return String.format("c.%d.%d.mcc", c.getX(), c.getZ());
+	}
+
+	public static String createDATFileName(Point2i p) {
+		return String.format("r.%d.%d.dat", p.getX(), p.getZ());
 	}
 
 	public static String createPNGFileName(Point2i r) {
@@ -236,5 +261,15 @@ public final class FileHelper {
 		if (!d.exists() && !d.mkdirs()) {
 			throw new IOException("failed to create directory " + d);
 		}
+	}
+
+	public static boolean deleteDirectory(File dir) {
+		File[] files = dir.listFiles();
+		if (files != null) {
+			for (File file : files) {
+				deleteDirectory(file);
+			}
+		}
+		return dir.delete();
 	}
 }

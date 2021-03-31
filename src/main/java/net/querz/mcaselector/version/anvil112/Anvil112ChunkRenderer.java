@@ -11,7 +11,7 @@ import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
 public class Anvil112ChunkRenderer implements ChunkRenderer {
 
 	@Override
-	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, int[] waterPixels, byte[] terrainHeights, byte[] waterHeights, boolean water) {
+	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water) {
 		ListTag<CompoundTag> sections = withDefault(() -> root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
 		if (sections == null) {
 			return;
@@ -32,17 +32,17 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 				boolean waterDepth = false;
 				//loop over sections
 				for (int i = 0; i < sections.size(); i++) {
-					final int si = i;
-					byte[] blocks = withDefault(() -> sections.get(si).getByteArray("Blocks"), null);
+					CompoundTag section = sections.get(i);
+					byte[] blocks = withDefault(() -> section.getByteArray("Blocks"), null);
 					if (blocks == null) {
 						continue;
 					}
-					byte[] data = withDefault(() -> sections.get(si).getByteArray("Data"), null);
+					byte[] data = withDefault(() -> section.getByteArray("Data"), null);
 					if (data == null) {
 						continue;
 					}
 
-					Integer height = withDefault(() -> sections.get(si).getNumber("Y").intValue(), null);
+					Integer height = withDefault(() -> section.getNumber("Y").intValue(), null);
 					if (height == null || height > 15 || height < 0) {
 						continue;
 					}
@@ -65,7 +65,7 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 							if (water) {
 								if (!waterDepth) {
 									pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
-									waterHeights[regionIndex] = (byte) (sectionHeight + cy);
+									waterHeights[regionIndex] = (short) (sectionHeight + cy);
 								}
 								if (isWater(block)) {
 									waterDepth = true;
@@ -76,7 +76,7 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 							} else {
 								pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
 							}
-							terrainHeights[regionIndex] = (byte) (sectionHeight + cy);
+							terrainHeights[regionIndex] = (short) (sectionHeight + cy);
 							continue zLoop;
 						}
 					}

@@ -1,8 +1,13 @@
-package net.querz.mcaselector.io;
+package net.querz.mcaselector.io.job;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.RegionDirectories;
+import net.querz.mcaselector.io.SelectionData;
+import net.querz.mcaselector.io.SelectionHelper;
+import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
@@ -64,7 +69,7 @@ public class ChunkFilterDeleter {
 			}
 
 			byte[] regionData = loadRegion();
-			byte[] poiData = loadPOI();
+			byte[] poiData = loadPoi();
 			byte[] entitiesData = loadEntities();
 
 			if (regionData == null && poiData == null && entitiesData == null) {
@@ -95,10 +100,13 @@ public class ChunkFilterDeleter {
 				// parse raw data
 				Region region = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
 
-				region.deleteChunks(filter, selection);
-
-				MCAFilePipe.executeSaveData(new MCADeleteFilterSaveJob(getRegionDirectories(), region, progressChannel));
-
+				if (region.deleteChunks(filter, selection)) {
+					// only save file if we actually deleted something
+					MCAFilePipe.executeSaveData(new MCADeleteFilterSaveJob(getRegionDirectories(), region, progressChannel));
+				} else {
+					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
+					Debug.dumpf("nothing to delete in %s, not saving", getRegionDirectories().getLocationAsFileName());
+				}
 			} catch (Exception ex) {
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				Debug.errorf("error deleting chunk indices in %s", getRegionDirectories().getLocationAsFileName());

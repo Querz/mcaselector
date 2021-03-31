@@ -1,4 +1,8 @@
-package net.querz.mcaselector.io;
+package net.querz.mcaselector.io.job;
+
+import net.querz.mcaselector.io.Job;
+import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.RegionDirectories;
 
 public abstract class SaveDataJob<T> extends Job {
 

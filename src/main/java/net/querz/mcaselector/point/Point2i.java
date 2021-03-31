@@ -178,4 +178,16 @@ public class Point2i implements Cloneable, Serializable {
 	public Point2i chunkToRegion() {
 		return shiftRight(5);
 	}
+
+	public long asLong() {
+		return (long) x << 32 | z & 0xFFFFFFFFL;
+	}
+
+	public Point2i normalizeChunkInRegion() {
+		int nx = x % 32;
+		nx = nx < 0 ? 32 + nx : nx;
+		int nz = z % 32;
+		nz = nz < 0 ? 32 + nz : nz;
+		return new Point2i(nx, nz);
+	}
 }

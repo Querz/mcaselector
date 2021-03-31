@@ -5,6 +5,7 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLineHelper;
 import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.PngWriter;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -12,6 +13,9 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.tiles.Tile;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -33,6 +37,57 @@ public final class ImageHelper {
 		at.scale(newSize / w, newSize / h);
 		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
 		return scaleOp.filter(before, after);
+	}
+
+	public static Image renderGradient(int width, float min, float max, float low, float high, boolean inverted) {
+		WritableImage image = new WritableImage(width, 50);
+		PixelWriter pixelWriter = image.getPixelWriter();
+		for (int i = 0; i < width; i++) {
+			float hue = (max - min) * ((float) i / width) + min;
+			float saturation = 1, brightness = 1;
+
+			if (hue < low || hue > high) {
+				saturation = 0.3f;
+				brightness = 0.6f;
+			}
+			if (inverted) {
+				hue = max - hue + min;
+			}
+
+			for (int j = 0; j < 50; j++) {
+				pixelWriter.setArgb(i, j, Color.HSBtoRGB(hue, saturation, brightness));
+			}
+		}
+		return image;
+	}
+
+	public static float getHue(int color) {
+		return getHue(color >> 16 & 0xFF, color >> 8 & 0xFF, color & 0xFF);
+	}
+
+	public static float getHue(float r, float g, float b) {
+		float min = Math.min(Math.min(r, g), b);
+		float max = Math.max(Math.max(r, g), b);
+
+		if (min == max) {
+			return 0f;
+		}
+
+		float hue;
+		if (r == max) {
+			hue = (g - b) / (max - min);
+		} else if (g == max) {
+			hue = 2f + (b - r) / (max - min);
+		} else {
+			hue = 4f + (r - g) / (max - min);
+		}
+
+		hue *= 60f;
+		if (hue < 0f) {
+			hue += 360f;
+		}
+
+		return hue / 360f;
 	}
 
 	private static Image empty;

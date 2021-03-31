@@ -1,7 +1,6 @@
 package net.querz.mcaselector.tiles;
 
 import javafx.scene.image.Image;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
@@ -23,16 +22,19 @@ public class Tile {
 	public static final int CHUNKS = 1024;
 	public static final int PIXELS = SIZE * SIZE;
 
-	Point2i location;
+	final Point2i location;
 
-	Image image;
 	Image markedChunksImage;
 
-	boolean loading = false;
+	Image image;
 	boolean loaded = false;
+
 	boolean marked = false;
-	//a set of all marked chunks in the tile in block locations
+	// a set of all marked chunks in the tile in chunk locations
 	Set<Point2i> markedChunks = new HashSet<>();
+
+	Image overlay;
+	boolean overlayLoaded = false;
 
 	public Tile(Point2i location) {
 		this.location = location;
@@ -67,6 +69,14 @@ public class Tile {
 		return image;
 	}
 
+	public Image getOverlay() {
+		return overlay;
+	}
+
+	public boolean isOverlayLoaded() {
+		return overlayLoaded;
+	}
+
 	public Point2i getLocation() {
 		return location;
 	}
@@ -80,26 +90,28 @@ public class Tile {
 	}
 
 	public void setLoaded(boolean loaded) {
-		Debug.dumpf("set tile %s to loaded=%s", location, loaded);
 		this.loaded = loaded;
 	}
 
-	public void setLoading(boolean loading) {
-		Debug.dumpf("set tile %s to loading=%s", location, loading);
-		this.loading = loading;
+	public boolean matchesZoomLevel(int zoomLevel) {
+		if (image == null) {
+			return true;
+		} else {
+			return (int) (Tile.SIZE * (1D / image.getWidth())) == zoomLevel;
+		}
 	}
 
-	public boolean isLoading() {
-		return loading;
-	}
-
-	public void unload() {
+	public void unload(boolean overlay) {
 		if (image != null) {
 			image.cancel();
 		}
 		if (markedChunksImage != null) {
 			markedChunksImage.cancel();
 			markedChunksImage = null;
+		}
+		if (overlay && this.overlay != null) {
+			this.overlay.cancel();
+			this.overlay = null;
 		}
 		loaded = false;
 	}

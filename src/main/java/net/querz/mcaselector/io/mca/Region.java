@@ -137,6 +137,20 @@ public class Region {
 		this.entities = entities;
 	}
 
+	public boolean isEmpty() {
+		boolean empty = true;
+		if (region != null) {
+			empty = region.isEmpty();
+		}
+		if (poi != null && empty) {
+			empty = poi.isEmpty();
+		}
+		if (entities != null && empty) {
+			empty = entities.isEmpty();
+		}
+		return empty;
+	}
+
 	public void setDirectories(RegionDirectories dirs) {
 		if (region != null) {
 			region.setFile(dirs.getRegion());
@@ -238,6 +252,18 @@ public class Region {
 		}
 	}
 
+	public void deleteFiles() {
+		if (directories.getRegion() != null && directories.getRegion().exists()) {
+			directories.getRegion().delete();
+		}
+		if (directories.getPoi() != null && directories.getPoi().exists()) {
+			directories.getPoi().delete();
+		}
+		if (directories.getEntities() != null && directories.getEntities().exists()) {
+			directories.getEntities().delete();
+		}
+	}
+
 	public void deleteChunks(Set<Point2i> selection) {
 		if (region != null) {
 			region.deleteChunks(selection);
@@ -250,7 +276,8 @@ public class Region {
 		}
 	}
 
-	public void deleteChunks(Filter<?> filter, Set<Point2i> selection) {
+	public boolean deleteChunks(Filter<?> filter, Set<Point2i> selection) {
+		boolean deleted = false;
 		for (int i = 0; i < 1024; i++) {
 			RegionChunk region = this.region.getChunk(i);
 			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
@@ -264,11 +291,14 @@ public class Region {
 
 			if (filter.matches(filterData)) {
 				deleteChunkIndex(i);
+				deleted = true;
 			}
 		}
+		return deleted;
 	}
 
-	public void keepChunks(Filter<?> filter, Set<Point2i> selection) {
+	public boolean keepChunks(Filter<?> filter, Set<Point2i> selection) {
+		boolean deleted = false;
 		for (int i = 0; i < 1024; i++) {
 			RegionChunk region = this.region.getChunk(i);
 			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
@@ -284,8 +314,10 @@ public class Region {
 			// ignore selection if it's null
 			if (!filter.matches(filterData) || selection != null && !selection.contains(region.getAbsoluteLocation())) {
 				deleteChunkIndex(i);
+				deleted = true;
 			}
 		}
+		return deleted;
 	}
 
 	private void deleteChunkIndex(int index) {
@@ -344,12 +376,12 @@ public class Region {
 					try {
 						chunkData.applyFieldChanges(fields, force);
 					} catch (Exception ex) {
-						Debug.dumpException("failed to apply fields to chunk " + absoluteLocation, ex);
+						Debug.dumpException("failed to apply field changes to chunk " + absoluteLocation, ex);
 					}
 				}
 			}
 		}
-		Debug.printf("took %s to replace blocks in region %s", t, location);
+		Debug.printf("took %s to apply field changes to region %s", t, location);
 	}
 
 	public void mergeInto(Region region, Point2i offset, boolean overwrite, Set<Point2i> sourceChunks, Set<Point2i> selection, List<Range> ranges) {

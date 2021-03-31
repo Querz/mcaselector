@@ -13,7 +13,7 @@ import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
 public class Anvil115ChunkRenderer implements ChunkRenderer {
 
 	@Override
-	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, int[] waterPixels, byte[] terrainHeights, byte[] waterHeights, boolean water) {
+	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water) {
 		CompoundTag level = withDefault(() -> root.getCompoundTag("Level"), null);
 		if (level == null) {
 			return;
@@ -80,29 +80,41 @@ public class Anvil115ChunkRenderer implements ChunkRenderer {
 							continue;
 						}
 
-						if (!isEmpty(paletteIndex, blockData)) {
+						if (!isEmpty(blockData)) {
 							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
 							if (water) {
 								if (!waterDepth) {
 									pixelBuffer[regionIndex] = colorMapping.getRGB(blockData) | 0xFF000000; // water color
-									waterHeights[regionIndex] = (byte) (sectionHeight + cy); // height of highest water or terrain block
+									waterHeights[regionIndex] = (short) (sectionHeight + cy); // height of highest water or terrain block
 								}
 								if (isWater(blockData)) {
 									waterDepth = true;
 									continue;
+								} else if (isWaterlogged(blockData)) {
+									pixelBuffer[regionIndex] = colorMapping.getRGB(waterDummy) | 0xFF000000; // water color
+									waterPixels[regionIndex] = colorMapping.getRGB(blockData) | 0xFF000000; // color of waterlogged block
+									waterHeights[regionIndex] = (short) (sectionHeight + cy);
+									terrainHeights[regionIndex] = (short) (sectionHeight + cy - 1); // "height" of bottom of water, which will just be 1 block lower so shading works
+									continue zLoop;
 								} else {
 									waterPixels[regionIndex] = colorMapping.getRGB(blockData) | 0xFF000000; // color of block at bottom of water
 								}
 							} else {
 								pixelBuffer[regionIndex] = colorMapping.getRGB(blockData) | 0xFF000000;
 							}
-							terrainHeights[regionIndex] = (byte) (sectionHeight + cy); // height of bottom of water
+							terrainHeights[regionIndex] = (short) (sectionHeight + cy); // height of bottom of water
 							continue zLoop;
 						}
 					}
 				}
 			}
 		}
+	}
+
+	private static final CompoundTag waterDummy = new CompoundTag();
+
+	static {
+		waterDummy.putString("Name", "minecraft:water");
 	}
 
 	private boolean isWater(CompoundTag blockData) {
@@ -112,6 +124,10 @@ public class Anvil115ChunkRenderer implements ChunkRenderer {
 				return true;
 		}
 		return false;
+	}
+
+	private boolean isWaterlogged(CompoundTag data) {
+		return data.get("Properties") != null && "true".equals(withDefault(() -> data.getCompoundTag("Properties").getString("waterlogged"), null));
 	}
 
 	private boolean isIgnoredInNether(int biome, CompoundTag blockData, int height) {
@@ -129,10 +145,7 @@ public class Anvil115ChunkRenderer implements ChunkRenderer {
 		return false;
 	}
 
-	private boolean isEmpty(int paletteIndex, CompoundTag blockData) {
-		if (paletteIndex == 0) {
-			return true;
-		}
+	private boolean isEmpty(CompoundTag blockData) {
 		switch (withDefault(() -> blockData.getString("Name"), "")) {
 			case "minecraft:air":
 			case "minecraft:cave_air":

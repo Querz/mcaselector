@@ -1,5 +1,11 @@
-package net.querz.mcaselector.io;
+package net.querz.mcaselector.io.job;
 
+import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.RegionDirectories;
+import net.querz.mcaselector.io.SelectionData;
+import net.querz.mcaselector.io.SelectionHelper;
+import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.debug.Debug;
@@ -22,8 +28,6 @@ public class SelectionExporter {
 			progressChannel.done("no selection");
 			return;
 		}
-
-		System.out.println("copying selected chunks to " + destination);
 
 		MCAFilePipe.clearQueues();
 
@@ -68,8 +72,6 @@ public class SelectionExporter {
 
 			RegionDirectories to = new RegionDirectories(getRegionDirectories().getLocation(), toRegion, toPoi, toEntities);
 
-			System.out.println("created target region directories: " + to);
-
 			if (chunksToBeExported == null) {
 
 				// copy region
@@ -101,7 +103,7 @@ public class SelectionExporter {
 			}
 
 			byte[] regionData = loadRegion();
-			byte[] poiData = loadPOI();
+			byte[] poiData = loadPoi();
 			byte[] entitiesData = loadEntities();
 
 			if (regionData == null && poiData == null && entitiesData == null) {
@@ -131,7 +133,6 @@ public class SelectionExporter {
 			//load MCAFile
 			try {
 				Region region = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
-				region.setDirectories(destinations);
 
 				Set<Point2i> inverted = new HashSet<>(Tile.CHUNKS - chunksToBeExported.size());
 				Point2i origin = chunksToBeExported.iterator().next().chunkToRegion().regionToChunk();
@@ -170,7 +171,7 @@ public class SelectionExporter {
 		public void execute() {
 			Timer t = new Timer();
 			try {
-				getData().saveWithTempFiles();
+				getData().saveWithTempFiles(destinations);
 			} catch (Exception ex) {
 				Debug.dumpException("failed to export filtered chunks from " + getRegionDirectories().getLocationAsFileName(), ex);
 			}

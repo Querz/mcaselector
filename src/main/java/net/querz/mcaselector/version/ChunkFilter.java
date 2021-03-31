@@ -17,6 +17,10 @@ public interface ChunkFilter {
 
 	void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace);
 
+	int getAverageHeight(CompoundTag data);
+
+	int getBlockAmount(CompoundTag data, String[] blocks);
+
 	class BlockReplaceData {
 
 		private String name;
