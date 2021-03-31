@@ -10,6 +10,7 @@ status.visible;régions visibles
 status.visible.tooltip;La quantité d'images de la région chargée pour le rendu.
 status.total;total des régions
 status.total.tooltip;Le nombre total de régions chargées, y compris les régions sélectionnées non visibles
+status.overlay;superposition
 menu.file;Fichier
 menu.view;Vue
 menu.selection;Sélection
@@ -42,6 +43,8 @@ menu.tools.filter_chunks;Filtrer les chunks
 menu.tools.change_fields;Changer les champs
 menu.tools.edit_nbt;Modifier le chunk
 menu.tools.swap_chunks;Échanger les chunks
+menu.tools.edit_overlays;Modifier les superpositions
+menu.tools.next_overlay;Superposition suivante
 dialog.select_world.title;Sélectionnez un monde
 dialog.settings.title;Options
 dialog.settings.language;Langage
@@ -95,6 +98,9 @@ dialog.filter_chunks.delete.tooltip;Supprime tous les chunks concernés de ce mo
 dialog.filter_chunks.selection_only;Appliquer seulement à la sélection
 dialog.filter_chunks.selection_radius;Rayon de sélection
 dialog.filter_chunks.selection_only.tooltip;Si ce filtre devrait seulement s'appliquer à la sélection actuelle.
+dialog.edit_overlays.title;Modifier les superpositions
+dialog.edit_overlays.overlay_active.tooltip;Actif
+dialog.edit_overlays.delete.tooltip;Effacer
 dialog.change_nbt.title;Changer les NBT
 dialog.change_nbt.change;Changer
 dialog.change_nbt.change.tooltip;Changer la valeur seulement si elle existe.

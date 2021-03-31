@@ -10,6 +10,7 @@ status.visible;可见区域
 status.visible.tooltip;用于渲染的加载区域图像的数量.
 status.total;区域总数
 status.total.tooltip;加载区域的总数, 包括不可见的选定区域.
+status.overlay;覆盖
 menu.file;文件
 menu.view;视图
 menu.selection;选择
@@ -42,6 +43,8 @@ menu.tools.filter_chunks;筛选区块
 menu.tools.change_fields;更改字段
 menu.tools.edit_nbt;编辑区块
 menu.tools.swap_chunks;交换区块
+menu.tools.edit_overlays;编辑叠加
+menu.tools.next_overlay;下一个叠加
 dialog.select_world.title;选择一个尺寸
 dialog.settings.title;设置
 dialog.settings.language;语言
@@ -95,6 +98,9 @@ dialog.filter_chunks.delete.tooltip;从当前世界中删除所有受影响的�
 dialog.filter_chunks.selection_only;仅应用于所选内容
 dialog.filter_chunks.selection_radius;选择半径
 dialog.filter_chunks.selection_only.tooltip;此筛选器是否只应用于当前所选内容.
+dialog.edit_overlays.title;编辑叠加
+dialog.edit_overlays.overlay_active.tooltip;积极的
+dialog.edit_overlays.delete.tooltip;删除
 dialog.change_nbt.title;更改NBT
 dialog.change_nbt.change;更改
 dialog.change_nbt.change.tooltip;仅当其键存在时更改值.

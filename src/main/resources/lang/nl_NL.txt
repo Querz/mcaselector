@@ -10,6 +10,7 @@ status.visible;zichtbaar
 status.visible.tooltip;De hoeveelheid geladen region afbeeldingen voor het renderen.
 status.total;totaal
 status.total.tooltip;De totale hoeveelheid geladen regions, inclusief de niet zichtbare geselecteerde regions.
+status.overlay;overlay
 menu.file;Bestand
 menu.view;Beeld
 menu.selection;Selectie
@@ -42,6 +43,8 @@ menu.tools.filter_chunks;Chunks filteren
 menu.tools.change_fields;Velden veranderen
 menu.tools.edit_nbt;Chunk aanpassen
 menu.tools.swap_chunks;Chunks omwisselen
+menu.tools.edit_overlays;Bewerk overlays
+menu.tools.next_overlay;Volgende overlay
 dialog.select_world.title;Selecteer een dimensie
 dialog.settings.title;Instellingen
 dialog.settings.language;Taal
@@ -95,6 +98,9 @@ dialog.filter_chunks.delete.tooltip;Verwijdert alle aangepaste chunks uit de hui
 dialog.filter_chunks.selection_only;Alleen van toepassing op selectie
 dialog.filter_chunks.selection_radius;Selectie radius
 dialog.filter_chunks.selection_only.tooltip;Of dit filter alleen van toepassing is op de huidige selectie.
+dialog.edit_overlays.title;Bewerk overlays
+dialog.edit_overlays.overlay_active.tooltip;Actief
+dialog.edit_overlays.delete.tooltip;Verwijderen
 dialog.change_nbt.title;NBT aanpassen
 dialog.change_nbt.change;Aanpassen
 dialog.change_nbt.change.tooltip;Past de waarde alleen aan als de bijbehorende sleutel bestaat.

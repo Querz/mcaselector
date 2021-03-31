@@ -10,6 +10,7 @@ status.visible;synliga
 status.visible.tooltip;Mängden laddade regionsbilder för rendering.
 status.total;totalt
 status.total.tooltip;Den totala mängden laddade regioner, inkluderat ej visade valda regioner.
+status.overlay;överlägget
 menu.file;Fil
 menu.view;Visa
 menu.selection;Markering
@@ -42,6 +43,8 @@ menu.tools.filter_chunks;Filtrera chunks
 menu.tools.change_fields;Ändra fält
 menu.tools.edit_nbt;Ändra chunk
 menu.tools.swap_chunks;Byt chunks
+menu.tools.edit_overlays;Redigera överlägg
+menu.tools.next_overlay;Nästa överlägg
 dialog.select_world.title;Välj en dimension
 dialog.settings.title;Inställningar
 dialog.settings.language;Språk
@@ -95,6 +98,9 @@ dialog.filter_chunks.delete.tooltip;Raderar alla påverkade chunks från världe
 dialog.filter_chunks.selection_only;Tillämpa endast till markering
 dialog.filter_chunks.selection_radius;Urvalsradie
 dialog.filter_chunks.selection_only.tooltip;Om detta filter enbart ska appliceras till den nuvarande markeringen.
+dialog.edit_overlays.title;Redigera överlägg
+dialog.edit_overlays.overlay_active.tooltip;Aktiva
+dialog.edit_overlays.delete.tooltip;Radera
 dialog.change_nbt.title;Ändra NBT
 dialog.change_nbt.change;Ändra
 dialog.change_nbt.change.tooltip;Ändrar endast värdet om dess nyckel finns.

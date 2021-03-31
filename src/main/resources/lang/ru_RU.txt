@@ -10,6 +10,7 @@ status.visible;отображено
 status.visible.tooltip;Количество прогруженных областей для отображения
 status.total;всего
 status.total.tooltip;Общее количество прогруженных областей, включая не отоброжаемые выбранные области.
+status.overlay;наложение
 menu.file;Файл
 menu.view;Вид
 menu.selection;Выбор
@@ -42,6 +43,8 @@ menu.tools.filter_chunks;Отфильтровать чанки
 menu.tools.change_fields;Изменить параметры
 menu.tools.edit_nbt;Редактировать чанк
 menu.tools.swap_chunks;поменять чанки
+menu.tools.edit_overlays;Редактировать наложения
+menu.tools.next_overlay;Следующий оверлей
 dialog.select_world.title;Выберите размер
 dialog.settings.title;Настройки
 dialog.settings.language;Язык
@@ -95,6 +98,9 @@ dialog.filter_chunks.delete.tooltip;Удаляет все подверженны
 dialog.filter_chunks.selection_only;Применить только к выбранным
 dialog.filter_chunks.selection_radius;Радиус выбора
 dialog.filter_chunks.selection_only.tooltip;Если этот фильтр должен применяться только к выбранным
+dialog.edit_overlays.title;Редактировать наложения
+dialog.edit_overlays.overlay_active.tooltip;Активный
+dialog.edit_overlays.delete.tooltip;Удалить
 dialog.change_nbt.title;Изменить NBT
 dialog.change_nbt.change;Изменить
 dialog.change_nbt.change.tooltip;Изменяет значение только при наличии ключа

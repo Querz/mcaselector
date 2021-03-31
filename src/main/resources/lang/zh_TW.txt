@@ -10,6 +10,7 @@ status.visible;可見區域
 status.visible.tooltip;用於渲染的已載入區域圖像的數量。
 status.total;區域總數
 status.total.tooltip;已載入區域的總數，包括不可見的已選擇區域。
+status.overlay;覆蓋
 menu.file;文件
 menu.view;檢視
 menu.selection;選擇
@@ -42,6 +43,8 @@ menu.tools.filter_chunks;篩選區塊
 menu.tools.change_fields;變更欄位
 menu.tools.edit_nbt;編輯區塊
 menu.tools.swap_chunks;交換塊
+menu.tools.edit_overlays;編輯疊加
+menu.tools.next_overlay;下一個疊加
 dialog.select_world.title;選擇一個尺寸
 dialog.settings.title;設置
 dialog.settings.language;語言
@@ -95,6 +98,9 @@ dialog.filter_chunks.delete.tooltip;從這個世界中刪除所有受影響的�
 dialog.filter_chunks.selection_only;僅適用於已選擇的內容
 dialog.filter_chunks.selection_radius;選擇半徑
 dialog.filter_chunks.selection_only.tooltip;此篩選器是否只套用於已選擇的內容。
+dialog.edit_overlays.title;編輯疊加
+dialog.edit_overlays.overlay_active.tooltip;積極的
+dialog.edit_overlays.delete.tooltip;刪除
 dialog.change_nbt.title;變更NBT
 dialog.change_nbt.change;變更
 dialog.change_nbt.change.tooltip;僅當其鍵存在時變更其值。

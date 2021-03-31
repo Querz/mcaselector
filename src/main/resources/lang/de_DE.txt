@@ -10,6 +10,7 @@ status.visible;Sichtbar
 status.visible.tooltip;Die Anzahl gerenderter Regionen.
 status.total;Alle
 status.total.tooltip;Die gesamte Anzahl geladener Regionen, inklusive der nicht sichtbaren selektierten Regionen.
+status.overlay;overlay
 menu.file;Datei
 menu.view;Ansicht
 menu.selection;Selektion
@@ -42,6 +43,8 @@ menu.tools.filter_chunks;Chunks filtern
 menu.tools.change_fields;Werte ändern
 menu.tools.edit_nbt;Chunk editieren
 menu.tools.swap_chunks;Chunks tauschen
+menu.tools.edit_overlays;Overlays editieren
+menu.tools.next_overlay;Nächstes Overlay
 dialog.select_world.title;Dimension auswählen
 dialog.settings.title;Einstellungen
 dialog.settings.language;Sprache
@@ -95,6 +98,9 @@ dialog.filter_chunks.delete.tooltip;Löscht alle betroffenen Chunks aus dieser W
 dialog.filter_chunks.selection_only;Nur auf Selektion anwenden
 dialog.filter_chunks.selection_radius;Selektionsradius
 dialog.filter_chunks.selection_only.tooltip;Ob der Filter nur auf die Chunks einer bereits existierenden Selektion angewendet werden soll.
+dialog.edit_overlays.title;Overlays editieren
+dialog.edit_overlays.overlay_active.tooltip;Aktiv
+dialog.edit_overlays.delete.tooltip;Löschen
 dialog.change_nbt.title;NBT ändern
 dialog.change_nbt.change;Ändern
 dialog.change_nbt.change.tooltip;Ändert den Wert nur, wenn er existiert.

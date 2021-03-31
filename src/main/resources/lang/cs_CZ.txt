@@ -10,6 +10,7 @@ status.visible;viditelné regiony
 status.visible.tooltip;Počet obrázků regionů nahraných pro vykreslení.
 status.total;celkem regionů
 status.total.tooltip;Celkový počet nahraných regionů, včetně vybraných nezobrazených regionů.
+status.overlay;překrytí
 menu.file;Soubor
 menu.view;Pohled
 menu.selection;Výběr
@@ -42,6 +43,8 @@ menu.tools.filter_chunks;Filtrovat chunky
 menu.tools.change_fields;Změnit pole
 menu.tools.edit_nbt;Upravit chunků
 menu.tools.swap_chunks;Vyměňovat chunky
+menu.tools.edit_overlays;Upravit překryvy
+menu.tools.next_overlay;Další překrytí
 dialog.select_world.title;Vyberte kótu
 dialog.settings.title;Nastavení
 dialog.settings.language;Jazyk
@@ -95,6 +98,9 @@ dialog.filter_chunks.delete.tooltip;Smaže všechny ovlivněné chunky z aktuál
 dialog.filter_chunks.selection_only;Aplikovat pouze na výběr
 dialog.filter_chunks.selection_radius;Poloměr výběru
 dialog.filter_chunks.selection_only.tooltip;Zda má být filtr aplikován pouze na aktuální výběr.
+dialog.edit_overlays.title;Upravit překryvy
+dialog.edit_overlays.overlay_active.tooltip;Aktivní
+dialog.edit_overlays.delete.tooltip;Vymazat
 dialog.change_nbt.title;Změnit NBT
 dialog.change_nbt.change;změnit
 dialog.change_nbt.change.tooltip;Změní hodnotu pouze pokud klíč existuje.

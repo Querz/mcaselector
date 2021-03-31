@@ -10,6 +10,7 @@ status.visible;widocznych
 status.visible.tooltip;Liczba załadowanych obrazów regionów.
 status.total;łącznie
 status.total.tooltip;Całkowita liczba załadowanych regionów - z uwzględnieniem niewidocznych.
+status.overlay;nakładka
 menu.file;Plik
 menu.view;Widok
 menu.selection;Zaznaczenie
@@ -42,6 +43,8 @@ menu.tools.filter_chunks;Filtruj chunki
 menu.tools.change_fields;Zmień dane NBT
 menu.tools.edit_nbt;Edytuj chunk
 menu.tools.swap_chunks;Zamień chunki
+menu.tools.edit_overlays;Edytuj nakładki
+menu.tools.next_overlay;Następna nakładka
 dialog.select_world.title;Wybierz wymiar
 dialog.settings.title;Ustawienia
 dialog.settings.language;Język
@@ -95,6 +98,9 @@ dialog.filter_chunks.delete.tooltip;Usuwa ze świata chunki wybrane przez filtr.
 dialog.filter_chunks.selection_only;Zastosuj tylko do zaznaczenia
 dialog.filter_chunks.selection_radius;Promień zaznaczenia
 dialog.filter_chunks.selection_only.tooltip;Zaznacz jeśli chcesz filtrować tylko obecne zaznaczenie.
+dialog.edit_overlays.title;Edytuj nakładki
+dialog.edit_overlays.overlay_active.tooltip;Aktywny
+dialog.edit_overlays.delete.tooltip;Usunąć
 dialog.change_nbt.title;Zmień NBT
 dialog.change_nbt.change;Zmień
 dialog.change_nbt.change.tooltip;Zmienia wartość tylko jeśli jej klucz istnieje.
