@@ -72,7 +72,7 @@ public abstract class MCAFile<T extends Chunk> {
 
 			tempFile.delete();
 		} else {
-			Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			Files.move(tempFile.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}
 		return result;
 	}
