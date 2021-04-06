@@ -21,6 +21,7 @@ public class Window extends Application {
 
 	private Stage primaryStage;
 	private String title = "";
+	private OptionBar optionBar;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -41,7 +42,7 @@ public class Window extends Application {
 		BorderPane pane = new BorderPane();
 
 		//menu bar
-		OptionBar optionBar = new OptionBar(tileMap, primaryStage);
+		optionBar = new OptionBar(tileMap, primaryStage);
 		pane.setTop(optionBar);
 
 		//tilemap
@@ -87,5 +88,13 @@ public class Window extends Application {
 
 	public boolean isKeyPressed(KeyCode keyCode) {
 		return pressedKeys.contains(keyCode);
+	}
+
+	public OptionBar getOptionBar() {
+		return optionBar;
+	}
+
+	public Stage getPrimaryStage() {
+		return primaryStage;
 	}
 }

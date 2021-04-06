@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
@@ -15,6 +16,7 @@ import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.ui.Color;
+import net.querz.mcaselector.ui.DialogHelper;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.key.KeyActivator;
@@ -24,6 +26,7 @@ import net.querz.mcaselector.progress.Timer;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -100,6 +103,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		this.setOnScroll(this::onScroll);
 		this.setOnScrollStarted(e -> onScrollStarted());
 		this.setOnScrollFinished(e -> onScrollFinished());
+		this.setOnDragOver(this::onDragOver);
+		this.setOnDragDropped(this::onDragDropped);
 		keyActivator.registerAction(KeyCode.W, c -> offset = offset.sub(0, (c.contains(KeyCode.SHIFT) ? 10 : 5) * scale));
 		keyActivator.registerAction(KeyCode.A, c -> offset = offset.sub((c.contains(KeyCode.SHIFT) ? 10 : 5) * scale, 0));
 		keyActivator.registerAction(KeyCode.S, c -> offset = offset.add(0, (c.contains(KeyCode.SHIFT) ? 10 : 5) * scale));
@@ -355,6 +360,28 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			mark(event.getX(), event.getY(), selectionInverted);
 		}
 		update();
+	}
+
+	private void onDragOver(DragEvent event) {
+		if (event.getGestureSource() != this && event.getDragboard().hasFiles()) {
+			if (FileHelper.testWorldDirectoriesValid(event.getDragboard().getFiles(), null) != null) {
+				event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+				event.consume();
+			}
+		}
+	}
+
+	private void onDragDropped(DragEvent event) {
+		Dragboard db = event.getDragboard();
+		if (db.hasFiles()) {
+
+			WorldDirectories wd = FileHelper.testWorldDirectoriesValid(db.getFiles(), getWindow().getPrimaryStage());
+			if (wd != null) {
+				DialogHelper.setWorld(wd, this);
+			}
+			event.setDropCompleted(true);
+		}
+		event.consume();
 	}
 
 	public void redrawOverlays() {

@@ -496,7 +496,7 @@ public class DialogHelper {
 		}
 	}
 
-	public static void openRegion(TileMap tileMap, Stage primaryStage, OptionBar optionBar) {
+	public static void openRegion(TileMap tileMap, Stage primaryStage) {
 		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", Config.getMCSavesDir());
 		File file = createDirectoryChooser(lastOpenDirectory).showDialog(primaryStage);
 		if (file != null && file.isDirectory()) {
@@ -509,7 +509,7 @@ public class DialogHelper {
 				tileMap.clear();
 				tileMap.update();
 				tileMap.disable(false);
-				optionBar.setWorldDependentMenuItemsEnabled(true, tileMap);
+				tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
 				tileMap.getWindow().setTitleSuffix(file.toString());
 				tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString());
 			} else {
@@ -520,11 +520,11 @@ public class DialogHelper {
 		}
 	}
 
-	public static void openWorld(TileMap tileMap, Stage primaryStage, OptionBar optionBar) {
+	public static void openWorld(TileMap tileMap, Stage primaryStage) {
 		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", Config.getMCSavesDir());
 		File file = createDirectoryChooser(lastOpenDirectory).showDialog(primaryStage);
 		if (file != null && file.isDirectory()) {
-			List<File> dimensions = detectDimensionDirectories(file);
+			List<File> dimensions = FileHelper.detectDimensionDirectories(file);
 			if (dimensions.size() == 0) {
 				new ErrorDialog(primaryStage, String.format("no dimensions found in %s", file.getAbsolutePath()));
 				Debug.dumpf("no dimensions found in %s", file.getAbsolutePath());
@@ -533,27 +533,27 @@ public class DialogHelper {
 
 			// if there is only one dimension, open it instantly
 			if (dimensions.size() == 1) {
-				setWorld(detectWorldDirectories(dimensions.get(0)), tileMap, optionBar);
+				setWorld(FileHelper.detectWorldDirectories(dimensions.get(0)), tileMap);
 				return;
 			}
 
 			// show world selection dialog
-			Optional<File> result = new SelectWorldDialog(dimensions, tileMap, primaryStage).showAndWait();
+			Optional<File> result = new SelectWorldDialog(dimensions, primaryStage).showAndWait();
 			result.ifPresent(dim -> {
-				setWorld(detectWorldDirectories(dim), tileMap, optionBar);
+				setWorld(FileHelper.detectWorldDirectories(dim), tileMap);
 			});
 		} else if (file != null) {
 			new ErrorDialog(primaryStage, String.format("%s is not a directory", file));
 		}
 	}
 
-	private static void setWorld(WorldDirectories worldDirectories, TileMap tileMap, OptionBar optionBar) {
+	public static void setWorld(WorldDirectories worldDirectories, TileMap tileMap) {
 		Config.setWorldDirs(worldDirectories);
 		CacheHelper.validateCacheVersion(tileMap);
 		tileMap.clear();
 		tileMap.update();
 		tileMap.disable(false);
-		optionBar.setWorldDependentMenuItemsEnabled(true, tileMap);
+		tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
 		tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent());
 		tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString());
 	}
@@ -597,67 +597,5 @@ public class DialogHelper {
 			fileChooser.setInitialDirectory(new File(initialDirectory));
 		}
 		return fileChooser;
-	}
-
-	public static WorldDirectories detectWorldDirectories(File dir) {
-		File region = new File(dir, "region");
-		File poi = new File(dir, "poi");
-		File entities = new File(dir, "entities");
-
-		WorldDirectories worldDirectories = new WorldDirectories();
-
-		if (region.exists() && hasMCAFiles(region)) {
-			worldDirectories.setRegion(region);
-		}
-		if (poi.exists()) {
-			worldDirectories.setPoi(poi);
-		}
-		if (entities.exists()) {
-			worldDirectories.setEntities(entities);
-		}
-
-		return worldDirectories;
-	}
-
-	// takes a directory and detects all world directories
-	public static List<File> detectDimensionDirectories(File dir) {
-		List<File> result = new ArrayList<>();
-
-		// detect overworld
-		if (isValidDimension(dir)) {
-			result.add(dir);
-		}
-
-		// detect nether folder and end folder first to have them at the beginning of the list
-		File nether = new File(dir, "DIM-1");
-		if (isValidDimension(nether)) {
-			result.add(nether);
-		}
-		File end = new File(dir, "DIM1");
-		if (isValidDimension(end)) {
-			result.add(end);
-		}
-
-		// detect custom dimensions
-		File[] customDimensions = dir.listFiles((d, name) -> !name.equals("DIM-1") && !name.equals("DIM1") && name.matches("^DIM-?\\d+$"));
-		if (customDimensions != null && customDimensions.length > 0) {
-			for (File customDimension : customDimensions) {
-				if (isValidDimension(customDimension)) {
-					result.add(customDimension);
-				}
-			}
-		}
-
-		return result;
-	}
-
-	private static boolean isValidDimension(File dir) {
-		File region = new File(dir, "region");
-		return region.exists() && hasMCAFiles(region);
-	}
-
-	private static boolean hasMCAFiles(File dir) {
-		File[] files = dir.listFiles((d, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
-		return files != null && files.length > 0;
 	}
 }

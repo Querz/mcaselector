@@ -62,17 +62,10 @@ public final class CacheHelper {
 						Debug.error("could not delete file " + file);
 					}
 				}
-			}
-			for (OverlayType type : OverlayType.values()) {
-				File typeFile = FileHelper.createDATFilePath(type, regionBlock);
-				if (typeFile.exists()) {
-					if (!typeFile.delete()) {
-						Debug.error("could not delete file " + typeFile);
-					}
-				}
+				tileMap.clearTile(regionBlock);
+				tileMap.getOverlayPool().discardData(regionBlock);
 			}
 		}
-		tileMap.clear();
 		tileMap.update();
 	}
 
@@ -96,20 +89,10 @@ public final class CacheHelper {
 					}
 				}
 			}
-			for (OverlayType type : OverlayType.values()) {
-				File typeDir = new File(Config.getCacheDir(), type.instance().name());
-				File[] typeFiles = typeDir.listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.dat$"));
-				if (typeFiles == null) {
-					continue;
-				}
-				for (File file : typeFiles) {
-					Point2i typeRegion = FileHelper.parseMCAFileName(file);
-					if (selection.isRegionSelected(typeRegion) && file.exists()) {
-						if (!file.delete()) {
-							Debug.error("could not delete file " + file);
-						}
-					}
-				}
+
+			Map<Point2i, Set<Point2i>> trueSelection = SelectionHelper.getTrueSelection(selection);
+			for (Point2i region : trueSelection.keySet()) {
+				tileMap.getOverlayPool().discardData(region);
 			}
 		} else {
 			for (Map.Entry<Point2i, Set<Point2i>> entry : tileMap.getMarkedChunks().entrySet()) {
@@ -122,14 +105,8 @@ public final class CacheHelper {
 					}
 					tileMap.clearTile(entry.getKey());
 				}
-				for (OverlayType type : OverlayType.values()) {
-					File typeFile = FileHelper.createDATFilePath(type, entry.getKey());
-					if (typeFile.exists()) {
-						if (!typeFile.delete()) {
-							Debug.error("could not delete file " + typeFile);
-						}
-					}
-				}
+				tileMap.getOverlayPool().discardData(entry.getKey());
+
 			}
 		}
 		tileMap.update();

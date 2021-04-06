@@ -1,10 +1,16 @@
 package net.querz.mcaselector.io;
 
 import javafx.scene.image.Image;
+import javafx.stage.Stage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
+import net.querz.mcaselector.ui.DialogHelper;
+import net.querz.mcaselector.ui.OptionBar;
+import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,12 +21,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -179,20 +188,12 @@ public final class FileHelper {
 		return new File(cacheDir, zoomLevel + "/" + createPNGFileName(r));
 	}
 
-	public static File createDATFilePath(OverlayType type, Point2i r) {
-		return new File(Config.getCacheDir(), type.instance().name() + "/" + createDATFileName(r));
-	}
-
 	public static String createMCAFileName(Point2i r) {
 		return String.format("r.%d.%d.mca", r.getX(), r.getZ());
 	}
 
 	public static String createMCCFileName(Point2i c) {
 		return String.format("c.%d.%d.mcc", c.getX(), c.getZ());
-	}
-
-	public static String createDATFileName(Point2i p) {
-		return String.format("r.%d.%d.dat", p.getX(), p.getZ());
 	}
 
 	public static String createPNGFileName(Point2i r) {
@@ -271,5 +272,164 @@ public final class FileHelper {
 			}
 		}
 		return dir.delete();
+	}
+
+
+	// takes a directory and detects all world directories
+	public static List<File> detectDimensionDirectories(File dir) {
+		List<File> result = new ArrayList<>();
+
+		// detect overworld
+		if (isValidDimension(dir)) {
+			result.add(dir);
+		}
+
+		// detect nether folder and end folder first to have them at the beginning of the list
+		File nether = new File(dir, "DIM-1");
+		if (isValidDimension(nether)) {
+			result.add(nether);
+		}
+		File end = new File(dir, "DIM1");
+		if (isValidDimension(end)) {
+			result.add(end);
+		}
+
+		// detect custom dimensions
+		File[] customDimensions = dir.listFiles((d, name) -> !name.equals("DIM-1") && !name.equals("DIM1") && name.matches("^DIM-?\\d+$"));
+		if (customDimensions != null && customDimensions.length > 0) {
+			for (File customDimension : customDimensions) {
+				if (isValidDimension(customDimension)) {
+					result.add(customDimension);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	public static boolean isValidDimension(File dir) {
+		File region = new File(dir, "region");
+		return region.exists() && hasMCAFiles(region);
+	}
+
+	public static boolean hasMCAFiles(File dir) {
+		File[] files = dir.listFiles((d, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
+		return files != null && files.length > 0;
+	}
+
+	public static WorldDirectories detectWorldDirectories(File dir) {
+		File region = new File(dir, "region");
+		File poi = new File(dir, "poi");
+		File entities = new File(dir, "entities");
+
+		WorldDirectories worldDirectories = new WorldDirectories();
+
+		if (region.exists() && FileHelper.hasMCAFiles(region)) {
+			worldDirectories.setRegion(region);
+		}
+		if (poi.exists()) {
+			worldDirectories.setPoi(poi);
+		}
+		if (entities.exists()) {
+			worldDirectories.setEntities(entities);
+		}
+
+		return worldDirectories;
+	}
+
+	public static File testFilesInSameDirectory(List<File> files) {
+		File dir = null;
+		for (File file : files) {
+			if (file.isDirectory()) {
+				if (dir == null) {
+					dir = file;
+				} else if (!file.equals(dir)) {
+					return null;
+				}
+			} else {
+				if (dir == null) {
+					dir = file.getParentFile();
+				} else if (!file.getParentFile().equals(dir)) {
+					return null;
+				}
+			}
+		}
+		return dir;
+	}
+
+	public static WorldDirectories testWorldDirectoriesValid(List<File> files, Stage primaryStage) {
+		if (files.size() == 0) {
+			return null;
+		}
+
+		// test if we have one or multiple files from the same directory
+		File dir;
+		if ((dir = testFilesInSameDirectory(files)) != null) {
+			if (hasMCAFiles(dir)) {
+				return new WorldDirectories(dir, null, null);
+			}
+		}
+
+		// test if those are "region", "poi" and "entities" folders
+		WorldDirectories wd = new WorldDirectories();
+		fileLoop:
+		for (File file : files) {
+			if (!file.isDirectory()) {
+				wd = null;
+				break;
+			}
+			switch (file.getName()) {
+				case "region":
+					if (wd.getRegion() != null) {
+						wd = null;
+						break fileLoop;
+					}
+					wd.setRegion(file);
+					break;
+				case "poi":
+					if (wd.getPoi() != null) {
+						wd = null;
+						break fileLoop;
+					}
+					wd.setPoi(file);
+					break;
+				case "entities":
+					if (wd.getEntities() != null) {
+						wd = null;
+						break fileLoop;
+					}
+					wd.setEntities(file);
+					break;
+			}
+		}
+		if (wd != null && wd.getRegion() != null) {
+			return wd;
+		}
+
+		// detect dimensions
+		if (files.size() != 1) {
+			return null;
+		}
+		File file = files.get(0);
+		if (file.isFile()) {
+			file = file.getParentFile();
+		}
+		List<File> dimensionDirs = detectDimensionDirectories(file);
+		if (dimensionDirs.size() == 1) {
+			return detectWorldDirectories(dimensionDirs.get(0));
+		} else if (dimensionDirs.size() > 1) {
+			if (primaryStage != null) {
+				Optional<File> result = new SelectWorldDialog(dimensionDirs, primaryStage).showAndWait();
+				DataProperty<WorldDirectories> dimensionProperty = new DataProperty<>();
+				result.ifPresent(dim -> dimensionProperty.set(FileHelper.detectWorldDirectories(dim)));
+				if (dimensionProperty.get() != null) {
+					return dimensionProperty.get();
+				}
+			} else {
+				return new WorldDirectories();
+			}
+		}
+
+		return null;
 	}
 }

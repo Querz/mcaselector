@@ -20,7 +20,7 @@ public class SelectWorldDialog extends Dialog<File> {
 
 	private static final double cellHeight = 26D;
 
-	public SelectWorldDialog(List<File> worldDirectories, TileMap tileMap, Stage primaryStage) {
+	public SelectWorldDialog(List<File> worldDirectories, Stage primaryStage) {
 		titleProperty().bind(Translation.DIALOG_SELECT_WORLD_TITLE.getProperty());
 
 		initStyle(StageStyle.UTILITY);

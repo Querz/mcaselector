@@ -101,8 +101,8 @@ public class OptionBar extends MenuBar {
 
 		getMenus().addAll(file, view, selection, tools, aboutMenu);
 
-		openWorld.setOnAction(e -> DialogHelper.openWorld(tileMap, primaryStage, this));
-		openRegion.setOnAction(e -> DialogHelper.openRegion(tileMap, primaryStage, this));
+		openWorld.setOnAction(e -> DialogHelper.openWorld(tileMap, primaryStage));
+		openRegion.setOnAction(e -> DialogHelper.openRegion(tileMap, primaryStage));
 		settings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage));
 		worldSettings.setOnAction(e -> DialogHelper.editWorldSettings(tileMap, primaryStage));
 		quit.setOnAction(e -> System.exit(0));
