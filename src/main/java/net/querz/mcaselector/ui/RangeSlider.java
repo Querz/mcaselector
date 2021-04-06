@@ -39,6 +39,11 @@ public class RangeSlider extends Pane {
 		setOnMouseDragged(this::onMouseDragged);
 		widthProperty().addListener(n -> update());
 
+		minProperty.addListener((v, o, n) -> update());
+		maxProperty.addListener((v, o, n) -> update());
+		lowProperty.addListener((v, o, n) -> update());
+		highProperty.addListener((v, o, n) -> update());
+
 		lowerThumb.setOnMousePressed(e -> lowerThumb.toFront());
 		upperThumb.setOnMousePressed(e -> upperThumb.toFront());
 
