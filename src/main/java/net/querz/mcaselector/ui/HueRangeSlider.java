@@ -9,7 +9,6 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import net.querz.mcaselector.io.ImageHelper;
-import org.controlsfx.control.RangeSlider;
 
 public class HueRangeSlider extends RangeSlider {
 
@@ -26,26 +25,26 @@ public class HueRangeSlider extends RangeSlider {
 			high = maxHue - high;
 		}
 
-		setLowValue(low);
-		setHighValue(high);
+		setLow(low);
+		setHigh(high);
 
 		getStyleClass().add("hue-range-slider");
 
 		// create rainbow
 		renderBackground();
 
-		highValueProperty().addListener((v, o, n) -> renderBackground());
-		lowValueProperty().addListener((v, o, n) -> renderBackground());
+		highProperty().addListener((v, o, n) -> renderBackground());
+		lowProperty().addListener((v, o, n) -> renderBackground());
 
 		invertedProperty.addListener((v, o, n) -> {
-			double l = getLowValue();
-			double h = getHighValue();
+			double l = getLow();
+			double h = getHigh();
 			if (n) {
-				setHighValue(getMax() - l);
-				setLowValue(getMax() - h);
+				setHigh(getMax() - l);
+				setLow(getMax() - h);
 			} else {
-				setLowValue(getMax() - h);
-				setHighValue(getMax() - l);
+				setLow(getMax() - h);
+				setHigh(getMax() - l);
 			}
 			renderBackground();
 		});
@@ -61,20 +60,20 @@ public class HueRangeSlider extends RangeSlider {
 
 	public float getMinHue() {
 		if (invertedProperty.get()) {
-			return (float) getMax() - (float) getLowValue();
+			return (float) getMax() - (float) getLow();
 		}
-		return (float) getLowValue();
+		return (float) getLow();
 	}
 
 	public float getMaxHue() {
 		if (invertedProperty.get()) {
-			return (float) getMax() - (float) getHighValue();
+			return (float) getMax() - (float) getHigh();
 		}
-		return (float) getHighValue();
+		return (float) getHigh();
 	}
 
 	private void renderBackground() {
-		Image bg = ImageHelper.renderGradient(width, 0, (float) getMax(), (float) getLowValue(), (float) getHighValue(), invertedProperty.get());
+		Image bg = ImageHelper.renderGradient(width, 0, (float) getMax(), (float) getLow(), (float) getHigh(), invertedProperty.get());
 		BackgroundImage bgi = new BackgroundImage(bg, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
 		setBackground(new Background(bgi));
 	}

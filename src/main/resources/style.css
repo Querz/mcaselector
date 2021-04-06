@@ -57,6 +57,40 @@
 	-color-table-line: #636769;
 	-color-warning-text: #ff6651;
 
+	-fx-base: #ececec;
+	-fx-background: derive(-fx-base, 26.4%);
+	-fx-text-box-border: ladder(
+		-fx-background,
+		black 10%,
+		derive(-fx-background, -15%) 30%
+	);
+	-fx-inner-border: linear-gradient(to bottom,
+		ladder(
+			-fx-base,
+			derive(-fx-base,30%) 0%,
+			derive(-fx-base,20%) 40%,
+			derive(-fx-base,25%) 60%,
+			derive(-fx-base,55%) 80%,
+			derive(-fx-base,55%) 90%,
+			derive(-fx-base,75%) 100%
+		),
+		ladder(
+			-fx-base,
+			derive(-fx-base,20%) 0%,
+			derive(-fx-base,10%) 20%,
+			derive(-fx-base,5%) 40%,
+			derive(-fx-base,-2%) 60%,
+			derive(-fx-base,-5%) 100%
+	));
+	-fx-body-color: linear-gradient(to bottom,
+		ladder(
+			-fx-base,
+			derive(-fx-base,8%) 75%,
+			derive(-fx-base,10%) 80%
+		),
+		derive(-fx-base, -8%)
+	);
+
 	-fx-font-family: "Noto Sans";
 }
 
@@ -562,7 +596,11 @@
 	-fx-pref-height: 32;
 }
 
-.hue-range-slider .high-thumb, .hue-range-slider .low-thumb {
+.hue-range-slider #upper-thumb, .hue-range-slider #lower-thumb {
+	-fx-background-color: linear-gradient(to bottom, derive(-fx-text-box-border, -20%), derive(-fx-text-box-border, -30%)), -fx-inner-border, -fx-body-color;
+	-fx-background-insets: 0, 1, 2;
+	-fx-effect: dropshadow(two-pass-box , rgba(0, 0, 0, 0.1), 5, 0.0 , 0, 2);
+
 	-fx-background-radius: 0;
 	-fx-pref-width: 6;
 	-fx-pref-height: 32;
@@ -574,9 +612,10 @@
 	-fx-pref-height: 32;
 }
 
-.hue-range-slider .range-bar {
+.hue-range-slider #range-bar {
 	-fx-pref-height: 32;
 	-fx-background-color: transparent;
+	-fx-cursor: hand;
 }
 
 .gradient-label {

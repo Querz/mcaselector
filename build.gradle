@@ -46,7 +46,6 @@ dependencies {
 	implementation 'org.json:json:20201115'
 	implementation 'ar.com.hjg:pngj:2.1.0'
 	implementation 'org.xerial:sqlite-jdbc:3.34.0'
-	implementation 'org.controlsfx:controlsfx:8.40.18'
 	testImplementation 'junit:junit:4.12'
 	testImplementation 'commons-io:commons-io:2.6'
 }

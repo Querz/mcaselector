@@ -95,13 +95,13 @@ public class OverlayBox extends BorderPane {
 			setGradientBackground(hueSlider);
 		});
 
-		hueSlider.lowValueProperty().addListener((v, o, n) -> {
+		hueSlider.lowProperty().addListener((v, o, n) -> {
 			getValue().setMinHue(hueSlider.getMinHue());
 			getValue().setMaxHue(hueSlider.getMaxHue());
 			setGradientBackground(hueSlider);
 		});
 
-		hueSlider.highValueProperty().addListener((v, o, n) -> {
+		hueSlider.highProperty().addListener((v, o, n) -> {
 			getValue().setMinHue(hueSlider.getMinHue());
 			getValue().setMaxHue(hueSlider.getMaxHue());
 			setGradientBackground(hueSlider);
@@ -152,12 +152,12 @@ public class OverlayBox extends BorderPane {
 	}
 
 	private void setGradientBackground(HueRangeSlider hueSlider) {
-		float min = (float) hueSlider.getLowValue();
-		float max = (float) hueSlider.getHighValue();
+		float min = (float) hueSlider.getLow();
+		float max = (float) hueSlider.getHigh();
 
 		if (hueSlider.isInverted()) {
 			min = 0.85f - max;
-			max = 0.85f - (float) hueSlider.getLowValue();
+			max = 0.85f - (float) hueSlider.getLow();
 		}
 
 		gradient.setBackground(new Background((new BackgroundImage(ImageHelper.renderGradient(
