@@ -252,6 +252,18 @@ public class Region {
 		}
 	}
 
+	public void deFragment() throws IOException {
+		if (region != null) {
+			region.deFragment();
+		}
+		if (poi != null) {
+			poi.deFragment();
+		}
+		if (entities != null) {
+			entities.deFragment();
+		}
+	}
+
 	public void deleteFiles() {
 		if (directories.getRegion() != null && directories.getRegion().exists()) {
 			directories.getRegion().delete();
@@ -322,16 +334,13 @@ public class Region {
 
 	private void deleteChunkIndex(int index) {
 		if (this.region != null) {
-			this.region.setChunk(index, null);
-			this.region.setTimestamp(index, 0);
+			this.region.deleteChunk(index);
 		}
 		if (this.entities != null) {
-			this.entities.setChunk(index, null);
-			this.entities.setTimestamp(index, 0);
+			this.entities.deleteChunk(index);
 		}
 		if (this.poi != null) {
-			this.poi.setChunk(index, null);
-			this.poi.setTimestamp(index, 0);
+			this.poi.deleteChunk(index);
 		}
 	}
 

@@ -133,7 +133,7 @@ public class SelectionDeleter {
 		public void execute() {
 			Timer t = new Timer();
 			try {
-				getData().saveWithTempFiles();
+				getData().deFragment();
 			} catch (Exception ex) {
 				Debug.dumpException("failed to delete selected chunks from " + getRegionDirectories().getLocationAsFileName(), ex);
 			}

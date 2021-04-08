@@ -1,6 +1,7 @@
 package net.querz.mcaselector.io.job;
 
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.Main;
 import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.MCAFilePipe;
@@ -59,6 +60,7 @@ public class ChunkFilterDeleter {
 
 		@Override
 		public void execute() {
+			Timer t = new Timer();
 			// load all files
 			Point2i location = getRegionDirectories().getLocation();
 
@@ -71,6 +73,8 @@ public class ChunkFilterDeleter {
 			byte[] regionData = loadRegion();
 			byte[] poiData = loadPoi();
 			byte[] entitiesData = loadEntities();
+
+			Main.loadTime.addAndGet(t.getNano());
 
 			if (regionData == null && poiData == null && entitiesData == null) {
 				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
@@ -96,6 +100,7 @@ public class ChunkFilterDeleter {
 
 		@Override
 		public void execute() {
+			Timer t = new Timer();
 			try {
 				// parse raw data
 				Region region = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
@@ -111,6 +116,8 @@ public class ChunkFilterDeleter {
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				Debug.errorf("error deleting chunk indices in %s", getRegionDirectories().getLocationAsFileName());
 			}
+
+			Main.processTime.addAndGet(t.getNano());
 		}
 	}
 
@@ -127,12 +134,13 @@ public class ChunkFilterDeleter {
 		public void execute() {
 			Timer t = new Timer();
 			try {
-				getData().saveWithTempFiles();
+				getData().deFragment();
 			} catch (Exception ex) {
 				Debug.dumpException("failed to delete filtered chunks from " + getRegionDirectories().getLocationAsFileName(), ex);
 			}
 			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-			Debug.dumpf("took %s to save data for %s", t, getRegionDirectories().getLocationAsFileName());
+			Debug.dumpf("took %s to save data for %s", t, getRegionDirectories().getLocation());
+			Main.saveTime.addAndGet(t.getNano());
 		}
 	}
 }
