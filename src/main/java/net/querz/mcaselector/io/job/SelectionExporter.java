@@ -102,9 +102,9 @@ public class SelectionExporter {
 				return;
 			}
 
-			byte[] regionData = loadRegion();
-			byte[] poiData = loadPoi();
-			byte[] entitiesData = loadEntities();
+			byte[] regionData = loadRegionHeader();
+			byte[] poiData = loadPoiHeader();
+			byte[] entitiesData = loadEntitiesHeader();
 
 			if (regionData == null && poiData == null && entitiesData == null) {
 				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
@@ -130,9 +130,9 @@ public class SelectionExporter {
 
 		@Override
 		public void execute() {
-			//load MCAFile
 			try {
-				Region region = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
+				// only load headers, because we don't care for chunk data
+				Region region = Region.loadRegionHeaders(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
 
 				Set<Point2i> inverted = new HashSet<>(Tile.CHUNKS - chunksToBeExported.size());
 				Point2i origin = chunksToBeExported.iterator().next().chunkToRegion().regionToChunk();
@@ -169,14 +169,12 @@ public class SelectionExporter {
 
 		@Override
 		public void execute() {
-			Timer t = new Timer();
 			try {
-				getData().saveWithTempFiles(destinations);
+				getData().deFragment(destinations);
 			} catch (Exception ex) {
 				Debug.dumpException("failed to export filtered chunks from " + getRegionDirectories().getLocationAsFileName(), ex);
 			}
 			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-			Debug.dumpf("took %s to save data for %s", t, getRegionDirectories().getLocationAsFileName());
 		}
 	}
 }

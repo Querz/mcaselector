@@ -6,7 +6,6 @@ import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.validation.ShutdownHooks;
-
 import javax.swing.*;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;

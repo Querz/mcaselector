@@ -78,9 +78,9 @@ public class SelectionDeleter {
 				return;
 			}
 
-			byte[] regionData = loadRegion();
-			byte[] poiData = loadPoi();
-			byte[] entitiesData = loadEntities();
+			byte[] regionData = loadRegionHeader();
+			byte[] poiData = loadPoiHeader();
+			byte[] entitiesData = loadEntitiesHeader();
 
 			if (regionData == null && poiData == null && entitiesData == null) {
 				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
@@ -107,7 +107,8 @@ public class SelectionDeleter {
 		public void execute() {
 			//load MCAFile
 			try {
-				Region region = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
+				// only load headers, we don't care for chunk contents
+				Region region = Region.loadRegionHeaders(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
 
 				region.deleteChunks(selection);
 
@@ -133,7 +134,7 @@ public class SelectionDeleter {
 		public void execute() {
 			Timer t = new Timer();
 			try {
-				getData().saveWithTempFiles();
+				getData().deFragment();
 			} catch (Exception ex) {
 				Debug.dumpException("failed to delete selected chunks from " + getRegionDirectories().getLocationAsFileName(), ex);
 			}

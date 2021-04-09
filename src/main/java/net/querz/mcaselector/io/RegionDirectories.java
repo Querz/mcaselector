@@ -22,14 +22,23 @@ public class RegionDirectories {
 	}
 
 	public void setRegion(File region) {
+		if (location == null) {
+			location = FileHelper.parseMCAFileName(region);
+		}
 		this.region = region;
 	}
 
 	public void setPoi(File poi) {
+		if (location == null) {
+			location = FileHelper.parseMCAFileName(poi);
+		}
 		this.poi = poi;
 	}
 
 	public void setEntities(File entities) {
+		if (location == null) {
+			location = FileHelper.parseMCAFileName(entities);
+		}
 		this.entities = entities;
 	}
 

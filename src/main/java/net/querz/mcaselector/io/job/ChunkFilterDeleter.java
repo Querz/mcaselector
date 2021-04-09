@@ -11,7 +11,6 @@ import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
-import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.text.Translation;
 import java.util.Map;
 import java.util.Set;
@@ -125,14 +124,12 @@ public class ChunkFilterDeleter {
 
 		@Override
 		public void execute() {
-			Timer t = new Timer();
 			try {
-				getData().saveWithTempFiles();
+				getData().deFragment();
 			} catch (Exception ex) {
 				Debug.dumpException("failed to delete filtered chunks from " + getRegionDirectories().getLocationAsFileName(), ex);
 			}
 			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-			Debug.dumpf("took %s to save data for %s", t, getRegionDirectories().getLocationAsFileName());
 		}
 	}
 }

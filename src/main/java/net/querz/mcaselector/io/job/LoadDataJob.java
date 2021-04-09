@@ -6,7 +6,6 @@ import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.progress.Timer;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -28,6 +27,18 @@ public abstract class LoadDataJob extends Job {
 
 	public byte[] loadRegion() {
 		return load(getRegionDirectories().getRegion());
+	}
+
+	public byte[] loadPoiHeader() {
+		return load(getRegionDirectories().getPoi(), 8192);
+	}
+
+	public byte[] loadEntitiesHeader() {
+		return load(getRegionDirectories().getEntities(), 8192);
+	}
+
+	public byte[] loadRegionHeader() {
+		return load(getRegionDirectories().getRegion(), 8192);
 	}
 
 	protected byte[] load(File file) {

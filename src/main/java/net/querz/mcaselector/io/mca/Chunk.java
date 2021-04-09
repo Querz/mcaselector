@@ -109,15 +109,15 @@ public abstract class Chunk {
 		switch (compressionType) {
 			case GZIP:
 			case GZIP_EXT:
-				nbtOut = new DataOutputStream(new GZIPOutputStream(baos = new ExposedByteArrayOutputStream(4096)));
+				nbtOut = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(baos = new ExposedByteArrayOutputStream())));
 				break;
 			case ZLIB:
 			case ZLIB_EXT:
-				nbtOut = new DataOutputStream(new DeflaterOutputStream(baos = new ExposedByteArrayOutputStream(4096)));
+				nbtOut = new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(baos = new ExposedByteArrayOutputStream())));
 				break;
 			case NONE:
 			case NONE_EXT:
-				nbtOut = new DataOutputStream(baos = new ExposedByteArrayOutputStream(4096));
+				nbtOut = new DataOutputStream(new BufferedOutputStream(baos = new ExposedByteArrayOutputStream()));
 				break;
 			default:
 				return 0;
@@ -144,7 +144,6 @@ public abstract class Chunk {
 			}
 			return 5;
 		} else {
-
 			raf.writeInt(baos.size() + 1); // length includes the compression type byte
 			raf.writeByte(compressionType.getByte());
 			raf.write(baos.getBuffer(), 0, baos.size());

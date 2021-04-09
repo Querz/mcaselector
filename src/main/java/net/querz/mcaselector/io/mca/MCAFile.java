@@ -7,7 +7,13 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.version.ChunkMerger;
 import net.querz.mcaselector.version.VersionController;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
@@ -25,6 +31,9 @@ public abstract class MCAFile<T extends Chunk> {
 	protected int[] timestamps;
 
 	protected T[] chunks;
+
+	private transient int[] offsets;
+	private transient byte[] sectors;
 
 	protected Function<Point2i, T> chunkConstructor;
 
@@ -116,9 +125,86 @@ public abstract class MCAFile<T extends Chunk> {
 		return globalOffset != 2;
 	}
 
+	public void deFragment() throws IOException {
+		deFragment(file);
+	}
+
+	public void deFragment(File dest) throws IOException {
+		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+			deFragment(raf, dest);
+		}
+	}
+
+	// reads raw chunk data from source and writes it into a new temp file,
+	// depending on which chunks of this MCA file are present in memory.
+	public void deFragment(RandomAccessFile source, File dest) throws IOException {
+		// loadHeader needs to be called before, otherwise this will delete everything
+
+		// create temp file
+		File tmpFile = File.createTempFile(file.getName(), null, null);
+		int globalOffset = 2; // chunk data starts at 8192 (after 2 sectors)
+
+		int skippedChunks = 0;
+
+		// rafTmp if on the new file
+		try (RandomAccessFile rafTmp = new RandomAccessFile(tmpFile, "rw")) {
+			// loop over all offsets, readHeader the raw byte data (complete sections) and write it to new file
+			for (int i = 0; i < offsets.length; i++) {
+				// don't do anything if this chunk is empty
+				if (offsets[i] == 0 || sectors[i] == 0) {
+					skippedChunks++;
+					continue;
+				}
+
+				int sectors = this.sectors[i];
+
+				// write offset and sector size to tmp file
+				rafTmp.seek(i * 4);
+				rafTmp.writeByte(globalOffset >>> 16);
+				rafTmp.writeByte(globalOffset >> 8 & 0xFF);
+				rafTmp.writeByte(globalOffset & 0xFF);
+				rafTmp.writeByte(sectors);
+
+				// write timestamp to tmp file
+				rafTmp.seek(4096 + i * 4);
+				rafTmp.writeInt(timestamps[i]);
+
+				// copy chunk data to tmp file
+				source.seek(offsets[i] * 4096);
+				rafTmp.seek(globalOffset * 4096);
+
+				DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(source.getFD()), sectors * 4096));
+				DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(rafTmp.getFD()), sectors * 4096));
+
+				byte[] data = new byte[sectors * 4096];
+				dis.read(data);
+				dos.write(data);
+				offsets[i] = globalOffset; // always keep MCAFile information up to date
+				globalOffset += sectors;
+			}
+		}
+
+		if (skippedChunks == 1024) {
+			Debug.dumpf("all chunks in %s deleted, removing entire file", file.getAbsolutePath());
+			if (tmpFile.exists() && !tmpFile.delete()) {
+				Debug.dumpf("could not delete tmpFile %s after all chunks were deleted", tmpFile.getAbsolutePath());
+			}
+
+			// only delete dest file if we are deFragmenting inside the source directory
+			if (dest.getCanonicalPath().equals(file.getCanonicalPath())) {
+				if (!dest.delete()) {
+					Debug.dumpf("could not delete file %s after all chunks were deleted", dest.getAbsolutePath());
+				}
+			}
+		} else {
+			Debug.dumpf("moving temp file %s to %s", tmpFile.getAbsolutePath(), dest.getAbsolutePath());
+			Files.move(tmpFile.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		}
+	}
+
 	public int[] load() throws IOException {
 		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
-			int[] offsets = loadHeader(raf);
+			loadHeader(raf);
 
 			Point2i origin = location.regionToChunk();
 
@@ -144,7 +230,7 @@ public abstract class MCAFile<T extends Chunk> {
 	}
 
 	public int[] load(ByteArrayPointer ptr) throws IOException {
-		int[] offsets = loadHeader(ptr);
+		loadHeader(ptr);
 
 		Point2i origin = location.regionToChunk();
 
@@ -168,27 +254,27 @@ public abstract class MCAFile<T extends Chunk> {
 		return offsets;
 	}
 
-	public int[] loadHeader(RandomAccessFile raf) throws IOException {
-		int[] offsets = new int[1024];
+	public void loadHeader(RandomAccessFile raf) throws IOException {
+		offsets = new int[1024];
+		sectors = new byte[1024];
 
 		raf.seek(0);
 		for (int i = 0; i < offsets.length; i++) {
 			int offset = (raf.read()) << 16;
 			offset |= (raf.read() & 0xFF) << 8;
 			offsets[i] = offset | raf.read() & 0xFF;
-			raf.read();
+			sectors[i] = raf.readByte();
 		}
 
 		// read timestamps
 		for (int i = 0; i < 1024; i++) {
 			timestamps[i] = raf.readInt();
 		}
-
-		return offsets;
 	}
 
-	public int[] loadHeader(ByteArrayPointer ptr) throws IOException {
-		int[] offsets = new int[1024];
+	public void loadHeader(ByteArrayPointer ptr) throws IOException {
+		offsets = new int[1024];
+		sectors = new byte[1024];
 
 		try {
 			ptr.seek(0);
@@ -196,7 +282,7 @@ public abstract class MCAFile<T extends Chunk> {
 				int offset = (ptr.read()) << 16;
 				offset |= (ptr.read() & 0xFF) << 8;
 				offsets[i] = offset | ptr.read() & 0xFF;
-				ptr.read();
+				sectors[i] = ptr.readByte();
 			}
 
 			// read timestamps
@@ -207,8 +293,6 @@ public abstract class MCAFile<T extends Chunk> {
 		} catch (ArrayIndexOutOfBoundsException ex) {
 			throw new IOException(ex);
 		}
-
-		return offsets;
 	}
 
 	public T loadSingleChunk(Point2i chunk) throws IOException {
@@ -272,6 +356,8 @@ public abstract class MCAFile<T extends Chunk> {
 			int index = getChunkIndex(chunk);
 			timestamps[index] = 0;
 			chunks[index] = null;
+			sectors[index] = 0;
+			offsets[index] = 0;
 		}
 	}
 
@@ -388,6 +474,13 @@ public abstract class MCAFile<T extends Chunk> {
 
 	public void setChunk(int index, T chunk) {
 		chunks[index] = chunk;
+	}
+
+	public void deleteChunk(int index) {
+		chunks[index] = null;
+		timestamps[index] = 0;
+		offsets[index] = 0;
+		sectors[index] = 0;
 	}
 
 	public boolean isEmpty() {
