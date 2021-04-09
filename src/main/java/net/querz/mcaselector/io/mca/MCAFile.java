@@ -129,15 +129,9 @@ public abstract class MCAFile<T extends Chunk> {
 		deFragment(file);
 	}
 
-	public void deFragment(File dest) throws IOException {
-		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
-			deFragment(raf, dest);
-		}
-	}
-
 	// reads raw chunk data from source and writes it into a new temp file,
 	// depending on which chunks of this MCA file are present in memory.
-	public void deFragment(RandomAccessFile source, File dest) throws IOException {
+	public void deFragment(File dest) throws IOException {
 		// loadHeader needs to be called before, otherwise this will delete everything
 
 		// create temp file
@@ -147,7 +141,8 @@ public abstract class MCAFile<T extends Chunk> {
 		int skippedChunks = 0;
 
 		// rafTmp if on the new file
-		try (RandomAccessFile rafTmp = new RandomAccessFile(tmpFile, "rw")) {
+		try (RandomAccessFile rafTmp = new RandomAccessFile(tmpFile, "rw");
+		     RandomAccessFile source = new RandomAccessFile(file, "r")) {
 			// loop over all offsets, readHeader the raw byte data (complete sections) and write it to new file
 			for (int i = 0; i < offsets.length; i++) {
 				// don't do anything if this chunk is empty
