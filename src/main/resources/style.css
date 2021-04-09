@@ -56,40 +56,31 @@
 	-color-treeview-cell-insert: #636769;
 	-color-table-line: #636769;
 	-color-warning-text: #ff6651;
-
-	-fx-base: #ececec;
-	-fx-background: derive(-fx-base, 26.4%);
-	-fx-text-box-border: ladder(
-		-fx-background,
-		black 10%,
-		derive(-fx-background, -15%) 30%
-	);
-	-fx-inner-border: linear-gradient(to bottom,
-		ladder(
-			-fx-base,
-			derive(-fx-base,30%) 0%,
-			derive(-fx-base,20%) 40%,
-			derive(-fx-base,25%) 60%,
-			derive(-fx-base,55%) 80%,
-			derive(-fx-base,55%) 90%,
-			derive(-fx-base,75%) 100%
-		),
-		ladder(
-			-fx-base,
-			derive(-fx-base,20%) 0%,
-			derive(-fx-base,10%) 20%,
-			derive(-fx-base,5%) 40%,
-			derive(-fx-base,-2%) 60%,
-			derive(-fx-base,-5%) 100%
-	));
-	-fx-body-color: linear-gradient(to bottom,
-		ladder(
-			-fx-base,
-			derive(-fx-base,8%) 75%,
-			derive(-fx-base,10%) 80%
-		),
-		derive(-fx-base, -8%)
-	);
+	-color-range-slider-base: #ececec;
+	-color-range-slider-background: derive(-color-range-slider-base, 26.4%);
+	-color-range-slider-text-box-border:
+		ladder(-color-range-slider-background,
+			black 10%,
+			derive(-color-range-slider-background, -15%) 30%);
+	-color-range-slider-inner-border: linear-gradient(to bottom,
+		ladder(-color-range-slider-base,
+			derive(-color-range-slider-base, 30%) 0%,
+			derive(-color-range-slider-base, 20%) 40%,
+			derive(-color-range-slider-base, 25%) 60%,
+			derive(-color-range-slider-base, 55%) 80%,
+			derive(-color-range-slider-base, 55%) 90%,
+			derive(-color-range-slider-base, 75%) 100%),
+		ladder(-color-range-slider-base,
+			derive(-color-range-slider-base, 20%) 0%,
+			derive(-color-range-slider-base, 10%) 20%,
+			derive(-color-range-slider-base, 5%) 40%,
+			derive(-color-range-slider-base, -2%) 60%,
+			derive(-color-range-slider-base, -5%) 100%));
+	-color-range-slider-body-color: linear-gradient(to bottom,
+		ladder(-color-range-slider-base,
+			derive(-color-range-slider-base, 8%) 75%,
+			derive(-color-range-slider-base, 10%) 80%),
+		derive(-color-range-slider-base, -8%));
 
 	-fx-font-family: "Noto Sans";
 }
@@ -597,7 +588,7 @@
 }
 
 .hue-range-slider #upper-thumb, .hue-range-slider #lower-thumb {
-	-fx-background-color: linear-gradient(to bottom, derive(-fx-text-box-border, -20%), derive(-fx-text-box-border, -30%)), -fx-inner-border, -fx-body-color;
+	-fx-background-color: linear-gradient(to bottom, derive(-color-range-slider-text-box-border, -20%), derive(-color-range-slider-text-box-border, -30%)), -color-range-slider-inner-border, -color-range-slider-body-color;
 	-fx-background-insets: 0, 1, 2;
 	-fx-effect: dropshadow(two-pass-box , rgba(0, 0, 0, 0.1), 5, 0.0 , 0, 2);
 
