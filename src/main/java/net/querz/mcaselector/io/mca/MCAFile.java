@@ -1,15 +1,12 @@
 package net.querz.mcaselector.io.mca;
 
-import net.querz.mcaselector.Main;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.version.ChunkMerger;
 import net.querz.mcaselector.version.VersionController;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -73,10 +70,7 @@ public abstract class MCAFile<T extends Chunk> {
 		File tempFile = File.createTempFile(dest.getName(), null, null);
 		boolean result;
 		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "rw")) {
-			Timer t = new Timer();
 			result = save(raf);
-			Main.rafTime.addAndGet(t.getNano());
-			System.out.println(t + " to save raf");
 		}
 		if (!result) {
 			if (dest.delete()) {
@@ -87,9 +81,7 @@ public abstract class MCAFile<T extends Chunk> {
 
 			tempFile.delete();
 		} else {
-			Timer t = new Timer();
 			Files.move(tempFile.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			System.out.println("took " + t + " to move tmp file");
 		}
 		return result;
 	}
@@ -134,15 +126,19 @@ public abstract class MCAFile<T extends Chunk> {
 	}
 
 	public void deFragment() throws IOException {
+		deFragment(file);
+	}
+
+	public void deFragment(File dest) throws IOException {
 		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
-			deFragment(raf);
+			deFragment(raf, dest);
 		}
 	}
 
-	// reads raw chunk data from source and rearranges it into a temp file to take up the least amount of space as possible.
-	// the chunks in source
-	public void deFragment(RandomAccessFile source) throws IOException {
-		// loadHeader needs to be called before
+	// reads raw chunk data from source and writes it into a new temp file,
+	// depending on which chunks of this MCA file are present in memory.
+	public void deFragment(RandomAccessFile source, File dest) throws IOException {
+		// loadHeader needs to be called before, otherwise this will delete everything
 
 		// create temp file
 		File tmpFile = File.createTempFile(file.getName(), null, null);
@@ -155,7 +151,7 @@ public abstract class MCAFile<T extends Chunk> {
 			// loop over all offsets, readHeader the raw byte data (complete sections) and write it to new file
 			for (int i = 0; i < offsets.length; i++) {
 				// don't do anything if this chunk is empty
-				if (offsets[i] == 0) {
+				if (offsets[i] == 0 || sectors[i] == 0) {
 					skippedChunks++;
 					continue;
 				}
@@ -193,18 +189,22 @@ public abstract class MCAFile<T extends Chunk> {
 			if (tmpFile.exists() && !tmpFile.delete()) {
 				Debug.dumpf("could not delete tmpFile %s after all chunks were deleted", tmpFile.getAbsolutePath());
 			}
-			if (!file.delete()) {
-				Debug.dumpf("could not delete file %s after all chunks were deleted", file.getAbsolutePath());
+
+			// only delete dest file if we are deFragmenting inside the source directory
+			if (dest.getCanonicalPath().equals(file.getCanonicalPath())) {
+				if (!dest.delete()) {
+					Debug.dumpf("could not delete file %s after all chunks were deleted", dest.getAbsolutePath());
+				}
 			}
 		} else {
-			Debug.dumpf("moving temp file %s to %s", tmpFile.getAbsolutePath(), file.getAbsolutePath());
-			Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			Debug.dumpf("moving temp file %s to %s", tmpFile.getAbsolutePath(), dest.getAbsolutePath());
+			Files.move(tmpFile.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}
 	}
 
 	public int[] load() throws IOException {
 		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
-			int[] offsets = loadHeader(raf);
+			loadHeader(raf);
 
 			Point2i origin = location.regionToChunk();
 
@@ -230,7 +230,7 @@ public abstract class MCAFile<T extends Chunk> {
 	}
 
 	public int[] load(ByteArrayPointer ptr) throws IOException {
-		int[] offsets = loadHeader(ptr);
+		loadHeader(ptr);
 
 		Point2i origin = location.regionToChunk();
 
@@ -254,7 +254,7 @@ public abstract class MCAFile<T extends Chunk> {
 		return offsets;
 	}
 
-	public int[] loadHeader(RandomAccessFile raf) throws IOException {
+	public void loadHeader(RandomAccessFile raf) throws IOException {
 		offsets = new int[1024];
 		sectors = new byte[1024];
 
@@ -270,11 +270,9 @@ public abstract class MCAFile<T extends Chunk> {
 		for (int i = 0; i < 1024; i++) {
 			timestamps[i] = raf.readInt();
 		}
-
-		return offsets;
 	}
 
-	public int[] loadHeader(ByteArrayPointer ptr) throws IOException {
+	public void loadHeader(ByteArrayPointer ptr) throws IOException {
 		offsets = new int[1024];
 		sectors = new byte[1024];
 
@@ -295,8 +293,6 @@ public abstract class MCAFile<T extends Chunk> {
 		} catch (ArrayIndexOutOfBoundsException ex) {
 			throw new IOException(ex);
 		}
-
-		return offsets;
 	}
 
 	public T loadSingleChunk(Point2i chunk) throws IOException {

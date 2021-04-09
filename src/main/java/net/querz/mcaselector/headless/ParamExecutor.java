@@ -17,7 +17,6 @@ import net.querz.mcaselector.io.job.SelectionDeleter;
 import net.querz.mcaselector.io.job.SelectionExporter;
 import net.querz.mcaselector.io.job.SelectionImageExporter;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
@@ -189,11 +188,7 @@ public final class ParamExecutor {
 		SelectionData selection = loadSelection();
 
 		ConsoleProgress progress = new ConsoleProgress();
-		Timer t = new Timer();
-		progress.onDone(() -> {
-			System.out.println("took " + t + " to delete chunks");
-			future.run();
-		});
+		progress.onDone(future);
 
 		if (query != null) {
 			ChunkFilterDeleter.deleteFilter(query, selection, progress, true);

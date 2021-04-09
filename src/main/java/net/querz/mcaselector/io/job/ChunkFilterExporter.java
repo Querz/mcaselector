@@ -141,7 +141,7 @@ public class ChunkFilterExporter {
 		public void execute() {
 			Timer t = new Timer();
 			try {
-				getData().saveWithTempFiles(to);
+				getData().deFragment(to);
 			} catch (Exception ex) {
 				Debug.dumpException("failed to save exported filtered chunks in " + getRegionDirectories().getLocationAsFileName(), ex);
 			}

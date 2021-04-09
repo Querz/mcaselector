@@ -1,9 +1,7 @@
 package net.querz.mcaselector.io.mca;
 
-import net.querz.mcaselector.Main;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.nbt.io.NBTDeserializer;
 import net.querz.nbt.io.NBTSerializer;
@@ -125,9 +123,7 @@ public abstract class Chunk {
 				return 0;
 		}
 
-		Timer t = new Timer();
 		new NBTSerializer(false).toStream(new NamedTag(null, data), nbtOut);
-		Main.nbtTime.addAndGet(t.getNano());
 		nbtOut.close();
 
 		// save mcc file if chunk doesn't fit in mca file
@@ -148,12 +144,9 @@ public abstract class Chunk {
 			}
 			return 5;
 		} else {
-
-			Timer p = new Timer();
 			raf.writeInt(baos.size() + 1); // length includes the compression type byte
 			raf.writeByte(compressionType.getByte());
 			raf.write(baos.getBuffer(), 0, baos.size());
-			Main.writeTime.addAndGet(p.getNano());
 			return baos.size() + 5; // data length + 1 compression type byte + 4 length bytes
 		}
 	}

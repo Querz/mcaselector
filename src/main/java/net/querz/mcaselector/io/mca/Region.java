@@ -4,7 +4,6 @@ import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.io.ByteArrayPointer;
-import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
@@ -30,7 +29,7 @@ public class Region {
 		Region r = new Region();
 		if (dirs.getRegion() != null && regionData != null) {
 			r.loadRegion(dirs.getRegion(), new ByteArrayPointer(regionData));
-			r.location = FileHelper.parseMCAFileName(dirs.getRegion());
+			r.location = dirs.getLocation();
 		}
 		if (dirs.getPoi() != null && poiData != null) {
 			r.loadPoi(dirs.getPoi(), new ByteArrayPointer(poiData));
@@ -52,6 +51,24 @@ public class Region {
 		}
 		if (dirs.getEntities() != null) {
 			r.loadEntities(dirs.getEntities());
+		}
+		r.directories = dirs;
+		return r;
+	}
+
+	public static Region loadRegionHeaders(RegionDirectories dirs, byte[] regionHeader, byte[] poiHeader, byte[] entitiesHeader) throws IOException {
+		Region r = new Region();
+		if (dirs.getRegion() != null && regionHeader != null) {
+			r.region = new RegionMCAFile(dirs.getRegion());
+			r.region.loadHeader(new ByteArrayPointer(regionHeader));
+		}
+		if (dirs.getPoi() != null && poiHeader != null) {
+			r.poi = new PoiMCAFile(dirs.getPoi());
+			r.poi.loadHeader(new ByteArrayPointer(poiHeader));
+		}
+		if (dirs.getEntities() != null && entitiesHeader != null) {
+			r.entities = new EntitiesMCAFile(dirs.getEntities());
+			r.entities.loadHeader(new ByteArrayPointer(entitiesHeader));
 		}
 		r.directories = dirs;
 		return r;
@@ -261,6 +278,18 @@ public class Region {
 		}
 		if (entities != null) {
 			entities.deFragment();
+		}
+	}
+
+	public void deFragment(RegionDirectories dest) throws IOException {
+		if (region != null) {
+			region.deFragment(dest.getRegion());
+		}
+		if (poi != null) {
+			poi.deFragment(dest.getPoi());
+		}
+		if (entities != null) {
+			entities.deFragment(dest.getEntities());
 		}
 	}
 
