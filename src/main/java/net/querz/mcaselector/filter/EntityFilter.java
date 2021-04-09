@@ -54,7 +54,8 @@ public class EntityFilter extends TextFilter<List<String>> {
 			return false;
 		}
 		ListTag<CompoundTag> entities = ((ListTag<?>) rawEntities).asCompoundTagList();
-		nameLoop: for (String name : getFilterValue()) {
+		nameLoop:
+		for (String name : getFilterValue()) {
 			for (CompoundTag entity : entities) {
 				String id = entity.getString("id");
 				if (name.equals(id)) {
@@ -64,6 +65,27 @@ public class EntityFilter extends TextFilter<List<String>> {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public boolean intersects(List<String> value, ChunkData data) {
+		if (data.getEntities() == null) {
+			return false;
+		}
+		Tag<?> rawEntities = data.getEntities().getData().getCompoundTag("Level").get("Entities");
+		if (rawEntities == null || rawEntities.getID() == LongArrayTag.ID) {
+			return false;
+		}
+		ListTag<CompoundTag> entities = ((ListTag<?>) rawEntities).asCompoundTagList();
+		for (String name : getFilterValue()) {
+			for (CompoundTag entity : entities) {
+				String id = entity.getString("id");
+				if (name.equals(id)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override

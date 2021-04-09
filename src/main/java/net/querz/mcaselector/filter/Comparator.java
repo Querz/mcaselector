@@ -9,7 +9,8 @@ public enum Comparator {
 	LARGER_EQUAL("\u2265", ">="),
 	SMALLER_EQUAL("\u2264", "<="),
 	CONTAINS("\u2283", "contains"),
-	CONTAINS_NOT("\u2285", "!contains");
+	CONTAINS_NOT("\u2285", "!contains"),
+	INTERSECTS("\u2229", "intersects");
 
 	private final String string;
 	private final String query;
@@ -60,7 +61,8 @@ public enum Comparator {
 			case LARGER: return SMALLER_EQUAL;
 			case SMALLER_EQUAL: return LARGER;
 			case LARGER_EQUAL: return SMALLER;
-			case CONTAINS: return CONTAINS_NOT;
+			case CONTAINS:
+			case INTERSECTS: return CONTAINS_NOT;
 			case CONTAINS_NOT: return CONTAINS;
 		}
 		throw new IllegalArgumentException("failed to negate comparator " + c);

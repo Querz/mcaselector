@@ -73,12 +73,21 @@ public class BiomeFilter extends TextFilter<List<Integer>> {
 			return false;
 		}
 		return VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"))
-				.matchBiomeIDs(data.getRegion().getData(), value.stream().mapToInt(i -> i).toArray());
+				.matchBiomeIDs(data.getRegion().getData(), value);
 	}
 
 	@Override
 	public boolean containsNot(List<Integer> value, ChunkData data) {
 		return !contains(value, data);
+	}
+
+	@Override
+	public boolean intersects(List<Integer> value, ChunkData data) {
+		if (data.getRegion() == null) {
+			return false;
+		}
+		return VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"))
+				.matchAnyBiomeID(data.getRegion().getData(), value);
 	}
 
 	@Override

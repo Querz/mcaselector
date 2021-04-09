@@ -70,20 +70,17 @@ public class StatusFilter extends TextFilter<String> {
 
 	@Override
 	public boolean contains(String value, ChunkData data) {
-		if (data.getRegion() == null) {
-			return false;
-		}
-		StringTag tag = data.getRegion().getData().getCompoundTag("Level").getStringTag("Status");
-		return tag != null && validStatus.contains(tag.getValue());
+		throw new UnsupportedOperationException("\"contains\" not allowed in StatusFilter");
 	}
 
 	@Override
 	public boolean containsNot(String value, ChunkData data) {
-		if (data.getRegion() == null) {
-			return true;
-		}
-		StringTag tag = data.getRegion().getData().getCompoundTag("Level").getStringTag("Status");
-		return tag == null || !validStatus.contains(tag.getValue());
+		throw new UnsupportedOperationException("\"!contains\" not allowed in StatusFilter");
+	}
+
+	@Override
+	public boolean intersects(String value, ChunkData data) {
+		throw new UnsupportedOperationException("\"intersects\" not allowed in StatusFilter");
 	}
 
 	@Override

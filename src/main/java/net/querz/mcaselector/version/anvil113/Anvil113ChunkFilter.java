@@ -13,6 +13,7 @@ import net.querz.nbt.tag.Tag;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ import static net.querz.mcaselector.validation.ValidationHelper.*;
 public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
-	public boolean matchBlockNames(CompoundTag data, String... names) {
+	public boolean matchBlockNames(CompoundTag data, Collection<String> names) {
 		CompoundTag level = withDefault(() -> data.getCompoundTag("Level"), null);
 		if (level == null) {
 			return false;
@@ -54,16 +55,51 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 				}
 			}
 		}
-		return names.length == c;
+		return names.size() == c;
 	}
 
 	@Override
-	public boolean matchBiomeIDs(CompoundTag data, int... ids) {
+	public boolean matchAnyBlockName(CompoundTag data, Collection<String> names) {
+		CompoundTag level = withDefault(() -> data.getCompoundTag("Level"), null);
+		if (level == null) {
+			return false;
+		}
+		Tag<?> rawSections = level.get("Sections");
+		if (rawSections == null || rawSections.getID() == LongArrayTag.ID) {
+			return false;
+		}
+		ListTag<CompoundTag> sections = catchClassCastException(((ListTag<?>) rawSections)::asCompoundTagList);
+		if (sections == null) {
+			return false;
+		}
+		for (String name : names) {
+			for (CompoundTag t : sections) {
+				ListTag<?> rawPalette = withDefault(() -> t.getListTag("Palette"), null);
+				if (rawPalette == null) {
+					continue;
+				}
+				ListTag<CompoundTag> palette = catchClassCastException(rawPalette::asCompoundTagList);
+				if (palette == null) {
+					continue;
+				}
+				for (CompoundTag p : palette) {
+					if (name.equals(withDefault(() -> p.getString("Name"), null))) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean matchBiomeIDs(CompoundTag data, Collection<Integer> ids) {
 		if (!data.containsKey("Level") || withDefault(() -> data.getCompoundTag("Level").getIntArrayTag("Biomes"), null) == null) {
 			return false;
 		}
 
-		filterLoop: for (int filterID : ids) {
+		filterLoop:
+		for (int filterID : ids) {
 			for (int dataID : data.getCompoundTag("Level").getIntArray("Biomes")) {
 				if (filterID == dataID) {
 					continue filterLoop;
@@ -72,6 +108,22 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public boolean matchAnyBiomeID(CompoundTag data, Collection<Integer> ids) {
+		if (!data.containsKey("Level") || withDefault(() -> data.getCompoundTag("Level").getIntArrayTag("Biomes"), null) == null) {
+			return false;
+		}
+
+		for (int filterID : ids) {
+			for (int dataID : data.getCompoundTag("Level").getIntArray("Biomes")) {
+				if (filterID == dataID) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override

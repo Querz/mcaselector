@@ -24,12 +24,21 @@ public class PaletteFilter extends TextFilter<List<String>> {
 			return false;
 		}
 		return VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"))
-				.matchBlockNames(data.getRegion().getData(), value.toArray(new String[0]));
+				.matchBlockNames(data.getRegion().getData(), value);
 	}
 
 	@Override
 	public boolean containsNot(List<String> value, ChunkData data) {
 		return !contains(value, data);
+	}
+
+	@Override
+	public boolean intersects(List<String> value, ChunkData data) {
+		if (data.getRegion() == null) {
+			return false;
+		}
+		return VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"))
+				.matchAnyBlockName(data.getRegion().getData(), value);
 	}
 
 	@Override

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -83,7 +84,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 	}
 
 	@Override
-	public boolean matchBlockNames(CompoundTag data, String... names) {
+	public boolean matchBlockNames(CompoundTag data, Collection<String> names) {
 		ListTag<CompoundTag> sections = withDefault(() -> data.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
 		if (sections == null) {
 			return false;
@@ -120,7 +121,45 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 				}
 			}
 		}
-		return names.length == c;
+		return names.size() == c;
+	}
+
+	@Override
+	public boolean matchAnyBlockName(CompoundTag data, Collection<String> names) {
+		ListTag<CompoundTag> sections = withDefault(() -> data.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
+		if (sections == null) {
+			return false;
+		}
+		for (String name : names) {
+			BlockData[] bd = mapping.get(name);
+			if (bd == null) {
+				Debug.dump("no mapping found for " + name);
+				continue;
+			}
+			for (CompoundTag t : sections) {
+				byte[] blocks = withDefault(() -> t.getByteArray("Blocks"), null);
+				if (blocks == null) {
+					continue;
+				}
+				byte[] blockData = withDefault(() -> t.getByteArray("Data"), null);
+				if (blockData == null) {
+					continue;
+				}
+
+				for (int i = 0; i < blocks.length; i++) {
+					short b = (short) (blocks[i] & 0xFF);
+					for (BlockData d : bd) {
+						if (d.id == b) {
+							byte dataByte = (byte) (i % 2 == 0 ? blockData[i / 2] & 0x0F : (blockData[i / 2] >> 4) & 0x0F);
+							if (d.data.contains(dataByte)) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	private static class BlockData {
@@ -139,11 +178,12 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 	}
 
 	@Override
-	public boolean matchBiomeIDs(CompoundTag data, int... ids) {
+	public boolean matchBiomeIDs(CompoundTag data, Collection<Integer> ids) {
 		if (!data.containsKey("Level") || withDefault(() -> data.getCompoundTag("Level").getByteArray("Biomes"), null) == null) {
 			return false;
 		}
-		filterLoop: for (int filterID : ids) {
+		filterLoop:
+		for (int filterID : ids) {
 			for (byte dataID : data.getCompoundTag("Level").getByteArray("Biomes")) {
 				if (filterID == dataID) {
 					continue filterLoop;
@@ -152,6 +192,21 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public boolean matchAnyBiomeID(CompoundTag data, Collection<Integer> ids) {
+		if (!data.containsKey("Level") || withDefault(() -> data.getCompoundTag("Level").getByteArray("Biomes"), null) == null) {
+			return false;
+		}
+		for (int filterID : ids) {
+			for (byte dataID : data.getCompoundTag("Level").getByteArray("Biomes")) {
+				if (filterID == dataID) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override

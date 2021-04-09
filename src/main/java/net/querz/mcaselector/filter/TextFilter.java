@@ -6,7 +6,8 @@ public abstract class TextFilter<T> extends Filter<T> {
 
 	private static final Comparator[] comparators = {
 			Comparator.CONTAINS,
-			Comparator.CONTAINS_NOT
+			Comparator.CONTAINS_NOT,
+			Comparator.INTERSECTS
 	};
 
 	protected T value;
@@ -40,6 +41,8 @@ public abstract class TextFilter<T> extends Filter<T> {
 			return contains(value, data);
 		case CONTAINS_NOT:
 			return containsNot(value, data);
+		case INTERSECTS:
+			return intersects(value, data);
 		}
 		return false;
 	}
@@ -58,4 +61,6 @@ public abstract class TextFilter<T> extends Filter<T> {
 	public abstract boolean contains(T value, ChunkData data);
 
 	public abstract boolean containsNot(T value, ChunkData data);
+
+	public abstract boolean intersects(T value, ChunkData data);
 }

@@ -2,6 +2,7 @@ package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.Tag;
 import java.io.BufferedReader;
@@ -37,20 +38,31 @@ public class StructureFilter extends TextFilter<List<String>> {
 	@Override
 	public boolean contains(List<String> value, ChunkData data) {
 		CompoundTag rawStructures = data.getRegion().getData().getCompoundTag("Level").getCompoundTag("Structures").getCompoundTag("References");
-
-		for (String name : getFilterValue()) {
+		for (String name : value) {
 			Tag<?> structure = rawStructures.get(name);
 			if (structure == null || structure.valueToString().equals("[]")) {
 				return false;
 			}
 		}
-
 		return true;
 	}
 
 	@Override
 	public boolean containsNot(List<String> value, ChunkData data) {
 		return !contains(value, data);
+	}
+
+	@Override
+	public boolean intersects(List<String> value, ChunkData data) {
+		CompoundTag rawStructures = data.getRegion().getData().getCompoundTag("Level").getCompoundTag("Structures").getCompoundTag("References");
+
+		for (String name : getFilterValue()) {
+			long[] references = ValidationHelper.withDefaultSilent(() -> rawStructures.getLongArray(name), null);
+			if (references != null && references.length > 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
