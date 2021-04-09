@@ -158,6 +158,7 @@ public class Anvil117ChunkRenderer implements ChunkRenderer {
 			case "minecraft:cave_air":
 			case "minecraft:barrier":
 			case "minecraft:structure_void":
+			case "minecraft:light":
 				return blockData.size() == 1;
 		}
 		return false;

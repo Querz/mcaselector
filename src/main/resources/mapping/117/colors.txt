@@ -544,6 +544,7 @@ lava;d45a12
 lava_cauldron;49484a
 lectern;ad8953
 lever;6f5d43
+light;fffb1e
 light_blue_banner;a2824e
 light_blue_bed;a2824e
 light_blue_candle;2289c4
@@ -1140,6 +1141,10 @@ waxed_exposed_copper;a17d67
 waxed_exposed_cut_copper;9a7965
 waxed_exposed_cut_copper_slab;9a7965
 waxed_exposed_cut_copper_stairs;9a7965
+waxed_oxidized_copper;52a284
+waxed_oxidized_cut_copper;4f997e
+waxed_oxidized_cut_copper_slab;4f997e
+waxed_oxidized_cut_copper_stairs;4f997e
 waxed_weathered_copper;6c996e
 waxed_weathered_cut_copper;6d916b
 waxed_weathered_cut_copper_slab;6d916b

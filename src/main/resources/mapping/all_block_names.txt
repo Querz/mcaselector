@@ -419,6 +419,7 @@ lava
 lava_cauldron
 lectern
 lever
+light
 light_blue_banner
 light_blue_bed
 light_blue_candle
@@ -842,6 +843,10 @@ waxed_exposed_copper
 waxed_exposed_cut_copper
 waxed_exposed_cut_copper_slab
 waxed_exposed_cut_copper_stairs
+waxed_oxidized_copper
+waxed_oxidized_cut_copper
+waxed_oxidized_cut_copper_slab
+waxed_oxidized_cut_copper_stairs
 waxed_weathered_copper
 waxed_weathered_cut_copper
 waxed_weathered_cut_copper_slab
