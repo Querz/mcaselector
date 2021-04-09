@@ -11,14 +11,8 @@ import net.querz.nbt.tag.Tag;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
 import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class Anvil112ChunkFilter implements ChunkFilter {
@@ -162,6 +156,68 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		return false;
 	}
 
+	@Override
+	public boolean paletteEquals(CompoundTag data, Collection<String> names) {
+		ListTag<CompoundTag> sections = withDefault(() -> data.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
+		if (sections == null) {
+			return false;
+		}
+
+		Set<Block> blocks = new HashSet<>();
+		List<BlockData> blockData = new ArrayList<>(names.size());
+		for (String name : names) {
+			BlockData[] bd = mapping.get(name);
+			if (bd == null) {
+				Debug.dump("no mapping found for " + name);
+				continue;
+			}
+			blockData.addAll(Arrays.asList(bd));
+		}
+
+		for (CompoundTag t : sections) {
+			byte[] blockBytes = withDefault(() -> t.getByteArray("Blocks"), null);
+			if (blockBytes == null) {
+				continue;
+			}
+			byte[] dataBits = withDefault(() -> t.getByteArray("Data"), null);
+			if (dataBits == null) {
+				continue;
+			}
+
+			blockLoop:
+			for (int i = 0; i < blockBytes.length; i++) {
+				short b = (short) (blockBytes[i] & 0xFF);
+				if (b == 0) {
+					continue;
+				}
+				for (BlockData d : blockData) {
+					if (b == d.id) {
+						byte dataByte = (byte) (i % 2 == 0 ? dataBits[i / 2] & 0x0F : (dataBits[i / 2] >> 4) & 0x0F);
+						if (d.data.contains(dataByte)) {
+							blocks.add(new Block(b, dataByte));
+							continue blockLoop;
+						}
+					}
+				}
+				// there's a block in this chunk that we are not searching for, so we return right now
+				return false;
+			}
+		}
+
+		blockDataLoop:
+		for (BlockData bd : blockData) {
+			for (Block block : blocks) {
+				if (bd.id == block.id && bd.data.contains(block.data)) {
+					continue blockDataLoop;
+				}
+			}
+			// blockData contains a block that does not exist in blocks (a block does not exist in this chunk)
+			return false;
+		}
+
+		return true;
+	}
+
 	private static class BlockData {
 		int id;
 		Set<Byte> data;
@@ -174,6 +230,26 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		@Override
 		public String toString() {
 			return "{" + id + ":" + Arrays.toString(data.toArray()) + "}";
+		}
+	}
+
+	private static class Block {
+		int id;
+		byte data;
+
+		Block(int id, byte data) {
+			this.id = id;
+			this.data = data;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(id, data);
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			return other instanceof Block && ((Block) other).id == id && ((Block) other).data == data;
 		}
 	}
 

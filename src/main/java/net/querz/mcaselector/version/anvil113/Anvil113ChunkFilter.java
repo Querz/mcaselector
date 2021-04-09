@@ -11,12 +11,8 @@ import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.LongArrayTag;
 import net.querz.nbt.tag.Tag;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class Anvil113ChunkFilter implements ChunkFilter {
@@ -90,6 +86,49 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public boolean paletteEquals(CompoundTag data, Collection<String> names) {
+		CompoundTag level = withDefault(() -> data.getCompoundTag("Level"), null);
+		if (level == null) {
+			return false;
+		}
+		Tag<?> rawSections = level.get("Sections");
+		if (rawSections == null || rawSections.getID() == LongArrayTag.ID) {
+			return false;
+		}
+		ListTag<CompoundTag> sections = catchClassCastException(((ListTag<?>) rawSections)::asCompoundTagList);
+		if (sections == null) {
+			return false;
+		}
+
+		Set<String> blocks = new HashSet<>();
+		for (CompoundTag t : sections) {
+			ListTag<?> rawPalette = withDefault(() -> t.getListTag("Palette"), null);
+			if (rawPalette == null) {
+				continue;
+			}
+			ListTag<CompoundTag> palette = catchClassCastException(rawPalette::asCompoundTagList);
+			if (palette == null) {
+				continue;
+			}
+			for (CompoundTag p : palette) {
+				String n;
+				if ((n = withDefault(() -> p.getString("Name"), null)) != null && !n.equals("minecraft:air")) {
+					blocks.add(n);
+				}
+			}
+		}
+		if (blocks.size() != names.size()) {
+			return false;
+		}
+		for (String name : names) {
+			if (!blocks.contains(name)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override

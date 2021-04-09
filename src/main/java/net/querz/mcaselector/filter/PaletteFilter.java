@@ -9,6 +9,13 @@ import java.util.List;
 
 public class PaletteFilter extends TextFilter<List<String>> {
 
+	private static final Comparator[] comparators = {
+		Comparator.CONTAINS,
+		Comparator.CONTAINS_NOT,
+		Comparator.INTERSECTS,
+		Comparator.EQUAL
+	};
+
 	public PaletteFilter() {
 		this(Operator.AND, Comparator.CONTAINS, null);
 	}
@@ -16,6 +23,26 @@ public class PaletteFilter extends TextFilter<List<String>> {
 	private PaletteFilter(Operator operator, Comparator comparator, List<String> value) {
 		super(FilterType.PALETTE, operator, comparator, value);
 		setRawValue(String.join(",", value == null ? new ArrayList<>(0) : value));
+	}
+
+	@Override
+	public Comparator[] getComparators() {
+		return comparators;
+	}
+
+	@Override
+	public boolean matches(ChunkData data) {
+		switch (getComparator()) {
+			case CONTAINS:
+				return contains(value, data);
+			case CONTAINS_NOT:
+				return containsNot(value, data);
+			case INTERSECTS:
+				return intersects(value, data);
+			case EQUAL:
+				return equals(value, data);
+		}
+		return false;
 	}
 
 	@Override
@@ -39,6 +66,14 @@ public class PaletteFilter extends TextFilter<List<String>> {
 		}
 		return VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"))
 				.matchAnyBlockName(data.getRegion().getData(), value);
+	}
+
+	public boolean equals(List<String> value, ChunkData data) {
+		if (data.getRegion() == null) {
+			return false;
+		}
+		return VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"))
+			.paletteEquals(data.getRegion().getData(), value);
 	}
 
 	@Override
