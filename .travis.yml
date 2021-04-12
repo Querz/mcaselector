@@ -15,6 +15,8 @@ before_install:
   - sudo sh travis/inno/innoinstall.sh
   - sudo sh travis/winrun4j/winrun4j.sh
 
+  - find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
+
   # download 7zip
   - sudo sh travis/inno/7zipdownload.sh
 

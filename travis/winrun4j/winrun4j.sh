@@ -22,3 +22,6 @@ wine "C:\winrun4j\RCEDIT64.exe" "/N" "$(winepath -w "build/tmp/winrun4j/winrun4j
 wine "C:\winrun4j\rcedit.exe" "$(winepath -w "build/tmp/winrun4j/winrun4j/bin/WinRun4J64.exe")" "--set-file-version" "1.0.0.0" "--set-product-version" "1.15.3" "--set-version-string" "LegalCopyright" "Querz"
 mkdir -p build/winrun4j
 cp build/tmp/winrun4j/winrun4j/bin/WinRun4J64.exe "build/winrun4j/MCA Selector.exe"
+
+ls -lah build/tmp/winrun4j/winrun4j/bin
+ls -lah build/winrun4j
