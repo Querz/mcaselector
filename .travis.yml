@@ -13,6 +13,7 @@ before_install:
   - sudo apt-get install -y -q wine unzip
   - wine --version
   - sudo sh travis/inno/innoinstall.sh
+  - sudo sh travis/winrun4j/winrun4j.sh
 
   # download 7zip
   - sudo sh travis/inno/7zipdownload.sh
@@ -23,7 +24,7 @@ install:
 
 script:
   # gradle build
-  - sudo ./gradlew clean build shadowJar createExe installer --stacktrace --warning-mode all
+  - sudo ./gradlew clean build shadowJar installer --stacktrace --warning-mode all
 
   # run inno setup
   - sudo sh travis/inno/iscc.sh build/inno/inno.iss
