@@ -10,11 +10,11 @@ rm winrun4j.zip
 wget https://github.com/electron/rcedit/releases/download/v1.1.1/rcedit-x64.exe -O build/tmp/winrun4j/rcedit.exe
 
 mkdir -p ~/".wine/drive_c/winrun4j"
-cp winrun4j/bin/WinRun4J64.exe ~/".wine/drive_c/winrun4j"
-cp winrun4j/bin/RCEDIT64.exe ~/".wine/drive_c/winrun4j"
-cp "inno/icon.ico" ~/".wine/drive_c/winrun4j"
-cp "travis/winrun4j/winrun4j.ini" ~/".wine/drive_c/winrun4j"
-cp rcedit.exe ~/".wine/drive_c/winrun4j"
+cp build/tmp/winrun4j/winrun4j/bin/WinRun4J64.exe ~/".wine/drive_c/winrun4j"
+cp build/tmp/winrun4j/winrun4j/bin/RCEDIT64.exe ~/".wine/drive_c/winrun4j"
+cp inno/icon.ico ~/".wine/drive_c/winrun4j"
+cp travis/winrun4j/winrun4j.ini ~/".wine/drive_c/winrun4j"
+cp build/tmp/winrun4j/rcedit.exe ~/".wine/drive_c/winrun4j"
 
 echo "assembling winrun4j"
 wine "C:\winrun4j\RCEDIT64.exe" "/I" "WinRun4J64.exe" "icon.ico"
