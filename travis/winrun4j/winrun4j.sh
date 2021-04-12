@@ -4,7 +4,7 @@ rm -fr build/tmp/winrun4j
 mkdir -p build/tmp/winrun4j
 
 wget https://github.com/poidasmith/winrun4j/files/1822558/winrun4J-0.4.5.zip -O build/tmp/winrun4j/winrun4j.zip
-unzip build/tmp/winrun4j/winrun4j.zip
+unzip build/tmp/winrun4j/winrun4j.zip -d build/tmp/winrun4j/
 rm build/tmp/winrun4j/winrun4j.zip
 
 wget https://github.com/electron/rcedit/releases/download/v1.1.1/rcedit-x64.exe -O build/tmp/winrun4j/rcedit.exe
