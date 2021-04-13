@@ -18,11 +18,12 @@ install:
   - sudo sh travis/inno/innoinstall.sh
   - sudo sh travis/winrun4j/winrun4j.sh
   # install sdkman to install jfx 8
+  - echo $JAVA_HOME
   - curl -s "https://get.sdkman.io" | bash
   - source "$HOME/.sdkman/bin/sdkman-init.sh"
   - sdk install java 8.0.282.fx-zulu
+  - echo $JAVA_HOME
   - java -version
-  - find / -name java
   - sudo update-alternatives --display java
 
   # download 7zip
