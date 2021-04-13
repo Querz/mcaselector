@@ -14,10 +14,9 @@ install:
 
   # inno setup
   - sudo dpkg --add-architecture i386
-  - wget -nc https://dl.winehq.org/wine-builds/winehq.key
-  - sudo apt-key add winehq.key
-  - sudo add-apt-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main'
-  - sudo apt install --install-recommends winehq-stable
+  - wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add -
+  - sudo add-apt-repository 'https://dl.winehq.org/wine-builds/ubuntu/' && sudo apt update
+  - sudo apt install winehq-stable
   - sudo apt-get install -y -q unzip
   - wine --version
   - sudo sh travis/inno/innoinstall.sh
