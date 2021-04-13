@@ -15,7 +15,7 @@ install:
   # install sdkman to install jfx 8
   - sudo wget https://cdn.azul.com/zulu/bin/zulu8.52.0.23-ca-fx-jdk8.0.282-linux_amd64.deb
   - find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
-  - sudo apt install zulu8.52.0.23-ca-fx-jdk8.0.282-linux_amd64.deb
+  - sudo dpkg -i zulu8.52.0.23-ca-fx-jdk8.0.282-linux_amd64.deb
 
   # inno setup
   - sudo apt-get install -y -q wine unzip
