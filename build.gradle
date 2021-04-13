@@ -97,6 +97,8 @@ task installer {
 	doLast {
 		def innoSetupDir = new File("${buildDir}/inno")
 
+		println(buildDir.getCanonicalPath())
+
 		delete innoSetupDir
 		innoSetupDir.mkdir()
 
