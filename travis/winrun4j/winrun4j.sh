@@ -26,6 +26,7 @@ mkdir -p build/winrun4j
 cp build/tmp/winrun4j/winrun4j/bin/WinRun4J64.exe "build/winrun4j/MCA Selector.exe"
 
 echo "----------------------------------------------"
+pwd
 ls -lah build/tmp/winrun4j
 ls -lah build/tmp/winrun4j/winrun4j/bin
 ls -lah build/winrun4j
