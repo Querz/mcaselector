@@ -6,9 +6,7 @@ addons:
   ssh_known_hosts: deploy.querz.net
 
 before_install:
-  # add keys as temporary workaround to be able to apt-get update
-  - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3CB3BD13
-  - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 762E3157
+  - cat /etc/apt/sources.list
 
 install:
   # update apt-get
