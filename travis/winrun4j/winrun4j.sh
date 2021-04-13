@@ -26,7 +26,8 @@ wine "C:\winrun4j\RCEDIT64.exe" "/N" "$exePath" "$(winepath -w "travis/winrun4j/
 
 # set to 32 bit
 mv ~/".wine" ~/".wine64"
-export WINEARCH=win32
+WINEARCH=win32
+wine config
 
 mkdir -p ~/".wine/drive_c/winrun4j"
 cp build/tmp/winrun4j/ResourceHacker.exe ~/".wine/drive_c/winrun4j"
@@ -39,6 +40,7 @@ wine "C:\winrun4j\ResourceHacker.exe" "-open $exePath -save $exePath -action add
 export WINEARCH=win64
 mv ~/".wine" ~/".wine32"
 mv ~/".wine64" ~/".wine"
+wine config
 
 mkdir -p build/winrun4j
 cp build/tmp/winrun4j/winrun4j/bin/WinRun4J64.exe "build/winrun4j/MCA Selector.exe"
