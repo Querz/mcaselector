@@ -32,7 +32,7 @@ install:
 
 script:
   # gradle build
-  - sudo ./gradlew clean build shadowJar installer --stacktrace --warning-mode all
+  - sudo ./gradlew build shadowJar installer --stacktrace --warning-mode all
 
   - find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
 
