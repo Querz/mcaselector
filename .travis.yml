@@ -22,8 +22,8 @@ install:
   - source "$HOME/.sdkman/bin/sdkman-init.sh"
   - sdk install java 8.0.282.fx-zulu
   - java -version
-
-  - find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
+  - find / -name java
+  - sudo update-alternatives --display java
 
   # download 7zip
   - sudo sh travis/inno/7zipdownload.sh
