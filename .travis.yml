@@ -13,7 +13,9 @@ install:
   - sudo apt-get update
 
   # inno setup
-  - sudo apt-get install -y -q wine unzip
+  - sudo add-apt-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main'
+  - sudo apt install --install-recommends winehq-stable
+  - sudo apt-get install -y -q unzip
   - wine --version
   - sudo sh travis/inno/innoinstall.sh
   - sudo sh travis/winrun4j/winrun4j.sh
