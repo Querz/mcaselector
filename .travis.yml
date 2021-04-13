@@ -39,6 +39,10 @@ script:
   - sudo ./gradlew build shadowJar installer --stacktrace --warning-mode all
 
   - find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
+  - echo "####################################################################"
+  - find /home/travis/.wine | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
+    - echo "####################################################################"
+    - find /home/travis/.wine32 | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
 
   # run inno setup
   - sudo sh travis/inno/iscc.sh build/inno/inno.iss
