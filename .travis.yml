@@ -1,7 +1,7 @@
 dist: xenial
 language: java
 jdk:
-  - oraclejdk8
+  - openjdk8
 addons:
   ssh_known_hosts: deploy.querz.net
 
