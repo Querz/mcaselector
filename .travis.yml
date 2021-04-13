@@ -18,8 +18,6 @@ install:
   - sudo sh travis/inno/innoinstall.sh
   - sudo sh travis/winrun4j/winrun4j.sh
 
-  - find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
-
   # install sdkman to install jfx 8
   - curl -s "https://get.sdkman.io" | bash
   - source "$HOME/.sdkman/bin/sdkman-init.sh"
@@ -35,6 +33,8 @@ install:
 script:
   # gradle build
   - sudo ./gradlew clean build shadowJar installer --stacktrace --warning-mode all
+
+  - find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
 
   # run inno setup
   - sudo sh travis/inno/iscc.sh build/inno/inno.iss
