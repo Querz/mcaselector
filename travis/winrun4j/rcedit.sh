@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 ls -lah build/inno
 echo "hello"

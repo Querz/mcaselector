@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 echo "hacking resources"
 exePath=$(winepath -w "build/tmp/winrun4j/winrun4j/bin/WinRun4J64.exe")
