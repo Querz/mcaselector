@@ -42,8 +42,8 @@ script:
   - sudo ./gradlew build shadowJar installer --stacktrace --warning-mode all
 
   # assemble winrun4j
-  - sudo sh travis/winrun4j/rcedit.sh
-  - sudo sh travis/winrun4j/resourcehacker.sh
+#  - sudo sh travis/winrun4j/rcedit.sh
+#  - sudo sh travis/winrun4j/resourcehacker.sh
 
   # run inno setup
   - sudo sh travis/inno/iscc.sh build/inno/inno.iss
