@@ -34,7 +34,7 @@ install:
   - export JAVA_HOME="$(sdk home java 8.0.282.fx-zulu)"
 
   # download 7zip
-  - sudo sh travis/inno/7zipdownload.sh
+  - sh travis/inno/7zipdownload.sh
 
   # disable default travis behavior 'gradle assemble'
   - ./gradlew -v
@@ -44,8 +44,8 @@ script:
   - sudo ./gradlew build shadowJar installer --stacktrace --warning-mode all
 
   # assemble winrun4j
-  - sudo sh travis/winrun4j/rcedit.sh
-  - sudo sh travis/winrun4j/resourcehacker.sh
+  - sh travis/winrun4j/rcedit.sh
+  - sh travis/winrun4j/resourcehacker.sh
 
   # run inno setup
   - sudo sh travis/inno/iscc.sh build/inno/inno.iss
