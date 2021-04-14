@@ -12,6 +12,7 @@ unzip build/tmp/winrun4j/resourcehacker.zip -d build/tmp/winrun4j/
 rm build/tmp/winrun4j/resourcehacker.zip
 
 mkdir -p ~/".wine/drive_c/winrun4j"
+cp build/tmp/winrun4j/winrun4j/bin/WinRun4J64.exe ~/".wine/drive_c/winrun4j"
 cp build/tmp/winrun4j/winrun4j/bin/RCEDIT64.exe ~/".wine/drive_c/winrun4j"
 cp inno/icon.ico ~/".wine/drive_c/winrun4j"
 cp travis/winrun4j/winrun4j.ini ~/".wine/drive_c/winrun4j"

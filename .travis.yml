@@ -14,7 +14,7 @@ install:
   - wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add -
   - sudo add-apt-repository 'https://dl.winehq.org/wine-builds/ubuntu/' && sudo apt update
   - sudo apt install winehq-stable
-  - sudo apt-get install -y -q cabextract unzip xvfb
+  - sudo apt-get install -y -q cabextract unzip zip xvfb
   - wineboot -i
   - wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
   - sh winetricks corefonts
@@ -24,8 +24,8 @@ install:
   - Xvfb :1 &
 
   # install inno and winrun4j
-  - sudo sh travis/inno/innoinstall.sh
-  - sudo sh travis/winrun4j/winrun4jinstall.sh
+  - sh travis/inno/innoinstall.sh
+  - sh travis/winrun4j/winrun4jinstall.sh
 
   # install sdkman to install jfx 8
   - curl -s "https://get.sdkman.io" | bash
@@ -41,7 +41,7 @@ install:
 
 script:
   # gradle build
-  - sudo ./gradlew build shadowJar installer --stacktrace --warning-mode all
+  - ./gradlew build shadowJar installer --stacktrace --warning-mode all
 
   # assemble winrun4j
   - sh travis/winrun4j/rcedit.sh
