@@ -45,7 +45,6 @@ script:
 
   # assemble winrun4j
   - sh travis/winrun4j/rcedit.sh
-  - sh travis/winrun4j/resourcehacker.sh
 
   # run inno setup
   - sudo sh travis/inno/iscc.sh build/inno/inno.iss

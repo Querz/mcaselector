@@ -18,5 +18,3 @@ cp inno/icon.ico ~/".wine/drive_c/winrun4j"
 cp travis/winrun4j/winrun4j.ini ~/".wine/drive_c/winrun4j"
 cp build/tmp/winrun4j/ResourceHacker.exe ~/".wine/drive_c/winrun4j"
 cp travis/winrun4j/resource.rc ~/".wine/drive_c/winrun4j"
-
-
