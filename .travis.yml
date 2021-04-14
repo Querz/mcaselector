@@ -9,18 +9,18 @@ before_install:
   - cat /etc/apt/sources.list
 
 install:
-  # update apt-get
-  - sudo apt-get update
-
   # inno setup
   - sudo dpkg --add-architecture i386
-  - wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add -
-  - sudo add-apt-repository 'https://dl.winehq.org/wine-builds/ubuntu/' && sudo apt update
-  - sudo apt install winehq-stable
-  - sudo apt-get install -y -q unzip
+  - sudo apt-get install -y -q wine unzip xvfb
   - wine --version
+
+  # start xvfb display
+  - Xvfb :1 &
+  - export DISPLAY=:1
+
+  # install inno and winrun4j
   - sudo sh travis/inno/innoinstall.sh
-  - sudo sh travis/winrun4j/winrun4j.sh
+  - sudo sh travis/winrun4j/winrun4jinstall.sh
 
   # install sdkman to install jfx 8
   - curl -s "https://get.sdkman.io" | bash
@@ -38,11 +38,9 @@ script:
   # gradle build
   - sudo ./gradlew build shadowJar installer --stacktrace --warning-mode all
 
-  - find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
-  - echo "####################################################################"
-  - find /home/travis/.wine | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
-    - echo "####################################################################"
-    - find /home/travis/.wine32 | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
+  # assemble winrun4j
+  - sudo sh travis/winrun4j/rcedit.sh build/inno/icon.ico travis/winrun4j/winrun4j.ini
+  - sudo sh travis/winrun4j/resourcehacker.sh
 
   # run inno setup
   - sudo sh travis/inno/iscc.sh build/inno/inno.iss

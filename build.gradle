@@ -110,7 +110,6 @@ task installer {
 			from("${rootProject.projectDir}/inno/small.bmp")
 			from("${rootProject.projectDir}/inno/large.bmp")
 			from("${buildDir}/libs/${project.name}-${project.version}-min.jar")
-			from("${buildDir}/winrun4j/${appName}.exe")
 			from("${rootProject.projectDir}/LICENSE")
 			from("${rootProject.projectDir}/7za.exe")
 			into(innoSetupDir)
