@@ -18,6 +18,7 @@ cp travis/winrun4j/winrun4j.ini ~/".wine/drive_c/winrun4j"
 cp build/tmp/winrun4j/ResourceHacker.exe ~/".wine/drive_c/winrun4j"
 cp travis/winrun4j/resource.rc ~/".wine/drive_c/winrun4j"
 
+unset DISPLAY
 echo "clearing exe"
 wine "C:\winrun4j\RCEDIT64.exe" "/C" "$(winepath -w "build/tmp/winrun4j/winrun4j/bin/WinRun4J64.exe")"
 echo "adding icon"
@@ -26,6 +27,7 @@ echo "adding ini"
 wine "C:\winrun4j\RCEDIT64.exe" "/N" "$(winepath -w "build/tmp/winrun4j/winrun4j/bin/WinRun4J64.exe")" "C:\winrun4j\winrun4j.ini"
 
 
+DISPLAY=:1
 echo "compiling resource.rc"
 wine "C:\winrun4j\ResourceHacker.exe" "-open" "C:\winrun4j\resource.rc" "-save" "C:\winrun4j\resource.res" "-action" "compile"
 echo "applying resource.res"

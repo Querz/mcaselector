@@ -15,14 +15,10 @@ install:
   - sudo add-apt-repository 'https://dl.winehq.org/wine-builds/ubuntu/' && sudo apt update
   - sudo apt install winehq-stable
   - sudo apt-get install -y -q unzip xvfb
-  - wget  https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
-  - sudo chmod +x winetricks
-  - sudo winetricks allfonts
   - wine --version
 
   # start xvfb display
   - Xvfb :1 &
-  - export DISPLAY=:1
 
   # install inno and winrun4j
   - sudo sh travis/inno/innoinstall.sh
