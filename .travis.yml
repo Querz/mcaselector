@@ -39,7 +39,7 @@ script:
   - sudo ./gradlew build shadowJar installer --stacktrace --warning-mode all
 
   # assemble winrun4j
-  - sudo sh travis/winrun4j/rcedit.sh build/inno/icon.ico travis/winrun4j/winrun4j.ini
+  - sudo sh travis/winrun4j/rcedit.sh inno/icon.ico travis/winrun4j/winrun4j.ini
   - sudo sh travis/winrun4j/resourcehacker.sh
 
   # run inno setup
