@@ -17,7 +17,7 @@ install:
   - sudo apt-get install -y -q cabextract unzip xvfb
   - wineboot -i
   - wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
-  - sh winetricks allfonts
+  - sh winetricks corefonts
   - wine --version
 
   # start xvfb display
