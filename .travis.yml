@@ -11,7 +11,11 @@ before_install:
 install:
   # inno setup
   - sudo dpkg --add-architecture i386
-  - sudo apt-get install -y -q wine unzip xvfb
+  - wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add -
+  - sudo add-apt-repository 'https://dl.winehq.org/wine-builds/ubuntu/' && sudo apt update
+  - sudo apt install winehq-stable
+  - sudo apt-get install -y -q unzip xvfb winetricks
+  - sudo winetricks allfonts
   - wine --version
 
   # start xvfb display
