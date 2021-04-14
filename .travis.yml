@@ -14,6 +14,8 @@ install:
   - wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add -
   - sudo add-apt-repository 'https://dl.winehq.org/wine-builds/ubuntu/' && sudo apt update
   - sudo apt install winehq-stable
+  - wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+  - sudo sh winetricks corefonts
   - sudo apt-get install -y -q unzip xvfb
   - wine --version
 
