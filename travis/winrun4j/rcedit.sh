@@ -1,5 +1,6 @@
 #!/bin/bash
 
+ls -lah build/inno
 exePath=$(winepath -w "build/tmp/winrun4j/winrun4j/bin/WinRun4J64.exe")
 iconPath=$(winepath -w "$1")
 iniPath=$(winepath -w "$2")
