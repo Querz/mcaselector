@@ -6,7 +6,7 @@ addons:
   ssh_known_hosts: deploy.querz.net
 
 before_install:
-  - cat /etc/apt/sources.list
+  - sudo apt-get update
 
 install:
   # inno setup
@@ -15,6 +15,8 @@ install:
   - sudo add-apt-repository 'https://dl.winehq.org/wine-builds/ubuntu/' && sudo apt update
   - sudo apt install winehq-stable
   - sudo apt-get install -y -q unzip xvfb
+  - sudo apt install winetricks
+  - sudo winetricks allfonts
   - wine --version
 
   # start xvfb display
