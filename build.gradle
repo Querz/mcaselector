@@ -7,7 +7,6 @@ buildscript {
 	dependencies {
 		classpath 'com.github.eriwen:gradle-css-plugin:9fe88d7126'
 		classpath 'com.github.jengelman.gradle.plugins:shadow:6.0.0'
-		classpath 'edu.sc.seis.launch4j:launch4j:2.4.9'
 	}
 }
 
@@ -16,7 +15,6 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'css'
-apply plugin: 'edu.sc.seis.launch4j'
 
 group 'net.querz.mcaselector'
 version '1.15.3'
@@ -84,15 +82,6 @@ minifyCss {
 	dest = "${sourceSets.main.output.resourcesDir}/style.css"
 }
 
-createExe {
-	dontWrapJar true
-	jar "${project.name}.jar"
-	outfile "${appName}.exe"
-	icon "${rootProject.projectDir}/inno/icon.ico"
-	bundledJrePath 'jre'
-	jvmOptions ['-Xmx8G']
-}
-
 task installer {
 	doLast {
 		def innoSetupDir = new File("${buildDir}/inno")
@@ -144,6 +133,7 @@ installer.dependsOn jar
 
 task updateReadme {
 	doLast {
+		// update version in README
 		ant.replaceregexp(
 				match: '(?:Download Version )\\d+\\.\\d+(?:\\.\\d+)?',
 				replace: "Download Version ${version}",
@@ -165,11 +155,53 @@ task updateReadme {
 				byline: true) {
 			fileset dir: '.', includes: 'README.md'
 		}
+
+		// update TOC in README
 		ant.replaceregexp(
 				match: '<!--toc-start-->[\\s\\S]*<!--toc-end-->',
 				replace: createTOC('README.md', '<!--toc-start-->', '<!--toc-end-->', true, true),
 				flags: 'g') {
 			fileset dir: '.', includes: 'README.md'
+		}
+
+		// replace version for exe
+		if ("${version}".split("\\.").length == 2) {
+			ant.replaceregexp(
+					match: '\\d+\\.\\d+(?:\\.\\d+)?\\.0',
+					replace: "${version}.0.0",
+					flags: 'g',
+					byline: true) {
+				fileset dir: './travis/winrun4j/', includes: 'resource.rc'
+			}
+			ant.replaceregexp(
+					match: '\\d+\\,\\d+(?:\\,\\d+)?\\,0',
+					replace: "${version}".replace('.', ',') + ",0,0",
+					flags: 'g',
+					byline: true) {
+				fileset dir: './travis/winrun4j/', includes: 'resource.rc'
+			}
+		} else if ("${version}".split("\\.").length == 3) {
+			ant.replaceregexp(
+					match: '\\d+\\.\\d+(?:\\.\\d+)?\\.0',
+					replace: "${version}.0",
+					flags: 'g',
+					byline: true) {
+				fileset dir: './travis/winrun4j/', includes: 'resource.rc'
+			}
+			ant.replaceregexp(
+					match: '\\d+\\,\\d+(?:\\,\\d+)?\\,0',
+					replace: "${version}".replace('.', ',') + ",0",
+					flags: 'g',
+					byline: true) {
+				fileset dir: './travis/winrun4j/', includes: 'resource.rc'
+			}
+		}
+		ant.replaceregexp(
+				match: '"ProductVersion",     "\\d+\\.\\d+(?:\\.\\d+)?',
+				replace: "\"ProductVersion\",     \"${version}",
+				flags: 'g',
+				byline: true) {
+			fileset dir: './travis/winrun4j/', includes: 'resource.rc'
 		}
 	}
 }
