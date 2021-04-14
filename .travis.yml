@@ -47,7 +47,7 @@ script:
   - sh travis/winrun4j/rcedit.sh
 
   # run inno setup
-  - sudo sh travis/inno/iscc.sh build/inno/inno.iss
+  - sh travis/inno/iscc.sh build/inno/inno.iss
 
 after-success:
   # decrypt deployment key
