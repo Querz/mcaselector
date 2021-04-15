@@ -1,3 +1,7 @@
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+
 buildscript {
 	repositories {
 		jcenter()
@@ -94,12 +98,27 @@ task installer {
 		def innoSetupLibDir = new File("${innoSetupDir}/lib")
 		innoSetupLibDir.mkdir()
 
+		// assemble license file
+		String finalLicense = new String(Files.readAllBytes(new File("${rootProject.projectDir}/LICENSE").toPath()))
+		finalLicense += "\n\n\n" +
+				"##########################################################################################\n" +
+				"##########################################################################################\n" +
+				"##                                                                                      ##\n" +
+				"##                                  3RD PARTY LICENSES                                  ##\n" +
+				"##                                                                                      ##\n" +
+				"##########################################################################################\n" +
+				"##########################################################################################"
+		for (File file : new File("${rootProject.projectDir}/src/main/resources/licenses").listFiles()) {
+			finalLicense = appendLicense(file, finalLicense)
+		}
+		finalLicense = appendLicense(new File("${rootProject.projectDir}/travis/winrun4j/winrun4j.license.txt"), finalLicense)
+		Files.write(new File(innoSetupDir, "LICENSE").toPath(), finalLicense.getBytes(StandardCharsets.UTF_8))
+
 		copy {
 			from("${rootProject.projectDir}/inno/icon.ico")
 			from("${rootProject.projectDir}/inno/small.bmp")
 			from("${rootProject.projectDir}/inno/large.bmp")
 			from("${buildDir}/libs/${project.name}-${project.version}-min.jar")
-			from("${rootProject.projectDir}/LICENSE")
 			from("${rootProject.projectDir}/7za.exe")
 			into(innoSetupDir)
 			rename("${project.name}-${project.version}-min.jar", "${project.name}.jar")
@@ -247,4 +266,36 @@ static String createTOC(String f, String st, String en, boolean it, boolean is) 
 		br.close()
 	}
 	return b.append(en).toString()
+}
+
+static String pad(String s, char p, int l) {
+	StringBuilder sb = new StringBuilder(s)
+	for (int i = s.length(); i < l; i++) {
+		if (i % 2 == 1) {
+			sb.append(p)
+		} else {
+			sb.insert(0, p)
+		}
+	}
+	return sb.toString()
+}
+
+static String appendLicense(File f, String l) {
+	String content = new String(Files.readAllBytes(f.toPath()))
+	if (f.getName().endsWith(".license.txt")) {
+		String licenseName = f.getName().replace(".license.txt", "").toUpperCase()
+		l += "\n\n\n" +
+				"##########################################################################################\n" +
+				"#" + pad(" License for " + licenseName, ' ' as char, 88) + "#\n" +
+				"##########################################################################################\n\n" +
+				content
+	} else if (f.getName().endsWith(".notice.txt")) {
+		String noticeName = f.getName().replace(".notice.txt", "").toUpperCase()
+		l += "\n\n\n" +
+				"##########################################################################################\n" +
+				"#" + pad("Notice for " + noticeName, ' ' as char, 88) + "#\n" +
+				"##########################################################################################\n\n" +
+				content
+	}
+	return l
 }
