@@ -978,8 +978,7 @@
 }
 
 .array-editor-table-view .table-cell {
- 	-fx-text-fill: -color-text-light;
-	-fx-width: 100%;
+	-fx-text-fill: -color-text-light;
 }
 
 .array-editor-table-view .table-row-cell:even {
