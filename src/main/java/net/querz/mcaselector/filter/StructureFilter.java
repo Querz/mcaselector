@@ -12,18 +12,19 @@ import java.util.*;
 
 public class StructureFilter extends TextFilter<List<String>> {
 
-	private static final Set<String> validNames = new HashSet<>();
+	private static final Map<String, String> validNames = new HashMap<>();
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
 				new InputStreamReader(Objects.requireNonNull(StructureFilter.class.getClassLoader().getResourceAsStream("mapping/all_structures.txt"))))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
-				validNames.add(line);
+				validNames.put(line.toLowerCase(), line);
 			}
 		} catch (IOException ex) {
 			Debug.dumpException("error reading mapping/all_structures.txt", ex);
 		}
+		System.out.println(validNames);
 	}
 
 	public StructureFilter() {
@@ -41,7 +42,10 @@ public class StructureFilter extends TextFilter<List<String>> {
 		for (String name : value) {
 			Tag<?> structure = rawStructures.get(name);
 			if (structure == null || structure.valueToString().equals("[]")) {
-				return false;
+				structure = rawStructures.get(validNames.get(name));
+				if (structure == null || structure.valueToString().equals("[]")) {
+					return false;
+				}
 			}
 		}
 		return true;
@@ -61,6 +65,10 @@ public class StructureFilter extends TextFilter<List<String>> {
 			if (references != null && references.length > 0) {
 				return true;
 			}
+			references = ValidationHelper.withDefaultSilent(() -> rawStructures.getLongArray(validNames.get(name)), null);
+			if (references != null && references.length > 0) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -73,9 +81,8 @@ public class StructureFilter extends TextFilter<List<String>> {
 			setValue(null);
 		} else {
 			for (int i = 0; i < rawStructureNames.length; i++) {
-				String name = rawStructureNames[i];
-
-				if (!validNames.contains(name)) {
+				String name = rawStructureNames[i].toLowerCase();
+				if (!validNames.containsKey(rawStructureNames[i]) && (!validNames.containsKey(name) || !validNames.get(name).equals(rawStructureNames[i]))) {
 					if (name.startsWith("'") && name.endsWith("'") && name.length() >= 2 && !name.contains("\"")) {
 						rawStructureNames[i] = name.substring(1, name.length() - 1);
 						continue;
@@ -84,6 +91,7 @@ public class StructureFilter extends TextFilter<List<String>> {
 					setValid(false);
 					return;
 				}
+				rawStructureNames[i] = name;
 			}
 			setValid(true);
 			setValue(Arrays.asList(rawStructureNames));
