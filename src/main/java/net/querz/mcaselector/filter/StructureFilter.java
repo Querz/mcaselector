@@ -24,7 +24,6 @@ public class StructureFilter extends TextFilter<List<String>> {
 		} catch (IOException ex) {
 			Debug.dumpException("error reading mapping/all_structures.txt", ex);
 		}
-		System.out.println(validNames);
 	}
 
 	public StructureFilter() {
