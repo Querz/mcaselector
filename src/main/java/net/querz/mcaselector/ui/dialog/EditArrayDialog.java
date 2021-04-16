@@ -1,7 +1,10 @@
 package net.querz.mcaselector.ui.dialog;
 
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -17,6 +20,7 @@ import javafx.util.converter.ByteStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.LongStringConverter;
 import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.math.Bits;
 import net.querz.mcaselector.text.Translation;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -29,6 +33,9 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 	private final ImageView addBefore, addAfter, add16Before, add16After, delete;
 	private boolean addMultiple = false;
 	private T array;
+
+	private CheckBox overlapping = new CheckBox();
+	private ComboBox<Integer> bits = new ComboBox<>();
 
 	@SuppressWarnings({"SuspiciousSystemArraycopy", "unchecked"})
 	public EditArrayDialog(T array, Stage primaryStage) {
@@ -70,7 +77,6 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 
 		table.getColumns().addAll(indexColumn, valueColumn);
 		indexColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().index));
-		applyArray();
 
 		// load icons
 		this.addBefore = new ImageView(FileHelper.getIconFromResources("img/nbt/add_before"));
@@ -128,12 +134,28 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 		addBefore.setOnMouseClicked(e -> add(addMultiple ? 16 : 1, false));
 		delete.setOnMouseClicked(e -> delete());
 
+		bits.getItems().add(null);
+		for (int i = 4; i <= 12; i++) {
+			bits.getItems().add(i);
+		}
+
+		bits.valueProperty().addListener((v, o, n) -> {
+			table.getItems().clear();
+			applyArray();
+		});
+
+		// -----------------------------------------------
+		bits.getSelectionModel().select(new Integer(12));
+		// -----------------------------------------------
+
 		HBox options = new HBox();
 		options.getStyleClass().add("array-editor-options");
-		options.getChildren().addAll(delete, addBefore, addAfter);
+		options.getChildren().addAll(delete, addBefore, addAfter, overlapping, bits);
 
 		VBox content = new VBox();
 		content.getChildren().addAll(table, options);
+
+		applyArray();
 
 		getDialogPane().setContent(content);
 	}
@@ -221,7 +243,16 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 				@Override
 				public Long fromString(String s) {
 					try {
-						return super.fromString(s);
+						long l = super.fromString(s);
+						if (bits.getValue() != null) {
+							int max = (int) Math.pow(2, bits.getValue());
+							if (l < max && l >= 0) {
+								return l;
+							} else {
+								return null;
+							}
+						}
+						return l;
 					} catch (NumberFormatException ex) {
 						return null;
 					}
@@ -264,14 +295,37 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 			}
 		} else if (array instanceof long[]) {
 			long[] la = (long[]) array;
-			for (int i = 0; i < la.length; i++) {
-				table.getItems().add(new Row(i, la[i]));
+			if (bits.getValue() == null) {
+				for (int i = 0; i < la.length; i++) {
+					table.getItems().add(new Row(i, la[i]));
+				}
+			} else {
+				int length = Math.floorDiv(64, bits.getValue()) * la.length;
+				for (int i = 0; i < length; i++) {
+					if (bits.getValue() != null) {
+						int bits = this.bits.getValue();
+						int indicesPerLong = (int) (64D / bits);
+						int blockStatesIndex = i / indicesPerLong;
+						int startBit = (i % indicesPerLong) * bits;
+						int value = (int) Bits.bitRange(la[blockStatesIndex], startBit, startBit + bits);
+						table.getItems().add(new Row(i, value));
+					}
+				}
 			}
 		}
 	}
 
 	private <V extends Number> void updateArrayIndex(int index, V value) {
-		Array.set(array, index, value);
+		if (array instanceof long[] && bits.getValue() != null) {
+			long[] l = (long[]) array;
+			int bits = this.bits.getValue();
+			int indicesPerLong = (int) (64D / bits);
+			int blockStatesIndex = index / indicesPerLong;
+			int startBit = (index % indicesPerLong) * bits;
+			l[blockStatesIndex] = Bits.setBits(value.longValue(), l[blockStatesIndex], startBit, startBit + bits);
+		} else {
+			Array.set(array, index, value);
+		}
 	}
 
 	private void delete() {
