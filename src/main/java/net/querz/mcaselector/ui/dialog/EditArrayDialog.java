@@ -151,10 +151,12 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 				addBefore.setDisable(false);
 				addAfter.setDisable(false);
 				overlapping.setDisable(true);
+				delete.setDisable(false);
 			} else {
 				addBefore.setDisable(true);
 				addAfter.setDisable(true);
 				overlapping.setDisable(64 % n.bits == 0);
+				delete.setDisable(true);
 			}
 			reloadBitValues(n);
 			table.getItems().clear();
