@@ -14,10 +14,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.converter.ByteStringConverter;
@@ -54,6 +52,8 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 		getDialogPane().getButtonTypes().addAll(ButtonType.APPLY, ButtonType.CANCEL);
 
 		setResultConverter(b -> b == ButtonType.APPLY ? new Result(this.array) : null);
+
+		setResizable(true);
 
 		table.setPlaceholder(new Label());
 		table.getStyleClass().add("array-editor-table-view");
@@ -112,7 +112,8 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 			}
 		});
 
-		table.getSelectionModel().selectedItemProperty().addListener((i, o, n) -> delete.setDisable(n == null));
+		table.getSelectionModel().selectedItemProperty().addListener(
+				(i, o, n) -> delete.setDisable(n == null || bits.getValue() != null && bits.getValue() != BitCount.NONE));
 
 		getDialogPane().setOnKeyPressed(e -> {
 			if (e.getCode() == KeyCode.SHIFT) {
@@ -132,7 +133,7 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 
 		getDialogPane().getScene().getWindow().sizeToScene();
 
-		((Stage) getDialogPane().getScene().getWindow()).setMinWidth(324);
+		((Stage) getDialogPane().getScene().getWindow()).setMinWidth(array instanceof long[] ? 324 : 200);
 		((Stage) getDialogPane().getScene().getWindow()).setMinHeight(500);
 
 		addAfter.setOnMouseClicked(e -> add(addMultiple ? 16 : 1, true));
@@ -176,7 +177,11 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 
 		HBox options = new HBox();
 		options.getStyleClass().add("array-editor-options");
-		options.getChildren().addAll(delete, new Separator(), addBefore, addAfter, new Separator(), bits, new Separator(), overlap, overlapping);
+		options.getChildren().addAll(delete, new Separator(), addBefore, addAfter);
+
+		if (array instanceof long[]) {
+			options.getChildren().addAll(new Separator(), bits, new Separator(), overlap, overlapping);
+		}
 
 		BorderPane content = new BorderPane();
 		BorderPane.setAlignment(table, Pos.TOP_LEFT);
