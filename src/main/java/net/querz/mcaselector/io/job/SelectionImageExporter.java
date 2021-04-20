@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io.job;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
@@ -7,6 +8,7 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.SelectionData;
@@ -15,8 +17,11 @@ import net.querz.mcaselector.io.SelectionInfo;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
+import net.querz.mcaselector.tiles.OverlayPool;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileImage;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -28,7 +33,7 @@ public class SelectionImageExporter {
 	private SelectionImageExporter() {}
 
 	// returns the unfinished image that is currently written to. image is done when progressChannel is done.
-	public static int[] exportSelectionImage(SelectionDataInfo selection, Progress progressChannel) {
+	public static int[] exportSelectionImage(SelectionDataInfo selection, OverlayPool overlayPool, Progress progressChannel) {
 		MCAFilePipe.clearQueues();
 
 		progressChannel.setMax(selection.selection.size());
@@ -40,7 +45,7 @@ public class SelectionImageExporter {
 		int[] pixels = new int[(int) selection.selectionInfo.getWidth() * 16 * (int) selection.selectionInfo.getHeight() * 16];
 
 		for (Map.Entry<Point2i, Set<Point2i>> entry : selection.selection.entrySet()) {
-			MCAFilePipe.addJob(new ExportSelectionImageLoadJob(entry.getKey(), entry.getValue(), selection.selectionInfo, pixels, progressChannel));
+			MCAFilePipe.addJob(new ExportSelectionImageLoadJob(entry.getKey(), entry.getValue(), selection.selectionInfo, pixels, overlayPool, progressChannel));
 		}
 
 		return pixels;
@@ -77,14 +82,16 @@ public class SelectionImageExporter {
 		private final Point2i region;
 		private final Set<Point2i> chunks;
 		private final SelectionInfo selectionInfo;
+		private final OverlayPool overlayPool;
 		private final Progress progressChannel;
 
-		public ExportSelectionImageLoadJob(Point2i region, Set<Point2i> chunks, SelectionInfo selectionInfo, int[] pixels, Progress progressChannel) {
+		public ExportSelectionImageLoadJob(Point2i region, Set<Point2i> chunks, SelectionInfo selectionInfo, int[] pixels, OverlayPool overlayPool, Progress progressChannel) {
 			super(new RegionDirectories(region, null, null, null));
 			this.pixels = pixels;
 			this.region = region;
 			this.chunks = chunks;
 			this.selectionInfo = selectionInfo;
+			this.overlayPool = overlayPool;
 			this.progressChannel = progressChannel;
 		}
 
@@ -123,7 +130,16 @@ public class SelectionImageExporter {
 				return;
 			}
 
-			MCAFilePipe.executeProcessData(new ExportSelectionImageProcessJob(region, chunks, image, selectionInfo, pixels, progressChannel));
+			Image overlay = null;
+			if (overlayPool != null && overlayPool.getParser() != null) {
+				// load overlay image
+				overlay = overlayPool.getImage(region);
+				// scale up
+				BufferedImage scaled = ImageHelper.scaleImage(SwingFXUtils.fromFXImage(overlay, null), 512);
+				overlay = SwingFXUtils.toFXImage(scaled, null);
+			}
+
+			MCAFilePipe.executeProcessData(new ExportSelectionImageProcessJob(region, chunks, image, overlay, selectionInfo, pixels, progressChannel));
 		}
 
 	}
@@ -135,19 +151,34 @@ public class SelectionImageExporter {
 		private final SelectionInfo selectionInfo;
 		private final Progress progressChannel;
 		private final Image source;
+		private final Image overlay;
 
-		public ExportSelectionImageProcessJob(Point2i region, Set<Point2i> chunks, Image source, SelectionInfo selectionInfo, int[] pixels, Progress progressChannel) {
+		public ExportSelectionImageProcessJob(Point2i region, Set<Point2i> chunks, Image source, Image overlay, SelectionInfo selectionInfo, int[] pixels, Progress progressChannel) {
 			super(new RegionDirectories(region, null, null, null), null, null, null);
 			this.pixels = pixels;
 			this.chunks = chunks;
 			this.selectionInfo = selectionInfo;
 			this.progressChannel = progressChannel;
 			this.source = source;
+			this.overlay = overlay;
 		}
 
 		@Override
 		public void execute() {
-			PixelReader pixelReader = source.getPixelReader();
+			PixelReader pixelReader;
+
+			// if we have an overlay, merge it
+			if (overlay != null) {
+				BufferedImage sourceBuf = SwingFXUtils.fromFXImage(source, null);
+				Graphics2D graphics2D = sourceBuf.createGraphics();
+				AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
+				BufferedImage overlayBuf = SwingFXUtils.fromFXImage(overlay, null);
+				graphics2D.setComposite(ac);
+				graphics2D.drawImage(overlayBuf, 0, 0, null);
+				pixelReader = SwingFXUtils.toFXImage(sourceBuf, null).getPixelReader();
+			} else {
+				 pixelReader = source.getPixelReader();
+			}
 
 			iterateChunks(chunks, getRegionDirectories().getLocation(), chunk -> {
 				Point2i relChunk = chunk.mod(32);

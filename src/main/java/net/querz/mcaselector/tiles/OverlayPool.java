@@ -11,6 +11,7 @@ import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.db.CacheDBController;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import java.awt.*;
 import java.io.IOException;
@@ -48,6 +49,10 @@ public class OverlayPool {
 
 	public OverlayPool(TileMap tileMap) {
 		this.tileMap = tileMap;
+	}
+
+	public OverlayParser getParser() {
+		return parser;
 	}
 
 	public void setParser(OverlayParser overlay) {
@@ -115,7 +120,33 @@ public class OverlayPool {
 		});
 	}
 
-	private Image parseColorGrades(int[] data, int min, int max, float minHue, float maxHue) {
+	public Image getImage(Point2i location) {
+		try {
+			int[] data = dataCache.getData(parser, location);
+			if (data != null) {
+				return parseColorGrades(data, parser.min(), parser.max(), parser.getMinHue(), parser.getMaxHue());
+			}
+		} catch (Exception ex) {
+			Debug.dumpException("failed to load cached overlay data for region " + location, ex);
+			return null;
+		}
+
+		DataProperty<Image> image = new DataProperty<>();
+		new ParseDataJob(
+				new Tile(location),
+				Config.getWorldDirs().makeRegionDirectories(location),
+				Config.getWorldUUID(),
+				(i, u) -> {
+					if (i != null) {
+						image.set(parseColorGrades(i, parser.min(), parser.max(), parser.getMinHue(), parser.getMaxHue()));
+					}
+				},
+				parser
+		).execute();
+		return image.get();
+	}
+
+	private static Image parseColorGrades(int[] data, int min, int max, float minHue, float maxHue) {
 		int[] colors = new int[1024];
 		for (int i = 0; i < 1024; i++) {
 			colors[i] = getColorGrade(data[i], min, max, minHue, maxHue);

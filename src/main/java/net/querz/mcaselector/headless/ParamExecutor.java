@@ -269,7 +269,8 @@ public final class ParamExecutor {
 			}
 		});
 
-		pixels.set(SelectionImageExporter.exportSelectionImage(info, generateProgress));
+		// TODO: parse overlays
+		pixels.set(SelectionImageExporter.exportSelectionImage(info, null, generateProgress));
 	}
 
 	private void printMissingTranslations(FutureTask<Boolean> future) {

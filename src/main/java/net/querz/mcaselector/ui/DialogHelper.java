@@ -330,7 +330,7 @@ public class DialogHelper {
 			if (b == ButtonType.OK) {
 				DataProperty<int[]> pixels = new DataProperty<>();
 				CancellableProgressDialog cpd = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_CREATING_IMAGE, primaryStage);
-				cpd.showProgressBar(t -> pixels.set(SelectionImageExporter.exportSelectionImage(info, t)));
+				cpd.showProgressBar(t -> pixels.set(SelectionImageExporter.exportSelectionImage(info, tileMap.getOverlayPool(), t)));
 				if (!cpd.cancelled() && pixels.get() != null) {
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SAVING_IMAGE, primaryStage)
 					.showProgressBar(t -> {

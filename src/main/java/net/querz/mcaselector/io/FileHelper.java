@@ -6,12 +6,7 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
-import net.querz.mcaselector.tiles.TileMap;
-import net.querz.mcaselector.tiles.overlay.OverlayType;
-import net.querz.mcaselector.ui.DialogHelper;
-import net.querz.mcaselector.ui.OptionBar;
 import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
