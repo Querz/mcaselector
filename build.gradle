@@ -1,3 +1,7 @@
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+
 buildscript {
 	repositories {
 		jcenter()
@@ -7,7 +11,6 @@ buildscript {
 	dependencies {
 		classpath 'com.github.eriwen:gradle-css-plugin:9fe88d7126'
 		classpath 'com.github.jengelman.gradle.plugins:shadow:6.0.0'
-		classpath 'edu.sc.seis.launch4j:launch4j:2.4.9'
 	}
 }
 
@@ -16,7 +19,6 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'css'
-apply plugin: 'edu.sc.seis.launch4j'
 
 group 'net.querz.mcaselector'
 version '1.15.3'
@@ -84,18 +86,11 @@ minifyCss {
 	dest = "${sourceSets.main.output.resourcesDir}/style.css"
 }
 
-createExe {
-	dontWrapJar true
-	jar "${project.name}.jar"
-	outfile "${appName}.exe"
-	icon "${rootProject.projectDir}/inno/icon.ico"
-	bundledJrePath 'jre'
-	jvmOptions ['-Xmx8G']
-}
-
 task installer {
 	doLast {
 		def innoSetupDir = new File("${buildDir}/inno")
+
+		println(buildDir.getCanonicalPath())
 
 		delete innoSetupDir
 		innoSetupDir.mkdir()
@@ -103,13 +98,27 @@ task installer {
 		def innoSetupLibDir = new File("${innoSetupDir}/lib")
 		innoSetupLibDir.mkdir()
 
+		// assemble license file
+		String finalLicense = new String(Files.readAllBytes(new File("${rootProject.projectDir}/LICENSE").toPath()))
+		finalLicense += "\n\n\n" +
+				"##########################################################################################\n" +
+				"##########################################################################################\n" +
+				"##                                                                                      ##\n" +
+				"##                                  3RD PARTY LICENSES                                  ##\n" +
+				"##                                                                                      ##\n" +
+				"##########################################################################################\n" +
+				"##########################################################################################"
+		for (File file : new File("${rootProject.projectDir}/src/main/resources/licenses").listFiles()) {
+			finalLicense = appendLicense(file, finalLicense)
+		}
+		finalLicense = appendLicense(new File("${rootProject.projectDir}/travis/winrun4j/winrun4j.license.txt"), finalLicense)
+		Files.write(new File(innoSetupDir, "LICENSE").toPath(), finalLicense.getBytes(StandardCharsets.UTF_8))
+
 		copy {
 			from("${rootProject.projectDir}/inno/icon.ico")
 			from("${rootProject.projectDir}/inno/small.bmp")
 			from("${rootProject.projectDir}/inno/large.bmp")
 			from("${buildDir}/libs/${project.name}-${project.version}-min.jar")
-			from("${buildDir}/launch4j/${appName}.exe")
-			from("${rootProject.projectDir}/LICENSE")
 			from("${rootProject.projectDir}/7za.exe")
 			into(innoSetupDir)
 			rename("${project.name}-${project.version}-min.jar", "${project.name}.jar")
@@ -143,6 +152,7 @@ installer.dependsOn jar
 
 task updateReadme {
 	doLast {
+		// update version in README
 		ant.replaceregexp(
 				match: '(?:Download Version )\\d+\\.\\d+(?:\\.\\d+)?',
 				replace: "Download Version ${version}",
@@ -164,11 +174,53 @@ task updateReadme {
 				byline: true) {
 			fileset dir: '.', includes: 'README.md'
 		}
+
+		// update TOC in README
 		ant.replaceregexp(
 				match: '<!--toc-start-->[\\s\\S]*<!--toc-end-->',
 				replace: createTOC('README.md', '<!--toc-start-->', '<!--toc-end-->', true, true),
 				flags: 'g') {
 			fileset dir: '.', includes: 'README.md'
+		}
+
+		// replace version for exe
+		if ("${version}".split("\\.").length == 2) {
+			ant.replaceregexp(
+					match: '\\d+\\.\\d+(?:\\.\\d+)?\\.0',
+					replace: "${version}.0.0",
+					flags: 'g',
+					byline: true) {
+				fileset dir: './travis/winrun4j/', includes: 'resource.rc'
+			}
+			ant.replaceregexp(
+					match: '\\d+\\,\\d+(?:\\,\\d+)?\\,0',
+					replace: "${version}".replace('.', ',') + ",0,0",
+					flags: 'g',
+					byline: true) {
+				fileset dir: './travis/winrun4j/', includes: 'resource.rc'
+			}
+		} else if ("${version}".split("\\.").length == 3) {
+			ant.replaceregexp(
+					match: '\\d+\\.\\d+(?:\\.\\d+)?\\.0',
+					replace: "${version}.0",
+					flags: 'g',
+					byline: true) {
+				fileset dir: './travis/winrun4j/', includes: 'resource.rc'
+			}
+			ant.replaceregexp(
+					match: '\\d+\\,\\d+(?:\\,\\d+)?\\,0',
+					replace: "${version}".replace('.', ',') + ",0",
+					flags: 'g',
+					byline: true) {
+				fileset dir: './travis/winrun4j/', includes: 'resource.rc'
+			}
+		}
+		ant.replaceregexp(
+				match: '"ProductVersion",     "\\d+\\.\\d+(?:\\.\\d+)?',
+				replace: "\"ProductVersion\",     \"${version}",
+				flags: 'g',
+				byline: true) {
+			fileset dir: './travis/winrun4j/', includes: 'resource.rc'
 		}
 	}
 }
@@ -214,4 +266,36 @@ static String createTOC(String f, String st, String en, boolean it, boolean is) 
 		br.close()
 	}
 	return b.append(en).toString()
+}
+
+static String pad(String s, char p, int l) {
+	StringBuilder sb = new StringBuilder(s)
+	for (int i = s.length(); i < l; i++) {
+		if (i % 2 == 1) {
+			sb.append(p)
+		} else {
+			sb.insert(0, p)
+		}
+	}
+	return sb.toString()
+}
+
+static String appendLicense(File f, String l) {
+	String content = new String(Files.readAllBytes(f.toPath()))
+	if (f.getName().endsWith(".license.txt")) {
+		String licenseName = f.getName().replace(".license.txt", "").toUpperCase()
+		l += "\n\n\n" +
+				"##########################################################################################\n" +
+				"#" + pad(" License for " + licenseName, ' ' as char, 88) + "#\n" +
+				"##########################################################################################\n\n" +
+				content
+	} else if (f.getName().endsWith(".notice.txt")) {
+		String noticeName = f.getName().replace(".notice.txt", "").toUpperCase()
+		l += "\n\n\n" +
+				"##########################################################################################\n" +
+				"#" + pad("Notice for " + noticeName, ' ' as char, 88) + "#\n" +
+				"##########################################################################################\n\n" +
+				content
+	}
+	return l
 }

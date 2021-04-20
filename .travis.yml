@@ -1,32 +1,53 @@
-dist: trusty
+dist: xenial
 language: java
 jdk:
-  - oraclejdk8
+  - openjdk8
 addons:
   ssh_known_hosts: deploy.querz.net
 
 before_install:
-  # update apt-get
   - sudo apt-get update
 
+install:
   # inno setup
-  - sudo apt-get install -y -q wine unzip
+  - sudo dpkg --add-architecture i386
+  - wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add -
+  - sudo add-apt-repository 'https://dl.winehq.org/wine-builds/ubuntu/' && sudo apt update
+  - sudo apt install winehq-stable
+  - sudo apt-get install -y -q cabextract unzip zip xvfb
+  - wineboot -i
+  - wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+  - sh winetricks corefonts
   - wine --version
-  - sudo sh travis/inno/innoinstall.sh
+
+  # start xvfb display
+  - Xvfb :1 &
+
+  # install inno and winrun4j
+  - sh travis/inno/innoinstall.sh
+  - sh travis/winrun4j/winrun4jinstall.sh
+
+  # install sdkman to install jfx 8
+  - curl -s "https://get.sdkman.io" | bash
+  - source "$HOME/.sdkman/bin/sdkman-init.sh"
+  - sdk install java 8.0.282.fx-zulu
+  - export JAVA_HOME="$(sdk home java 8.0.282.fx-zulu)"
 
   # download 7zip
-  - sudo sh travis/inno/7zipdownload.sh
+  - sh travis/inno/7zipdownload.sh
 
-install:
   # disable default travis behavior 'gradle assemble'
   - ./gradlew -v
 
 script:
   # gradle build
-  - sudo ./gradlew clean build shadowJar createExe installer --stacktrace --warning-mode all
+  - ./gradlew build shadowJar installer --stacktrace --warning-mode all
+
+  # assemble winrun4j
+  - sh travis/winrun4j/rcedit.sh
 
   # run inno setup
-  - sudo sh travis/inno/iscc.sh build/inno/inno.iss
+  - sh travis/inno/iscc.sh build/inno/inno.iss
 
 after-success:
   # decrypt deployment key
