@@ -1012,19 +1012,41 @@
 }
 
 .array-editor-add-tag-label {
-	-fx-padding: 3 0 3 0;
+	-fx-padding: 3 2 3 2;
 }
 
 .array-editor-add-tag-label:hover {
-	-fx-padding: 2 -1 2 -1;
+	-fx-padding: 2 1 2 1;
 }
 
 .array-editor-delete-tag-label {
-	-fx-border-width: 0 2 0 0;
-	-fx-padding: 0 2 0 0;
-	-fx-border-color: -color-dialog-separator;
+	-fx-padding: 3 0 0 2;
 }
 
 .array-editor-delete-tag-label-enabled:hover {
-	-fx-padding: -1 1 -1 -1;
+	-fx-padding: 2 -1 -1 1;
+}
+
+.array-editor-options .separator {
+	-fx-orientation: vertical;
+	-fx-padding: 2 10 2 10;
+	-fx-background-color: transparent;
+}
+
+.array-editor-options .separator *.line {
+	-fx-border-width: 0;
+	-fx-width: 2;
+	-fx-background-color: -color-menu-separator;
+}
+
+.array-editor-options .combo-box {
+	-fx-pref-width: 50;
+}
+
+.array-editor-options .overlap-label {
+	-fx-padding: 2 0 0 0;
+}
+
+.array-editor-options .check-box {
+	-fx-padding: -1 0 0 -1;
 }

@@ -8,7 +8,6 @@ import javafx.stage.Stage;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.ui.dialog.PreviewDisclaimerDialog;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
