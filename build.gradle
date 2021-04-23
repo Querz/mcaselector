@@ -102,9 +102,9 @@ task installer {
 		finalLicense += "\n\n\n" +
 				"############################################################\n" +
 				"############################################################\n" +
-				"##                                                        ##\n" +
-				"##                   3RD PARTY LICENSES                   ##\n" +
-				"##                                                        ##\n" +
+				"##\n" +
+				"##                   3RD PARTY LICENSES\n" +
+				"##\n" +
 				"############################################################\n" +
 				"############################################################"
 		for (File file : new File("${rootProject.projectDir}/src/main/resources/licenses").listFiles()) {
@@ -268,14 +268,10 @@ static String createTOC(String f, String st, String en, boolean it, boolean is) 
 }
 
 static String pad(String s, char p, int l) {
-	StringBuilder sb = new StringBuilder(s)
-	for (int i = s.length(); i < l; i++) {
-		if (i % 2 == 1)
-			sb.append(p)
-		else
-			sb.insert(0, p)
-	}
-	return sb.toString()
+	StringBuilder sb = new StringBuilder(l)
+	for (int i = 0; i < l - s.length(); i += 2)
+		sb.append(p)
+	return sb.append(s).toString()
 }
 
 static String appendLicense(File f, String l) {
@@ -284,7 +280,7 @@ static String appendLicense(File f, String l) {
 		String licenseName = f.getName().replace(".license.txt", "").toUpperCase()
 		l += "\n\n\n" +
 				"############################################################\n" +
-				"#" + pad(" License for " + licenseName, ' ' as char, 58) + "#\n" +
+				"#" + pad("License for " + licenseName, ' ' as char, 58) + "\n" +
 				"############################################################\n\n" +
 				content
 	}
