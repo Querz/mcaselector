@@ -29,7 +29,7 @@ install:
 
   # install jdk8 with javafx
   - sh travis/jdkinstall.sh
-  - export JAVA_HOME="~/jdkfx8"
+  - export JAVA_HOME="$HOME/jdkfx8"
 
   # download 7zip
   - sh travis/inno/7zipdownload.sh
