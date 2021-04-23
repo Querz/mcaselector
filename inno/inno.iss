@@ -48,6 +48,7 @@ Type: filesandordirs; Name: "{app}\\jre"
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\\jre"
+Type: filesandordirs; Name: "{app}\\zulu8.52.0.23-ca-fx-jre8.0.282-win_x64"
 
 [Icons]
 Name: "{autoprograms}\\${applicationName}"; Filename: "{app}\\${applicationName}.exe"
@@ -101,6 +102,4 @@ begin
 		Log('Failed to rename jre folder, creating custom ini');
 		SaveStringToFile(ExpandConstant('{app}\\MCA Selector.ini'), 'vm.location=zulu8.52.0.23-ca-fx-jre8.0.282-win_x64\\bin\\server\\jvm.dll', False);
 	end;
-
-	SaveStringToFile(ExpandConstant('{app}\\testing.ini'), 'vm.location=zulu8.52.0.23-ca-fx-jre8.0.282-win_x64\\bin\\server\\jvm.dll', False);
 end;
