@@ -27,11 +27,8 @@ install:
   - sh travis/inno/innoinstall.sh
   - sh travis/winrun4j/winrun4jinstall.sh
 
-  # install sdkman to install jfx 8
-  - curl -s "https://get.sdkman.io" | bash
-  - source "$HOME/.sdkman/bin/sdkman-init.sh"
-  - sdk install java 8.0.282.fx-zulu
-  - export JAVA_HOME="$(sdk home java 8.0.282.fx-zulu)"
+  # install jdk8 with javafx
+  - sh travis/jdkinstall.sh
 
   # download 7zip
   - sh travis/inno/7zipdownload.sh
