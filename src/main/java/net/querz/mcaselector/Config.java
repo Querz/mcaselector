@@ -198,10 +198,16 @@ public final class Config {
 	}
 
 	public static File getCacheDirForWorldUUID(UUID world, int zoomLevel) {
+		if (world == null) {
+			return new File(cacheDir, "" + zoomLevel);
+		}
 		return new File(baseCacheDir, world.toString().replace("-", "") + "/" + zoomLevel);
 	}
 
 	public static File getCacheDirForWorldUUID(UUID world) {
+		if (world == null) {
+			return cacheDir;
+		}
 		return new File(baseCacheDir, world.toString().replace("-", ""));
 	}
 

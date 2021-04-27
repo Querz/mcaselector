@@ -8,6 +8,7 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.NamedThreadFactory;
 import net.querz.mcaselector.io.db.CacheDBController;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.point.Point2i;
@@ -33,13 +34,15 @@ public class OverlayPool {
 	private final ThreadPoolExecutor overlayCacheLoaders = new ThreadPoolExecutor(
 			4, 4,
 			0L, TimeUnit.MILLISECONDS,
-			new LinkedBlockingQueue<>());
+			new LinkedBlockingQueue<>(),
+			new NamedThreadFactory("overlayCachePool"));
 
 	// used to load region data from db asynchronously to be displayed in the status bar
 	private final ThreadPoolExecutor overlayValueLoader = new ThreadPoolExecutor(
 			1, 1,
 			0L, TimeUnit.MILLISECONDS,
-			new LinkedBlockingQueue<>());
+			new LinkedBlockingQueue<>(),
+			new NamedThreadFactory("overlayValuePool"));
 
 	private final CacheDBController dataCache = new CacheDBController();
 	private OverlayParser parser;
