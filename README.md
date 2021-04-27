@@ -385,6 +385,12 @@ The following languages are available:
 If you would like to contribute a translation, you can find the language files in [resources/lang/](https://github.com/Querz/mcaselector/tree/master/src/main/resources/lang). The files are automatically detected and shown as the respective language option in the settings dropdown menu once they are placed in this folder.
 
 ---
+## Sponsoring
+
+| <a href="https://jb.gg/OpenSource"><img width="64" alt="IntelliJ IDEA Logo" src="https://gist.githubusercontent.com/Querz/79c526f5226515a884c444f6d4b2ce68/raw/130f3d4ebf516e85961986e01a769209e4f3ac70/icon-intellij-idea.png"></a> | IntelliJ IDEA Ultimate was sponsored by [JetBrains](https://jb.gg/OpenSource) through their Open Source program. |
+| --- | --- |
+
+---
 
 ## Download and installation
 
