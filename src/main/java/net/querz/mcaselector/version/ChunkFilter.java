@@ -17,6 +17,7 @@ public interface ChunkFilter {
 	// returns true if AT LEAST ONE block name is present
 	boolean matchAnyBlockName(CompoundTag data, Collection<String> names);
 
+	// returns true if the palette ONLY contains the block names, ignoring air
 	boolean paletteEquals(CompoundTag data, Collection<String> names);
 
 	// returns true if AT LEAST ONE biome is present

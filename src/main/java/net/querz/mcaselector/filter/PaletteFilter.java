@@ -13,7 +13,8 @@ public class PaletteFilter extends TextFilter<List<String>> {
 		Comparator.CONTAINS,
 		Comparator.CONTAINS_NOT,
 		Comparator.INTERSECTS,
-		Comparator.EQUAL
+		Comparator.EQUAL,
+		Comparator.NOT_EQUAL
 	};
 
 	public PaletteFilter() {
@@ -41,6 +42,8 @@ public class PaletteFilter extends TextFilter<List<String>> {
 				return intersects(value, data);
 			case EQUAL:
 				return equals(value, data);
+			case NOT_EQUAL:
+				return notEquals(value, data);
 		}
 		return false;
 	}
@@ -74,6 +77,10 @@ public class PaletteFilter extends TextFilter<List<String>> {
 		}
 		return VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"))
 			.paletteEquals(data.getRegion().getData(), value);
+	}
+
+	public boolean notEquals(List<String> values, ChunkData data) {
+		return !equals(values, data);
 	}
 
 	@Override
