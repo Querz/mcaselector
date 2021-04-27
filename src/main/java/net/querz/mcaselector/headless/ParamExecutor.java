@@ -493,11 +493,11 @@ public final class ParamExecutor {
 			throw new ParseException("missing " + key + " directory");
 		}
 		File file = new File(f);
-		if (!file.isDirectory()) {
-			throw new ParseException(file + " is not a directory");
-		}
 		if (!file.exists() && !file.mkdirs()) {
 			throw new IOException("failed to create directory " + file);
+		}
+		if (!file.isDirectory()) {
+			throw new ParseException(file + " is not a directory");
 		}
 		return file;
 	}
