@@ -49,6 +49,7 @@ Type: filesandordirs; Name: "{app}\\jre"
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\\jre"
 Type: filesandordirs; Name: "{app}\\zulu8.52.0.23-ca-fx-jre8.0.282-win_x64"
+Type: filesandordirs; Name: "{app}\\MCA Selector.ini"
 
 [Icons]
 Name: "{autoprograms}\\${applicationName}"; Filename: "{app}\\${applicationName}.exe"
