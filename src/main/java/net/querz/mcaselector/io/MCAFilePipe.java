@@ -7,10 +7,9 @@ import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.ProcessDataJob;
 import net.querz.mcaselector.io.job.SaveDataJob;
 import net.querz.mcaselector.validation.ShutdownHooks;
-
-import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -57,22 +56,26 @@ public final class MCAFilePipe {
 		loadDataExecutor = new ThreadPoolExecutor(
 				Config.getLoadThreads(), Config.getLoadThreads(),
 				0L, TimeUnit.MILLISECONDS,
-				new LinkedBlockingQueue<>());
+				new LinkedBlockingQueue<>(),
+				new NamedThreadFactory("loadPool"));
 		Debug.dumpf("created data load ThreadPoolExecutor with %d threads", Config.getLoadThreads());
 		processDataExecutor = new ThreadPoolExecutor(
 				Config.getProcessThreads(), Config.getProcessThreads(),
 				0L, TimeUnit.MILLISECONDS,
-				new LinkedBlockingQueue<>());
+				new LinkedBlockingQueue<>(),
+				new NamedThreadFactory("processPool"));
 		Debug.dumpf("created data processor ThreadPoolExecutor with %d threads", Config.getProcessThreads());
 		saveDataExecutor = new ThreadPoolExecutor(
 				Config.getWriteThreads(), Config.getWriteThreads(),
 				0L, TimeUnit.MILLISECONDS,
-				new LinkedBlockingQueue<>());
+				new LinkedBlockingQueue<>(),
+				new NamedThreadFactory("savePool"));
 		Debug.dumpf("created data save ThreadPoolExecutor with %d threads", Config.getWriteThreads());
 		dataParsingExecutor = new ThreadPoolExecutor(
 				1, 1,
 				0L, TimeUnit.MILLISECONDS,
-				new LinkedBlockingQueue<>());
+				new LinkedBlockingQueue<>(),
+				new NamedThreadFactory("parsePool"));
 		Debug.dumpf("created data parser ThreadPoolExecutor with %d threads", 1);
 	}
 

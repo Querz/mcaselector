@@ -7,7 +7,6 @@ import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.progress.Progress;
-import net.querz.mcaselector.tiles.overlay.OverlayType;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
