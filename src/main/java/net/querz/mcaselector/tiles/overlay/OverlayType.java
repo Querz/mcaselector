@@ -5,6 +5,8 @@ import java.util.function.Supplier;
 public enum OverlayType {
 
 	INHABITED_TIME("InhabitedTime", InhabitedTimeParser::new),
+	TIMESTAMP("Timestamp", TimestampParser::new),
+	LAST_UPDATE("LastUpdate", LastUpdateParser::new),
 	ENTITY_AMOUNT("#Entities", EntityAmountParser::new),
 	TILE_ENTITY_AMOUNT("#TileEntityAmount", TileEntityAmountParser::new),
 	DATA_VERSION("DataVersion", DataVersionParser::new),
