@@ -111,7 +111,7 @@ public abstract class MCAFile<T extends Chunk> {
 
 			// write timestamp
 			raf.seek(4096 + i * 4);
-			raf.writeInt(timestamps[i]);
+			raf.writeInt(chunk.getTimestamp());
 
 			globalOffset += sectors;
 		}
@@ -214,6 +214,7 @@ public abstract class MCAFile<T extends Chunk> {
 
 				try {
 					chunks[i] = chunkConstructor.apply(chunkLocation);
+					chunks[i].setTimestamp(timestamps[i]);
 					chunks[i].load(raf);
 				} catch (Exception ex) {
 					chunks[i] = null;
@@ -240,6 +241,7 @@ public abstract class MCAFile<T extends Chunk> {
 
 			try {
 				chunks[i] = chunkConstructor.apply(chunkLocation);
+				chunks[i].setTimestamp(timestamps[i]);
 				chunks[i].load(ptr);
 			} catch (Exception ex) {
 				chunks[i] = null;
@@ -313,11 +315,16 @@ public abstract class MCAFile<T extends Chunk> {
 
 			Point2i absoluteChunkLocation = region.regionToChunk().add(rel);
 
+			// read timestamp
+			raf.seek(headerOffset + 4096L);
+			int timestamp = raf.readInt();
+
 			// read chunk data
 			T chunkData = chunkConstructor.apply(absoluteChunkLocation);
+			chunkData.setTimestamp(timestamp);
 
 			if (offset > 0) {
-				raf.seek(offset * 4096);
+				raf.seek(offset * 4096L);
 				chunkData.load(raf);
 			}
 
@@ -339,6 +346,7 @@ public abstract class MCAFile<T extends Chunk> {
 		int index = rel.getZ() * 32 + rel.getX();
 
 		setChunk(index, chunk);
+		setTimestamp(index, chunk.getTimestamp());
 		saveWithTempFile();
 	}
 

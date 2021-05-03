@@ -25,6 +25,7 @@ import java.util.zip.InflaterInputStream;
 
 public abstract class Chunk {
 
+	protected int timestamp;
 	protected CompoundTag data;
 	protected CompressionType compressionType;
 	protected final Point2i absoluteLocation;
@@ -177,6 +178,14 @@ public abstract class Chunk {
 
 	public Point2i getAbsoluteLocation() {
 		return absoluteLocation;
+	}
+
+	public int getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(int timestamp) {
+		this.timestamp = timestamp;
 	}
 
 	@Override

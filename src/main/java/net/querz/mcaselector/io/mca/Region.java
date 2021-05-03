@@ -328,7 +328,7 @@ public class Region {
 				continue;
 			}
 
-			ChunkData filterData = new ChunkData(this.region.getTimestamp(i), region, poi, entities);
+			ChunkData filterData = new ChunkData(region, poi, entities);
 
 			if (filter.matches(filterData)) {
 				deleteChunkIndex(i);
@@ -349,7 +349,7 @@ public class Region {
 				continue;
 			}
 
-			ChunkData filterData = new ChunkData(this.region.getTimestamp(i), region, poi, entities);
+			ChunkData filterData = new ChunkData(region, poi, entities);
 
 			// keep chunk if filter AND selection applies
 			// ignore selection if it's null
@@ -385,7 +385,7 @@ public class Region {
 				continue;
 			}
 
-			ChunkData filterData = new ChunkData(this.region.getTimestamp(i), region, poi, entities);
+			ChunkData filterData = new ChunkData(region, poi, entities);
 
 			Point2i location = region.getAbsoluteLocation();
 			try {

@@ -26,7 +26,7 @@ public class InhabitedTimeFilter extends LongFilter {
 		super.setFilterValue(raw);
 		if (!isValid()) {
 			try {
-				//InhabitedTime is in ticks, not seconds
+				// InhabitedTime is in ticks, not seconds
 				setFilterNumber(TextHelper.parseDuration(raw) * 20);
 				setValid(true);
 				setRawValue(raw);

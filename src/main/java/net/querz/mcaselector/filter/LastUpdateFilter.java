@@ -3,19 +3,22 @@ package net.querz.mcaselector.filter;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.text.TextHelper;
 
-public class LastUpdateFilter extends IntFilter {
+public class LastUpdateFilter extends LongFilter {
 
 	public LastUpdateFilter() {
 		this(Operator.AND, Comparator.EQUAL, 0);
 	}
 
-	private LastUpdateFilter(Operator operator, Comparator comparator, int value) {
+	private LastUpdateFilter(Operator operator, Comparator comparator, long value) {
 		super(FilterType.LAST_UPDATE, operator, comparator, value);
 	}
 
 	@Override
-	Integer getNumber(ChunkData data) {
-		return data.getLastUpdated();
+	protected Long getNumber(ChunkData data) {
+		if (data.getRegion() == null) {
+			return 0L;
+		}
+		return data.getRegion().getData().getCompoundTag("Level").getLong("LastUpdate");
 	}
 
 	@Override
@@ -23,24 +26,25 @@ public class LastUpdateFilter extends IntFilter {
 		super.setFilterValue(raw);
 		if (!isValid()) {
 			try {
-				setFilterNumber(TextHelper.parseTimestamp(raw));
+				// LastUpdate is in ticks, not seconds
+				setFilterNumber(TextHelper.parseDuration(raw) * 20);
 				setValid(true);
 				setRawValue(raw);
 			} catch (IllegalArgumentException ex) {
-				setFilterNumber(0);
+				setFilterNumber(0L);
 				setValid(false);
 			}
 		}
 	}
 
 	@Override
-	public String getFormatText() {
-		return "YYYY-MM-DD hh:mm:ss";
+	public String toString() {
+		return "LastUpdate " + getComparator().getQueryString() + " \"" + getRawValue() + "\"";
 	}
 
 	@Override
-	public String toString() {
-		return "LastUpdate " + getComparator().getQueryString() + " \"" + getRawValue() + "\"";
+	public String getFormatText() {
+		return "duration";
 	}
 
 	@Override

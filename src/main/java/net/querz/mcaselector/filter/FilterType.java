@@ -10,6 +10,7 @@ public enum FilterType {
 	INHABITED_TIME("InhabitedTime", InhabitedTimeFilter::new, Format.NUMBER),
 	X_POS("xPos", XPosFilter::new, Format.NUMBER),
 	Z_POS("zPos", ZPosFilter::new, Format.NUMBER),
+	TIMESTAMP("Timestamp", TimestampFilter::new, Format.NUMBER),
 	LAST_UPDATE("LastUpdate", LastUpdateFilter::new, Format.NUMBER),
 	PALETTE("Palette", PaletteFilter::new, Format.TEXT),
 	BIOME("Biome", BiomeFilter::new, Format.TEXT),

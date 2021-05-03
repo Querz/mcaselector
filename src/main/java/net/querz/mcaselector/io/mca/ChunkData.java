@@ -8,24 +8,14 @@ import java.util.List;
 
 public class ChunkData {
 
-	private final int lastUpdated;
 	private final RegionChunk region;
 	private final EntitiesChunk entities;
 	private final PoiChunk poi;
 
 	public ChunkData(RegionChunk region, PoiChunk poi, EntitiesChunk entities) {
-		this(0, region, poi, entities);
-	}
-
-	public ChunkData(int lastUpdated, RegionChunk region, PoiChunk poi, EntitiesChunk entities) {
-		this.lastUpdated = lastUpdated;
 		this.region = region;
 		this.entities = entities;
 		this.poi = poi;
-	}
-
-	public int getLastUpdated() {
-		return lastUpdated;
 	}
 
 	public RegionChunk getRegion() {
