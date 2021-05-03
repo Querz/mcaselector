@@ -12,7 +12,7 @@ public class LastUpdateParser extends OverlayParser {
 	private String maxDuration;
 
 	public LastUpdateParser() {
-		super(OverlayType.INHABITED_TIME);
+		super(OverlayType.LAST_UPDATE);
 	}
 
 	@Override
