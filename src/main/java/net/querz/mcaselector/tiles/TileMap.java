@@ -8,12 +8,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.Main;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
+import net.querz.mcaselector.io.net.server.message.WindowInteractMessage;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.DialogHelper;
@@ -26,7 +28,6 @@ import net.querz.mcaselector.progress.Timer;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -398,13 +399,15 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	public void update() {
 		Timer t = new Timer();
 
+		Main.client.sendEvent(new WindowInteractMessage(getWidth(), getHeight(), offset, scale));
+
 		// removes jobs from queue that are no longer needed
 		MCAFilePipe.validateJobs(j -> {
 			if (j instanceof RegionImageGenerator.MCAImageLoadJob) {
 				RegionImageGenerator.MCAImageLoadJob job = (RegionImageGenerator.MCAImageLoadJob) j;
 				if (!job.getTile().isVisible(this)) {
 					Debug.dumpf("removing %s for tile %s from queue", job.getClass().getSimpleName(), job.getTile().getLocation());
-					RegionImageGenerator.setLoading(job.getTile(), false);
+					RegionImageGenerator.setLoading(job.getTile().getLocation(), false);
 					return true;
 				}
 			} else if (j instanceof ParseDataJob) {
@@ -423,7 +426,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			if (!tile.isVisible(this, TILE_VISIBILITY_THRESHOLD)) {
 				visibleTiles.remove(tile);
 				// unload tile if it is currently loading neither the image nor the overlay
-				if (!RegionImageGenerator.isLoading(tile) && !ParseDataJob.isLoading(tile)) {
+				if (!RegionImageGenerator.isLoading(tile.getLocation()) && !ParseDataJob.isLoading(tile)) {
 					tile.unload(true);
 					if (!tile.isMarked() && tile.getMarkedChunks().size() == 0) {
 						tiles.remove(tile.getLocation());
@@ -535,7 +538,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	public List<Point2i> getVisibleRegions() {
 		List<Point2i> regions = new ArrayList<>();
-		runOnVisibleRegions(regions::add, new Point2f());
+		runOnVisibleRegions(regions::add, offset, scale, getWidth(), getHeight(), new Point2f());
 		return regions;
 	}
 
@@ -811,7 +814,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 			TileImage.draw(tile, ctx, scale, p, selectionInverted, overlayParser != null);
 
-		}, new Point2f());
+		}, offset, scale, getWidth(), getHeight(), new Point2f());
 
 		if (pastedChunks != null) {
 			runOnVisibleRegions(region -> {
@@ -819,7 +822,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getZ() / scale);
 				p = p.add(pastedChunksOffset.mul(16).div(scale).toPoint2f());
 				drawPastedChunks(ctx, region, p);
-			}, pastedChunksOffset.mul(16).toPoint2f());
+			}, offset, scale, getWidth(), getHeight(), pastedChunksOffset.mul(16).toPoint2f());
 		}
 
 		if (showRegionGrid) {
@@ -923,9 +926,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	//performs an action on regions in a spiral pattern starting from the center of all visible regions in the TileMap.
-	private void runOnVisibleRegions(Consumer<Point2i> consumer, Point2f additionalOffset) {
+	public static void runOnVisibleRegions(Consumer<Point2i> consumer, Point2f offset, float scale, double width, double height, Point2f additionalOffset) {
 		Point2i min = offset.sub(additionalOffset).toPoint2i().blockToRegion();
-		Point2i max = offset.sub(additionalOffset).add((float) getWidth() * scale, (float) getHeight() * scale).toPoint2i().blockToRegion();
+		Point2i max = offset.sub(additionalOffset).add((float) width * scale, (float) height * scale).toPoint2i().blockToRegion();
 
 		Point2i mid = min.regionToBlock().add(max.regionToBlock()).div(2).blockToRegion().regionToBlock().blockToRegion();
 		int dir = 0; //0 = right, 1 = down, 2 = left, 3 = up
@@ -966,6 +969,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			}
 			steps++;
 		}
+	}
+
+	public Tile getTile(Point2i region) {
+		return tiles.get(region);
 	}
 
 	public Window getWindow() {

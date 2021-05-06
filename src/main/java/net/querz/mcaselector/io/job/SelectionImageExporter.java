@@ -6,7 +6,7 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.io.ByteArrayReader;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.io.MCAFilePipe;
@@ -116,7 +116,7 @@ public class SelectionImageExporter {
 
 				RegionMCAFile mcaFile = new RegionMCAFile(regionFile);
 				try {
-					mcaFile.load(new ByteArrayPointer(data));
+					mcaFile.load(new ByteArrayReader(data));
 				} catch (IOException ex) {
 					progressChannel.incrementProgress(regionFile.getName());
 					return;

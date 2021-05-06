@@ -1,6 +1,6 @@
 package net.querz.mcaselector.io.mca;
 
-import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.io.ByteArrayReader;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.nbt.io.NBTDeserializer;
@@ -33,7 +33,7 @@ public abstract class Chunk {
 		this.absoluteLocation = absoluteLocation;
 	}
 
-	public void load(ByteArrayPointer ptr) throws IOException {
+	public void load(ByteArrayReader ptr) throws IOException {
 		int length = ptr.readInt();
 		compressionType = CompressionType.fromByte(ptr.readByte());
 		DataInputStream nbtIn = null;

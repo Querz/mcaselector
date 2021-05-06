@@ -1,7 +1,7 @@
 package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.io.ByteArrayReader;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
@@ -224,7 +224,7 @@ public abstract class MCAFile<T extends Chunk> {
 		}
 	}
 
-	public int[] load(ByteArrayPointer ptr) throws IOException {
+	public int[] load(ByteArrayReader ptr) throws IOException {
 		loadHeader(ptr);
 
 		Point2i origin = location.regionToChunk();
@@ -267,7 +267,7 @@ public abstract class MCAFile<T extends Chunk> {
 		}
 	}
 
-	public void loadHeader(ByteArrayPointer ptr) throws IOException {
+	public void loadHeader(ByteArrayReader ptr) throws IOException {
 		offsets = new int[1024];
 		sectors = new byte[1024];
 

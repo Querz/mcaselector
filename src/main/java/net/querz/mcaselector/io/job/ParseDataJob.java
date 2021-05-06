@@ -1,7 +1,7 @@
 package net.querz.mcaselector.io.job;
 
 import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.io.ByteArrayReader;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.EntitiesMCAFile;
@@ -66,7 +66,7 @@ public class ParseDataJob extends LoadDataJob {
 			regionMCAFile = new RegionMCAFile(getRegionDirectories().getRegion());
 			if (regionData != null) {
 				// load EntitiesMCAFile
-				ByteArrayPointer ptr = new ByteArrayPointer(regionData);
+				ByteArrayReader ptr = new ByteArrayReader(regionData);
 				try {
 					regionMCAFile.load(ptr);
 				} catch (IOException ex) {
@@ -81,7 +81,7 @@ public class ParseDataJob extends LoadDataJob {
 			entitiesMCAFile = new EntitiesMCAFile(getRegionDirectories().getEntities());
 			if (entitiesData != null) {
 				// load EntitiesMCAFile
-				ByteArrayPointer ptr = new ByteArrayPointer(entitiesData);
+				ByteArrayReader ptr = new ByteArrayReader(entitiesData);
 				try {
 					entitiesMCAFile.load(ptr);
 				} catch (IOException ex) {
@@ -96,7 +96,7 @@ public class ParseDataJob extends LoadDataJob {
 			poiMCAFile = new PoiMCAFile(getRegionDirectories().getPoi());
 			if (poiData != null) {
 				// load PoiMCAFile
-				ByteArrayPointer ptr = new ByteArrayPointer(poiData);
+				ByteArrayReader ptr = new ByteArrayReader(poiData);
 				try {
 					poiMCAFile.load(ptr);
 				} catch (IOException ex) {

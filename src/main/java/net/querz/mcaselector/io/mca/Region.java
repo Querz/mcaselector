@@ -3,7 +3,7 @@ package net.querz.mcaselector.io.mca;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.filter.Filter;
-import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.io.ByteArrayReader;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
@@ -28,14 +28,14 @@ public class Region {
 	public static Region loadRegion(RegionDirectories dirs, byte[] regionData, byte[] poiData, byte[] entitiesData) throws IOException {
 		Region r = new Region();
 		if (dirs.getRegion() != null && regionData != null) {
-			r.loadRegion(dirs.getRegion(), new ByteArrayPointer(regionData));
+			r.loadRegion(dirs.getRegion(), new ByteArrayReader(regionData));
 			r.location = dirs.getLocation();
 		}
 		if (dirs.getPoi() != null && poiData != null) {
-			r.loadPoi(dirs.getPoi(), new ByteArrayPointer(poiData));
+			r.loadPoi(dirs.getPoi(), new ByteArrayReader(poiData));
 		}
 		if (dirs.getEntities() != null && entitiesData != null) {
-			r.loadEntities(dirs.getEntities(), new ByteArrayPointer(entitiesData));
+			r.loadEntities(dirs.getEntities(), new ByteArrayReader(entitiesData));
 		}
 		r.directories = dirs;
 		return r;
@@ -60,15 +60,15 @@ public class Region {
 		Region r = new Region();
 		if (dirs.getRegion() != null && regionHeader != null) {
 			r.region = new RegionMCAFile(dirs.getRegion());
-			r.region.loadHeader(new ByteArrayPointer(regionHeader));
+			r.region.loadHeader(new ByteArrayReader(regionHeader));
 		}
 		if (dirs.getPoi() != null && poiHeader != null) {
 			r.poi = new PoiMCAFile(dirs.getPoi());
-			r.poi.loadHeader(new ByteArrayPointer(poiHeader));
+			r.poi.loadHeader(new ByteArrayReader(poiHeader));
 		}
 		if (dirs.getEntities() != null && entitiesHeader != null) {
 			r.entities = new EntitiesMCAFile(dirs.getEntities());
-			r.entities.loadHeader(new ByteArrayPointer(entitiesHeader));
+			r.entities.loadHeader(new ByteArrayReader(entitiesHeader));
 		}
 		r.directories = dirs;
 		return r;
@@ -105,7 +105,7 @@ public class Region {
 		region.load();
 	}
 
-	public void loadRegion(File src, ByteArrayPointer ptr) throws IOException {
+	public void loadRegion(File src, ByteArrayReader ptr) throws IOException {
 		region = new RegionMCAFile(src);
 		region.load(ptr);
 	}
@@ -115,7 +115,7 @@ public class Region {
 		poi.load();
 	}
 
-	public void loadPoi(File src, ByteArrayPointer ptr) throws IOException {
+	public void loadPoi(File src, ByteArrayReader ptr) throws IOException {
 		poi = new PoiMCAFile(src);
 		poi.load(ptr);
 	}
@@ -125,7 +125,7 @@ public class Region {
 		entities.load();
 	}
 
-	public void loadEntities(File src, ByteArrayPointer ptr) throws IOException {
+	public void loadEntities(File src, ByteArrayReader ptr) throws IOException {
 		entities = new EntitiesMCAFile(src);
 		entities.load(ptr);
 	}

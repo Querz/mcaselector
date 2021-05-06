@@ -3,7 +3,7 @@ package net.querz.mcaselector.io.job;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.io.ByteArrayReader;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.io.MCAFilePipe;
@@ -38,23 +38,23 @@ public class RegionImageGenerator {
 		MCAFilePipe.addJob(new MCAImageLoadJob(tile, world, callback, scaleSupplier, scaleOnly, progressChannel));
 	}
 
-	public static boolean isLoading(Tile tile) {
-		return loading.contains(tile.getLocation());
+	public static boolean isLoading(Point2i region) {
+		return loading.contains(region);
 	}
 
-	public static void setLoading(Tile tile, boolean loading) {
+	public static void setLoading(Point2i region, boolean loading) {
 		if (loading) {
-			RegionImageGenerator.loading.add(tile.getLocation());
+			RegionImageGenerator.loading.add(region);
 		} else {
-			RegionImageGenerator.loading.remove(tile.getLocation());
+			RegionImageGenerator.loading.remove(region);
 		}
 	}
 
-	private static void setSaving(Tile tile, boolean saving) {
+	private static void setSaving(Point2i region, boolean saving) {
 		if (saving) {
-			RegionImageGenerator.saving.add(tile.getLocation());
+			RegionImageGenerator.saving.add(region);
 		} else {
-			RegionImageGenerator.saving.remove(tile.getLocation());
+			RegionImageGenerator.saving.remove(region);
 		}
 	}
 
@@ -104,7 +104,7 @@ public class RegionImageGenerator {
 
 		@Override
 		public void cancel() {
-			setLoading(tile, false);
+			setLoading(tile.getLocation(), false);
 		}
 
 		public Tile getTile() {
@@ -140,7 +140,7 @@ public class RegionImageGenerator {
 			Timer t = new Timer();
 
 			File file = tile.getMCAFile();
-			ByteArrayPointer ptr = new ByteArrayPointer(getRegionData());
+			ByteArrayReader ptr = new ByteArrayReader(getRegionData());
 			RegionMCAFile mcaFile = new RegionMCAFile(file);
 			Image image = null;
 			try {
@@ -169,8 +169,8 @@ public class RegionImageGenerator {
 
 
 			if (image != null) {
-				setSaving(tile, true);
-				MCAFilePipe.executeSaveData(new MCAImageSaveCacheJob(image, mcaFile, tile, world, scaleSupplier, scaleOnly, progressChannel));
+				setSaving(tile.getLocation(), true);
+				MCAFilePipe.executeSaveData(new MCAImageSaveCacheJob(image, tile.getLocation(), world, scaleSupplier, scaleOnly, progressChannel));
 			} else {
 				if (progressChannel != null) {
 					progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
@@ -180,7 +180,7 @@ public class RegionImageGenerator {
 
 		@Override
 		public void cancel() {
-			setLoading(tile, false);
+			setLoading(tile.getLocation(), false);
 		}
 
 		public Tile getTile() {
@@ -188,19 +188,17 @@ public class RegionImageGenerator {
 		}
 	}
 
-	private static class MCAImageSaveCacheJob extends SaveDataJob<Image> {
+	public static class MCAImageSaveCacheJob extends SaveDataJob<Image> {
 
-		private final Tile tile;
-		private final RegionMCAFile mcaFile;
+		private final Point2i region;
 		private final UUID world;
 		private final Supplier<Float> scaleSupplier;
 		private final boolean scaleOnly;
 		private final Progress progressChannel;
 
-		private MCAImageSaveCacheJob(Image data, RegionMCAFile mcaFile, Tile tile, UUID world, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
-			super(new RegionDirectories(tile.getLocation(), null, null, null), data);
-			this.tile = tile;
-			this.mcaFile = mcaFile;
+		public MCAImageSaveCacheJob(Image data, Point2i region, UUID world, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
+			super(new RegionDirectories(region, null, null, null), data);
+			this.region = region;
 			this.world = world;
 			this.scaleSupplier = scaleSupplier;
 			this.scaleOnly = scaleOnly;
@@ -216,7 +214,7 @@ public class RegionImageGenerator {
 				BufferedImage img = SwingFXUtils.fromFXImage(getData(), null);
 				if (scaleOnly) {
 					int zoomLevel = Tile.getZoomLevel(scaleSupplier.get());
-					File cacheFile = FileHelper.createPNGFilePath(Config.getCacheDirForWorldUUID(world, zoomLevel), tile.getLocation());
+					File cacheFile = FileHelper.createPNGFilePath(Config.getCacheDirForWorldUUID(world, zoomLevel), region);
 					if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
 						Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
 					}
@@ -227,7 +225,7 @@ public class RegionImageGenerator {
 
 				} else {
 					for (int i = Config.getMinZoomLevel(); i <= Config.getMaxZoomLevel(); i *= 2) {
-						File cacheFile = FileHelper.createPNGFilePath(Config.getCacheDirForWorldUUID(world, i), tile.getLocation());
+						File cacheFile = FileHelper.createPNGFilePath(Config.getCacheDirForWorldUUID(world, i), region);
 						if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
 							Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
 						}
@@ -238,27 +236,27 @@ public class RegionImageGenerator {
 					}
 				}
 			} catch (IOException ex) {
-				Debug.dumpException("failed to save images to cache for " + tile.getLocation(), ex);
+				Debug.dumpException("failed to save images to cache for " + region, ex);
 			}
 
-			setSaving(tile, false);
+			setSaving(region, false);
 
-			Runnable r = onSaved.get(tile.getLocation());
+			Runnable r = onSaved.get(region);
 			if (r != null) {
 				r.run();
-				onSaved.remove(tile.getLocation());
+				onSaved.remove(region);
 			}
 
 			if (progressChannel != null) {
-				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
+				progressChannel.incrementProgress(FileHelper.createMCAFileName(region));
 			}
 
-			Debug.dumpf("took %s to cache image of %s to %s", t, tile.getMCAFile().getName(), FileHelper.createPNGFileName(tile.getLocation()));
+			Debug.dumpf("took %s to cache image of %s to %s", t, FileHelper.createMCAFileName(region), FileHelper.createPNGFileName(region));
 		}
 
 		@Override
 		public void cancel() {
-			setSaving(tile, false);
+			setSaving(region, false);
 		}
 	}
 }

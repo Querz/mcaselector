@@ -43,7 +43,7 @@ public final class ImagePool {
 		}
 
 		// skip if this tile is already loading
-		if (RegionImageGenerator.isLoading(tile)) {
+		if (RegionImageGenerator.isLoading(tile.getLocation())) {
 			return;
 		}
 
@@ -69,9 +69,9 @@ public final class ImagePool {
 		} else {
 			Debug.dump("image does not exist: " + cachedImgFile.getAbsolutePath());
 
-			RegionImageGenerator.setLoading(tile, true);
+			RegionImageGenerator.setLoading(tile.getLocation(), true);
 			RegionImageGenerator.generate(tile, Config.getWorldUUID(), (i, u) -> Platform.runLater(() -> {
-				RegionImageGenerator.setLoading(tile, false);
+				RegionImageGenerator.setLoading(tile.getLocation(), false);
 				if (u.equals(Config.getWorldUUID())) {
 					// check if scale is still correct
 					tile.setImage(i);
@@ -91,14 +91,14 @@ public final class ImagePool {
 	}
 
 	private void loadImageFromDiskCache(Tile tile, File cachedImgFile, int scale) {
-		RegionImageGenerator.setLoading(tile, true);
+		RegionImageGenerator.setLoading(tile.getLocation(), true);
 
 		Image cachedImg = new Image(cachedImgFile.toURI().toString(), true);
 		cachedImg.progressProperty().addListener((v, o, n) -> {
 			if (n.intValue() == 1) {
 				// run the following on the JavaFX main thread because concurrency
 				Platform.runLater(() -> {
-					RegionImageGenerator.setLoading(tile, false);
+					RegionImageGenerator.setLoading(tile.getLocation(), false);
 					if (cachedImg.isError()) {
 						tile.setImage(null);
 						tile.setLoaded(true);

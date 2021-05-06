@@ -5,6 +5,8 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import net.querz.mcaselector.Main;
+import net.querz.mcaselector.io.net.client.message.RegionImageMessage;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.ui.dialog.PreviewDisclaimerDialog;
@@ -37,6 +39,8 @@ public class Window extends Application {
 		primaryStage.getIcons().add(FileHelper.getIconFromResources("img/icon"));
 
 		TileMap tileMap = new TileMap(this, width, height);
+
+		Main.client.getMessageEventHandler().registerEvent(new RegionImageMessage(tileMap));
 
 		BorderPane pane = new BorderPane();
 

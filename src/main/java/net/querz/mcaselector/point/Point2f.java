@@ -115,4 +115,8 @@ public class Point2f implements Cloneable {
 		}
 		return null;
 	}
+
+	public long asLong() {
+		return (long) (Float.floatToIntBits(x)) << 32 | Float.floatToIntBits(y) & 0xFFFFFFFFL;
+	}
 }

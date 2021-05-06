@@ -2,7 +2,7 @@ package net.querz.mcaselector.io.job;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.io.ByteArrayReader;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.RegionDirectories;
@@ -403,7 +403,7 @@ public class ChunkImporter {
 
 				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMappingRegion.entrySet()) {
 					RegionMCAFile source = new RegionMCAFile(new File(sourceDirs.getRegion(), FileHelper.createMCAFileName(sourceData.getKey())));
-					source.load(new ByteArrayPointer(sourceData.getValue()));
+					source.load(new ByteArrayReader(sourceData.getValue()));
 
 					Debug.dumpf("merging region chunks from %s into %s", sourceData.getKey(), target);
 
@@ -416,7 +416,7 @@ public class ChunkImporter {
 
 				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMappingPoi.entrySet()) {
 					PoiMCAFile source = new PoiMCAFile(new File(sourceDirs.getPoi(), FileHelper.createMCAFileName(sourceData.getKey())));
-					source.load(new ByteArrayPointer(sourceData.getValue()));
+					source.load(new ByteArrayReader(sourceData.getValue()));
 
 					Debug.dumpf("merging poi chunks from %s into %s", sourceData.getKey(), target);
 
@@ -429,7 +429,7 @@ public class ChunkImporter {
 
 				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMappingEntities.entrySet()) {
 					EntitiesMCAFile source = new EntitiesMCAFile(new File(sourceDirs.getEntities(), FileHelper.createMCAFileName(sourceData.getKey())));
-					source.load(new ByteArrayPointer(sourceData.getValue()));
+					source.load(new ByteArrayReader(sourceData.getValue()));
 
 					Debug.dumpf("merging entities chunks from %s into %s", sourceData.getKey(), target);
 
