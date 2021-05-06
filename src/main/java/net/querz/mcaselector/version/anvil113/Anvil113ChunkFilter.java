@@ -115,7 +115,10 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 			}
 			for (CompoundTag p : palette) {
 				String n;
-				if ((n = withDefault(() -> p.getString("Name"), null)) != null && !n.equals("minecraft:air")) {
+				if ((n = withDefault(() -> p.getString("Name"), null)) != null) {
+					if (!names.contains(n)) {
+						return false;
+					}
 					blocks.add(n);
 				}
 			}

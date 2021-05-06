@@ -187,9 +187,6 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 			blockLoop:
 			for (int i = 0; i < blockBytes.length; i++) {
 				short b = (short) (blockBytes[i] & 0xFF);
-				if (b == 0) {
-					continue;
-				}
 				for (BlockData d : blockData) {
 					if (b == d.id) {
 						byte dataByte = (byte) (i % 2 == 0 ? dataBits[i / 2] & 0x0F : (dataBits[i / 2] >> 4) & 0x0F);
