@@ -2,7 +2,7 @@ acacia_button;a85a32
 acacia_door;a75f3c
 acacia_fence;a85a32
 acacia_fence_gate;a85a32
-acacia_leaves;0e6f00
+acacia_leaves;959494;f
 acacia_log;965837
 acacia_planks;a85a32
 acacia_pressure_plate;a85a32
@@ -71,7 +71,7 @@ birch_button;c0af79
 birch_door;dcd1b0
 birch_fence;c0af79
 birch_fence_gate;c0af79
-birch_leaves;0c6000
+birch_leaves;41542b
 birch_log;c1b387
 birch_planks;c0af79
 birch_pressure_plate;c0af79
@@ -317,7 +317,7 @@ dark_oak_button;422b14
 dark_oak_door;4c3319
 dark_oak_fence;422b14
 dark_oak_fence_gate;422b14
-dark_oak_leaves;0e7000
+dark_oak_leaves;969696;f
 dark_oak_log;402a15
 dark_oak_planks;422b14
 dark_oak_pressure_plate;422b14
@@ -365,7 +365,7 @@ deepslate_diamond_ore;536a6a
 deepslate_emerald_ore;4e6857
 deepslate_gold_ore;73664e
 deepslate_iron_ore;6a635e
-deepslate_lapis_ore;505a73
+deepslate_lapis_ore;4f5a73
 deepslate_redstone_ore;68494a
 deepslate_tile_slab;363637
 deepslate_tile_stairs;363637
@@ -433,7 +433,7 @@ farmland:moisture=4;8f6646
 farmland:moisture=5;8f6646
 farmland:moisture=6;8f6646
 farmland:moisture=7;512c0f
-fern;344934
+fern;7c7c7c;g
 fire;d38c35
 fire_coral;a6252e
 fire_coral_block;a3232e
@@ -458,8 +458,8 @@ granite;956755
 granite_slab;956755
 granite_stairs;956755
 granite_wall;956755
-grass;3d553d
-grass_block;3e563e
+grass;919191;g
+grass_block;939393;g
 gravel;837f7e
 gray_banner;a2824e
 gray_bed;a2824e
@@ -520,7 +520,7 @@ jungle_button;a07350
 jungle_door;a37754
 jungle_fence;a07350
 jungle_fence_gate;a07350
-jungle_leaves;0f7300
+jungle_leaves;9c9a8f;f
 jungle_log;956d46
 jungle_planks;a07350
 jungle_pressure_plate;a07350
@@ -536,10 +536,10 @@ kelp_plant;56822a
 ladder;7c6036
 lantern;6a5b53
 lapis_block;1e438c
-lapis_ore;6a758d
+lapis_ore;6b758d
 large_amethyst_bud;a17eca
-large_fern:half=lower;374d37
-large_fern:half=upper;354a35
+large_fern:half=lower;838383;g
+large_fern:half=upper;7d7d7d;g
 lava;d45a12
 lava_cauldron;49484a
 lectern;ad8953
@@ -589,7 +589,7 @@ lightning_rod:facing=west,powered=true;ffffff
 lilac:half=lower;897c7e
 lilac:half=upper;9a7d93
 lily_of_the_valley;7bae5f
-lily_pad;0d6300
+lily_pad;104218
 lime_banner;a2824e
 lime_bed;a2824e
 lime_candle;62ab16
@@ -623,7 +623,7 @@ magenta_wool;bd44b3
 magma_block;8e3f1f
 medium_amethyst_bud;9e78c9
 melon;6f901e
-melon_stem;0f7200
+melon_stem;999999;g
 moss_block;596d2d
 moss_carpet;596d2d
 mossy_cobblestone;6e765e
@@ -659,7 +659,7 @@ oak_button;a2824e
 oak_door;8b6e41
 oak_fence;a2824e
 oak_fence_gate;a2824e
-oak_leaves;0e6b00
+oak_leaves;909090;f
 oak_log;977949
 oak_planks;a2824e
 oak_pressure_plate;a2824e
@@ -811,7 +811,7 @@ prismarine_slab;639c97
 prismarine_stairs;639c97
 prismarine_wall;639c97
 pumpkin;c67618
-pumpkin_stem;0f7300
+pumpkin_stem;9a9a9a;g
 purple_banner;a2824e
 purple_bed;a2824e
 purple_candle;69229f
@@ -845,6 +845,9 @@ rail:shape=north_south;7d6f58
 rail:shape=north_west;827359
 rail:shape=south_east;827359
 rail:shape=south_west;827359
+raw_copper_block;9a694f
+raw_gold_block;dda92e
+raw_iron_block;a6876b
 red_banner;a2824e
 red_bed;a2824e
 red_candle;992624
@@ -1031,7 +1034,7 @@ spruce_button;725430
 spruce_door;6a5030
 spruce_fence;725430
 spruce_fence_gate;725430
-spruce_leaves;0c5d00
+spruce_leaves;2f4b2f
 spruce_log;6c502e
 spruce_planks;725430
 spruce_pressure_plate;725430
@@ -1081,8 +1084,8 @@ sweet_berry_bush:age=0;2a5938
 sweet_berry_bush:age=1;2f5e39
 sweet_berry_bush:age=2;3b5838
 sweet_berry_bush:age=3;444d32
-tall_grass:half=lower;364b36
-tall_grass:half=upper;405740
+tall_grass:half=lower;808080;g
+tall_grass:half=upper;979597;g
 tall_seagrass:half=lower;2d7504
 tall_seagrass:half=upper;3b8b0e
 target;e2aa9d
@@ -1112,7 +1115,7 @@ turtle_egg:eggs=4,hatch=1;e4e2bf
 turtle_egg:eggs=4,hatch=2;e4e2bf
 twisting_vines;148f7c
 twisting_vines_plant;14877a
-vine;0b5600
+vine;747474;f
 wall_torch;8a713f
 warped_button;2b6863
 warped_door;2c7e78
