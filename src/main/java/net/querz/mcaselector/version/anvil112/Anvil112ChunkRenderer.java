@@ -26,8 +26,10 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 				byte[] biomes = withDefault(() -> root.getCompoundTag("Level").getByteArray("Biomes"), null);
 				int biome = -1;
 				if (biomes != null && biomes.length != 0) {
-					biome = biomes[getBlockIndex(cx, 0, cz)];
+					biome = biomes[getBlockIndex(cx, 0, cz)] & 0xFF;
 				}
+
+				biome = Math.max(0, biome);
 
 				boolean waterDepth = false;
 				//loop over sections
@@ -64,17 +66,17 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
 							if (water) {
 								if (!waterDepth) {
-									pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
+									pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData), biome) | 0xFF000000;
 									waterHeights[regionIndex] = (short) (sectionHeight + cy);
 								}
 								if (isWater(block)) {
 									waterDepth = true;
 									continue;
 								} else {
-									waterPixels[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
+									waterPixels[regionIndex] = colorMapping.getRGB(((block << 4) + blockData), biome) | 0xFF000000;
 								}
 							} else {
-								pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData)) | 0xFF000000;
+								pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData), biome) | 0xFF000000;
 							}
 							terrainHeights[regionIndex] = (short) (sectionHeight + cy);
 							continue zLoop;

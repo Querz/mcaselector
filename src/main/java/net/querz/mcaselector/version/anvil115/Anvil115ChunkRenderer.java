@@ -74,6 +74,7 @@ public class Anvil115ChunkRenderer implements ChunkRenderer {
 						CompoundTag blockData = palette.get(paletteIndex);
 
 						int biome = getBiomeAtBlock(biomes, cx, sectionHeight + cy, cz);
+						biome = Math.max(0, Math.min(255, biome));
 
 						//ignore bedrock and netherrack until 75
 						if (isIgnoredInNether(biome, blockData, sectionHeight + cy)) {
@@ -84,23 +85,23 @@ public class Anvil115ChunkRenderer implements ChunkRenderer {
 							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
 							if (water) {
 								if (!waterDepth) {
-									pixelBuffer[regionIndex] = colorMapping.getRGB(blockData) | 0xFF000000; // water color
+									pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome) | 0xFF000000; // water color
 									waterHeights[regionIndex] = (short) (sectionHeight + cy); // height of highest water or terrain block
 								}
 								if (isWater(blockData)) {
 									waterDepth = true;
 									continue;
 								} else if (isWaterlogged(blockData)) {
-									pixelBuffer[regionIndex] = colorMapping.getRGB(waterDummy) | 0xFF000000; // water color
-									waterPixels[regionIndex] = colorMapping.getRGB(blockData) | 0xFF000000; // color of waterlogged block
+									pixelBuffer[regionIndex] = colorMapping.getRGB(waterDummy, biome) | 0xFF000000; // water color
+									waterPixels[regionIndex] = colorMapping.getRGB(blockData, biome) | 0xFF000000; // color of waterlogged block
 									waterHeights[regionIndex] = (short) (sectionHeight + cy);
 									terrainHeights[regionIndex] = (short) (sectionHeight + cy - 1); // "height" of bottom of water, which will just be 1 block lower so shading works
 									continue zLoop;
 								} else {
-									waterPixels[regionIndex] = colorMapping.getRGB(blockData) | 0xFF000000; // color of block at bottom of water
+									waterPixels[regionIndex] = colorMapping.getRGB(blockData, biome) | 0xFF000000; // color of block at bottom of water
 								}
 							} else {
-								pixelBuffer[regionIndex] = colorMapping.getRGB(blockData) | 0xFF000000;
+								pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome) | 0xFF000000;
 							}
 							terrainHeights[regionIndex] = (short) (sectionHeight + cy); // height of bottom of water
 							continue zLoop;

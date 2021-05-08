@@ -1134,7 +1134,7 @@ warped_stem;396767
 warped_trapdoor;2f776f
 warped_wall_sign;2b6863
 warped_wart_block;167779
-water;2e43f4
+water;b0b0b0
 water_cauldron;49484a
 waxed_copper_block;c06b4f
 waxed_cut_copper;bf6a50
