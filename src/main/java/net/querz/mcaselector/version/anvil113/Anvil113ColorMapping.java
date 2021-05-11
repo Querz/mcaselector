@@ -16,6 +16,8 @@ public class Anvil113ColorMapping implements ColorMapping {
 
 	//value can either be an Integer (color) or a BlockStateMapping
 	private final Map<String, Object> mapping = new TreeMap<>();
+	private final Set<String> grass = new HashSet<>();
+	private final Set<String> foliage = new HashSet<>();
 
 	public Anvil113ColorMapping() {
 		// note_block:pitch=1,powered=true,instrument=flute;01ab9f
@@ -25,7 +27,7 @@ public class Anvil113ColorMapping implements ColorMapping {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				String[] elements = line.split(";");
-				if (elements.length != 2) {
+				if (elements.length < 2 || elements.length > 3) {
 					Debug.dumpf("invalid line in color file: \"%s\"", line);
 					continue;
 				}
@@ -37,11 +39,12 @@ public class Anvil113ColorMapping implements ColorMapping {
 				Integer color = TextHelper.parseInt(elements[1], 16);
 				if (color == null || color < 0x0 || color > 0xFFFFFF) {
 					Debug.dumpf("invalid color code in color file: \"%s\"", elements[1]);
+					continue;
 				}
 
 				if (blockData.length == 1) {
 					//default block color, set value to Integer color
-					mapping.put("minecraft:" + blockData[0], color);
+					mapping.put("minecraft:" + blockData[0], color | 0xFF000000);
 				} else {
 					BlockStateMapping bsm;
 					if (mapping.containsKey("minecraft:" + blockData[0])) {
@@ -51,7 +54,19 @@ public class Anvil113ColorMapping implements ColorMapping {
 						mapping.put("minecraft:" + blockData[0], bsm);
 					}
 					Set<String> conditions = new HashSet<>(Arrays.asList(blockData[1].split(",")));
-					bsm.blockStateMapping.put(conditions, color);
+					bsm.blockStateMapping.put(conditions, color | 0xFF000000);
+				}
+				if (elements.length == 3) {
+					switch (elements[2]) {
+						case "g":
+							grass.add("minecraft:" + blockData[0]);
+							break;
+						case "f":
+							foliage.add("minecraft:" + blockData[0]);
+							break;
+						default:
+							throw new RuntimeException("invalid grass / foliage type " + elements[2]);
+					}
 				}
 			}
 		} catch (IOException ex) {
@@ -60,14 +75,27 @@ public class Anvil113ColorMapping implements ColorMapping {
 	}
 
 	@Override
-	public int getRGB(Object o) {
-		Object value = mapping.get(withDefault(() -> ((CompoundTag) o).getString("Name"), ""));
+	public int getRGB(Object o, int biome) {
+		String name = withDefault(() -> ((CompoundTag) o).getString("Name"), "");
+		Object value = mapping.get(name);
 		if (value instanceof Integer) {
-			return (int) value;
+			return applyBiomeTint(name, biome, (int) value);
 		} else if (value instanceof BlockStateMapping) {
-			return ((BlockStateMapping) value).getColor(withDefault(() -> ((CompoundTag) o).getCompoundTag("Properties"), null));
+			int color = ((BlockStateMapping) value).getColor(withDefault(() -> ((CompoundTag) o).getCompoundTag("Properties"), null));
+			return applyBiomeTint(name, biome, color);
 		}
-		return 0x000000;
+		return 0xFF000000;
+	}
+
+	private int applyBiomeTint(String name, int biome, int color) {
+		if (grass.contains(name)) {
+			return applyTint(color, biomeGrassTints[biome]);
+		} else if (foliage.contains(name)) {
+			return applyTint(color, biomeFoliageTints[biome]);
+		} else if (name.equals("minecraft:water")) {
+			return applyTint(color, biomeWaterTints[biome]);
+		}
+		return color;
 	}
 
 	private static class BlockStateMapping {
