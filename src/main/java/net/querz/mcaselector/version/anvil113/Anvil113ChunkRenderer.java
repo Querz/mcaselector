@@ -34,7 +34,21 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 			return;
 		}
 
-		sections.sort(this::filterSections);
+		@SuppressWarnings("unchecked")
+		ListTag<CompoundTag>[] palettes = (ListTag<CompoundTag>[]) new ListTag[16];
+		long[][] blockStatesArray = new long[16][];
+		sections.forEach(s -> {
+			if (!s.containsKey("Palette") || !s.containsKey("BlockStates")) {
+				return;
+			}
+			ListTag<CompoundTag> p = withDefault(() -> s.getListTag("Palette").asCompoundTagList(), null);
+			int y = withDefault(() -> s.getNumber("Y").intValue(), -1);
+			long[] b = withDefault(() -> s.getLongArray("BlockStates"), null);
+			if (y >= 0 && y < 16 && p != null && b != null) {
+				palettes[y] = p;
+				blockStatesArray[y] = b;
+			}
+		});
 
 		int[] biomes = withDefault(() -> level.getIntArray("Biomes"), null);
 
@@ -47,29 +61,17 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 
 				//loop over sections
 				boolean waterDepth = false;
-				for (int i = 0; i < sections.size(); i++) {
-					final int si = i;
-					CompoundTag section;
-					ListTag<?> rawPalette;
-					ListTag<CompoundTag> palette;
-					if ((section = sections.get(si)) == null
-							|| (rawPalette = section.getListTag("Palette")) == null
-							|| (palette = rawPalette.asCompoundTagList()) == null) {
-						continue;
-					}
-					long[] blockStates = withDefault(() -> sections.get(si).getLongArray("BlockStates"), null);
-					if (blockStates == null) {
+				for (int i = palettes.length - 1; i >= 0; i--) {
+					if (blockStatesArray[i] == null) {
 						continue;
 					}
 
-					Byte height = withDefault(() -> sections.get(si).getByte("Y"), null);
-					if (height == null) {
-						continue;
-					}
+					long[] blockStates = blockStatesArray[i];
+					ListTag<CompoundTag> palette = palettes[i];
 
-					int sectionHeight = height * 16;
+					int sectionHeight = i * Tile.CHUNK_SIZE;
 
-					int bits = blockStates.length / 64;
+					int bits = blockStates.length >> 6;
 					int clean = ((int) Math.pow(2, bits) - 1);
 
 					for (int cy = Tile.CHUNK_SIZE - 1; cy >= 0; cy--) {
@@ -85,23 +87,23 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
 							if (water) {
 								if (!waterDepth) {
-									pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome) | 0xFF000000; // water color
+									pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome); // water color
 									waterHeights[regionIndex] = (short) (sectionHeight + cy); // height of highest water or terrain block
 								}
 								if (isWater(blockData)) {
 									waterDepth = true;
 									continue;
 								} else if (isWaterlogged(blockData)) {
-									pixelBuffer[regionIndex] = colorMapping.getRGB(waterDummy, biome) | 0xFF000000; // water color
-									waterPixels[regionIndex] = colorMapping.getRGB(blockData, biome) | 0xFF000000; // color of waterlogged block
+									pixelBuffer[regionIndex] = colorMapping.getRGB(waterDummy, biome); // water color
+									waterPixels[regionIndex] = colorMapping.getRGB(blockData, biome); // color of waterlogged block
 									waterHeights[regionIndex] = (short) (sectionHeight + cy);
 									terrainHeights[regionIndex] = (short) (sectionHeight + cy - 1); // "height" of bottom of water, which will just be 1 block lower so shading works
 									continue zLoop;
 								} else {
-									waterPixels[regionIndex] = colorMapping.getRGB(blockData, biome) | 0xFF000000; // color of block at bottom of water
+									waterPixels[regionIndex] = colorMapping.getRGB(blockData, biome); // color of block at bottom of water
 								}
 							} else {
-								pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome) | 0xFF000000;
+								pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome);
 							}
 							terrainHeights[regionIndex] = (short) (sectionHeight + cy); // height of bottom of water
 							continue zLoop;
@@ -134,7 +136,7 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 
 	private boolean isIgnoredInNether(int biome, CompoundTag blockData, int height) {
 		if (biome == 8) {
-			switch (withDefault(() -> blockData.getString("Name"), "")) {
+			switch (blockData.getString("Name")) {
 				case "minecraft:bedrock":
 				case "minecraft:flowing_lava":
 				case "minecraft:lava":
@@ -147,7 +149,7 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 	}
 
 	private boolean isEmpty(CompoundTag blockData) {
-		switch (withDefault(() -> blockData.getString("Name"), "")) {
+		switch (blockData.getString("Name")) {
 			case "minecraft:air":
 			case "minecraft:cave_air":
 			case "minecraft:barrier":

@@ -39,8 +39,9 @@ public class Anvil112ColorMapping implements ColorMapping {
 				Integer color = TextHelper.parseInt(elements[2], 16);
 				if (color == null || color < 0x0 || color > 0xFFFFFF) {
 					Debug.dumpf("invalid color code in color file: \"%s\"", elements[2]);
+					continue;
 				}
-				mapping.put((id << 4) + data, color);
+				mapping.put((id << 4) + data, color | 0xFF000000);
 
 				if (elements.length == 4) {
 					switch (elements[3]) {
@@ -62,7 +63,7 @@ public class Anvil112ColorMapping implements ColorMapping {
 
 	@Override
 	public int getRGB(Object blockID, int biome) {
-		return applyBiomeTint((int) blockID >> 4, biome, mapping.getOrDefault((int) blockID, 0x000000));
+		return applyBiomeTint((int) blockID >> 4, biome, mapping.getOrDefault((int) blockID, 0xFF000000));
 	}
 
 	private int applyBiomeTint(int id, int biome, int color) {

@@ -13,10 +13,10 @@ public interface ColorMapping {
 	int getRGB(Object o, int biome);
 
 	default int applyTint(int color, int tint) {
-		int nr = (tint >> 16 & 0xFF) * (color >> 16 & 0xFF) / 255;
-		int ng = (tint >> 8 & 0xFF) * (color >> 8 & 0xFF) / 255;
-		int nb = (tint & 0xFF) * (color & 0xFF) / 255;
-		return nr << 16 | ng << 8 | nb;
+		int nr = (tint >> 16 & 0xFF) * (color >> 16 & 0xFF) >> 8;
+		int ng = (tint >> 8 & 0xFF) * (color >> 8 & 0xFF) >> 8;
+		int nb = (tint & 0xFF) * (color & 0xFF) >> 8;
+		return color & 0xFF000000 | nr << 16 | ng << 8 | nb;
 	}
 
 	int[] biomeGrassTints = new int[256];

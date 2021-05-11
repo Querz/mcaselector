@@ -16,14 +16,29 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 		if (sections == null) {
 			return;
 		}
-		sections.sort(this::filterSections);
+
+		byte[][] blocksArray = new byte[16][];
+		byte[][] dataArray = new byte[16][];
+		sections.forEach(s -> {
+			if (!s.containsKey("Blocks") || !s.containsKey("Data")) {
+				return;
+			}
+			int y = withDefault(() -> s.getNumber("Y").intValue(), -1);
+			byte[] b = withDefault(() -> s.getByteArray("Blocks"), null);
+			byte[] d = withDefault(() -> s.getByteArray("Data"), null);
+			if (y >= 0 && y < 16 && b != null && d != null) {
+				blocksArray[y] = b;
+				dataArray[y] = d;
+			}
+		});
+
+		byte[] biomes = withDefault(() -> root.getCompoundTag("Level").getByteArray("Biomes"), null);
 
 		//loop over x / z
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
 
-				byte[] biomes = withDefault(() -> root.getCompoundTag("Level").getByteArray("Biomes"), null);
 				int biome = -1;
 				if (biomes != null && biomes.length != 0) {
 					biome = biomes[getBlockIndex(cx, 0, cz)] & 0xFF;
@@ -33,22 +48,15 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 
 				boolean waterDepth = false;
 				//loop over sections
-				for (int i = 0; i < sections.size(); i++) {
-					CompoundTag section = sections.get(i);
-					byte[] blocks = withDefault(() -> section.getByteArray("Blocks"), null);
-					if (blocks == null) {
-						continue;
-					}
-					byte[] data = withDefault(() -> section.getByteArray("Data"), null);
-					if (data == null) {
+				for (int i = blocksArray.length - 1; i >= 0; i--) {
+					if (blocksArray[i] == null) {
 						continue;
 					}
 
-					Integer height = withDefault(() -> section.getNumber("Y").intValue(), null);
-					if (height == null || height > 15 || height < 0) {
-						continue;
-					}
-					int sectionHeight = height * 16;
+					byte[] blocks = blocksArray[i];
+					byte[] data = dataArray[i];
+
+					int sectionHeight = i * Tile.CHUNK_SIZE;
 
 					//loop over y value in section from top to bottom
 					for (int cy = Tile.CHUNK_SIZE - 1; cy >= 0; cy--) {
@@ -66,17 +74,17 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
 							if (water) {
 								if (!waterDepth) {
-									pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData), biome) | 0xFF000000;
+									pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData), biome);
 									waterHeights[regionIndex] = (short) (sectionHeight + cy);
 								}
 								if (isWater(block)) {
 									waterDepth = true;
 									continue;
 								} else {
-									waterPixels[regionIndex] = colorMapping.getRGB(((block << 4) + blockData), biome) | 0xFF000000;
+									waterPixels[regionIndex] = colorMapping.getRGB(((block << 4) + blockData), biome);
 								}
 							} else {
-								pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData), biome) | 0xFF000000;
+								pixelBuffer[regionIndex] = colorMapping.getRGB(((block << 4) + blockData), biome);
 							}
 							terrainHeights[regionIndex] = (short) (sectionHeight + cy);
 							continue zLoop;
@@ -116,9 +124,5 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 
 	private int getBlockIndex(int x, int y, int z) {
 		return y * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + z * Tile.CHUNK_SIZE + x;
-	}
-
-	private int filterSections(CompoundTag sectionA, CompoundTag sectionB) {
-		return withDefault(() -> sectionB.getNumber("Y").intValue(), -1) - withDefault(() -> sectionA.getNumber("Y").intValue(), -1);
 	}
 }

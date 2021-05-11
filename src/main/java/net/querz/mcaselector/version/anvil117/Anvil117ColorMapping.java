@@ -45,11 +45,12 @@ public class Anvil117ColorMapping implements ColorMapping {
 				Integer color = TextHelper.parseInt(elements[1], 16);
 				if (color == null || color < 0x0 || color > 0xFFFFFF) {
 					Debug.dumpf("invalid color code in color file: \"%s\"", elements[1]);
+					continue;
 				}
 
 				if (blockData.length == 1) {
 					//default block color, set value to Integer color
-					mapping.put("minecraft:" + blockData[0], color);
+					mapping.put("minecraft:" + blockData[0], color | 0xFF000000);
 				} else {
 					BlockStateMapping bsm;
 					if (mapping.containsKey("minecraft:" + blockData[0])) {
@@ -59,7 +60,7 @@ public class Anvil117ColorMapping implements ColorMapping {
 						mapping.put("minecraft:" + blockData[0], bsm);
 					}
 					Set<String> conditions = new HashSet<>(Arrays.asList(blockData[1].split(",")));
-					bsm.blockStateMapping.put(conditions, color);
+					bsm.blockStateMapping.put(conditions, color | 0xFF000000);
 				}
 				if (elements.length == 3) {
 					switch (elements[2]) {
@@ -89,7 +90,7 @@ public class Anvil117ColorMapping implements ColorMapping {
 			int color = ((BlockStateMapping) value).getColor(withDefault(() -> ((CompoundTag) o).getCompoundTag("Properties"), null));
 			return applyBiomeTint(name, biome, color);
 		}
-		return 0x000000;
+		return 0xFF000000;
 	}
 
 	private int applyBiomeTint(String name, int biome, int color) {
