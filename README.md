@@ -35,6 +35,7 @@
   * [Change values](#change-values)
 * [Checkout and building](#checkout-and-building)
 * [Translation](#translation)
+* [Sponsoring](#sponsoring)
 * [Download and installation](#download-and-installation)
   * [What works on most systems](#what-works-on-most-systems)
   * [If you have Minecraft Java Edition installed](#if-you-have-minecraft-java-edition-installed)
@@ -84,8 +85,9 @@ Because the conditions use internal values used by Minecraft, the following tabl
 | Group | - | Groups multiple conditions. |
 | Not Group | - | A negated group. |
 | DataVersion | int | The DataVersion tag of the chunk. 100-1343 for 1.12.2 and below, 1444 for 1.13 snapshots and above. |
-| InhabitedTime | long | The total amount of time in game-ticks players have spent in that chunk. 1 second ~20 ticks. Also accepts a duration string such as `1 year 2 months 3 days 4 hours 5 minutes 6 seconds`. |
-| LastUpdate | int | The time a chunk was last updated in seconds since 1970-01-01. Also accepts a timestamp in the `yyyy-MM-dd HH-mm-ss`-format such as `2018-01-02 15:03:04`. If the time is omitted, it will default to `00:00:00`. |
+| InhabitedTime | long | The total amount of time in game-ticks players have spent in that chunk. 1 second is ~20 ticks. Also accepts a duration string such as `1 year 2 months 3 days 4 hours 5 minutes 6 seconds`. |
+| Timestamp | int | The time a chunk was last saved in epoch seconds. Also accepts a timestamp in the `yyyy-MM-dd HH-mm-ss`-format such as `2018-01-02 15:03:04`. If the time is omitted, it will default to `00:00:00`. |
+| LastUpdate | long | The time a chunk was last saved in ticks since world creation. 1 second is ~20 ticks. Also accepts a duration string such as `1 year 2 months 3 days 4 hours 5 minutes 6 seconds`. |
 | xPos | int | The location of the chunk on the x-axis in chunk coordinates. |
 | zPos | int | The location of the chunk on the z-axis in chunk coordinates. |
 | Palette | String | A list of comma (,) separated 1.13 block names. The block names will be converted to block ids for chunks with DataVersion 1343 or below. The validation of block names can be skipped by writing them in single quotes ('). Example: `sand,'new_block',gravel`.|
@@ -118,7 +120,8 @@ You can change the following values:
 | LightPopulated | byte | Whether the light levels for the chunk have been calculated. If this is set to `0`, converting a world from 1.12.x to 1.13 will omit that chunk. Allowed values are `0` and `1` |
 | DataVersion | int | Allows to change the DataVersion of the chunks. Should be used with extreme care. |
 | InhabitedTime | long | This field stores the amount of game-ticks players have spent in a chunk. Impacts the local difficulty. |
-| LastUpdate | long | Stores a timestamp when this chunk was last updated in Milliseconds. |
+| LastUpdate | long | The time in ticks since world creation when the chunk was last saved. |
+| Timestamp | int | The time in epoch seconds when the chunk was last saved. |
 | Status | String | The status of the chunk generation. Only recognized by Minecraft 1.13+ (DataVersion 1444+) |
 | Biome | String/int | A biome name or ID. This sets all biomes of this chunk to a single biome. For a reference of biome names and IDs, have a look at the [Wiki](https://minecraft.gamepedia.com/Java_Edition_data_values#Biomes). Custom biomes can be specified by using single quotes (') around a biome ID. |
 | ReplaceBlocks | String | A comma separated list of block replacements in the format `<block-name>=<block-name\|block-nbt>[;<tile-nbt>]`. Custom block names can be specified by surrounding them with single quotes. |
@@ -208,7 +211,7 @@ The MCA Selector currently supports the following Minecraft versions:
 | 1.14 - 1.14.4     | 1901 - 1976 |
 | 1.15 - 1.15.2     | 2200 - 2230 |
 | 1.16 - 1.16.5     | 2566 - 2586 |
-| Snapshot 21w14a   | 2706 |
+| Snapshot 21w18a   | 2718 |
 
 There is no guarantee for worlds generated in a Snapshot version to work, even if it is specified in the table above. This only represents the current development status towards the next Minecraft release. Old Snapshots of past Minecraft releases are not supported.
 
@@ -398,7 +401,7 @@ If you would like to contribute a translation, you can find the language files i
 
 ---
 
-[**Download Version 1.15.3 (Windows Installer)**](https://github.com/Querz/mcaselector/releases/download/1.15.3/MCA_Selector_Setup.exe)
+[**Download Version 1.15.4 (Windows Installer)**](https://github.com/Querz/mcaselector/releases/download/1.15.4/MCA_Selector_Setup.exe)
 
 "Requirements":
 * Windows 7-10 64bit
@@ -406,7 +409,7 @@ If you would like to contribute a translation, you can find the language files i
 
 ---
 
-[**Download Version 1.15.3 (Universal)**](https://github.com/Querz/mcaselector/releases/download/1.15.3/mcaselector-1.15.3.jar)
+[**Download Version 1.15.4 (Universal)**](https://github.com/Querz/mcaselector/releases/download/1.15.4/mcaselector-1.15.4.jar)
 
 
 "Requirements":
@@ -418,23 +421,23 @@ If you would like to contribute a translation, you can find the language files i
 * A brain
 
 ### What works on most systems
-Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.15.3.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
+Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.15.4.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
 
 ### If you have Minecraft Java Edition installed
 Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of Java on your system.
 
 For Windows:
 * Hold `Shift` and Right-click on an empty space and select `Open PowerShell window here` (`Open Command window here` on Windows 8 and earlier).
-* Type `& "C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\java" -jar `, then drag and drop the `mcaselector-1.15.3.jar into the console` and press `Enter`. In the Command window (Windows 8 and earlier), the command starts with `"C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\java" -jar ` instead and the path to `mcaselector-1.15.3.jar` must be typed or copied and pasted into the console manually.
+* Type `& "C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\java" -jar `, then drag and drop the `mcaselector-1.15.4.jar into the console` and press `Enter`. In the Command window (Windows 8 and earlier), the command starts with `"C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\java" -jar ` instead and the path to `mcaselector-1.15.4.jar` must be typed or copied and pasted into the console manually.
 
 For MacOS:
 * Press `Cmd+Space`, type `Terminal` and press `Enter`.
-* Type `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/java -jar ` (with a space at the end), then drag and drop the `mcaselector-1.15.3.jar` into the console and press `Enter`.
+* Type `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/java -jar ` (with a space at the end), then drag and drop the `mcaselector-1.15.4.jar` into the console and press `Enter`.
 
 **WARNING:** For MacOS 10.14+ (Mojave) It is NOT recommended to use the JRE provided by Minecraft (1.8.0_74), because it contains a severe bug that causes JavaFX applications to crash when they lose focus while a dialog window (such as the save-file-dialog) is open (see the bug report [here](https://bugs.openjdk.java.net/browse/JDK-8211304)). This bug has been fixed in Java 1.8.0_201 and above.
 
 ### If you receive a JavaFX error
-"When I run `mcaselector-1.15.3.jar`, an error dialog appears that looks like this:"
+"When I run `mcaselector-1.15.4.jar`, an error dialog appears that looks like this:"
 
 <p align="center">
   <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/missing_javafx.png" alt="Popup dialog stating a missing JavaFX installation">
@@ -451,28 +454,28 @@ For MacOS:
 Type the command `java -version` and press `Enter`. If the output shows that your java command is linked to `java version "1.8.0"`, you can simply run MCA Selector through the console.
 
 For Windows and MacOS:
-* Type `java -jar ` (with a space at the end) and drag and drop the `mcaselector-1.15.3.jar` into the console and hit `Enter`.
+* Type `java -jar ` (with a space at the end) and drag and drop the `mcaselector-1.15.4.jar` into the console and hit `Enter`.
 
 For Linux:
-* Run `java -jar <path to mcaselector-1.15.3.jar` where you replace everything in `<>`.
+* Run `java -jar <path to mcaselector-1.15.4.jar` where you replace everything in `<>`.
 
 If the output shows a Java version higher than Java 8, please find and download the appropriate JavaFX version from [Here](https://gluonhq.com/products/javafx/). If you know what to do, do it. If you don't, follow these steps:
 
 For Windows:
 * Download "JavaFX Windows SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
 * Unzip the `.zip`-file with your program of choice, then navigate into the unzipped folder.
-* Hold `Shift` and Right-click on an empty space in that folder and select `Open PowerShell window here` (`Open Command window here` on Windows 8 and earlier). Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type ` --add-modules ALL-MODULE-PATH -jar ` (with a space at the beginning and the end), then drag and drop the `mcaselector-1.15.3.jar` into the console and hit `Enter`.
+* Hold `Shift` and Right-click on an empty space in that folder and select `Open PowerShell window here` (`Open Command window here` on Windows 8 and earlier). Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type ` --add-modules ALL-MODULE-PATH -jar ` (with a space at the beginning and the end), then drag and drop the `mcaselector-1.15.4.jar` into the console and hit `Enter`.
 
 For MacOS:
 * Download "JavaFX Mac OS X SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
 * Double-click the `.zip`-file to unpack, then navigate into the unzipped folder.
-* Press `Cmd+Space`, type `Terminal` and press `Enter`. Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type `--add-modules ALL-MODULE-PATH -jar ` (with a space at the end), then drag and drop the `mcaselector-1.15.3.jar` into the console and hit `Enter`.
+* Press `Cmd+Space`, type `Terminal` and press `Enter`. Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type `--add-modules ALL-MODULE-PATH -jar ` (with a space at the end), then drag and drop the `mcaselector-1.15.4.jar` into the console and hit `Enter`.
 
 For Linux:
 * Download "JavaFX Linux SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
 * Unzip the `.zip`-file with your program of choice.
-* Open the command prompt and run `java --module-path <path to unzipped folder>/lib --add-modules ALL-MODULE-PATH -jar <path to mcaselector-1.15.3.jar>` where you replace everything in `<>` with the appropriate paths.
-* Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. On Debian, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of JavaFX is required to run the `mcaselector-1.15.3.jar`.
+* Open the command prompt and run `java --module-path <path to unzipped folder>/lib --add-modules ALL-MODULE-PATH -jar <path to mcaselector-1.15.4.jar>` where you replace everything in `<>` with the appropriate paths.
+* Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. On Debian, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of JavaFX is required to run the `mcaselector-1.15.4.jar`.
 
 To avoid having to go through this process every time to start MCA Selector, the resulting command can be copied into a `.bat`-file on Windows or `.sh`-file on MacOS and Linux and can then be executed by double-clicking the `.bat`-file on Windows or running `sh <file>.sh` in the terminal / console on MacOS or Linux where `<file>` must be replaced by the name of the `.sh`-file.
 
