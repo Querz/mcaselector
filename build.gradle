@@ -20,7 +20,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'css'
 
 group 'net.querz.mcaselector'
-version '1.15.3'
+version '1.15.4'
 def appName = 'MCA Selector'
 def appUrl = 'https://github.com/Querz/mcaselector'
 def appAuthor = 'Querz'
@@ -178,7 +178,7 @@ task updateReadme {
 		// update TOC in README
 		ant.replaceregexp(
 				match: '<!--toc-start-->[\\s\\S]*<!--toc-end-->',
-				replace: createTOC('README.md', '<!--toc-start-->', '<!--toc-end-->', true, true),
+				replace: createTOC(new File("${rootProject.projectDir}/README.md"), '<!--toc-start-->', '<!--toc-end-->', true, true),
 				flags: 'g') {
 			fileset dir: '.', includes: 'README.md'
 		}
@@ -239,13 +239,12 @@ task updateReadme {
  * @throws IOException If the input file could not be read
  * @throws IllegalArgumentException If the input file is not a file
  */
-static String createTOC(String f, String st, String en, boolean it, boolean is) throws IOException {
-	File e = new File(f).getAbsoluteFile()
-	if (!e.isFile())
-		throw new IllegalArgumentException('file doesn\'t exist or is not a file')
+static String createTOC(File f, String st, String en, boolean it, boolean is) throws IOException {
+	if (!f.isFile())
+		throw new IllegalArgumentException('file doesn\'t exist or is not a file: ' + f)
 	StringBuilder b = new StringBuilder(st + '\n' as String)
 	int l, s = 0
-	BufferedReader br = new BufferedReader(new FileReader(e))
+	BufferedReader br = new BufferedReader(new FileReader(f))
 	try {
 		for (String n in br.lines()) {
 			String t
