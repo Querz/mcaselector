@@ -384,7 +384,7 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 				int startBit = (int) ((blockStatesIndex - Math.floor(longIndex)) * 64D);
 				if (startBit + bits > 64) {
 					l[longIndex] = Bits.setBits(value.shortValue(), l[longIndex], startBit, 64);
-					l[longIndex + 1] = Bits.setBits(value.shortValue(), l[longIndex + 1], startBit - 64, startBit + bits - 64);
+					l[longIndex + 1] = Bits.setBits(value.shortValue() >> (64 - startBit), l[longIndex + 1], 0, startBit + bits - 64);
 				} else {
 					l[longIndex] = Bits.setBits(value.shortValue(), l[longIndex], startBit, startBit + bits);
 				}

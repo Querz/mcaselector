@@ -362,7 +362,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		int startBit = (int) ((blockStatesIndex - Math.floor(longIndex)) * 64D);
 		if (startBit + bits > 64) {
 			blockStates[longIndex] = Bits.setBits(paletteIndex, blockStates[longIndex], startBit, 64);
-			blockStates[longIndex + 1] = Bits.setBits(paletteIndex, blockStates[longIndex + 1], startBit - 64, startBit + bits - 64);
+			blockStates[longIndex + 1] = Bits.setBits(paletteIndex >> (64 - startBit), blockStates[longIndex + 1], 0, startBit + bits - 64);
 		} else {
 			blockStates[longIndex] = Bits.setBits(paletteIndex, blockStates[longIndex], startBit, startBit + bits);
 		}
