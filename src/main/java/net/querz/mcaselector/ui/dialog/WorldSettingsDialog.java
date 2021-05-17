@@ -19,6 +19,8 @@ public class WorldSettingsDialog extends Dialog<WorldSettingsDialog.Result> {
 
 	private final Label poiLabel = UIFactory.label(Translation.DIALOG_WORLD_SETTINGS_POI);
 	private final Label entitiesLabel = UIFactory.label(Translation.DIALOG_WORLD_SETTINGS_ENTITIES);
+	private final Label heightLabel = UIFactory.label(Translation.DIALOG_WORLD_SETTINGS_RENDER_HEIGHT);
+	private final Label layerOnlyLabel = UIFactory.label(Translation.DIALOG_WORLD_SETTINGS_RENDER_LAYER_ONLY);
 	private final FileTextField poiField = new FileTextField();
 	private final FileTextField entitiesField = new FileTextField();
 	private final Slider heightSlider = new Slider(-64, 319, 319);
@@ -55,6 +57,8 @@ public class WorldSettingsDialog extends Dialog<WorldSettingsDialog.Result> {
 		grid.getStyleClass().add("grid-pane");
 		grid.add(poiLabel, 0, 0);
 		grid.add(entitiesLabel, 0, 1);
+		grid.add(heightLabel, 0, 2);
+		grid.add(layerOnlyLabel, 0, 3);
 		grid.add(poiField, 1, 0);
 		grid.add(entitiesField, 1, 1);
 		grid.add(heightBox, 1, 2);
