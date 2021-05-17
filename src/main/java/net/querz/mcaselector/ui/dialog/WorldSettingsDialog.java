@@ -1,9 +1,12 @@
 package net.querz.mcaselector.ui.dialog;
 
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.Config;
@@ -12,12 +15,14 @@ import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.FileTextField;
 import net.querz.mcaselector.ui.UIFactory;
 
-public class WorldSettingsDialog extends Dialog<WorldDirectories> {
+public class WorldSettingsDialog extends Dialog<WorldSettingsDialog.Result> {
 
 	private final Label poiLabel = UIFactory.label(Translation.DIALOG_WORLD_SETTINGS_POI);
 	private final Label entitiesLabel = UIFactory.label(Translation.DIALOG_WORLD_SETTINGS_ENTITIES);
 	private final FileTextField poiField = new FileTextField();
 	private final FileTextField entitiesField = new FileTextField();
+	private final Slider heightSlider = new Slider(-64, 319, 319);
+	private final CheckBox layerOnlyCheckBox = new CheckBox();
 
 	private final WorldDirectories worldDirectories;
 
@@ -31,10 +36,20 @@ public class WorldSettingsDialog extends Dialog<WorldDirectories> {
 		// make sure that they are not equal to the region folder or to each other
 
 		worldDirectories = Config.getWorldDirs().clone();
-		setResultConverter(c -> c == ButtonType.OK ? worldDirectories : null);
+		setResultConverter(c -> c == ButtonType.OK ? new Result(worldDirectories, (int) heightSlider.getValue(), layerOnlyCheckBox.isSelected()) : null);
 
 		poiField.setFile(worldDirectories.getPoi());
 		entitiesField.setFile(worldDirectories.getEntities());
+
+		HBox heightBox = new HBox();
+		heightBox.getStyleClass().add("height-box");
+		heightBox.getChildren().addAll(heightSlider, UIFactory.attachTextFieldToSlider(heightSlider));
+		heightSlider.setValue(Config.getRenderHeight());
+		heightSlider.setSnapToTicks(true);
+		heightSlider.setMajorTickUnit(32);
+		heightSlider.setMinorTickCount(384);
+
+		layerOnlyCheckBox.setSelected(Config.renderLayerOnly());
 
 		GridPane grid = new GridPane();
 		grid.getStyleClass().add("grid-pane");
@@ -42,7 +57,34 @@ public class WorldSettingsDialog extends Dialog<WorldDirectories> {
 		grid.add(entitiesLabel, 0, 1);
 		grid.add(poiField, 1, 0);
 		grid.add(entitiesField, 1, 1);
+		grid.add(heightBox, 1, 2);
+		grid.add(layerOnlyCheckBox, 1, 3);
 
 		getDialogPane().setContent(grid);
+	}
+
+	public static class Result {
+
+		private final WorldDirectories worldDirectories;
+		private final int height;
+		private final boolean layerOnly;
+
+		private Result(WorldDirectories worldDirectories, int height, boolean layerOnly) {
+			this.worldDirectories = worldDirectories;
+			this.height = height;
+			this.layerOnly = layerOnly;
+		}
+
+		public WorldDirectories getWorldDirectories() {
+			return worldDirectories;
+		}
+
+		public int getHeight() {
+			return height;
+		}
+
+		public boolean layerOnly() {
+			return layerOnly;
+		}
 	}
 }

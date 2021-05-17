@@ -1,10 +1,8 @@
 package net.querz.mcaselector.text;
 
 import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.exception.ParseException;
 import net.querz.mcaselector.filter.PaletteFilter;
 import net.querz.mcaselector.io.StringPointer;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,7 +16,6 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,8 +33,8 @@ public final class TextHelper {
 
 	static {
 		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:years?|y)"), 31536000L);
-		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:months?)"), 2628000L);
-		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:days?|d)"), 90000L);
+		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:months?)"), 2592000L);
+		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:days?|d)"), 86400L);
 		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:hours?|h)"), 3600L);
 		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:minutes?|mins?)"), 60L);
 		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:seconds?|secs?|s)"), 1L);
@@ -114,16 +111,29 @@ public final class TextHelper {
 	public static long parseDuration(String d) {
 		boolean result = false;
 		int duration = 0;
+		List<String> elements = new ArrayList<>();
 		for (Map.Entry<Pattern, Long> entry : DURATION_REGEXP.entrySet()) {
 			Matcher m = entry.getKey().matcher(d);
 			if (m.find()) {
 				duration += Long.parseLong(m.group("data")) * entry.getValue();
 				result = true;
+
+				elements.add(d.substring(m.start(), m.end()));
 			}
 		}
 		if (!result) {
 			throw new IllegalArgumentException("could not parse anything from duration string");
 		}
+
+		String remains = d;
+		for (String element : elements) {
+			remains = remains.replaceFirst(element, "");
+		}
+		remains = remains.trim();
+		if (remains.length() > 0) {
+			throw new IllegalArgumentException("invalid element in duration string: " + remains);
+		}
+
 		return duration;
 	}
 

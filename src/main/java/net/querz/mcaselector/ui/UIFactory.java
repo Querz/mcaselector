@@ -84,8 +84,8 @@ public final class UIFactory {
 		TextField sliderValue = new TextField();
 		sliderValue.getStyleClass().add("slider-value-field");
 		sliderValue.textProperty().addListener((l, o, n) -> {
-			if (!n.matches("\\d*")) {
-				sliderValue.setText(n.replaceAll("[^\\d]", ""));
+			if (!n.matches("-?\\d*")) {
+				sliderValue.setText(n.replaceAll("[^\\-\\d]", ""));
 			} else if ("".equals(n)) {
 				slider.setValue(slider.getMin());
 			} else {

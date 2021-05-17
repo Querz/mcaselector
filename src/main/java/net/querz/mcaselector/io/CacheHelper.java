@@ -137,10 +137,14 @@ public final class CacheHelper {
 		String version = null;
 		String poi = null;
 		String entities = null;
+		int height = Config.DEFAULT_RENDER_HEIGHT;
+		boolean layerOnly = Config.DEFAULT_RENDER_LAYER_ONLY;
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			version = br.readLine();
 			poi = br.readLine();
 			entities = br.readLine();
+			height = Integer.parseInt(br.readLine());
+			layerOnly = br.readLine().equals("true");
 		} catch (IOException ex) {
 			Debug.dumpException("failed to read version from file " + file, ex);
 		}
@@ -151,11 +155,13 @@ public final class CacheHelper {
 		if (entities != null && !entities.isEmpty() && !entities.equals("null")) {
 			Config.getWorldDirs().setEntities(new File(entities));
 		}
+		Config.setRenderHeight(height);
+		Config.setRenderLayerOnly(layerOnly);
 
 		return version;
 	}
 
-	private static void updateVersionFile() {
+	public static void updateVersionFile() {
 		String applicationVersion = null;
 		try {
 			applicationVersion = FileHelper.getManifestAttributes().getValue("Application-Version");
@@ -177,6 +183,8 @@ public final class CacheHelper {
 			bw.write(applicationVersion + "\n");
 			bw.write(Config.getWorldDirs().getPoi() + "\n");
 			bw.write(Config.getWorldDirs().getEntities() + "");
+			bw.write(Config.getRenderHeight() + "\n");
+			bw.write(Config.renderLayerOnly() + "\n");
 		} catch (IOException ex) {
 			Debug.dumpException("failed to write cache version file", ex);
 		}

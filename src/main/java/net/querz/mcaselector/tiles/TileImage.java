@@ -129,7 +129,7 @@ public final class TileImage {
 				}
 			}
 
-			if (Config.shade()) {
+			if (Config.shade() && !Config.renderLayerOnly()) {
 				shade(pixelBuffer, waterPixels, terrainHeights, waterHeights);
 			}
 
@@ -148,16 +148,27 @@ public final class TileImage {
 		}
 		int dataVersion = chunkData.getData().getInt("DataVersion");
 		try {
-			VersionController.getChunkRenderer(dataVersion).drawChunk(
-					chunkData.getData(),
-					VersionController.getColorMapping(dataVersion),
-					x, z,
-					pixelBuffer,
-					waterPixels,
-					terrainHeights,
-					waterHeights,
-					Config.shade() && Config.shadeWater()
-			);
+			if (Config.renderLayerOnly()) {
+				VersionController.getChunkRenderer(dataVersion).drawLayer(
+						chunkData.getData(),
+						VersionController.getColorMapping(dataVersion),
+						x, z,
+						pixelBuffer,
+						Config.getRenderHeight()
+				);
+			} else {
+				VersionController.getChunkRenderer(dataVersion).drawChunk(
+						chunkData.getData(),
+						VersionController.getColorMapping(dataVersion),
+						x, z,
+						pixelBuffer,
+						waterPixels,
+						terrainHeights,
+						waterHeights,
+						Config.shade() && Config.shadeWater(),
+						Config.getRenderHeight()
+				);
+			}
 		} catch (Exception ex) {
 			Debug.dumpException("failed to draw chunk " + chunkData.getAbsoluteLocation(), ex);
 

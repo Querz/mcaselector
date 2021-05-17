@@ -7,10 +7,8 @@ import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.ui.Window;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
@@ -138,6 +136,9 @@ public final class Config {
 	public static final boolean DEFAULT_DEBUG = false;
 	public static final String DEFAULT_MC_SAVES_DIR = FileHelper.getMCSavesDir();
 
+	public static final int DEFAULT_RENDER_HEIGHT = 319;
+	public static final boolean DEFAULT_RENDER_LAYER_ONLY = false;
+
 	private static File worldDir = null;
 	private static WorldDirectories worldDirs = null;
 	private static UUID worldUUID = null;
@@ -156,6 +157,9 @@ public final class Config {
 	private static boolean shade = DEFAULT_SHADE;
 	private static boolean shadeWater = DEFAULT_SHADE_WATER;
 	private static String mcSavesDir = DEFAULT_MC_SAVES_DIR;
+
+	private static int renderHeight = DEFAULT_RENDER_HEIGHT;
+	private static boolean renderLayerOnly = DEFAULT_RENDER_LAYER_ONLY;
 
 	private static boolean debug = DEFAULT_DEBUG;
 
@@ -262,6 +266,22 @@ public final class Config {
 
 	public static boolean shadeWater() {
 		return Config.shadeWater;
+	}
+
+	public static void setRenderHeight(int renderHeight) {
+		Config.renderHeight = renderHeight;
+	}
+
+	public static int getRenderHeight() {
+		return Config.renderHeight;
+	}
+
+	public static void setRenderLayerOnly(boolean renderLayerOnly) {
+		Config.renderLayerOnly = renderLayerOnly;
+	}
+
+	public static boolean renderLayerOnly() {
+		return Config.renderLayerOnly;
 	}
 
 	public static void setMCSavesDir(String mcSavesDir) {

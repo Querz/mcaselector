@@ -281,8 +281,15 @@ public class DialogHelper {
 	}
 
 	public static void editWorldSettings(TileMap tileMap, Stage primaryStage) {
-		Optional<WorldDirectories> result = new WorldSettingsDialog(primaryStage).showAndWait();
-		result.ifPresent(Config::setWorldDirs);
+		Optional<WorldSettingsDialog.Result> result = new WorldSettingsDialog(primaryStage).showAndWait();
+		result.ifPresent(r -> {
+			Config.setWorldDirs(r.getWorldDirectories());
+			if (r.getHeight() != Config.getRenderHeight() || r.layerOnly() != Config.renderLayerOnly()) {
+				Config.setRenderHeight(r.getHeight());
+				Config.setRenderLayerOnly(r.layerOnly());
+				CacheHelper.clearAllCache(tileMap);
+			}
+		});
 	}
 
 	public static void editNBT(TileMap tileMap, Stage primaryStage) {
