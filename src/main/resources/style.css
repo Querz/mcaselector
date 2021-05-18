@@ -522,7 +522,7 @@
 
 .tile-map-box {
 	-fx-effect: innershadow(gaussian, -color-tilemap-shadow, 8, 0, 0, 0);
-	-fx-background-color: black;
+	/*-fx-background-color: transparent;*/
 	-region-grid-color: black;
 	-chunk-grid-color: darkgray;
 	-grid-line-width: 0.5;

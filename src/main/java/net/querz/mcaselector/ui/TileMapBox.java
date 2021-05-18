@@ -2,10 +2,19 @@ package net.querz.mcaselector.ui;
 
 import javafx.beans.value.ChangeListener;
 import javafx.css.*;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
@@ -14,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class TileMapBox extends HBox {
 
@@ -97,6 +107,8 @@ public class TileMapBox extends HBox {
 		setAlignment(Pos.TOP_LEFT);
 		getChildren().add(tileMap);
 		bind();
+
+		TileMapBoxBackground.BLACK.changeBackground(this);
 	}
 
 	private void bind() {
@@ -112,5 +124,30 @@ public class TileMapBox extends HBox {
 	@Override
 	public List<CssMetaData<? extends Styleable, ?>> getCssMetaData() {
 		return CLASS_CSS_META_DATA;
+	}
+
+	private void setBackgroundImage(String resource) {
+		setBackground(new Background(new BackgroundImage(FileHelper.getIconFromResources(resource),
+				BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,
+				BackgroundSize.DEFAULT)));
+	}
+
+	public enum TileMapBoxBackground {
+
+		GREY_CHECKERBOARD(b -> b.setBackgroundImage("img/background/grey_checkerboard")),
+		PURPLE_CHECKERBOARD(b -> b.setBackgroundImage("img/background/purple_checkerboard")),
+		BLUE_CHECKERBOARD(b -> b.setBackgroundImage("img/background/blue_checkerboard")),
+		BLACK(b -> b.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)))),
+		GREY(b -> b.setBackground(new Background(new BackgroundFill(Color.GREY, CornerRadii.EMPTY, Insets.EMPTY))));
+
+		private Consumer<TileMapBox> changeFunc;
+
+		TileMapBoxBackground(Consumer<TileMapBox> changeFunc) {
+			this.changeFunc = changeFunc;
+		}
+
+		public void changeBackground(TileMapBox box) {
+			changeFunc.accept(box);
+		}
 	}
 }
