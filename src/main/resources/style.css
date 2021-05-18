@@ -807,7 +807,7 @@
 	-fx-padding: 4 0 -3 0;
 }
 
-.languages-combo-box {
+.languages-combo-box, .tilemap-backgrounds-combo-box {
 	-fx-alignment: center;
 	-fx-pref-width: 240;
 }

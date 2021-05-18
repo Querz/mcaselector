@@ -35,7 +35,7 @@ public final class TileImage {
 
 	private TileImage() {}
 
-	public static void draw(Tile tile, GraphicsContext ctx, float scale, Point2f offset, boolean selectionInverted, boolean overlay) {
+	public static void draw(Tile tile, GraphicsContext ctx, float scale, Point2f offset, boolean selectionInverted, boolean overlay, boolean showNonexistentRegions) {
 		if (tile.image != null) {
 			ctx.drawImage(tile.getImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 
@@ -44,7 +44,7 @@ public final class TileImage {
 				ctx.drawImage(tile.getOverlay(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 				ctx.setGlobalAlpha(1);
 			}
-		} else {
+		} else if (showNonexistentRegions) {
 			ctx.drawImage(ImageHelper.getEmptyTileImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		}
 

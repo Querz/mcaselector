@@ -61,6 +61,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private boolean showChunkGrid = true;
 	private boolean showRegionGrid = true;
+	private boolean showNonexistentRegions = true;
 
 	private final List<Consumer<TileMap>> updateListener = new ArrayList<>(1);
 	private final List<Consumer<TileMap>> hoverListener = new ArrayList<>(1);
@@ -122,6 +123,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		imgPool = new ImagePool(this, Config.IMAGE_POOL_SIZE);
 
 		setOverlays(Config.getOverlays());
+		showNonexistentRegions = Config.showNonExistentRegions();
 
 		update();
 	}
@@ -519,6 +521,11 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		update();
 	}
 
+	public void setShowNonexistentRegions(boolean showNonexistentRegions) {
+		this.showNonexistentRegions = showNonexistentRegions;
+		update();
+	}
+
 	public void goTo(int x, int z) {
 		offset = new Point2f(x - getWidth() * scale / 2, z - getHeight() * scale / 2);
 		update();
@@ -808,7 +815,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 			Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getZ() / scale);
 
-			TileImage.draw(tile, ctx, scale, p, selectionInverted, overlayParser != null);
+			TileImage.draw(tile, ctx, scale, p, selectionInverted, overlayParser != null, showNonexistentRegions);
 
 		}, new Point2f());
 

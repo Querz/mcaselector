@@ -276,6 +276,10 @@ public class DialogHelper {
 				Config.setShadeWater(r.getShadeWater());
 				CacheHelper.clearAllCache(tileMap);
 			}
+			Config.setShowNonExistentRegions(r.getShowNonexistentRegions());
+			tileMap.setShowNonexistentRegions(r.getShowNonexistentRegions());
+			Config.setTileMapBackground(r.getTileMapBackground().name());
+			tileMap.getWindow().getTileMapBox().setBackground(r.getTileMapBackground().getBackground());
 			Config.setMCSavesDir(r.getMcSavesDir() + "");
 			Config.setDebug(r.getDebug());
 			tileMap.redrawOverlays();

@@ -75,6 +75,8 @@ public enum Translation {
 	DIALOG_SETTINGS_PASTED_CHUNKS_COLOR("dialog.settings.pasted_chunks_color"),
 	DIALOG_SETTINGS_SHADE("dialog.settings.shade"),
 	DIALOG_SETTINGS_SHADE_WATER("dialog.settings.shade_water"),
+	DIALOG_SETTINGS_SHOW_NONEXISTENT_REGIONS("dialog.settings.show_nonexistent_regions"),
+	DIALOG_SETTINGS_BACKGROUND_PATTERN("dialog.settings.background_pattern"),
 	DIALOG_SETTINGS_MC_SAVES_DIR("dialog.settings.mc_saves_dir"),
 	DIALOG_SETTINGS_PRINT_DEBUG("dialog.settings.print_debug"),
 	DIALOG_SETTINGS_SHOW_LOG_FILE("dialog.settings.show_log_file"),

@@ -14,6 +14,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.tiles.Tile;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class TileMapBox extends HBox {
 
@@ -108,7 +108,11 @@ public class TileMapBox extends HBox {
 		getChildren().add(tileMap);
 		bind();
 
-		TileMapBoxBackground.BLACK.changeBackground(this);
+		try {
+			setBackground(TileMapBoxBackground.valueOf(Config.getTileMapBackground()).getBackground());
+		} catch (IllegalArgumentException ex) {
+			setBackground(TileMapBoxBackground.valueOf(Config.DEFAULT_TILEMAP_BACKGROUND).getBackground());
+		}
 	}
 
 	private void bind() {
@@ -126,28 +130,29 @@ public class TileMapBox extends HBox {
 		return CLASS_CSS_META_DATA;
 	}
 
-	private void setBackgroundImage(String resource) {
-		setBackground(new Background(new BackgroundImage(FileHelper.getIconFromResources(resource),
-				BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,
-				BackgroundSize.DEFAULT)));
-	}
-
 	public enum TileMapBoxBackground {
 
-		GREY_CHECKERBOARD(b -> b.setBackgroundImage("img/background/grey_checkerboard")),
-		PURPLE_CHECKERBOARD(b -> b.setBackgroundImage("img/background/purple_checkerboard")),
-		BLUE_CHECKERBOARD(b -> b.setBackgroundImage("img/background/blue_checkerboard")),
-		BLACK(b -> b.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)))),
-		GREY(b -> b.setBackground(new Background(new BackgroundFill(Color.GREY, CornerRadii.EMPTY, Insets.EMPTY))));
+		GREY_CHECKERBOARD(createBackgroundFromImage("img/background/grey_checkerboard")),
+		PURPLE_CHECKERBOARD(createBackgroundFromImage("img/background/purple_checkerboard")),
+		BLUE_CHECKERBOARD(createBackgroundFromImage("img/background/blue_checkerboard")),
+		BLACK(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY))),
+		GREY(new Background(new BackgroundFill(Color.GREY, CornerRadii.EMPTY, Insets.EMPTY))),
+		WHITE(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-		private Consumer<TileMapBox> changeFunc;
-
-		TileMapBoxBackground(Consumer<TileMapBox> changeFunc) {
-			this.changeFunc = changeFunc;
+		private static Background createBackgroundFromImage(String resource) {
+			return new Background(new BackgroundImage(FileHelper.getIconFromResources(resource),
+				BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,
+				BackgroundSize.DEFAULT));
 		}
 
-		public void changeBackground(TileMapBox box) {
-			changeFunc.accept(box);
+		private final Background background;
+
+		TileMapBoxBackground(Background background) {
+			this.background = background;
+		}
+
+		public Background getBackground() {
+			return background;
 		}
 	}
 }

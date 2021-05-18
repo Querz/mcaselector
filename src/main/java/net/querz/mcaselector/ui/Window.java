@@ -21,6 +21,7 @@ public class Window extends Application {
 	private Stage primaryStage;
 	private String title = "";
 	private OptionBar optionBar;
+	private TileMapBox tileMapBox;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -45,7 +46,7 @@ public class Window extends Application {
 		pane.setTop(optionBar);
 
 		//tilemap
-		TileMapBox tileMapBox = new TileMapBox(tileMap, primaryStage);
+		tileMapBox = new TileMapBox(tileMap, primaryStage);
 		pane.setCenter(tileMapBox);
 
 		//status bar
@@ -95,5 +96,9 @@ public class Window extends Application {
 
 	public Stage getPrimaryStage() {
 		return primaryStage;
+	}
+
+	public TileMapBox getTileMapBox() {
+		return tileMapBox;
 	}
 }
