@@ -89,7 +89,11 @@ public final class UIFactory {
 			} else if ("".equals(n)) {
 				slider.setValue(slider.getMin());
 			} else {
-				slider.setValue(Integer.parseInt(n));
+				try {
+					slider.setValue(Integer.parseInt(n));
+				} catch (NumberFormatException ex) {
+					slider.setValue(slider.getMin());
+				}
 			}
 		});
 		sliderValue.focusedProperty().addListener((l, o, n) -> {
