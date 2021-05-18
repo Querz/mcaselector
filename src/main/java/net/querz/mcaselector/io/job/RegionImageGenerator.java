@@ -34,8 +34,8 @@ public class RegionImageGenerator {
 
 	private RegionImageGenerator() {}
 
-	public static void generate(Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
-		MCAFilePipe.addJob(new MCAImageLoadJob(tile, world, callback, scaleSupplier, scaleOnly, progressChannel));
+	public static void generate(Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel, boolean canSkipSaving) {
+		MCAFilePipe.addJob(new MCAImageLoadJob(tile, world, callback, scaleSupplier, scaleOnly, progressChannel, canSkipSaving));
 	}
 
 	public static boolean isLoading(Tile tile) {
@@ -78,8 +78,9 @@ public class RegionImageGenerator {
 		private final Supplier<Float> scaleSupplier;
 		private final boolean scaleOnly;
 		private final Progress progressChannel;
+		private final boolean canSkipSaving;
 
-		private MCAImageLoadJob(Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
+		private MCAImageLoadJob(Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel, boolean canSkipSaving) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null));
 			this.tile = tile;
 			this.world = world;
@@ -87,13 +88,14 @@ public class RegionImageGenerator {
 			this.scaleSupplier = scaleSupplier;
 			this.scaleOnly = scaleOnly;
 			this.progressChannel = progressChannel;
+			this.canSkipSaving = canSkipSaving;
 		}
 
 		@Override
 		public void execute() {
 			byte[] data = load(tile.getMCAFile());
 			if (data != null) {
-				MCAFilePipe.executeProcessData(new MCAImageProcessJob(tile.getMCAFile(), data, tile, world, callback, scaleSupplier, scaleOnly, progressChannel));
+				MCAFilePipe.executeProcessData(new MCAImageProcessJob(tile.getMCAFile(), data, tile, world, callback, scaleSupplier, scaleOnly, progressChannel, canSkipSaving));
 				return;
 			}
 			callback.accept(null, world);
@@ -121,8 +123,9 @@ public class RegionImageGenerator {
 		private final Supplier<Float> scaleSupplier;
 		private final boolean scaleOnly;
 		private final Progress progressChannel;
+		private final boolean canSkipSaving;
 
-		private MCAImageProcessJob(File file, byte[] data, Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
+		private MCAImageProcessJob(File file, byte[] data, Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel, boolean canSkipSaving) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null), data, null, null);
 			this.file = file;
 			this.tile = tile;
@@ -131,6 +134,7 @@ public class RegionImageGenerator {
 			this.scaleSupplier = scaleSupplier;
 			this.scaleOnly = scaleOnly;
 			this.progressChannel = progressChannel;
+			this.canSkipSaving = canSkipSaving;
 		}
 
 		@Override
@@ -170,7 +174,7 @@ public class RegionImageGenerator {
 
 			if (image != null) {
 				setSaving(tile, true);
-				MCAFilePipe.executeSaveData(new MCAImageSaveCacheJob(image, mcaFile, tile, world, scaleSupplier, scaleOnly, progressChannel));
+				MCAFilePipe.executeSaveData(new MCAImageSaveCacheJob(image, tile, world, scaleSupplier, scaleOnly, progressChannel, canSkipSaving));
 			} else {
 				if (progressChannel != null) {
 					progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
@@ -191,20 +195,20 @@ public class RegionImageGenerator {
 	private static class MCAImageSaveCacheJob extends SaveDataJob<Image> {
 
 		private final Tile tile;
-		private final RegionMCAFile mcaFile;
 		private final UUID world;
 		private final Supplier<Float> scaleSupplier;
 		private final boolean scaleOnly;
 		private final Progress progressChannel;
+		private final boolean canSkip;
 
-		private MCAImageSaveCacheJob(Image data, RegionMCAFile mcaFile, Tile tile, UUID world, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel) {
+		private MCAImageSaveCacheJob(Image data, Tile tile, UUID world, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel, boolean canSkip) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null), data);
 			this.tile = tile;
-			this.mcaFile = mcaFile;
 			this.world = world;
 			this.scaleSupplier = scaleSupplier;
 			this.scaleOnly = scaleOnly;
 			this.progressChannel = progressChannel;
+			this.canSkip = canSkip;
 		}
 
 		@Override
@@ -259,6 +263,14 @@ public class RegionImageGenerator {
 		@Override
 		public void cancel() {
 			setSaving(tile, false);
+			if (progressChannel != null) {
+				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
+			}
+		}
+
+		@Override
+		public boolean canSkip() {
+			return canSkip;
 		}
 	}
 }

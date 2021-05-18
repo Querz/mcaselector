@@ -8,6 +8,7 @@ import net.querz.mcaselector.io.job.ProcessDataJob;
 import net.querz.mcaselector.io.job.SaveDataJob;
 import net.querz.mcaselector.validation.ShutdownHooks;
 import java.util.Queue;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -68,7 +69,7 @@ public final class MCAFilePipe {
 		saveDataExecutor = new ThreadPoolExecutor(
 				Config.getWriteThreads(), Config.getWriteThreads(),
 				0L, TimeUnit.MILLISECONDS,
-				new LinkedBlockingQueue<>(),
+				new LinkedBlockingDeque<>(),
 				new NamedThreadFactory("savePool"));
 		Debug.dumpf("created data save ThreadPoolExecutor with %d threads", Config.getWriteThreads());
 		dataParsingExecutor = new ThreadPoolExecutor(
@@ -81,8 +82,9 @@ public final class MCAFilePipe {
 
 	public static void refillDataLoadExecutorQueue() {
 		// should only refill if processDataExecutor and loadDataExecutor don't have more than MAX_LOADED_FILES
-		// should only refill if saveDataExecutor is not jamming the other executors
 		// --> loadDataExecutor waits for processDataExecutor AND saveDataExecutor
+		trimSaveDataQueue();
+
 		while (!waitingForLoad.isEmpty()
 				&& processDataExecutor.getQueue().size() + loadDataExecutor.getQueue().size() < Config.getMaxLoadedFiles()
 				&& saveDataExecutor.getQueue().size() < Config.getMaxLoadedFiles()) {
@@ -94,7 +96,27 @@ public final class MCAFilePipe {
 		}
 	}
 
+	private static void trimSaveDataQueue() {
+		// caching is not a priority over processing, so we just skip caching if caching is the bottleneck
+		if (saveDataExecutor.getQueue().size() > Config.getMaxLoadedFiles()) {
+			@SuppressWarnings({"unchecked", "rawtypes"})
+			LinkedBlockingDeque<SaveDataJob<?>> queue = (LinkedBlockingDeque) saveDataExecutor.getQueue();
+			while (queue.size() > Config.getMaxLoadedFiles()) {
+				SaveDataJob<?> job = queue.pollLast();
+				if (job != null && job.canSkip()) {
+					job.cancel();
+					RegionDirectories rd = job.getRegionDirectories();
+					Debug.dumpf("skipped SaveDataJob for " + (rd == null ? "null" : rd.getLocation()));
+				} else {
+					break;
+				}
+			}
+		}
+	}
+
 	public static void addJob(LoadDataJob job) {
+		trimSaveDataQueue();
+
 		if (processDataExecutor.getQueue().size() + loadDataExecutor.getQueue().size() > Config.getMaxLoadedFiles()
 				|| saveDataExecutor.getQueue().size() > Config.getMaxLoadedFiles()) {
 			Debug.dumpf("adding LoadDataJob %s for %s to wait queue", job.getClass().getSimpleName(), job.getRegionDirectories().getLocationAsFileName());

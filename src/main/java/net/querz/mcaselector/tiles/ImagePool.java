@@ -82,11 +82,10 @@ public final class ImagePool {
 						return;
 					}
 					push(scale, tile.location, i);
-					Debug.dumpf("pushed image for %s with scale %d to pool (contains=%s, value=%s)", tile.location, scale, pool.get(scale).containsKey(tile.location), pool.get(scale).get(tile.location));
 					tileMap.update();
 				}
 			}),
-			() -> (float) scale, false, null);
+			() -> (float) scale, false, null, true);
 		}
 	}
 

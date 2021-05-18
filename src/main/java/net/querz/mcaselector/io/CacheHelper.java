@@ -37,7 +37,7 @@ public final class CacheHelper {
 				int z = Integer.parseInt(m.group("regionZ"));
 				boolean scaleOnly = zoomLevel != null;
 				float zoomLevelSupplier = scaleOnly ? zoomLevel : 1;
-				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), null, (i, u) -> {}, () -> zoomLevelSupplier, scaleOnly, progressChannel);
+				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), null, (i, u) -> {}, () -> zoomLevelSupplier, scaleOnly, progressChannel, false);
 			}
 		}
 	}
