@@ -560,6 +560,7 @@ public class DialogHelper {
 	public static void setWorld(WorldDirectories worldDirectories, TileMap tileMap) {
 		Config.setWorldDirs(worldDirectories);
 		CacheHelper.validateCacheVersion(tileMap);
+		CacheHelper.readWorldSettingsFile();
 		tileMap.clear();
 		tileMap.update();
 		tileMap.disable(false);

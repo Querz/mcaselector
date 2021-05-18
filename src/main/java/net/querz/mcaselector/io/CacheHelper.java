@@ -7,12 +7,15 @@ import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.progress.Progress;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -48,6 +51,7 @@ public final class CacheHelper {
 			FileHelper.deleteDirectory(cacheDir);
 		}
 		updateVersionFile();
+		updateWorldSettingsFile();
 		tileMap.clear();
 		tileMap.update();
 	}
@@ -135,29 +139,11 @@ public final class CacheHelper {
 
 	private static String readVersionFromFile(File file) {
 		String version = null;
-		String poi = null;
-		String entities = null;
-		int height = Config.DEFAULT_RENDER_HEIGHT;
-		boolean layerOnly = Config.DEFAULT_RENDER_LAYER_ONLY;
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			version = br.readLine();
-			poi = br.readLine();
-			entities = br.readLine();
-			height = Integer.parseInt(br.readLine());
-			layerOnly = br.readLine().equals("true");
 		} catch (IOException ex) {
 			Debug.dumpException("failed to read version from file " + file, ex);
 		}
-
-		if (poi != null && !poi.isEmpty() && !poi.equals("null")) {
-			Config.getWorldDirs().setPoi(new File(poi));
-		}
-		if (entities != null && !entities.isEmpty() && !entities.equals("null")) {
-			Config.getWorldDirs().setEntities(new File(entities));
-		}
-		Config.setRenderHeight(height);
-		Config.setRenderLayerOnly(layerOnly);
-
 		return version;
 	}
 
@@ -180,13 +166,60 @@ public final class CacheHelper {
 		}
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(versionFile))) {
-			bw.write(applicationVersion + "\n");
-			bw.write(Config.getWorldDirs().getPoi() + "\n");
-			bw.write(Config.getWorldDirs().getEntities() + "");
-			bw.write(Config.getRenderHeight() + "\n");
-			bw.write(Config.renderLayerOnly() + "\n");
+			bw.write(applicationVersion);
 		} catch (IOException ex) {
 			Debug.dumpException("failed to write cache version file", ex);
+		}
+	}
+
+	public static void readWorldSettingsFile() {
+		File worldSettingsFile = new File(Config.getCacheDir(), "world_settings.json");
+		if (!worldSettingsFile.exists()) {
+			return;
+		}
+
+		String poi = null;
+		String entities = null;
+		int height = Config.DEFAULT_RENDER_HEIGHT;
+		boolean layerOnly = Config.DEFAULT_RENDER_LAYER_ONLY;
+
+		try {
+			byte[] data = Files.readAllBytes(worldSettingsFile.toPath());
+			JSONObject root = new JSONObject(new String(data));
+			poi = root.has("poi") ? root.getString("poi") : null;
+			entities = root.has("entities") ? root.getString("entities") : null;
+			height = root.has("height") ? root.getInt("height") : Config.DEFAULT_RENDER_HEIGHT;
+			layerOnly = root.has("layerOnly") ? root.getBoolean("layerOnly") : Config.DEFAULT_RENDER_LAYER_ONLY;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (poi != null && !poi.isEmpty() && !poi.equals("null")) {
+			Config.getWorldDirs().setPoi(new File(poi));
+		}
+		if (entities != null && !entities.isEmpty() && !entities.equals("null")) {
+			Config.getWorldDirs().setEntities(new File(entities));
+		}
+		Config.setRenderHeight(height);
+		Config.setRenderLayerOnly(layerOnly);
+	}
+
+	public static void updateWorldSettingsFile() {
+		File worldSettingsFile = new File(Config.getCacheDir(), "world_settings.json");
+		if (!worldSettingsFile.getParentFile().exists()) {
+			worldSettingsFile.getParentFile().mkdirs();
+		}
+
+		JSONObject root = new JSONObject();
+		root.put("poi", Config.getWorldDirs().getPoi());
+		root.put("entities", Config.getWorldDirs().getEntities());
+		root.put("height", Config.getRenderHeight());
+		root.put("layerOnly", Config.renderLayerOnly());
+
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(worldSettingsFile))) {
+			bw.write(root.toString());
+		} catch (IOException ex) {
+			Debug.dumpException("failed to write world settings file", ex);
 		}
 	}
 }
