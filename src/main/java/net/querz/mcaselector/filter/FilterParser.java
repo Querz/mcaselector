@@ -11,6 +11,14 @@ public class FilterParser {
 		ptr = new StringPointer(filter);
 	}
 
+	public GroupFilter parseStrict() throws ParseException {
+		GroupFilter group = parse();
+		if (ptr.hasNext()) {
+			throw ptr.parseException("unexpected character at end of string");
+		}
+		return group;
+	}
+
 	public GroupFilter parse() throws ParseException {
 		GroupFilter group = new GroupFilter();
 		ptr.skipWhitespace();
