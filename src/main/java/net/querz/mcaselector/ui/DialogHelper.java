@@ -271,8 +271,11 @@ public class DialogHelper {
 			Config.setRegionSelectionColor(new Color(r.getRegionColor()));
 			Config.setChunkSelectionColor(new Color(r.getChunkColor()));
 			Config.setPasteChunksColor(new Color(r.getPasteColor()));
-			Config.setShade(r.getShade());
-			Config.setShadeWater(r.getShadeWater());
+			if (r.getShade() != Config.shade() || r.getShadeWater() != Config.shadeWater()) {
+				Config.setShade(r.getShade());
+				Config.setShadeWater(r.getShadeWater());
+				CacheHelper.clearAllCache(tileMap);
+			}
 			Config.setMCSavesDir(r.getMcSavesDir() + "");
 			Config.setDebug(r.getDebug());
 			tileMap.redrawOverlays();

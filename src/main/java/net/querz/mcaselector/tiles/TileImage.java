@@ -19,9 +19,9 @@ import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.version.VersionController;
-import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
+import static net.querz.mcaselector.io.job.RegionImageGenerator.UniqueID;
 
 public final class TileImage {
 
@@ -98,15 +98,7 @@ public final class TileImage {
 		tile.markedChunksImage = wImage;
 	}
 
-	public static Image generateImage(Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, RegionMCAFile mcaFile) {
-		Timer t = new Timer();
-
-		Image image = createMCAImage(mcaFile);
-
-		return image;
-	}
-
-	public static Image createMCAImage(RegionMCAFile mcaFile) {
+	public static Image generateImage(RegionMCAFile mcaFile) {
 		try {
 			WritableImage finalImage = new WritableImage(Tile.SIZE, Tile.SIZE);
 			PixelWriter writer = finalImage.getPixelWriter();

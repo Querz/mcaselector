@@ -122,7 +122,7 @@ public class SelectionImageExporter {
 					return;
 				}
 
-				image = TileImage.createMCAImage(mcaFile);
+				image = TileImage.generateImage(mcaFile);
 			}
 
 			if (image == null) {

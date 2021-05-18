@@ -37,16 +37,16 @@ public final class CacheHelper {
 				int z = Integer.parseInt(m.group("regionZ"));
 				boolean scaleOnly = zoomLevel != null;
 				float zoomLevelSupplier = scaleOnly ? zoomLevel : 1;
-				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), null, (i, u) -> {}, () -> zoomLevelSupplier, scaleOnly, progressChannel, false);
+				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), (i, u) -> {}, () -> zoomLevelSupplier, scaleOnly, progressChannel, false);
 			}
 		}
 	}
 
 	public static void clearAllCache(TileMap tileMap) {
+		MCAFilePipe.cancelAllJobsAndFlush();
 		for (File cacheDir : Config.getCacheDirs()) {
 			FileHelper.deleteDirectory(cacheDir);
 		}
-		MCAFilePipe.clearQueues();
 		updateVersionFile();
 		tileMap.clear();
 		tileMap.update();

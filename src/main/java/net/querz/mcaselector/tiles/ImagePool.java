@@ -70,9 +70,9 @@ public final class ImagePool {
 			Debug.dump("image does not exist: " + cachedImgFile.getAbsolutePath());
 
 			RegionImageGenerator.setLoading(tile, true);
-			RegionImageGenerator.generate(tile, Config.getWorldUUID(), (i, u) -> Platform.runLater(() -> {
+			RegionImageGenerator.generate(tile, (i, u) -> Platform.runLater(() -> {
 				RegionImageGenerator.setLoading(tile, false);
-				if (u.equals(Config.getWorldUUID())) {
+				if (u.matchesCurrentConfig()) {
 					// check if scale is still correct
 					tile.setImage(i);
 					tile.setLoaded(true);

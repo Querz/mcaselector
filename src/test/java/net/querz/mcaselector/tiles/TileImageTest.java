@@ -4,17 +4,12 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.progress.Timer;
 import org.junit.Test;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
 import static org.junit.Assert.*;
 import static net.querz.mcaselector.MCASelectorTestCase.*;
 
@@ -25,34 +20,16 @@ public class TileImageTest {
 		Config.setShade(true);
 		Config.setShadeWater(true);
 		RegionMCAFile data = loadRegionMCAFileFromResource("anvil112/r.0.0.mca");
-		Image image = TileImage.generateImage(
-				new Tile(new Point2i(0, 0)),
-				UUID.randomUUID(),
-				(i, u) -> {},
-				() -> 1.0f,
-				data
-		);
+		Image image = TileImage.generateImage(data);
 
 		assertImageEquals("anvil112/r.0.0.png", image);
 
 		Config.setShadeWater(false);
-		image = TileImage.generateImage(
-				new Tile(new Point2i(0, 0)),
-				UUID.randomUUID(),
-				(i, u) -> {},
-				() -> 1.0f,
-				data
-		);
+		image = TileImage.generateImage(data);
 		assertImageEquals("anvil112/r.0.0-no_water_shade.png", image);
 
 		Config.setShade(false);
-		image = TileImage.generateImage(
-				new Tile(new Point2i(0, 0)),
-				UUID.randomUUID(),
-				(i, u) -> {},
-				() -> 1.0f,
-				data
-		);
+		image = TileImage.generateImage(data);
 		assertImageEquals("anvil112/r.0.0-no_shade.png", image);
 	}
 
@@ -61,34 +38,16 @@ public class TileImageTest {
 		Config.setShade(true);
 		Config.setShadeWater(true);
 		RegionMCAFile data = loadRegionMCAFileFromResource("anvil113/r.0.0.mca");
-		Image image = TileImage.generateImage(
-				new Tile(new Point2i(0, 0)),
-				UUID.randomUUID(),
-				(i, u) -> {},
-				() -> 1.0f,
-				data
-		);
+		Image image = TileImage.generateImage(data);
 
 		assertImageEquals("anvil113/r.0.0.png", image);
 
 		Config.setShadeWater(false);
-		image = TileImage.generateImage(
-				new Tile(new Point2i(0, 0)),
-				UUID.randomUUID(),
-				(i, u) -> {},
-				() -> 1.0f,
-				data
-		);
+		image = TileImage.generateImage(data);
 		assertImageEquals("anvil113/r.0.0-no_water_shade.png", image);
 
 		Config.setShade(false);
-		image = TileImage.generateImage(
-				new Tile(new Point2i(0, 0)),
-				UUID.randomUUID(),
-				(i, u) -> {},
-				() -> 1.0f,
-				data
-		);
+		image = TileImage.generateImage(data);
 		assertImageEquals("anvil113/r.0.0-no_shade.png", image);
 	}
 
@@ -97,33 +56,15 @@ public class TileImageTest {
 		Config.setShade(true);
 		Config.setShadeWater(true);
 		RegionMCAFile data = loadRegionMCAFileFromResource("anvil114/r.0.0.mca");
-		Image image = TileImage.generateImage(
-				new Tile(new Point2i(0, 0)),
-				UUID.randomUUID(),
-				(i, u) -> {},
-				() -> 1.0f,
-				data
-		);
+		Image image = TileImage.generateImage(data);
 		assertImageEquals("anvil114/r.0.0.png", image);
 
 		Config.setShadeWater(false);
-		image = TileImage.generateImage(
-				new Tile(new Point2i(0, 0)),
-				UUID.randomUUID(),
-				(i, u) -> {},
-				() -> 1.0f,
-				data
-		);
+		image = TileImage.generateImage(data);
 		assertImageEquals("anvil114/r.0.0-no_water_shade.png", image);
 
 		Config.setShade(false);
-		image = TileImage.generateImage(
-				new Tile(new Point2i(0, 0)),
-				UUID.randomUUID(),
-				(i, u) -> {},
-				() -> 1.0f,
-				data
-		);
+		image = TileImage.generateImage(data);
 		assertImageEquals("anvil114/r.0.0-no_shade.png", image);
 	}
 
@@ -132,33 +73,15 @@ public class TileImageTest {
 		Config.setShade(true);
 		Config.setShadeWater(true);
 		RegionMCAFile data = loadRegionMCAFileFromResource("anvil115/r.0.0.mca");
-		Image image = TileImage.generateImage(
-				new Tile(new Point2i(0, 0)),
-				UUID.randomUUID(),
-				(i, u) -> {},
-				() -> 1.0f,
-				data
-		);
+		Image image = TileImage.generateImage(data);
 		assertImageEquals("anvil115/r.0.0.png", image);
 
 		Config.setShadeWater(false);
-		image = TileImage.generateImage(
-				new Tile(new Point2i(0, 0)),
-				UUID.randomUUID(),
-				(i, u) -> {},
-				() -> 1.0f,
-				data
-		);
+		image = TileImage.generateImage(data);
 		assertImageEquals("anvil115/r.0.0-no_water_shade.png", image);
 
 		Config.setShade(false);
-		image = TileImage.generateImage(
-				new Tile(new Point2i(0, 0)),
-				UUID.randomUUID(),
-				(i, u) -> {},
-				() -> 1.0f,
-				data
-		);
+		image = TileImage.generateImage(data);
 		assertImageEquals("anvil115/r.0.0-no_shade.png", image);
 	}
 
@@ -167,33 +90,15 @@ public class TileImageTest {
 		Config.setShade(true);
 		Config.setShadeWater(true);
 		RegionMCAFile data = loadRegionMCAFileFromResource("anvil116/r.0.0.mca");
-		Image image = TileImage.generateImage(
-				new Tile(new Point2i(0, 0)),
-				UUID.randomUUID(),
-				(i, u) -> {},
-				() -> 1.0f,
-				data
-		);
+		Image image = TileImage.generateImage(data);
 		assertImageEquals("anvil116/r.0.0.png", image);
 
 		Config.setShadeWater(false);
-		image = TileImage.generateImage(
-				new Tile(new Point2i(0, 0)),
-				UUID.randomUUID(),
-				(i, u) -> {},
-				() -> 1.0f,
-				data
-		);
+		image = TileImage.generateImage(data);
 		assertImageEquals("anvil116/r.0.0-no_water_shade.png", image);
 
 		Config.setShade(false);
-		image = TileImage.generateImage(
-				new Tile(new Point2i(0, 0)),
-				UUID.randomUUID(),
-				(i, u) -> {},
-				() -> 1.0f,
-				data
-		);
+		image = TileImage.generateImage(data);
 		assertImageEquals("anvil116/r.0.0-no_shade.png", image);
 	}
 

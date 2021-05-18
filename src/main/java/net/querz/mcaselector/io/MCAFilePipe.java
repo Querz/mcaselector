@@ -8,9 +8,9 @@ import net.querz.mcaselector.io.job.ProcessDataJob;
 import net.querz.mcaselector.io.job.SaveDataJob;
 import net.querz.mcaselector.validation.ShutdownHooks;
 import java.util.Queue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -163,25 +163,16 @@ public final class MCAFilePipe {
 				return true;
 			});
 		}
-		if (loadDataExecutor != null) {
-			synchronized (loadDataExecutor.getQueue()) {
-				loadDataExecutor.getQueue().removeIf(j -> {
-					((Job) j).cancel();
-					return true;
-				});
-			}
-		}
-		if (processDataExecutor != null) {
-			synchronized (processDataExecutor.getQueue()) {
-				processDataExecutor.getQueue().removeIf(j -> {
-					((Job) j).cancel();
-					return true;
-				});
-			}
-		}
-		if (saveDataExecutor != null) {
-			synchronized (saveDataExecutor.getQueue()) {
-				saveDataExecutor.getQueue().removeIf(j -> {
+
+		cancelExecutorQueue(loadDataExecutor);
+		cancelExecutorQueue(processDataExecutor);
+		cancelExecutorQueue(saveDataExecutor);
+	}
+
+	private static void cancelExecutorQueue(ThreadPoolExecutor executor) {
+		if (executor != null) {
+			synchronized (executor.getQueue()) {
+				executor.getQueue().removeIf(j -> {
 					((Job) j).cancel();
 					return true;
 				});
@@ -200,19 +191,30 @@ public final class MCAFilePipe {
 		}
 	}
 
-	public static void cancelAllJobs(Runnable callback) {
+	public static void cancelAllJobsAndFlushAsync(Runnable callback) {
 		clearQueues();
 		Thread thread = new Thread(() -> {
-			for (;;) {
-				if (loadDataExecutor.getActiveCount() == 0
-						&& processDataExecutor.getActiveCount() == 0
-						&& saveDataExecutor.getActiveCount() == 0) {
-					break;
-				}
-			}
+			flushExecutor(loadDataExecutor);
+			flushExecutor(processDataExecutor);
+			flushExecutor(saveDataExecutor);
 			callback.run();
 		});
 		thread.start();
+	}
+
+	public static void cancelAllJobsAndFlush() {
+		clearQueues();
+		flushExecutor(loadDataExecutor);
+		flushExecutor(processDataExecutor);
+		flushExecutor(saveDataExecutor);
+	}
+
+	private static void flushExecutor(ThreadPoolExecutor executor) {
+		try {
+			executor.submit(() -> {}).get();
+		} catch (InterruptedException | ExecutionException ex) {
+			Debug.dumpException("failed to detect when executor is empty", ex);
+		}
 	}
 
 	public static int getActiveJobs() {
