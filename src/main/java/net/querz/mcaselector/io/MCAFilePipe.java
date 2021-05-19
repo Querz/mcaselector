@@ -6,13 +6,15 @@ import net.querz.mcaselector.io.job.LoadDataJob;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.ProcessDataJob;
 import net.querz.mcaselector.io.job.SaveDataJob;
+import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.validation.ShutdownHooks;
 import java.util.Queue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 public final class MCAFilePipe {
@@ -31,12 +33,53 @@ public final class MCAFilePipe {
 
 	private static final Queue<LoadDataJob> waitingForLoad = new LinkedBlockingQueue<>();
 
+
+	private static final AtomicInteger allTasks = new AtomicInteger(0);
+
 	static {
 		init();
 		ShutdownHooks.addShutdownHook(() -> loadDataExecutor.shutdownNow());
 		ShutdownHooks.addShutdownHook(() -> processDataExecutor.shutdownNow());
 		ShutdownHooks.addShutdownHook(() -> saveDataExecutor.shutdownNow());
 		ShutdownHooks.addShutdownHook(() -> dataParsingExecutor.shutdownNow());
+	}
+
+	private static class WrapperJob implements Runnable {
+
+		Job job;
+		final AtomicBoolean isDone = new AtomicBoolean(false);
+
+		WrapperJob(Job job) {
+			allTasks.incrementAndGet();
+			this.job = job;
+		}
+
+		@Override
+		public void run() {
+			try {
+				job.run();
+			} finally {
+				synchronized (isDone) {
+					if (!isDone.get()) {
+						allTasks.decrementAndGet();
+					}
+					isDone.set(true);
+				}
+			}
+		}
+
+		public void cancel() {
+			try {
+				job.cancel();
+			} finally {
+				synchronized (isDone) {
+					if (!isDone.get()) {
+						allTasks.decrementAndGet();
+					}
+					isDone.set(true);
+				}
+			}
+		}
 	}
 
 	public static void init() {
@@ -91,7 +134,7 @@ public final class MCAFilePipe {
 			LoadDataJob job = waitingForLoad.poll();
 			if (job != null) {
 				Debug.dumpf("refilling data load executor queue with %s", job.getRegionDirectories().getLocationAsFileName());
-				loadDataExecutor.execute(job);
+				loadDataExecutor.execute(new WrapperJob(job));
 			}
 		}
 	}
@@ -100,13 +143,18 @@ public final class MCAFilePipe {
 		// caching is not a priority over processing, so we just skip caching if caching is the bottleneck
 		if (saveDataExecutor.getQueue().size() > Config.getMaxLoadedFiles()) {
 			@SuppressWarnings({"unchecked", "rawtypes"})
-			LinkedBlockingDeque<SaveDataJob<?>> queue = (LinkedBlockingDeque) saveDataExecutor.getQueue();
+			LinkedBlockingDeque<WrapperJob> queue = (LinkedBlockingDeque) saveDataExecutor.getQueue();
 			while (queue.size() > Config.getMaxLoadedFiles()) {
-				SaveDataJob<?> job = queue.pollLast();
-				if (job != null && job.canSkip()) {
-					job.cancel();
-					RegionDirectories rd = job.getRegionDirectories();
-					Debug.dumpf("skipped SaveDataJob for " + (rd == null ? "null" : rd.getLocation()));
+				WrapperJob job = queue.pollLast();
+				if (job != null) {
+					SaveDataJob<?> saveDataJob = (SaveDataJob<?>) job.job;
+					if (saveDataJob.canSkip()) {
+						job.cancel();
+						RegionDirectories rd = saveDataJob.getRegionDirectories();
+						Debug.dumpf("skipped SaveDataJob for " + (rd == null ? "null" : rd.getLocation()));
+					} else {
+						break;
+					}
 				} else {
 					break;
 				}
@@ -123,16 +171,16 @@ public final class MCAFilePipe {
 			waitingForLoad.offer(job);
 		} else {
 			Debug.dumpf("adding LoadDataJob %s for %s to executor queue", job.getClass().getSimpleName(), job.getRegionDirectories().getLocationAsFileName());
-			loadDataExecutor.execute(job);
+			loadDataExecutor.execute(new WrapperJob(job));
 		}
 	}
 
 	public static void executeProcessData(ProcessDataJob job) {
-		processDataExecutor.execute(job);
+		processDataExecutor.execute(new WrapperJob(job));
 	}
 
 	public static void executeSaveData(SaveDataJob<?> job) {
-		saveDataExecutor.execute(job);
+		saveDataExecutor.execute(new WrapperJob(job));
 	}
 
 	public static void executeParseData(ParseDataJob job) {
@@ -173,7 +221,7 @@ public final class MCAFilePipe {
 		if (executor != null) {
 			synchronized (executor.getQueue()) {
 				executor.getQueue().removeIf(j -> {
-					((Job) j).cancel();
+					((WrapperJob) j).cancel();
 					return true;
 				});
 			}
@@ -192,10 +240,12 @@ public final class MCAFilePipe {
 	}
 
 	public static void cancelAllJobsAndFlushAsync(Runnable callback) {
-		clearQueues();
 		Thread thread = new Thread(() -> {
+			clearQueues();
 			flushExecutor(loadDataExecutor);
+			clearQueues();
 			flushExecutor(processDataExecutor);
+			clearQueues();
 			flushExecutor(saveDataExecutor);
 			callback.run();
 		});
@@ -203,18 +253,18 @@ public final class MCAFilePipe {
 	}
 
 	public static void cancelAllJobsAndFlush() {
+		Timer t = new Timer();
 		clearQueues();
 		flushExecutor(loadDataExecutor);
+		clearQueues();
 		flushExecutor(processDataExecutor);
+		clearQueues();
 		flushExecutor(saveDataExecutor);
+		System.out.println("all: " + allTasks.get() + " " + t);
 	}
 
 	private static void flushExecutor(ThreadPoolExecutor executor) {
-		try {
-			executor.submit(() -> {}).get();
-		} catch (InterruptedException | ExecutionException ex) {
-			Debug.dumpException("failed to detect when executor is empty", ex);
-		}
+		while (allTasks.get() > 0);
 	}
 
 	public static int getActiveJobs() {

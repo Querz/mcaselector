@@ -1,5 +1,9 @@
 package net.querz.mcaselector.ui;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -7,7 +11,11 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
+import net.querz.mcaselector.Config;
+import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.io.CacheHelper;
 import net.querz.mcaselector.text.Translation;
@@ -36,6 +44,7 @@ public class OptionBar extends MenuBar {
 	private final Menu selection = UIFactory.menu(Translation.MENU_SELECTION);
 	private final Menu tools = UIFactory.menu(Translation.MENU_TOOLS);
 	private final Label about = UIFactory.label(Translation.MENU_ABOUT);
+	private final Slider height = new Slider(-64, 319, 319);
 
 	private final MenuItem openWorld = UIFactory.menuItem(Translation.MENU_FILE_OPEN_WORLD);
 	private final MenuItem openRegion = UIFactory.menuItem(Translation.MENU_FILE_OPEN);
@@ -99,7 +108,49 @@ public class OptionBar extends MenuBar {
 		Menu aboutMenu = new Menu();
 		aboutMenu.setGraphic(about);
 
-		getMenus().addAll(file, view, selection, tools, aboutMenu);
+		height.setSnapToTicks(true);
+		height.setShowTickLabels(false);
+		height.setShowTickMarks(false);
+		height.setMajorTickUnit(32);
+		height.setMinorTickCount(384);
+		height.setPrefWidth(300);
+		height.setLabelFormatter(new StringConverter<Double>() {
+			@Override
+			public String toString(Double object) {
+				return null;
+			}
+
+			@Override
+			public Double fromString(String string) {
+				return null;
+			}
+		});
+		height.setBlockIncrement(1);
+
+		DoubleProperty heightValue = new SimpleDoubleProperty(height.getValue());
+		height.setOnMouseReleased(e -> {
+			if (heightValue.get() != height.getValue()) {
+				heightValue.set(height.getValue());
+			}
+		});
+
+		height.setOnKeyReleased(e -> {
+			if (heightValue.get() != height.getValue()) {
+				heightValue.set(height.getValue());
+			}
+		});
+
+		heightValue.addListener((v, o, n) -> {
+			if (!tileMap.getDisabled()) {
+				Config.setRenderHeight(n.intValue());
+				CacheHelper.clearAllCache(tileMap);
+			}
+		});
+
+		Menu slider = new Menu();
+		slider.setGraphic(height);
+
+		getMenus().addAll(file, view, selection, tools, aboutMenu, slider);
 
 		openWorld.setOnAction(e -> DialogHelper.openWorld(tileMap, primaryStage));
 		openRegion.setOnAction(e -> DialogHelper.openRegion(tileMap, primaryStage));
