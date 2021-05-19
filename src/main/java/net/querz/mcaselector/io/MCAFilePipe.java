@@ -241,12 +241,7 @@ public final class MCAFilePipe {
 
 	public static void cancelAllJobsAndFlushAsync(Runnable callback) {
 		Thread thread = new Thread(() -> {
-			clearQueues();
-			flushExecutor(loadDataExecutor);
-			clearQueues();
-			flushExecutor(processDataExecutor);
-			clearQueues();
-			flushExecutor(saveDataExecutor);
+			cancelAllJobsAndFlush();
 			callback.run();
 		});
 		thread.start();
@@ -255,15 +250,15 @@ public final class MCAFilePipe {
 	public static void cancelAllJobsAndFlush() {
 		Timer t = new Timer();
 		clearQueues();
-		flushExecutor(loadDataExecutor);
+		flushExecutor();
 		clearQueues();
-		flushExecutor(processDataExecutor);
+		flushExecutor();
 		clearQueues();
-		flushExecutor(saveDataExecutor);
+		flushExecutor();
 		System.out.println("all: " + allTasks.get() + " " + t);
 	}
 
-	private static void flushExecutor(ThreadPoolExecutor executor) {
+	private static void flushExecutor() {
 		while (allTasks.get() > 0);
 	}
 

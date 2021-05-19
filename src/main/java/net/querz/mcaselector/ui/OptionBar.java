@@ -15,6 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.io.CacheHelper;
@@ -142,6 +143,7 @@ public class OptionBar extends MenuBar {
 
 		heightValue.addListener((v, o, n) -> {
 			if (!tileMap.getDisabled()) {
+				System.out.println("value changed from " + o + " to " + n);
 				Config.setRenderHeight(n.intValue());
 				CacheHelper.clearAllCache(tileMap);
 			}
