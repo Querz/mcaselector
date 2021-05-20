@@ -1,5 +1,6 @@
 package net.querz.mcaselector.ui;
 
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -13,6 +14,7 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.ScrollEvent;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.Translation;
 
@@ -106,7 +108,19 @@ public final class UIFactory {
 				sliderValue.setText((int) Math.round(slider.getValue()) + "");
 			}
 		});
-		sliderValue.setText((int) slider.getValue() + "");
+
+		EventHandler<? super ScrollEvent> scrollEvent = e -> {
+			if (e.getDeltaY() > 0) {
+				slider.setValue(slider.getValue() + 1);
+			} else if (e.getDeltaY() < 0) {
+				slider.setValue(slider.getValue() - 1);
+			}
+		};
+
+		sliderValue.setOnScroll(scrollEvent);
+		slider.setOnScroll(scrollEvent);
+
+		sliderValue.setText((int) Math.round(slider.getValue()) + "");
 		return sliderValue;
 	}
 
