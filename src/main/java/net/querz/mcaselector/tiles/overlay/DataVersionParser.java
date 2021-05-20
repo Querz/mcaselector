@@ -6,7 +6,7 @@ import net.querz.mcaselector.validation.ValidationHelper;
 public class DataVersionParser extends OverlayParser {
 
 	public DataVersionParser() {
-		super(OverlayType.INHABITED_TIME);
+		super(OverlayType.DATA_VERSION);
 	}
 
 	@Override
