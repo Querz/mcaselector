@@ -9,6 +9,7 @@ import net.querz.mcaselector.version.anvil116.*;
 import net.querz.mcaselector.version.anvil117.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class VersionController {
 
@@ -46,14 +47,14 @@ public final class VersionController {
 		return Mapping.match(dataVersion).getEntityFilter();
 	}
 
-	private static final Map<Class<? extends ChunkFilter>, ChunkFilter> chunkFilterInstances = new HashMap<>();
-	private static final Map<Class<? extends ChunkMerger>, ChunkMerger> chunkMergerInstances = new HashMap<>();
-	private static final Map<Class<? extends ChunkRelocator>, ChunkRelocator> chunkRelocatorInstances = new HashMap<>();
-	private static final Map<Class<? extends PoiRelocator>, PoiRelocator> poiRelocatorInstances = new HashMap<>();
-	private static final Map<Class<? extends EntityRelocator>, EntityRelocator> entityRelocatorInstances = new HashMap<>();
-	private static final Map<Class<? extends EntityFilter>, EntityFilter> entityFilterInstances = new HashMap<>();
-	private static final Map<Class<? extends ChunkRenderer>, ChunkRenderer> chunkRendererInstances = new HashMap<>();
-	private static final Map<Class<? extends ColorMapping>, ColorMapping> colorMappingInstances = new HashMap<>();
+	private static final Map<Class<? extends ChunkFilter>, ChunkFilter> chunkFilterInstances = new ConcurrentHashMap<>();
+	private static final Map<Class<? extends ChunkMerger>, ChunkMerger> chunkMergerInstances = new ConcurrentHashMap<>();
+	private static final Map<Class<? extends ChunkRelocator>, ChunkRelocator> chunkRelocatorInstances = new ConcurrentHashMap<>();
+	private static final Map<Class<? extends PoiRelocator>, PoiRelocator> poiRelocatorInstances = new ConcurrentHashMap<>();
+	private static final Map<Class<? extends EntityRelocator>, EntityRelocator> entityRelocatorInstances = new ConcurrentHashMap<>();
+	private static final Map<Class<? extends EntityFilter>, EntityFilter> entityFilterInstances = new ConcurrentHashMap<>();
+	private static final Map<Class<? extends ChunkRenderer>, ChunkRenderer> chunkRendererInstances = new ConcurrentHashMap<>();
+	private static final Map<Class<? extends ColorMapping>, ColorMapping> colorMappingInstances = new ConcurrentHashMap<>();
 
 	private enum Mapping {
 
