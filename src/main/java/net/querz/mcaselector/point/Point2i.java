@@ -3,7 +3,7 @@ package net.querz.mcaselector.point;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class Point2i implements Cloneable, Serializable {
+public class Point2i implements Cloneable, Comparable<Point2i>, Serializable {
 
 	private int x, z;
 
@@ -189,5 +189,10 @@ public class Point2i implements Cloneable, Serializable {
 		int nz = z % 32;
 		nz = nz < 0 ? 32 + nz : nz;
 		return new Point2i(nx, nz);
+	}
+
+	@Override
+	public int compareTo(Point2i o) {
+		return Long.compareUnsigned(asLong(), o.asLong());
 	}
 }

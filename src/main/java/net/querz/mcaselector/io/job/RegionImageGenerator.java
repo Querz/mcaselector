@@ -21,9 +21,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class RegionImageGenerator {
@@ -32,10 +34,41 @@ public class RegionImageGenerator {
 	private static final Set<Point2i> saving = ConcurrentHashMap.newKeySet();
 	private static final Map<Point2i, Runnable> onSaved = new ConcurrentHashMap<>();
 
+	private static final TreeMap<Point2i, RegionMCAFile> cachedMCAFiles = new TreeMap<>();
+	private static Function<Point2i, Boolean> cacheEligibilityChecker = null;
+
 	private RegionImageGenerator() {}
 
 	public static void generate(Tile tile, BiConsumer<Image, UniqueID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel, boolean canSkipSaving) {
 		MCAFilePipe.addJob(new MCAImageLoadJob(tile, new UniqueID(), callback, scaleSupplier, scaleOnly, progressChannel, canSkipSaving));
+	}
+
+	public static RegionMCAFile getCachedRegionMCAFile(Point2i region) {
+		return cachedMCAFiles.get(region);
+	}
+
+	public static void cacheRegionMCAFile(RegionMCAFile regionMCAFile, UniqueID uniqueID) {
+		synchronized (cachedMCAFiles) {
+			if (!uniqueID.matchesCurrentConfig()) {
+				return;
+			}
+			if (cacheEligibilityChecker != null && cacheEligibilityChecker.apply(regionMCAFile.getLocation())) {
+				if (cachedMCAFiles.size() > Config.getMaxLoadedFiles()) {
+					Map.Entry<Point2i, RegionMCAFile> e = cachedMCAFiles.pollFirstEntry();
+				}
+				cachedMCAFiles.put(regionMCAFile.getLocation(), regionMCAFile);
+			}
+		}
+	}
+
+	public static void setCacheEligibilityChecker(Function<Point2i, Boolean> checker) {
+		RegionImageGenerator.cacheEligibilityChecker = checker;
+	}
+
+	public static void invalidateCachedMCAFiles() {
+		synchronized (cachedMCAFiles) {
+			cachedMCAFiles.clear();
+		}
 	}
 
 	public static boolean isLoading(Tile tile) {
@@ -118,9 +151,13 @@ public class RegionImageGenerator {
 
 		@Override
 		public void execute() {
-			byte[] data = load(tile.getMCAFile());
-			if (data != null) {
-				MCAFilePipe.executeProcessData(new MCAImageProcessJob(tile.getMCAFile(), data, tile, uniqueID, callback, scaleSupplier, scaleOnly, progressChannel, canSkipSaving));
+			RegionMCAFile cachedRegion = getCachedRegionMCAFile(tile.getLocation());
+			byte[] data = null;
+			if (cachedRegion == null) {
+				data = load(tile.getMCAFile());
+			}
+			if (data != null || cachedRegion != null) {
+				MCAFilePipe.executeProcessData(new MCAImageProcessJob(tile.getMCAFile(), data, cachedRegion, tile, uniqueID, callback, scaleSupplier, scaleOnly, progressChannel, canSkipSaving));
 				return;
 			}
 			callback.accept(null, uniqueID);
@@ -142,6 +179,7 @@ public class RegionImageGenerator {
 	private static class MCAImageProcessJob extends ProcessDataJob {
 
 		private final File file;
+		private RegionMCAFile mcaFile;
 		private final Tile tile;
 		private final UniqueID uniqueID;
 		private final BiConsumer<Image, UniqueID> callback;
@@ -150,9 +188,10 @@ public class RegionImageGenerator {
 		private final Progress progressChannel;
 		private final boolean canSkipSaving;
 
-		private MCAImageProcessJob(File file, byte[] data, Tile tile, UniqueID uniqueID, BiConsumer<Image, UniqueID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel, boolean canSkipSaving) {
+		private MCAImageProcessJob(File file, byte[] data, RegionMCAFile cachedFile, Tile tile, UniqueID uniqueID, BiConsumer<Image, UniqueID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel, boolean canSkipSaving) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null), data, null, null);
 			this.file = file;
+			this.mcaFile = cachedFile;
 			this.tile = tile;
 			this.uniqueID = uniqueID;
 			this.callback = callback;
@@ -166,38 +205,37 @@ public class RegionImageGenerator {
 		public void execute() {
 			Debug.dumpf("generating image for %s", file.getAbsolutePath());
 
-			Timer t = new Timer();
-
 			File file = tile.getMCAFile();
 			ByteArrayPointer ptr = new ByteArrayPointer(getRegionData());
-			RegionMCAFile mcaFile = new RegionMCAFile(file);
-			Image image = null;
-			try {
-				mcaFile.load(ptr);
-				Debug.dumpf("took %s to read mca file %s", t, mcaFile.getFile().getName());
-
-				t.reset();
-
-				image = TileImage.generateImage(mcaFile);
-
-				if (image != null) {
-					BufferedImage img = SwingFXUtils.fromFXImage(image, null);
-					int zoomLevel = Tile.getZoomLevel(scaleSupplier.get());
-					BufferedImage scaled = ImageHelper.scaleImage(img, (double) Tile.SIZE / zoomLevel);
-					Image scaledImage = SwingFXUtils.toFXImage(scaled, null);
-					callback.accept(scaledImage, uniqueID);
-				} else {
-					callback.accept(null, uniqueID);
+			boolean isCached = false;
+			if (mcaFile == null) {
+				mcaFile = new RegionMCAFile(file);
+				try {
+					Timer t = new Timer();
+					mcaFile.load(ptr);
+					Debug.dumpf("took %s to read mca file %s", t, mcaFile.getFile().getName());
+				} catch (IOException ex) {
+					Debug.dumpf("failed to load mca file %s", mcaFile.getFile().getName());
 				}
+			} else {
+				isCached = true;
+			}
 
+			Image image = TileImage.generateImage(mcaFile);
 
-			} catch (IOException ex) {
-				Debug.errorf("failed to read mca file header from %s", file);
+			if (image != null) {
+				BufferedImage img = SwingFXUtils.fromFXImage(image, null);
+				int zoomLevel = Tile.getZoomLevel(scaleSupplier.get());
+				BufferedImage scaled = ImageHelper.scaleImage(img, (double) Tile.SIZE / zoomLevel);
+				Image scaledImage = SwingFXUtils.toFXImage(scaled, null);
+				callback.accept(scaledImage, uniqueID);
+			} else {
 				callback.accept(null, uniqueID);
 			}
 
+			cacheRegionMCAFile(mcaFile, uniqueID);
 
-			if (image != null) {
+			if (image != null && !isCached) {
 				setSaving(tile, true);
 				MCAFilePipe.executeSaveData(new MCAImageSaveCacheJob(image, tile, uniqueID, scaleSupplier, scaleOnly, progressChannel, canSkipSaving));
 			} else {

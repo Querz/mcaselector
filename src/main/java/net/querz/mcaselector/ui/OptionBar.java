@@ -157,8 +157,9 @@ public class OptionBar extends BorderPane {
 
 		heightValue.addListener((v, o, n) -> {
 			if (!tileMap.getDisabled()) {
+				int value = (int) Math.round(n.doubleValue());
 				heightDisabled.set(true);
-				Config.setRenderHeight(n.intValue());
+				Config.setRenderHeight(value);
 
 				CacheHelper.clearAllCacheAsync(tileMap, () -> {
 					heightDisabled.set(false);

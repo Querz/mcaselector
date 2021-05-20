@@ -15,6 +15,7 @@ import net.querz.mcaselector.io.job.ChunkFilterExporter;
 import net.querz.mcaselector.io.job.ChunkFilterSelector;
 import net.querz.mcaselector.io.job.ChunkImporter;
 import net.querz.mcaselector.io.job.FieldChanger;
+import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.io.job.SelectionDeleter;
 import net.querz.mcaselector.io.job.SelectionExporter;
 import net.querz.mcaselector.io.job.SelectionImageExporter;
@@ -566,6 +567,7 @@ public class DialogHelper {
 		Config.setWorldDirs(worldDirectories);
 		CacheHelper.validateCacheVersion(tileMap);
 		CacheHelper.readWorldSettingsFile();
+		RegionImageGenerator.invalidateCachedMCAFiles();
 		tileMap.getWindow().getOptionBar().setRenderHeight(Config.getRenderHeight());
 		tileMap.clear();
 		tileMap.update();

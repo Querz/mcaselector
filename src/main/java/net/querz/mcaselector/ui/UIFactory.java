@@ -98,12 +98,12 @@ public final class UIFactory {
 		});
 		sliderValue.focusedProperty().addListener((l, o, n) -> {
 			if (!n) {
-				sliderValue.setText((int) slider.getValue() + "");
+				sliderValue.setText((int) Math.round(slider.getValue()) + "");
 			}
 		});
 		slider.valueProperty().addListener((l, o, n) -> {
 			if (n.intValue() != slider.getMin() || slider.isFocused()) {
-				sliderValue.setText(n.intValue() + "");
+				sliderValue.setText((int) Math.round(slider.getValue()) + "");
 			}
 		});
 		sliderValue.setText((int) slider.getValue() + "");

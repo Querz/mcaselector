@@ -14,6 +14,7 @@ import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
+import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.DialogHelper;
@@ -124,6 +125,16 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 		setOverlays(Config.getOverlays());
 		showNonexistentRegions = Config.showNonExistentRegions();
+
+		RegionImageGenerator.setCacheEligibilityChecker(region -> {
+			DataProperty<Boolean> eligible = new DataProperty<>(false);
+			runOnVisibleRegions(r -> {
+				if (region.equals(r)) {
+					eligible.set(true);
+				}
+			}, new Point2f(), Config.getMaxLoadedFiles());
+			return eligible.get();
+		});
 
 		update();
 	}
@@ -541,7 +552,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	public List<Point2i> getVisibleRegions() {
 		List<Point2i> regions = new ArrayList<>();
-		runOnVisibleRegions(regions::add, new Point2f());
+		runOnVisibleRegions(regions::add, new Point2f(), Integer.MAX_VALUE);
 		return regions;
 	}
 
@@ -817,7 +828,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 			TileImage.draw(tile, ctx, scale, p, selectionInverted, overlayParser != null, showNonexistentRegions);
 
-		}, new Point2f());
+		}, new Point2f(), Integer.MAX_VALUE);
 
 		if (pastedChunks != null) {
 			runOnVisibleRegions(region -> {
@@ -825,7 +836,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getZ() / scale);
 				p = p.add(pastedChunksOffset.mul(16).div(scale).toPoint2f());
 				drawPastedChunks(ctx, region, p);
-			}, pastedChunksOffset.mul(16).toPoint2f());
+			}, pastedChunksOffset.mul(16).toPoint2f(), Integer.MAX_VALUE);
 		}
 
 		if (showRegionGrid) {
@@ -929,7 +940,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	//performs an action on regions in a spiral pattern starting from the center of all visible regions in the TileMap.
-	private void runOnVisibleRegions(Consumer<Point2i> consumer, Point2f additionalOffset) {
+	private void runOnVisibleRegions(Consumer<Point2i> consumer, Point2f additionalOffset, int limit) {
 		Point2i min = offset.sub(additionalOffset).toPoint2i().blockToRegion();
 		Point2i max = offset.sub(additionalOffset).add((float) getWidth() * scale, (float) getHeight() * scale).toPoint2i().blockToRegion();
 
@@ -941,12 +952,17 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		int step = 0;
 		int x = mid.getX();
 		int y = mid.getZ();
+		int count = 0;
 		while ((x <= max.getX() || y <= max.getZ()) && (x >= min.getX() || y >= min.getZ())) {
 			for (int i = 0; i < steps * 2; i++) {
 				x = mid.getX() + xSteps;
 				y = mid.getZ() + ySteps;
 				if (x <= max.getX() && x >= min.getX() && y <= max.getZ() && y >= min.getZ()) {
 					consumer.accept(new Point2i(x, y));
+					count++;
+					if (count == limit) {
+						return;
+					}
 				}
 				switch (dir) {
 				case 0:
