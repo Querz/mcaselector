@@ -582,8 +582,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	public void markAllTilesAsObsolete() {
 		for (Tile tile : visibleTiles) {
 			tile.setLoaded(false);
-			imgPool.clear();
 		}
+		imgPool.clear();
 	}
 
 	public void clearTile(Point2i p) {

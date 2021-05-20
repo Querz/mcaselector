@@ -19,10 +19,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -34,7 +31,7 @@ public class RegionImageGenerator {
 	private static final Set<Point2i> saving = ConcurrentHashMap.newKeySet();
 	private static final Map<Point2i, Runnable> onSaved = new ConcurrentHashMap<>();
 
-	private static final TreeMap<Point2i, RegionMCAFile> cachedMCAFiles = new TreeMap<>();
+	private static final LinkedHashMap<Point2i, RegionMCAFile> cachedMCAFiles = new LinkedHashMap<>();
 	private static Function<Point2i, Boolean> cacheEligibilityChecker = null;
 
 	private RegionImageGenerator() {}
@@ -54,9 +51,11 @@ public class RegionImageGenerator {
 			}
 			if (cacheEligibilityChecker != null && cacheEligibilityChecker.apply(regionMCAFile.getLocation())) {
 				if (cachedMCAFiles.size() > Config.getMaxLoadedFiles()) {
-					Map.Entry<Point2i, RegionMCAFile> e = cachedMCAFiles.pollFirstEntry();
+					cachedMCAFiles.entrySet().iterator().next();
 				}
-				cachedMCAFiles.put(regionMCAFile.getLocation(), regionMCAFile);
+				if (!cachedMCAFiles.containsKey(regionMCAFile.getLocation())) {
+					cachedMCAFiles.put(regionMCAFile.getLocation(), regionMCAFile);
+				}
 			}
 		}
 	}
