@@ -294,6 +294,7 @@ public class DialogHelper {
 			if (r.getHeight() != Config.getRenderHeight() || r.layerOnly() != Config.renderLayerOnly()) {
 				Config.setRenderHeight(r.getHeight());
 				Config.setRenderLayerOnly(r.layerOnly());
+				tileMap.getWindow().getOptionBar().setRenderHeight(r.getHeight());
 				CacheHelper.clearAllCache(tileMap);
 			}
 		});
@@ -565,6 +566,7 @@ public class DialogHelper {
 		Config.setWorldDirs(worldDirectories);
 		CacheHelper.validateCacheVersion(tileMap);
 		CacheHelper.readWorldSettingsFile();
+		tileMap.getWindow().getOptionBar().setRenderHeight(Config.getRenderHeight());
 		tileMap.clear();
 		tileMap.update();
 		tileMap.disable(false);

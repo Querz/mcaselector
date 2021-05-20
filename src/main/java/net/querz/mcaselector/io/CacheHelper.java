@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io;
 
+import javafx.application.Platform;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.point.Point2i;
@@ -8,7 +9,6 @@ import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.progress.Progress;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -54,6 +54,24 @@ public final class CacheHelper {
 		updateWorldSettingsFile();
 		tileMap.clear();
 		tileMap.update();
+	}
+
+	public static void clearAllCacheAsync(TileMap tileMap, Runnable callback) {
+		Thread clear = new Thread(() -> {
+			MCAFilePipe.cancelAllJobsAndFlush();
+			for (File cacheDir : Config.getCacheDirs()) {
+				FileHelper.deleteDirectory(cacheDir);
+			}
+			updateVersionFile();
+			updateWorldSettingsFile();
+
+			Platform.runLater(() -> {
+				tileMap.clear();
+				tileMap.update();
+			});
+			callback.run();
+		});
+		clear.start();
 	}
 
 	public static void clearViewCache(TileMap tileMap) {

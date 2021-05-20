@@ -255,7 +255,7 @@ public final class MCAFilePipe {
 		flushExecutor();
 		clearQueues();
 		flushExecutor();
-		System.out.println("all: " + allTasks.get() + " " + t);
+		Debug.dumpf("took %s to cancel and flush all executors", t);
 	}
 
 	private static void flushExecutor() {

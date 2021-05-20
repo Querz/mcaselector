@@ -11,12 +11,11 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.io.MCAFilePipe;
-import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.io.CacheHelper;
 import net.querz.mcaselector.text.Translation;
@@ -26,7 +25,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 
-public class OptionBar extends MenuBar {
+public class OptionBar extends BorderPane {
 	/*
 	* File				View				Selection					Tools				About
 	* - Open World		- Chunk Grid		- Clear selection			- Import chunks
@@ -40,12 +39,17 @@ public class OptionBar extends MenuBar {
 	* 										- Clear cache
 	* */
 
+	private final MenuBar menuBar = new MenuBar();
+
 	private final Menu file = UIFactory.menu(Translation.MENU_FILE);
 	private final Menu view = UIFactory.menu(Translation.MENU_VIEW);
 	private final Menu selection = UIFactory.menu(Translation.MENU_SELECTION);
 	private final Menu tools = UIFactory.menu(Translation.MENU_TOOLS);
 	private final Label about = UIFactory.label(Translation.MENU_ABOUT);
 	private final Slider height = new Slider(-64, 319, 319);
+	private final Label heightMinLabel = new Label("-64");
+	private final Label heightMaxLabel = new Label("319");
+	private final TextField heightField = UIFactory.attachTextFieldToSlider(height);
 
 	private final MenuItem openWorld = UIFactory.menuItem(Translation.MENU_FILE_OPEN_WORLD);
 	private final MenuItem openRegion = UIFactory.menuItem(Translation.MENU_FILE_OPEN);
@@ -79,9 +83,12 @@ public class OptionBar extends MenuBar {
 
 	private int previousSelectedChunks = 0;
 	private boolean previousInvertedSelection = false;
+	private final DoubleProperty heightValue = new SimpleDoubleProperty(height.getValue());
+	private final BooleanProperty heightDisabled = new SimpleBooleanProperty(false);
 
 	public OptionBar(TileMap tileMap, Stage primaryStage) {
-		getStyleClass().add("option-bar");
+		getStyleClass().add("option-bar-box");
+		menuBar.getStyleClass().add("option-bar");
 
 		tileMap.setOnUpdate(this::onUpdate);
 
@@ -128,14 +135,21 @@ public class OptionBar extends MenuBar {
 		});
 		height.setBlockIncrement(1);
 
-		DoubleProperty heightValue = new SimpleDoubleProperty(height.getValue());
 		height.setOnMouseReleased(e -> {
+			if (heightDisabled.get()) {
+				e.consume();
+				return;
+			}
 			if (heightValue.get() != height.getValue()) {
 				heightValue.set(height.getValue());
 			}
 		});
 
 		height.setOnKeyReleased(e -> {
+			if (heightDisabled.get()) {
+				e.consume();
+				return;
+			}
 			if (heightValue.get() != height.getValue()) {
 				heightValue.set(height.getValue());
 			}
@@ -143,16 +157,38 @@ public class OptionBar extends MenuBar {
 
 		heightValue.addListener((v, o, n) -> {
 			if (!tileMap.getDisabled()) {
-				System.out.println("value changed from " + o + " to " + n);
+				heightDisabled.set(true);
 				Config.setRenderHeight(n.intValue());
-				CacheHelper.clearAllCache(tileMap);
+
+				CacheHelper.clearAllCacheAsync(tileMap, () -> {
+					heightDisabled.set(false);
+					if (height.getValue() != heightValue.get()) {
+						heightValue.set(height.getValue());
+					}
+				});
 			}
 		});
 
-		Menu slider = new Menu();
-		slider.setGraphic(height);
+		HBox heightSlider = new HBox();
+		heightSlider.getStyleClass().add("option-bar-slider-box");
 
-		getMenus().addAll(file, view, selection, tools, aboutMenu, slider);
+		heightField.textProperty().addListener((v, o, n) -> {
+			try {
+				int parsed = Integer.parseInt(n);
+				if (heightDisabled.get()) {
+					return;
+				}
+				if (heightValue.get() != height.getValue()) {
+					heightValue.set(parsed);
+				}
+			} catch (NumberFormatException ex) {
+				// do nothing
+			}
+		});
+
+		heightSlider.getChildren().addAll(heightMinLabel, height, heightMaxLabel, heightField);
+
+		menuBar.getMenus().addAll(file, view, selection, tools, aboutMenu);
 
 		openWorld.setOnAction(e -> DialogHelper.openWorld(tileMap, primaryStage));
 		openRegion.setOnAction(e -> DialogHelper.openRegion(tileMap, primaryStage));
@@ -186,6 +222,8 @@ public class OptionBar extends MenuBar {
 
 
 		openWorld.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN));
+		settings.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCodeCombination.SHORTCUT_DOWN));
+		worldSettings.setAccelerator(new KeyCodeCombination(KeyCode.E));
 		quit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCodeCombination.SHORTCUT_DOWN));
 		chunkGrid.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCodeCombination.SHORTCUT_DOWN));
 		regionGrid.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCodeCombination.SHORTCUT_DOWN));
@@ -215,6 +253,9 @@ public class OptionBar extends MenuBar {
 		setWorldDependentMenuItemsEnabled(false, tileMap);
 
 		Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> paste.setDisable(!hasValidClipboardContent(tileMap) || tileMap.getDisabled()));
+
+		setLeft(menuBar);
+		setRight(heightSlider);
 	}
 
 	private void onUpdate(TileMap tileMap) {
@@ -236,6 +277,10 @@ public class OptionBar extends MenuBar {
 		invert.setDisable(!enabled);
 		paste.setDisable(!enabled || !hasValidClipboardContent(tileMap));
 		nextOverlay.setDisable(!enabled);
+		height.setDisable(!enabled);
+		heightMinLabel.setDisable(!enabled);
+		heightMaxLabel.setDisable(!enabled);
+		heightField.setDisable(!enabled);
 	}
 
 	private void setSelectionDependentMenuItemsEnabled(int selected, boolean inverted) {
@@ -255,5 +300,12 @@ public class OptionBar extends MenuBar {
 		Transferable content = clipboard.getContents(tileMap);
 		DataFlavor[] flavors = content.getTransferDataFlavors();
 		return flavors.length == 1 && flavors[0].equals(TileMapSelection.SELECTION_DATA_FLAVOR);
+	}
+
+	public void setRenderHeight(double height) {
+		this.height.setValue(height);
+		if (Config.getRenderHeight() != height) {
+			heightValue.set(height);
+		}
 	}
 }

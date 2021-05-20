@@ -50,6 +50,7 @@ public class WorldSettingsDialog extends Dialog<WorldSettingsDialog.Result> {
 		heightSlider.setSnapToTicks(true);
 		heightSlider.setMajorTickUnit(32);
 		heightSlider.setMinorTickCount(384);
+		heightSlider.setBlockIncrement(1);
 
 		layerOnlyCheckBox.setSelected(Config.renderLayerOnly());
 

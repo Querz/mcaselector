@@ -75,6 +75,8 @@ public class Window extends Application {
 			new PreviewDisclaimerDialog(primaryStage).showAndWait();
 		}
 
+		tileMap.requestFocus();
+
 		primaryStage.show();
 	}
 
