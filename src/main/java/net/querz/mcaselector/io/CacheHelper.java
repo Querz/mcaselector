@@ -56,6 +56,8 @@ public final class CacheHelper {
 		tileMap.update();
 	}
 
+	// asynchronously cancels all jobs and marks all Tiles as "not loaded"
+	// but doesn't delete their images.
 	public static void clearAllCacheAsync(TileMap tileMap, Runnable callback) {
 		Thread clear = new Thread(() -> {
 			MCAFilePipe.cancelAllJobsAndFlush();
@@ -66,7 +68,7 @@ public final class CacheHelper {
 			updateWorldSettingsFile();
 
 			Platform.runLater(() -> {
-				tileMap.clear();
+				tileMap.markAllTilesAsObsolete();
 				tileMap.update();
 			});
 			callback.run();
