@@ -57,6 +57,8 @@ dialog.settings.chunk_color;Kolor zaznaczenia chunku
 dialog.settings.pasted_chunks_color;Kolor wstawionych chunku
 dialog.settings.shade;Cieniuj
 dialog.settings.shade_water;Cieniuj wodę
+dialog.settings.show_nonexistent_regions;Pokaż nieistniejące regiony
+dialog.settings.background_pattern;Wzór tła
 dialog.settings.mc_saves_dir;Katalog Minecraft
 dialog.settings.print_debug;Wyświetlaj zaawansowane informacje
 dialog.settings.show_log_file;Pokaż plik dziennika
@@ -64,6 +66,8 @@ dialog.settings.reset;Resetuj
 dialog.world_settings.title;Ustawienia świata
 dialog.world_settings.poi;POI
 dialog.world_settings.entities;Podmioty
+dialog.world_settings.render_height;Wysokość renderowania
+dialog.world_settings.render_layer_only;Renderuj tylko warstwę
 dialog.goto.title;Idź do miejsca
 dialog.confirmation.question;Jesteś pewien?
 dialog.delete_chunks_confirmation.title;Usuń chunki

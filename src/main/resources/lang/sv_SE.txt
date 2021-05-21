@@ -57,6 +57,8 @@ dialog.settings.chunk_color;Chunkmarkeringsfärg
 dialog.settings.pasted_chunks_color;Färg på insatta chunks
 dialog.settings.shade;Skugga
 dialog.settings.shade_water;Vattendjup
+dialog.settings.show_nonexistent_regions;Visa regioner som inte finns
+dialog.settings.background_pattern;Bakgrundsmönster
 dialog.settings.mc_saves_dir;Minecraft-katalog
 dialog.settings.print_debug;Skriv ut felsökningsmeddelanden
 dialog.settings.show_log_file;Visa loggfil
@@ -64,6 +66,8 @@ dialog.settings.reset;Återställ
 dialog.world_settings.title;Världsinställningar
 dialog.world_settings.poi;POI
 dialog.world_settings.entities;Enheter
+dialog.world_settings.render_height;Gör höjd
+dialog.world_settings.render_layer_only;Gör endast lager
 dialog.goto.title;Gå till plats
 dialog.confirmation.question;Är du säker?
 dialog.delete_chunks_confirmation.title;Radera chunks

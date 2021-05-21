@@ -87,6 +87,31 @@
 
 /*---------- MENU BAR, MENU AND MENU ITEM ----------*/
 
+.option-bar-box {
+	-fx-background-color: -color-menu-background;
+}
+
+.option-bar-slider-box {
+	-fx-padding: 0 5 -5 0;
+}
+
+.option-bar-slider-box .slider {
+	-fx-show-tick-labels: false;
+	-fx-padding: 3 0 -5 0;
+}
+
+.option-bar-slider-box .label {
+	-fx-text-fill: -color-text-light;
+	-fx-padding: 2 5 -5 5;
+}
+
+.option-bar-slider-box .text-field {
+	-fx-padding: -3 0 -3 0;
+	-fx-background-insets: 2 0 2 0;
+	-fx-border-insets: 2 0 2 0;
+	-fx-pref-height: 10;
+}
+
 /* basic menu background color */
 .menu-bar, .menu, .menu-item, .context-menu {
 	-fx-background-color: -color-menu-background;
@@ -444,6 +469,18 @@
 	-fx-pref-width: 300px;
 }
 
+.world-settings-dialog-pane .slider-value-field {
+	-fx-pref-width: 38;
+}
+
+.world-settings-dialog-pane .slider {
+	-fx-pref-width: 300;
+}
+
+.world-settings-dialog-pane .height-box {
+	-fx-spacing: 5;
+}
+
 /*---------- FILE TEXT FIELD ----------*/
 
 .file-text-field {
@@ -510,7 +547,7 @@
 
 .tile-map-box {
 	-fx-effect: innershadow(gaussian, -color-tilemap-shadow, 8, 0, 0, 0);
-	-fx-background-color: black;
+	/*-fx-background-color: transparent;*/
 	-region-grid-color: black;
 	-chunk-grid-color: darkgray;
 	-grid-line-width: 0.5;
@@ -795,7 +832,7 @@
 	-fx-padding: 4 0 -3 0;
 }
 
-.languages-combo-box {
+.languages-combo-box, .tilemap-backgrounds-combo-box {
 	-fx-alignment: center;
 	-fx-pref-width: 240;
 }

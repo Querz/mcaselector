@@ -19,9 +19,9 @@ import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.version.VersionController;
-import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
+import static net.querz.mcaselector.io.job.RegionImageGenerator.UniqueID;
 
 public final class TileImage {
 
@@ -35,7 +35,7 @@ public final class TileImage {
 
 	private TileImage() {}
 
-	public static void draw(Tile tile, GraphicsContext ctx, float scale, Point2f offset, boolean selectionInverted, boolean overlay) {
+	public static void draw(Tile tile, GraphicsContext ctx, float scale, Point2f offset, boolean selectionInverted, boolean overlay, boolean showNonexistentRegions) {
 		if (tile.image != null) {
 			ctx.drawImage(tile.getImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 
@@ -44,7 +44,7 @@ public final class TileImage {
 				ctx.drawImage(tile.getOverlay(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 				ctx.setGlobalAlpha(1);
 			}
-		} else {
+		} else if (showNonexistentRegions) {
 			ctx.drawImage(ImageHelper.getEmptyTileImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		}
 
@@ -98,15 +98,7 @@ public final class TileImage {
 		tile.markedChunksImage = wImage;
 	}
 
-	public static Image generateImage(Tile tile, UUID world, BiConsumer<Image, UUID> callback, Supplier<Float> scaleSupplier, RegionMCAFile mcaFile) {
-		Timer t = new Timer();
-
-		Image image = createMCAImage(mcaFile);
-
-		return image;
-	}
-
-	public static Image createMCAImage(RegionMCAFile mcaFile) {
+	public static Image generateImage(RegionMCAFile mcaFile) {
 		try {
 			WritableImage finalImage = new WritableImage(Tile.SIZE, Tile.SIZE);
 			PixelWriter writer = finalImage.getPixelWriter();
@@ -129,7 +121,7 @@ public final class TileImage {
 				}
 			}
 
-			if (Config.shade()) {
+			if (Config.shade() && !Config.renderLayerOnly()) {
 				shade(pixelBuffer, waterPixels, terrainHeights, waterHeights);
 			}
 
@@ -148,16 +140,27 @@ public final class TileImage {
 		}
 		int dataVersion = chunkData.getData().getInt("DataVersion");
 		try {
-			VersionController.getChunkRenderer(dataVersion).drawChunk(
-					chunkData.getData(),
-					VersionController.getColorMapping(dataVersion),
-					x, z,
-					pixelBuffer,
-					waterPixels,
-					terrainHeights,
-					waterHeights,
-					Config.shade() && Config.shadeWater()
-			);
+			if (Config.renderLayerOnly()) {
+				VersionController.getChunkRenderer(dataVersion).drawLayer(
+						chunkData.getData(),
+						VersionController.getColorMapping(dataVersion),
+						x, z,
+						pixelBuffer,
+						Config.getRenderHeight()
+				);
+			} else {
+				VersionController.getChunkRenderer(dataVersion).drawChunk(
+						chunkData.getData(),
+						VersionController.getColorMapping(dataVersion),
+						x, z,
+						pixelBuffer,
+						waterPixels,
+						terrainHeights,
+						waterHeights,
+						Config.shade() && Config.shadeWater(),
+						Config.getRenderHeight()
+				);
+			}
 		} catch (Exception ex) {
 			Debug.dumpException("failed to draw chunk " + chunkData.getAbsoluteLocation(), ex);
 

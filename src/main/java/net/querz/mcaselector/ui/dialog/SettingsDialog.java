@@ -15,8 +15,8 @@ import javafx.util.StringConverter;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.FileTextField;
+import net.querz.mcaselector.ui.TileMapBox;
 import net.querz.mcaselector.ui.UIFactory;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Locale;
@@ -53,6 +53,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private final Button pasteChunksColorPreview = new Button();
 	private final CheckBox shadeCheckBox = new CheckBox();
 	private final CheckBox shadeWaterCheckBox = new CheckBox();
+	private final CheckBox showNonexistentRegionsCheckBox = new CheckBox();
+	private final ComboBox<TileMapBox.TileMapBoxBackground> tileMapBackgrounds = new ComboBox<>();
 	private final FileTextField mcSavesDir = new FileTextField();
 	private final CheckBox debugCheckBox = new CheckBox();
 
@@ -84,6 +86,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			pasteChunksColorPreview.setBackground(new Background(new BackgroundFill(Config.DEFAULT_PASTE_CHUNKS_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
 			shadeCheckBox.setSelected(Config.DEFAULT_SHADE);
 			shadeWaterCheckBox.setSelected(Config.DEFAULT_SHADE_WATER);
+			showNonexistentRegionsCheckBox.setSelected(Config.DEFAULT_SHOW_NONEXISTENT_REGIONS);
+			tileMapBackgrounds.setValue(TileMapBox.TileMapBoxBackground.valueOf(Config.DEFAULT_TILEMAP_BACKGROUND));
 			mcSavesDir.setFile(Config.DEFAULT_MC_SAVES_DIR == null ? null : new File(Config.DEFAULT_MC_SAVES_DIR));
 			debugCheckBox.setSelected(Config.DEFAULT_DEBUG);
 		});
@@ -101,6 +105,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 						pasteChunksColor,
 						shadeCheckBox.isSelected(),
 						shadeWaterCheckBox.isSelected(),
+						showNonexistentRegionsCheckBox.isSelected(),
+						tileMapBackgrounds.getSelectionModel().getSelectedItem(),
 						mcSavesDir.getFile(),
 						debugCheckBox.isSelected()
 				);
@@ -139,6 +145,30 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		pasteChunksColorPreview.setBackground(new Background(new BackgroundFill(pasteChunksColor, CornerRadii.EMPTY, Insets.EMPTY)));
 		shadeCheckBox.setSelected(Config.shade());
 		shadeWaterCheckBox.setSelected(Config.shadeWater());
+		showNonexistentRegionsCheckBox.setSelected(Config.showNonExistentRegions());
+		tileMapBackgrounds.getItems().addAll(TileMapBox.TileMapBoxBackground.values());
+
+		tileMapBackgrounds.setCellFactory((listView) -> {
+			ListCell<TileMapBox.TileMapBoxBackground> cell = new ListCell<TileMapBox.TileMapBoxBackground>() {
+
+				@Override
+				public void updateIndex(int i) {
+					super.updateIndex(i);
+					TileMapBox.TileMapBoxBackground[] values = TileMapBox.TileMapBoxBackground.values();
+					if (i < 0 || i >= values.length) {
+						return;
+					}
+					setBackground(values[i].getBackground());
+				}
+			};
+			// we don't want this to be treated like a regular list cell
+			cell.getStyleClass().clear();
+			return cell;
+		});
+		tileMapBackgrounds.setButtonCell(tileMapBackgrounds.getCellFactory().call(null));
+		tileMapBackgrounds.getStyleClass().add("tilemap-backgrounds-combo-box");
+
+		tileMapBackgrounds.setValue(TileMapBox.TileMapBoxBackground.valueOf(Config.getTileMapBackground()));
 		mcSavesDir.setFile(Config.getMCSavesDir() == null ? null : new File(Config.getMCSavesDir()));
 		debugCheckBox.setSelected(Config.debug());
 
@@ -184,8 +214,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_PASTED_CHUNKS_COLOR), 0, 7, 1, 1);
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SHADE), 0, 8, 1, 1);
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SHADE_WATER), 0, 9, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_MC_SAVES_DIR), 0, 10, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_PRINT_DEBUG), 0, 11, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SHOW_NONEXISTENT_REGIONS), 0, 10, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_BACKGROUND_PATTERN), 0, 11, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_MC_SAVES_DIR), 0, 12, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_PRINT_DEBUG), 0, 13, 1, 1);
 		grid.add(languages, 1, 0, 2, 1);
 		grid.add(readThreadsSlider, 1, 1, 1, 1);
 		grid.add(processThreadsSlider, 1, 2, 1, 1);
@@ -196,8 +228,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		grid.add(pasteChunksColorPreview, 1, 7, 2, 1);
 		grid.add(shadeCheckBox, 1, 8, 2, 1);
 		grid.add(shadeWaterCheckBox, 1, 9, 2, 1);
-		grid.add(mcSavesDir, 1, 10, 2, 1);
-		grid.add(debugBox, 1, 11, 2, 1);
+		grid.add(showNonexistentRegionsCheckBox, 1, 10, 2, 1);
+		grid.add(tileMapBackgrounds, 1, 11, 2, 1);
+		grid.add(mcSavesDir, 1, 12, 2, 1);
+		grid.add(debugBox, 1, 13, 2, 1);
 		grid.add(UIFactory.attachTextFieldToSlider(readThreadsSlider), 2, 1, 1, 1);
 		grid.add(UIFactory.attachTextFieldToSlider(processThreadsSlider), 2, 2, 1, 1);
 		grid.add(UIFactory.attachTextFieldToSlider(writeThreadsSlider), 2, 3, 1, 1);
@@ -220,11 +254,17 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		private final Color regionColor, chunkColor, pasteColor;
 		private final boolean shadeWater;
 		private final boolean shade;
+		private final boolean showNonexistentRegions;
+		private final TileMapBox.TileMapBoxBackground tileMapBackground;
 		private final File mcSavesDir;
 		private final boolean debug;
 		private final Locale locale;
 
-		public Result(Locale locale, int readThreads, int processThreads, int writeThreads, int maxLoadedFiles, Color regionColor, Color chunkColor, Color pasteColor, boolean shade, boolean shadeWater, File mcSavesDir, boolean debug) {
+		public Result(Locale locale, int readThreads, int processThreads, int writeThreads, int maxLoadedFiles,
+		              Color regionColor, Color chunkColor, Color pasteColor, boolean shade, boolean shadeWater,
+		              boolean showNonexistentRegions, TileMapBox.TileMapBoxBackground tileMapBackground,
+		              File mcSavesDir, boolean debug) {
+
 			this.locale = locale;
 			this.readThreads = readThreads;
 			this.processThreads = processThreads;
@@ -235,6 +275,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			this.pasteColor = pasteColor;
 			this.shade = shade;
 			this.shadeWater = shadeWater;
+			this.showNonexistentRegions = showNonexistentRegions;
+			this.tileMapBackground = tileMapBackground;
 			if (mcSavesDir == null) {
 				this.mcSavesDir = new File(Config.DEFAULT_MC_SAVES_DIR);
 			} else {
@@ -281,6 +323,14 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		public boolean getShadeWater() {
 			return shadeWater;
+		}
+
+		public boolean getShowNonexistentRegions() {
+			return showNonexistentRegions;
+		}
+
+		public TileMapBox.TileMapBoxBackground getTileMapBackground() {
+			return tileMapBackground;
 		}
 
 		public File getMcSavesDir() {

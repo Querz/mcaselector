@@ -1,5 +1,6 @@
 package net.querz.mcaselector.ui;
 
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -13,6 +14,7 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.ScrollEvent;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.Translation;
 
@@ -84,25 +86,41 @@ public final class UIFactory {
 		TextField sliderValue = new TextField();
 		sliderValue.getStyleClass().add("slider-value-field");
 		sliderValue.textProperty().addListener((l, o, n) -> {
-			if (!n.matches("\\d*")) {
-				sliderValue.setText(n.replaceAll("[^\\d]", ""));
+			if (!n.matches("-?\\d*")) {
+				sliderValue.setText(n.replaceAll("[^\\-\\d]", ""));
 			} else if ("".equals(n)) {
 				slider.setValue(slider.getMin());
 			} else {
-				slider.setValue(Integer.parseInt(n));
+				try {
+					slider.setValue(Integer.parseInt(n));
+				} catch (NumberFormatException ex) {
+					slider.setValue(slider.getMin());
+				}
 			}
 		});
 		sliderValue.focusedProperty().addListener((l, o, n) -> {
 			if (!n) {
-				sliderValue.setText((int) slider.getValue() + "");
+				sliderValue.setText((int) Math.round(slider.getValue()) + "");
 			}
 		});
 		slider.valueProperty().addListener((l, o, n) -> {
 			if (n.intValue() != slider.getMin() || slider.isFocused()) {
-				sliderValue.setText(n.intValue() + "");
+				sliderValue.setText((int) Math.round(slider.getValue()) + "");
 			}
 		});
-		sliderValue.setText((int) slider.getValue() + "");
+
+		EventHandler<? super ScrollEvent> scrollEvent = e -> {
+			if (e.getDeltaY() > 0) {
+				slider.setValue(slider.getValue() + 1);
+			} else if (e.getDeltaY() < 0) {
+				slider.setValue(slider.getValue() - 1);
+			}
+		};
+
+		sliderValue.setOnScroll(scrollEvent);
+		slider.setOnScroll(scrollEvent);
+
+		sliderValue.setText((int) Math.round(slider.getValue()) + "");
 		return sliderValue;
 	}
 

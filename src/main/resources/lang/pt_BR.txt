@@ -57,6 +57,8 @@ dialog.settings.chunk_color;Cor dos chunks selecionados
 dialog.settings.pasted_chunks_color;Cor dos chunks inseridos
 dialog.settings.shade;Sombra
 dialog.settings.shade_water;Profundidade da água
+dialog.settings.show_nonexistent_regions;Mostrar regiões inexistentes
+dialog.settings.background_pattern;Padrão de fundo
 dialog.settings.mc_saves_dir;Diretório de mundos do Minecraft
 dialog.settings.print_debug;Mostrar mensagens de desenvolvedor
 dialog.settings.show_log_file;Mostrar arquivo de log
@@ -64,6 +66,8 @@ dialog.settings.reset;Resetar
 dialog.world_settings.title;Configurações do mundo
 dialog.world_settings.poi;POI
 dialog.world_settings.entities;Entidades
+dialog.world_settings.render_height;Altura de renderização
+dialog.world_settings.render_layer_only;Camada de renderização apenas
 dialog.goto.title;Ir para coordenadas
 dialog.confirmation.question;Tem certeza?
 dialog.delete_chunks_confirmation.title;Apagar chunks

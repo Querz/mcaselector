@@ -57,6 +57,8 @@ dialog.settings.chunk_color;Chunk selection color
 dialog.settings.pasted_chunks_color;Pasted chunks color
 dialog.settings.shade;Shade
 dialog.settings.shade_water;Shade water
+dialog.settings.show_nonexistent_regions;Show nonexistent regions
+dialog.settings.background_pattern;Background pattern
 dialog.settings.mc_saves_dir;MC Saves Directory
 dialog.settings.print_debug;Print debug messages
 dialog.settings.show_log_file;Show log file
@@ -64,6 +66,8 @@ dialog.settings.reset;Reset
 dialog.world_settings.title;World Settings
 dialog.world_settings.poi;POI
 dialog.world_settings.entities;Entities
+dialog.world_settings.render_height;Render height
+dialog.world_settings.render_layer_only;Layer only
 dialog.goto.title;Goto location
 dialog.confirmation.question;Are you sure?
 dialog.delete_chunks_confirmation.title;Delete chunks

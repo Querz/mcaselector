@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io;
 
+import javafx.application.Platform;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.point.Point2i;
@@ -7,12 +8,14 @@ import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.progress.Progress;
+import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -37,19 +40,40 @@ public final class CacheHelper {
 				int z = Integer.parseInt(m.group("regionZ"));
 				boolean scaleOnly = zoomLevel != null;
 				float zoomLevelSupplier = scaleOnly ? zoomLevel : 1;
-				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), null, (i, u) -> {}, () -> zoomLevelSupplier, scaleOnly, progressChannel);
+				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), (i, u) -> {}, () -> zoomLevelSupplier, scaleOnly, progressChannel, false);
 			}
 		}
 	}
 
 	public static void clearAllCache(TileMap tileMap) {
+		MCAFilePipe.cancelAllJobsAndFlush();
 		for (File cacheDir : Config.getCacheDirs()) {
 			FileHelper.deleteDirectory(cacheDir);
 		}
-		MCAFilePipe.clearQueues();
 		updateVersionFile();
+		updateWorldSettingsFile();
 		tileMap.clear();
 		tileMap.update();
+	}
+
+	// asynchronously cancels all jobs and marks all Tiles as "not loaded"
+	// but doesn't delete their images.
+	public static void clearAllCacheAsync(TileMap tileMap, Runnable callback) {
+		Thread clear = new Thread(() -> {
+			MCAFilePipe.cancelAllJobsAndFlush();
+			for (File cacheDir : Config.getCacheDirs()) {
+				FileHelper.deleteDirectory(cacheDir);
+			}
+			updateVersionFile();
+			updateWorldSettingsFile();
+
+			Platform.runLater(() -> {
+				tileMap.markAllTilesAsObsolete();
+				tileMap.update();
+			});
+			callback.run();
+		});
+		clear.start();
 	}
 
 	public static void clearViewCache(TileMap tileMap) {
@@ -135,27 +159,15 @@ public final class CacheHelper {
 
 	private static String readVersionFromFile(File file) {
 		String version = null;
-		String poi = null;
-		String entities = null;
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			version = br.readLine();
-			poi = br.readLine();
-			entities = br.readLine();
 		} catch (IOException ex) {
 			Debug.dumpException("failed to read version from file " + file, ex);
 		}
-
-		if (poi != null && !poi.isEmpty() && !poi.equals("null")) {
-			Config.getWorldDirs().setPoi(new File(poi));
-		}
-		if (entities != null && !entities.isEmpty() && !entities.equals("null")) {
-			Config.getWorldDirs().setEntities(new File(entities));
-		}
-
 		return version;
 	}
 
-	private static void updateVersionFile() {
+	public static void updateVersionFile() {
 		String applicationVersion = null;
 		try {
 			applicationVersion = FileHelper.getManifestAttributes().getValue("Application-Version");
@@ -174,11 +186,60 @@ public final class CacheHelper {
 		}
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(versionFile))) {
-			bw.write(applicationVersion + "\n");
-			bw.write(Config.getWorldDirs().getPoi() + "\n");
-			bw.write(Config.getWorldDirs().getEntities() + "");
+			bw.write(applicationVersion);
 		} catch (IOException ex) {
 			Debug.dumpException("failed to write cache version file", ex);
+		}
+	}
+
+	public static void readWorldSettingsFile() {
+		File worldSettingsFile = new File(Config.getCacheDir(), "world_settings.json");
+		if (!worldSettingsFile.exists()) {
+			return;
+		}
+
+		String poi = null;
+		String entities = null;
+		int height = Config.DEFAULT_RENDER_HEIGHT;
+		boolean layerOnly = Config.DEFAULT_RENDER_LAYER_ONLY;
+
+		try {
+			byte[] data = Files.readAllBytes(worldSettingsFile.toPath());
+			JSONObject root = new JSONObject(new String(data));
+			poi = root.has("poi") ? root.getString("poi") : null;
+			entities = root.has("entities") ? root.getString("entities") : null;
+			height = root.has("height") ? root.getInt("height") : Config.DEFAULT_RENDER_HEIGHT;
+			layerOnly = root.has("layerOnly") ? root.getBoolean("layerOnly") : Config.DEFAULT_RENDER_LAYER_ONLY;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (poi != null && !poi.isEmpty() && !poi.equals("null")) {
+			Config.getWorldDirs().setPoi(new File(poi));
+		}
+		if (entities != null && !entities.isEmpty() && !entities.equals("null")) {
+			Config.getWorldDirs().setEntities(new File(entities));
+		}
+		Config.setRenderHeight(height);
+		Config.setRenderLayerOnly(layerOnly);
+	}
+
+	public static void updateWorldSettingsFile() {
+		File worldSettingsFile = new File(Config.getCacheDir(), "world_settings.json");
+		if (!worldSettingsFile.getParentFile().exists()) {
+			worldSettingsFile.getParentFile().mkdirs();
+		}
+
+		JSONObject root = new JSONObject();
+		root.put("poi", Config.getWorldDirs().getPoi());
+		root.put("entities", Config.getWorldDirs().getEntities());
+		root.put("height", Config.getRenderHeight());
+		root.put("layerOnly", Config.renderLayerOnly());
+
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(worldSettingsFile))) {
+			bw.write(root.toString());
+		} catch (IOException ex) {
+			Debug.dumpException("failed to write world settings file", ex);
 		}
 	}
 }

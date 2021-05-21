@@ -70,9 +70,9 @@ public final class ImagePool {
 			Debug.dump("image does not exist: " + cachedImgFile.getAbsolutePath());
 
 			RegionImageGenerator.setLoading(tile, true);
-			RegionImageGenerator.generate(tile, Config.getWorldUUID(), (i, u) -> Platform.runLater(() -> {
+			RegionImageGenerator.generate(tile, (i, u) -> Platform.runLater(() -> {
 				RegionImageGenerator.setLoading(tile, false);
-				if (u.equals(Config.getWorldUUID())) {
+				if (u.matchesCurrentConfig()) {
 					// check if scale is still correct
 					tile.setImage(i);
 					tile.setLoaded(true);
@@ -82,11 +82,10 @@ public final class ImagePool {
 						return;
 					}
 					push(scale, tile.location, i);
-					Debug.dumpf("pushed image for %s with scale %d to pool (contains=%s, value=%s)", tile.location, scale, pool.get(scale).containsKey(tile.location), pool.get(scale).get(tile.location));
 					tileMap.update();
 				}
 			}),
-			() -> (float) scale, false, null);
+			() -> (float) scale, false, null, true);
 		}
 	}
 

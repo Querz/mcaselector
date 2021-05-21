@@ -25,7 +25,7 @@ public class CancellableProgressDialog extends ProgressDialog {
 			cancelled = true;
 			getCurrentTask().setLocked(true);
 			getCurrentTask().setIndeterminate(Translation.DIALOG_PROGRESS_CANCELLING.toString());
-			MCAFilePipe.cancelAllJobs(() -> Platform.runLater(() -> {
+			MCAFilePipe.cancelAllJobsAndFlushAsync(() -> Platform.runLater(() -> {
 				getCurrentTask().cancelTask();
 				getCurrentTask().done(Translation.DIALOG_PROGRESS_DONE.toString());
 				close();

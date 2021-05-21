@@ -15,6 +15,7 @@ import net.querz.mcaselector.io.job.ChunkFilterExporter;
 import net.querz.mcaselector.io.job.ChunkFilterSelector;
 import net.querz.mcaselector.io.job.ChunkImporter;
 import net.querz.mcaselector.io.job.FieldChanger;
+import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.io.job.SelectionDeleter;
 import net.querz.mcaselector.io.job.SelectionExporter;
 import net.querz.mcaselector.io.job.SelectionImageExporter;
@@ -271,8 +272,15 @@ public class DialogHelper {
 			Config.setRegionSelectionColor(new Color(r.getRegionColor()));
 			Config.setChunkSelectionColor(new Color(r.getChunkColor()));
 			Config.setPasteChunksColor(new Color(r.getPasteColor()));
-			Config.setShade(r.getShade());
-			Config.setShadeWater(r.getShadeWater());
+			if (r.getShade() != Config.shade() || r.getShadeWater() != Config.shadeWater()) {
+				Config.setShade(r.getShade());
+				Config.setShadeWater(r.getShadeWater());
+				CacheHelper.clearAllCache(tileMap);
+			}
+			Config.setShowNonExistentRegions(r.getShowNonexistentRegions());
+			tileMap.setShowNonexistentRegions(r.getShowNonexistentRegions());
+			Config.setTileMapBackground(r.getTileMapBackground().name());
+			tileMap.getWindow().getTileMapBox().setBackground(r.getTileMapBackground().getBackground());
 			Config.setMCSavesDir(r.getMcSavesDir() + "");
 			Config.setDebug(r.getDebug());
 			tileMap.redrawOverlays();
@@ -281,8 +289,16 @@ public class DialogHelper {
 	}
 
 	public static void editWorldSettings(TileMap tileMap, Stage primaryStage) {
-		Optional<WorldDirectories> result = new WorldSettingsDialog(primaryStage).showAndWait();
-		result.ifPresent(Config::setWorldDirs);
+		Optional<WorldSettingsDialog.Result> result = new WorldSettingsDialog(primaryStage).showAndWait();
+		result.ifPresent(r -> {
+			Config.setWorldDirs(r.getWorldDirectories());
+			if (r.getHeight() != Config.getRenderHeight() || r.layerOnly() != Config.renderLayerOnly()) {
+				Config.setRenderHeight(r.getHeight());
+				Config.setRenderLayerOnly(r.layerOnly());
+				tileMap.getWindow().getOptionBar().setRenderHeight(r.getHeight());
+				CacheHelper.clearAllCache(tileMap);
+			}
+		});
 	}
 
 	public static void editNBT(TileMap tileMap, Stage primaryStage) {
@@ -550,6 +566,9 @@ public class DialogHelper {
 	public static void setWorld(WorldDirectories worldDirectories, TileMap tileMap) {
 		Config.setWorldDirs(worldDirectories);
 		CacheHelper.validateCacheVersion(tileMap);
+		CacheHelper.readWorldSettingsFile();
+		RegionImageGenerator.invalidateCachedMCAFiles();
+		tileMap.getWindow().getOptionBar().setRenderHeight(Config.getRenderHeight());
 		tileMap.clear();
 		tileMap.update();
 		tileMap.disable(false);

@@ -57,6 +57,8 @@ dialog.settings.chunk_color;区块选择颜色
 dialog.settings.pasted_chunks_color;插入的块的颜色
 dialog.settings.shade;阴影
 dialog.settings.shade_water;水影
+dialog.settings.show_nonexistent_regions;显示不存在的地区
+dialog.settings.background_pattern;背景图案
 dialog.settings.mc_saves_dir;我的世界目录
 dialog.settings.print_debug;打印调试消息
 dialog.settings.show_log_file;显示日志文件
@@ -64,6 +66,8 @@ dialog.settings.reset;重置
 dialog.world_settings.title;世界设置
 dialog.world_settings.poi;兴趣点
 dialog.world_settings.entities;实体
+dialog.world_settings.render_height;渲染高度
+dialog.world_settings.render_layer_only;仅渲染层
 dialog.goto.title;转到位置
 dialog.confirmation.question;你确定吗?
 dialog.delete_chunks_confirmation.title;删除区块

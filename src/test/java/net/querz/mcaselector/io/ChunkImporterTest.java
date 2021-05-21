@@ -1,32 +1,19 @@
 package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.property.DataProperty;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.Tag;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.TestName;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import static net.querz.mcaselector.MCASelectorTestCase.*;
-import static org.junit.Assert.*;
 
 public class ChunkImporterTest {
 
@@ -1332,7 +1319,7 @@ public class ChunkImporterTest {
 	@After
 	public void after() throws InterruptedException, TimeoutException, ExecutionException {
 		FutureTask<Object> f = new FutureTask<>(() -> {}, null);
-		MCAFilePipe.cancelAllJobs(f);
+		MCAFilePipe.cancelAllJobsAndFlushAsync(f);
 		f.get(60, TimeUnit.SECONDS);
 	}
 

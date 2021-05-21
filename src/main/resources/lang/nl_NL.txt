@@ -57,6 +57,8 @@ dialog.settings.chunk_color;Chunk selectie kleur
 dialog.settings.pasted_chunks_color;Kleur van ingevoegde chunks
 dialog.settings.shade;Schaduw
 dialog.settings.shade_water;Shaduw water
+dialog.settings.show_nonexistent_regions;Toon niet-bestaande regio's
+dialog.settings.background_pattern;Patroon van de achtergrond
 dialog.settings.mc_saves_dir;Minecraft-map
 dialog.settings.print_debug;Print foutopsporingsberichten
 dialog.settings.show_log_file;Toon logbestand
@@ -64,6 +66,8 @@ dialog.settings.reset;Reset
 dialog.world_settings.title;Wereldinstellingen
 dialog.world_settings.poi;POI
 dialog.world_settings.entities;Entiteiten
+dialog.world_settings.render_height;Geef hoogte weer
+dialog.world_settings.render_layer_only;Alleen laag renderen
 dialog.goto.title;Ga naar locatie
 dialog.confirmation.question;Weet je het zeker?
 dialog.delete_chunks_confirmation.title;Chunks verwijderen

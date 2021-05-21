@@ -7,10 +7,8 @@ import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.ui.Window;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
@@ -135,8 +133,13 @@ public final class Config {
 	public static final int DEFAULT_MAX_LOADED_FILES = (int) Math.max(Math.ceil(Runtime.getRuntime().maxMemory() / 1_000_000_000D) * 2, 1);
 	public static final boolean DEFAULT_SHADE = true;
 	public static final boolean DEFAULT_SHADE_WATER = true;
+	public static final boolean DEFAULT_SHOW_NONEXISTENT_REGIONS = true;
+	public static final String DEFAULT_TILEMAP_BACKGROUND = "BLACK";
 	public static final boolean DEFAULT_DEBUG = false;
 	public static final String DEFAULT_MC_SAVES_DIR = FileHelper.getMCSavesDir();
+
+	public static final int DEFAULT_RENDER_HEIGHT = 319;
+	public static final boolean DEFAULT_RENDER_LAYER_ONLY = false;
 
 	private static File worldDir = null;
 	private static WorldDirectories worldDirs = null;
@@ -155,7 +158,12 @@ public final class Config {
 	private static int maxLoadedFiles = DEFAULT_MAX_LOADED_FILES;
 	private static boolean shade = DEFAULT_SHADE;
 	private static boolean shadeWater = DEFAULT_SHADE_WATER;
+	private static boolean showNonexistentRegions = DEFAULT_SHOW_NONEXISTENT_REGIONS;
+	private static String tileMapBackground = DEFAULT_TILEMAP_BACKGROUND;
 	private static String mcSavesDir = DEFAULT_MC_SAVES_DIR;
+
+	private static int renderHeight = DEFAULT_RENDER_HEIGHT;
+	private static boolean renderLayerOnly = DEFAULT_RENDER_LAYER_ONLY;
 
 	private static boolean debug = DEFAULT_DEBUG;
 
@@ -264,6 +272,38 @@ public final class Config {
 		return Config.shadeWater;
 	}
 
+	public static void setShowNonExistentRegions(boolean showNonexistentRegions) {
+		Config.showNonexistentRegions = showNonexistentRegions;
+	}
+
+	public static boolean showNonExistentRegions() {
+		return Config.showNonexistentRegions;
+	}
+
+	public static void setTileMapBackground(String tileMapBackground) {
+		Config.tileMapBackground = tileMapBackground;
+	}
+
+	public static String getTileMapBackground() {
+		return Config.tileMapBackground;
+	}
+
+	public static void setRenderHeight(int renderHeight) {
+		Config.renderHeight = renderHeight;
+	}
+
+	public static int getRenderHeight() {
+		return Config.renderHeight;
+	}
+
+	public static void setRenderLayerOnly(boolean renderLayerOnly) {
+		Config.renderLayerOnly = renderLayerOnly;
+	}
+
+	public static boolean renderLayerOnly() {
+		return Config.renderLayerOnly;
+	}
+
 	public static void setMCSavesDir(String mcSavesDir) {
 		Config.mcSavesDir = mcSavesDir;
 	}
@@ -355,6 +395,8 @@ public final class Config {
 				maxLoadedFiles = Integer.parseInt(config.getOrDefault("MaxLoadedFiles", DEFAULT_MAX_LOADED_FILES + ""));
 				shade = Boolean.parseBoolean(config.getOrDefault("Shade", DEFAULT_SHADE + ""));
 				shadeWater = Boolean.parseBoolean(config.getOrDefault("ShadeWater", DEFAULT_SHADE_WATER + ""));
+				showNonexistentRegions = Boolean.parseBoolean(config.getOrDefault("ShowNonexistentRegions", DEFAULT_SHOW_NONEXISTENT_REGIONS + ""));
+				tileMapBackground = config.getOrDefault("TileMapBackground", DEFAULT_TILEMAP_BACKGROUND);
 				mcSavesDir = config.getOrDefault("MCSavesDir", DEFAULT_MC_SAVES_DIR);
 				if (!new File(mcSavesDir).exists()) {
 					mcSavesDir = DEFAULT_MC_SAVES_DIR;
@@ -409,6 +451,8 @@ public final class Config {
 		addSettingsLine("MaxLoadedFiles", maxLoadedFiles, DEFAULT_MAX_LOADED_FILES, lines);
 		addSettingsLine("Shade", shade, DEFAULT_SHADE, lines);
 		addSettingsLine("ShadeWater", shadeWater, DEFAULT_SHADE_WATER, lines);
+		addSettingsLine("ShowNonexistentRegions", showNonexistentRegions, DEFAULT_SHOW_NONEXISTENT_REGIONS, lines);
+		addSettingsLine("TileMapBackground", tileMapBackground, DEFAULT_TILEMAP_BACKGROUND, lines);
 		addSettingsLine("MCSavesDir", mcSavesDir, DEFAULT_MC_SAVES_DIR, lines);
 		addSettingsLine("Debug", debug, DEFAULT_DEBUG, lines);
 		if (lines.size() == 0) {
