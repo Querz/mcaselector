@@ -57,6 +57,8 @@ dialog.settings.chunk_color;Barva vybraného chunku
 dialog.settings.pasted_chunks_color;Barva vložených chunku
 dialog.settings.shade;Odstín
 dialog.settings.shade_water;Hloubka vody
+dialog.settings.show_nonexistent_regions;Zobrazit neexistující oblasti
+dialog.settings.background_pattern;Vzorek pozadí
 dialog.settings.mc_saves_dir;Adresář Minecraft
 dialog.settings.print_debug;Vypisovat ladící zprávy
 dialog.settings.show_log_file;Zobrazit soubor protokolu
@@ -64,6 +66,8 @@ dialog.settings.reset;Obnovit
 dialog.world_settings.title;Nastavení světa
 dialog.world_settings.poi;POI
 dialog.world_settings.entities;Subjekty
+dialog.world_settings.render_height;Výška vykreslení
+dialog.world_settings.render_layer_only;Pouze vykreslení vrstvy
 dialog.goto.title;Přejít na pozici
 dialog.confirmation.question;Jste si jisti?
 dialog.delete_chunks_confirmation.title;Smazat chunky

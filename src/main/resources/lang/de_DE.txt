@@ -57,6 +57,8 @@ dialog.settings.chunk_color;Farbe selektierter Chunk
 dialog.settings.pasted_chunks_color;Farbe eingefügter Chunks
 dialog.settings.shade;Schatten
 dialog.settings.shade_water;Wassertiefe
+dialog.settings.show_nonexistent_regions;nicht vorhandene Regionen anzeigen
+dialog.settings.background_pattern;Hintergrundmuster
 dialog.settings.mc_saves_dir;MC Speicherort
 dialog.settings.print_debug;Debug
 dialog.settings.show_log_file;Log-Datei anzeigen
@@ -64,6 +66,8 @@ dialog.settings.reset;Zurücksetzen
 dialog.world_settings.title;Welteinstellungen
 dialog.world_settings.poi;POI
 dialog.world_settings.entities;Entities
+dialog.world_settings.render_height;Renderhöhe
+dialog.world_settings.render_layer_only;Nur Ebene rendern
 dialog.goto.title;Gehe zu Koordinaten
 dialog.confirmation.question;Bist Du dir sicher?
 dialog.delete_chunks_confirmation.title;Chunks löschen
