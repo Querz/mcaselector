@@ -57,7 +57,7 @@ For people who prefer watching a video to understand how the MCA Selector works,
 Executing the tool, it shows an empty window with a chunk and a region grid. To actually show a world, open a folder containing Minecraft Anvil (\*.mca) files. The tool will then render a top-down view of this world that you can zoom into and zoom out of by scrolling up and down and that you can move around using the middle mouse button (`Cmd+LMB` on Mac OS) or using `WASD`.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/default.png" alt="MCA Selector window showing chunk and region grid">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/default.png" alt="MCA Selector window showing chunk and region grid">
 </p>
 
 Zooming out far enough disables the selection of single chunks but lets you select entire regions.
@@ -66,7 +66,7 @@ Zooming out far enough disables the selection of single chunks but lets you sele
 Upon finishing selecting chunks and regions, they can be deleted or exported using the `Selection`-menu. Exported chunks and regions are not deleted from the original world.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/selections.png" alt="MCA Selector window showing chunk and region selection export">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/selections.png" alt="MCA Selector window showing chunk and region selection export">
 </p>
 
 A selection (not the chunks and regions themselves) can also be exported or imported and even be applied to different worlds.
@@ -75,7 +75,7 @@ A selection (not the chunks and regions themselves) can also be exported or impo
 The MCA Selector also contains a powerful tool to delete or export chunks and regions by conditions like the data version, the time it was last updated, how much time players have spent in this chunk and some more. Multiple of these conditions can be used to create a very specific query describing what chunks and regions should be deleted or exported.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/filter_chunks.png" alt="MCA Selector window showing the chunk filter">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/filter_chunks.png" alt="MCA Selector window showing the chunk filter">
 </p>
 
 Because the conditions use internal values used by Minecraft, the following table gives a brief explanation on what they do:
@@ -110,7 +110,7 @@ Running the query will check the `.mca`-file's name first if the query would eve
 The NBT Changer modifies the world files directly by changing specific values.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/change_nbt.png" alt="MCA Selector window showing the nbt changer">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/change_nbt.png" alt="MCA Selector window showing the nbt changer">
 </p>
 
 You can change the following values:
@@ -139,7 +139,7 @@ For more information about the fields have a look at the chunk format descriptio
 When selecting a single chunk, the menu "Edit chunks" becomes available. It allows precise editing of the entire NBT structure of that chunk, including poi and entities data. Names and values can be changed, added, deleted or moved (via drag & drop).
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/edit_chunk.png" alt="MCA Selector window showing the NBT editor">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/edit_chunk.png" alt="MCA Selector window showing the NBT editor">
 </p>
 
 **Notice** When the NBT editor does not show any data, the cached top-down view might be outdated, and the chunk might not exist anymore in the mca files. In that case, clearing the cache will re-render the regions from scratch and show the up-to-date top-down view.
@@ -148,7 +148,7 @@ When selecting a single chunk, the menu "Edit chunks" becomes available. It allo
 Importing chunks can be easily done by opening the target world first using `File --> Open` and then merging the chunks of a second world using `Tools --> Import chunks`. After selecting a folder containing region files, it is possible to import the chunks with a bunch of additional options.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/import_chunks.png" alt="MCA Selector window showing the chunk import">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/import_chunks.png" alt="MCA Selector window showing the chunk import">
 </p>
 
 Options:
@@ -167,7 +167,7 @@ After making a selection, use `Selection --> Copy chunks` or press `Ctrl+C` (`Cm
 Copying can be cancelled by pressing `Esc`.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/copy_paste.png" alt="MCA Selector window showing copy-paste overlay">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/copy_paste.png" alt="MCA Selector window showing copy-paste overlay">
 </p>
 
 ### Swapping chunks
@@ -177,7 +177,7 @@ When exactly two chunks are selected, they can be swapped using `Tools --> Swap 
 To have a better overview of what's happening in your world, MCA Selector gives the option to enable customizable overlays. Overlays can display single values per chunk in the form of a color gradient with a minimum and maximum value.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/overlays.png" alt="MCA Selector window showing InhabitedTime overlay for Hermitcraft Season 6">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/overlays.png" alt="MCA Selector window showing InhabitedTime overlay for Hermitcraft Season 6">
 </p>
 
 Overlays can be con figured using `Tools --> Edit overlays`. Only when all values of an overlay are valid (e.g. minimum < maximum) and it is set to active, it can be toggled on and off in the map view using the `O` key. Overlays are globally persistent and can be reused for all worlds.
@@ -219,7 +219,7 @@ There is no guarantee for worlds generated in a Snapshot version to work, even i
 ## Headless mode
 
 MCA Selector can be run in a headless mode without showing the UI. Using any command line parameter automatically switches to headless mode.
-A cheat-sheet with all commands can be found [here](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/efc4b6990bce79ed4512e9a0a363c64afd7b7444/commands-diagram.png).
+A cheat-sheet with all commands can be found [here](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/commands-diagram.png).
 
 | Mode | Parameter | Description |
 | ---- | --------- | ----------- |
@@ -401,7 +401,7 @@ If you would like to contribute a translation, you can find the language files i
 
 ---
 
-[**Download Version 1.15.4 (Windows Installer)**](https://github.com/Querz/mcaselector/releases/download/1.15.4/MCA_Selector_Setup.exe)
+[**Download Version 1.15.5 (Windows Installer)**](https://github.com/Querz/mcaselector/releases/download/1.15.5/MCA_Selector_Setup.exe)
 
 "Requirements":
 * Windows 7-10 64bit
@@ -409,7 +409,7 @@ If you would like to contribute a translation, you can find the language files i
 
 ---
 
-[**Download Version 1.15.4 (Universal)**](https://github.com/Querz/mcaselector/releases/download/1.15.4/mcaselector-1.15.4.jar)
+[**Download Version 1.15.5 (Universal)**](https://github.com/Querz/mcaselector/releases/download/1.15.5/mcaselector-1.15.5.jar)
 
 
 "Requirements":
@@ -421,26 +421,26 @@ If you would like to contribute a translation, you can find the language files i
 * A brain
 
 ### What works on most systems
-Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.15.4.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
+Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.15.5.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
 
 ### If you have Minecraft Java Edition installed
 Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of Java on your system.
 
 For Windows:
 * Hold `Shift` and Right-click on an empty space and select `Open PowerShell window here` (`Open Command window here` on Windows 8 and earlier).
-* Type `& "C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\java" -jar `, then drag and drop the `mcaselector-1.15.4.jar into the console` and press `Enter`. In the Command window (Windows 8 and earlier), the command starts with `"C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\java" -jar ` instead and the path to `mcaselector-1.15.4.jar` must be typed or copied and pasted into the console manually.
+* Type `& "C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\java" -jar `, then drag and drop the `mcaselector-1.15.5.jar into the console` and press `Enter`. In the Command window (Windows 8 and earlier), the command starts with `"C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\java" -jar ` instead and the path to `mcaselector-1.15.5.jar` must be typed or copied and pasted into the console manually.
 
 For MacOS:
 * Press `Cmd+Space`, type `Terminal` and press `Enter`.
-* Type `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/java -jar ` (with a space at the end), then drag and drop the `mcaselector-1.15.4.jar` into the console and press `Enter`.
+* Type `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/java -jar ` (with a space at the end), then drag and drop the `mcaselector-1.15.5.jar` into the console and press `Enter`.
 
 **WARNING:** For MacOS 10.14+ (Mojave) It is NOT recommended to use the JRE provided by Minecraft (1.8.0_74), because it contains a severe bug that causes JavaFX applications to crash when they lose focus while a dialog window (such as the save-file-dialog) is open (see the bug report [here](https://bugs.openjdk.java.net/browse/JDK-8211304)). This bug has been fixed in Java 1.8.0_201 and above.
 
 ### If you receive a JavaFX error
-"When I run `mcaselector-1.15.4.jar`, an error dialog appears that looks like this:"
+"When I run `mcaselector-1.15.5.jar`, an error dialog appears that looks like this:"
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/missing_javafx.png" alt="Popup dialog stating a missing JavaFX installation">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/missing_javafx.png" alt="Popup dialog stating a missing JavaFX installation">
 </p>
 
 Open the console or terminal on your OS.
@@ -454,28 +454,28 @@ For MacOS:
 Type the command `java -version` and press `Enter`. If the output shows that your java command is linked to `java version "1.8.0"`, you can simply run MCA Selector through the console.
 
 For Windows and MacOS:
-* Type `java -jar ` (with a space at the end) and drag and drop the `mcaselector-1.15.4.jar` into the console and hit `Enter`.
+* Type `java -jar ` (with a space at the end) and drag and drop the `mcaselector-1.15.5.jar` into the console and hit `Enter`.
 
 For Linux:
-* Run `java -jar <path to mcaselector-1.15.4.jar` where you replace everything in `<>`.
+* Run `java -jar <path to mcaselector-1.15.5.jar` where you replace everything in `<>`.
 
 If the output shows a Java version higher than Java 8, please find and download the appropriate JavaFX version from [Here](https://gluonhq.com/products/javafx/). If you know what to do, do it. If you don't, follow these steps:
 
 For Windows:
 * Download "JavaFX Windows SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
 * Unzip the `.zip`-file with your program of choice, then navigate into the unzipped folder.
-* Hold `Shift` and Right-click on an empty space in that folder and select `Open PowerShell window here` (`Open Command window here` on Windows 8 and earlier). Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type ` --add-modules ALL-MODULE-PATH -jar ` (with a space at the beginning and the end), then drag and drop the `mcaselector-1.15.4.jar` into the console and hit `Enter`.
+* Hold `Shift` and Right-click on an empty space in that folder and select `Open PowerShell window here` (`Open Command window here` on Windows 8 and earlier). Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type ` --add-modules ALL-MODULE-PATH -jar ` (with a space at the beginning and the end), then drag and drop the `mcaselector-1.15.5.jar` into the console and hit `Enter`.
 
 For MacOS:
 * Download "JavaFX Mac OS X SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
 * Double-click the `.zip`-file to unpack, then navigate into the unzipped folder.
-* Press `Cmd+Space`, type `Terminal` and press `Enter`. Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type `--add-modules ALL-MODULE-PATH -jar ` (with a space at the end), then drag and drop the `mcaselector-1.15.4.jar` into the console and hit `Enter`.
+* Press `Cmd+Space`, type `Terminal` and press `Enter`. Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type `--add-modules ALL-MODULE-PATH -jar ` (with a space at the end), then drag and drop the `mcaselector-1.15.5.jar` into the console and hit `Enter`.
 
 For Linux:
 * Download "JavaFX Linux SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
 * Unzip the `.zip`-file with your program of choice.
-* Open the command prompt and run `java --module-path <path to unzipped folder>/lib --add-modules ALL-MODULE-PATH -jar <path to mcaselector-1.15.4.jar>` where you replace everything in `<>` with the appropriate paths.
-* Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. On Debian, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of JavaFX is required to run the `mcaselector-1.15.4.jar`.
+* Open the command prompt and run `java --module-path <path to unzipped folder>/lib --add-modules ALL-MODULE-PATH -jar <path to mcaselector-1.15.5.jar>` where you replace everything in `<>` with the appropriate paths.
+* Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. On Debian, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of JavaFX is required to run the `mcaselector-1.15.5.jar`.
 
 To avoid having to go through this process every time to start MCA Selector, the resulting command can be copied into a `.bat`-file on Windows or `.sh`-file on MacOS and Linux and can then be executed by double-clicking the `.bat`-file on Windows or running `sh <file>.sh` in the terminal / console on MacOS or Linux where `<file>` must be replaced by the name of the `.sh`-file.
 
