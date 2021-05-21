@@ -52,12 +52,13 @@ public final class CacheHelper {
 		}
 		updateVersionFile();
 		updateWorldSettingsFile();
+		RegionImageGenerator.invalidateCachedMCAFiles();
 		tileMap.clear();
 		tileMap.update();
 	}
 
 	// asynchronously cancels all jobs and marks all Tiles as "not loaded"
-	// but doesn't delete their images.
+	// but doesn't remove their images from memory.
 	public static void clearAllCacheAsync(TileMap tileMap, Runnable callback) {
 		Thread clear = new Thread(() -> {
 			MCAFilePipe.cancelAllJobsAndFlush();
@@ -89,6 +90,7 @@ public final class CacheHelper {
 				tileMap.getOverlayPool().discardData(regionBlock);
 			}
 		}
+		RegionImageGenerator.invalidateCachedMCAFiles();
 		tileMap.update();
 	}
 
@@ -132,6 +134,7 @@ public final class CacheHelper {
 
 			}
 		}
+		RegionImageGenerator.invalidateCachedMCAFiles();
 		tileMap.update();
 	}
 
