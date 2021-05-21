@@ -89,11 +89,6 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 						int paletteIndex = getPaletteIndex(getIndex(cx, cy, cz), blockStates, bits, clean);
 						CompoundTag blockData = palette.get(paletteIndex);
 
-						//ignore bedrock and netherrack until 75
-						if (isIgnoredInNether(biome, blockData, sectionHeight + cy)) {
-							continue;
-						}
-
 						if (!isEmpty(blockData)) {
 							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
 							if (water) {
@@ -211,20 +206,6 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 
 	private boolean isWaterlogged(CompoundTag data) {
 		return data.get("Properties") != null && "true".equals(withDefault(() -> data.getCompoundTag("Properties").getString("waterlogged"), null));
-	}
-
-	private boolean isIgnoredInNether(int biome, CompoundTag blockData, int height) {
-		if (biome == 8) {
-			switch (blockData.getString("Name")) {
-				case "minecraft:bedrock":
-				case "minecraft:flowing_lava":
-				case "minecraft:lava":
-				case "minecraft:netherrack":
-				case "minecraft:nether_quartz_ore":
-					return height > 75;
-			}
-		}
-		return false;
 	}
 
 	private boolean isEmpty(CompoundTag blockData) {

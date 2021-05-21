@@ -89,11 +89,6 @@ public class Anvil115ChunkRenderer implements ChunkRenderer {
 						int biome = getBiomeAtBlock(biomes, cx, sectionHeight + cy, cz);
 						biome = MathUtil.clamp(biome, 0, 255);
 
-						//ignore bedrock and netherrack until 75
-						if (isIgnoredInNether(biome, blockData, sectionHeight + cy)) {
-							continue;
-						}
-
 						if (!isEmpty(blockData)) {
 							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
 							if (water) {
@@ -211,21 +206,6 @@ public class Anvil115ChunkRenderer implements ChunkRenderer {
 
 	private boolean isWaterlogged(CompoundTag data) {
 		return data.get("Properties") != null && "true".equals(withDefault(() -> data.getCompoundTag("Properties").getString("waterlogged"), null));
-	}
-
-	private boolean isIgnoredInNether(int biome, CompoundTag blockData, int height) {
-		// all nether biomes: nether/nether_wastes, soul_sand_valley, crimson_forest, warped_forest, basalt_deltas
-		if (biome == 8 || biome == 170 || biome == 171 || biome == 172 || biome == 173) {
-			switch (blockData.getString("Name")) {
-				case "minecraft:bedrock":
-				case "minecraft:flowing_lava":
-				case "minecraft:lava":
-				case "minecraft:netherrack":
-				case "minecraft:nether_quartz_ore":
-					return height > 75;
-			}
-		}
-		return false;
 	}
 
 	private boolean isEmpty(CompoundTag blockData) {

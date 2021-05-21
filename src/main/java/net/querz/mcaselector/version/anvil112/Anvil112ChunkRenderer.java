@@ -72,11 +72,6 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 						int index = getBlockIndex(cx, cy, cz);
 						short block = (short) (blocks[index] & 0xFF);
 
-						//ignore bedrock and netherrack until 75
-						if (isIgnoredInNether(biome, block, sectionHeight + cy)) {
-							continue;
-						}
-
 						byte blockData = (byte) (index % 2 == 0 ? data[index / 2] & 0x0F : (data[index / 2] >> 4) & 0x0F);
 
 						if (!isEmpty(block)) {
@@ -167,20 +162,6 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 			case 8:
 			case 9:
 				return true;
-		}
-		return false;
-	}
-
-	private boolean isIgnoredInNether(int biome, short block, int height) {
-		if (biome == 8) {
-			switch (block) {
-				case 7:   //bedrock
-				case 10:  //flowing_lava
-				case 11:  //lava
-				case 87:  //netherrack
-				case 153: //quartz_ore
-					return height > 75;
-			}
 		}
 		return false;
 	}
