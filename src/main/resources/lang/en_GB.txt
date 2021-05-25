@@ -45,6 +45,7 @@ menu.tools.edit_nbt;Edit chunk
 menu.tools.swap_chunks;Swap chunks
 menu.tools.edit_overlays;Edit overlays
 menu.tools.next_overlay;Next overlay
+menu.tools.next_overlay_type;Next overlay type
 dialog.select_world.title;Select Dimension
 dialog.settings.title;Settings
 dialog.settings.language;Language

@@ -63,6 +63,7 @@ public enum Translation {
 	MENU_TOOLS_SWAP_CHUNKS("menu.tools.swap_chunks"),
 	MENU_TOOLS_EDIT_OVERLAYS("menu.tools.edit_overlays"),
 	MENU_TOOLS_NEXT_OVERLAY("menu.tools.next_overlay"),
+	MENU_TOOLS_NEXT_OVERLAY_TYPE("menu.tools.next_overlay_type"),
 	DIALOG_SELECT_WORLD_TITLE("dialog.select_world.title"),
 	DIALOG_SETTINGS_TITLE("dialog.settings.title"),
 	DIALOG_SETTINGS_LANGUAGE("dialog.settings.language"),

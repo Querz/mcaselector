@@ -615,6 +615,12 @@
 	-fx-min-width: 700;
 }
 
+.overlay-list .scroll-pane {
+	-fx-pref-height: 300;
+	-fx-min-height: 50;
+	-fx-max-height: infinity;
+}
+
 .overlay-dialog-pane .custom-menu-item:hover {
 	-fx-background-color: -color-menu-background;
 }
