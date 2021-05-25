@@ -29,6 +29,7 @@ import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -160,6 +161,27 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	public void nextOverlay() {
+		if (disabled || overlayParser == null) {
+			return;
+		}
+
+		int index = overlayParsers.indexOf(overlayParser);
+
+		OverlayParser parser;
+		do {
+			index++;
+			if (index == overlayParsers.size()) {
+				index = 0;
+			}
+
+		// repeat if the current parser is null, it is invalid or inactive or if the types are not the same
+		} while ((parser = overlayParsers.get(index)) == null || !parser.isActive() || !parser.isValid() || parser.getType() != overlayParser.getType());
+
+		setOverlay(parser);
+		MCAFilePipe.clearParserQueue();
+	}
+
+	public void nextOverlayType() {
 		if (disabled) {
 			return;
 		}
@@ -173,8 +195,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				index = 0;
 			}
 
-		// try until we find either null or a parser that is active and valid
-		} while ((parser = overlayParsers.get(index)) != null && (!parser.isActive() || !parser.isValid()));
+			// repeat if the current parser is not null, it is inactive or invalid or the types are equal
+		} while ((parser = overlayParsers.get(index)) != null && (!parser.isActive() || !parser.isValid() || overlayParser != null && parser.getType() == overlayParser.getType()));
 
 		setOverlay(parser);
 		MCAFilePipe.clearParserQueue();
@@ -189,6 +211,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 		overlayParsers = new ArrayList<>(overlays.size() + 1);
 		overlayParsers.addAll(overlays);
+		overlayParsers.sort(Comparator.comparing(OverlayParser::getType));
 		overlayParsers.add(null);
 		setOverlay(null);
 		MCAFilePipe.clearParserQueue();

@@ -80,6 +80,7 @@ public class OptionBar extends BorderPane {
 	private final MenuItem swapChunks = UIFactory.menuItem(Translation.MENU_TOOLS_SWAP_CHUNKS);
 	private final MenuItem editOverlays = UIFactory.menuItem(Translation.MENU_TOOLS_EDIT_OVERLAYS);
 	private final MenuItem nextOverlay = UIFactory.menuItem(Translation.MENU_TOOLS_NEXT_OVERLAY);
+	private final MenuItem nextOverlayType = UIFactory.menuItem(Translation.MENU_TOOLS_NEXT_OVERLAY_TYPE);
 
 	private int previousSelectedChunks = 0;
 	private boolean previousInvertedSelection = false;
@@ -111,7 +112,7 @@ public class OptionBar extends BorderPane {
 		tools.getItems().addAll(
 				importChunks, filterChunks, changeFields, editNBT, UIFactory.separator(),
 				swapChunks, UIFactory.separator(),
-				editOverlays, nextOverlay);
+				editOverlays, nextOverlay, nextOverlayType);
 		about.setOnMouseClicked(e -> DialogHelper.showAboutDialog(primaryStage));
 		Menu aboutMenu = new Menu();
 		aboutMenu.setGraphic(about);
@@ -220,6 +221,7 @@ public class OptionBar extends BorderPane {
 		swapChunks.setOnAction(e -> DialogHelper.swapChunks(tileMap, primaryStage));
 		editOverlays.setOnAction(e -> DialogHelper.editOverlays(tileMap, primaryStage));
 		nextOverlay.setOnAction(e -> tileMap.nextOverlay());
+		nextOverlayType.setOnAction(e -> tileMap.nextOverlayType());
 
 
 		openWorld.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN));
@@ -249,6 +251,7 @@ public class OptionBar extends BorderPane {
 		swapChunks.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCodeCombination.SHORTCUT_DOWN));
 		editOverlays.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCodeCombination.SHORTCUT_DOWN));
 		nextOverlay.setAccelerator(new KeyCodeCombination(KeyCode.O));
+		nextOverlayType.setAccelerator(new KeyCodeCombination(KeyCode.N));
 
 		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks(), tileMap.isSelectionInverted());
 		setWorldDependentMenuItemsEnabled(false, tileMap);
@@ -278,6 +281,7 @@ public class OptionBar extends BorderPane {
 		invert.setDisable(!enabled);
 		paste.setDisable(!enabled || !hasValidClipboardContent(tileMap));
 		nextOverlay.setDisable(!enabled);
+		nextOverlayType.setDisable(!enabled);
 		height.setDisable(!enabled);
 		heightMinLabel.setDisable(!enabled);
 		heightMaxLabel.setDisable(!enabled);
