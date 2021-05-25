@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -64,6 +65,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		VBox content = new VBox();
 		content.getStyleClass().add("overlay-list");
 		content.getChildren().addAll(overlaysScrollPane, add);
+		VBox.setVgrow(overlaysScrollPane, Priority.ALWAYS);
 
 		getDialogPane().setContent(content);
 	}
