@@ -1,31 +1,19 @@
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
-buildscript {
-	repositories {
-		jcenter()
-		maven { url 'https://jitpack.io' }
-		maven { url "https://plugins.gradle.org/m2/" }
-	}
-	dependencies {
-		classpath 'com.github.eriwen:gradle-css-plugin:9fe88d7126'
-		classpath 'com.github.jengelman.gradle.plugins:shadow:6.0.0'
-	}
+plugins {
+	id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'css'
 
 group 'net.querz.mcaselector'
 version '1.15.4'
 def appName = 'MCA Selector'
 def appUrl = 'https://github.com/Querz/mcaselector'
 def appAuthor = 'Querz'
-
-sourceCompatibility = 1.8
 
 idea {
 	module.downloadSources = true
@@ -78,11 +66,6 @@ shadowJar {
 compileJava {
 	options.encoding = 'UTF-8'
 	options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-}
-
-minifyCss {
-	source = "${sourceSets.main.resources.srcDirs[0]}/style.css"
-	dest = "${sourceSets.main.output.resourcesDir}/style.css"
 }
 
 task installer {
@@ -141,12 +124,6 @@ task installer {
 		}
 	}
 }
-
-jar.finalizedBy shadowJar
-jar.dependsOn minifyCss
-jar.dependsOn copyRuntimeLibs
-assemble.dependsOn shadowJar
-installer.dependsOn jar
 
 task updateReadme {
 	doLast {
@@ -223,6 +200,21 @@ task updateReadme {
 	}
 }
 
+task minifyCss {
+	doLast {
+		minCss(
+				new File("${sourceSets.main.resources.srcDirs[0]}/style.css"),
+				new File("${sourceSets.main.output.resourcesDir}/style.css"))
+	}
+}
+
+// task dependencies
+jar.dependsOn minifyCss
+jar.dependsOn copyRuntimeLibs
+jar.finalizedBy shadowJar
+assemble.dependsOn shadowJar
+installer.dependsOn jar
+
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -262,6 +254,19 @@ static String createTOC(File f, String st, String en, boolean it, boolean is) th
 		br.close()
 	}
 	return b.append(en).toString()
+}
+
+/**
+ * "Minifies" a css file by removing all comments, \n, \t and all duplicate spaces.
+ *
+ * @param i The input css file
+ * @param o The output css file
+ * @throws IOException If something goes wrong during reading or writing
+ */
+static minCss(File i, File o) throws IOException {
+	String s = Files.readString(i.toPath())
+	s = s.replace("\t", "").replace("\r\n", " ").replace("\n", " ").replaceAll("/\\*.*?\\*/", "").replaceAll(" {2,}", " ").trim()
+	Files.writeString(o.toPath(), s)
 }
 
 static String pad(String s, char p, int l) {

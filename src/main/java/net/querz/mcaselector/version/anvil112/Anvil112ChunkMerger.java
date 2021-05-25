@@ -50,7 +50,8 @@ public class Anvil112ChunkMerger implements ChunkMerger {
 	}
 
 	private void mergeListTagLists(CompoundTag source, CompoundTag destination, List<Range> ranges, String name) {
-		ListTag<ListTag<?>> sourceList = withDefault(() -> source.getCompoundTag("Level").getListTag(name).asListTagList(), new ListTag<>(ListTag.class));
+		ListTag<ListTag<?>> def = new ListTag<>(ListTag.class);
+		ListTag<ListTag<?>> sourceList = withDefault(() -> source.getCompoundTag("Level").getListTag(name).asListTagList(), def);
 		ListTag<ListTag<?>> destinationList = withDefault(() -> destination.getCompoundTag("Level").getListTag(name).asListTagList(), sourceList);
 
 		if (sourceList.size() != destinationList.size()) {
