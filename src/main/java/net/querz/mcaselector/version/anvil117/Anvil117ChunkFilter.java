@@ -55,13 +55,13 @@ public class Anvil117ChunkFilter extends Anvil116ChunkFilter {
 		// handle the special case when someone wants to replace air with something else
 		if (replace.containsKey("minecraft:air")) {
 			Map<Integer, CompoundTag> sectionMap = new HashMap<>();
-			List<Integer> heights = new ArrayList<>(26);
+			List<Integer> heights = new ArrayList<>(18);
 			for (CompoundTag section : sections) {
 				sectionMap.put(section.getNumber("Y").intValue(), section);
 				heights.add(section.getNumber("Y").intValue());
 			}
 
-			for (int y = -4; y < 20; y++) {
+			for (int y = 0; y < 16; y++) {
 				if (!sectionMap.containsKey(y)) {
 					sectionMap.put(y, createEmptySection(y));
 					heights.add(y);
