@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.tiles.overlay.InhabitedTimeParser;
@@ -34,6 +35,8 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 	private final Label add = new Label("", new ImageView(addIcon));
 
 	private final TileMap tileMap;
+
+	private DataProperty<Boolean> closedWithOK = new DataProperty<>(false);
 
 	public OverlayEditorDialog(Stage primaryStage, TileMap tileMap, List<OverlayParser> values) {
 		if (values == null) {
@@ -57,13 +60,16 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 			Config.setOverlays(overlays);
 			tileMap.getWindow().getOptionBar().setEditOverlaysEnabled(true);
 			tileMap.getWindow().untrackDialog(this);
+			closedWithOK.set(true);
 		});
-		getDialogPane().lookupButton(ButtonType.CANCEL).addEventFilter(ActionEvent.ACTION, e -> {
-			tileMap.setOverlays(originalOverlays);
-			tileMap.setOverlay(originalOverlay);
-			tileMap.update();
-			tileMap.getWindow().getOptionBar().setEditOverlaysEnabled(true);
-			tileMap.getWindow().untrackDialog(this);
+		setOnCloseRequest(e -> {
+			if (!closedWithOK.get()) {
+				tileMap.setOverlays(originalOverlays);
+				tileMap.setOverlay(originalOverlay);
+				tileMap.update();
+				tileMap.getWindow().getOptionBar().setEditOverlaysEnabled(true);
+				tileMap.getWindow().untrackDialog(this);
+			}
 		});
 
 		setResizable(true);
