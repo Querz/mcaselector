@@ -81,6 +81,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private List<OverlayParser> overlayParsers = Collections.singletonList(null);
 	private OverlayParser overlayParser = null;
+	private OverlayParser lastOverlayParser = null;
 
 	private Map<Point2i, Set<Point2i>> pastedChunks;
 	private boolean pastedChunksInverted;
@@ -179,6 +180,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 		setOverlay(parser);
 		MCAFilePipe.clearParserQueue();
+		update();
 	}
 
 	public void nextOverlayType() {
@@ -200,6 +202,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 		setOverlay(parser);
 		MCAFilePipe.clearParserQueue();
+		update();
 	}
 
 	public void setOverlays(List<OverlayParser> overlays) {
@@ -218,13 +221,19 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	public void setOverlay(OverlayParser overlay) {
+		if (disabled) {
+			return;
+		}
 		this.overlayParser = overlay;
 		this.overlayPool.setParser(overlay);
+		clearOverlay();
+	}
+
+	public void clearOverlay() {
 		for (Tile tile : visibleTiles) {
 			tile.overlay = null;
 			tile.overlayLoaded = false;
 		}
-		update();
 	}
 
 	public OverlayParser getOverlay() {

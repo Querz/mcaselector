@@ -2,6 +2,7 @@ package net.querz.mcaselector.ui;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Dialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -22,6 +23,8 @@ public class Window extends Application {
 	private String title = "";
 	private OptionBar optionBar;
 	private TileMapBox tileMapBox;
+
+	private List<Dialog<?>> trackedDialogs = new ArrayList<>();
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -77,7 +80,24 @@ public class Window extends Application {
 
 		tileMap.requestFocus();
 
+		primaryStage.focusedProperty().addListener((v, o, n) -> {
+			if (n) {
+				trackedDialogs.forEach(d -> {
+					((Stage) d.getDialogPane().getScene().getWindow()).setAlwaysOnTop(true);
+					((Stage) d.getDialogPane().getScene().getWindow()).setAlwaysOnTop(false);
+				});
+			}
+		});
+
 		primaryStage.show();
+	}
+
+	public void trackDialog(Dialog<?> dialog) {
+		trackedDialogs.add(dialog);
+	}
+
+	public void untrackDialog(Dialog<?> dialog) {
+		trackedDialogs.remove(dialog);
 	}
 
 	public void setTitleSuffix(String suffix) {

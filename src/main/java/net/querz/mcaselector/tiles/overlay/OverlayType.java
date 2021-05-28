@@ -8,7 +8,7 @@ public enum OverlayType {
 	TIMESTAMP("Timestamp", TimestampParser::new),
 	LAST_UPDATE("LastUpdate", LastUpdateParser::new),
 	ENTITY_AMOUNT("#Entities", EntityAmountParser::new),
-	TILE_ENTITY_AMOUNT("#TileEntityAmount", TileEntityAmountParser::new),
+	TILE_ENTITY_AMOUNT("#TileEntities", TileEntityAmountParser::new),
 	DATA_VERSION("DataVersion", DataVersionParser::new),
 	AVERAGE_HEIGHT("AverageHeight", AverageHeightParser::new),
 	BLOCK_AMOUNT("#Blocks", BlockAmountParser::new);

@@ -72,6 +72,10 @@ public class OverlayPool {
 	}
 
 	public void requestImage(Tile tile, OverlayParser parser) {
+		if (parser == null || !parser.isActive() || !parser.isValid()) {
+			return;
+		}
+
 		// check if data for this region exists
 		if (noData.contains(tile.location)) {
 			return;
@@ -82,25 +86,28 @@ public class OverlayPool {
 			return;
 		}
 
-		if (parser == null) {
-			return;
-		}
-
 		ParseDataJob.setLoading(tile, true);
+
+		OverlayParser parserClone = parser.clone();
 
 		overlayCacheLoaders.execute(() -> {
 			int[] data = null;
 			try {
-				data = dataCache.getData(parser, tile.location);
+				data = dataCache.getData(parserClone, tile.location);
 			} catch (Exception ex) {
 				Debug.dumpException("failed to load cached overlay data for region " + tile.location, ex);
 			}
 
 			if (data != null) {
-				tile.overlay = parseColorGrades(data, parser.min(), parser.max(), parser.getMinHue(), parser.getMaxHue());
-				tile.overlayLoaded = true;
-				ParseDataJob.setLoading(tile, false);
-				Platform.runLater(tileMap::update);
+				Image overlay = parseColorGrades(data, parserClone.min(), parserClone.max(), parserClone.getMinHue(), parserClone.getMaxHue());
+				Platform.runLater(() -> {
+					if (parserClone.equals(this.parser)) {
+						tile.overlay = overlay;
+						tile.overlayLoaded = true;
+						tileMap.update();
+					}
+					ParseDataJob.setLoading(tile, false);
+				});
 			} else {
 				// calculate data
 				MCAFilePipe.executeParseData(new ParseDataJob(tile, FileHelper.createRegionDirectories(tile.location), Config.getWorldUUID(),
@@ -111,7 +118,7 @@ public class OverlayPool {
 							tile.overlayLoaded = true;
 							return;
 						}
-						if (parser.equals(this.parser)) {
+						if (parserClone.equals(this.parser)) {
 							push(tile.location, d);
 							tile.overlay = parseColorGrades(d, parser.min(), parser.max(), parser.getMinHue(), parser.getMaxHue());
 							tile.overlayLoaded = true;

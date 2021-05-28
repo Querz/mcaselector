@@ -21,6 +21,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
+import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
@@ -32,9 +33,10 @@ public class OverlayBox extends BorderPane {
 	private static final Image deleteIcon = FileHelper.getIconFromResources("img/delete");
 	private static final Image flipIcon = FileHelper.getIconFromResources("img/flip");
 
-	private OverlayParser value;
+	public DataProperty<OverlayParser> valueProperty;
 
 	private BiConsumer<OverlayParser, OverlayParser> onTypeChange;
+	private Consumer<OverlayParser> onValuesChange;
 	private Consumer<OverlayParser> onDelete;
 
 	private final GridPane inputs = new GridPane();
@@ -49,7 +51,7 @@ public class OverlayBox extends BorderPane {
 	private final Label delete = new Label("", new ImageView(deleteIcon));
 
 	public OverlayBox(OverlayParser value) {
-		this.value = value;
+		valueProperty = new DataProperty<>(value);
 
 		getStyleClass().add("overlay-box");
 
@@ -78,12 +80,18 @@ public class OverlayBox extends BorderPane {
 
 		options.getStyleClass().add("overlay-options-grid");
 
-		active.selectedProperty().addListener((v, o, n) -> getValue().setActive(n));
+		active.selectedProperty().addListener((v, o, n) -> {
+			getValue().setActive(n);
+			if (onValuesChange != null) {
+				onValuesChange.accept(getValue());
+			}
+		});
 		active.setTooltip(UIFactory.tooltip(Translation.DIALOG_EDIT_OVERLAYS_OVERLAY_ACTIVE_TOOLTIP));
 
 		gradient.getStyleClass().add("gradient-label");
 
 		ContextMenu gradientMenu = new ContextMenu();
+		gradientMenu.setOnHiding(e -> onValuesChange.accept(getValue()));
 		HueRangeSlider hueSlider = new HueRangeSlider(0, 0.85f, value.getMinHue(), value.getMaxHue(), 400);
 		setGradientBackground(hueSlider);
 		Label flip = new Label("", new ImageView(flipIcon));
@@ -130,7 +138,7 @@ public class OverlayBox extends BorderPane {
 		options.add(delete, 2, 0, 1, 1);
 
 		delete.getStyleClass().add("control-label");
-		delete.setOnMouseReleased(e -> onDelete.accept(value));
+		delete.setOnMouseReleased(e -> onDelete.accept(getValue()));
 		delete.setTooltip(UIFactory.tooltip(Translation.DIALOG_EDIT_OVERLAYS_DELETE_TOOLTIP));
 
 		setRight(options);
@@ -148,7 +156,7 @@ public class OverlayBox extends BorderPane {
 	}
 
 	private OverlayParser getValue() {
-		return value;
+		return valueProperty.get();
 	}
 
 	private void setGradientBackground(HueRangeSlider hueSlider) {
@@ -171,22 +179,26 @@ public class OverlayBox extends BorderPane {
 		onTypeChange = consumer;
 	}
 
+	public void setOnValuesChange(Consumer<OverlayParser> consumer) {
+		onValuesChange = consumer;
+	}
+
 	public void setOnDelete(Consumer<OverlayParser> consumer) {
 		onDelete = consumer;
 	}
 
 	private void update(OverlayType type) {
-		if (type == null || type == value.getType()) {
+		if (type == null || type == getValue().getType()) {
 			return;
 		}
 
 		// create new data parser and fill with min / max values
-		OverlayParser oldValue = value;
+		OverlayParser oldValue = getValue();
 		OverlayParser newValue = type.instance();
 
-		newValue.setActive(value.isActive());
+		newValue.setActive(getValue().isActive());
 
-		value = newValue;
+		valueProperty.set(newValue);
 
 		// initialize new value and show parsing errors in ui
 		onMinimumInput(minimum.getText());
@@ -196,19 +208,28 @@ public class OverlayBox extends BorderPane {
 
 		active.setSelected(newValue.isActive());
 
-		onTypeChange.accept(oldValue, newValue);
+		onTypeChange.accept(oldValue, getValue());
 	}
 
 	private void onMinimumInput(String newValue) {
-		displayValid(value.setMin(newValue));
+		displayValid(getValue().setMin(newValue));
+		if (onValuesChange != null) {
+			onValuesChange.accept(getValue());
+		}
 	}
 
 	private void onMaximumInput(String newValue) {
-		displayValid(value.setMax(newValue));
+		displayValid(getValue().setMax(newValue));
+		if (onValuesChange != null) {
+			onValuesChange.accept(getValue());
+		}
 	}
 
 	private void onAdditionalDataInput(String newValue) {
-		displayValid(value.setMultiValues(newValue));
+		displayValid(getValue().setMultiValues(newValue));
+		if (onValuesChange != null) {
+			onValuesChange.accept(getValue());
+		}
 	}
 
 	private void displayValid(boolean valid) {

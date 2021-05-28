@@ -270,6 +270,7 @@ public class OptionBar extends BorderPane {
 		}
 		previousSelectedChunks = selectedChunks;
 		previousInvertedSelection = invertedSelection;
+		nextOverlay.setDisable(tileMap.getOverlay() == null);
 	}
 
 	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap) {
@@ -286,6 +287,10 @@ public class OptionBar extends BorderPane {
 		heightMinLabel.setDisable(!enabled);
 		heightMaxLabel.setDisable(!enabled);
 		heightField.setDisable(!enabled);
+	}
+
+	public void setEditOverlaysEnabled(boolean enabled) {
+		editOverlays.setDisable(!enabled);
 	}
 
 	private void setSelectionDependentMenuItemsEnabled(int selected, boolean inverted) {
