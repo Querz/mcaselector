@@ -255,7 +255,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 				continue;
 			}
 
-			int y = section.getByte("Y");
+			int y = section.getNumber("Y").intValue();
 
 			for (int i = 0; i < 4096; i++) {
 				CompoundTag blockState = getBlockAt(i, blockStates, palette);
