@@ -28,7 +28,7 @@ public abstract class AmountParser extends OverlayParser {
 		try {
 			return setMax(Integer.parseInt(raw));
 		} catch (NumberFormatException ex) {
-			return setMin((Integer) null);
+			return setMax((Integer) null);
 		}
 	}
 }

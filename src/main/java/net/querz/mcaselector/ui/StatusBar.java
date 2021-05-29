@@ -124,13 +124,14 @@ public class StatusBar extends StackPane {
 
 	private void updateOverlay(TileMap tileMap, Point2i chunk) {
 		if (tileMap.getOverlay() != null) {
-			if (chunk != null) {
+			OverlayParser p = tileMap.getOverlay();
+			if (!p.isActive()) {
+				overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + ", " + p.max() + "), -");
+			} else if (chunk != null) {
 				tileMap.getOverlayPool().getHoveredChunkValue(chunk, v -> {
-					OverlayParser p = tileMap.getOverlay();
 					overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + ", " + p.max() + "), " + (v == null ? "-" : v));
 				});
 			} else {
-				OverlayParser p = tileMap.getOverlay();
 				overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + ", " + p.max() + "), -");
 			}
 		} else {
