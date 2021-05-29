@@ -45,6 +45,7 @@ menu.tools.edit_nbt;編輯區塊
 menu.tools.swap_chunks;交換塊
 menu.tools.edit_overlays;編輯疊加
 menu.tools.next_overlay;下一個疊加
+menu.tools.next_overlay_type;疊加類型
 dialog.select_world.title;選擇一個尺寸
 dialog.settings.title;設置
 dialog.settings.language;語言
@@ -58,6 +59,7 @@ dialog.settings.pasted_chunks_color;插入的塊的顏色
 dialog.settings.shade;陰影
 dialog.settings.shade_water;水深
 dialog.settings.show_nonexistent_regions;顯示不存在的地區
+dialog.settings.smooth_rendering;渲染平滑
 dialog.settings.background_pattern;背景圖案
 dialog.settings.mc_saves_dir;我的世界目錄
 dialog.settings.print_debug;列印偵錯訊息

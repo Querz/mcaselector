@@ -96,6 +96,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		super(width, height);
 		this.window = window;
 		context = getGraphicsContext2D();
+		context.setImageSmoothing(Config.smoothRendering());
 		setFocusTraversable(true);
 		this.setOnMousePressed(this::onMousePressed);
 		this.setOnMouseReleased(e -> onMouseReleased());
@@ -661,6 +662,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		for (Tile tile : visibleTiles) {
 			tile.unload(overlay);
 		}
+	}
+
+	public void setSmoothRendering(boolean smoothRendering) {
+		context.setImageSmoothing(smoothRendering);
 	}
 
 	//will return a map of all chunks marked for deletion, mapped to regions.

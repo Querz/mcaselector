@@ -45,6 +45,7 @@ menu.tools.edit_nbt;Edytuj chunk
 menu.tools.swap_chunks;Zamień chunki
 menu.tools.edit_overlays;Edytuj nakładki
 menu.tools.next_overlay;Następna nakładka
+menu.tools.next_overlay_type;Typ nakładki
 dialog.select_world.title;Wybierz wymiar
 dialog.settings.title;Ustawienia
 dialog.settings.language;Język
@@ -58,6 +59,7 @@ dialog.settings.pasted_chunks_color;Kolor wstawionych chunku
 dialog.settings.shade;Cieniuj
 dialog.settings.shade_water;Cieniuj wodę
 dialog.settings.show_nonexistent_regions;Pokaż nieistniejące regiony
+dialog.settings.smooth_rendering;Renderuj gładko
 dialog.settings.background_pattern;Wzór tła
 dialog.settings.mc_saves_dir;Katalog Minecraft
 dialog.settings.print_debug;Wyświetlaj zaawansowane informacje

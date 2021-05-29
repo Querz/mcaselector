@@ -45,6 +45,7 @@ menu.tools.edit_nbt;Editar chunk
 menu.tools.swap_chunks;Intercambiar chunks
 menu.tools.edit_overlays;Editar superposiciones
 menu.tools.next_overlay;Siguiente superposición
+menu.tools.next_overlay_type;Tipo de superposición
 dialog.select_world.title;Seleccione una dimensión
 dialog.settings.title;Configuración
 dialog.settings.language;Idioma
@@ -58,6 +59,7 @@ dialog.settings.pasted_chunks_color;Color de los Chunks insertados
 dialog.settings.shade;Volumen 3D
 dialog.settings.shade_water;Profundidad del agua
 dialog.settings.show_nonexistent_regions;Mostrar regiones inexistentes
+dialog.settings.smooth_rendering;Renderizado suave
 dialog.settings.background_pattern;Patrón de fondo
 dialog.settings.mc_saves_dir;Directorio de Minecraft
 dialog.settings.print_debug;Mostrar mensajes de desarrolador

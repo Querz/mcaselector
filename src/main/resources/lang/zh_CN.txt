@@ -45,6 +45,7 @@ menu.tools.edit_nbt;编辑区块
 menu.tools.swap_chunks;交换区块
 menu.tools.edit_overlays;编辑叠加
 menu.tools.next_overlay;下一个叠加
+menu.tools.next_overlay_type;叠加类型
 dialog.select_world.title;选择一个尺寸
 dialog.settings.title;设置
 dialog.settings.language;语言
@@ -58,6 +59,7 @@ dialog.settings.pasted_chunks_color;插入的块的颜色
 dialog.settings.shade;阴影
 dialog.settings.shade_water;水影
 dialog.settings.show_nonexistent_regions;显示不存在的地区
+dialog.settings.smooth_rendering;渲染流畅
 dialog.settings.background_pattern;背景图案
 dialog.settings.mc_saves_dir;我的世界目录
 dialog.settings.print_debug;打印调试消息

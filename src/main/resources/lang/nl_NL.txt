@@ -45,6 +45,7 @@ menu.tools.edit_nbt;Chunk aanpassen
 menu.tools.swap_chunks;Chunks omwisselen
 menu.tools.edit_overlays;Bewerk overlays
 menu.tools.next_overlay;Volgende overlay
+menu.tools.next_overlay_type;Overlaytype
 dialog.select_world.title;Selecteer een dimensie
 dialog.settings.title;Instellingen
 dialog.settings.language;Taal
@@ -58,6 +59,7 @@ dialog.settings.pasted_chunks_color;Kleur van ingevoegde chunks
 dialog.settings.shade;Schaduw
 dialog.settings.shade_water;Shaduw water
 dialog.settings.show_nonexistent_regions;Toon niet-bestaande regio's
+dialog.settings.smooth_rendering;Glad maken
 dialog.settings.background_pattern;Patroon van de achtergrond
 dialog.settings.mc_saves_dir;Minecraft-map
 dialog.settings.print_debug;Print foutopsporingsberichten

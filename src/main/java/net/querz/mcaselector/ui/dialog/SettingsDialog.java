@@ -54,6 +54,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private final CheckBox shadeCheckBox = new CheckBox();
 	private final CheckBox shadeWaterCheckBox = new CheckBox();
 	private final CheckBox showNonexistentRegionsCheckBox = new CheckBox();
+	private final CheckBox smoothRendering = new CheckBox();
 	private final ComboBox<TileMapBox.TileMapBoxBackground> tileMapBackgrounds = new ComboBox<>();
 	private final FileTextField mcSavesDir = new FileTextField();
 	private final CheckBox debugCheckBox = new CheckBox();
@@ -87,6 +88,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			shadeCheckBox.setSelected(Config.DEFAULT_SHADE);
 			shadeWaterCheckBox.setSelected(Config.DEFAULT_SHADE_WATER);
 			showNonexistentRegionsCheckBox.setSelected(Config.DEFAULT_SHOW_NONEXISTENT_REGIONS);
+			smoothRendering.setSelected(Config.DEFAULT_SMOOTH_RENDERING);
 			tileMapBackgrounds.setValue(TileMapBox.TileMapBoxBackground.valueOf(Config.DEFAULT_TILEMAP_BACKGROUND));
 			mcSavesDir.setFile(Config.DEFAULT_MC_SAVES_DIR == null ? null : new File(Config.DEFAULT_MC_SAVES_DIR));
 			debugCheckBox.setSelected(Config.DEFAULT_DEBUG);
@@ -106,6 +108,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 						shadeCheckBox.isSelected(),
 						shadeWaterCheckBox.isSelected(),
 						showNonexistentRegionsCheckBox.isSelected(),
+						smoothRendering.isSelected(),
 						tileMapBackgrounds.getSelectionModel().getSelectedItem(),
 						mcSavesDir.getFile(),
 						debugCheckBox.isSelected()
@@ -146,6 +149,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		shadeCheckBox.setSelected(Config.shade());
 		shadeWaterCheckBox.setSelected(Config.shadeWater());
 		showNonexistentRegionsCheckBox.setSelected(Config.showNonExistentRegions());
+		smoothRendering.setSelected(Config.smoothRendering());
 		tileMapBackgrounds.getItems().addAll(TileMapBox.TileMapBoxBackground.values());
 
 		tileMapBackgrounds.setCellFactory((listView) -> {
@@ -215,9 +219,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SHADE), 0, 8, 1, 1);
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SHADE_WATER), 0, 9, 1, 1);
 		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SHOW_NONEXISTENT_REGIONS), 0, 10, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_BACKGROUND_PATTERN), 0, 11, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_MC_SAVES_DIR), 0, 12, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_PRINT_DEBUG), 0, 13, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SMOOTH_RENDERING), 0, 11, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_BACKGROUND_PATTERN), 0, 12, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_MC_SAVES_DIR), 0, 13, 1, 1);
+		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_PRINT_DEBUG), 0, 14, 1, 1);
 		grid.add(languages, 1, 0, 2, 1);
 		grid.add(readThreadsSlider, 1, 1, 1, 1);
 		grid.add(processThreadsSlider, 1, 2, 1, 1);
@@ -229,9 +234,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		grid.add(shadeCheckBox, 1, 8, 2, 1);
 		grid.add(shadeWaterCheckBox, 1, 9, 2, 1);
 		grid.add(showNonexistentRegionsCheckBox, 1, 10, 2, 1);
-		grid.add(tileMapBackgrounds, 1, 11, 2, 1);
-		grid.add(mcSavesDir, 1, 12, 2, 1);
-		grid.add(debugBox, 1, 13, 2, 1);
+		grid.add(smoothRendering, 1, 11, 2, 1);
+		grid.add(tileMapBackgrounds, 1, 12, 2, 1);
+		grid.add(mcSavesDir, 1, 13, 2, 1);
+		grid.add(debugBox, 1, 14, 2, 1);
 		grid.add(UIFactory.attachTextFieldToSlider(readThreadsSlider), 2, 1, 1, 1);
 		grid.add(UIFactory.attachTextFieldToSlider(processThreadsSlider), 2, 2, 1, 1);
 		grid.add(UIFactory.attachTextFieldToSlider(writeThreadsSlider), 2, 3, 1, 1);
@@ -255,6 +261,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		private final boolean shadeWater;
 		private final boolean shade;
 		private final boolean showNonexistentRegions;
+		private boolean smoothRendering;
 		private final TileMapBox.TileMapBoxBackground tileMapBackground;
 		private final File mcSavesDir;
 		private final boolean debug;
@@ -262,8 +269,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		public Result(Locale locale, int readThreads, int processThreads, int writeThreads, int maxLoadedFiles,
 		              Color regionColor, Color chunkColor, Color pasteColor, boolean shade, boolean shadeWater,
-		              boolean showNonexistentRegions, TileMapBox.TileMapBoxBackground tileMapBackground,
-		              File mcSavesDir, boolean debug) {
+		              boolean showNonexistentRegions, boolean smoothRendering,
+		              TileMapBox.TileMapBoxBackground tileMapBackground, File mcSavesDir, boolean debug) {
 
 			this.locale = locale;
 			this.readThreads = readThreads;
@@ -276,6 +283,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			this.shade = shade;
 			this.shadeWater = shadeWater;
 			this.showNonexistentRegions = showNonexistentRegions;
+			this.smoothRendering = smoothRendering;
 			this.tileMapBackground = tileMapBackground;
 			if (mcSavesDir == null) {
 				this.mcSavesDir = new File(Config.DEFAULT_MC_SAVES_DIR);
@@ -327,6 +335,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		public boolean getShowNonexistentRegions() {
 			return showNonexistentRegions;
+		}
+
+		public boolean getSmoothRendering() {
+			return smoothRendering;
 		}
 
 		public TileMapBox.TileMapBoxBackground getTileMapBackground() {

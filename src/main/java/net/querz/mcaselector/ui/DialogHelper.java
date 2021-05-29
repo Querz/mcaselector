@@ -173,10 +173,6 @@ public class DialogHelper {
 
 	public static void editOverlays(TileMap tileMap, Stage primaryStage) {
 		new OverlayEditorDialog(primaryStage, tileMap, tileMap.getOverlayParsers()).show();
-//		result.ifPresent(r -> {
-//			Config.setOverlays(r.getOverlays());
-//			tileMap.setOverlays(r.getOverlays());
-//		});
 	}
 
 	public static void deleteSelection(TileMap tileMap, Stage primaryStage) {
@@ -279,6 +275,8 @@ public class DialogHelper {
 			}
 			Config.setShowNonExistentRegions(r.getShowNonexistentRegions());
 			tileMap.setShowNonexistentRegions(r.getShowNonexistentRegions());
+			Config.setSmoothRendering(r.getSmoothRendering());
+			tileMap.setSmoothRendering(r.getSmoothRendering());
 			Config.setTileMapBackground(r.getTileMapBackground().name());
 			tileMap.getWindow().getTileMapBox().setBackground(r.getTileMapBackground().getBackground());
 			Config.setMCSavesDir(r.getMcSavesDir() + "");

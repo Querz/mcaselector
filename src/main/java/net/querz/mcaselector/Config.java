@@ -134,6 +134,7 @@ public final class Config {
 	public static final boolean DEFAULT_SHADE = true;
 	public static final boolean DEFAULT_SHADE_WATER = true;
 	public static final boolean DEFAULT_SHOW_NONEXISTENT_REGIONS = true;
+	public static final boolean DEFAULT_SMOOTH_RENDERING = false;
 	public static final String DEFAULT_TILEMAP_BACKGROUND = "BLACK";
 	public static final boolean DEFAULT_DEBUG = false;
 	public static final String DEFAULT_MC_SAVES_DIR = FileHelper.getMCSavesDir();
@@ -159,6 +160,7 @@ public final class Config {
 	private static boolean shade = DEFAULT_SHADE;
 	private static boolean shadeWater = DEFAULT_SHADE_WATER;
 	private static boolean showNonexistentRegions = DEFAULT_SHOW_NONEXISTENT_REGIONS;
+	private static boolean smoothRendering = DEFAULT_SMOOTH_RENDERING;
 	private static String tileMapBackground = DEFAULT_TILEMAP_BACKGROUND;
 	private static String mcSavesDir = DEFAULT_MC_SAVES_DIR;
 
@@ -280,6 +282,14 @@ public final class Config {
 		return Config.showNonexistentRegions;
 	}
 
+	public static void setSmoothRendering(boolean smoothRendering) {
+		Config.smoothRendering = smoothRendering;
+	}
+
+	public static boolean smoothRendering() {
+		return Config.smoothRendering;
+	}
+
 	public static void setTileMapBackground(String tileMapBackground) {
 		Config.tileMapBackground = tileMapBackground;
 	}
@@ -396,6 +406,7 @@ public final class Config {
 				shade = Boolean.parseBoolean(config.getOrDefault("Shade", DEFAULT_SHADE + ""));
 				shadeWater = Boolean.parseBoolean(config.getOrDefault("ShadeWater", DEFAULT_SHADE_WATER + ""));
 				showNonexistentRegions = Boolean.parseBoolean(config.getOrDefault("ShowNonexistentRegions", DEFAULT_SHOW_NONEXISTENT_REGIONS + ""));
+				smoothRendering = Boolean.parseBoolean(config.getOrDefault("SmoothRendering", DEFAULT_SMOOTH_RENDERING + ""));
 				tileMapBackground = config.getOrDefault("TileMapBackground", DEFAULT_TILEMAP_BACKGROUND);
 				mcSavesDir = config.getOrDefault("MCSavesDir", DEFAULT_MC_SAVES_DIR);
 				if (!new File(mcSavesDir).exists()) {
@@ -452,6 +463,7 @@ public final class Config {
 		addSettingsLine("Shade", shade, DEFAULT_SHADE, lines);
 		addSettingsLine("ShadeWater", shadeWater, DEFAULT_SHADE_WATER, lines);
 		addSettingsLine("ShowNonexistentRegions", showNonexistentRegions, DEFAULT_SHOW_NONEXISTENT_REGIONS, lines);
+		addSettingsLine("SmoothRendering", smoothRendering, DEFAULT_SMOOTH_RENDERING, lines);
 		addSettingsLine("TileMapBackground", tileMapBackground, DEFAULT_TILEMAP_BACKGROUND, lines);
 		addSettingsLine("MCSavesDir", mcSavesDir, DEFAULT_MC_SAVES_DIR, lines);
 		addSettingsLine("Debug", debug, DEFAULT_DEBUG, lines);
