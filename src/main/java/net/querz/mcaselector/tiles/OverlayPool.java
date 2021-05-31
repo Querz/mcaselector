@@ -60,7 +60,7 @@ public class OverlayPool {
 
 	public void setParser(OverlayParser overlay) {
 		this.parser = overlay;
-		if (overlay != null) {
+		if (overlay != null && overlay.isValid() && overlay.isActive()) {
 			try {
 				dataCache.initTables(Collections.singletonList(overlay));
 				hoveredRegion = null;
