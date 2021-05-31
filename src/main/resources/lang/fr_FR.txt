@@ -60,6 +60,7 @@ dialog.settings.shade;Ombre
 dialog.settings.shade_water;Profondeur d'eau
 dialog.settings.show_nonexistent_regions;Afficher les régions inexistantes
 dialog.settings.smooth_rendering;Rendre lisse
+dialog.settings.smooth_overlays;Superpositions lisses
 dialog.settings.background_pattern;Motif de fond
 dialog.settings.mc_saves_dir;Directoire de MC
 dialog.settings.print_debug;Logger des messages de debug

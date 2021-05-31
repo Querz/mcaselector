@@ -60,6 +60,7 @@ dialog.settings.shade;Skugga
 dialog.settings.shade_water;Vattendjup
 dialog.settings.show_nonexistent_regions;Visa regioner som inte finns
 dialog.settings.smooth_rendering;Gör smidig
+dialog.settings.smooth_overlays;Släta överlägg
 dialog.settings.background_pattern;Bakgrundsmönster
 dialog.settings.mc_saves_dir;Minecraft-katalog
 dialog.settings.print_debug;Skriv ut felsökningsmeddelanden

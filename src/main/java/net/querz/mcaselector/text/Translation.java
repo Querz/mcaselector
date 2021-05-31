@@ -78,6 +78,7 @@ public enum Translation {
 	DIALOG_SETTINGS_SHADE_WATER("dialog.settings.shade_water"),
 	DIALOG_SETTINGS_SHOW_NONEXISTENT_REGIONS("dialog.settings.show_nonexistent_regions"),
 	DIALOG_SETTINGS_SMOOTH_RENDERING("dialog.settings.smooth_rendering"),
+	DIALOG_SETTINGS_SMOOTH_OVERLAYS("dialog.settings.smooth_overlays"),
 	DIALOG_SETTINGS_BACKGROUND_PATTERN("dialog.settings.background_pattern"),
 	DIALOG_SETTINGS_MC_SAVES_DIR("dialog.settings.mc_saves_dir"),
 	DIALOG_SETTINGS_PRINT_DEBUG("dialog.settings.print_debug"),

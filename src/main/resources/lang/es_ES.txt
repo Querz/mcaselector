@@ -60,6 +60,7 @@ dialog.settings.shade;Volumen 3D
 dialog.settings.shade_water;Profundidad del agua
 dialog.settings.show_nonexistent_regions;Mostrar regiones inexistentes
 dialog.settings.smooth_rendering;Renderizado suave
+dialog.settings.smooth_overlays;Superposiciones suaves
 dialog.settings.background_pattern;Patrón de fondo
 dialog.settings.mc_saves_dir;Directorio de Minecraft
 dialog.settings.print_debug;Mostrar mensajes de desarrolador

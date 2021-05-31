@@ -60,6 +60,7 @@ dialog.settings.shade;тень
 dialog.settings.shade_water;Глубина воды
 dialog.settings.show_nonexistent_regions;Показать несуществующие регионы
 dialog.settings.smooth_rendering;Сделать гладким
+dialog.settings.smooth_overlays;Гладкие накладки
 dialog.settings.background_pattern;Фоновый узор
 dialog.settings.mc_saves_dir;Каталог Minecraft
 dialog.settings.print_debug;Отображать системные сообщения

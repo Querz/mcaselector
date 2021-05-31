@@ -60,6 +60,7 @@ dialog.settings.shade;Sombra
 dialog.settings.shade_water;Profundidade da água
 dialog.settings.show_nonexistent_regions;Mostrar regiões inexistentes
 dialog.settings.smooth_rendering;Renderizar suave
+dialog.settings.smooth_overlays;Sobreposições suaves
 dialog.settings.background_pattern;Padrão de fundo
 dialog.settings.mc_saves_dir;Diretório Minecraft
 dialog.settings.print_debug;Mostrar mensagens de desenvolvedor

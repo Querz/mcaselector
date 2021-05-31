@@ -60,6 +60,7 @@ dialog.settings.shade;Ombra
 dialog.settings.shade_water;Sfumatura dell'acqua
 dialog.settings.show_nonexistent_regions;Mostra regioni inesistenti
 dialog.settings.smooth_rendering;Rendi liscio
+dialog.settings.smooth_overlays;Sovrapposizioni lisce
 dialog.settings.background_pattern;Pattern di sfondo
 dialog.settings.mc_saves_dir;Directory di Minecraft
 dialog.settings.print_debug;Scrivi il messaggio di debug

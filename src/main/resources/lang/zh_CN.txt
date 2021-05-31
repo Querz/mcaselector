@@ -60,6 +60,7 @@ dialog.settings.shade;阴影
 dialog.settings.shade_water;水影
 dialog.settings.show_nonexistent_regions;显示不存在的地区
 dialog.settings.smooth_rendering;渲染流畅
+dialog.settings.smooth_overlays;平滑叠加
 dialog.settings.background_pattern;背景图案
 dialog.settings.mc_saves_dir;我的世界目录
 dialog.settings.print_debug;打印调试消息

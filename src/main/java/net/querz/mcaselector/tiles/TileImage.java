@@ -15,13 +15,9 @@ import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2f;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.version.VersionController;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
-import static net.querz.mcaselector.io.job.RegionImageGenerator.UniqueID;
 
 public final class TileImage {
 
@@ -41,8 +37,10 @@ public final class TileImage {
 
 			if (overlay && tile.overlay != null) {
 				ctx.setGlobalAlpha(0.5);
+				ctx.setImageSmoothing(Config.smoothOverlays());
 				ctx.drawImage(tile.getOverlay(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 				ctx.setGlobalAlpha(1);
+				ctx.setImageSmoothing(Config.smoothRendering());
 			}
 		} else if (showNonexistentRegions) {
 			ctx.drawImage(ImageHelper.getEmptyTileImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);

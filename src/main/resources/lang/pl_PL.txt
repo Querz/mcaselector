@@ -60,6 +60,7 @@ dialog.settings.shade;Cieniuj
 dialog.settings.shade_water;Cieniuj wodę
 dialog.settings.show_nonexistent_regions;Pokaż nieistniejące regiony
 dialog.settings.smooth_rendering;Renderuj gładko
+dialog.settings.smooth_overlays;Gładkie nakładki
 dialog.settings.background_pattern;Wzór tła
 dialog.settings.mc_saves_dir;Katalog Minecraft
 dialog.settings.print_debug;Wyświetlaj zaawansowane informacje

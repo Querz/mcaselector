@@ -60,6 +60,7 @@ dialog.settings.shade;Shade
 dialog.settings.shade_water;Shade water
 dialog.settings.show_nonexistent_regions;Show nonexistent regions
 dialog.settings.smooth_rendering;Smooth rendering
+dialog.settings.smooth_overlays;Smooth overlays
 dialog.settings.background_pattern;Background pattern
 dialog.settings.mc_saves_dir;MC Saves Directory
 dialog.settings.print_debug;Print debug messages

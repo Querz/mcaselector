@@ -277,6 +277,7 @@ public class DialogHelper {
 			tileMap.setShowNonexistentRegions(r.getShowNonexistentRegions());
 			Config.setSmoothRendering(r.getSmoothRendering());
 			tileMap.setSmoothRendering(r.getSmoothRendering());
+			Config.setSmoothOverlays(r.getSmoothOverlays());
 			Config.setTileMapBackground(r.getTileMapBackground().name());
 			tileMap.getWindow().getTileMapBox().setBackground(r.getTileMapBackground().getBackground());
 			Config.setMCSavesDir(r.getMcSavesDir() + "");

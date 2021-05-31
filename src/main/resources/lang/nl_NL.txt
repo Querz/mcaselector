@@ -60,6 +60,7 @@ dialog.settings.shade;Schaduw
 dialog.settings.shade_water;Shaduw water
 dialog.settings.show_nonexistent_regions;Toon niet-bestaande regio's
 dialog.settings.smooth_rendering;Glad maken
+dialog.settings.smooth_overlays;Vloeiende overlays
 dialog.settings.background_pattern;Patroon van de achtergrond
 dialog.settings.mc_saves_dir;Minecraft-map
 dialog.settings.print_debug;Print foutopsporingsberichten
