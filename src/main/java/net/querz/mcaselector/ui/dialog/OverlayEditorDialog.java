@@ -103,6 +103,17 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
 		getDialogPane().setContent(content);
 
+		getDialogPane().setOnKeyPressed(e -> {
+			switch (e.getCode()) {
+				case O:
+					tileMap.nextOverlay();
+					break;
+				case N:
+					tileMap.nextOverlayType();
+					break;
+			}
+		});
+
 		tileMap.getWindow().getOptionBar().setEditOverlaysEnabled(false);
 		tileMap.getWindow().trackDialog(this);
 	}
