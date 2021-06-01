@@ -9,27 +9,20 @@ import net.querz.nbt.tag.Tag;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
 
 public class Anvil117ColorMapping implements ColorMapping {
 
-	//value can either be an Integer (color) or a BlockStateMapping
+	// value can either be an Integer (color) or a BlockStateMapping
 	private final Map<String, Object> mapping = new TreeMap<>();
 	private final Set<String> grass = new HashSet<>();
 	private final Set<String> foliage = new HashSet<>();
 
 	public Anvil117ColorMapping() {
 		// note_block:pitch=1,powered=true,instrument=flute;01ab9f
-		// noinspection ConstantConditions
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Anvil117ColorMapping.class.getClassLoader().getResourceAsStream("mapping/117/colors.txt")))) {
+				new InputStreamReader(Objects.requireNonNull(Anvil117ColorMapping.class.getClassLoader().getResourceAsStream("mapping/117/colors.txt"))))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				String[] elements = line.split(";");
@@ -49,7 +42,7 @@ public class Anvil117ColorMapping implements ColorMapping {
 				}
 
 				if (blockData.length == 1) {
-					//default block color, set value to Integer color
+					// default block color, set value to Integer color
 					mapping.put("minecraft:" + blockData[0], color | 0xFF000000);
 				} else {
 					BlockStateMapping bsm;
@@ -64,14 +57,9 @@ public class Anvil117ColorMapping implements ColorMapping {
 				}
 				if (elements.length == 3) {
 					switch (elements[2]) {
-						case "g":
-							grass.add("minecraft:" + blockData[0]);
-							break;
-						case "f":
-							foliage.add("minecraft:" + blockData[0]);
-							break;
-						default:
-							throw new RuntimeException("invalid grass / foliage type " + elements[2]);
+						case "g" -> grass.add("minecraft:" + blockData[0]);
+						case "f" -> foliage.add("minecraft:" + blockData[0]);
+						default -> throw new RuntimeException("invalid grass / foliage type " + elements[2]);
 					}
 				}
 			}

@@ -59,8 +59,8 @@ public class LocationInput extends HBox {
 		xValue.requestFocus();
 	}
 
-	//allow empty textfield
-	//allow only + / -
+	// allow empty textfield
+	// allow only + / -
 
 	private void onXInput(String o, String n) {
 		if (emptyIsZero && (n.isEmpty() || "-".equals(n) || "+".equals(n))) {

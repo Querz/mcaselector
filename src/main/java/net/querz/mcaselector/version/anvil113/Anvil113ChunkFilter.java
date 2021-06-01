@@ -10,9 +10,7 @@ import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.LongArrayTag;
 import net.querz.nbt.tag.Tag;
-
 import java.util.*;
-
 import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class Anvil113ChunkFilter implements ChunkFilter {

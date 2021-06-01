@@ -62,7 +62,7 @@ public class Anvil114ChunkRelocator implements ChunkRelocator {
 		}
 
 		// adjust structures
-		if (level.containsKey("Structures")) { // 1.13
+		if (level.containsKey("Structures")) {
 			CompoundTag structures = catchClassCastException(() -> level.getCompoundTag("Structures"));
 			if (structures != null) {
 				applyOffsetToStructures(structures, offset);

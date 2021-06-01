@@ -3,17 +3,18 @@ import java.nio.file.Files
 
 plugins {
 	id "com.github.johnrengelman.shadow" version "7.0.0"
+	id 'java'
+	id 'eclipse'
+	id 'idea'
 }
-
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
 
 group 'net.querz.mcaselector'
 version '1.15.4'
 def appName = 'MCA Selector'
 def appUrl = 'https://github.com/Querz/mcaselector'
 def appAuthor = 'Querz'
+
+sourceCompatibility = 16
 
 idea {
 	module.downloadSources = true

@@ -37,7 +37,7 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 
 		byte[] biomes = withDefault(() -> root.getCompoundTag("Level").getByteArray("Biomes"), null);
 
-		//loop over x / z
+		// loop over x / z
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
@@ -49,7 +49,7 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 				biome = Math.max(0, biome);
 
 				boolean waterDepth = false;
-				//loop over sections
+				// loop over sections
 				for (int i = blocksArray.length - (16 - (height >> 4)); i >= 0; i--) {
 					if (blocksArray[i] == null) {
 						continue;
@@ -67,7 +67,7 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 						startHeight = Tile.CHUNK_SIZE - 1;
 					}
 
-					//loop over y value in section from top to bottom
+					// loop over y value in section from top to bottom
 					for (int cy = startHeight; cy >= 0; cy--) {
 						int index = getBlockIndex(cx, cy, cz);
 						short block = (short) (blocks[index] & 0xFF);
@@ -158,12 +158,10 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 	}
 
 	private boolean isWater(short block) {
-		switch (block) {
-			case 8:
-			case 9:
-				return true;
-		}
-		return false;
+		return switch (block) {
+			case 8, 9 -> true;
+			default -> false;
+		};
 	}
 
 	private boolean isEmpty(int blockID) {

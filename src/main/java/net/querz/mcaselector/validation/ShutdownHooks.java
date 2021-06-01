@@ -34,8 +34,9 @@ public final class ShutdownHooks {
 	}
 
 	public static class ShutdownJob implements Runnable, Comparable<ShutdownJob> {
-		private int priority;
-		private Runnable runnable;
+
+		private final int priority;
+		private final Runnable runnable;
 
 		private ShutdownJob(Runnable runnable, int priority) {
 			this.runnable = runnable;

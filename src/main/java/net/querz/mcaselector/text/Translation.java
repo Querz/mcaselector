@@ -318,7 +318,7 @@ public enum Translation {
 			String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!"));
 			JarFile jar;
 			try {
-				jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+				jar = new JarFile(URLDecoder.decode(jarPath, StandardCharsets.UTF_8));
 			} catch (IOException ex) {
 				Debug.dumpException("failed to decode jar file", ex);
 				return null;

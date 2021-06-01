@@ -1,10 +1,6 @@
 package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.exception.ParseException;
-import net.querz.nbt.io.SNBTUtil;
-import net.querz.nbt.tag.Tag;
-
-import java.io.IOException;
 import java.util.function.Function;
 
 public class StringPointer {
@@ -37,7 +33,7 @@ public class StringPointer {
 	}
 
 	public String parseQuotedString(char quote) throws ParseException {
-		int oldIndex = ++index; //ignore beginning quotes
+		int oldIndex = ++index; // ignore beginning quotes
 		StringBuilder sb = null;
 		boolean escape = false;
 		while (hasNext()) {
@@ -48,7 +44,7 @@ public class StringPointer {
 				}
 				escape = false;
 			} else {
-				if (c == '\\') { //escape
+				if (c == '\\') { // escape
 					escape = true;
 					if (sb != null) {
 						continue;

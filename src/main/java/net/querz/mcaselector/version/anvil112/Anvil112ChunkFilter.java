@@ -5,14 +5,10 @@ import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.LongArrayTag;
-import net.querz.nbt.tag.Tag;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
-
 import static net.querz.mcaselector.validation.ValidationHelper.*;
 
 public class Anvil112ChunkFilter implements ChunkFilter {
@@ -20,9 +16,8 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 	private final Map<String, BlockData[]> mapping = new HashMap<>();
 
 	public Anvil112ChunkFilter() {
-		// noinspection ConstantConditions
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Anvil112ChunkFilter.class.getClassLoader().getResourceAsStream("mapping/block_name_to_id.txt")))) {
+				new InputStreamReader(Objects.requireNonNull(Anvil112ChunkFilter.class.getClassLoader().getResourceAsStream("mapping/block_name_to_id.txt"))))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				line = line.trim();

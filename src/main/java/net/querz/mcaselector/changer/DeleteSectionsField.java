@@ -64,7 +64,7 @@ public class DeleteSectionsField extends Field<List<Range>> {
 		}
 		StringJoiner sj = new StringJoiner(", ");
 		getNewValue().forEach(r -> sj.add(r.toString()));
-		return getType().toString() + " = \"" + sj.toString() + "\"";
+		return getType().toString() + " = \"" + sj + "\"";
 	}
 
 	@Override

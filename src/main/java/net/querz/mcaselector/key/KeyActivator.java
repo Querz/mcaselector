@@ -2,7 +2,6 @@ package net.querz.mcaselector.key;
 
 import javafx.scene.input.KeyCode;
 import net.querz.mcaselector.validation.ShutdownHooks;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,13 +14,13 @@ import java.util.function.Consumer;
 
 public class KeyActivator extends TimerTask {
 
-	private final Timer timer = new Timer();
 	private final Set<KeyCode> pressedButtons = new HashSet<>();
 	private final Set<KeyCode> pressedActionKeys = new HashSet<>();
 	private final Map<KeyCode, List<Consumer<Set<KeyCode>>>> actions = new HashMap<>();
 	private Runnable globalAction;
 
 	public KeyActivator() {
+		Timer timer = new Timer();
 		timer.schedule(this, 0L, 33L);
 		ShutdownHooks.addShutdownHook(timer::cancel);
 	}

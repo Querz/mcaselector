@@ -103,17 +103,17 @@ public class DialogHelper {
 			}
 
 			switch (r.getType()) {
-				case DELETE:
+				case DELETE -> {
 					Optional<ButtonType> confRes = new DeleteConfirmationDialog(null, primaryStage).showAndWait();
 					confRes.ifPresent(confR -> {
 						if (confR == ButtonType.OK) {
 							new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_FILTERED_CHUNKS, primaryStage)
-									.showProgressBar(t -> ChunkFilterDeleter.deleteFilter(
-											r.getFilter(),
-											r.isSelectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
-											t,
-											false
-									));
+								.showProgressBar(t -> ChunkFilterDeleter.deleteFilter(
+									r.getFilter(),
+									r.isSelectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
+									t,
+									false
+								));
 							if (r.isSelectionOnly()) {
 								CacheHelper.clearSelectionCache(tileMap);
 							} else {
@@ -121,11 +121,11 @@ public class DialogHelper {
 							}
 						}
 					});
-					break;
-				case EXPORT:
+				}
+				case EXPORT -> {
 					File dir = createDirectoryChooser(FileHelper.getLastOpenedDirectory("chunk_import_export", null)).showDialog(primaryStage);
 					if (dir != null) {
-						confRes = new ExportConfirmationDialog(null, primaryStage).showAndWait();
+						Optional<ButtonType> confRes = new ExportConfirmationDialog(null, primaryStage).showAndWait();
 						confRes.ifPresent(confR -> {
 							if (confR == ButtonType.OK) {
 								FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
@@ -139,34 +139,33 @@ public class DialogHelper {
 								}
 
 								new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_FILTERED_CHUNKS, primaryStage)
-										.showProgressBar(t -> ChunkFilterExporter.exportFilter(
-												r.getFilter(),
-												r.isSelectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
-												worldDirectories,
-												t,
-												false
-										));
+									.showProgressBar(t -> ChunkFilterExporter.exportFilter(
+										r.getFilter(),
+										r.isSelectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
+										worldDirectories,
+										t,
+										false
+									));
 							}
 						});
 					} else {
 						Debug.dump("cancelled exporting chunks, no valid destination directory");
 					}
-					break;
-				case SELECT:
+				}
+				case SELECT -> {
 					SelectionData selectionData = new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted());
 					tileMap.clearSelection();
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS, primaryStage)
-							.showProgressBar(t -> ChunkFilterSelector.selectFilter(
-								r.getFilter(),
-								r.isSelectionOnly() ? (selectionData.isEmpty() ? null : selectionData) : null,
-								r.getRadius(),
-								selection -> Platform.runLater(() -> {
-									tileMap.addMarkedChunks(selection);
-									tileMap.update();
+						.showProgressBar(t -> ChunkFilterSelector.selectFilter(
+							r.getFilter(),
+							r.isSelectionOnly() ? (selectionData.isEmpty() ? null : selectionData) : null,
+							r.getRadius(),
+							selection -> Platform.runLater(() -> {
+								tileMap.addMarkedChunks(selection);
+								tileMap.update();
 							}), t, false));
-					break;
-				default:
-					Debug.dump("i have no idea how you got no selection there...");
+				}
+				default -> Debug.dump("i have no idea how you got no selection there...");
 			}
 		});
 	}
@@ -554,9 +553,7 @@ public class DialogHelper {
 
 			// show world selection dialog
 			Optional<File> result = new SelectWorldDialog(dimensions, primaryStage).showAndWait();
-			result.ifPresent(dim -> {
-				setWorld(FileHelper.detectWorldDirectories(dim), tileMap);
-			});
+			result.ifPresent(dim -> setWorld(FileHelper.detectWorldDirectories(dim), tileMap));
 		} else if (file != null) {
 			new ErrorDialog(primaryStage, String.format("%s is not a directory", file));
 		}
@@ -582,8 +579,8 @@ public class DialogHelper {
 		if (file != null) {
 			SelectionData selection = SelectionHelper.importSelection(file);
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
-			tileMap.setMarkedChunks(selection.getSelection());
-			tileMap.setSelectionInverted(selection.isInverted());
+			tileMap.setMarkedChunks(selection.selection());
+			tileMap.setSelectionInverted(selection.inverted());
 			tileMap.update();
 		}
 	}

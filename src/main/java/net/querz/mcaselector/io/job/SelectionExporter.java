@@ -11,7 +11,6 @@ import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
-import net.querz.mcaselector.progress.Timer;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -19,12 +18,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class SelectionExporter {
+public final class SelectionExporter {
 
 	private SelectionExporter() {}
 
 	public static void exportSelection(SelectionData selection, WorldDirectories destination, Progress progressChannel) {
-		if (selection.getSelection().isEmpty() && !selection.isInverted()) {
+		if (selection.selection().isEmpty() && !selection.inverted()) {
 			progressChannel.done("no selection");
 			return;
 		}

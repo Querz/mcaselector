@@ -47,7 +47,7 @@ public final class TileImage {
 		}
 
 		if (tile.marked && tile.markedChunks.isEmpty() && !selectionInverted || !tile.marked && tile.markedChunks.isEmpty() && selectionInverted) {
-			//draw marked region
+			// draw marked region
 			ctx.setFill(Config.getRegionSelectionColor().makeJavaFXColor());
 			ctx.fillRect(offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		} else if (tile.markedChunks.size() > 0) {

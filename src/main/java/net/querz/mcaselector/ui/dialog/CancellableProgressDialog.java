@@ -10,7 +10,6 @@ import net.querz.mcaselector.ui.UIFactory;
 
 public class CancellableProgressDialog extends ProgressDialog {
 
-	private final Button cancel = UIFactory.button(Translation.BUTTON_CANCEL);
 	private boolean cancelled = false;
 
 	public CancellableProgressDialog(Translation title, Stage primaryStage) {
@@ -18,6 +17,7 @@ public class CancellableProgressDialog extends ProgressDialog {
 
 		HBox cancelBox = new HBox();
 		cancelBox.getStyleClass().add("cancel-box");
+		Button cancel = UIFactory.button(Translation.BUTTON_CANCEL);
 		cancelBox.getChildren().add(cancel);
 
 		getBox().getChildren().add(cancelBox);

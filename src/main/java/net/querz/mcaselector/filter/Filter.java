@@ -1,14 +1,13 @@
 package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.io.mca.ChunkData;
-
 import java.io.Serializable;
 
 public abstract class Filter<T> implements Serializable {
 
 	private String rawValue;
 	private boolean valid = true;
-	private FilterType type;
+	private final FilterType type;
 	private Operator operator;
 	private Filter<?> parent;
 

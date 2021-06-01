@@ -7,7 +7,6 @@ import net.querz.mcaselector.version.anvil114.*;
 import net.querz.mcaselector.version.anvil115.*;
 import net.querz.mcaselector.version.anvil116.*;
 import net.querz.mcaselector.version.anvil117.*;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;

@@ -12,7 +12,7 @@ import net.querz.mcaselector.io.ImageHelper;
 
 public class HueRangeSlider extends RangeSlider {
 
-	private BooleanProperty invertedProperty = new SimpleBooleanProperty(false);
+	private final BooleanProperty invertedProperty = new SimpleBooleanProperty(false);
 	private final int width;
 
 	public HueRangeSlider(float minHue, float maxHue, float low, float high, int width) {

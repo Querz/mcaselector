@@ -15,7 +15,7 @@ import net.querz.mcaselector.text.Translation;
 import java.util.Map;
 import java.util.Set;
 
-public class ChunkFilterDeleter {
+public final class ChunkFilterDeleter {
 
 	private ChunkFilterDeleter() {}
 

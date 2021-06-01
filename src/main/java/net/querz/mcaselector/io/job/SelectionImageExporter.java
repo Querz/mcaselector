@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class SelectionImageExporter {
+public final class SelectionImageExporter {
 
 	private SelectionImageExporter() {}
 

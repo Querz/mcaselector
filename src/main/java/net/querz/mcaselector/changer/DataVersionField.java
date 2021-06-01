@@ -23,7 +23,7 @@ public class DataVersionField extends Field<Integer> {
 				return true;
 			}
 		} catch (NumberFormatException ex) {
-			//do nothing
+			// do nothing
 		}
 		return super.parseNewValue(s);
 	}

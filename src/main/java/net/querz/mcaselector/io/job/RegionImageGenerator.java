@@ -25,7 +25,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class RegionImageGenerator {
+public final class RegionImageGenerator {
 
 	private static final Set<Point2i> loading = ConcurrentHashMap.newKeySet();
 	private static final Set<Point2i> saving = ConcurrentHashMap.newKeySet();
@@ -277,7 +277,7 @@ public class RegionImageGenerator {
 		public void execute() {
 			Timer t = new Timer();
 
-			//save image to cache
+			// save image to cache
 			try {
 				BufferedImage img = SwingFXUtils.fromFXImage(getData(), null);
 				if (scaleOnly) {

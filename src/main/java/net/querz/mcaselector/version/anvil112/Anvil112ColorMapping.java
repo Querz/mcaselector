@@ -4,10 +4,7 @@ import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.version.ColorMapping;
 import java.io.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Anvil112ColorMapping implements ColorMapping {
 
@@ -16,9 +13,8 @@ public class Anvil112ColorMapping implements ColorMapping {
 	private final Set<Integer> foliage = new HashSet<>();
 
 	public Anvil112ColorMapping() {
-		// noinspection ConstantConditions
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Anvil112ColorMapping.class.getClassLoader().getResourceAsStream("mapping/112/colors.txt")))) {
+				new InputStreamReader(Objects.requireNonNull(Anvil112ColorMapping.class.getClassLoader().getResourceAsStream("mapping/112/colors.txt"))))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				String[] elements = line.split(";");
@@ -45,14 +41,9 @@ public class Anvil112ColorMapping implements ColorMapping {
 
 				if (elements.length == 4) {
 					switch (elements[3]) {
-						case "g":
-							grass.add(id);
-							break;
-						case "f":
-							foliage.add(id);
-							break;
-						default:
-							throw new RuntimeException("invalid grass / foliage type " + elements[3]);
+						case "g" -> grass.add(id);
+						case "f" -> foliage.add(id);
+						default -> throw new RuntimeException("invalid grass / foliage type " + elements[3]);
 					}
 				}
 			}

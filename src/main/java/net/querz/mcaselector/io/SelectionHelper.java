@@ -18,10 +18,10 @@ public class SelectionHelper {
 
 	public static void exportSelection(SelectionData data, File file) {
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-			if (data.isInverted()) {
+			if (data.inverted()) {
 				bw.write("inverted\n");
 			}
-			for (Map.Entry<Point2i, Set<Point2i>> entry : data.getSelection().entrySet()) {
+			for (Map.Entry<Point2i, Set<Point2i>> entry : data.selection().entrySet()) {
 				Point2i r = entry.getKey();
 				if (entry.getValue() != null) {
 					for (Point2i c : entry.getValue()) {
@@ -67,7 +67,7 @@ public class SelectionHelper {
 					}
 					Point2i region = new Point2i(x, z);
 					if (cx == null) {
-						//don't overwrite possibly selected chunks in this region with null
+						// don't overwrite possibly selected chunks in this region with null
 						if (!chunks.containsKey(region)) {
 							chunks.put(region, null);
 						}
@@ -84,8 +84,8 @@ public class SelectionHelper {
 	}
 
 	public static Map<Point2i, Set<Point2i>> getTrueSelection(SelectionData selection) {
-		Map<Point2i, Set<Point2i>> sel = selection == null ? null : selection.getSelection();
-		if (selection != null && selection.isInverted()) {
+		Map<Point2i, Set<Point2i>> sel = selection == null ? null : selection.selection();
+		if (selection != null && selection.inverted()) {
 			sel = new HashMap<>();
 			Set<Point2i> allRegions = FileHelper.parseAllMCAFileNames(Config.getWorldDir());
 			Set<Point2i> allPoi = FileHelper.parseAllMCAFileNames(Config.getWorldDirs().getPoi());
@@ -94,10 +94,10 @@ public class SelectionHelper {
 			allRegions.addAll(allEntities);
 			for (Point2i region : allRegions) {
 				if (selection.isRegionSelected(region)) {
-					if (!selection.getSelection().containsKey(region)) {
+					if (!selection.selection().containsKey(region)) {
 						sel.put(region, null);
-					} else if (selection.getSelection().get(region) != null) {
-						sel.put(region, SelectionData.createInvertedRegionSet(region, selection.getSelection().get(region)));
+					} else if (selection.selection().get(region) != null) {
+						sel.put(region, SelectionData.createInvertedRegionSet(region, selection.selection().get(region)));
 					}
 				}
 			}

@@ -29,16 +29,13 @@ public enum CompressionType {
 	}
 
 	public CompressionType getExternal() {
-		switch (this) {
-			case NONE:
-				return NONE_EXT;
-			case GZIP:
-				return GZIP_EXT;
-			case ZLIB:
-				return ZLIB_EXT;
-			default:
+		return switch (this) {
+			case NONE -> NONE_EXT;
+			case GZIP -> GZIP_EXT;
+			case ZLIB -> ZLIB_EXT;
+			default ->
 				// this is already an external type
-				return this;
-		}
+				this;
+		};
 	}
 }

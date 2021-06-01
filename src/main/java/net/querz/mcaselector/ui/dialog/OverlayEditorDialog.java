@@ -36,7 +36,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
 	private final TileMap tileMap;
 
-	private DataProperty<Boolean> closedWithOK = new DataProperty<>(false);
+	private final DataProperty<Boolean> closedWithOK = new DataProperty<>(false);
 
 	public OverlayEditorDialog(Stage primaryStage, TileMap tileMap, List<OverlayParser> values) {
 		if (values == null) {
@@ -105,12 +105,8 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
 		getDialogPane().setOnKeyPressed(e -> {
 			switch (e.getCode()) {
-				case O:
-					tileMap.nextOverlay();
-					break;
-				case N:
-					tileMap.nextOverlayType();
-					break;
+				case O -> tileMap.nextOverlay();
+				case N -> tileMap.nextOverlayType();
 			}
 		});
 

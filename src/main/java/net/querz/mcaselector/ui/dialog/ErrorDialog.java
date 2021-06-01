@@ -78,7 +78,7 @@ public class ErrorDialog extends Alert {
 		label.setText(text);
 		Thread t = new Thread(() -> {
 			try {
-				Thread.sleep(seconds * 1000);
+				Thread.sleep(seconds * 1000L);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

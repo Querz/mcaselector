@@ -185,7 +185,9 @@ public final class CacheHelper {
 
 		File versionFile = new File(Config.getCacheDir(), "version");
 		if (!versionFile.getParentFile().exists()) {
-			versionFile.getParentFile().mkdirs();
+			if (!versionFile.getParentFile().mkdirs()) {
+				Debug.dumpf("failed to create directory for %s", versionFile);
+			}
 		}
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(versionFile))) {
@@ -230,7 +232,9 @@ public final class CacheHelper {
 	public static void updateWorldSettingsFile() {
 		File worldSettingsFile = new File(Config.getCacheDir(), "world_settings.json");
 		if (!worldSettingsFile.getParentFile().exists()) {
-			worldSettingsFile.getParentFile().mkdirs();
+			if (!worldSettingsFile.getParentFile().mkdirs()) {
+				Debug.dumpf("failed to create directory for %s", worldSettingsFile);
+			}
 		}
 
 		JSONObject root = new JSONObject();

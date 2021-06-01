@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
-public class ChunkFilterExporter {
+public final class ChunkFilterExporter {
 
 	private ChunkFilterExporter() {}
 
@@ -111,7 +111,7 @@ public class ChunkFilterExporter {
 
 		@Override
 		public void execute() {
-			//load MCAFile
+			// load MCAFile
 			try {
 				Region region = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
 

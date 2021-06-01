@@ -17,11 +17,11 @@ public class SelectionData {
 		this.inverted = inverted;
 	}
 
-	public Map<Point2i, Set<Point2i>> getSelection() {
+	public Map<Point2i, Set<Point2i>> selection() {
 		return selection;
 	}
 
-	public boolean isInverted() {
+	public boolean inverted() {
 		return inverted;
 	}
 

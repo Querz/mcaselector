@@ -196,12 +196,10 @@ public class Anvil116ChunkRenderer implements ChunkRenderer {
 	}
 
 	private boolean isWater(CompoundTag blockData) {
-		switch (blockData.getString("Name")) {
-			case "minecraft:water":
-			case "minecraft:bubble_column":
-				return true;
-		}
-		return false;
+		return switch (blockData.getString("Name")) {
+			case "minecraft:water", "minecraft:bubble_column" -> true;
+			default -> false;
+		};
 	}
 
 	private boolean isWaterlogged(CompoundTag data) {
@@ -209,14 +207,10 @@ public class Anvil116ChunkRenderer implements ChunkRenderer {
 	}
 
 	private boolean isEmpty(CompoundTag blockData) {
-		switch (blockData.getString("Name")) {
-			case "minecraft:air":
-			case "minecraft:cave_air":
-			case "minecraft:barrier":
-			case "minecraft:structure_void":
-				return blockData.size() == 1;
-		}
-		return false;
+		return switch (blockData.getString("Name")) {
+			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void" -> blockData.size() == 1;
+			default -> false;
+		};
 	}
 
 	private int getIndex(int x, int y, int z) {

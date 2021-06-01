@@ -18,10 +18,7 @@ import net.querz.mcaselector.ui.FileTextField;
 import net.querz.mcaselector.ui.TileMapBox;
 import net.querz.mcaselector.ui.UIFactory;
 import java.io.File;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
@@ -35,6 +32,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	* - Maximum amount of loaded files
 	* toggle shading
 	* toggle shading of water
+	* toggle showing non-existent regions
+	* toggle smooth rendering
+	* toggle smooth overlays
+	* background pattern
 	* minecraft saves folder
 	* toggle debug
 	* */
@@ -122,7 +123,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		languages.getItems().addAll(Translation.getAvailableLanguages());
 		languages.setValue(Config.getLocale());
-		languages.setConverter(new StringConverter<Locale>() {
+		languages.setConverter(new StringConverter<>() {
 
 			final Map<String, Locale> cache = new HashMap<>();
 
@@ -157,7 +158,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		tileMapBackgrounds.getItems().addAll(TileMapBox.TileMapBoxBackground.values());
 
 		tileMapBackgrounds.setCellFactory((listView) -> {
-			ListCell<TileMapBox.TileMapBoxBackground> cell = new ListCell<TileMapBox.TileMapBoxBackground>() {
+			ListCell<TileMapBox.TileMapBoxBackground> cell = new ListCell<>() {
 
 				@Override
 				public void updateIndex(int i) {
@@ -292,11 +293,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			this.smoothRendering = smoothRendering;
 			this.smoothOverlays = smoothOverlays;
 			this.tileMapBackground = tileMapBackground;
-			if (mcSavesDir == null) {
-				this.mcSavesDir = new File(Config.DEFAULT_MC_SAVES_DIR);
-			} else {
-				this.mcSavesDir = mcSavesDir;
-			}
+			this.mcSavesDir = Objects.requireNonNullElseGet(mcSavesDir, () -> new File(Config.DEFAULT_MC_SAVES_DIR));
 			this.debug = debug;
 		}
 

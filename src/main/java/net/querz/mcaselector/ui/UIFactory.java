@@ -17,7 +17,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.ScrollEvent;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.Translation;
-
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;

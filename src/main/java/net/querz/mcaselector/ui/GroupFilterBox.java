@@ -7,7 +7,7 @@ import net.querz.mcaselector.text.Translation;
 
 public class GroupFilterBox extends FilterBox {
 
-	//has a listview in the bottom part of the border pane
+	// has a listview in the bottom part of the border pane
 	protected VBox filters = new VBox();
 
 	public GroupFilterBox(FilterBox parent, GroupFilter filter, boolean root) {

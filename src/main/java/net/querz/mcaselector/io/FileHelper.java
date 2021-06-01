@@ -197,7 +197,7 @@ public final class FileHelper {
 
 	public static Attributes getManifestAttributes() throws IOException {
 		String className = FileHelper.class.getSimpleName() + ".class";
-		String classPath = FileHelper.class.getResource(className).toString();
+		String classPath = Objects.requireNonNull(FileHelper.class.getResource(className)).toString();
 		if (!classPath.startsWith("jar")) {
 			throw new IOException("application not running in jar file");
 		}
@@ -208,7 +208,7 @@ public final class FileHelper {
 	}
 
 	public static void clearFolder(File dir) throws IOException {
-		Files.walkFileTree(dir.toPath(), new SimpleFileVisitor<Path>() {
+		Files.walkFileTree(dir.toPath(), new SimpleFileVisitor<>() {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 				Files.deleteIfExists(file);
@@ -374,27 +374,27 @@ public final class FileHelper {
 				break;
 			}
 			switch (file.getName()) {
-				case "region":
+				case "region" -> {
 					if (wd.getRegion() != null) {
 						wd = null;
 						break fileLoop;
 					}
 					wd.setRegion(file);
-					break;
-				case "poi":
+				}
+				case "poi" -> {
 					if (wd.getPoi() != null) {
 						wd = null;
 						break fileLoop;
 					}
 					wd.setPoi(file);
-					break;
-				case "entities":
+				}
+				case "entities" -> {
 					if (wd.getEntities() != null) {
 						wd = null;
 						break fileLoop;
 					}
 					wd.setEntities(file);
-					break;
+				}
 			}
 		}
 		if (wd != null && wd.getRegion() != null) {
