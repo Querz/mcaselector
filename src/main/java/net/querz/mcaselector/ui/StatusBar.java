@@ -125,14 +125,15 @@ public class StatusBar extends StackPane {
 	private void updateOverlay(TileMap tileMap, Point2i chunk) {
 		if (tileMap.getOverlay() != null) {
 			OverlayParser p = tileMap.getOverlay();
+			String s = p.getShortMultiValues();
 			if (!p.isActive()) {
-				overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + ", " + p.max() + "), -");
+				overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + ", " + p.max() + (s == null ? "" : ", " + s) + "), -");
 			} else if (chunk != null) {
 				tileMap.getOverlayPool().getHoveredChunkValue(chunk, v -> {
-					overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + ", " + p.max() + "), " + (v == null ? "-" : v));
+					overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + ", " + p.max() + (s == null ? "" : ", " + s) + "), " + (v == null ? "-" : v));
 				});
 			} else {
-				overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + ", " + p.max() + "), -");
+				overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + ", " + p.max() + (s == null ? "" : ", " + s) + "), -");
 			}
 		} else {
 			overlay.setText(Translation.STATUS_OVERLAY + ": -, -");

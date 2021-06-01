@@ -103,6 +103,17 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
 		getDialogPane().setContent(content);
 
+		getDialogPane().setOnKeyPressed(e -> {
+			switch (e.getCode()) {
+				case O:
+					tileMap.nextOverlay();
+					break;
+				case N:
+					tileMap.nextOverlayType();
+					break;
+			}
+		});
+
 		tileMap.getWindow().getOptionBar().setEditOverlaysEnabled(false);
 		tileMap.getWindow().trackDialog(this);
 	}
@@ -129,12 +140,10 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		box.setOnTypeChange(this::onTypeChange);
 		box.setOnValuesChange(p -> {
 			if (p.isActive()) {
-				if (p == tileMap.getOverlay()) {
-					tileMap.clearOverlay();
-				} else {
+				if (p != tileMap.getOverlay()) {
 					tileMap.setOverlays(overlays);
-					tileMap.setOverlay(p);
 				}
+				tileMap.setOverlay(p);
 				tileMap.update();
 			} else if (p == tileMap.getOverlay()) {
 				tileMap.clearOverlay();

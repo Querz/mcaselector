@@ -16,6 +16,7 @@ public abstract class OverlayParser implements Cloneable {
 	private String rawMax;
 	private String[] multiValues = null;
 	private String rawMultiValues;
+	private transient String rawMultiValuesShort;
 	private float minHue = 0.66666667f; // blue
 	private float maxHue = 0f; // red
 
@@ -69,6 +70,19 @@ public abstract class OverlayParser implements Cloneable {
 		return rawMultiValues;
 	}
 
+	public String getShortMultiValues() {
+		if (rawMultiValuesShort != null) {
+			return rawMultiValuesShort;
+		}
+		if (rawMultiValues == null) {
+			return null;
+		}
+		if (rawMultiValues.length() > 50) {
+			return rawMultiValuesShort = rawMultiValues.substring(0, 50) + "...";
+		}
+		return rawMultiValuesShort = rawMultiValues;
+	}
+
 	public void setRawMin(String rawMin) {
 		this.rawMin = rawMin;
 	}
@@ -79,6 +93,7 @@ public abstract class OverlayParser implements Cloneable {
 
 	public void setRawMultiValues(String rawMultiValues) {
 		this.rawMultiValues = rawMultiValues;
+		this.rawMultiValuesShort = null;
 	}
 
 	protected boolean setMin(Integer min) {
