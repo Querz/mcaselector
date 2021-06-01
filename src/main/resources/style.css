@@ -85,6 +85,10 @@
 	-fx-font-family: "Noto Sans";
 }
 
+.label:disabled {
+	-fx-text-fill: -color-button-disabled-text;
+}
+
 /*---------- MENU BAR, MENU AND MENU ITEM ----------*/
 
 .option-bar-box {
@@ -148,6 +152,10 @@
 	-fx-opacity: 1;
 }
 
+.menu-item:disabled .label {
+	-fx-text-fill: -color-button-disabled-text;
+}
+
 /* separator lines in menus */
 .menu .separator *.line {
 	-fx-border-width: 0;
@@ -178,7 +186,7 @@
 /*---------- CHECKBOX ----------*/
 
 .check-box {
-	-fx-padding: 4 0 -3 0;
+	/*-fx-padding: 4 0 -3 0;*/
 	-fx-text-fill: -color-text-light;
 }
 
@@ -688,7 +696,7 @@
 }
 
 .filter-box {
-	-fx-padding: 6 0 6 10;
+	-fx-padding: 7 0 6 10;
 	-fx-background-color: -color-dialog-background;
 	-fx-border-width: 1 0 0 1;
 	-fx-border-color: -color-dialog-separator;
