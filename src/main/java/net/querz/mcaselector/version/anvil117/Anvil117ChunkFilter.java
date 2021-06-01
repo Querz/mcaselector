@@ -25,7 +25,7 @@ public class Anvil117ChunkFilter extends Anvil116ChunkFilter {
 			if (biomes != null && (biomes.length == 1024 || biomes.length == 1536)) {
 				biomes = new int[biomes.length];
 			} else {
-				biomes = new int[1536];
+				biomes = new int[1024];
 			}
 			Arrays.fill(biomes, id);
 			data.getCompoundTag("Level").putIntArray("Biomes", biomes);
