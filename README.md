@@ -37,16 +37,16 @@
 * [Translation](#translation)
 * [Sponsoring](#sponsoring)
 * [Download and installation](#download-and-installation)
-  * [What works on most systems](#what-works-on-most-systems)
-  * [If you have Minecraft Java Edition installed](#if-you-have-minecraft-java-edition-installed)
-  * [If you receive a JavaFX error](#if-you-receive-a-javafx-error)
+  * [Using a JRE or JDK with pre-packed JavaFX (the simple way)](#using-a-jre-or-jdk-with-pre-packed-javafx-the-simple-way)
+  * [When you receive an error from a previously installed version of Java](#when-you-receive-an-error-from-a-previously-installed-version-of-java)
 <!--toc-end-->
 
 ---
 
 ## Usage
 ### Video Tutorials
-For people who prefer watching a video to understand how the MCA Selector works, there some very good tutorials on Youtube explaining the basics:
+For people who prefer watching a video to understand how the MCA Selector works, there some very good tutorials on 
+YouTube explaining the basics:
 
 * [How To Reset Chunks In Your Minecraft World!](https://www.youtube.com/watch?v=1xx8fwynlRs) by [Farzy](https://www.youtube.com/channel/UCVtz3s3FUxVxBgPl2OWtIJQ)
 * [How To Clear Unwanted Chunks In Minecraft 1.16 | MCASelector Tutorial](https://www.youtube.com/watch?v=ADDTXGRJo20) by [Muriako](https://www.youtube.com/channel/UCpt-MjKkc5X4W7bUFV3Dwrw)
@@ -54,7 +54,10 @@ For people who prefer watching a video to understand how the MCA Selector works,
 * [How To Reset The End Dimension! - The Minecraft Survival Guide](https://www.youtube.com/watch?v=p-2gFkJl_Lo) starting at [8:45](https://www.youtube.com/watch?v=p-2gFkJl_Lo&t=8m45s) by [Pixlriffs](https://www.youtube.com/channel/UCgGjBqZZtAjxfpGSba7d6ww)
 
 ### Navigation
-Executing the tool, it shows an empty window with a chunk and a region grid. To actually show a world, open a folder containing Minecraft Anvil (\*.mca) files. The tool will then render a top-down view of this world that you can zoom into and zoom out of by scrolling up and down and that you can move around using the middle mouse button (`Cmd+LMB` on Mac OS) or using `WASD`.
+Executing the tool, it shows an empty window with a chunk and a region grid. To actually show a world, open a folder 
+containing Minecraft Anvil (\*.mca) files. The tool will then render a top-down view of this world that you can zoom 
+into and zoom out of by scrolling up and down and that you can move around using the middle mouse button (`Cmd+LMB` 
+on Mac OS) or using `WASD`.
 
 <p align="center">
   <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/default.png" alt="MCA Selector window showing chunk and region grid">
@@ -63,7 +66,8 @@ Executing the tool, it shows an empty window with a chunk and a region grid. To 
 Zooming out far enough disables the selection of single chunks but lets you select entire regions.
 
 ### Selections
-Upon finishing selecting chunks and regions, they can be deleted or exported using the `Selection`-menu. Exported chunks and regions are not deleted from the original world.
+Upon finishing selecting chunks and regions, they can be deleted or exported using the `Selection`-menu. Exported 
+chunks and regions are not deleted from the original world.
 
 <p align="center">
   <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/selections.png" alt="MCA Selector window showing chunk and region selection export">
@@ -72,13 +76,17 @@ Upon finishing selecting chunks and regions, they can be deleted or exported usi
 A selection (not the chunks and regions themselves) can also be exported or imported and even be applied to different worlds.
 
 ### Chunk filter
-The MCA Selector also contains a powerful tool to delete or export chunks and regions by conditions like the data version, the time it was last updated, how much time players have spent in this chunk and some more. Multiple of these conditions can be used to create a very specific query describing what chunks and regions should be deleted or exported.
+The MCA Selector also contains a powerful tool to delete or export chunks and regions by conditions like the data 
+version, the time it was last updated, how much time players have spent in this chunk and some more. Multiple of 
+these conditions can be used to create a very specific query describing what chunks and regions should be deleted or 
+exported.
 
 <p align="center">
   <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/filter_chunks.png" alt="MCA Selector window showing the chunk filter">
 </p>
 
-Because the conditions use internal values used by Minecraft, the following table gives a brief explanation on what they do:
+Because the conditions use internal values used by Minecraft, the following table gives a brief explanation on what 
+they do:
 
 | Condition | Type | Description |
 | --------- | ----- | ----------- |
@@ -99,12 +107,15 @@ Because the conditions use internal values used by Minecraft, the following tabl
 | #Entities | int | The total amount of entities in that chunk. |
 | #TileEntities | int | The total amount of tile entities in that chunk. |
 
-Fields that allow multiple comma separated values act the same as multiple consecutive filters of the same type with single values connected with the `AND` operator.
+Fields that allow multiple comma separated values act the same as multiple consecutive filters of the same type with 
+single values connected with the `AND` operator.
 
-A string representation of the query is printed in a text field below the query editor. When entering a query into this field directly, press `Enter` to parse it into the query editor.
+A string representation of the query is printed in a text field below the query editor. When entering a query into 
+this field directly, press `Enter` to parse it into the query editor.
 
 **Notice**
-Running the query will check the `.mca`-file's name first if the query would even apply to any chunk in this file using the xPos and zPos conditions, as long as the query is built in a way that allows doing this.
+Running the query will check the `.mca`-file's name first if the query would even apply to any chunk in this file 
+using the xPos and zPos conditions, as long as the query is built in a way that allows doing this.
 
 ### NBT Changer
 The NBT Changer modifies the world files directly by changing specific values.
@@ -129,23 +140,31 @@ You can change the following values:
 | DeleteSections | boolean | One or a range of section indices. A range has the format `<from>:<to>`, inclusive. Omitting `<from>` sets the lowest possible value, omitting `<to>` sets the highest possible value. `:` or `true` means _all_ sections. Multiple ranges or single indices can be defined by separating them with a comma. |
 | FixStatus | boolean | Will look for chunks that have terrain data, but their `Status` is set to `empty` and set their `Status` field to `full`. Having terrain data but the `Status` set to `empty` can sometimes happen when upgrading the world through a long upgrade path, e.g. from Minecraft 1.12 directly to 1.16. |
 
-Once the field is highlighted in green, the value is considered valid and will be changed. A gray field, no matter its content, will be ignored.
+Once the field is highlighted in green, the value is considered valid and will be changed. A gray field, no matter 
+its content, will be ignored.
 
-A string representation of the to be changed fields is printed in a text field below the editor. When entering a field string into this field directly, press `Enter` to parse it into the editor.
+A string representation of the to be changed fields is printed in a text field below the editor. When entering a 
+field string into this field directly, press `Enter` to parse it into the editor.
 
 For more information about the fields have a look at the chunk format description on [Minecraft Wiki](https://minecraft.gamepedia.com/Chunk_format)
 
 ### Chunk Editor
-When selecting a single chunk, the menu "Edit chunks" becomes available. It allows precise editing of the entire NBT structure of that chunk, including poi and entities data. Names and values can be changed, added, deleted or moved (via drag & drop).
+When selecting a single chunk, the menu "Edit chunks" becomes available. It allows precise editing of the entire NBT 
+structure of that chunk, including poi and entities data. Names and values can be changed, added, deleted or moved 
+(via drag & drop).
 
 <p align="center">
   <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/edit_chunk.png" alt="MCA Selector window showing the NBT editor">
 </p>
 
-**Notice** When the NBT editor does not show any data, the cached top-down view might be outdated, and the chunk might not exist anymore in the mca files. In that case, clearing the cache will re-render the regions from scratch and show the up-to-date top-down view.
+**Notice** When the NBT editor does not show any data, the cached top-down view might be outdated, and the chunk 
+might not exist anymore in the mca files. In that case, clearing the cache will re-render the regions from scratch 
+and show the up-to-date top-down view.
 
 ### Chunk import
-Importing chunks can be easily done by opening the target world first using `File --> Open` and then merging the chunks of a second world using `Tools --> Import chunks`. After selecting a folder containing region files, it is possible to import the chunks with a bunch of additional options.
+Importing chunks can be easily done by opening the target world first using `File --> Open` and then merging the 
+chunks of a second world using `Tools --> Import chunks`. After selecting a folder containing region files, it is 
+possible to import the chunks with a bunch of additional options.
 
 <p align="center">
   <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/import_chunks.png" alt="MCA Selector window showing the chunk import">
@@ -155,15 +174,25 @@ Options:
 * **Offset** imports chunks with an offset in chunk coordinates. To convert block coordinates to chunk coordinates, divide them by 16.
 * **Overwrite existing chunks** deletes existing chunks and overwrites them with the imported ones.
 * **Apply to selection only** imports chunks into the current selection.
-* **Sections** defines one, or a range of sections to be imported. A range has the format `<from>:<to>`, inclusive. Omitting `<from>` sets the lowest possible value, omitting `<to>` sets the highest possible value. `:`, `true` or empty means _all_ sections. Multiple ranges or single indices can be defined by separating them with a comma. If a chunk does not already exist at the location, it will be created containing only the specified sections of the imported chunk.
+* **Sections** defines one, or a range of sections to be imported. A range has the format `<from>:<to>`, inclusive. 
+  Omitting `<from>` sets the lowest possible value, omitting `<to>` sets the highest possible value. `:`, `true` or 
+  empty means _all_ sections. Multiple ranges or single indices can be defined by separating them with a comma. If a 
+  chunk does not already exist at the location, it will be created containing only the specified sections of the 
+  imported chunk.
 
 **Notice**
 Commands inside of command blocks will not be changed.
 Maps will not be updated, because their data is not stored inside region files.
 
 ### Copy and Paste
-It is possible to copy a selection to the system clipboard and pasting it to a different location in the same world or into an entirely different world.
-After making a selection, use `Selection --> Copy chunks` or press `Ctrl+C` (`Cmd+C` on Mac). After navigating to the location in the world where the copied chunks need to be pasted, use `Selection --> Paste chunks` or press `Ctrl+V` (`Cmd+V`on Mac) to display an overlay showing where the clipboard will be imported to. The overlay can be moved around by pressing and holding the left mouse button. Press `Ctrl+V` again to import the chunks at the selected location. This will open the [Import chunks](#chunk-import) dialog with prefilled values depending on where the overlay has been placed.
+It is possible to copy a selection to the system clipboard and pasting it to a different location in the same world 
+or into an entirely different world.
+After making a selection, use `Selection --> Copy chunks` or press `Ctrl+C` (`Cmd+C` on Mac). After navigating to 
+the location in the world where the copied chunks need to be pasted, use `Selection --> Paste chunks` or press 
+`Ctrl+V` (`Cmd+V`on Mac) to display an overlay showing where the clipboard will be imported to. The overlay can be 
+moved around by pressing and holding the left mouse button. Press `Ctrl+V` again to import the chunks at the 
+selected location. This will open the [Import chunks](#chunk-import) dialog with prefilled values depending on where 
+the overlay has been placed.
 Copying can be cancelled by pressing `Esc`.
 
 <p align="center">
@@ -171,16 +200,21 @@ Copying can be cancelled by pressing `Esc`.
 </p>
 
 ### Swapping chunks
-When exactly two chunks are selected, they can be swapped using `Tools --> Swap chunks`. This is useful for corrupted region files when Minecraft failed to correctly save the region file index, resulting in scrambled chunks.
+When exactly two chunks are selected, they can be swapped using `Tools --> Swap chunks`. This is useful for 
+corrupted region files when Minecraft failed to correctly save the region file index, resulting in scrambled chunks.
 
 ### Overlays
-To have a better overview of what's happening in your world, MCA Selector gives the option to enable customizable overlays. Overlays can display single values per chunk in the form of a color gradient with a minimum and maximum value.
+To have a better overview of what's happening in your world, MCA Selector gives the option to enable customizable 
+overlays. Overlays can display single values per chunk in the form of a color gradient with a minimum and maximum value.
 
 <p align="center">
   <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/overlays.png" alt="MCA Selector window showing InhabitedTime overlay for Hermitcraft Season 6">
 </p>
 
-Overlays can be con figured using `Tools --> Edit overlays`. Only when all values of an overlay are valid (e.g. minimum < maximum) and it is set to active, it can be toggled on and off in the map view using the `O` key. Overlays are globally persistent and can be reused for all worlds.
+Overlays can be con figured using `Tools --> Edit overlays`. By pressing the `N` key, it will switch to displaying 
+the next overlay type. When pressing `O` while displaying an overlay, it will rotate all overlays of this type. Only 
+when all values of an overlay are valid (e.g. minimum < maximum) and it is set to active it will be displayed in the 
+main window.
 
 ### Caching
 The tool creates an image for each region from the provided mca-files. These images are saved separately inside the respective operating system's specific cache folders. Experience showed that a Minecraft world with a size of 10GB resulted in cached image files with a total size of 80-100MB. Caching as many regions as possible significantly improves loading times.
@@ -192,11 +226,15 @@ The tool creates an image for each region from the provided mca-files. These ima
 MCA Selector is capable of generating an image based on a selection.
 
 ### Debugging
-If something is not working properly or if you want to see what exactly the MCA Selector is doing, debugging can be enabled in the settings. Informative messages and errors will be printed to the console as well as to a log file.
+If something is not working properly or if you want to see what exactly the MCA Selector is doing, debugging can be 
+enabled in the settings. Informative messages and errors will be printed to the console as well as to a log file.
 The log file is stored in the following directory and is overwritten after each new start of the program:
-* Windows: `%LOCALAPPDATA%\mcaselector\debug.log` if `%LOCALAPPDATA%` is set, otherwise `<parent directory of mcaselector.jar>\mcaselector\debug.log`
+* Windows: `%LOCALAPPDATA%\mcaselector\debug.log` if `%LOCALAPPDATA%` is set, otherwise `<parent directory of 
+  mcaselector.jar>\mcaselector\debug.log`
 * MacOS: `~/Library/Logs/mcaselector/debug.log`
-* Linux: `$XDG_DATA_HOME/mcaselector/debug.log` if `$XDG_DATA_HOME` is set or the first directory that contains a file `mcaselector/debug.log` in `$XDG_DATA_DIRS` or `mcaselector` in the first entry in `$XDG_DATA_DIRS` or if neither `$XDG_DATA_HOME` nor `$XDG_DATA_DIRS` is set `~/.local/share/mcaselector/debug.log`.
+* Linux: `$XDG_DATA_HOME/mcaselector/debug.log` if `$XDG_DATA_HOME` is set or the first directory that contains a 
+  file `mcaselector/debug.log` in `$XDG_DATA_DIRS` or `mcaselector` in the first entry in `$XDG_DATA_DIRS` or if 
+  neither `$XDG_DATA_HOME` nor `$XDG_DATA_DIRS` is set `~/.local/share/mcaselector/debug.log`.
 
 Alternatively, the location of the log file can be viewed by clicking on the link in the settings dialog.
 
@@ -211,14 +249,17 @@ The MCA Selector currently supports the following Minecraft versions:
 | 1.14 - 1.14.4     | 1901 - 1976 |
 | 1.15 - 1.15.2     | 2200 - 2230 |
 | 1.16 - 1.16.5     | 2566 - 2586 |
-| Snapshot 21w18a   | 2718 |
+| 1.17-pre3         | 2719 |
 
-There is no guarantee for worlds generated in a Snapshot version to work, even if it is specified in the table above. This only represents the current development status towards the next Minecraft release. Old Snapshots of past Minecraft releases are not supported.
+There is no guarantee for worlds generated in a Snapshot version to work, even if it is specified in the table above.
+This only represents the current development status towards the next Minecraft release. Old Snapshots of past 
+Minecraft releases are not supported.
 
 ---
 ## Headless mode
 
-MCA Selector can be run in a headless mode without showing the UI. Using any command line parameter automatically switches to headless mode.
+MCA Selector can be run in a headless mode without showing the UI. Using any command line parameter automatically 
+switches to headless mode.
 A cheat-sheet with all commands can be found [here](https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/efc4b6990bce79ed4512e9a0a363c64afd7b7444/commands-diagram.png).
 
 | Mode | Parameter | Description |
@@ -328,7 +369,8 @@ This requires a working JavaFX installation
 
 ### Filter query
 
-A filter query is a text representation of the chunk filter that can be created in the UI of the program. It is shown in the text field below the query editor of the Chunk filter tool.
+A filter query is a text representation of the chunk filter that can be created in the UI of the program. It is 
+shown in the text field below the query editor of the Chunk filter tool.
 Example:
 ```
 --query "xPos >= 10 AND xPos <= 20 AND Palette contains \"sand,water\""
@@ -336,16 +378,21 @@ Example:
 This will select all chunks that contain sand and water blocks and their x-position ranges from 10 to 20.
 As shown, double quotes (") must be escaped with a backslash.
 
-Groups are represented with a pair of parentheses (`(...)`). As with the chunk filter, logical operators are evaluated from left to right, and `AND` has a higher precedence than `OR`. In other words, `a AND b OR c AND d AND e` is the same as `(a AND b) OR (c AND d AND e)`. It differs from `c AND d AND e OR a AND b` not by the result, but by the sequence of tests performed due to [short-circuiting](https://en.wikipedia.org/wiki/Short-circuit_evaluation).
+Groups are represented with a pair of parentheses (`(...)`). As with the chunk filter, logical operators are 
+evaluated from left to right, and `AND` has a higher precedence than `OR`. In other words, `a AND b OR c AND d AND 
+e` is the same as `(a AND b) OR (c AND d AND e)`. It differs from `c AND d AND e OR a AND b` not by the result, but 
+by the sequence of tests performed due to [short-circuiting](https://en.wikipedia.org/wiki/Short-circuit_evaluation).
 
 ### Change values
 
-The query for changing NBT values in chunks looks slightly different to the filter query. It is a comma (,) separated list of assignments.
+The query for changing NBT values in chunks looks slightly different to the filter query. It is a comma (,) 
+separated list of assignments.
 Example:
 ```
 --filter "LightPopulated = 1, Status = empty"
 ```
-This will set the field "LightPopulated" to "1" and "Status" to "empty". Just like the filter query, the query to change values is printed to the console when using the UI in debug mode.
+This will set the field "LightPopulated" to "1" and "Status" to "empty". Just like the filter query, the query to 
+change values is printed to the console when using the UI in debug mode.
 
 ---
 ## Checkout and building
@@ -383,9 +430,12 @@ The following languages are available:
 * Russian (Russia) (thanks to [@Quarktal](https://github.com/Quarktal) for translating)
 * Dutch (Netherlands) (thanks to [@Clijmart](https://github.com/Clijmart) for translating)
 * Italian (Italy) (thanks to @valeilsimpaticone for translating)
-* Polish (Poland) (thanks to [@Marcinolak](https://github.com/Marcinolak) for thranslating)
+* Polish (Poland) (thanks to [@Marcinolak](https://github.com/Marcinolak) for translating)
 
-If you would like to contribute a translation, you can find the language files in [resources/lang/](https://github.com/Querz/mcaselector/tree/master/src/main/resources/lang). The files are automatically detected and shown as the respective language option in the settings dropdown menu once they are placed in this folder.
+If you would like to contribute a translation, you can find the language files in 
+[resources/lang/](https://github.com/Querz/mcaselector/tree/master/src/main/resources/lang). The files 
+are automatically detected and shown as the respective language option in the settings dropdown menu once they are 
+placed in this folder.
 
 ---
 ## Sponsoring
@@ -414,29 +464,51 @@ If you would like to contribute a translation, you can find the language files i
 
 "Requirements":
 * Either:
-  * 64bit JRE 8+, you can get it from [HERE](https://www.java.com/en/download/windows-64bit.jsp)
+  * 64bit JRE 16+, with JavaFX either pre-packed or installed separately
   * A Minecraft Java Edition installation
 * A computer
-  * At least 6 GB of RAM. If lower, more RAM has to manually be assigned to the JVM using the `-Xmx` argument. Assigning 4 GB is recommended.
+  * At least 6 GB of RAM. If lower, more RAM has to manually be assigned to the JVM using the `-Xmx` argument. 
+    Assigning 4 GB is recommended.
 * A brain
 
-### What works on most systems
-Most likely, `.jar` files are associated with java on your computer, it should therefore launch by simply double clicking the file (or however your OS is configured to open files using your mouse or keyboard). If not, you can try `java -jar mcaselector-1.15.4.jar` from your console. If this doesn't work, you might want to look into how to modify the `PATH` variable on your system to tell your system that java is an executable program.
+### Using a JRE or JDK with pre-packed JavaFX (the simple way)
+The following steps describe a way to run MCA Selector using a JRE or JDK with pre-packed JavaFX.
 
-### If you have Minecraft Java Edition installed
-Minecraft Java Edition comes with a JRE that you can use to start the MCA Selector, so there is no need to install another version of Java on your system.
-
+With zulu JRE-FX:
 For Windows:
-* Hold `Shift` and Right-click on an empty space and select `Open PowerShell window here` (`Open Command window here` on Windows 8 and earlier).
-* Type `& "C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\java" -jar `, then drag and drop the `mcaselector-1.15.4.jar into the console` and press `Enter`. In the Command window (Windows 8 and earlier), the command starts with `"C:\Program Files (x86)\Minecraft\runtime\jre-x64\bin\java" -jar ` instead and the path to `mcaselector-1.15.4.jar` must be typed or copied and pasted into the console manually.
+
+* Download the JRE-FX-16 from [HERE](https://cdn.azul.com/zulu/bin/zulu16.30.15-ca-fx-jre16.0.1-win_x64.zip) into an 
+  empty folder.
+* Move the previously downloaded `mcaselector-1.15.4.jar` into the same folder. Extract the content of the 
+  downloaded .zip file into this folder.
+* Hold `Shift` and `right-click` an empty spot in this folder, and choose `Open PowerShell window here`. Type `& ` 
+  (with a space at the end), go into the previously extracted folder and drag and drop the `bin\java.exe` file into 
+  the PowerShell window. Then complete the command by typing a space and ` -jar mcaselector-1.15.4.jar` and press 
+  `Enter`.
 
 For MacOS:
-* Press `Cmd+Space`, type `Terminal` and press `Enter`.
-* Type `~/Library/Application\ Support/minecraft/runtime/jre-x64/jre.bundle/Contents/Home/bin/java -jar ` (with a space at the end), then drag and drop the `mcaselector-1.15.4.jar` into the console and press `Enter`.
 
-**WARNING:** For MacOS 10.14+ (Mojave) It is NOT recommended to use the JRE provided by Minecraft (1.8.0_74), because it contains a severe bug that causes JavaFX applications to crash when they lose focus while a dialog window (such as the save-file-dialog) is open (see the bug report [here](https://bugs.openjdk.java.net/browse/JDK-8211304)). This bug has been fixed in Java 1.8.0_201 and above.
+* Download the JDK-FX-16 from [HERE](https://cdn.azul.com/zulu/bin/zulu16.30.15-ca-fx-jdk16.0.1-macosx_x64.zip) into 
+  an empty folder.
+* Extract the content of the downloaded .zip file into this folder.
+* Press `Cmd+Space`, type `Terminal` and press `Enter`. Go into the previously extracted folder and darg and drop 
+  the `zulu-16.jdk/Contents/Home/bin/java` into the terminal. Continue to type `-jar ` (with a space at the end) and 
+  drag-and drop the `mcaselector-1.15.4.jar` into the terminal as well, the press `Enter`.
 
-### If you receive a JavaFX error
+For Linux:
+
+* Download the JDK-FX-16 from [HERE](https://cdn.azul.com/zulu/bin/zulu16.30.15-ca-fx-jdk16.0.1-linux_x64.tar.gz) 
+  into an empty folder.
+* Extract the content of the downloaded .tar.gz file into this folder.
+* Open your terminal of choice and navigate in the extracted folder into `bin`, then run `./java -jar 
+  <path-to-mcaselector-1.15.4.jar>`.
+
+To avoid having to go through this process every time to start MCA Selector, the resulting command can be copied 
+into a `.bat`-file on Windows or `.sh`-file on MacOS and Linux and can then be executed by double-clicking the 
+`.bat`-file on Windows or running `sh <file>.sh` in the terminal / console on MacOS or Linux where `<file>` must be 
+replaced by the name of the `.sh`-file.
+
+### When you receive an error from a previously installed version of Java
 "When I run `mcaselector-1.15.4.jar`, an error dialog appears that looks like this:"
 
 <p align="center">
@@ -446,39 +518,52 @@ For MacOS:
 Open the console or terminal on your OS.
 
 For Windows:
-* Hold `Shift` and Right-click on an empty space on your desktop and select `Open PowerShell here` (`Open Command window here` on Windows 8 and earlier).
+* Hold `Shift` and Right-click on an empty space on your desktop and select `Open PowerShell here` (`Open Command 
+  window here` on Windows 8 and earlier).
 
 For MacOS:
 * Press `Cmd+Space`, type `Terminal` and press `Enter`.
 
-Type the command `java -version` and press `Enter`. If the output shows that your java command is linked to `java version "1.8.0"`, you can simply run MCA Selector through the console.
+Type the command `java -version` and press `Enter`. If the output shows that your java command is linked to `java 
+version "1.8.0"`, you can simply run MCA Selector through the console.
 
 For Windows and MacOS:
-* Type `java -jar ` (with a space at the end) and drag and drop the `mcaselector-1.15.4.jar` into the console and hit `Enter`.
+* Type `java -jar ` (with a space at the end) and drag and drop the `mcaselector-1.15.4.jar` into the console and 
+  hit `Enter`.
 
 For Linux:
 * Run `java -jar <path to mcaselector-1.15.4.jar` where you replace everything in `<>`.
 
-If the output shows a Java version higher than Java 8, please find and download the appropriate JavaFX version from [Here](https://gluonhq.com/products/javafx/). If you know what to do, do it. If you don't, follow these steps:
-
 For Windows:
 * Download "JavaFX Windows SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
 * Unzip the `.zip`-file with your program of choice, then navigate into the unzipped folder.
-* Hold `Shift` and Right-click on an empty space in that folder and select `Open PowerShell window here` (`Open Command window here` on Windows 8 and earlier). Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type ` --add-modules ALL-MODULE-PATH -jar ` (with a space at the beginning and the end), then drag and drop the `mcaselector-1.15.4.jar` into the console and hit `Enter`.
+* Hold `Shift` and Right-click on an empty space in that folder and select `Open PowerShell window here` (`Open 
+  Command window here` on Windows 8 and earlier). Type `java --module-path ` (with a space at the end), then drag 
+  and drop the `lib`-folder into the console. Continue to type ` --add-modules ALL-MODULE-PATH -jar ` (with a space 
+  at the beginning and the end), then drag and drop the `mcaselector-1.15.4.jar` into the console and hit `Enter`.
 
 For MacOS:
 * Download "JavaFX Mac OS X SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
 * Double-click the `.zip`-file to unpack, then navigate into the unzipped folder.
-* Press `Cmd+Space`, type `Terminal` and press `Enter`. Type `java --module-path ` (with a space at the end), then drag and drop the `lib`-folder into the console. Continue to type `--add-modules ALL-MODULE-PATH -jar ` (with a space at the end), then drag and drop the `mcaselector-1.15.4.jar` into the console and hit `Enter`.
+* Press `Cmd+Space`, type `Terminal` and press `Enter`. Type `java --module-path ` (with a space at the end), then 
+  drag and drop the `lib`-folder into the console. Continue to type `--add-modules ALL-MODULE-PATH -jar ` (with a 
+  space at the end), then drag and drop the `mcaselector-1.15.4.jar` into the console and hit `Enter`.
 
 For Linux:
 * Download "JavaFX Linux SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
 * Unzip the `.zip`-file with your program of choice.
-* Open the command prompt and run `java --module-path <path to unzipped folder>/lib --add-modules ALL-MODULE-PATH -jar <path to mcaselector-1.15.4.jar>` where you replace everything in `<>` with the appropriate paths.
-* Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. On Debian, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of JavaFX is required to run the `mcaselector-1.15.4.jar`.
+* Open the command prompt and run `java --module-path <path to unzipped folder>/lib --add-modules ALL-MODULE-PATH 
+  -jar <path to mcaselector-1.15.4.jar>` where you replace everything in `<>` with the appropriate paths.
+* Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. 
+  On Debian, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of 
+  JavaFX is required to run the `mcaselector-1.15.4.jar`.
 
-To avoid having to go through this process every time to start MCA Selector, the resulting command can be copied into a `.bat`-file on Windows or `.sh`-file on MacOS and Linux and can then be executed by double-clicking the `.bat`-file on Windows or running `sh <file>.sh` in the terminal / console on MacOS or Linux where `<file>` must be replaced by the name of the `.sh`-file.
+To avoid having to go through this process every time to start MCA Selector, the resulting command can be copied 
+into a `.bat`-file on Windows or `.sh`-file on MacOS and Linux and can then be executed by double-clicking the
+`.bat`-file on Windows or running `sh <file>.sh` in the terminal / console on MacOS or Linux where `<file>` must be 
+replaced by the name of the `.sh`-file.
 
 ---
 
-If none of these instructions work, apply "A brain" that you providently held ready after having read the "Requirements" section carefully. Or ask your question on [Discord](https://discord.gg/h942U8U).
+If none of these instructions work, apply "A brain" that you providently held ready after having read the 
+"Requirements" section carefully. Or ask your question on [Discord](https://discord.gg/h942U8U).
