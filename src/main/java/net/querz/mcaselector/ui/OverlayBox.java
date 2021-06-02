@@ -1,6 +1,7 @@
 package net.querz.mcaselector.ui;
 
 import javafx.application.Platform;
+import javafx.css.PseudoClass;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
@@ -32,6 +33,8 @@ public class OverlayBox extends BorderPane {
 
 	private static final Image deleteIcon = FileHelper.getIconFromResources("img/delete");
 	private static final Image flipIcon = FileHelper.getIconFromResources("img/flip");
+
+	private static final PseudoClass invalid = PseudoClass.getPseudoClass("invalid");
 
 	public DataProperty<OverlayParser> valueProperty;
 
@@ -233,12 +236,6 @@ public class OverlayBox extends BorderPane {
 	}
 
 	private void displayValid(boolean valid) {
-		if (valid) {
-			getStyleClass().remove("overlay-box-invalid");
-			active.setDisable(false);
-		} else if (!getStyleClass().contains("overlay-box-invalid")) {
-			getStyleClass().add("overlay-box-invalid");
-			active.setDisable(true);
-		}
+		pseudoClassStateChanged(invalid, !valid);
 	}
 }

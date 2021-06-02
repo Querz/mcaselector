@@ -1,5 +1,6 @@
 package net.querz.mcaselector.ui.dialog;
 
+import javafx.css.PseudoClass;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -19,6 +20,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ImportConfirmationDialog extends ConfirmationDialog {
+
+	private static final PseudoClass invalid = PseudoClass.getPseudoClass("invalid");
 
 	public ImportConfirmationDialog(Stage primaryStage, ChunkImportConfirmationData preFill, Consumer<ChunkImportConfirmationData> dataAction) {
 		super(
@@ -65,17 +68,15 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		TextField range = new TextField();
 		range.textProperty().addListener((obs, o, n) -> {
 			if (n.isEmpty()) {
-				range.getStyleClass().remove("range-text-field-invalid");
+				range.pseudoClassStateChanged(invalid, false);
 				data.ranges = null;
 			} else {
 				List<Range> ranges = RangeParser.parseRanges(n, ",");
 				if (ranges == null) {
-					if (!range.getStyleClass().contains("range-text-field-invalid")) {
-						range.getStyleClass().add("range-text-field-invalid");
-					}
+					range.pseudoClassStateChanged(invalid, true);
 					data.ranges = null;
 				} else {
-					range.getStyleClass().remove("range-text-field-invalid");
+					range.pseudoClassStateChanged(invalid, false);
 					data.ranges = ranges;
 				}
 			}
