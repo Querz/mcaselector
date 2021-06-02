@@ -2,6 +2,7 @@ package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.LongArrayTag;
@@ -49,7 +50,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 		if (data.getEntities() == null) {
 			return false;
 		}
-		Tag<?> rawEntities = data.getEntities().getData().getCompoundTag("Level").get("Entities");
+		Tag<?> rawEntities = VersionController.getEntityFilter(data.getRegion().getData().getInt("DataVersion")).getEntities(data);
 		if (rawEntities == null || rawEntities.getID() == LongArrayTag.ID) {
 			return false;
 		}
@@ -72,7 +73,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 		if (data.getEntities() == null) {
 			return false;
 		}
-		Tag<?> rawEntities = data.getEntities().getData().getCompoundTag("Level").get("Entities");
+		Tag<?> rawEntities = VersionController.getEntityFilter(data.getRegion().getData().getInt("DataVersion")).getEntities(data);
 		if (rawEntities == null || rawEntities.getID() == LongArrayTag.ID) {
 			return false;
 		}
