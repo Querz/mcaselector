@@ -35,6 +35,7 @@ public class OverlayBox extends BorderPane {
 	private static final Image flipIcon = FileHelper.getIconFromResources("img/flip");
 
 	private static final PseudoClass invalid = PseudoClass.getPseudoClass("invalid");
+	private static final PseudoClass selected = PseudoClass.getPseudoClass("selected");
 
 	public DataProperty<OverlayParser> valueProperty;
 
@@ -156,6 +157,10 @@ public class OverlayBox extends BorderPane {
 
 		onMinimumInput(value.minString());
 		onMaximumInput(value.maxString());
+	}
+
+	public void setSelected(boolean selected) {
+		pseudoClassStateChanged(OverlayBox.selected, selected);
 	}
 
 	private OverlayParser getValue() {

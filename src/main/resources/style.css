@@ -596,8 +596,12 @@
 }
 
 .overlay-box:invalid .text-field {
-	-fx-background-color: -color-filter-box-invaalid-background;
+	-fx-background-color: -color-filter-box-invalid-background;
 	-fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
+}
+
+.overlay-box:selected {
+	-fx-background-color: -color-menu-hover-background;
 }
 
 .overlay-box .text-field:disabled {

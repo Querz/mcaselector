@@ -1,6 +1,8 @@
 package net.querz.mcaselector.tiles;
 
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -80,7 +82,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private final OverlayPool overlayPool;
 
 	private List<OverlayParser> overlayParsers = Collections.singletonList(null);
-	private OverlayParser overlayParser = null;
+	private ObjectProperty<OverlayParser> overlayParser = new SimpleObjectProperty<>(null);
 
 	private Map<Point2i, Set<Point2i>> pastedChunks;
 	private boolean pastedChunksInverted;
@@ -162,11 +164,11 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	public void nextOverlay() {
-		if (disabled || overlayParser == null) {
+		if (disabled || overlayParser.get() == null) {
 			return;
 		}
 
-		int index = overlayParsers.indexOf(overlayParser);
+		int index = overlayParsers.indexOf(overlayParser.get());
 
 		OverlayParser parser;
 		do {
@@ -176,7 +178,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			}
 
 		// repeat if the current parser is null, it is invalid or inactive or if the types are not the same
-		} while ((parser = overlayParsers.get(index)) == null || !parser.isActive() || !parser.isValid() || parser.getType() != overlayParser.getType());
+		} while ((parser = overlayParsers.get(index)) == null || !parser.isActive() || !parser.isValid() || parser.getType() != overlayParser.get().getType());
 
 		setOverlay(parser);
 		MCAFilePipe.clearParserQueue();
@@ -188,7 +190,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			return;
 		}
 
-		int index = overlayParsers.indexOf(overlayParser);
+		int index = overlayParsers.indexOf(overlayParser.get());
 
 		OverlayParser parser;
 		do {
@@ -198,7 +200,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			}
 
 			// repeat if the current parser is not null, it is inactive or invalid or the types are equal
-		} while ((parser = overlayParsers.get(index)) != null && (!parser.isActive() || !parser.isValid() || overlayParser != null && parser.getType() == overlayParser.getType()));
+		} while ((parser = overlayParsers.get(index)) != null && (!parser.isActive() || !parser.isValid() || overlayParser.get() != null && parser.getType() == overlayParser.get().getType()));
 
 		setOverlay(parser);
 		MCAFilePipe.clearParserQueue();
@@ -224,7 +226,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		if (disabled) {
 			return;
 		}
-		this.overlayParser = overlay;
+		this.overlayParser.set(overlay);
 		this.overlayPool.setParser(overlay);
 		clearOverlay();
 	}
@@ -237,6 +239,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	public OverlayParser getOverlay() {
+		return overlayParser.get();
+	}
+
+	public ObjectProperty<OverlayParser> overlayParserProperty() {
 		return overlayParser;
 	}
 
@@ -860,8 +866,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 					imgPool.requestImage(tile, zoomLevel);
 				}
 
-				if (overlayParser != null && !tile.isOverlayLoaded()) {
-					overlayPool.requestImage(tile, overlayParser);
+				if (overlayParser.get() != null && !tile.isOverlayLoaded()) {
+					overlayPool.requestImage(tile, overlayParser.get());
 				}
 			}
 

@@ -8,6 +8,8 @@ import java.util.UUID;
 
 public abstract class OverlayParser implements Cloneable {
 
+	private transient UUID id;
+
 	private final OverlayType type;
 	private boolean active;
 	private Integer min;
@@ -24,6 +26,7 @@ public abstract class OverlayParser implements Cloneable {
 
 	public OverlayParser(OverlayType type) {
 		this.type = type;
+		id = UUID.randomUUID();
 	}
 
 	public OverlayType getType() {
@@ -199,11 +202,10 @@ public abstract class OverlayParser implements Cloneable {
 
 	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof OverlayParser)) {
+		if (!(other instanceof OverlayParser o)) {
 			return false;
 		}
-		OverlayParser o = (OverlayParser) other;
-				// type is equal
+		// type is equal
 		return type == o.type
 				// min are both null or equal
 				&& (min == null && o.min == null || min != null && o.min != null && min.intValue() == o.min.intValue())
@@ -217,9 +219,17 @@ public abstract class OverlayParser implements Cloneable {
 				&& Arrays.equals(multiValues(), o.multiValues()));
 	}
 
+	public boolean same(Object other) {
+		if (!(other instanceof OverlayParser o)) {
+			return false;
+		}
+		return id.equals(o.id);
+	}
+
 	@Override
 	public OverlayParser clone() {
 		OverlayParser clone = type.instance();
+		clone.id = id;
 		clone.min = min;
 		clone.max = max;
 		clone.multiValues = multiValues == null ? null : Arrays.copyOf(multiValues, multiValues.length);

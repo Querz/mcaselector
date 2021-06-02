@@ -1,6 +1,8 @@
 package net.querz.mcaselector.ui.dialog;
 
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -38,6 +40,12 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
 	private final DataProperty<Boolean> closedWithOK = new DataProperty<>(false);
 
+	private ChangeListener<OverlayParser> tileMapSelectedOverlayChange = (v, o, n) -> {
+		if (o != n) {
+			select(n);
+		}
+	};
+
 	public OverlayEditorDialog(Stage primaryStage, TileMap tileMap, List<OverlayParser> values) {
 		if (values == null) {
 			this.overlays = new ArrayList<>();
@@ -63,6 +71,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 			closedWithOK.set(true);
 		});
 		setOnCloseRequest(e -> {
+			tileMap.overlayParserProperty().removeListener(tileMapSelectedOverlayChange);
 			if (!closedWithOK.get()) {
 				tileMap.setOverlays(originalOverlays);
 				tileMap.setOverlay(originalOverlay);
@@ -110,6 +119,10 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 			}
 		});
 
+		select(tileMap.getOverlay());
+
+		tileMap.overlayParserProperty().addListener(tileMapSelectedOverlayChange);
+
 		tileMap.getWindow().getOptionBar().setEditOverlaysEnabled(false);
 		tileMap.getWindow().trackDialog(this);
 	}
@@ -148,6 +161,13 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		});
 		box.setOnDelete(this::onDelete);
 		overlaysList.getChildren().add(box);
+	}
+
+	private void select(OverlayParser parser) {
+		for (Node child : overlaysList.getChildren()) {
+			OverlayBox box = (OverlayBox) child;
+			box.setSelected(box.valueProperty.get().same(parser));
+		}
 	}
 
 	public static class Result {
