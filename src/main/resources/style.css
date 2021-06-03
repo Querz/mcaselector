@@ -110,9 +110,9 @@
 }
 
 .option-bar-slider-box .text-field {
-	-fx-padding: -3 0 -3 0;
-	-fx-background-insets: 2 0 2 0;
-	-fx-border-insets: 2 0 2 0;
+	-fx-padding: -4 0 -3 0;
+	-fx-background-insets: 2 0 3 0;
+	-fx-border-insets: 2 0 3 0;
 	-fx-pref-height: 10;
 }
 

@@ -255,8 +255,9 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 	private Slider createSlider(int min, int max, int steps, int init) {
 		Slider slider = new Slider(min, max, init);
-		slider.setMajorTickUnit(steps);
-		slider.setMinorTickCount(0);
+		int majorTicks = (int) (Math.ceil(max - min) / 5);
+		slider.setMajorTickUnit(majorTicks);
+		slider.setMinorTickCount(majorTicks - 1);
 		slider.setBlockIncrement(steps);
 		return slider;
 	}
