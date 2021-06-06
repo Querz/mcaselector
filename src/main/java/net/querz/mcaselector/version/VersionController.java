@@ -7,6 +7,7 @@ import net.querz.mcaselector.version.anvil114.*;
 import net.querz.mcaselector.version.anvil115.*;
 import net.querz.mcaselector.version.anvil116.*;
 import net.querz.mcaselector.version.anvil117.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -104,8 +105,8 @@ public final class VersionController {
 		ChunkFilter getChunkFilter() {
 			return chunkFilterInstances.computeIfAbsent(chunkFilter, k -> {
 				try {
-					return k.newInstance();
-				} catch (InstantiationException | IllegalAccessException ex) {
+					return k.getConstructor().newInstance();
+				} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
 					Debug.dumpException(String.format("failed to create new instance of ChunkFilter for %d-%d", minVersion, maxVersion), ex);
 				}
 				return null;
@@ -115,8 +116,8 @@ public final class VersionController {
 		ChunkMerger getChunkMerger() {
 			return chunkMergerInstances.computeIfAbsent(chunkMerger, k -> {
 				try {
-					return k.newInstance();
-				} catch (InstantiationException | IllegalAccessException ex) {
+					return k.getConstructor().newInstance();
+				} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
 					Debug.dumpException(String.format("failed to create new instance of ChunkMerger for %d-%d", minVersion, maxVersion), ex);
 				}
 				return null;
@@ -126,8 +127,8 @@ public final class VersionController {
 		ChunkRelocator getChunkRelocator() {
 			return chunkRelocatorInstances.computeIfAbsent(chunkRelocator, k -> {
 				try {
-					return k.newInstance();
-				} catch (InstantiationException | IllegalAccessException ex) {
+					return k.getConstructor().newInstance();
+				} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
 					Debug.dumpException(String.format("failed to create new instance of ChunkRelocator for %d-%d", minVersion, maxVersion), ex);
 				}
 				return null;
@@ -137,8 +138,8 @@ public final class VersionController {
 		PoiRelocator getPOIRelocator() {
 			return poiRelocatorInstances.computeIfAbsent(poiRelocator, k -> {
 				try {
-					return k.newInstance();
-				} catch (InstantiationException | IllegalAccessException ex) {
+					return k.getConstructor().newInstance();
+				} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
 					Debug.dumpException(String.format("failed to create new instance of POIRelocator for %d-%d", minVersion, maxVersion), ex);
 				}
 				return null;
@@ -148,8 +149,8 @@ public final class VersionController {
 		EntityRelocator getEntityRelocator() {
 			return entityRelocatorInstances.computeIfAbsent(entityRelocator, k -> {
 				try {
-					return k.newInstance();
-				} catch (InstantiationException | IllegalAccessException ex) {
+					return k.getConstructor().newInstance();
+				} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
 					Debug.dumpException(String.format("failed to create new instance of EntityRelocator for %d-%d", minVersion, maxVersion), ex);
 				}
 				return null;
@@ -159,8 +160,8 @@ public final class VersionController {
 		EntityFilter getEntityFilter() {
 			return entityFilterInstances.computeIfAbsent(entityFilter, k -> {
 				try {
-					return k.newInstance();
-				} catch (InstantiationException | IllegalAccessException ex) {
+					return k.getConstructor().newInstance();
+				} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
 					Debug.dumpException(String.format("failed to create new instance of EntityFilter for %d-%d", minVersion, maxVersion), ex);
 				}
 				return null;
@@ -170,8 +171,8 @@ public final class VersionController {
 		ChunkRenderer getChunkRenderer() {
 			return chunkRendererInstances.computeIfAbsent(chunkRenderer, k -> {
 				try {
-					return k.newInstance();
-				} catch (InstantiationException | IllegalAccessException ex) {
+					return k.getConstructor().newInstance();
+				} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
 					Debug.dumpException(String.format("failed to create new instance of ChunkRenderer for %d-%d", minVersion, maxVersion), ex);
 				}
 				return null;
@@ -181,8 +182,8 @@ public final class VersionController {
 		ColorMapping getColorMapping() {
 			return colorMappingInstances.computeIfAbsent(colorMapping, k -> {
 				try {
-					return k.newInstance();
-				} catch (InstantiationException | IllegalAccessException ex) {
+					return k.getConstructor().newInstance();
+				} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
 					Debug.dumpException(String.format("failed to create new instance of ColorMapping for %d-%d", minVersion, maxVersion), ex);
 				}
 				return null;

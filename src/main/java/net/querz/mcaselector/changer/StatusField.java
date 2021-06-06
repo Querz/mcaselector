@@ -4,7 +4,6 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.filter.BiomeFilter;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.validation.ValidationHelper;
-import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.StringTag;
 import java.io.BufferedReader;
 import java.io.IOException;

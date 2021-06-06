@@ -20,7 +20,6 @@ import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.github.VersionChecker;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.UIFactory;
-
 import java.io.IOException;
 import java.util.function.Consumer;
 

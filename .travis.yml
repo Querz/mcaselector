@@ -1,7 +1,7 @@
 dist: xenial
 language: java
 jdk:
-  - openjdk8
+  - openjdk16
 addons:
   ssh_known_hosts: deploy.querz.net
 
@@ -27,9 +27,9 @@ install:
   - sh travis/inno/innoinstall.sh
   - sh travis/winrun4j/winrun4jinstall.sh
 
-  # install jdk8 with javafx
+  # install jdk16 with javafx
   - sh travis/jdkinstall.sh
-  - export JAVA_HOME="$HOME/jdkfx8"
+  - export JAVA_HOME="$HOME/jdkfx16"
 
   # download 7zip
   - sh travis/inno/7zipdownload.sh

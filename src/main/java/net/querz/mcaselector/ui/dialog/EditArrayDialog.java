@@ -259,7 +259,7 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 			TableColumn<Row, Byte> column = new TableColumn<>();
 			column.textProperty().bind(Translation.DIALOG_EDIT_ARRAY_VALUE.getProperty());
 			column.setCellFactory(t -> {
-				TextFieldTableCell<Row, Byte> cell = new TextFieldTableCell<Row, Byte>() {
+				TextFieldTableCell<Row, Byte> cell = new TextFieldTableCell<>() {
 					@Override
 					public void commitEdit(Byte b) {
 						if (b == null) {
@@ -290,7 +290,7 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 			TableColumn<Row, Integer> column = new TableColumn<>();
 			column.textProperty().bind(Translation.DIALOG_EDIT_ARRAY_VALUE.getProperty());
 			column.setCellFactory(t -> {
-				TextFieldTableCell<Row, Integer> cell = new TextFieldTableCell<Row, Integer>() {
+				TextFieldTableCell<Row, Integer> cell = new TextFieldTableCell<>() {
 					@Override
 					public void commitEdit(Integer b) {
 						if (b == null) {
@@ -329,7 +329,7 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 			TableColumn<Row, Long> column = new TableColumn<>();
 			column.textProperty().bind(Translation.DIALOG_EDIT_ARRAY_VALUE.getProperty());
 			column.setCellFactory(t -> {
-				TextFieldTableCell<Row, Long> cell = new TextFieldTableCell<Row, Long>() {
+				TextFieldTableCell<Row, Long> cell = new TextFieldTableCell<>() {
 					@Override
 					public void commitEdit(Long b) {
 						if (b == null) {
@@ -350,18 +350,15 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 
 	@SuppressWarnings("unchecked")
 	private void applyArray() {
-		if (array instanceof byte[]) {
-			byte[] ba = (byte[]) array;
+		if (array instanceof byte[] ba) {
 			for (int i = 0; i < ba.length; i++) {
 				table.getItems().add(new Row(i, ba[i]));
 			}
-		} else if (array instanceof int[]) {
-			int[] ia = (int[]) array;
+		} else if (array instanceof int[] ia) {
 			for (int i = 0; i < ia.length; i++) {
 				table.getItems().add(new Row(i, ia[i]));
 			}
-		} else if (array instanceof long[]) {
-			long[] la = (long[]) array;
+		} else if (array instanceof long[] la) {
 			if (bits.getValue() == BitCount.NONE || bits.getValue() == null) {
 				for (int i = 0; i < la.length; i++) {
 					table.getItems().add(new Row(i, la[i]));

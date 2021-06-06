@@ -259,6 +259,7 @@ public final class MCAFilePipe {
 	}
 
 	private static void flushExecutor() {
+		//noinspection StatementWithEmptyBody
 		while (allTasks.get() > 0);
 	}
 

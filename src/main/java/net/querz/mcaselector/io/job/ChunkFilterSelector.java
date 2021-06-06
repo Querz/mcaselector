@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class ChunkFilterSelector {
+public final class ChunkFilterSelector {
 
 	private ChunkFilterSelector() {}
 
@@ -110,7 +110,7 @@ public class ChunkFilterSelector {
 
 		@Override
 		public void execute() {
-			//load MCAFile
+			// load MCAFile
 			Timer t = new Timer();
 			try {
 				Region region = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());

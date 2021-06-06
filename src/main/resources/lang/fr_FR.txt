@@ -45,6 +45,7 @@ menu.tools.edit_nbt;Modifier le chunk
 menu.tools.swap_chunks;Échanger les chunks
 menu.tools.edit_overlays;Modifier les superpositions
 menu.tools.next_overlay;Superposition suivante
+menu.tools.next_overlay_type;Type de superposition
 dialog.select_world.title;Sélectionnez un monde
 dialog.settings.title;Options
 dialog.settings.language;Langage
@@ -58,6 +59,8 @@ dialog.settings.pasted_chunks_color;Couleur des chunks insérés
 dialog.settings.shade;Ombre
 dialog.settings.shade_water;Profondeur d'eau
 dialog.settings.show_nonexistent_regions;Afficher les régions inexistantes
+dialog.settings.smooth_rendering;Rendre lisse
+dialog.settings.smooth_overlays;Superpositions lisses
 dialog.settings.background_pattern;Motif de fond
 dialog.settings.mc_saves_dir;Directoire de MC
 dialog.settings.print_debug;Logger des messages de debug

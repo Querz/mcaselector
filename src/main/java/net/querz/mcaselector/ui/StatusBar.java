@@ -129,9 +129,7 @@ public class StatusBar extends StackPane {
 			if (!p.isActive()) {
 				overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + ", " + p.max() + (s == null ? "" : ", " + s) + "), -");
 			} else if (chunk != null) {
-				tileMap.getOverlayPool().getHoveredChunkValue(chunk, v -> {
-					overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + ", " + p.max() + (s == null ? "" : ", " + s) + "), " + (v == null ? "-" : v));
-				});
+				tileMap.getOverlayPool().getHoveredChunkValue(chunk, v -> overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + ", " + p.max() + (s == null ? "" : ", " + s) + "), " + (v == null ? "-" : v)));
 			} else {
 				overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + ", " + p.max() + (s == null ? "" : ", " + s) + "), -");
 			}

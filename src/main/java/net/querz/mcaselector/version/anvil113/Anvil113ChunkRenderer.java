@@ -63,7 +63,7 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 				int biome = getBiomeAtBlock(biomes, cx, cz);
 				biome = MathUtil.clamp(biome, 0, 255);
 
-				//loop over sections
+				// loop over sections
 				boolean waterDepth = false;
 				for (int i = palettes.length - (16 - (height >> 4)); i >= 0; i--) {
 					if (blockStatesArray[i] == null) {
@@ -196,12 +196,10 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 	}
 
 	private boolean isWater(CompoundTag blockData) {
-		switch (blockData.getString("Name")) {
-			case "minecraft:water":
-			case "minecraft:bubble_column":
-				return true;
-		}
-		return false;
+		return switch (blockData.getString("Name")) {
+			case "minecraft:water", "minecraft:bubble_column" -> true;
+			default -> false;
+		};
 	}
 
 	private boolean isWaterlogged(CompoundTag data) {
@@ -209,14 +207,10 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 	}
 
 	private boolean isEmpty(CompoundTag blockData) {
-		switch (blockData.getString("Name")) {
-			case "minecraft:air":
-			case "minecraft:cave_air":
-			case "minecraft:barrier":
-			case "minecraft:structure_void":
-				return blockData.size() == 1;
-		}
-		return false;
+		return switch (blockData.getString("Name")) {
+			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void" -> blockData.size() == 1;
+			default -> false;
+		};
 	}
 
 	private int getIndex(int x, int y, int z) {
@@ -241,21 +235,17 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 		int startBit = (int) ((blockStatesIndex - Math.floor(blockStatesIndex)) * 64D);
 
 		if (startBit + bits > 64) {
-			//get msb from current long, no need to cleanup manually, just fill with 0
+			// get msb from current long, no need to cleanup manually, just fill with 0
 			int previous = (int) (blockStates[longIndex] >>> startBit);
 
-			//cleanup pattern for bits from next long
+			// cleanup pattern for bits from next long
 			int remainingClean = ((int) Math.pow(2, startBit + bits - 64) - 1);
 
-			//get lsb from next long
+			// get lsb from next long
 			int next = ((int) blockStates[longIndex + 1]) & remainingClean;
 			return (next << 64 - startBit) + previous;
 		} else {
 			return (int) (blockStates[longIndex] >> startBit) & clean;
 		}
-	}
-
-	private int filterSections(CompoundTag sectionA, CompoundTag sectionB) {
-		return withDefault(() -> sectionB.getByte("Y"), (byte) -1) - withDefault(() -> sectionA.getByte("Y"), (byte) -1);
 	}
 }

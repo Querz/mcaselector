@@ -58,8 +58,8 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 		return i + 1;
 	}
 
-	public boolean removeFilter(Filter<?> filter) {
-		return children.remove(filter);
+	public void removeFilter(Filter<?> filter) {
+		children.remove(filter);
 	}
 
 	@Override

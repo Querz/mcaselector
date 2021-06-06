@@ -196,12 +196,10 @@ public class Anvil115ChunkRenderer implements ChunkRenderer {
 	}
 
 	private boolean isWater(CompoundTag blockData) {
-		switch (blockData.getString("Name")) {
-			case "minecraft:water":
-			case "minecraft:bubble_column":
-				return true;
-		}
-		return false;
+		return switch (blockData.getString("Name")) {
+			case "minecraft:water", "minecraft:bubble_column" -> true;
+			default -> false;
+		};
 	}
 
 	private boolean isWaterlogged(CompoundTag data) {
@@ -209,14 +207,10 @@ public class Anvil115ChunkRenderer implements ChunkRenderer {
 	}
 
 	private boolean isEmpty(CompoundTag blockData) {
-		switch (blockData.getString("Name")) {
-			case "minecraft:air":
-			case "minecraft:cave_air":
-			case "minecraft:barrier":
-			case "minecraft:structure_void":
-				return blockData.size() == 1;
-		}
-		return false;
+		return switch (blockData.getString("Name")) {
+			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void" -> blockData.size() == 1;
+			default -> false;
+		};
 	}
 
 	private int getIndex(int x, int y, int z) {
@@ -241,13 +235,13 @@ public class Anvil115ChunkRenderer implements ChunkRenderer {
 		int startBit = (int) ((blockStatesIndex - Math.floor(blockStatesIndex)) * 64D);
 
 		if (startBit + bits > 64) {
-			//get msb from current long, no need to cleanup manually, just fill with 0
+			// get msb from current long, no need to cleanup manually, just fill with 0
 			int previous = (int) (blockStates[longIndex] >>> startBit);
 
-			//cleanup pattern for bits from next long
+			// cleanup pattern for bits from next long
 			int remainingClean = ((int) Math.pow(2, startBit + bits - 64) - 1);
 
-			//get lsb from next long
+			// get lsb from next long
 			int next = ((int) blockStates[longIndex + 1]) & remainingClean;
 			return (next << 64 - startBit) + previous;
 		} else {

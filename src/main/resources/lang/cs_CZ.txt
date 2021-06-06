@@ -45,6 +45,7 @@ menu.tools.edit_nbt;Upravit chunků
 menu.tools.swap_chunks;Vyměňovat chunky
 menu.tools.edit_overlays;Upravit překryvy
 menu.tools.next_overlay;Další překrytí
+menu.tools.next_overlay_type;Typ překrytí
 dialog.select_world.title;Vyberte kótu
 dialog.settings.title;Nastavení
 dialog.settings.language;Jazyk
@@ -58,6 +59,8 @@ dialog.settings.pasted_chunks_color;Barva vložených chunku
 dialog.settings.shade;Odstín
 dialog.settings.shade_water;Hloubka vody
 dialog.settings.show_nonexistent_regions;Zobrazit neexistující oblasti
+dialog.settings.smooth_rendering;Vykreslení hladké
+dialog.settings.smooth_overlays;Hladké překryvy
 dialog.settings.background_pattern;Vzorek pozadí
 dialog.settings.mc_saves_dir;Adresář Minecraft
 dialog.settings.print_debug;Vypisovat ladící zprávy

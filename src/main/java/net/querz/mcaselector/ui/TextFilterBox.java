@@ -1,5 +1,6 @@
 package net.querz.mcaselector.ui;
 
+import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
@@ -12,6 +13,8 @@ public class TextFilterBox extends FilterBox {
 
 	private final TextField input = new TextField();
 	private final ComboBox<Comparator> comparator = new ComboBox<>();
+
+	private static final PseudoClass invalid = PseudoClass.getPseudoClass("invalid");
 
 	public TextFilterBox(FilterBox parent, TextFilter<?> filter, boolean root) {
 		super(parent, filter, root);
@@ -40,13 +43,7 @@ public class TextFilterBox extends FilterBox {
 
 	private void onTextInput(Filter<?> filter, String newValue) {
 		filter.setFilterValue(newValue);
-		if (!filter.isValid()) {
-			if (!getStyleClass().contains("text-filter-box-invalid")) {
-				getStyleClass().add("text-filter-box-invalid");
-			}
-		} else {
-			getStyleClass().remove("text-filter-box-invalid");
-		}
+		pseudoClassStateChanged(invalid, !filter.isValid());
 		callUpdateEvent();
 	}
 

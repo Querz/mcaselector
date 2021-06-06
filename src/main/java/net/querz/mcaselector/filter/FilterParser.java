@@ -5,7 +5,7 @@ import net.querz.mcaselector.io.StringPointer;
 
 public class FilterParser {
 
-	private StringPointer ptr;
+	private final StringPointer ptr;
 
 	public FilterParser(String filter) {
 		ptr = new StringPointer(filter);

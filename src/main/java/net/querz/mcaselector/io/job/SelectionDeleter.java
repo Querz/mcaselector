@@ -13,12 +13,12 @@ import net.querz.mcaselector.progress.Timer;
 import java.util.Map;
 import java.util.Set;
 
-public class SelectionDeleter {
+public final class SelectionDeleter {
 
 	private SelectionDeleter() {}
 
 	public static void deleteSelection(SelectionData selection, Progress progressChannel) {
-		if (selection.getSelection().isEmpty() && !selection.isInverted()) {
+		if (selection.selection().isEmpty() && !selection.inverted()) {
 			progressChannel.done("no selection");
 			return;
 		}
@@ -105,7 +105,7 @@ public class SelectionDeleter {
 
 		@Override
 		public void execute() {
-			//load MCAFile
+			// load MCAFile
 			try {
 				// only load headers, we don't care for chunk contents
 				Region region = Region.loadRegionHeaders(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());

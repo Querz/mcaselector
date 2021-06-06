@@ -20,7 +20,6 @@ import net.querz.mcaselector.changer.ChangeParser;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.exception.ParseException;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.RegionChunk;
@@ -42,7 +41,6 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 	private final List<Field<?>> fields = new ArrayList<>();
 	private final TextField changeQuery = new TextField();
-	private final ToggleGroup toggleGroup = new ToggleGroup();
 	private final RadioButton change = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_CHANGE);
 	private final RadioButton force = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_FORCE);
 	private final CheckBox selectionOnly = UIFactory.checkbox(Translation.DIALOG_CHANGE_NBT_SELECTION_ONLY);
@@ -67,7 +65,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 			return null;
 		});
 
-		//apply same stylesheets to this dialog
+		// apply same stylesheets to this dialog
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -83,6 +81,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 			readSingleChunkAsync(tileMap, fieldView);
 		}
 
+		ToggleGroup toggleGroup = new ToggleGroup();
 		toggleGroup.getToggles().addAll(change, force);
 		change.fire();
 
@@ -165,8 +164,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		public void updateFields(List<Field<?>> fields) {
 			childLoop:
 			for (Node child : getChildren()) {
-				if (child instanceof FieldCell) {
-					FieldCell fieldCell = (FieldCell) child;
+				if (child instanceof FieldCell fieldCell) {
 					for (Field<?> newField : fields) {
 						if (newField.getType() == fieldCell.value.getType()) {
 							fieldCell.value.setNewValueRaw(newField.getNewValue());

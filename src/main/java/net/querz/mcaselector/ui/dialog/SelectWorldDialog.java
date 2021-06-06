@@ -10,7 +10,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.tiles.TileMap;
 import java.io.File;
 import java.util.List;
 

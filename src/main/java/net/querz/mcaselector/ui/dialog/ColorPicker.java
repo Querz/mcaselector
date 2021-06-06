@@ -16,7 +16,6 @@ import javafx.scene.paint.Color;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.TransparentStage;
 import net.querz.mcaselector.ui.UIFactory;
-
 import java.util.Optional;
 
 public class ColorPicker extends TransparentStage {

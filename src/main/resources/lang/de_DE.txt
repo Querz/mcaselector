@@ -45,6 +45,7 @@ menu.tools.edit_nbt;Chunk editieren
 menu.tools.swap_chunks;Chunks tauschen
 menu.tools.edit_overlays;Overlays editieren
 menu.tools.next_overlay;Nächstes Overlay
+menu.tools.next_overlay_type;Overlaytyp
 dialog.select_world.title;Dimension auswählen
 dialog.settings.title;Einstellungen
 dialog.settings.language;Sprache
@@ -58,6 +59,8 @@ dialog.settings.pasted_chunks_color;Farbe eingefügter Chunks
 dialog.settings.shade;Schatten
 dialog.settings.shade_water;Wassertiefe
 dialog.settings.show_nonexistent_regions;nicht vorhandene Regionen anzeigen
+dialog.settings.smooth_rendering;Glatt rendern
+dialog.settings.smooth_overlays;Glatte Overlays
 dialog.settings.background_pattern;Hintergrundmuster
 dialog.settings.mc_saves_dir;MC Speicherort
 dialog.settings.print_debug;Debug

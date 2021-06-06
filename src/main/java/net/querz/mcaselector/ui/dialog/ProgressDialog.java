@@ -12,7 +12,6 @@ import javafx.stage.Window;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.ui.UIFactory;
-
 import java.util.function.Consumer;
 
 public class ProgressDialog extends Stage {

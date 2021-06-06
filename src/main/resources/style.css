@@ -1,5 +1,5 @@
 @font-face {
-    src: url("font/NotoSans-Regular.ttf"), /*CSSParser doesn't like it when the css minifier removes the semicolon at the end, so we just use a comma*/
+	src: url("font/NotoSans-Regular.ttf"); /*CSSParser doesn't like it when the css minifier removes the semicolon at the end, so we just use a comma*/
 }
 
 * {
@@ -85,6 +85,10 @@
 	-fx-font-family: "Noto Sans";
 }
 
+.label:disabled {
+	-fx-text-fill: -color-button-disabled-text;
+}
+
 /*---------- MENU BAR, MENU AND MENU ITEM ----------*/
 
 .option-bar-box {
@@ -106,9 +110,9 @@
 }
 
 .option-bar-slider-box .text-field {
-	-fx-padding: -3 0 -3 0;
-	-fx-background-insets: 2 0 2 0;
-	-fx-border-insets: 2 0 2 0;
+	-fx-padding: -4 0 -3 0;
+	-fx-background-insets: 2 0 3 0;
+	-fx-border-insets: 2 0 3 0;
 	-fx-pref-height: 10;
 }
 
@@ -148,6 +152,10 @@
 	-fx-opacity: 1;
 }
 
+.menu-item:disabled .label {
+	-fx-text-fill: -color-button-disabled-text;
+}
+
 /* separator lines in menus */
 .menu .separator *.line {
 	-fx-border-width: 0;
@@ -178,7 +186,7 @@
 /*---------- CHECKBOX ----------*/
 
 .check-box {
-	-fx-padding: 4 0 -3 0;
+	/*-fx-padding: 4 0 -3 0;*/
 	-fx-text-fill: -color-text-light;
 }
 
@@ -547,10 +555,9 @@
 
 .tile-map-box {
 	-fx-effect: innershadow(gaussian, -color-tilemap-shadow, 8, 0, 0, 0);
-	/*-fx-background-color: transparent;*/
-	-region-grid-color: black;
-	-chunk-grid-color: darkgray;
-	-grid-line-width: 0.5;
+	-region-grid-color: rgba(0, 0, 0, 0.5);
+	-chunk-grid-color: rgba(169, 169, 169, 0.5);
+	-grid-line-width: 1px;
 	-empty-color: rgba(51, 51, 51, 1);
 }
 
@@ -588,9 +595,13 @@
 	-fx-border-color: -color-dialog-separator;
 }
 
-.overlay-box-invalid .text-field {
+.overlay-box:invalid .text-field {
 	-fx-background-color: -color-filter-box-invalid-background;
 	-fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
+}
+
+.overlay-box:selected {
+	-fx-background-color: -color-menu-hover-background;
 }
 
 .overlay-box .text-field:disabled {
@@ -689,7 +700,7 @@
 }
 
 .filter-box {
-	-fx-padding: 6 0 6 10;
+	-fx-padding: 7 0 6 10;
 	-fx-background-color: -color-dialog-background;
 	-fx-border-width: 1 0 0 1;
 	-fx-border-color: -color-dialog-separator;
@@ -699,7 +710,7 @@
 	-fx-background-color: -color-filter-box-control-hover-background
 }
 
-.number-filter-box-invalid .text-field, .text-filter-box-invalid .text-field {
+.number-filter-box:invalid .text-field, .text-filter-box:invalid .text-field {
 	-fx-background-color: -color-filter-box-invalid-background;
 	-fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
 }
@@ -788,7 +799,7 @@
 	-fx-hgap: 10;
 }
 
-.range-text-field-invalid {
+.range-text-field:invalid {
 	-fx-background-color: -color-filter-box-invalid-background;
 	-fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
 }

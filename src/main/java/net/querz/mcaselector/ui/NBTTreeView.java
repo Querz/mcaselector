@@ -232,66 +232,33 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 	}
 
 	private static String tagToString(NamedTag tag) {
-		switch (tag.tag.getID()) {
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			case 6:
-				return (tag.name == null ? "" : tag.name + ": ") + tag.tag.valueToString(1);
-			case 8:
-				return (tag.name == null ? "" : tag.name + ": ") + ((StringTag) tag.tag).getValue();
-			case 7:
-			case 11:
-			case 12:
-				return (tag.name == null ? "(" : tag.name + " (") + ((ArrayTag<?>) tag.tag).length() + ")";
-			case 9:
-				return (tag.name == null ? "(" : tag.name + " (") + ((ListTag<?>) tag.tag).size() + ")";
-			case 10:
-				return (tag.name == null ? "(" : tag.name + " (") + ((CompoundTag) tag.tag).size() + ")";
-		}
-		return null;
+		return switch (tag.tag.getID()) {
+			case 1, 2, 3, 4, 5, 6 -> (tag.name == null ? "" : tag.name + ": ") + tag.tag.valueToString(1);
+			case 8 -> (tag.name == null ? "" : tag.name + ": ") + ((StringTag) tag.tag).getValue();
+			case 7, 11, 12 -> (tag.name == null ? "(" : tag.name + " (") + ((ArrayTag<?>) tag.tag).length() + ")";
+			case 9 -> (tag.name == null ? "(" : tag.name + " (") + ((ListTag<?>) tag.tag).size() + ")";
+			case 10 -> (tag.name == null ? "(" : tag.name + " (") + ((CompoundTag) tag.tag).size() + ")";
+			default -> null;
+		};
 	}
 
 	private String tagValueToString(NamedTag tag) {
-		switch (tag.tag.getID()) {
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			case 6:
-				return tag.tag.valueToString(1);
-			case 8:
-				return ((StringTag) tag.tag).getValue();
-			default:
-				return null;
-		}
+		return switch (tag.tag.getID()) {
+			case 1, 2, 3, 4, 5, 6 -> tag.tag.valueToString(1);
+			case 8 -> ((StringTag) tag.tag).getValue();
+			default -> null;
+		};
 	}
 
 	private void updateValue(Tag<?> tag, String value) {
 		switch (tag.getID()) {
-			case 1:
-				((ByteTag) tag).setValue(Byte.parseByte(value));
-				return;
-			case 2:
-				((ShortTag) tag).setValue(Short.parseShort(value));
-				return;
-			case 3:
-				((IntTag) tag).setValue(Integer.parseInt(value));
-				return;
-			case 4:
-				((LongTag) tag).setValue(Long.parseLong(value));
-				return;
-			case 5:
-				((FloatTag) tag).setValue(Float.parseFloat(value));
-				return;
-			case 6:
-				((DoubleTag) tag).setValue(Double.parseDouble(value));
-				return;
-			case 8:
-				((StringTag) tag).setValue(value);
+			case 1 -> ((ByteTag) tag).setValue(Byte.parseByte(value));
+			case 2 -> ((ShortTag) tag).setValue(Short.parseShort(value));
+			case 3 -> ((IntTag) tag).setValue(Integer.parseInt(value));
+			case 4 -> ((LongTag) tag).setValue(Long.parseLong(value));
+			case 5 -> ((FloatTag) tag).setValue(Float.parseFloat(value));
+			case 6 -> ((DoubleTag) tag).setValue(Double.parseDouble(value));
+			case 8 -> ((StringTag) tag).setValue(value);
 		}
 	}
 
@@ -366,7 +333,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 			NBTTreeItem oldParent = (NBTTreeItem) item.getParent();
 
-			// do not move if this is item's parent and this are a compoundtag identical
+			// do not move if this is item's parent and this are a compound tag identical
 			if (oldParent == this && oldParent.getValue().tag.getID() == 10) {
 				return;
 			}
@@ -532,13 +499,13 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				if (item.getValue().tag.getID() == 9) {
 					// insert before
 					if (e.getY() < getHeight() / 4) {
-						// if parent is comp, mark comp or top of treeview
+						// if parent is comp, mark comp or top of tree view
 						if (item.getParent().getValue().tag.getID() == 10) {
 							// if parent is equal to the dragged item's parent
 							if (item.getParent() != dragboardContent.getParent()) {
 								KeyValueTreeCell cell = getTreeCell(item.getParent());
 								if (cell == null) {
-									// mark top of treeview
+									// mark top of tree view
 									dropTarget = item.getParent();
 									setInsertParentCss(true);
 								} else {
@@ -573,13 +540,13 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 							}
 						} else {
 							// insert after this list in parent
-							// if parent is comp, mark comp or top of treeview
+							// if parent is comp, mark comp or top of tree view
 							if (item.getParent().getValue().tag.getID() == 10) {
 								// if parent is equal to the dragged item's parent
 								if (item.getParent() != dragboardContent.getParent()) {
 									KeyValueTreeCell cell = getTreeCell(item.getParent());
 									if (cell == null) {
-										// mark top of treeview
+										// mark top of tree view
 										dropTarget = item.getParent();
 										setInsertParentCss(true);
 									} else {
@@ -609,13 +576,13 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 					} else {
 						// insert before
 						if (e.getY() < getHeight() / 4) {
-							// if parent is comp, mark comp or top of treeview
+							// if parent is comp, mark comp or top of tree view
 							if (item.getParent().getValue().tag.getID() == 10) {
 								// if parent is equal to the dragged item's parent
 								if (item.getParent() != dragboardContent.getParent()) {
 									KeyValueTreeCell cell = getTreeCell(item.getParent());
 									if (cell == null) {
-										// mark top of treeview
+										// mark top of tree view
 										dropTarget = item.getParent();
 										setInsertParentCss(true);
 									} else {
@@ -649,7 +616,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 									if (item.getParent() != dragboardContent.getParent()) {
 										KeyValueTreeCell cell = getTreeCell(item.getParent());
 										if (cell == null) {
-											// mark top of treeview
+											// mark top of tree view
 											dropTarget = item.getParent();
 											setInsertParentCss(true);
 										} else {
@@ -678,7 +645,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 							if (item.getParent() != dragboardContent.getParent()) {
 								KeyValueTreeCell cell = getTreeCell(item.getParent());
 								if (cell == null) {
-									// mark top of treeview
+									// mark top of tree view
 									dropTarget = item.getParent();
 									setInsertParentCss(true);
 								} else {
@@ -785,7 +752,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		private void onDragDropped(DragEvent e) {
 			Dragboard db = e.getDragboard();
 			if (db.hasContent(CLIPBOARD_DATAFORMAT)) {
-				// this treecell receives a foreign drop
+				// this tree cell receives a foreign drop
 				// get content and insert into this tag, before this tag or after this tag
 				// and remove dropped tag from old location
 
@@ -882,7 +849,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			if (key.getText() != null && !key.getText().isEmpty()) {
 				CompoundTag parent = (CompoundTag) tag.parent;
 				if (parent.containsKey(key.getText()) && !key.getText().equals(tag.name)) {
-					// do not commit if the key cahnged and the key already exists
+					// do not commit if the key changed and the key already exists
 					return;
 				}
 				parent.remove(tag.name);
@@ -893,7 +860,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				try {
 					updateValue(tag.tag, value.getText());
 				} catch (Exception ex) {
-					// reset text in textfield
+					// reset text in text field
 					value.setText(tagValueToString(tag));
 				}
 			}

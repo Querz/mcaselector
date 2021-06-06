@@ -46,7 +46,9 @@ public final class CacheDBController {
 		File dbFile = new File(dbPath);
 
 		if (dbFile.getParentFile() != null && !dbFile.getParentFile().exists()) {
-			dbFile.getParentFile().mkdirs();
+			if (!dbFile.getParentFile().mkdirs()) {
+				throw new SQLException("failed to create directory for cache db");
+			}
 		}
 
 		try {

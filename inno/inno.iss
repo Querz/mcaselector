@@ -19,7 +19,7 @@ SolidCompression=yes
 WizardStyle=modern
 WizardSmallImageFile=small.bmp
 WizardImageFile=large.bmp
-ExtraDiskSpaceRequired=178204672
+ExtraDiskSpaceRequired=223010816
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -48,7 +48,7 @@ Type: filesandordirs; Name: "{app}\\jre"
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\\jre"
-Type: filesandordirs; Name: "{app}\\zulu8.52.0.23-ca-fx-jre8.0.282-win_x64"
+Type: filesandordirs; Name: "{app}\\zulu16.30.15-ca-fx-jre16.0.1-win_x64"
 Type: filesandordirs; Name: "{app}\\MCA Selector.ini"
 
 [Icons]
@@ -79,7 +79,7 @@ function NextButtonClick(CurPageID: Integer): Boolean;
 begin
 	if CurPageID = wpReady then begin
 		DownloadPage.Clear;
-		DownloadPage.Add('https://cdn.azul.com/zulu/bin/zulu8.52.0.23-ca-fx-jre8.0.282-win_x64.zip', 'jre.zip', '');
+		DownloadPage.Add('https://cdn.azul.com/zulu/bin/zulu16.30.15-ca-fx-jre16.0.1-win_x64.zip', 'jre.zip', '');
 		DownloadPage.Show;
 		try
 			try
@@ -99,8 +99,8 @@ end;
 procedure RenameJRE;
 begin
 	Log('Renaming jre directory');
-	if not RenameFile(ExpandConstant('{app}\\zulu8.52.0.23-ca-fx-jre8.0.282-win_x64'), ExpandConstant('{app}\\jre')) then begin
+	if not RenameFile(ExpandConstant('{app}\\zulu16.30.15-ca-fx-jre16.0.1-win_x64'), ExpandConstant('{app}\\jre')) then begin
 		Log('Failed to rename jre folder, creating custom ini');
-		SaveStringToFile(ExpandConstant('{app}\\MCA Selector.ini'), 'vm.location=zulu8.52.0.23-ca-fx-jre8.0.282-win_x64\\bin\\server\\jvm.dll', False);
+		SaveStringToFile(ExpandConstant('{app}\\MCA Selector.ini'), 'vm.location=zulu16.30.15-ca-fx-jre16.0.1-win_x64\\bin\\server\\jvm.dll', False);
 	end;
 end;

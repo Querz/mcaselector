@@ -45,6 +45,7 @@ menu.tools.edit_nbt;Редактировать чанк
 menu.tools.swap_chunks;поменять чанки
 menu.tools.edit_overlays;Редактировать наложения
 menu.tools.next_overlay;Следующий оверлей
+menu.tools.next_overlay_type;Тип наложения
 dialog.select_world.title;Выберите размер
 dialog.settings.title;Настройки
 dialog.settings.language;Язык
@@ -58,6 +59,8 @@ dialog.settings.pasted_chunks_color;Цвет вставленных чанков
 dialog.settings.shade;тень
 dialog.settings.shade_water;Глубина воды
 dialog.settings.show_nonexistent_regions;Показать несуществующие регионы
+dialog.settings.smooth_rendering;Сделать гладким
+dialog.settings.smooth_overlays;Гладкие накладки
 dialog.settings.background_pattern;Фоновый узор
 dialog.settings.mc_saves_dir;Каталог Minecraft
 dialog.settings.print_debug;Отображать системные сообщения

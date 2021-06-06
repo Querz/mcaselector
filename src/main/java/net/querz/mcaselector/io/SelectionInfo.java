@@ -1,7 +1,6 @@
 package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.point.Point2i;
-
 import java.util.function.Consumer;
 
 public class SelectionInfo {
@@ -65,5 +64,4 @@ public class SelectionInfo {
 	public String toString() {
 		return String.format("SelectionInfo{min: %s, max: %s, width: %d, height: %d}", min, max, width, height);
 	}
-
 }

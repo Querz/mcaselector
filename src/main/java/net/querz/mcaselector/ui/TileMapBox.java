@@ -28,7 +28,7 @@ import java.util.List;
 public class TileMapBox extends HBox {
 
 	private final StyleableObjectProperty<Color> regionGridColorProperty = new SimpleStyleableObjectProperty<>(regionGridColorMetaData, this, "regionGridColor");
-	private static final CssMetaData<TileMapBox, Color> regionGridColorMetaData = new CssMetaData<TileMapBox, Color>("-region-grid-color", StyleConverter.getColorConverter()) {
+	private static final CssMetaData<TileMapBox, Color> regionGridColorMetaData = new CssMetaData<>("-region-grid-color", StyleConverter.getColorConverter()) {
 		@Override
 		public boolean isSettable(TileMapBox styleable) {
 			return !styleable.regionGridColorProperty.isBound();
@@ -41,7 +41,7 @@ public class TileMapBox extends HBox {
 	};
 
 	private final StyleableObjectProperty<Color> chunkGridColorProperty = new SimpleStyleableObjectProperty<>(chunkGridColorMetaData, this, "chunkGridColor");
-	private static final CssMetaData<TileMapBox, Color> chunkGridColorMetaData = new CssMetaData<TileMapBox, Color>("-chunk-grid-color", StyleConverter.getColorConverter()) {
+	private static final CssMetaData<TileMapBox, Color> chunkGridColorMetaData = new CssMetaData<>("-chunk-grid-color", StyleConverter.getColorConverter()) {
 		@Override
 		public boolean isSettable(TileMapBox styleable) {
 			return !styleable.chunkGridColorProperty.isBound();
@@ -54,7 +54,7 @@ public class TileMapBox extends HBox {
 	};
 
 	private final StyleableDoubleProperty gridLineWidthProperty = new SimpleStyleableDoubleProperty(gridLineWidthMetaData, this, "gridLineWidth");
-	private static final CssMetaData<TileMapBox, Number> gridLineWidthMetaData = new CssMetaData<TileMapBox, Number>("-grid-line-width", StyleConverter.getSizeConverter()) {
+	private static final CssMetaData<TileMapBox, Number> gridLineWidthMetaData = new CssMetaData<>("-grid-line-width", StyleConverter.getSizeConverter()) {
 		@Override
 		public boolean isSettable(TileMapBox styleable) {
 			return !styleable.gridLineWidthProperty.isBound();
@@ -67,7 +67,7 @@ public class TileMapBox extends HBox {
 	};
 
 	private final StyleableObjectProperty<Color> emptyColorProperty = new SimpleStyleableObjectProperty<>(emptyColorMetaData, this, "emptyColor");
-	private static final CssMetaData<TileMapBox, Color> emptyColorMetaData = new CssMetaData<TileMapBox, Color>("-empty-color", StyleConverter.getColorConverter()) {
+	private static final CssMetaData<TileMapBox, Color> emptyColorMetaData = new CssMetaData<>("-empty-color", StyleConverter.getColorConverter()) {
 		@Override
 		public boolean isSettable(TileMapBox styleable) {
 			return !styleable.emptyColorProperty.isBound();

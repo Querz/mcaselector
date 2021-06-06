@@ -22,7 +22,11 @@ import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
 import net.querz.mcaselector.text.Translation;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
@@ -297,23 +301,43 @@ public final class ParamExecutor {
 			throw new ParseException("no locale");
 		}
 
-		Pattern languageFilePattern = Pattern.compile("^(?<locale>-?(?<language>-?[a-z]{2})_(?<country>-?[A-Z]{2}))$");
-
-		Locale locale;
-
-		Matcher matcher = languageFilePattern.matcher(l);
-		if (matcher.matches()) {
-			String language = matcher.group("language");
-			String country = matcher.group("country");
-			locale = new Locale(language, country);
+		if (l.equals("updateResources")) {
+			Set<Locale> locales = Translation.getAvailableLanguages();
+			for (Locale locale : locales) {
+				Translation.load(locale);
+				try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("src/main/resources/lang/" + locale + ".txt"), StandardCharsets.UTF_8)) {
+					boolean first = true;
+					for (Translation translation : Translation.values()) {
+						osw.write((first ? "" : "\n") + translation.getKey() + ";" + (translation.isTranslated() ? translation.toString() : ""));
+						first = false;
+					}
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
 		} else {
-			throw new ParseException("invalid locale " + l);
-		}
+			Pattern languageFilePattern = Pattern.compile("^(?<locale>-?(?<language>-?[a-z]{2})_(?<country>-?[A-Z]{2}))$");
 
-		Translation.load(locale);
+			Locale locale;
 
-		for (Translation translation : Translation.values()) {
-			System.out.println(translation.getKey() + ";" + (translation.isTranslated() ? translation.toString() : ""));
+			Matcher matcher = languageFilePattern.matcher(l);
+			if (matcher.matches()) {
+				String language = matcher.group("language");
+				String country = matcher.group("country");
+				locale = new Locale(language, country);
+			} else {
+				throw new ParseException("invalid locale " + l);
+			}
+
+			Translation.load(locale);
+
+			try (OutputStreamWriter osw = new OutputStreamWriter(System.out, StandardCharsets.UTF_8)) {
+				for (Translation translation : Translation.values()) {
+					osw.write(translation.getKey() + ";" + (translation.isTranslated() ? translation.toString() : "") + "\n");
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
 		}
 
 		future.run();

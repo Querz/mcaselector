@@ -28,14 +28,15 @@ import java.awt.datatransfer.Transferable;
 public class OptionBar extends BorderPane {
 	/*
 	* File				View				Selection					Tools				About
-	* - Open World		- Chunk Grid		- Clear selection			- Import chunks
-	* - Open Region		- Region Grid		- Invert selection			- Filter chunks
+	* - Open World		- Chunk Grid		- Clear         			- Import chunks
+	* - Open Region		- Region Grid		- Invert        			- Filter chunks
 	* - Settings		- Goto				- Copy chunks				- Change fields
-	* - World Settings	- Save Screenshot	- Paste chunks				- Edit NBT
-	* - Quit			- Clear cache		- Export selected chunks	- Swap chunks
-	*					- Clear all cache	- Delete selected chunks	- Edit overlays
-	*										- Import selection			- Next overlay
-	*										- Export selection
+	* - World Settings	- Reset Zoom    	- Paste chunks				- Edit chunk
+	* - Quit			- Save Screenshot	- Export selected chunks	- Swap chunks
+	*					- Clear cache   	- Delete selected chunks	- Edit overlays
+	*					- Clear all cache	- Import selection			- Next overlay
+	*										- Export selection          - Next overlay type
+	*                                       - Export as image
 	* 										- Clear cache
 	* */
 
@@ -123,7 +124,7 @@ public class OptionBar extends BorderPane {
 		height.setMajorTickUnit(32);
 		height.setMinorTickCount(384);
 		height.setPrefWidth(300);
-		height.setLabelFormatter(new StringConverter<Double>() {
+		height.setLabelFormatter(new StringConverter<>() {
 			@Override
 			public String toString(Double object) {
 				return null;
@@ -275,6 +276,8 @@ public class OptionBar extends BorderPane {
 
 	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap) {
 		worldSettings.setDisable(!enabled);
+		clearViewCache.setDisable(!enabled);
+		clearAllCache.setDisable(!enabled);
 		saveScreenshot.setDisable(!enabled);
 		filterChunks.setDisable(!enabled);
 		changeFields.setDisable(!enabled);

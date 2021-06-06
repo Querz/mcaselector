@@ -37,28 +37,16 @@ public abstract class Chunk {
 	public void load(ByteArrayPointer ptr) throws IOException {
 		int length = ptr.readInt();
 		compressionType = CompressionType.fromByte(ptr.readByte());
-		DataInputStream nbtIn = null;
 
-		switch (compressionType) {
-			case GZIP:
-				nbtIn = new DataInputStream(new BufferedInputStream(new GZIPInputStream(ptr, length)));
-				break;
-			case ZLIB:
-				nbtIn = new DataInputStream(new BufferedInputStream(new InflaterInputStream(ptr, new Inflater(), length)));
-				break;
-			case NONE:
-				nbtIn = new DataInputStream(ptr);
-				break;
-			case GZIP_EXT:
-				nbtIn = new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(getMCCFile()))));
-				break;
-			case ZLIB_EXT:
-				nbtIn = new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(getMCCFile()))));
-				break;
-			case NONE_EXT:
-				nbtIn = new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile())));
-				break;
-		}
+		DataInputStream nbtIn = switch (compressionType) {
+			case GZIP -> new DataInputStream(new BufferedInputStream(new GZIPInputStream(ptr, length)));
+			case ZLIB -> new DataInputStream(new BufferedInputStream(new InflaterInputStream(ptr, new Inflater(), length)));
+			case NONE -> new DataInputStream(ptr);
+			case GZIP_EXT -> new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(getMCCFile()))));
+			case ZLIB_EXT -> new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(getMCCFile()))));
+			case NONE_EXT -> new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile())));
+		};
+
 		NamedTag tag = new NBTDeserializer(false).fromStream(nbtIn);
 
 		if (tag.getTag() instanceof CompoundTag) {
@@ -71,28 +59,15 @@ public abstract class Chunk {
 	public void load(RandomAccessFile raf) throws IOException {
 		int length = raf.readInt();
 		compressionType = CompressionType.fromByte(raf.readByte());
-		DataInputStream nbtIn = null;
 
-		switch (compressionType) {
-			case GZIP:
-				nbtIn = new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(raf.getFD()))));
-				break;
-			case ZLIB:
-				nbtIn = new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(raf.getFD()))));
-				break;
-			case NONE:
-				nbtIn = new DataInputStream(new BufferedInputStream(new FileInputStream(raf.getFD()), length - 1));
-				break;
-			case GZIP_EXT:
-				nbtIn = new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(getMCCFile()))));
-				break;
-			case ZLIB_EXT:
-				nbtIn = new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(getMCCFile()))));
-				break;
-			case NONE_EXT:
-				nbtIn = new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile())));
-				break;
-		}
+		DataInputStream nbtIn = switch (compressionType) {
+			case GZIP -> new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(raf.getFD()))));
+			case ZLIB -> new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(raf.getFD()))));
+			case NONE -> new DataInputStream(new BufferedInputStream(new FileInputStream(raf.getFD()), length - 1));
+			case GZIP_EXT -> new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(getMCCFile()))));
+			case ZLIB_EXT -> new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(getMCCFile()))));
+			case NONE_EXT -> new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile())));
+		};
 
 		NamedTag tag = new NBTDeserializer(false).fromStream(nbtIn);
 
@@ -104,25 +79,13 @@ public abstract class Chunk {
 	}
 
 	public int save(RandomAccessFile raf) throws IOException {
-		DataOutputStream nbtOut;
-		ExposedByteArrayOutputStream baos;
+		ExposedByteArrayOutputStream baos = null;
 
-		switch (compressionType) {
-			case GZIP:
-			case GZIP_EXT:
-				nbtOut = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(baos = new ExposedByteArrayOutputStream())));
-				break;
-			case ZLIB:
-			case ZLIB_EXT:
-				nbtOut = new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(baos = new ExposedByteArrayOutputStream())));
-				break;
-			case NONE:
-			case NONE_EXT:
-				nbtOut = new DataOutputStream(new BufferedOutputStream(baos = new ExposedByteArrayOutputStream()));
-				break;
-			default:
-				return 0;
-		}
+		DataOutputStream nbtOut = switch (compressionType) {
+			case GZIP, GZIP_EXT -> new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(baos = new ExposedByteArrayOutputStream())));
+			case ZLIB, ZLIB_EXT -> new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(baos = new ExposedByteArrayOutputStream())));
+			case NONE, NONE_EXT -> new DataOutputStream(new BufferedOutputStream(baos = new ExposedByteArrayOutputStream()));
+		};
 
 		new NBTSerializer(false).toStream(new NamedTag(null, data), nbtOut);
 		nbtOut.close();

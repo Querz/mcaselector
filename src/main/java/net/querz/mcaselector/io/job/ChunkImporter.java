@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ChunkImporter {
+public final class ChunkImporter {
 
 	private ChunkImporter() {}
 
@@ -80,7 +80,7 @@ public class ChunkImporter {
 				} else {
 					for (Point2i sourceRegion : sourceRegions) {
 						Set<Point2i> localSourceChunks;
-						localSourceChunks = sourceSelection.getSelection().getOrDefault(sourceRegion, Collections.emptySet());
+						localSourceChunks = sourceSelection.selection().getOrDefault(sourceRegion, Collections.emptySet());
 						localSourceSelection.put(sourceRegion, localSourceChunks);
 					}
 				}
@@ -89,11 +89,11 @@ public class ChunkImporter {
 				if (targetSelection == null) {
 					localTargetSelection = Collections.emptySet();
 				} else {
-					localTargetSelection = targetSelection.getSelection().getOrDefault(targetRegion, Collections.emptySet());
+					localTargetSelection = targetSelection.selection().getOrDefault(targetRegion, Collections.emptySet());
 				}
 
-				boolean sourceInverted = sourceSelection != null && sourceSelection.isInverted();
-				boolean targetInverted = targetSelection != null && targetSelection.isInverted();
+				boolean sourceInverted = sourceSelection != null && sourceSelection.inverted();
+				boolean targetInverted = targetSelection != null && targetSelection.inverted();
 
 				RegionDirectories targetDirs = FileHelper.createRegionDirectories(targetRegion);
 

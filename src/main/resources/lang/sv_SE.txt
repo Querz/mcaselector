@@ -45,6 +45,7 @@ menu.tools.edit_nbt;Ändra chunk
 menu.tools.swap_chunks;Byt chunks
 menu.tools.edit_overlays;Redigera överlägg
 menu.tools.next_overlay;Nästa överlägg
+menu.tools.next_overlay_type;Överlagringstyp
 dialog.select_world.title;Välj en dimension
 dialog.settings.title;Inställningar
 dialog.settings.language;Språk
@@ -58,6 +59,8 @@ dialog.settings.pasted_chunks_color;Färg på insatta chunks
 dialog.settings.shade;Skugga
 dialog.settings.shade_water;Vattendjup
 dialog.settings.show_nonexistent_regions;Visa regioner som inte finns
+dialog.settings.smooth_rendering;Gör smidig
+dialog.settings.smooth_overlays;Släta överlägg
 dialog.settings.background_pattern;Bakgrundsmönster
 dialog.settings.mc_saves_dir;Minecraft-katalog
 dialog.settings.print_debug;Skriv ut felsökningsmeddelanden

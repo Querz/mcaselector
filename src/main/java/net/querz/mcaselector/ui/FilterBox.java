@@ -294,7 +294,7 @@ public abstract class FilterBox extends BorderPane {
 		NumberFilter<?> f = new DataVersionFilter(Operator.AND, Comparator.EQUAL, 0);
 		int index;
 		if (filter.getParent() == null || filter instanceof GroupFilter) {
-			//root group
+			// root group
 			index = ((GroupFilter) filter).addFilter(f);
 		} else {
 			index = ((GroupFilter) filter.getParent()).addFilterAfter(f, filter);
@@ -359,17 +359,10 @@ public abstract class FilterBox extends BorderPane {
 			// remove this filter from view and add new filterbox
 			FilterBox newBox = null;
 			switch (type.getFormat()) {
-			case GROUP:
-				newBox = new GroupFilterBox(this.parent, (GroupFilter) f, false);
-				break;
-			case TEXT:
-				newBox = new TextFilterBox(this.parent, (TextFilter<?>) f, false);
-				break;
-			case NUMBER:
-				newBox = new NumberFilterBox(this.parent, (NumberFilter<?>) f, false);
-				break;
-			default:
-				Debug.dump("unknown FilterType Format: " + type.getFormat());
+				case GROUP -> newBox = new GroupFilterBox(this.parent, (GroupFilter) f, false);
+				case TEXT -> newBox = new TextFilterBox(this.parent, (TextFilter<?>) f, false);
+				case NUMBER -> newBox = new NumberFilterBox(this.parent, (NumberFilter<?>) f, false);
+				default -> Debug.dump("unknown FilterType format: " + type.getFormat());
 			}
 
 			if (this.parent != null) {

@@ -20,7 +20,7 @@ public class TransparentStage extends Stage {
 	private double yOffset = 0;
 
 	public TransparentStage(javafx.stage.Window parent) {
-		//create ONE Pane that contains all the elements
+		// create ONE Pane that contains all the elements
 		initStyle(StageStyle.TRANSPARENT);
 		setResizable(false);
 		initModality(Modality.APPLICATION_MODAL);

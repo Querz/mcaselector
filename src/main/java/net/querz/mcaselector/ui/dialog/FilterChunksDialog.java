@@ -42,7 +42,6 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 	private GroupFilter value = gf;
 	private final TextField filterQuery = new TextField();
 	private final GroupFilterBox groupFilterBox = new GroupFilterBox(null, value, true);
-	private final ToggleGroup toggleGroup = new ToggleGroup();
 	private final RadioButton select = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_SELECT);
 	private final RadioButton export = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_EXPORT);
 	private final RadioButton delete = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_DELETE);
@@ -63,7 +62,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 		setResultConverter(p -> p == ButtonType.OK ? new Result(value, getHandleType(), applyToSelectionOnly, radius) : null);
 
-		//apply same stylesheets to this dialog
+		// apply same stylesheets to this dialog
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -72,6 +71,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		export.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_EXPORT_TOOLTIP));
 		delete.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_DELETE_TOOLTIP));
 
+		ToggleGroup toggleGroup = new ToggleGroup();
 		toggleGroup.getToggles().addAll(select, export, delete);
 		select.fire();
 

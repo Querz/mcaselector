@@ -24,7 +24,7 @@ public class Window extends Application {
 	private OptionBar optionBar;
 	private TileMapBox tileMapBox;
 
-	private List<Dialog<?>> trackedDialogs = new ArrayList<>();
+	private final List<Dialog<?>> trackedDialogs = new ArrayList<>();
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -44,15 +44,15 @@ public class Window extends Application {
 
 		BorderPane pane = new BorderPane();
 
-		//menu bar
+		// menu bar
 		optionBar = new OptionBar(tileMap, primaryStage);
 		pane.setTop(optionBar);
 
-		//tilemap
+		// tilemap
 		tileMapBox = new TileMapBox(tileMap, primaryStage);
 		pane.setCenter(tileMapBox);
 
-		//status bar
+		// status bar
 		pane.setBottom(new StatusBar(tileMap));
 
 		Scene scene = new Scene(pane, width, height);

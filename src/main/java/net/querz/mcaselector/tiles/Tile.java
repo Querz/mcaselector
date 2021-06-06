@@ -11,10 +11,10 @@ import java.util.Set;
 
 public class Tile {
 
-	public static Color REGION_GRID_COLOR = Color.BLACK;
-	public static Color CHUNK_GRID_COLOR = Color.DARK_GRAY;
+	public static Color REGION_GRID_COLOR = new Color(0, 0, 0, 0.5);
+	public static Color CHUNK_GRID_COLOR = new Color(0.6627451f, 0.6627451f, 0.6627451f, 0.5);
 	public static Color EMPTY_COLOR = new Color(0.2, 0.2, 0.2, 1);
-	public static double GRID_LINE_WIDTH = 0.5;
+	public static double GRID_LINE_WIDTH = 1;
 
 	public static final int SIZE = 512;
 	public static final int CHUNK_SIZE = 16;
@@ -52,9 +52,9 @@ public class Tile {
 		return isVisible(tileMap, 0);
 	}
 
-	//returns whether this tile is visible on screen, adding a custom radius
-	//as a threshold
-	//threshold is measured in tiles
+	// returns whether this tile is visible on screen, adding a custom radius
+	// as a threshold
+	// threshold is measured in tiles
 	public boolean isVisible(TileMap tileMap, int threshold) {
 		Point2i o = tileMap.getOffset().toPoint2i();
 		Point2i min = o.sub(threshold * SIZE).blockToRegion().regionToBlock();
@@ -155,7 +155,7 @@ public class Tile {
 			}
 		}
 		markedChunks.remove(chunkBlock);
-		markedChunksImage = null; //reset markedChunksImage
+		markedChunksImage = null; // reset markedChunksImage
 	}
 
 	public void clearMarks() {

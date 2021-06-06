@@ -79,7 +79,9 @@ public abstract class MCAFile<T extends Chunk> {
 				Debug.dumpf("failed to delete empty region file %s", dest);
 			}
 
-			tempFile.delete();
+			if (!tempFile.delete()) {
+				Debug.dumpf("failed to delete temp file %s", tempFile);
+			}
 		} else {
 			Files.move(tempFile.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}
@@ -92,7 +94,7 @@ public abstract class MCAFile<T extends Chunk> {
 
 		raf.seek(0);
 		for (int i = 0; i < 1024; i++) {
-			raf.seek(globalOffset * 4096);
+			raf.seek(globalOffset * 4096L);
 			T chunk = chunks[i];
 
 			if (chunk == null || chunk.isEmpty()) {
@@ -118,7 +120,7 @@ public abstract class MCAFile<T extends Chunk> {
 
 		// padding
 		if (lastWritten % 4096 != 0) {
-			raf.seek(globalOffset * 4096 - 1);
+			raf.seek(globalOffset * 4096L - 1);
 			raf.write(0);
 		}
 
@@ -154,19 +156,19 @@ public abstract class MCAFile<T extends Chunk> {
 				int sectors = this.sectors[i];
 
 				// write offset and sector size to tmp file
-				rafTmp.seek(i * 4);
+				rafTmp.seek(i * 4L);
 				rafTmp.writeByte(globalOffset >>> 16);
 				rafTmp.writeByte(globalOffset >> 8 & 0xFF);
 				rafTmp.writeByte(globalOffset & 0xFF);
 				rafTmp.writeByte(sectors);
 
 				// write timestamp to tmp file
-				rafTmp.seek(4096 + i * 4);
+				rafTmp.seek(4096 + i * 4L);
 				rafTmp.writeInt(timestamps[i]);
 
 				// copy chunk data to tmp file
-				source.seek(offsets[i] * 4096);
-				rafTmp.seek(globalOffset * 4096);
+				source.seek(offsets[i] * 4096L);
+				rafTmp.seek(globalOffset * 4096L);
 
 				DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(source.getFD()), sectors * 4096));
 				DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(rafTmp.getFD()), sectors * 4096));
@@ -208,7 +210,7 @@ public abstract class MCAFile<T extends Chunk> {
 					chunks[i] = null;
 					continue;
 				}
-				raf.seek(offsets[i] * 4096);
+				raf.seek(offsets[i] * 4096L);
 
 				Point2i chunkLocation = origin.add(getChunkOffsetFromIndex(i));
 
@@ -235,7 +237,7 @@ public abstract class MCAFile<T extends Chunk> {
 				chunks[i] = null;
 				continue;
 			}
-			ptr.seek(offsets[i] * 4096);
+			ptr.seek(offsets[i] * 4096L);
 
 			Point2i chunkLocation = origin.add(getChunkOffsetFromIndex(i));
 
