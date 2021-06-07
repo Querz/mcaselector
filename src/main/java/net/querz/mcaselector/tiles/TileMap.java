@@ -143,14 +143,14 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		update();
 	}
 
-	private void updateScale(float oldScale) {
+	private void updateScale(float oldScale, Point2f center) {
 		scale = scale < Config.MAX_SCALE ? Math.max(scale, Config.MIN_SCALE) : Config.MAX_SCALE;
 		if (oldScale != scale) {
 			// calculate the difference between the old max and the new max point
-			Point2f diff = offset.add((float) getWidth() * oldScale, (float) getHeight() * oldScale)
-					.sub(offset.add((float) getWidth() * scale, (float) getHeight() * scale));
+			Point2f diff = offset.add(center.getX() * oldScale, center.getY() * oldScale)
+					.sub(offset.add(center.getX() * scale, center.getY() * scale));
 
-			offset = offset.add(diff.div(2));
+			offset = offset.add(diff);
 
 			if (Tile.getZoomLevel(oldScale) != Tile.getZoomLevel(scale)) {
 				Debug.dumpf("zoom level changed from %d to %d", Tile.getZoomLevel(oldScale), Tile.getZoomLevel(scale));
@@ -297,16 +297,16 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private void onKeyTyped(KeyEvent event) {
 		if ("+".equals(event.getCharacter())) {
-			zoomFactor(1.05);
+			zoomFactor(1.05, new Point2f(getWidth() / 2, getHeight() / 2));
 		} else if ("-".equals(event.getCharacter())) {
-			zoomFactor(0.95);
+			zoomFactor(0.95, new Point2f(getWidth() / 2, getHeight() / 2));
 		}
 	}
 
-	private void zoomFactor(double factor) {
+	private void zoomFactor(double factor, Point2f center) {
 		float oldScale = scale;
 		scale /= factor;
-		updateScale(oldScale);
+		updateScale(oldScale, center);
 	}
 
 	private void onKeyReleased(KeyEvent event) {
@@ -334,14 +334,16 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	private void onScroll(ScrollEvent event) {
+		System.out.println(event.getX() + " / " + event.getY());
+
 		if (trackpadScrolling || event.isInertia()) {
 			if (window.isKeyPressed(KeyCode.COMMAND)) {
 				// zoom
 
 				if (event.getDeltaY() > 0) {
-					zoomFactor(1.03 + event.getDeltaY() / 1000);
+					zoomFactor(1.03 + event.getDeltaY() / 1000, new Point2f(event.getX(), event.getY()));
 				} else if (event.getDeltaY() < 0) {
-					zoomFactor(0.97 + event.getDeltaY() / 1000);
+					zoomFactor(0.97 + event.getDeltaY() / 1000, new Point2f(event.getX(), event.getY()));
 				}
 
 			} else {
@@ -350,9 +352,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			}
 		} else {
 			if (event.getDeltaY() > 0) {
-				zoomFactor(1.03 + event.getDeltaY() / 1000);
+				zoomFactor(1.03 + event.getDeltaY() / 1000, new Point2f(event.getX(), event.getY()));
 			} else if (event.getDeltaY() < 0) {
-				zoomFactor(0.97 + event.getDeltaY() / 1000);
+				zoomFactor(0.97 + event.getDeltaY() / 1000, new Point2f(event.getX(), event.getY()));
 			}
 		}
 	}
@@ -366,7 +368,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	private void onZoom(ZoomEvent event) {
-		zoomFactor(event.getZoomFactor());
+		zoomFactor(event.getZoomFactor(), new Point2f(event.getX(), event.getY()));
 	}
 
 	private void onMousePressed(MouseEvent event) {
