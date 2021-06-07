@@ -254,8 +254,11 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	}
 
 	private Slider createSlider(int min, int max, int steps, int init) {
+		if (max < min) {
+			max = min;
+		}
 		Slider slider = new Slider(min, max, init);
-		int majorTicks = (int) (Math.ceil(max - min) / 5);
+		int majorTicks = Math.max((int) Math.ceil(max - min) / 5, 1);
 		slider.setMajorTickUnit(majorTicks);
 		slider.setMinorTickCount(majorTicks - 1);
 		slider.setBlockIncrement(steps);
