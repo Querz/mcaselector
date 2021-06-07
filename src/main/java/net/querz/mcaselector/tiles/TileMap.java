@@ -334,8 +334,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	private void onScroll(ScrollEvent event) {
-		System.out.println(event.getX() + " / " + event.getY());
-
 		if (trackpadScrolling || event.isInertia()) {
 			if (window.isKeyPressed(KeyCode.COMMAND)) {
 				// zoom
