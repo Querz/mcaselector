@@ -242,7 +242,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 				try {
 					T chunkData = mcaFile.loadSingleChunk(selectedChunk);
 					if (chunkData.getData() == null) {
-						Debug.dump("no chunk data found for:" + selectedChunk);
+						Debug.dump("no chunk data found for: " + selectedChunk);
 						enableAddTagLabels(new int[]{10}, addTagLabels);
 						Platform.runLater(() -> treeViewHolder.setCenter(UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_NO_CHUNK_DATA)));
 						return;
@@ -254,7 +254,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 						getDialogPane().lookupButton(ButtonType.APPLY).setDisable(false);
 					});
 				} catch (IOException ex) {
-					Debug.dumpException("failed to load chunk", ex);
+					Debug.dumpException("failed to load chunk from file " + mcaFile.getFile(), ex);
 				}
 			} else {
 				enableAddTagLabels(new int[]{10}, addTagLabels);
