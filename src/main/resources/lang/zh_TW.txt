@@ -11,7 +11,7 @@ status.visible.tooltip;用於渲染的已載入區域圖像的數量。
 status.total;區域總數
 status.total.tooltip;已載入區域的總數，包括不可見的已選擇區域。
 status.overlay;覆蓋
-menu.file;文件
+menu.file;檔案
 menu.view;檢視
 menu.selection;選擇
 menu.tools;工具
@@ -25,13 +25,13 @@ menu.view.chunk_grid;區塊網格
 menu.view.region_grid;區域網格
 menu.view.goto;轉到
 menu.view.reset_zoom;重設縮放
-menu.view.save_screenshot;保存截圖
+menu.view.save_screenshot;儲存截圖
 menu.view.clear_cache;清除緩存
 menu.view.clear_all_cache;清除所有緩存
 menu.selection.clear;清除
-menu.selection.invert;倒置
-menu.selection.copy_chunks;複製塊
-menu.selection.paste_chunks;粘貼大塊
+menu.selection.invert;反相選取
+menu.selection.copy_chunks;複製區塊
+menu.selection.paste_chunks;貼上區塊
 menu.selection.export_chunks;匯出已選擇的區塊
 menu.selection.delete_chunks;刪除已選擇的區塊
 menu.selection.import_selection;匯入已選擇的內容
@@ -42,11 +42,11 @@ menu.tools.import_chunks;匯入區塊
 menu.tools.filter_chunks;篩選區塊
 menu.tools.change_fields;變更欄位
 menu.tools.edit_nbt;編輯區塊
-menu.tools.swap_chunks;交換塊
+menu.tools.swap_chunks;交換區塊
 menu.tools.edit_overlays;編輯疊加
 menu.tools.next_overlay;下一個疊加
 menu.tools.next_overlay_type;疊加類型
-dialog.select_world.title;選擇一個尺寸
+dialog.select_world.title;選擇維度
 dialog.settings.title;設置
 dialog.settings.language;語言
 dialog.settings.read_threads;讀取執行緒
@@ -55,23 +55,23 @@ dialog.settings.write_threads;寫入執行緒
 dialog.settings.max_files;最多載入文件數量
 dialog.settings.region_color;已選擇區域的顏色標示
 dialog.settings.chunk_color;已選擇區塊的顏色標示
-dialog.settings.pasted_chunks_color;插入的塊的顏色
+dialog.settings.pasted_chunks_color;插入的區塊的顏色
 dialog.settings.shade;陰影
 dialog.settings.shade_water;水深
 dialog.settings.show_nonexistent_regions;顯示不存在的地區
 dialog.settings.smooth_rendering;渲染平滑
 dialog.settings.smooth_overlays;平滑疊加
 dialog.settings.background_pattern;背景圖案
-dialog.settings.mc_saves_dir;我的世界目錄
-dialog.settings.print_debug;列印偵錯訊息
-dialog.settings.show_log_file;顯示日誌文件
+dialog.settings.mc_saves_dir;Minecraft 儲存路徑
+dialog.settings.print_debug;顯示偵錯訊息
+dialog.settings.show_log_file;顯示日誌檔案
 dialog.settings.reset;重置
 dialog.world_settings.title;世界設置
 dialog.world_settings.poi;興趣點
 dialog.world_settings.entities;實體
 dialog.world_settings.render_height;渲染高度
 dialog.world_settings.render_layer_only;僅渲染層
-dialog.goto.title;轉到位置
+dialog.goto.title;前往位置
 dialog.confirmation.question;你確定嗎？
 dialog.delete_chunks_confirmation.title;刪除區塊
 dialog.delete_chunks_confirmation.header_short;你將要從這個世界中刪除未知數量的區塊。
@@ -106,7 +106,7 @@ dialog.filter_chunks.selection_only;僅適用於已選擇的內容
 dialog.filter_chunks.selection_radius;選擇半徑
 dialog.filter_chunks.selection_only.tooltip;此篩選器是否只套用於已選擇的內容。
 dialog.edit_overlays.title;編輯疊加
-dialog.edit_overlays.overlay_active.tooltip;積極的
+dialog.edit_overlays.overlay_active.tooltip;已啟用
 dialog.edit_overlays.delete.tooltip;刪除
 dialog.change_nbt.title;變更NBT
 dialog.change_nbt.change;變更
@@ -115,7 +115,7 @@ dialog.change_nbt.force;強制
 dialog.change_nbt.force.tooltip;如果標記不存在時則建立標記。
 dialog.change_nbt.selection_only;僅適用於已選擇的內容
 dialog.change_nbt.selection_only.tooltip;此篩選器是否只套用於已選擇的內容。
-dialog.change_nbt_confirmation.title;變更NBT
+dialog.change_nbt_confirmation.title;變更 NBT
 dialog.change_nbt_confirmation.header_short;你將要在此世界中變更未知數量的區塊的資料。
 dialog.change_nbt_confirmation.header_verbose;你將要在此世界中變更 %d 個區塊的資料。
 dialog.edit_nbt.title;編輯區塊
@@ -125,7 +125,7 @@ dialog.edit_nbt.placeholder.no_region_file;區域文件不存在
 dialog.edit_array.index;索引
 dialog.edit_array.value;值
 dialog.about.title;關於
-dialog.about.header;關於MCA Selector
+dialog.about.header;關於 MCA Selector
 dialog.about.version;版本：
 dialog.about.version.unknown;未知
 dialog.about.version.check;檢查更新
