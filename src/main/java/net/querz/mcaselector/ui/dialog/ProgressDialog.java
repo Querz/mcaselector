@@ -9,6 +9,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.ui.UIFactory;
@@ -51,6 +52,7 @@ public class ProgressDialog extends Stage {
 	}
 
 	public void showProgressBar(Consumer<ProgressTask> r) {
+		MCAFilePipe.setTrimSaveData(false);
 		currentTask = new ProgressTask() {
 			@Override
 			protected Void call() {
@@ -64,6 +66,7 @@ public class ProgressDialog extends Stage {
 		Thread thread = new Thread(currentTask);
 		thread.start();
 		showAndWait();
+		MCAFilePipe.setTrimSaveData(true);
 	}
 
 	public void updateProgress(String status, double progress) {

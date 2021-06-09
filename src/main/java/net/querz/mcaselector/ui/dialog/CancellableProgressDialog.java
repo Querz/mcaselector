@@ -22,6 +22,7 @@ public class CancellableProgressDialog extends ProgressDialog {
 
 		getBox().getChildren().add(cancelBox);
 		cancel.setOnAction(e -> {
+			cancel.setDisable(true);
 			cancelled = true;
 			getCurrentTask().setLocked(true);
 			getCurrentTask().setIndeterminate(Translation.DIALOG_PROGRESS_CANCELLING.toString());

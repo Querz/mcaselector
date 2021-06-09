@@ -46,7 +46,7 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 		return negated;
 	}
 
-	//returns index of where this filter was added
+	// returns index of where this filter was added
 	public int addFilterAfter(Filter<?> filter, Filter<?> after) {
 		filter.setParent(this);
 		int i = children.indexOf(after);
@@ -89,15 +89,15 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 	public boolean matches(ChunkData data) {
 		boolean currentResult = true;
 		for (int i = 0; i < children.size(); i++) {
-			//skip all condition in this AND block if it is already false
+			// skip all condition in this AND block if it is already false
 			if ((children.get(i).getOperator() == Operator.AND || i == 0) && currentResult) {
 				currentResult = children.get(i).matches(data);
 			} else if (children.get(i).getOperator() == Operator.OR) {
-				//don't check other conditions if everything before OR is already true
+				// don't check other conditions if everything before OR is already true
 				if (currentResult) {
 					return !negated;
 				}
-				//otherwise, reset currentResult
+				// otherwise, reset currentResult
 				currentResult = children.get(i).matches(data);
 			}
 		}
@@ -113,17 +113,15 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 			Filter<?> child = gf.children.get(i);
 			if (child instanceof GroupFilter && ((GroupFilter) child).appliesToRegion(region)) {
 				currentResult = true;
-			} else if (child instanceof RegionMatcher) {
-				RegionMatcher regionMatcher = (RegionMatcher) child;
-
+			} else if (child instanceof RegionMatcher regionMatcher) {
 				if ((child.getOperator() == Operator.AND || i == 0) && currentResult) {
 					currentResult = regionMatcher.matchesRegion(region);
 				} else if (child.getOperator() == Operator.OR) {
-					//don't check other conditions if everything before OR is already true
+					// don't check other conditions if everything before OR is already true
 					if (currentResult) {
 						return true;
 					}
-					//otherwise, reset currentResult
+					// otherwise, reset currentResult
 					currentResult = regionMatcher.matchesRegion(region);
 				}
 			} else {

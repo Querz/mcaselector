@@ -13,7 +13,6 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
@@ -33,7 +32,6 @@ public final class MCAFilePipe {
 
 	private static final Queue<LoadDataJob> waitingForLoad = new LinkedBlockingQueue<>();
 
-
 	private static final AtomicInteger allTasks = new AtomicInteger(0);
 
 	static {
@@ -44,10 +42,18 @@ public final class MCAFilePipe {
 		ShutdownHooks.addShutdownHook(() -> dataParsingExecutor.shutdownNow());
 	}
 
+	private static boolean trimSaveData = true;
+
+	public static void setTrimSaveData(boolean trimSaveData) {
+		Debug.dump((trimSaveData ? "enabled" : "disabled") + " trimming save data");
+		MCAFilePipe.trimSaveData = trimSaveData;
+	}
+
 	private static class WrapperJob implements Runnable {
 
 		Job job;
-		final AtomicBoolean isDone = new AtomicBoolean(false);
+		boolean done = false;
+		final Object lock = new Object();
 
 		WrapperJob(Job job) {
 			allTasks.incrementAndGet();
@@ -59,11 +65,11 @@ public final class MCAFilePipe {
 			try {
 				job.run();
 			} finally {
-				synchronized (isDone) {
-					if (!isDone.get()) {
+				synchronized (lock) {
+					if (!done) {
 						allTasks.decrementAndGet();
 					}
-					isDone.set(true);
+					done = true;
 				}
 			}
 		}
@@ -72,11 +78,11 @@ public final class MCAFilePipe {
 			try {
 				job.cancel();
 			} finally {
-				synchronized (isDone) {
-					if (!isDone.get()) {
+				synchronized (lock) {
+					if (!done) {
 						allTasks.decrementAndGet();
 					}
-					isDone.set(true);
+					done = true;
 				}
 			}
 		}
@@ -140,6 +146,10 @@ public final class MCAFilePipe {
 	}
 
 	private static void trimSaveDataQueue() {
+		if (!trimSaveData) {
+			return;
+		}
+
 		// caching is not a priority over processing, so we just skip caching if caching is the bottleneck
 		if (saveDataExecutor.getQueue().size() > Config.getMaxLoadedFiles()) {
 			@SuppressWarnings({"unchecked", "rawtypes"})
@@ -153,6 +163,8 @@ public final class MCAFilePipe {
 						RegionDirectories rd = saveDataJob.getRegionDirectories();
 						Debug.dumpf("skipped SaveDataJob for " + (rd == null ? "null" : rd.getLocation()));
 					} else {
+						// add the job back if it can't be skipped
+						saveDataExecutor.execute(job);
 						break;
 					}
 				} else {

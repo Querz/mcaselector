@@ -388,14 +388,13 @@ public class Region {
 			ChunkData filterData = new ChunkData(region, poi, entities);
 
 			Point2i location = region.getAbsoluteLocation();
+			if (location == null) {
+				continue;
+			}
+
 			try {
-				if (filter.matches(filterData)) {
-					if (location == null) {
-						continue;
-					}
-					if (selection == null || selection.contains(location)) {
-						chunks.add(location);
-					}
+				if ((selection == null || selection.contains(location)) && filter.matches(filterData)) {
+					chunks.add(location);
 				}
 			} catch (Exception ex) {
 				Debug.dumpException(String.format("failed to select chunk %s", location), ex);
