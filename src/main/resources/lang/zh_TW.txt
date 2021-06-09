@@ -108,7 +108,7 @@ dialog.filter_chunks.selection_only.tooltip;此篩選器是否只套用於已選
 dialog.edit_overlays.title;編輯疊加
 dialog.edit_overlays.overlay_active.tooltip;已啟用
 dialog.edit_overlays.delete.tooltip;刪除
-dialog.change_nbt.title;變更NBT
+dialog.change_nbt.title;變更 NBT
 dialog.change_nbt.change;變更
 dialog.change_nbt.change.tooltip;僅當其鍵存在時變更其值。
 dialog.change_nbt.force;強制
