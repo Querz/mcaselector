@@ -154,6 +154,6 @@ dialog.progress.title.saving_chunk;正在將塊保存到文件…
 dialog.error.button.copy_to_clipboard;複製到剪貼板
 dialog.error.title;錯誤
 dialog.error.header;發生錯誤
-dialog.error.copied_to_clipboard;複製到剪貼板!
+dialog.error.copied_to_clipboard;已複製到剪貼簿！
 button.cancel;取消
 button.ok;確定
