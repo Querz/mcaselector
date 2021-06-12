@@ -27,7 +27,7 @@ public class Anvil117EntityRelocator implements EntityRelocator {
 		position[0] += offset.blockToChunk().getX();
 		position[1] += offset.blockToChunk().getZ();
 
-		if (!root.containsKey("Entities") && root.get("Entities").getID() != LongArrayTag.ID) {
+		if (root.containsKey("Entities")) {
 			ListTag<CompoundTag> entities = catchClassCastException(() -> root.getListTag("Entities").asCompoundTagList());
 			if (entities != null) {
 				entities.forEach(v -> applyOffsetToEntity(v, offset));
