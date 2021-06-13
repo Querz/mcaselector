@@ -312,6 +312,7 @@ A cheat-sheet with all commands can be found [here](https://gist.githubuserconte
 | `--offset-z <number>` | The offset in chunks in z-direction. | No, default `0` |
 | `--overwrite` | Whether to overwrite existing chunks. | No, default `false` |
 | `--selection <csv-file>` | A specific selection where to import chunks to. | No |
+| `--input-selection <csv-file>` | A specific selection for the source world listing what chunks to import into the target world. | No |
 | `--sections <range\|number[,...]>` | One or a range of section indices. A range has the format `<from>:<to>`, inclusive. Omitting `<from>` sets the lowest possible value, omitting `<to>` sets the highest possible value. `:` or `true` means _all_ sections. Multiple ranges or single indices can be defined by separating them with a comma. | No, default all sections |
 
 #### Delete chunks
