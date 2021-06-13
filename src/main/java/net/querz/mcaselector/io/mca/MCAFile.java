@@ -348,7 +348,9 @@ public abstract class MCAFile<T extends Chunk> {
 		int index = rel.getZ() * 32 + rel.getX();
 
 		setChunk(index, chunk);
-		setTimestamp(index, chunk.getTimestamp());
+		if (chunk != null) {
+			setTimestamp(index, chunk.getTimestamp());
+		}
 		saveWithTempFile();
 	}
 
