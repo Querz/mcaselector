@@ -26,6 +26,7 @@ import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.ui.dialog.EditArrayDialog;
 import net.querz.nbt.tag.*;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -815,24 +816,30 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 				TextField focus = null;
 
-
-				if (getItem().tag instanceof ArrayTag) {
-					if (getItem().name == null) {
-						box.getChildren().setAll(getGraphic(), edit);
-					} else {
+				if (getItem().parent instanceof CompoundTag) {
+					if (getItem().tag instanceof ArrayTag) {
+						// array inside compound: name + edit
 						box.getChildren().setAll(getGraphic(), focus = key, edit);
+					} else if (getItem().tag instanceof CompoundTag || getItem().tag instanceof ListTag) {
+						// container inside compound: name
+						box.getChildren().setAll(getGraphic(), focus = key);
+					} else {
+						// rest inside compound: name + value
+						box.getChildren().setAll(getGraphic(), focus = key, value);
 					}
-					edit.requestFocus();
-				} else if (getItem().name == null) {
-					box.getChildren().setAll(getGraphic(), focus = value);
-				} else if (value.getText() == null) {
-					box.getChildren().setAll(getGraphic(), focus = key);
-				} else if (getItem().name != null && value.getText() != null) {
-					box.getChildren().setAll(getGraphic(), key, focus = value);
-				} else {
-					// cancel if it is a comp or list tag inside a list tag
-					return;
+				} else if (getItem().parent instanceof ListTag) {
+					if (getItem().tag instanceof ArrayTag) {
+						// array inside list: edit
+						box.getChildren().setAll(getGraphic(), edit);
+					} else if (getItem().tag instanceof CompoundTag || getItem().tag instanceof ListTag) {
+						// container inside list: not editable
+						return;
+					} else {
+						// rest inside list: value
+						box.getChildren().setAll(getGraphic(), focus = value);
+					}
 				}
+
 				setGraphic(box);
 				setText(null);
 
@@ -884,7 +891,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			} else {
 				setText(tagToString(tag));
 				ImageView icon = new ImageView(icons.get(tag.tag.getID()));
-				icon.getStyleClass().add("key-value-");
 				setGraphic(icon);
 				setEditable(tag.parent != null);
 			}
