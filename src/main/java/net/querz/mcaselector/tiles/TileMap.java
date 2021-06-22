@@ -290,9 +290,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			update();
 		}
 
-		if (event.getCode() == KeyCode.N) {
+		if (event.getCode() == KeyCode.M) {
 			dumpMetrics();
 		}
+		event.consume();
 	}
 
 	private void onKeyTyped(KeyEvent event) {
@@ -315,6 +316,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		} else {
 			keyActivator.releaseKey(event.getCode());
 		}
+		event.consume();
 	}
 
 	public void releaseAllKeys() {

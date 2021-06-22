@@ -191,6 +191,13 @@ public class OptionBar extends BorderPane {
 
 		heightSlider.getChildren().addAll(heightMinLabel, height, heightMaxLabel, heightField);
 
+		// when we press escape we want to give the focus back to the tile map
+		setOnKeyPressed(e -> {
+			if (e.getCode() == KeyCode.ESCAPE) {
+				tileMap.requestFocus();
+			}
+		});
+
 		menuBar.getMenus().addAll(file, view, selection, tools, aboutMenu);
 
 		openWorld.setOnAction(e -> DialogHelper.openWorld(tileMap, primaryStage));
