@@ -1,15 +1,15 @@
 status.region;リージョン
-status.region.tooltip;The currently hovered region, represents the numbers in its file name.
+status.region.tooltip;ホバーされているリージョン
 status.chunk;チャンク
-status.chunk.tooltip;The currently hovered chunk.
+status.chunk.tooltip;ホバーされているチャンク
 status.block;ブロック
-status.block.tooltip;An approximation of the currently hovered block.
+status.block.tooltip;ホバーされているブロックの概算
 status.selected;selected
-status.selected.tooltip;The currently selected amount of chunks.
-status.visible;visible
-status.visible.tooltip;The amount of loaded region images for rendering.
-status.total;total
-status.total.tooltip;The total amount of loaded regions, including not visible selected regions.
+status.selected.tooltip;選択されているチャンク
+status.visible;Visible
+status.visible.tooltip;レンダリングされているリージョン
+status.total;Total
+status.total.tooltip;ロードされたリージョン
 status.overlay;オーバーレイ
 menu.file;ファイル
 menu.view;ビュー
@@ -40,9 +40,9 @@ menu.selection.export_image;画像としてエクスポート
 menu.selection.clear_cache;キャッシュをクリア
 menu.tools.import_chunks;チャンクのインポート
 menu.tools.filter_chunks;フィルター
-menu.tools.change_fields;Change fields
+menu.tools.change_fields;フィールドを変更
 menu.tools.edit_nbt;NBTを編集
-menu.tools.swap_chunks;Swap chunks
+menu.tools.swap_chunks;チャンクをスワップ
 menu.tools.edit_overlays;オーバーレイを編集
 menu.tools.next_overlay;次のオーバーレイ
 menu.tools.next_overlay_type;次のオーバーレイのタイプ
@@ -52,16 +52,16 @@ dialog.settings.language;言語
 dialog.settings.read_threads;読み込むスレッド
 dialog.settings.process_threads;プロセススレッド
 dialog.settings.write_threads;書き込むスレッド
-dialog.settings.max_files;Max loaded files
-dialog.settings.region_color;リージョンの選択色
-dialog.settings.chunk_color;チャンクの選択色
-dialog.settings.pasted_chunks_color;Pasted chunks color
+dialog.settings.max_files;ロードできるファイル
+dialog.settings.region_color;選択したリージョンの色
+dialog.settings.chunk_color;選択したチャンクの色
+dialog.settings.pasted_chunks_color;ペーストしたチャンクの色
 dialog.settings.shade;影/透過
 dialog.settings.shade_water;水の透過
-dialog.settings.show_nonexistent_regions;Show nonexistent regions
-dialog.settings.smooth_rendering;Smooth rendering
-dialog.settings.smooth_overlays;Smooth overlays
-dialog.settings.background_pattern;Background pattern
+dialog.settings.show_nonexistent_regions;存在しない領域を表示する
+dialog.settings.smooth_rendering;滑らかなレンダリング
+dialog.settings.smooth_overlays;滑らかなオーバーレイ
+dialog.settings.background_pattern;背景
 dialog.settings.mc_saves_dir;セーブデータのフォルダ
 dialog.settings.print_debug;デバッグ情報を出力
 dialog.settings.show_log_file;ログを表示
@@ -69,32 +69,32 @@ dialog.settings.reset;リセット
 dialog.world_settings.title;ワールドの設定
 dialog.world_settings.poi;POI
 dialog.world_settings.entities;エンティティー
-dialog.world_settings.render_height;Render height
-dialog.world_settings.render_layer_only;Layer only
+dialog.world_settings.render_height;レンダリングの高さ
+dialog.world_settings.render_layer_only;レイヤーのみ
 dialog.goto.title;入力した座標に移動
 dialog.confirmation.question;よろしいですか？
-dialog.delete_chunks_confirmation.title;Delete chunks
-dialog.delete_chunks_confirmation.header_short;You are about to delete an unknown number of chunks from this world.
-dialog.delete_chunks_confirmation.header_verbose;You are about to delete %d chunks from this world.
-dialog.image_export_confirmation.title;Export image
-dialog.image_export_confirmation.header_short;You are about to create an image of unknown proportions.
-dialog.image_export_confirmation.header_verbose;You are about to create an image with the dimensions %dx%d.
-dialog.import_chunks_confirmation.title;Import chunks
-dialog.import_chunks_confirmation.header;You are about to import an unknown number of chunks to this world.
-dialog.import_chunks_confirmation.options;Options
-dialog.import_chunks_confirmation.options.offset;Offset
-dialog.import_chunks_confirmation.options.overwrite;Overwrite existing chunks
-dialog.import_chunks_confirmation.options.selection_only;Apply to selection only
-dialog.import_chunks_confirmation.options.sections;Sections
-dialog.import_chunks_confirmation.warning;Warning: Importing chunks with an offset will not update contents of command blocks.
-dialog.export_chunks_confirmation.title;Export chunks
-dialog.export_chunks_confirmation.header_short;You are about to export an unknown number of chunks from this world.
-dialog.export_chunks_confirmation.header_verbose;You are about to export %d chunks from this world.
-dialog.filter_chunks.title;Filter chunks
-dialog.filter_chunks.filter.add.tooltip;Add a new condition below this one.
-dialog.filter_chunks.filter.delete.tooltip;Delete this condition.
-dialog.filter_chunks.filter.type.tooltip;The type of this condition.
-dialog.filter_chunks.filter.operator.tooltip;The operator to link multiple conditions.
+dialog.delete_chunks_confirmation.title;チャンクを削除
+dialog.delete_chunks_confirmation.header_short;不明な数のチャンクを削除しようとしています
+dialog.delete_chunks_confirmation.header_verbose;％d個のチャンクを削除しようとしています
+dialog.image_export_confirmation.title;画像としてエクスポート
+dialog.image_export_confirmation.header_short;比率が不明な画像を作成しようとしています
+dialog.image_export_confirmation.header_verbose;サイズが%dx%dの画像を作成しようとしています
+dialog.import_chunks_confirmation.title;チャンクをインポート
+dialog.import_chunks_confirmation.header;不明な数のチャンクをインポートしようとしています
+dialog.import_chunks_confirmation.options;オプション
+dialog.import_chunks_confirmation.options.offset;オフセット
+dialog.import_chunks_confirmation.options.overwrite;既存のチャンクを上書き
+dialog.import_chunks_confirmation.options.selection_only;選択範囲のみに適用
+dialog.import_chunks_confirmation.options.sections;セクション
+dialog.import_chunks_confirmation.warning;警告：オフセットを使用してチャンクをインポートしても、コマンドブロックの内容は更新されません
+dialog.export_chunks_confirmation.title;チャンクをエクスポート
+dialog.export_chunks_confirmation.header_short;不明な数のチャンクをエクスポートしようとしています
+dialog.export_chunks_confirmation.header_verbose;%d個のチャンクをエクスポートしようとしています
+dialog.filter_chunks.title;チャンクにフィルターをかける
+dialog.filter_chunks.filter.add.tooltip;この条件の下に新しい条件を追加します
+dialog.filter_chunks.filter.delete.tooltip;この条件を削除します
+dialog.filter_chunks.filter.type.tooltip;この条件のタイプ
+dialog.filter_chunks.filter.operator.tooltip;複数の条件をリンクする演算子
 dialog.filter_chunks.filter.comparator.tooltip;コンパレーター
 dialog.filter_chunks.select;選択
 dialog.filter_chunks.select.tooltip;影響を受けるチャンクを選択します
@@ -116,8 +116,8 @@ dialog.change_nbt.force.tooltip;タグが存在しない場合はタグを作成
 dialog.change_nbt.selection_only;選択範囲のみに適用
 dialog.change_nbt.selection_only.tooltip;このフィルターを現在の選択範囲にのみ適用する必要がある場合
 dialog.change_nbt_confirmation.title;NBTを変更
-dialog.change_nbt_confirmation.header_short;このワールドで未知の数のチャンクのデータを変更しようとしています
-dialog.change_nbt_confirmation.header_verbose;このワールドで％dチャンクのデータを変更しようとしています
+dialog.change_nbt_confirmation.header_short;不明な数のチャンクのデータを変更しようとしています
+dialog.change_nbt_confirmation.header_verbose;％d個のチャンクのデータを変更しようとしています
 dialog.edit_nbt.title;NBTを編集
 dialog.edit_nbt.placeholder.loading;ロード中...
 dialog.edit_nbt.placeholder.no_chunk_data;チャンクデータが存在しません
