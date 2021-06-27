@@ -72,7 +72,7 @@ dialog.world_settings.entities;エンティティー
 dialog.world_settings.render_height;Render height
 dialog.world_settings.render_layer_only;Layer only
 dialog.goto.title;入力した座標に移動
-dialog.confirmation.question;Are you sure?
+dialog.confirmation.question;よろしいですか？
 dialog.delete_chunks_confirmation.title;Delete chunks
 dialog.delete_chunks_confirmation.header_short;You are about to delete an unknown number of chunks from this world.
 dialog.delete_chunks_confirmation.header_verbose;You are about to delete %d chunks from this world.
@@ -95,29 +95,29 @@ dialog.filter_chunks.filter.add.tooltip;Add a new condition below this one.
 dialog.filter_chunks.filter.delete.tooltip;Delete this condition.
 dialog.filter_chunks.filter.type.tooltip;The type of this condition.
 dialog.filter_chunks.filter.operator.tooltip;The operator to link multiple conditions.
-dialog.filter_chunks.filter.comparator.tooltip;The comparator.
-dialog.filter_chunks.select;Select
-dialog.filter_chunks.select.tooltip;Creates a selection of the affected chunks.
-dialog.filter_chunks.export;Export
-dialog.filter_chunks.export.tooltip;Exports all affected chunks into a new directory.
-dialog.filter_chunks.delete;Delete
-dialog.filter_chunks.delete.tooltip;Deletes all affected chunks from the current world.
-dialog.filter_chunks.selection_only;Apply to selection only
-dialog.filter_chunks.selection_radius;Selection radius
-dialog.filter_chunks.selection_only.tooltip;If this filter should only apply to the current selection.
-dialog.edit_overlays.title;Edit overlays
-dialog.edit_overlays.overlay_active.tooltip;Active
-dialog.edit_overlays.delete.tooltip;Delete
-dialog.change_nbt.title;Change NBT
-dialog.change_nbt.change;Change
-dialog.change_nbt.change.tooltip;Changes the value only if its key exists.
-dialog.change_nbt.force;Force
-dialog.change_nbt.force.tooltip;Creates the tag if it doesn't exist.
-dialog.change_nbt.selection_only;Apply to selection only
-dialog.change_nbt.selection_only.tooltip;If this filter should only apply to the current selection.
-dialog.change_nbt_confirmation.title;Change NBT
-dialog.change_nbt_confirmation.header_short;You are about to change data in an unknown number of chunks in this world.
-dialog.change_nbt_confirmation.header_verbose;You are about to change data in %d chunks in this world.
+dialog.filter_chunks.filter.comparator.tooltip;コンパレーター
+dialog.filter_chunks.select;選択
+dialog.filter_chunks.select.tooltip;影響を受けるチャンクを選択します
+dialog.filter_chunks.export;エクスポート
+dialog.filter_chunks.export.tooltip;影響を受けるチャンクを新しいディレクトリにエクスポートします
+dialog.filter_chunks.delete;削除
+dialog.filter_chunks.delete.tooltip;影響を受けるチャンクをワールドから削除します
+dialog.filter_chunks.selection_only;選択範囲のみに適用
+dialog.filter_chunks.selection_radius;選択範囲の半径
+dialog.filter_chunks.selection_only.tooltip;このフィルターを現在の選択範囲のみに適用する必要がある場合
+dialog.edit_overlays.title;オーバレイを編集
+dialog.edit_overlays.overlay_active.tooltip;アクティブ
+dialog.edit_overlays.delete.tooltip;削除
+dialog.change_nbt.title;NBTを変更
+dialog.change_nbt.change;変更
+dialog.change_nbt.change.tooltip;キーが存在する場合にのみ値を変更します
+dialog.change_nbt.force;強制
+dialog.change_nbt.force.tooltip;タグが存在しない場合はタグを作成します
+dialog.change_nbt.selection_only;選択範囲のみに適用
+dialog.change_nbt.selection_only.tooltip;このフィルターを現在の選択範囲にのみ適用する必要がある場合
+dialog.change_nbt_confirmation.title;NBTを変更
+dialog.change_nbt_confirmation.header_short;このワールドで未知の数のチャンクのデータを変更しようとしています
+dialog.change_nbt_confirmation.header_verbose;このワールドで％dチャンクのデータを変更しようとしています
 dialog.edit_nbt.title;NBTを編集
 dialog.edit_nbt.placeholder.loading;ロード中...
 dialog.edit_nbt.placeholder.no_chunk_data;チャンクデータが存在しません
@@ -132,14 +132,14 @@ dialog.about.version.check;チェック
 dialog.about.version.checking;チェックしています...
 dialog.about.version.up_to_date;更新はありません
 dialog.about.version.error;エラー
-dialog.about.license;ライセンス:
-dialog.about.copyright;著作権:
-dialog.about.source;ソースコード:
-dialog.progress.title;Progress
-dialog.progress.no_files;no files
-dialog.progress.running;running...
-dialog.progress.cancelling;cancelling...
-dialog.progress.collecting_data;collecting data...
+dialog.about.license;ライセンス：
+dialog.about.copyright;著作権：
+dialog.about.source;ソース：
+dialog.progress.title;進捗
+dialog.progress.no_files;ファイルがありません
+dialog.progress.running;実行中...
+dialog.progress.cancelling;キャンセルしています...
+dialog.progress.collecting_data;データをコレクトしています...
 dialog.progress.done;完了
 dialog.progress.title.deleting_selection;選択範囲を削除しています...
 dialog.progress.title.creating_image;画像を作成中...
