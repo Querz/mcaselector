@@ -58,7 +58,7 @@ dialog.settings.chunk_color;選択したチャンクの色
 dialog.settings.pasted_chunks_color;ペーストしたチャンクの色
 dialog.settings.shade;影/透過
 dialog.settings.shade_water;水の透過
-dialog.settings.show_nonexistent_regions;存在しない領域を表示する
+dialog.settings.show_nonexistent_regions;存在しないリージョンを表示する
 dialog.settings.smooth_rendering;滑らかなレンダリング
 dialog.settings.smooth_overlays;滑らかなオーバーレイ
 dialog.settings.background_pattern;背景
@@ -91,11 +91,11 @@ dialog.export_chunks_confirmation.title;チャンクをエクスポート
 dialog.export_chunks_confirmation.header_short;不明な数のチャンクをエクスポートしようとしています
 dialog.export_chunks_confirmation.header_verbose;%d個のチャンクをエクスポートしようとしています
 dialog.filter_chunks.title;チャンクにフィルターをかける
-dialog.filter_chunks.filter.add.tooltip;この条件の下に新しい条件を追加します
-dialog.filter_chunks.filter.delete.tooltip;この条件を削除します
-dialog.filter_chunks.filter.type.tooltip;この条件のタイプ
-dialog.filter_chunks.filter.operator.tooltip;複数の条件をリンクする演算子
-dialog.filter_chunks.filter.comparator.tooltip;コンパレーター
+dialog.filter_chunks.filter.add.tooltip;このフィルターの下に新しいフィルターを追加します
+dialog.filter_chunks.filter.delete.tooltip;フィルターを削除します
+dialog.filter_chunks.filter.type.tooltip;フィルターのタイプ
+dialog.filter_chunks.filter.operator.tooltip;フィルターをリンクする演算子
+dialog.filter_chunks.filter.comparator.tooltip;関係演算子
 dialog.filter_chunks.select;選択
 dialog.filter_chunks.select.tooltip;影響を受けるチャンクを選択します
 dialog.filter_chunks.export;エクスポート
