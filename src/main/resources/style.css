@@ -469,25 +469,25 @@
 
 /*---------- WORLD SETTINGS DIALOG ----------*/
 
-.world-settings-dialog-pane .grid-pane .label {
-	-fx-padding: 5 10 5 0;
-}
+/*.world-settings-dialog-pane .grid-pane .label {*/
+/*	-fx-padding: 5 10 5 0;*/
+/*}*/
 
-.world-settings-dialog-pane .text-field {
-	-fx-pref-width: 300px;
-}
+/*.world-settings-dialog-pane .text-field {*/
+/*	-fx-pref-width: 300px;*/
+/*}*/
 
-.world-settings-dialog-pane .slider-value-field {
-	-fx-pref-width: 38;
-}
+/*.world-settings-dialog-pane .slider-value-field {*/
+/*	-fx-pref-width: 38;*/
+/*}*/
 
-.world-settings-dialog-pane .slider {
-	-fx-pref-width: 300;
-}
+/*.world-settings-dialog-pane .slider {*/
+/*	-fx-pref-width: 300;*/
+/*}*/
 
-.world-settings-dialog-pane .height-box {
-	-fx-spacing: 5;
-}
+/*.world-settings-dialog-pane .height-box {*/
+/*	-fx-spacing: 5;*/
+/*}*/
 
 /*---------- FILE TEXT FIELD ----------*/
 
@@ -833,25 +833,21 @@
 /*---------- Settings Dialog ----------*/
 
 .slider-grid-pane .slider {
-	-fx-pref-width: 200;
+	-fx-pref-width: 240;
 	-fx-padding: 0 10 0 0;
 }
 
-.color-preview-button {
-	-fx-pref-width: 240;
+.slider-grid-pane .color-preview-button, .slider-grid-pane .file-text-field, .slider-grid-pane .combo-box {
+	-fx-pref-width: 280;
 }
 
 .slider-grid-pane .label {
 	-fx-padding: 10 10 10 0;
+	-fx-min-width: 150;
 }
 
 .slider-grid-pane .debug-box {
 	-fx-padding: 4 0 -3 0;
-}
-
-.languages-combo-box, .tilemap-backgrounds-combo-box {
-	-fx-alignment: center;
-	-fx-pref-width: 240;
 }
 
 .settings-dialog-pane .file-text-field {

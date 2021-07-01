@@ -89,6 +89,7 @@ public enum Translation {
 	DIALOG_WORLD_SETTINGS_ENTITIES("dialog.world_settings.entities"),
 	DIALOG_WORLD_SETTINGS_RENDER_HEIGHT("dialog.world_settings.render_height"),
 	DIALOG_WORLD_SETTINGS_RENDER_LAYER_ONLY("dialog.world_settings.render_layer_only"),
+	DIALOG_WORLD_SETTINGS_RENDER_CAVES("dialog.world_settings.render_caves"),
 	DIALOG_GOTO_TITLE("dialog.goto.title"),
 	DIALOG_CONFIRMATION_QUESTION("dialog.confirmation.question"),
 	DIALOG_DELETE_CHUNKS_CONFIRMATION_TITLE("dialog.delete_chunks_confirmation.title"),

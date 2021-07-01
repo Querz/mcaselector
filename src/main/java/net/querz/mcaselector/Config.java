@@ -142,6 +142,7 @@ public final class Config {
 
 	public static final int DEFAULT_RENDER_HEIGHT = 319;
 	public static final boolean DEFAULT_RENDER_LAYER_ONLY = false;
+	public static final boolean DEFAULT_RENDER_CAVES = false;
 
 	private static File worldDir = null;
 	private static WorldDirectories worldDirs = null;
@@ -168,6 +169,7 @@ public final class Config {
 
 	private static int renderHeight = DEFAULT_RENDER_HEIGHT;
 	private static boolean renderLayerOnly = DEFAULT_RENDER_LAYER_ONLY;
+	private static boolean renderCaves = DEFAULT_RENDER_CAVES;
 
 	private static boolean debug = DEFAULT_DEBUG;
 
@@ -324,6 +326,14 @@ public final class Config {
 		return Config.renderLayerOnly;
 	}
 
+	public static void setRenderCaves(boolean renderCaves) {
+		Config.renderCaves = renderCaves;
+	}
+
+	public static boolean renderCaves() {
+		return Config.renderCaves;
+	}
+
 	public static void setMCSavesDir(String mcSavesDir) {
 		Config.mcSavesDir = mcSavesDir;
 	}
@@ -413,12 +423,6 @@ public final class Config {
 				processThreads = Integer.parseInt(config.getOrDefault("ProcessThreads", DEFAULT_PROCESS_THREADS + ""));
 				writeThreads = Integer.parseInt(config.getOrDefault("WriteThreads", DEFAULT_WRITE_THREADS + ""));
 				maxLoadedFiles = Integer.parseInt(config.getOrDefault("MaxLoadedFiles", DEFAULT_MAX_LOADED_FILES + ""));
-				shade = Boolean.parseBoolean(config.getOrDefault("Shade", DEFAULT_SHADE + ""));
-				shadeWater = Boolean.parseBoolean(config.getOrDefault("ShadeWater", DEFAULT_SHADE_WATER + ""));
-				showNonexistentRegions = Boolean.parseBoolean(config.getOrDefault("ShowNonexistentRegions", DEFAULT_SHOW_NONEXISTENT_REGIONS + ""));
-				smoothRendering = Boolean.parseBoolean(config.getOrDefault("SmoothRendering", DEFAULT_SMOOTH_RENDERING + ""));
-				smoothOverlays = Boolean.parseBoolean(config.getOrDefault("SmoothOverlays", DEFAULT_SMOOTH_OVERLAYS + ""));
-				tileMapBackground = config.getOrDefault("TileMapBackground", DEFAULT_TILEMAP_BACKGROUND);
 				mcSavesDir = config.getOrDefault("MCSavesDir", DEFAULT_MC_SAVES_DIR);
 				if (!new File(mcSavesDir).exists()) {
 					mcSavesDir = DEFAULT_MC_SAVES_DIR;
@@ -471,12 +475,6 @@ public final class Config {
 		addSettingsLine("ProcessThreads", processThreads, DEFAULT_PROCESS_THREADS, lines);
 		addSettingsLine("WriteThreads", writeThreads, DEFAULT_WRITE_THREADS, lines);
 		addSettingsLine("MaxLoadedFiles", maxLoadedFiles, DEFAULT_MAX_LOADED_FILES, lines);
-		addSettingsLine("Shade", shade, DEFAULT_SHADE, lines);
-		addSettingsLine("ShadeWater", shadeWater, DEFAULT_SHADE_WATER, lines);
-		addSettingsLine("ShowNonexistentRegions", showNonexistentRegions, DEFAULT_SHOW_NONEXISTENT_REGIONS, lines);
-		addSettingsLine("SmoothRendering", smoothRendering, DEFAULT_SMOOTH_RENDERING, lines);
-		addSettingsLine("SmoothOverlays", smoothOverlays, DEFAULT_SMOOTH_OVERLAYS, lines);
-		addSettingsLine("TileMapBackground", tileMapBackground, DEFAULT_TILEMAP_BACKGROUND, lines);
 		addSettingsLine("MCSavesDir", mcSavesDir, DEFAULT_MC_SAVES_DIR, lines);
 		addSettingsLine("Debug", debug, DEFAULT_DEBUG, lines);
 		if (lines.size() == 0) {

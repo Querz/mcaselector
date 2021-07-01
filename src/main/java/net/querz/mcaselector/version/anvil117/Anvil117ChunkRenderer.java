@@ -9,6 +9,9 @@ import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.LongArrayTag;
 import net.querz.nbt.tag.Tag;
+
+import java.util.Arrays;
+
 import static net.querz.mcaselector.validation.ValidationHelper.catchClassCastException;
 import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
 
@@ -185,6 +188,99 @@ public class Anvil117ChunkRenderer implements ChunkRenderer {
 
 				int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
 				pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome);
+			}
+		}
+	}
+
+	@Override
+	public void drawCaves(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, short[] terrainHeights, int height) {
+		CompoundTag level = withDefault(() -> root.getCompoundTag("Level"), null);
+		if (level == null) {
+			return;
+		}
+
+		String status = withDefault(() -> level.getString("Status"), null);
+		if (status == null || "empty".equals(status)) {
+			return;
+		}
+
+		Tag<?> rawSections = level.get("Sections");
+		if (rawSections == null || rawSections.getID() == LongArrayTag.ID) {
+			return;
+		}
+
+		ListTag<CompoundTag> sections = catchClassCastException(((ListTag<?>) rawSections)::asCompoundTagList);
+		if (sections == null) {
+			return;
+		}
+
+		int absHeight = height + 64;
+
+		@SuppressWarnings("unchecked")
+		ListTag<CompoundTag>[] palettes = (ListTag<CompoundTag>[]) new ListTag[24];
+		long[][] blockStatesArray = new long[24][];
+		sections.forEach(s -> {
+			if (!s.containsKey("Palette") || !s.containsKey("BlockStates")) {
+				return;
+			}
+			ListTag<CompoundTag> p = withDefault(() -> s.getListTag("Palette").asCompoundTagList(), null);
+			int y = withDefault(() -> s.getNumber("Y").intValue(), -5);
+			long[] b = withDefault(() -> s.getLongArray("BlockStates"), null);
+			if (y >= -4 && y < 20 && p != null && b != null) {
+				palettes[y + 4] = p;
+				blockStatesArray[y + 4] = b;
+			}
+		});
+
+		int[] biomes = withDefault(() -> level.getIntArray("Biomes"), null);
+
+		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
+			zLoop:
+			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+
+				int ignored = 0;
+				boolean doneSkipping = false;
+
+				// loop over sections
+				for (int i = palettes.length - (24 - (absHeight >> 4)); i >= 0; i--) {
+					if (blockStatesArray[i] == null) {
+						continue;
+					}
+
+					long[] blockStates = blockStatesArray[i];
+					ListTag<CompoundTag> palette = palettes[i];
+
+					int sectionHeight = (i - 4) * Tile.CHUNK_SIZE;
+
+					int bits = blockStates.length >> 6;
+					int clean = ((int) Math.pow(2, bits) - 1);
+
+					int startHeight;
+					if (absHeight >> 4 == i) {
+						startHeight = Tile.CHUNK_SIZE - (16 - absHeight % 16) - 1;
+					} else {
+						startHeight = Tile.CHUNK_SIZE - 1;
+					}
+
+					for (int cy = startHeight; cy >= 0; cy--) {
+						int paletteIndex = getPaletteIndex(getIndex(cx, cy, cz), blockStates, bits, clean);
+						CompoundTag blockData = palette.get(paletteIndex);
+
+						if (!isEmpty(blockData)) {
+							if (doneSkipping) {
+								int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
+								int biome = getBiomeAtBlock(biomes, cx, sectionHeight + cy, cz);
+								biome = MathUtil.clamp(biome, 0, 255);
+								pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome);
+								terrainHeights[regionIndex] = (short) (sectionHeight + cy);
+								continue zLoop;
+							}
+							ignored++;
+						} else if (ignored > 0) {
+							doneSkipping = true;
+						}
+					}
+				}
 			}
 		}
 	}

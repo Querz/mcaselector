@@ -157,6 +157,11 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 		}
 	}
 
+	@Override
+	public void drawCaves(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, short[] terrainHeights, int height) {
+
+	}
+
 	private boolean isWater(short block) {
 		return switch (block) {
 			case 8, 9 -> true;

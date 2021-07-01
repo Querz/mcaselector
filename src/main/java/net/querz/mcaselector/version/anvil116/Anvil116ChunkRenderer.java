@@ -189,6 +189,11 @@ public class Anvil116ChunkRenderer implements ChunkRenderer {
 		}
 	}
 
+	@Override
+	public void drawCaves(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, short[] terrainHeights, int height) {
+
+	}
+
 	private static final CompoundTag waterDummy = new CompoundTag();
 
 	static {

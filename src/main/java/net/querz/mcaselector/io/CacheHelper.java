@@ -8,6 +8,7 @@ import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.progress.Progress;
+import net.querz.mcaselector.ui.TileMapBox;
 import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -197,7 +198,7 @@ public final class CacheHelper {
 		}
 	}
 
-	public static void readWorldSettingsFile() {
+	public static void readWorldSettingsFile(TileMap tileMap) {
 		File worldSettingsFile = new File(Config.getCacheDir(), "world_settings.json");
 		if (!worldSettingsFile.exists()) {
 			return;
@@ -207,6 +208,13 @@ public final class CacheHelper {
 		String entities = null;
 		int height = Config.DEFAULT_RENDER_HEIGHT;
 		boolean layerOnly = Config.DEFAULT_RENDER_LAYER_ONLY;
+		boolean caves = Config.DEFAULT_RENDER_CAVES;
+		boolean shade = Config.DEFAULT_SHADE;
+		boolean shadeWater = Config.DEFAULT_SHADE_WATER;
+		boolean smooth = Config.DEFAULT_SMOOTH_RENDERING;
+		boolean smoothOverlays = Config.DEFAULT_SMOOTH_OVERLAYS;
+		String tileMapBackground = Config.DEFAULT_TILEMAP_BACKGROUND;
+		boolean showNonexistentRegions = Config.DEFAULT_SHOW_NONEXISTENT_REGIONS;
 
 		try {
 			byte[] data = Files.readAllBytes(worldSettingsFile.toPath());
@@ -215,8 +223,15 @@ public final class CacheHelper {
 			entities = root.has("entities") ? root.getString("entities") : null;
 			height = root.has("height") ? root.getInt("height") : Config.DEFAULT_RENDER_HEIGHT;
 			layerOnly = root.has("layerOnly") ? root.getBoolean("layerOnly") : Config.DEFAULT_RENDER_LAYER_ONLY;
-		} catch (IOException e) {
-			e.printStackTrace();
+			caves = root.has("caves") ? root.getBoolean("caves") : Config.DEFAULT_RENDER_CAVES;
+			shade = root.has("shade") ? root.getBoolean("shade") : Config.DEFAULT_SHADE;
+			shadeWater = root.has("shadeWater") ? root.getBoolean("shadeWater") : Config.DEFAULT_SHADE_WATER;
+			smooth = root.has("smooth") ? root.getBoolean("smooth") : Config.DEFAULT_SMOOTH_RENDERING;
+			smoothOverlays = root.has("smoothOverlays") ? root.getBoolean("smoothOverlays") : Config.DEFAULT_SMOOTH_OVERLAYS;
+			tileMapBackground = root.has("tileMapBackground") ? root.getString("tileMapBackground") : Config.DEFAULT_TILEMAP_BACKGROUND;
+			showNonexistentRegions = root.has("showNonexistentRegions") ? root.getBoolean("showNonexistentRegions") : Config.DEFAULT_SHOW_NONEXISTENT_REGIONS;
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 
 		if (poi != null && !poi.isEmpty() && !poi.equals("null")) {
@@ -227,6 +242,18 @@ public final class CacheHelper {
 		}
 		Config.setRenderHeight(height);
 		Config.setRenderLayerOnly(layerOnly);
+		Config.setRenderCaves(caves);
+		Config.setShade(shade);
+		Config.setShadeWater(shadeWater);
+		Config.setSmoothRendering(smooth);
+		Config.setSmoothOverlays(smoothOverlays);
+		Config.setTileMapBackground(tileMapBackground);
+		try {
+			tileMap.getWindow().getTileMapBox().setBackground(TileMapBox.TileMapBoxBackground.valueOf(tileMapBackground).getBackground());
+		} catch (IllegalArgumentException ex) {
+			ex.printStackTrace();
+		}
+		Config.setShowNonExistentRegions(showNonexistentRegions);
 	}
 
 	public static void updateWorldSettingsFile() {
@@ -242,6 +269,13 @@ public final class CacheHelper {
 		root.put("entities", Config.getWorldDirs().getEntities());
 		root.put("height", Config.getRenderHeight());
 		root.put("layerOnly", Config.renderLayerOnly());
+		root.put("caves", Config.renderCaves());
+		root.put("shade", Config.shade());
+		root.put("shadeWater", Config.shadeWater());
+		root.put("smooth", Config.smoothRendering());
+		root.put("smoothOverlays", Config.smoothOverlays());
+		root.put("tileMapBackground", Config.getTileMapBackground());
+		root.put("showNonexistentRegions", Config.showNonExistentRegions());
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(worldSettingsFile))) {
 			bw.write(root.toString());

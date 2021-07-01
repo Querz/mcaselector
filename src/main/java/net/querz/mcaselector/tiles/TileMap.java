@@ -278,6 +278,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		if (event.getCode() == KeyCode.SHIFT) {
 			keyActivator.pressActionKey(event.getCode());
 		} else {
+			switch (event.getCode()) {
+				case UP, DOWN, LEFT, RIGHT -> event.consume();
+			}
 			keyActivator.pressKey(event.getCode());
 		}
 
@@ -293,7 +296,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		if (event.getCode() == KeyCode.M) {
 			dumpMetrics();
 		}
-		event.consume();
 	}
 
 	private void onKeyTyped(KeyEvent event) {
@@ -314,9 +316,11 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		if (event.getCode() == KeyCode.SHIFT) {
 			keyActivator.releaseActionKey(event.getCode());
 		} else {
+			switch (event.getCode()) {
+				case UP, DOWN, LEFT, RIGHT -> event.consume();
+			}
 			keyActivator.releaseKey(event.getCode());
 		}
-		event.consume();
 	}
 
 	public void releaseAllKeys() {

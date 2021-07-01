@@ -55,7 +55,6 @@ public class OptionBar extends BorderPane {
 	private final MenuItem openWorld = UIFactory.menuItem(Translation.MENU_FILE_OPEN_WORLD);
 	private final MenuItem openRegion = UIFactory.menuItem(Translation.MENU_FILE_OPEN);
 	private final MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
-	private final MenuItem worldSettings = UIFactory.menuItem(Translation.MENU_FILE_WORLD_SETTINGS);
 	private final MenuItem quit = UIFactory.menuItem(Translation.MENU_FILE_QUIT);
 	private final CheckMenuItem chunkGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_CHUNK_GRID, true);
 	private final CheckMenuItem regionGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_REGION_GRID, true);
@@ -96,7 +95,7 @@ public class OptionBar extends BorderPane {
 
 		file.getItems().addAll(
 				openWorld, openRegion, UIFactory.separator(),
-				settings, worldSettings, UIFactory.separator(),
+				settings, UIFactory.separator(),
 				quit);
 		view.getItems().addAll(
 				chunkGrid, regionGrid, UIFactory.separator(),
@@ -202,8 +201,7 @@ public class OptionBar extends BorderPane {
 
 		openWorld.setOnAction(e -> DialogHelper.openWorld(tileMap, primaryStage));
 		openRegion.setOnAction(e -> DialogHelper.openRegion(tileMap, primaryStage));
-		settings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage));
-		worldSettings.setOnAction(e -> DialogHelper.editWorldSettings(tileMap, primaryStage));
+		settings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage, false));
 		quit.setOnAction(e -> System.exit(0));
 		chunkGrid.setOnAction(e -> tileMap.setShowChunkGrid(chunkGrid.isSelected()));
 		regionGrid.setOnAction(e -> tileMap.setShowRegionGrid(regionGrid.isSelected()));
@@ -234,7 +232,6 @@ public class OptionBar extends BorderPane {
 
 		openWorld.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN));
 		settings.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCodeCombination.SHORTCUT_DOWN));
-		worldSettings.setAccelerator(new KeyCodeCombination(KeyCode.E));
 		quit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCodeCombination.SHORTCUT_DOWN));
 		chunkGrid.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCodeCombination.SHORTCUT_DOWN));
 		regionGrid.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCodeCombination.SHORTCUT_DOWN));
@@ -261,6 +258,8 @@ public class OptionBar extends BorderPane {
 		nextOverlay.setAccelerator(new KeyCodeCombination(KeyCode.O));
 		nextOverlayType.setAccelerator(new KeyCodeCombination(KeyCode.N));
 
+
+
 		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks(), tileMap.isSelectionInverted());
 		setWorldDependentMenuItemsEnabled(false, tileMap);
 
@@ -282,7 +281,6 @@ public class OptionBar extends BorderPane {
 	}
 
 	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap) {
-		worldSettings.setDisable(!enabled);
 		clearViewCache.setDisable(!enabled);
 		clearAllCache.setDisable(!enabled);
 		saveScreenshot.setDisable(!enabled);

@@ -71,6 +71,7 @@ dialog.world_settings.poi;POI
 dialog.world_settings.entities;Entities
 dialog.world_settings.render_height;Render height
 dialog.world_settings.render_layer_only;Layer only
+dialog.world_settings.render_caves;Caves
 dialog.goto.title;Goto location
 dialog.confirmation.question;Are you sure?
 dialog.delete_chunks_confirmation.title;Delete chunks

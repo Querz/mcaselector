@@ -119,6 +119,8 @@ public final class TileImage {
 				}
 			}
 
+//			flatShade(pixelBuffer, terrainHeights);
+
 			if (Config.shade() && !Config.renderLayerOnly()) {
 				shade(pixelBuffer, waterPixels, terrainHeights, waterHeights);
 			}
@@ -138,6 +140,15 @@ public final class TileImage {
 		}
 		int dataVersion = chunkData.getData().getInt("DataVersion");
 		try {
+//			VersionController.getChunkRenderer(dataVersion).drawCaves(
+//					chunkData.getData(),
+//					VersionController.getColorMapping(dataVersion),
+//					x, z,
+//					pixelBuffer,
+//					terrainHeights,
+//					Config.getRenderHeight()
+//			);
+
 			if (Config.renderLayerOnly()) {
 				VersionController.getChunkRenderer(dataVersion).drawLayer(
 						chunkData.getData(),
@@ -170,6 +181,16 @@ public final class TileImage {
 					terrainHeights[dstIndex] = 64;
 					waterHeights[dstIndex] = 64;
 				}
+			}
+		}
+	}
+
+	private static void flatShade(int[] pixelBuffer, short[] terrainHeights) {
+		int index = 0;
+		for (int z = 0; z < Tile.SIZE; z++) {
+			for (int x = 0; x < Tile.SIZE; x++, index++) {
+				int altitudeShade = 16 * ((terrainHeights[index]) - 64) / 64;
+				pixelBuffer[index] = Color.shade(pixelBuffer[index], altitudeShade * 4);
 			}
 		}
 	}
