@@ -22,7 +22,7 @@ A clear and concise description of what you expected to happen.
 
 **Screenshots and other files**
 If applicable, add screenshots to help explain your problem.
-Relevant world files ('.mca'-files) and selection files ('.csv'.files) must be bundled in a '.zip'-archive.
+Relevant world files ('.mca'-files) and selection files ('.csv'-files) must be bundled in a '.zip'-archive.
 To create the 'debug.log' file, follow these steps:
 1. Enable 'Print debug messages' in 'File'-->'Settings'.
 2. Restart MCA Selector.
@@ -31,8 +31,8 @@ To create the 'debug.log' file, follow these steps:
 
 **Environment (please complete the following information):**
 - OS: [e.g. Windows 10]
-- Java version: [e.g. 1.8.0_202 and no, "newest version" is not a version]
-- Version [e.g. 1.9.8]
+- Java version: [e.g. 16.0.1 and no, "newest version" is not a version]
+- Version of MCA Selector [e.g. 1.16.2]
 
 **Additional context**
 Add any other context about the problem here, e.g.:
