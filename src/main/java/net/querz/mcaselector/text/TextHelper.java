@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.Array;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -214,11 +213,7 @@ public final class TextHelper {
 		return sw.toString();
 	}
 
-	public static void main(String[] args) throws ParseException {
-		System.out.println(Arrays.toString(TextHelper.splitWithExcaping("test\\.size", '.', '\\')));
-	}
-
-	public static String[] splitWithExcaping(String input, char split, char escape) throws ParseException {
+	public static String[] splitWithEscaping(String input, char split, char escape) throws ParseException {
 		List<String> result = new ArrayList<>();
 
 		StringBuilder s = new StringBuilder(input);

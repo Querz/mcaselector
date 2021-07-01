@@ -4,6 +4,7 @@ import net.querz.mcaselector.exception.ParseException;
 import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.text.TextHelper;
+import net.querz.nbt.tag.ArrayTag;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.NumberTag;
@@ -11,7 +12,6 @@ import net.querz.nbt.tag.Tag;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -68,6 +68,8 @@ public class CustomParser extends AmountParser {
 			return compound.size();
 		} else if (current instanceof ListTag<?> list && size) {
 			return list.size();
+		} else if (current instanceof ArrayTag<?> array && size) {
+			return array.length();
 		}
 		return 0;
 	}
@@ -89,7 +91,7 @@ public class CustomParser extends AmountParser {
 		setRawMultiValues(raw);
 		String[] elements;
 		try {
-			elements = TextHelper.splitWithExcaping(raw, '/', '\\');
+			elements = TextHelper.splitWithEscaping(raw, '/', '\\');
 			setMultiValues(elements);
 		} catch (ParseException ex) {
 			setMultiValues(new String[0]);
@@ -110,7 +112,7 @@ public class CustomParser extends AmountParser {
 		}
 
 		try {
-			String[] last = TextHelper.splitWithExcaping(elements[elements.length - 1], '.', '\\');
+			String[] last = TextHelper.splitWithEscaping(elements[elements.length - 1], '.', '\\');
 			if (last.length > 1 && last[last.length - 1].equals("size")) {
 				size = true;
 				parseElement(elements[elements.length - 1].substring(0, elements[elements.length - 1].length() - 5));
