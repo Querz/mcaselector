@@ -432,6 +432,7 @@ The following languages are available:
 * Dutch (Netherlands) (thanks to [@Clijmart](https://github.com/Clijmart) for translating)
 * Italian (Italy) (thanks to @valeilsimpaticone for translating)
 * Polish (Poland) (thanks to [@Marcinolak](https://github.com/Marcinolak) for translating)
+* Japanese (Japan) (thanks to [@Uguisu64J](https://github.com/Uguisu64J) for translating)
 
 If you would like to contribute a translation, you can find the language files in 
 [resources/lang/](https://github.com/Querz/mcaselector/tree/master/src/main/resources/lang). The files 
