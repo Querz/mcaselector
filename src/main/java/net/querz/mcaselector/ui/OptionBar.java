@@ -189,6 +189,8 @@ public class OptionBar extends BorderPane {
 			}
 		});
 
+		heightField.setFocusTraversable(false);
+
 		heightSlider.getChildren().addAll(heightMinLabel, height, heightMaxLabel, heightField);
 
 		// when we press escape we want to give the focus back to the tile map
