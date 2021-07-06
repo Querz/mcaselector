@@ -481,11 +481,11 @@ For Windows:
 
 * Download the JRE-FX-16 from [HERE](https://cdn.azul.com/zulu/bin/zulu16.30.15-ca-fx-jre16.0.1-win_x64.zip) into an 
   empty folder.
-* Move the previously downloaded `mcaselector-1.16.2.jar` into the same folder. Extract the content of the 
+* Move the previously downloaded `mcaselector.jar` into the same folder. Extract the content of the 
   downloaded .zip file into this folder.
 * Hold `Shift` and `right-click` an empty spot in this folder, and choose `Open PowerShell window here`. Type `& ` 
   (with a space at the end), go into the previously extracted folder and drag and drop the `bin\java.exe` file into 
-  the PowerShell window. Then complete the command by typing a space and ` -jar mcaselector-1.16.2.jar` and press 
+  the PowerShell window. Then complete the command by typing ` -jar ` (with a space both at the beginning and the end), then dragging and dropping the `mcaselector.jar` file and pressing 
   `Enter`.
 
 For MacOS:
