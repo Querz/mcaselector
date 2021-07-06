@@ -72,4 +72,11 @@ public class KeyActivator extends TimerTask {
 	public void registerGlobalAction(Runnable action) {
 		globalAction = action;
 	}
+
+	public static boolean isArrowKey(KeyCode code) {
+		return switch (code) {
+			case UP, RIGHT, DOWN, LEFT -> true;
+			default -> false;
+		};
+	}
 }

@@ -293,6 +293,11 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		if (event.getCode() == KeyCode.M) {
 			dumpMetrics();
 		}
+
+		// don't pass event to parent node if it would cause the tile map to lose focus
+		if (KeyActivator.isArrowKey(event.getCode())) {
+			event.consume();
+		}
 	}
 
 	private void onKeyTyped(KeyEvent event) {
