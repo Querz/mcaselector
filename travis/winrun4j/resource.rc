@@ -1,17 +1,17 @@
 VS_VERSION_INFO VERSIONINFO
-    FILEVERSION    1,16,2,0
-    PRODUCTVERSION 1,16,2,0
+    FILEVERSION    1,16,3,0
+    PRODUCTVERSION 1,16,3,0
 {
     BLOCK "StringFileInfo"
     {
         BLOCK "040904b0"
         {
             VALUE "FileDescription",    "MCA Selector\0"
-            VALUE "FileVersion",        "1.16.2.0\0"
+            VALUE "FileVersion",        "1.16.3.0\0"
             VALUE "LegalCopyright",     "© 2018-2021 Querz\0"
             VALUE "OriginalFilename",   "MCA Selector.exe\0"
             VALUE "ProductName",        "MCA Selector\0"
-            VALUE "ProductVersion",     "1.16.2\0"
+            VALUE "ProductVersion",     "1.16.3\0"
         }
     }
     BLOCK "VarFileInfo"
