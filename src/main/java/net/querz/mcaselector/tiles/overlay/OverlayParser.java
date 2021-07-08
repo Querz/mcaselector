@@ -192,8 +192,11 @@ public abstract class OverlayParser implements Cloneable {
 		parser.rawMultiValues = object.get("rawMultiValues") == JSONObject.NULL ? null : object.getString("rawMultiValues");
 		parser.minHue = object.getFloat("minHue");
 		parser.maxHue = object.getFloat("maxHue");
+		parser.parseCustomJSON(object);
 		return parser;
 	}
+
+	public void parseCustomJSON(JSONObject object) {}
 
 	@Override
 	public String toString() {

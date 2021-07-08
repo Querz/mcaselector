@@ -11,7 +11,8 @@ public enum OverlayType {
 	TILE_ENTITY_AMOUNT("#TileEntities", TileEntityAmountParser::new),
 	DATA_VERSION("DataVersion", DataVersionParser::new),
 	AVERAGE_HEIGHT("AverageHeight", AverageHeightParser::new),
-	BLOCK_AMOUNT("#Blocks", BlockAmountParser::new);
+	BLOCK_AMOUNT("#Blocks", BlockAmountParser::new),
+	CUSTOM("Custom", CustomParser::new);
 
 	private final String name;
 	private final Supplier<OverlayParser> supplier;

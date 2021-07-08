@@ -1,6 +1,7 @@
 package net.querz.mcaselector.text;
 
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.exception.ParseException;
 import net.querz.mcaselector.filter.PaletteFilter;
 import net.querz.mcaselector.io.StringPointer;
 import java.io.BufferedReader;
@@ -16,6 +17,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -209,5 +211,39 @@ public final class TextHelper {
 		ex.printStackTrace(pw);
 		pw.flush();
 		return sw.toString();
+	}
+
+	public static String[] splitWithEscaping(String input, char split, char escape) throws ParseException {
+		List<String> result = new ArrayList<>();
+
+		StringBuilder s = new StringBuilder(input);
+
+		int start = 0;
+		boolean escaped = false;
+		for (int i = 0; i < s.length(); i++) {
+			char current = s.charAt(i);
+			if (current == escape) {
+				if (escaped) {
+					s.deleteCharAt(--i);
+					escaped = false;
+					continue;
+				}
+				escaped = true;
+			} else if (current == split) {
+				if (!escaped) {
+					result.add(s.substring(start, i));
+					start = ++i;
+					continue;
+				}
+				s.deleteCharAt(--i);
+				escaped = false;
+			} else if (escaped) {
+				throw new ParseException("invalid escape sequence", s.toString(), i);
+			}
+		}
+		if (start < s.length() - 1) {
+			result.add(s.substring(start));
+		}
+		return result.toArray(new String[0]);
 	}
 }

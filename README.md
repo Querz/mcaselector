@@ -60,7 +60,7 @@ into and zoom out of by scrolling up and down and that you can move around using
 on Mac OS) or using `WASD`.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/default.png" alt="MCA Selector window showing chunk and region grid">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/default.png" alt="MCA Selector window showing chunk and region grid">
 </p>
 
 Zooming out far enough disables the selection of single chunks but lets you select entire regions.
@@ -70,7 +70,7 @@ Upon finishing selecting chunks and regions, they can be deleted or exported usi
 chunks and regions are not deleted from the original world.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/selections.png" alt="MCA Selector window showing chunk and region selection export">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/selections.png" alt="MCA Selector window showing chunk and region selection export">
 </p>
 
 A selection (not the chunks and regions themselves) can also be exported or imported and even be applied to different worlds.
@@ -82,7 +82,7 @@ these conditions can be used to create a very specific query describing what chu
 exported.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/filter_chunks.png" alt="MCA Selector window showing the chunk filter">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/filter_chunks.png" alt="MCA Selector window showing the chunk filter">
 </p>
 
 Because the conditions use internal values used by Minecraft, the following table gives a brief explanation on what 
@@ -121,7 +121,7 @@ using the xPos and zPos conditions, as long as the query is built in a way that 
 The NBT Changer modifies the world files directly by changing specific values.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/change_nbt.png" alt="MCA Selector window showing the nbt changer">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/change_nbt.png" alt="MCA Selector window showing the nbt changer">
 </p>
 
 You can change the following values:
@@ -154,7 +154,7 @@ structure of that chunk, including poi and entities data. Names and values can b
 (via drag & drop).
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/edit_chunk.png" alt="MCA Selector window showing the NBT editor">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/edit_chunk.png" alt="MCA Selector window showing the NBT editor">
 </p>
 
 **Notice** When the NBT editor does not show any data, the cached top-down view might be outdated, and the chunk 
@@ -167,7 +167,7 @@ chunks of a second world using `Tools --> Import chunks`. After selecting a fold
 possible to import the chunks with a bunch of additional options.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/import_chunks.png" alt="MCA Selector window showing the chunk import">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/import_chunks.png" alt="MCA Selector window showing the chunk import">
 </p>
 
 Options:
@@ -196,7 +196,7 @@ the overlay has been placed.
 Copying can be cancelled by pressing `Esc`.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/copy_paste.png" alt="MCA Selector window showing copy-paste overlay">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/copy_paste.png" alt="MCA Selector window showing copy-paste overlay">
 </p>
 
 ### Swapping chunks
@@ -208,7 +208,7 @@ To have a better overview of what's happening in your world, MCA Selector gives 
 overlays. Overlays can display single values per chunk in the form of a color gradient with a minimum and maximum value.
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/overlays.png" alt="MCA Selector window showing InhabitedTime overlay for Hermitcraft Season 6">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/overlays.png" alt="MCA Selector window showing InhabitedTime overlay for Hermitcraft Season 6">
 </p>
 
 Overlays can be con figured using `Tools --> Edit overlays`. By pressing the `N` key, it will switch to displaying 
@@ -249,7 +249,7 @@ The MCA Selector currently supports the following Minecraft versions:
 | 1.14 - 1.14.4     | 1901 - 1976 |
 | 1.15 - 1.15.2     | 2200 - 2230 |
 | 1.16 - 1.16.5     | 2566 - 2586 |
-| 1.17              | 2724        |
+| 1.17 - 1.17.1     | 2724 - 2730 |
 
 There is no guarantee for worlds generated in a Snapshot version to work, even if it is specified in the table above.
 This only represents the current development status towards the next Minecraft release. Old Snapshots of past 
@@ -432,6 +432,7 @@ The following languages are available:
 * Dutch (Netherlands) (thanks to [@Clijmart](https://github.com/Clijmart) for translating)
 * Italian (Italy) (thanks to @valeilsimpaticone for translating)
 * Polish (Poland) (thanks to [@Marcinolak](https://github.com/Marcinolak) for translating)
+* Japanese (Japan) (thanks to [@Uguisu64J](https://github.com/Uguisu64J) for translating)
 
 If you would like to contribute a translation, you can find the language files in 
 [resources/lang/](https://github.com/Querz/mcaselector/tree/master/src/main/resources/lang). The files 
@@ -452,7 +453,7 @@ placed in this folder.
 
 ---
 
-[**Download Version 1.16.2 (Windows Installer)**](https://github.com/Querz/mcaselector/releases/download/1.16.2/MCA_Selector_Setup.exe)
+[**Download Version 1.16.3 (Windows Installer)**](https://github.com/Querz/mcaselector/releases/download/1.16.3/MCA_Selector_Setup.exe)
 
 "Requirements":
 * Windows 7-10 64bit
@@ -460,7 +461,7 @@ placed in this folder.
 
 ---
 
-[**Download Version 1.16.2 (Universal)**](https://github.com/Querz/mcaselector/releases/download/1.16.2/mcaselector-1.16.2.jar)
+[**Download Version 1.16.3 (Universal)**](https://github.com/Querz/mcaselector/releases/download/1.16.3/mcaselector-1.16.3.jar)
 
 
 "Requirements":
@@ -480,11 +481,11 @@ For Windows:
 
 * Download the JRE-FX-16 from [HERE](https://cdn.azul.com/zulu/bin/zulu16.30.15-ca-fx-jre16.0.1-win_x64.zip) into an 
   empty folder.
-* Move the previously downloaded `mcaselector-1.16.2.jar` into the same folder. Extract the content of the 
+* Move the previously downloaded `mcaselector-1.16.3.jar` into the same folder. Extract the content of the 
   downloaded .zip file into this folder.
 * Hold `Shift` and `right-click` an empty spot in this folder, and choose `Open PowerShell window here`. Type `& ` 
   (with a space at the end), go into the previously extracted folder and drag and drop the `bin\java.exe` file into 
-  the PowerShell window. Then complete the command by typing a space and ` -jar mcaselector-1.16.2.jar` and press 
+  the PowerShell window. Then complete the command by typing a space and ` -jar mcaselector-1.16.3.jar` and press 
   `Enter`.
 
 For MacOS:
@@ -494,7 +495,7 @@ For MacOS:
 * Extract the content of the downloaded .zip file into this folder.
 * Press `Cmd+Space`, type `Terminal` and press `Enter`. Go into the previously extracted folder and drag and drop 
   the `zulu-16.jdk/Contents/Home/bin/java` into the terminal. Continue to type `-jar ` (with a space at the end) and 
-  drag-and drop the `mcaselector-1.16.2.jar` into the terminal as well, the press `Enter`.
+  drag-and drop the `mcaselector-1.16.3.jar` into the terminal as well, the press `Enter`.
 
 For Linux:
 
@@ -502,7 +503,7 @@ For Linux:
   into an empty folder.
 * Extract the content of the downloaded .tar.gz file into this folder.
 * Open your terminal of choice and navigate in the extracted folder into `bin`, then run `./java -jar 
-  <path-to-mcaselector-1.16.2.jar>`.
+  <path-to-mcaselector-1.16.3.jar>`.
 
 To avoid having to go through this process every time to start MCA Selector, the resulting command can be copied 
 into a `.bat`-file on Windows or `.sh`-file on MacOS and Linux and can then be executed by double-clicking the 
@@ -510,10 +511,10 @@ into a `.bat`-file on Windows or `.sh`-file on MacOS and Linux and can then be e
 replaced by the name of the `.sh`-file.
 
 ### When you receive an error from a previously installed version of Java
-"When I run `mcaselector-1.16.2.jar`, an error dialog appears that looks like this:"
+"When I run `mcaselector-1.16.3.jar`, an error dialog appears that looks like this:"
 
 <p align="center">
-  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/7aa44cd77eefd19a56eb8154ad3fe5de26c15941/missing_javafx.png" alt="Popup dialog stating a missing JavaFX installation">
+  <img src="https://gist.githubusercontent.com/Querz/5e08c4ab863c2ad8b5da146dc4188ecb/raw/1a935464a6d62ce1c73f4651149825ce6a2ecd80/missing_javafx.png" alt="Popup dialog stating a missing JavaFX installation">
 </p>
 
 Open the console or terminal on your OS.
@@ -530,11 +531,11 @@ version older than 16, make sure that you have Java 16 installed or proceed with
 JavaFX (the simple way)](#using-a-jre-or-jdk-with-pre-packed-javafx-the-simple-way).
 
 For Windows and MacOS:
-* Type `java -jar ` (with a space at the end) and drag and drop the `mcaselector-1.16.2.jar` into the console and 
+* Type `java -jar ` (with a space at the end) and drag and drop the `mcaselector-1.16.3.jar` into the console and 
   hit `Enter`.
 
 For Linux:
-* Run `java -jar <path to mcaselector-1.16.2.jar` where you replace everything in `<>`.
+* Run `java -jar <path to mcaselector-1.16.3.jar` where you replace everything in `<>`.
 
 For Windows:
 * Download "JavaFX Windows SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
@@ -542,23 +543,23 @@ For Windows:
 * Hold `Shift` and Right-click on an empty space in that folder and select `Open PowerShell window here` (`Open 
   Command window here` on Windows 8 and earlier). Type `java --module-path ` (with a space at the end), then drag 
   and drop the `lib`-folder into the console. Continue to type ` --add-modules ALL-MODULE-PATH -jar ` (with a space 
-  at the beginning and the end), then drag and drop the `mcaselector-1.16.2.jar` into the console and hit `Enter`.
+  at the beginning and the end), then drag and drop the `mcaselector-1.16.3.jar` into the console and hit `Enter`.
 
 For MacOS:
 * Download "JavaFX Mac OS X SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
 * Double-click the `.zip`-file to unpack, then navigate into the unzipped folder.
 * Press `Cmd+Space`, type `Terminal` and press `Enter`. Type `java --module-path ` (with a space at the end), then 
   drag and drop the `lib`-folder into the console. Continue to type `--add-modules ALL-MODULE-PATH -jar ` (with a 
-  space at the end), then drag and drop the `mcaselector-1.16.2.jar` into the console and hit `Enter`.
+  space at the end), then drag and drop the `mcaselector-1.16.3.jar` into the console and hit `Enter`.
 
 For Linux:
 * Download "JavaFX Linux SDK" for your Java version from [here](https://gluonhq.com/products/javafx/).
 * Unzip the `.zip`-file with your program of choice.
 * Open the command prompt and run `java --module-path <path to unzipped folder>/lib --add-modules ALL-MODULE-PATH 
-  -jar <path to mcaselector-1.16.2.jar>` where you replace everything in `<>` with the appropriate paths.
+  -jar <path to mcaselector-1.16.3.jar>` where you replace everything in `<>` with the appropriate paths.
 * Some distributions like AdoptOpenJDK (shipped with most Linux distributions) do not ship with JavaFX by default. 
   On Debian, an open version of JavaFX is contained in the `openjfx` package. This or some other installation of 
-  JavaFX is required to run the `mcaselector-1.16.2.jar`.
+  JavaFX is required to run the `mcaselector-1.16.3.jar`.
 
 To avoid having to go through this process every time to start MCA Selector, the resulting command can be copied 
 into a `.bat`-file on Windows or `.sh`-file on MacOS and Linux and can then be executed by double-clicking the
