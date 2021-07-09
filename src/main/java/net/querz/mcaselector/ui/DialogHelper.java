@@ -285,9 +285,10 @@ public class DialogHelper {
 				Config.setDebug(r.debug);
 
 				if (r.height != Config.getRenderHeight() || r.layerOnly != Config.renderLayerOnly()
-					|| r.shade != Config.shade() || r.shadeWater != Config.shadeWater()) {
+					|| r.shade != Config.shade() || r.shadeWater != Config.shadeWater() || r.caves != Config.renderCaves()) {
 					Config.setRenderHeight(r.height);
 					Config.setRenderLayerOnly(r.layerOnly);
+					Config.setRenderCaves(r.caves);
 					tileMap.getWindow().getOptionBar().setRenderHeight(r.height);
 					Config.setShade(r.shade);
 					Config.setShadeWater(r.shadeWater);

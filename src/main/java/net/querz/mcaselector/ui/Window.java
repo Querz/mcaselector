@@ -63,12 +63,7 @@ public class Window extends Application {
 			scene.getStylesheets().add(styleSheet);
 		}
 
-		scene.setOnKeyPressed(e -> {
-			pressedKeys.add(e.getCode());
-			if (e.getCode() == KeyCode.E) {
-				DialogHelper.editSettings(tileMap, primaryStage, true);
-			}
-		});
+		scene.setOnKeyPressed(e -> pressedKeys.add(e.getCode()));
 		scene.setOnKeyReleased(e -> pressedKeys.remove(e.getCode()));
 		primaryStage.focusedProperty().addListener((obs, o, n) -> {
 			if (!n) {

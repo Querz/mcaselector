@@ -278,9 +278,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		if (event.getCode() == KeyCode.SHIFT) {
 			keyActivator.pressActionKey(event.getCode());
 		} else {
-			switch (event.getCode()) {
-				case UP, DOWN, LEFT, RIGHT -> event.consume();
-			}
 			keyActivator.pressKey(event.getCode());
 		}
 
