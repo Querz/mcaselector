@@ -124,13 +124,13 @@ dialog.edit_nbt.placeholder.no_chunk_data;チャンクデータが存在しま�
 dialog.edit_nbt.placeholder.no_region_file;リージョンファイルが存在しません
 dialog.edit_array.index;インデックス
 dialog.edit_array.value;値
-dialog.about.title;About
+dialog.about.title;詳細
 dialog.about.header;MCA Selectorについて
 dialog.about.version;バージョン:
 dialog.about.version.unknown;不明
-dialog.about.version.check;更新をチェック
-dialog.about.version.checking;更新をチェックしています...
-dialog.about.version.up_to_date;更新はありません
+dialog.about.version.check;更新
+dialog.about.version.checking;確認中...
+dialog.about.version.up_to_date;なし
 dialog.about.version.error;エラー
 dialog.about.license;ライセンス:
 dialog.about.copyright;著作権:
