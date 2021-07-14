@@ -174,6 +174,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		smoothRendering.setSelected(Config.smoothRendering());
 		smoothOverlays.setSelected(Config.smoothOverlays());
 		heightSlider.setValue(Config.getRenderHeight());
+		layerOnly.setSelected(Config.renderLayerOnly());
 		caves.setSelected(Config.renderCaves());
 		tileMapBackgrounds.getItems().addAll(TileMapBox.TileMapBoxBackground.values());
 
@@ -224,8 +225,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		});
 
 		shadeCheckBox.setOnAction(e -> shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected()));
-		shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected() || caves.isSelected());
-		shadeCheckBox.setDisable(caves.isSelected());
+		shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected() || caves.isSelected() || layerOnly.isSelected());
+		shadeCheckBox.setDisable(caves.isSelected() || layerOnly.isSelected());
 
 		layerOnly.setOnAction(e -> caves.setDisable(layerOnly.isSelected()));
 		caves.setDisable(layerOnly.isSelected());
@@ -234,6 +235,11 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			layerOnly.setDisable(caves.isSelected());
 			shadeCheckBox.setDisable(caves.isSelected());
 			shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected() || caves.isSelected());
+		});
+		layerOnly.setOnAction(e -> {
+			caves.setDisable(layerOnly.isSelected());
+			shadeCheckBox.setDisable(layerOnly.isSelected());
+			shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected() || layerOnly.isSelected());
 		});
 
 		HBox debugBox = new HBox();
