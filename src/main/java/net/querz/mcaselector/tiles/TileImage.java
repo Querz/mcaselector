@@ -13,6 +13,7 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
+import net.querz.mcaselector.math.MathUtil;
 import net.querz.mcaselector.point.Point2f;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.ui.Color;
@@ -190,7 +191,7 @@ public final class TileImage {
 		int index = 0;
 		for (int z = 0; z < Tile.SIZE; z++) {
 			for (int x = 0; x < Tile.SIZE; x++, index++) {
-				int altitudeShade = 16 * ((terrainHeights[index]) - 64) / 64;
+				int altitudeShade = MathUtil.clamp(16 * terrainHeights[index] / 64, -50, 50);
 				pixelBuffer[index] = Color.shade(pixelBuffer[index], altitudeShade * 4);
 			}
 		}
@@ -238,7 +239,7 @@ public final class TileImage {
 						shade = 8;
 					}
 
-					int altitudeShade = 16 * ((waterHeights[index]) - 64) / 255;
+					int altitudeShade = 16 * (waterHeights[index] - 64) / 255;
 					if (altitudeShade < -4) {
 						altitudeShade = -4;
 					}
