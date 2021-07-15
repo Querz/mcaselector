@@ -1,4 +1,4 @@
-package net.querz.mcaselector.version.anvil117;
+package net.querz.mcaselector.version.anvil118;
 
 import net.querz.mcaselector.math.MathUtil;
 import net.querz.mcaselector.property.DataProperty;
@@ -12,7 +12,7 @@ import net.querz.nbt.tag.Tag;
 import static net.querz.mcaselector.validation.ValidationHelper.catchClassCastException;
 import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
 
-public class Anvil117ChunkRenderer implements ChunkRenderer {
+public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
@@ -318,12 +318,7 @@ public class Anvil117ChunkRenderer implements ChunkRenderer {
 		if (biomes == null) {
 			return -1;
 		}
-		if (biomes.length == 1536) {
-			biomeY += 64; // adjust for negative y block coordinates
-		} else if (biomes.length != 1024) { // still support 256 height
-			return -1;
-		}
-		return biomes[getBiomeIndex(biomeX / 4, biomeY / 4, biomeZ / 4)];
+		return biomes[getBiomeIndex(biomeX / 4, (biomeY + 64) / 4, biomeZ / 4)];
 	}
 
 	private int getPaletteIndex(int index, long[] blockStates, int bits, int clean) {
