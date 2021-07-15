@@ -82,6 +82,17 @@ public class Anvil116ColorMapping implements ColorMapping {
 		return 0xFF000000;
 	}
 
+	@Override
+	public boolean isFoliage(Object name) {
+		if (foliage.contains((String) name)) {
+			return true;
+		}
+		return switch ((String) name) {
+			case "minecraft:birch_leaves", "minecraft:spruce_leaves" -> true;
+			default -> false;
+		};
+	}
+
 	private int applyBiomeTint(String name, int biome, int color) {
 		if (grass.contains(name)) {
 			return applyTint(color, biomeGrassTints[biome]);

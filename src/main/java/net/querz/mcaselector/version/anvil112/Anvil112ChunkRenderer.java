@@ -220,7 +220,7 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 
 						byte blockData = (byte) (index % 2 == 0 ? data[index / 2] & 0x0F : (data[index / 2] >> 4) & 0x0F);
 
-						if (!isEmpty(block)) {
+						if (!isEmptyOrFoliage(block, colorMapping)) {
 							if (doneSkipping) {
 								int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
 								int biome = -1;
@@ -251,6 +251,13 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 
 	private boolean isEmpty(int blockID) {
 		return blockID == 0 || blockID == 166 || blockID == 217;
+	}
+
+	private boolean isEmptyOrFoliage(int blockID, ColorMapping colorMapping) {
+		return switch (blockID) {
+			case 0, 166, 217 -> true;
+			default -> colorMapping.isFoliage(blockID);
+		};
 	}
 
 	private int getBlockIndex(int x, int y, int z) {

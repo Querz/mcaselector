@@ -263,7 +263,7 @@ public class Anvil117ChunkRenderer implements ChunkRenderer {
 						int paletteIndex = getPaletteIndex(getIndex(cx, cy, cz), blockStates, bits, clean);
 						CompoundTag blockData = palette.get(paletteIndex);
 
-						if (!isEmpty(blockData)) {
+						if (!isEmptyOrFoliage(blockData, colorMapping)) {
 							if (doneSkipping) {
 								int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
 								int biome = getBiomeAtBlock(biomes, cx, sectionHeight + cy, cz);
@@ -303,6 +303,14 @@ public class Anvil117ChunkRenderer implements ChunkRenderer {
 		return switch (withDefault(() -> blockData.getString("Name"), "")) {
 			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void", "minecraft:light" -> blockData.size() == 1;
 			default -> false;
+		};
+	}
+
+	private boolean isEmptyOrFoliage(CompoundTag blockData, ColorMapping colorMapping) {
+		String name;
+		return switch (name = withDefault(() -> blockData.getString("Name"), "")) {
+			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void", "minecraft:light" -> blockData.size() == 1;
+			default -> colorMapping.isFoliage(name);
 		};
 	}
 

@@ -57,6 +57,14 @@ public class Anvil112ColorMapping implements ColorMapping {
 		return applyBiomeTint((int) blockID >> 4, biome, mapping.getOrDefault((int) blockID, 0xFF000000));
 	}
 
+	@Override
+	public boolean isFoliage(Object id) {
+		return switch ((int) id) {
+			case 18, 106, 161 -> true;
+			default -> false;
+		};
+	}
+
 	private int applyBiomeTint(int id, int biome, int color) {
 		if (grass.contains(id)) {
 			return applyTint(color, biomeGrassTints[biome]);

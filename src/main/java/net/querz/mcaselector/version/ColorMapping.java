@@ -17,6 +17,8 @@ public interface ColorMapping {
 	// returns a color based on the block data given as the parameter
 	int getRGB(Object o, int biome);
 
+	boolean isFoliage(Object o);
+
 	default int applyTint(int color, int tint) {
 		int nr = (tint >> 16 & 0xFF) * (color >> 16 & 0xFF) >> 8;
 		int ng = (tint >> 8 & 0xFF) * (color >> 8 & 0xFF) >> 8;
