@@ -19,7 +19,7 @@ menu.about;About
 menu.file.open_world;Open World
 menu.file.open;Open Region
 menu.file.settings;Settings
-menu.file.world_settings;World Settings
+menu.file.render_settings;Render Settings
 menu.file.quit;Quit
 menu.view.chunk_grid;Chunk Grid
 menu.view.region_grid;Region Grid
@@ -48,30 +48,43 @@ menu.tools.next_overlay;Next overlay
 menu.tools.next_overlay_type;Next overlay type
 dialog.select_world.title;Select Dimension
 dialog.settings.title;Settings
-dialog.settings.language;Language
-dialog.settings.read_threads;Read Threads
-dialog.settings.process_threads;Process Threads
-dialog.settings.write_threads;Write Threads
-dialog.settings.max_files;Max loaded files
-dialog.settings.region_color;Region selection color
-dialog.settings.chunk_color;Chunk selection color
-dialog.settings.pasted_chunks_color;Pasted chunks color
-dialog.settings.shade;Shade
-dialog.settings.shade_water;Shade water
-dialog.settings.show_nonexistent_regions;Show nonexistent regions
-dialog.settings.smooth_rendering;Smooth rendering
-dialog.settings.smooth_overlays;Smooth overlays
-dialog.settings.background_pattern;Background pattern
-dialog.settings.mc_saves_dir;MC Saves Directory
-dialog.settings.print_debug;Print debug messages
-dialog.settings.show_log_file;Show log file
+dialog.settings.global.language;Language
+dialog.settings.global.language.language;Language
+dialog.settings.processing.process.read_threads;Read threads
+dialog.settings.processing.process.process_threads;Process threads
+dialog.settings.processing.process;Process
+dialog.settings.processing.process.write_threads;Write threads
+dialog.settings.processing.files.max_files;Max files
+dialog.settings.global.selection.region_color;Region color
+dialog.settings.global.selection.chunk_color;Chunk color
+dialog.settings.global.selection.pasted_chunks_color;Pasted chunks color
+dialog.settings.rendering.shade.shade;Shade
+dialog.settings.rendering.shade;Shade
+dialog.settings.rendering.shade.shade_water;Shade water
+dialog.settings.rendering.background.show_nonexistent_regions;Show nonexistent regions
+dialog.settings.rendering.smooth.smooth_rendering;Smooth rendering
+dialog.settings.rendering.smooth.smooth_overlays;Smooth overlays
+dialog.settings.rendering.background.background_pattern;Background pattern
+dialog.settings.rendering.background;Background
+dialog.settings.global.misc.mc_saves_dir;MC saves dir
+dialog.settings.global.misc.print_debug;Print debug messages
+dialog.settings.global.misc.show_log_file;Show log file
 dialog.settings.reset;Reset
-dialog.world_settings.title;World Settings
-dialog.world_settings.poi;POI
-dialog.world_settings.entities;Entities
-dialog.world_settings.render_height;Render height
-dialog.world_settings.render_layer_only;Layer only
-dialog.world_settings.render_caves;Caves
+dialog.settings.tab_global;Global
+dialog.settings.tab_processing;Processing
+dialog.settings.tab_rendering;Rendering
+dialog.settings.tab_world;World
+dialog.settings.global.misc;Misc
+dialog.settings.processing.files;Files
+dialog.settings.rendering.smooth;Smooth
+dialog.settings.global.selection;Selection
+dialog.settings.world.paths;Paths
+dialog.settings.world.paths.poi;POI
+dialog.settings.world.paths.entities;Entities
+dialog.settings.rendering.layers.render_height;Render height
+dialog.settings.rendering.layers.render_layer_only;Render layer only
+dialog.settings.rendering.layers;Layers
+dialog.settings.rendering.layers.render_caves;Render caves
 dialog.goto.title;Goto location
 dialog.confirmation.question;Are you sure?
 dialog.delete_chunks_confirmation.title;Delete chunks

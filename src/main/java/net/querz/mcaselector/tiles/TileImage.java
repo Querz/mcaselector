@@ -101,9 +101,9 @@ public final class TileImage {
 			WritableImage finalImage = new WritableImage(Tile.SIZE, Tile.SIZE);
 			PixelWriter writer = finalImage.getPixelWriter();
 			int[] pixelBuffer = new int[Tile.PIXELS];
-			int[] waterPixels = Config.shade() && Config.shadeWater() ? new int[Tile.PIXELS] : null;
+			int[] waterPixels = Config.shade() && Config.shadeWater() && !Config.renderCaves() ? new int[Tile.PIXELS] : null;
 			short[] terrainHeights = new short[Tile.PIXELS];
-			short[] waterHeights = Config.shade() && Config.shadeWater() ? new short[Tile.PIXELS] : null;
+			short[] waterHeights = Config.shade() && Config.shadeWater() && !Config.renderCaves() ? new short[Tile.PIXELS] : null;
 
 			for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
 				for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
@@ -119,9 +119,10 @@ public final class TileImage {
 				}
 			}
 
-//			flatShade(pixelBuffer, terrainHeights);
 
-			if (Config.shade() && !Config.renderLayerOnly()) {
+			if (Config.renderCaves()) {
+				flatShade(pixelBuffer, terrainHeights);
+			} else if (Config.shade() && !Config.renderLayerOnly()) {
 				shade(pixelBuffer, waterPixels, terrainHeights, waterHeights);
 			}
 
@@ -140,16 +141,16 @@ public final class TileImage {
 		}
 		int dataVersion = chunkData.getData().getInt("DataVersion");
 		try {
-//			VersionController.getChunkRenderer(dataVersion).drawCaves(
-//					chunkData.getData(),
-//					VersionController.getColorMapping(dataVersion),
-//					x, z,
-//					pixelBuffer,
-//					terrainHeights,
-//					Config.getRenderHeight()
-//			);
-
-			if (Config.renderLayerOnly()) {
+			if (Config.renderCaves()) {
+				VersionController.getChunkRenderer(dataVersion).drawCaves(
+						chunkData.getData(),
+						VersionController.getColorMapping(dataVersion),
+						x, z,
+						pixelBuffer,
+						terrainHeights,
+						Config.getRenderHeight()
+				);
+			} else if (Config.renderLayerOnly()) {
 				VersionController.getChunkRenderer(dataVersion).drawLayer(
 						chunkData.getData(),
 						VersionController.getColorMapping(dataVersion),

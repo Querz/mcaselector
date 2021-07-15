@@ -2,7 +2,6 @@ package net.querz.mcaselector.ui.dialog;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -18,8 +17,6 @@ import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.FileTextField;
 import net.querz.mcaselector.ui.TileMapBox;
 import net.querz.mcaselector.ui.UIFactory;
-
-import javax.swing.*;
 import java.io.File;
 import java.util.*;
 
@@ -47,6 +44,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private static final long maxMemory = Runtime.getRuntime().maxMemory();
 
 	private final TabPane tabPane = new TabPane();
+	private final ToggleGroup toggleGroup = new ToggleGroup();
+
+	// use a custom box containing a group of ToggleButtons to be able to freely align the tabs
+	private final BorderPane tabBox = new BorderPane();
 
 	private final ComboBox<Locale> languages = new ComboBox<>();
 
@@ -102,6 +103,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			showNonexistentRegionsCheckBox.setSelected(Config.DEFAULT_SHOW_NONEXISTENT_REGIONS);
 			smoothRendering.setSelected(Config.DEFAULT_SMOOTH_RENDERING);
 			smoothOverlays.setSelected(Config.DEFAULT_SMOOTH_OVERLAYS);
+			heightSlider.setValue(heightSlider.getMax());
+			caves.setSelected(Config.DEFAULT_RENDER_CAVES);
 			tileMapBackgrounds.setValue(TileMapBox.TileMapBoxBackground.valueOf(Config.DEFAULT_TILEMAP_BACKGROUND));
 			mcSavesDir.setFile(Config.DEFAULT_MC_SAVES_DIR == null ? null : new File(Config.DEFAULT_MC_SAVES_DIR));
 			debugCheckBox.setSelected(Config.DEFAULT_DEBUG);
@@ -170,6 +173,9 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		showNonexistentRegionsCheckBox.setSelected(Config.showNonExistentRegions());
 		smoothRendering.setSelected(Config.smoothRendering());
 		smoothOverlays.setSelected(Config.smoothOverlays());
+		heightSlider.setValue(Config.getRenderHeight());
+		layerOnly.setSelected(Config.renderLayerOnly());
+		caves.setSelected(Config.renderCaves());
 		tileMapBackgrounds.getItems().addAll(TileMapBox.TileMapBoxBackground.values());
 
 		tileMapBackgrounds.setCellFactory((listView) -> {
@@ -219,16 +225,26 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		});
 
 		shadeCheckBox.setOnAction(e -> shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected()));
-		shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected());
+		shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected() || caves.isSelected() || layerOnly.isSelected());
+		shadeCheckBox.setDisable(caves.isSelected() || layerOnly.isSelected());
 
 		layerOnly.setOnAction(e -> caves.setDisable(layerOnly.isSelected()));
 		caves.setDisable(layerOnly.isSelected());
 		layerOnly.setDisable(caves.isSelected());
-		caves.setOnAction(e -> layerOnly.setDisable(caves.isSelected()));
+		caves.setOnAction(e -> {
+			layerOnly.setDisable(caves.isSelected());
+			shadeCheckBox.setDisable(caves.isSelected());
+			shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected() || caves.isSelected());
+		});
+		layerOnly.setOnAction(e -> {
+			caves.setDisable(layerOnly.isSelected());
+			shadeCheckBox.setDisable(layerOnly.isSelected());
+			shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected() || layerOnly.isSelected());
+		});
 
 		HBox debugBox = new HBox();
 		debugBox.getStyleClass().add("debug-box");
-		Hyperlink logFileLink = UIFactory.explorerLink(Translation.DIALOG_SETTINGS_SHOW_LOG_FILE, Config.getLogFile().getParentFile(), null);
+		Hyperlink logFileLink = UIFactory.explorerLink(Translation.DIALOG_SETTINGS_GLOBAL_MISC_SHOW_LOG_FILE, Config.getLogFile().getParentFile(), null);
 		debugBox.getChildren().addAll(debugCheckBox, logFileLink);
 
 		if (Config.getWorldDirs() != null) {
@@ -243,105 +259,139 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		heightSlider.setMinorTickCount(384);
 		heightSlider.setBlockIncrement(1);
 
+		toggleGroup.selectedToggleProperty().addListener((v, o, n) -> {
+			if (n == null) {
+				toggleGroup.selectToggle(o);
+			} else {
+				tabPane.getSelectionModel().select((Tab) n.getUserData());
+			}
+		});
+
+		HBox leftTabs = new HBox();
+		leftTabs.getStyleClass().add("tab-box");
+		HBox rightTabs = new HBox();
+		rightTabs.getStyleClass().add("tab-box");
+
 		// -------------------------------------------------------------------------------------------------------------
 
-		Tab globalTab = createTab("Global");
+		// GLOBAL
+		Tab globalTab = createTab(Translation.DIALOG_SETTINGS_TAB_GLOBAL);
 		VBox globalBox = new VBox();
 
 		GridPane languageGrid = createGrid();
-		addPairToGrid(languageGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_LANGUAGE), languages);
-		BorderedTitledPane lang = new BorderedTitledPane(Translation.DIALOG_SETTINGS_LANGUAGE, languageGrid);
+		addPairToGrid(languageGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_GLOBAL_LANGUAGE_LANGUAGE), languages);
+		BorderedTitledPane lang = new BorderedTitledPane(Translation.DIALOG_SETTINGS_GLOBAL_LANGUAGE, languageGrid);
 
 		GridPane selectionsGrid = createGrid();
-		addPairToGrid(selectionsGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_REGION_COLOR), regionSelectionColorPreview);
-		addPairToGrid(selectionsGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_CHUNK_COLOR), chunkSelectionColorPreview);
-		addPairToGrid(selectionsGrid, 2, UIFactory.label(Translation.DIALOG_SETTINGS_PASTED_CHUNKS_COLOR), pasteChunksColorPreview);
-		BorderedTitledPane selections = new BorderedTitledPane(Translation.MENU_SELECTION, selectionsGrid);
+		addPairToGrid(selectionsGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_GLOBAL_SELECTION_REGION_COLOR), regionSelectionColorPreview);
+		addPairToGrid(selectionsGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_GLOBAL_SELECTION_CHUNK_COLOR), chunkSelectionColorPreview);
+		addPairToGrid(selectionsGrid, 2, UIFactory.label(Translation.DIALOG_SETTINGS_GLOBAL_SELECTION_PASTED_CHUNKS_COLOR), pasteChunksColorPreview);
+		BorderedTitledPane selections = new BorderedTitledPane(Translation.DIALOG_SETTINGS_GLOBAL_SELECTION, selectionsGrid);
 
 		GridPane miscGrid = createGrid();
-		addPairToGrid(miscGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_MC_SAVES_DIR), mcSavesDir);
-		addPairToGrid(miscGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_PRINT_DEBUG), debugBox);
-		BorderedTitledPane misc = new BorderedTitledPane(Translation.DIALOG_SETTINGS_LANGUAGE, miscGrid);
+		addPairToGrid(miscGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_GLOBAL_MISC_MC_SAVES_DIR), mcSavesDir);
+		addPairToGrid(miscGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_GLOBAL_MISC_PRINT_DEBUG), debugBox);
+		BorderedTitledPane misc = new BorderedTitledPane(Translation.DIALOG_SETTINGS_GLOBAL_MISC, miscGrid);
 
 		globalBox.getChildren().addAll(lang, selections, misc);
 		globalTab.setContent(globalBox);
+		ToggleButton globalToggleButton = createToggleButton(globalTab, Translation.DIALOG_SETTINGS_TAB_GLOBAL);
+		leftTabs.getChildren().add(globalToggleButton);
 
-		Tab processingTab = createTab("Processing");
+		// PROCESSING
+		Tab processingTab = createTab(Translation.DIALOG_SETTINGS_TAB_PROCESSING);
 		VBox processingBox = new VBox();
 
 		GridPane threadGrid = createGrid();
-		addPairToGrid(threadGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_READ_THREADS), readThreadsSlider, UIFactory.attachTextFieldToSlider(readThreadsSlider));
-		addPairToGrid(threadGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_PROCESS_THREADS), processThreadsSlider, UIFactory.attachTextFieldToSlider(processThreadsSlider));
-		addPairToGrid(threadGrid, 2, UIFactory.label(Translation.DIALOG_SETTINGS_WRITE_THREADS), writeThreadsSlider, UIFactory.attachTextFieldToSlider(writeThreadsSlider));
-		BorderedTitledPane threads = new BorderedTitledPane(Translation.DIALOG_SETTINGS_PROCESS_THREADS, threadGrid);
+		addPairToGrid(threadGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_PROCESSING_PROCESS_READ_THREADS), readThreadsSlider, UIFactory.attachTextFieldToSlider(readThreadsSlider));
+		addPairToGrid(threadGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_PROCESSING_PROCESS_PROCESS_THREADS), processThreadsSlider, UIFactory.attachTextFieldToSlider(processThreadsSlider));
+		addPairToGrid(threadGrid, 2, UIFactory.label(Translation.DIALOG_SETTINGS_PROCESSING_PROCESS_WRITE_THREADS), writeThreadsSlider, UIFactory.attachTextFieldToSlider(writeThreadsSlider));
+		BorderedTitledPane threads = new BorderedTitledPane(Translation.DIALOG_SETTINGS_PROCESSING_PROCESS, threadGrid);
 
 		GridPane filesGrid = createGrid();
-		addPairToGrid(filesGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_MAX_FILES), maxLoadedFilesSlider, UIFactory.attachTextFieldToSlider(maxLoadedFilesSlider));
-		BorderedTitledPane files = new BorderedTitledPane(Translation.DIALOG_SETTINGS_MAX_FILES, filesGrid);
+		addPairToGrid(filesGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_PROCESSING_FILES_MAX_FILES), maxLoadedFilesSlider, UIFactory.attachTextFieldToSlider(maxLoadedFilesSlider));
+		BorderedTitledPane files = new BorderedTitledPane(Translation.DIALOG_SETTINGS_PROCESSING_FILES, filesGrid);
 
 		processingBox.getChildren().addAll(threads, files);
 		processingTab.setContent(processingBox);
+		leftTabs.getChildren().add(createToggleButton(processingTab, Translation.DIALOG_SETTINGS_TAB_PROCESSING));
 
-		Tab renderingTab = createTab("Rendering");
+		// RENDERING
+		Tab renderingTab = createTab(Translation.DIALOG_SETTINGS_TAB_RENDERING);
 		VBox renderingBox = new VBox();
 
 		HBox shadingAndSmooth = new HBox();
 
 		GridPane shadingGrid = createGrid();
-		addPairToGrid(shadingGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_SHADE), shadeCheckBox);
-		addPairToGrid(shadingGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_SHADE_WATER), shadeWaterCheckBox);
-		BorderedTitledPane shade = new BorderedTitledPane(Translation.DIALOG_SETTINGS_SHADE, shadingGrid);
+		addPairToGrid(shadingGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_SHADE_SHADE), shadeCheckBox);
+		addPairToGrid(shadingGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_SHADE_SHADE_WATER), shadeWaterCheckBox);
+		BorderedTitledPane shade = new BorderedTitledPane(Translation.DIALOG_SETTINGS_RENDERING_SHADE, shadingGrid);
 
 		GridPane smoothGrid = createGrid();
-		addPairToGrid(smoothGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_SMOOTH_RENDERING), smoothRendering);
-		addPairToGrid(smoothGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_SMOOTH_OVERLAYS), smoothOverlays);
-		BorderedTitledPane smooth = new BorderedTitledPane(Translation.DIALOG_SETTINGS_SMOOTH_RENDERING, smoothGrid);
+		addPairToGrid(smoothGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_SMOOTH_SMOOTH_RENDERING), smoothRendering);
+		addPairToGrid(smoothGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_SMOOTH_SMOOTH_OVERLAYS), smoothOverlays);
+		BorderedTitledPane smooth = new BorderedTitledPane(Translation.DIALOG_SETTINGS_RENDERING_SMOOTH, smoothGrid);
 
 		HBox.setHgrow(shade, Priority.ALWAYS);
 		HBox.setHgrow(smooth, Priority.ALWAYS);
 		shadingAndSmooth.getChildren().addAll(shade, smooth);
 
 		GridPane layerGrid = createGrid();
-		addPairToGrid(layerGrid, 0, UIFactory.label(Translation.DIALOG_WORLD_SETTINGS_RENDER_HEIGHT), heightSlider, UIFactory.attachTextFieldToSlider(heightSlider));
-		addPairToGrid(layerGrid, 1, UIFactory.label(Translation.DIALOG_WORLD_SETTINGS_RENDER_LAYER_ONLY), layerOnly);
-		addPairToGrid(layerGrid, 2, UIFactory.label(Translation.DIALOG_WORLD_SETTINGS_RENDER_CAVES), caves);
-		BorderedTitledPane layers = new BorderedTitledPane(Translation.DIALOG_SETTINGS_SMOOTH_RENDERING, layerGrid);
+		addPairToGrid(layerGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_LAYERS_RENDER_HEIGHT), heightSlider, UIFactory.attachTextFieldToSlider(heightSlider));
+		addPairToGrid(layerGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_LAYERS_RENDER_LAYER_ONLY), layerOnly);
+		addPairToGrid(layerGrid, 2, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_LAYERS_RENDER_CAVES), caves);
+		BorderedTitledPane layers = new BorderedTitledPane(Translation.DIALOG_SETTINGS_RENDERING_LAYERS, layerGrid);
 
 		GridPane backgroundGrid = createGrid();
-		addPairToGrid(backgroundGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_BACKGROUND_PATTERN), tileMapBackgrounds);
-		addPairToGrid(backgroundGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_SHOW_NONEXISTENT_REGIONS), showNonexistentRegionsCheckBox);
-		BorderedTitledPane background = new BorderedTitledPane(Translation.DIALOG_SETTINGS_BACKGROUND_PATTERN, backgroundGrid);
+		addPairToGrid(backgroundGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_BACKGROUND_BACKGROUND_PATTERN), tileMapBackgrounds);
+		addPairToGrid(backgroundGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_BACKGROUND_SHOW_NONEXISTENT_REGIONS), showNonexistentRegionsCheckBox);
+		BorderedTitledPane background = new BorderedTitledPane(Translation.DIALOG_SETTINGS_RENDERING_BACKGROUND, backgroundGrid);
 
 		renderingBox.getChildren().addAll(shadingAndSmooth, layers, background);
 		renderingTab.setContent(renderingBox);
+		ToggleButton renderingToggleButton = createToggleButton(renderingTab, Translation.DIALOG_SETTINGS_TAB_RENDERING);
+		rightTabs.getChildren().add(renderingToggleButton);
 
-		Tab worldTab = createTab("World");
+		// WORLD
+		Tab worldTab = createTab(Translation.DIALOG_SETTINGS_TAB_WORLD);
 		VBox worldBox = new VBox();
 
 		GridPane worldGrid = createGrid();
-		addPairToGrid(worldGrid, 0, UIFactory.label(Translation.DIALOG_WORLD_SETTINGS_POI), poiField);
-		addPairToGrid(worldGrid, 1, UIFactory.label(Translation.DIALOG_WORLD_SETTINGS_ENTITIES), entitiesField);
-		BorderedTitledPane world = new BorderedTitledPane(Translation.DIALOG_SETTINGS_SHADE, worldGrid);
+		addPairToGrid(worldGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_WORLD_PATHS_POI), poiField);
+		addPairToGrid(worldGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_WORLD_PATHS_ENTITIES), entitiesField);
+		BorderedTitledPane world = new BorderedTitledPane(Translation.DIALOG_SETTINGS_WORLD_PATHS, worldGrid);
 
 		worldBox.getChildren().addAll(world);
 		worldTab.setContent(worldBox);
+		ToggleButton worldToggleButton = createToggleButton(worldTab, Translation.DIALOG_SETTINGS_TAB_WORLD);
+		rightTabs.getChildren().add(worldToggleButton);
 
 		// -------------------------------------------------------------------------------------------------------------
 
 		renderingTab.setDisable(Config.getWorldDirs() == null);
 		worldTab.setDisable(Config.getWorldDirs() == null);
+		renderingToggleButton.setDisable(Config.getWorldDirs() == null);
+		worldToggleButton.setDisable(Config.getWorldDirs() == null);
 
 		tabPane.getTabs().addAll(globalTab, processingTab, renderingTab, worldTab);
 
 		final DataProperty<Tab> focusedTab = new DataProperty<>(globalTab);
 		if (Config.getWorldDirs() != null && renderSettings) {
-			tabPane.getSelectionModel().select(renderingTab);
 			focusedTab.set(renderingTab);
+			toggleGroup.selectToggle(renderingToggleButton);
+		} else {
+			toggleGroup.selectToggle(globalToggleButton);
 		}
 
 		Platform.runLater(() -> focusedTab.get().getContent().requestFocus());
 
-		getDialogPane().setContent(tabPane);
+		tabBox.setLeft(leftTabs);
+		tabBox.setRight(rightTabs);
+
+		VBox content = new VBox();
+		content.getChildren().addAll(tabBox, tabPane);
+
+		getDialogPane().setContent(content);
 	}
 
 	private <T extends Node> T withAlignment(T node) {
@@ -349,10 +399,19 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		return node;
 	}
 
-	private Tab createTab(String name) {
-		Tab tab = new Tab(name);
+	private Tab createTab(Translation name) {
+		Tab tab = new Tab();
 		tab.setClosable(false);
+		tab.textProperty().bind(name.getProperty());
 		return tab;
+	}
+
+	private ToggleButton createToggleButton(Tab tab, Translation name) {
+		ToggleButton toggleButton = new ToggleButton();
+		toggleButton.textProperty().bind(name.getProperty());
+		toggleButton.setToggleGroup(toggleGroup);
+		toggleButton.setUserData(tab);
+		return toggleButton;
 	}
 
 	private GridPane createGrid() {

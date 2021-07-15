@@ -9,6 +9,11 @@ import java.util.Objects;
 
 public interface ColorMapping {
 
+	// default tints from plains biome
+	int DEFAULT_GRASS_TINT = 0x91bd59;
+	int DEFAULT_FOLIAGE_TINT = 0x77ab2f;
+	int DEFAULT_WATER_TINT = 0x3f76e4;
+
 	// returns a color based on the block data given as the parameter
 	int getRGB(Object o, int biome);
 
@@ -30,9 +35,9 @@ public interface ColorMapping {
 		private TintInitializer() {}
 
 		static {
-			Arrays.fill(biomeGrassTints, 0);
-			Arrays.fill(biomeFoliageTints, 0);
-			Arrays.fill(biomeWaterTints, 0);
+			Arrays.fill(biomeGrassTints, DEFAULT_GRASS_TINT);
+			Arrays.fill(biomeFoliageTints, DEFAULT_FOLIAGE_TINT);
+			Arrays.fill(biomeWaterTints, DEFAULT_WATER_TINT);
 
 			try (BufferedReader bis = new BufferedReader(
 				new InputStreamReader(Objects.requireNonNull(ColorMapping.class.getClassLoader().getResourceAsStream("mapping/all_biome_colors.txt"))))) {

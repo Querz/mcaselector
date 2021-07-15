@@ -60,7 +60,7 @@ public class Anvil117ChunkRenderer implements ChunkRenderer {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
 
-				//loop over sections
+				// loop over sections
 				boolean waterDepth = false;
 				for (int i = palettes.length - (24 - (absHeight >> 4)); i >= 0; i--) {
 					if (blockStatesArray[i] == null) {
