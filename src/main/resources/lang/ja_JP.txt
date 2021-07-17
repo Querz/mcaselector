@@ -52,10 +52,10 @@ dialog.settings.language;言語
 dialog.settings.read_threads;読み込むスレッド
 dialog.settings.process_threads;プロセススレッド
 dialog.settings.write_threads;書き込むスレッド
-dialog.settings.max_files;ロードできるファイル
-dialog.settings.region_color;選択したリージョンの色
-dialog.settings.chunk_color;選択したチャンクの色
-dialog.settings.pasted_chunks_color;ペーストしたチャンクの色
+dialog.settings.max_files;読み込めるファイル
+dialog.settings.region_color;選択しているリージョンの色
+dialog.settings.chunk_color;選択しているチャンクの色
+dialog.settings.pasted_chunks_color;ペーストするチャンクの色
 dialog.settings.shade;影/透過
 dialog.settings.shade_water;水の透過
 dialog.settings.show_nonexistent_regions;存在しないリージョンを表示する
@@ -124,13 +124,13 @@ dialog.edit_nbt.placeholder.no_chunk_data;チャンクデータが存在しま�
 dialog.edit_nbt.placeholder.no_region_file;リージョンファイルが存在しません
 dialog.edit_array.index;インデックス
 dialog.edit_array.value;値
-dialog.about.title;About
+dialog.about.title;詳細
 dialog.about.header;MCA Selectorについて
 dialog.about.version;バージョン:
 dialog.about.version.unknown;不明
-dialog.about.version.check;更新をチェック
-dialog.about.version.checking;更新をチェックしています...
-dialog.about.version.up_to_date;更新はありません
+dialog.about.version.check;更新
+dialog.about.version.checking;確認中...
+dialog.about.version.up_to_date;なし
 dialog.about.version.error;エラー
 dialog.about.license;ライセンス:
 dialog.about.copyright;著作権:
@@ -154,6 +154,6 @@ dialog.progress.title.saving_chunk;チャンクを保存しています...
 dialog.error.button.copy_to_clipboard;クリップボードにコピー
 dialog.error.title;エラー
 dialog.error.header;エラーが発生しました
-dialog.error.copied_to_clipboard;クリップボードにコピーしました
+dialog.error.copied_to_clipboard;コピーしました
 button.cancel;キャンセル
 button.ok;OK
