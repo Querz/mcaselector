@@ -7,7 +7,7 @@ import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.NamedThreadFactory;
 import net.querz.mcaselector.io.db.CacheDBController;
 import net.querz.mcaselector.io.job.ParseDataJob;
@@ -110,7 +110,7 @@ public class OverlayPool {
 				});
 			} else {
 				// calculate data
-				MCAFilePipe.executeParseData(new ParseDataJob(tile, FileHelper.createRegionDirectories(tile.location), Config.getWorldUUID(),
+				JobHandler.executeParseData(new ParseDataJob(tile, FileHelper.createRegionDirectories(tile.location), Config.getWorldUUID(),
 						(d, u) -> Platform.runLater(() -> {
 					if (u.equals(Config.getWorldUUID())) {
 						if (d == null) {

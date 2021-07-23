@@ -11,7 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.text.Translation;
@@ -80,7 +80,7 @@ public class StatusBar extends StackPane {
 				} catch (InterruptedException ex) {
 					return;
 				}
-				int activeJobs = MCAFilePipe.getActiveJobs();
+				int activeJobs = JobHandler.getActiveJobs();
 				if (before.get() == 0 && activeJobs != 0) {
 					Platform.runLater(() -> {
 						rt.play();

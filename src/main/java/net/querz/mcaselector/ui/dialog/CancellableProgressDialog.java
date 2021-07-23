@@ -4,7 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.UIFactory;
 
@@ -26,7 +26,7 @@ public class CancellableProgressDialog extends ProgressDialog {
 			cancelled = true;
 			getCurrentTask().setLocked(true);
 			getCurrentTask().setIndeterminate(Translation.DIALOG_PROGRESS_CANCELLING.toString());
-			MCAFilePipe.cancelAllJobsAndFlushAsync(() -> Platform.runLater(() -> {
+			JobHandler.cancelAllJobsAndFlushAsync(() -> Platform.runLater(() -> {
 				getCurrentTask().cancelTask();
 				getCurrentTask().done(Translation.DIALOG_PROGRESS_DONE.toString());
 				close();

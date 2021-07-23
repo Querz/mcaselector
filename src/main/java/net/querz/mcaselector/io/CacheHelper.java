@@ -47,7 +47,7 @@ public final class CacheHelper {
 	}
 
 	public static void clearAllCache(TileMap tileMap) {
-		MCAFilePipe.cancelAllJobsAndFlush();
+		JobHandler.cancelAllJobsAndFlush();
 		for (File cacheDir : Config.getCacheDirs()) {
 			FileHelper.deleteDirectory(cacheDir);
 		}
@@ -62,7 +62,7 @@ public final class CacheHelper {
 	// but doesn't remove their images from memory.
 	public static void clearAllCacheAsync(TileMap tileMap, Runnable callback) {
 		Thread clear = new Thread(() -> {
-			MCAFilePipe.cancelAllJobsAndFlush();
+			JobHandler.cancelAllJobsAndFlush();
 			for (File cacheDir : Config.getCacheDirs()) {
 				FileHelper.deleteDirectory(cacheDir);
 			}
