@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
-public class ParseDataJob extends LoadDataJob {
+public class ParseDataJob extends ProcessDataJob {
 
 	private static final Set<Point2i> loading = ConcurrentHashMap.newKeySet();
 

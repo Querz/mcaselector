@@ -1,6 +1,6 @@
 package net.querz.mcaselector.headless;
 
-import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.progress.Progress;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -11,7 +11,7 @@ public class ConsoleProgress implements Progress {
 	private Runnable doneAction;
 
 	public ConsoleProgress() {
-		MCAFilePipe.setTrimSaveData(false);
+		JobHandler.setTrimSaveData(false);
 	}
 
 	@Override

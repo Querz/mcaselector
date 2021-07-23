@@ -259,7 +259,7 @@ public class DialogHelper {
 				Config.setLoadThreads(r.readThreads);
 				Config.setProcessThreads(r.processThreads);
 				Config.setWriteThreads(r.writeThreads);
-				MCAFilePipe.init();
+				JobHandler.init();
 			}
 			Config.setMaxLoadedFiles(r.maxLoadedFiles);
 

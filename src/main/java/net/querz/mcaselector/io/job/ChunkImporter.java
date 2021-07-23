@@ -4,7 +4,7 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
@@ -45,7 +45,7 @@ public final class ChunkImporter {
 				return;
 			}
 
-			MCAFilePipe.clearQueues();
+			JobHandler.clearQueues();
 
 			if (headless) {
 				progressChannel.setMessage("collecting data...");
@@ -97,7 +97,7 @@ public final class ChunkImporter {
 
 				RegionDirectories targetDirs = FileHelper.createRegionDirectories(targetRegion);
 
-				MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetDirs, source, targetRegion, sourceRegions, offset, progressChannel, overwrite, localSourceSelection, sourceInverted, localTargetSelection, targetInverted, ranges, tempFilesMap));
+				JobHandler.addJob(new MCAChunkImporterProcessJob(targetDirs, source, targetRegion, sourceRegions, offset, progressChannel, overwrite, localSourceSelection, sourceInverted, localTargetSelection, targetInverted, ranges, tempFilesMap));
 			}
 		} catch (Exception ex) {
 			Debug.dumpException("failed creating jobs to import chunks", ex);
@@ -157,11 +157,11 @@ public final class ChunkImporter {
 		return result;
 	}
 
-	private static class MCAChunkImporterLoadJob extends LoadDataJob {
+	private static class MCAChunkImporterProcessJob extends ProcessDataJob {
 
-		private final Point2i target;
-		private final Set<Point2i> sources;
 		private final WorldDirectories sourceDirs;
+		private final Set<Point2i> sources;
+		private final Point2i target;
 		private final Point2i offset;
 		private final Progress progressChannel;
 		private final boolean overwrite;
@@ -172,11 +172,11 @@ public final class ChunkImporter {
 		private final List<Range> ranges;
 		private final Map<Point2i, RegionDirectories> tempFilesMap;
 
-		private MCAChunkImporterLoadJob(RegionDirectories targetDirs, WorldDirectories sourceDirs, Point2i target, Set<Point2i> sources, Point2i offset, Progress progressChannel, boolean overwrite, Map<Point2i, Set<Point2i>> sourceChunks, boolean sourceChunksInverted, Set<Point2i> selection, boolean targetChunksInverted, List<Range> ranges, Map<Point2i, RegionDirectories> tempFilesMap) {
+		private MCAChunkImporterProcessJob(RegionDirectories targetDirs, WorldDirectories sourceDirs, Point2i target, Set<Point2i> sources, Point2i offset, Progress progressChannel, boolean overwrite, Map<Point2i, Set<Point2i>> sourceChunks, boolean sourceChunksInverted, Set<Point2i> selection, boolean targetChunksInverted, List<Range> ranges, Map<Point2i, RegionDirectories> tempFilesMap) {
 			super(targetDirs);
-			this.target = target;
-			this.sources = sources;
 			this.sourceDirs = sourceDirs;
+			this.sources = sources;
+			this.target = target;
 			this.offset = offset;
 			this.progressChannel = progressChannel;
 			this.overwrite = overwrite;
@@ -190,7 +190,6 @@ public final class ChunkImporter {
 
 		@Override
 		public void execute() {
-
 			// try to copy files directly if there is no offset, no selection and the target file does not exist
 			if (offset.getX() == 0 && offset.getZ() == 0 && (selection == null || selection.size() == 0)) {
 				boolean allCopied = true;
@@ -347,47 +346,10 @@ public final class ChunkImporter {
 				}
 			}
 
-			MCAFilePipe.executeProcessData(new MCAChunkImporterProcessJob(getRegionDirectories(), sourceDirs, target, sourceDataMappingRegion, sourceDataMappingPoi, sourceDataMappingEntities, destDataRegion, destDataPoi, destDataEntities, offset, progressChannel, overwrite, sourceChunks, sourceChunksInverted, selection, targetChunksInverted, ranges));
-		}
-	}
-
-	private static class MCAChunkImporterProcessJob extends ProcessDataJob {
-
-		private final WorldDirectories sourceDirs;
-		private final Point2i target;
-		private final Map<Point2i, byte[]> sourceDataMappingRegion, sourceDataMappingPoi, sourceDataMappingEntities;
-		private final Point2i offset;
-		private final Progress progressChannel;
-		private final boolean overwrite;
-		private final Map<Point2i, Set<Point2i>> sourceChunks;
-		private final boolean sourceChunksInverted;
-		private final Set<Point2i> selection;
-		private final boolean targetChunksInverted;
-		private final List<Range> ranges;
-
-		private MCAChunkImporterProcessJob(RegionDirectories targetDirs, WorldDirectories sourceDirs, Point2i target, Map<Point2i, byte[]> sourceDataMappingRegion, Map<Point2i, byte[]> sourceDataMappingPoi, Map<Point2i, byte[]> sourceDataMappingEntities, byte[] destDataRegion, byte[] destDataPoi, byte[] destDataEntities, Point2i offset, Progress progressChannel, boolean overwrite, Map<Point2i, Set<Point2i>> sourceChunks, boolean sourceChunksInverted, Set<Point2i> selection, boolean targetChunksInverted, List<Range> ranges) {
-			super(targetDirs, destDataRegion, destDataPoi, destDataEntities);
-			this.sourceDirs = sourceDirs;
-			this.target = target;
-			this.sourceDataMappingRegion = sourceDataMappingRegion;
-			this.sourceDataMappingPoi = sourceDataMappingPoi;
-			this.sourceDataMappingEntities = sourceDataMappingEntities;
-			this.offset = offset;
-			this.progressChannel = progressChannel;
-			this.overwrite = overwrite;
-			this.sourceChunks = sourceChunks;
-			this.sourceChunksInverted = sourceChunksInverted;
-			this.selection = selection;
-			this.targetChunksInverted = targetChunksInverted;
-			this.ranges = ranges;
-		}
-
-		@Override
-		public void execute() {
 			Timer t = new Timer();
 			try {
 				// load target region
-				Region targetRegion = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(),getEntitiesData());
+				Region targetRegion = Region.loadRegion(getRegionDirectories(), destDataRegion, destDataPoi, destDataEntities);
 
 				Set<Point2i> selection = this.selection;
 				// invert target selection if necessary
@@ -442,7 +404,7 @@ public final class ChunkImporter {
 
 				// -----------------------------------------------------------------------------------------------------
 
-				MCAFilePipe.executeSaveData(new MCAChunkImporterSaveJob(getRegionDirectories(), targetRegion, progressChannel));
+				JobHandler.executeSaveData(new MCAChunkImporterSaveJob(getRegionDirectories(), targetRegion, progressChannel));
 
 			} catch (Exception ex) {
 				Debug.dumpException("failed to process chunk import for " + getRegionDirectories().getLocationAsFileName(), ex);

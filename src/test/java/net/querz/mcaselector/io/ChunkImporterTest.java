@@ -1313,13 +1313,13 @@ public class ChunkImporterTest {
 		Config.setDebug(true);
 		Config.setCacheDir(new File("tmp/" + name.getMethodName()));
 		Config.getCacheDir().mkdirs();
-		MCAFilePipe.init();
+		JobHandler.init();
 	}
 
 	@After
 	public void after() throws InterruptedException, TimeoutException, ExecutionException {
 		FutureTask<Object> f = new FutureTask<>(() -> {}, null);
-		MCAFilePipe.cancelAllJobsAndFlushAsync(f);
+		JobHandler.cancelAllJobsAndFlushAsync(f);
 		f.get(60, TimeUnit.SECONDS);
 	}
 

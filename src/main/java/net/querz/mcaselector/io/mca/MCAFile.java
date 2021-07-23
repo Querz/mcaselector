@@ -49,6 +49,10 @@ public abstract class MCAFile<T extends Chunk> {
 		this.chunkConstructor = chunkConstructor;
 	}
 
+	protected MCAFile(Point2i location) {
+		this.location = location;
+	}
+
 // IO STUFF ------------------------------------------------------------------------------------------------------------
 
 	public boolean save() throws IOException {

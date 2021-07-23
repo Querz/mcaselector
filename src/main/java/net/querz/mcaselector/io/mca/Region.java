@@ -5,6 +5,7 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.RegionDirectories;
+import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.range.Range;
@@ -317,20 +318,22 @@ public class Region {
 		}
 	}
 
-	public boolean deleteChunks(Filter<?> filter, Set<Point2i> selection) {
+	public boolean deleteChunks(Filter<?> filter, SelectionData selection) {
 		boolean deleted = false;
+		Point2i regionChunk = location.regionToChunk();
 		for (int i = 0; i < 1024; i++) {
 			RegionChunk region = this.region.getChunk(i);
 			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
 			PoiChunk poi = this.poi == null ? null : this.poi.getChunk(i);
 
-			if (region == null || region.isEmpty() || selection != null && !selection.contains(region.getAbsoluteLocation())) {
+			if (region == null || region.isEmpty() || selection != null && !selection.isRegionSelected(region.getAbsoluteLocation())) {
 				continue;
 			}
 
 			ChunkData filterData = new ChunkData(region, poi, entities);
 
-			if (filter.matches(filterData)) {
+			Point2i chunk = new Point2i(i >> 5, i & 31).add(regionChunk);
+			if ((selection == null || selection.isChunkSelected(chunk)) && filter.matches(filterData)) {
 				deleteChunkIndex(i);
 				deleted = true;
 			}
@@ -338,8 +341,9 @@ public class Region {
 		return deleted;
 	}
 
-	public boolean keepChunks(Filter<?> filter, Set<Point2i> selection) {
+	public boolean keepChunks(Filter<?> filter, SelectionData selection) {
 		boolean deleted = false;
+		Point2i regionChunk = location.regionToChunk();
 		for (int i = 0; i < 1024; i++) {
 			RegionChunk region = this.region.getChunk(i);
 			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
@@ -353,7 +357,8 @@ public class Region {
 
 			// keep chunk if filter AND selection applies
 			// ignore selection if it's null
-			if (!filter.matches(filterData) || selection != null && !selection.contains(region.getAbsoluteLocation())) {
+			Point2i chunk = new Point2i(i >> 5, i & 31).add(regionChunk);
+			if (!filter.matches(filterData) || selection != null && !selection.isChunkSelected(chunk)) {
 				deleteChunkIndex(i);
 				deleted = true;
 			}
@@ -373,9 +378,10 @@ public class Region {
 		}
 	}
 
-	public Set<Point2i> getFilteredChunks(Filter<?> filter, Set<Point2i> selection) {
+	public Set<Point2i> getFilteredChunks(Filter<?> filter, SelectionData selection) {
 		Set<Point2i> chunks = new HashSet<>();
 
+		Point2i regionChunk = location.regionToChunk();
 		for (int i = 0; i < 1024; i++) {
 			RegionChunk region = this.region.getChunk(i);
 			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
@@ -393,7 +399,8 @@ public class Region {
 			}
 
 			try {
-				if ((selection == null || selection.contains(location)) && filter.matches(filterData)) {
+				Point2i chunk = new Point2i(i >> 5, i & 31).add(regionChunk);
+				if ((selection == null || selection.isChunkSelected(chunk)) && filter.matches(filterData)) {
 					chunks.add(location);
 				}
 			} catch (Exception ex) {
@@ -403,13 +410,13 @@ public class Region {
 		return chunks;
 	}
 
-	public void applyFieldChanges(List<Field<?>> fields, boolean force, Set<Point2i> selection) {
+	public void applyFieldChanges(List<Field<?>> fields, boolean force, SelectionData selection) {
 		Timer t = new Timer();
 		for (int x = 0; x < 32; x++) {
 			for (int z = 0; z < 32; z++) {
 				Point2i absoluteLocation = location.regionToChunk().add(x, z);
 				ChunkData chunkData = getChunkDataAt(absoluteLocation);
-				if (selection == null || selection.contains(absoluteLocation)) {
+				if (selection == null || selection.isChunkSelected(absoluteLocation)) {
 					try {
 						chunkData.applyFieldChanges(fields, force);
 					} catch (Exception ex) {

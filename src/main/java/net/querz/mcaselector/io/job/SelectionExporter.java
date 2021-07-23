@@ -1,7 +1,7 @@
 package net.querz.mcaselector.io.job;
 
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.SelectionHelper;
@@ -28,7 +28,7 @@ public final class SelectionExporter {
 			return;
 		}
 
-		MCAFilePipe.clearQueues();
+		JobHandler.clearQueues();
 
 		Map<Point2i, Set<Point2i>> sel = SelectionHelper.getTrueSelection(selection);
 
@@ -37,7 +37,7 @@ public final class SelectionExporter {
 		progressChannel.updateProgress(FileHelper.createMCAFileName(first), 0);
 
 		for (Map.Entry<Point2i, Set<Point2i>> entry : sel.entrySet()) {
-			MCAFilePipe.addJob(new MCADeleteSelectionLoadJob(
+			JobHandler.addJob(new MCADeleteSelectionProcessJob(
 					FileHelper.createRegionDirectories(entry.getKey()),
 					entry.getValue(),
 					destination,
@@ -45,13 +45,13 @@ public final class SelectionExporter {
 		}
 	}
 
-	private static class MCADeleteSelectionLoadJob extends LoadDataJob {
+	private static class MCADeleteSelectionProcessJob extends ProcessDataJob {
 
+		private final Progress progressChannel;
 		private final Set<Point2i> chunksToBeExported;
 		private final WorldDirectories destination;
-		private final Progress progressChannel;
 
-		private MCADeleteSelectionLoadJob(RegionDirectories dirs, Set<Point2i> chunksToBeExported, WorldDirectories destination, Progress progressChannel) {
+		private MCADeleteSelectionProcessJob(RegionDirectories dirs, Set<Point2i> chunksToBeExported, WorldDirectories destination, Progress progressChannel) {
 			super(dirs);
 			this.chunksToBeExported = chunksToBeExported;
 			this.destination = destination;
@@ -108,30 +108,13 @@ public final class SelectionExporter {
 			if (regionData == null && poiData == null && entitiesData == null) {
 				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-			} else {
-				MCAFilePipe.executeProcessData(new MCADeleteSelectionProcessJob(getRegionDirectories(), regionData, poiData, entitiesData, chunksToBeExported, to, progressChannel));
+				return;
 			}
-		}
-	}
 
-	private static class MCADeleteSelectionProcessJob extends ProcessDataJob {
 
-		private final Progress progressChannel;
-		private final Set<Point2i> chunksToBeExported;
-		private final RegionDirectories destinations;
-
-		private MCADeleteSelectionProcessJob(RegionDirectories dirs, byte[] regionData, byte[] poiData, byte[] entitiesData, Set<Point2i> chunksToBeExported, RegionDirectories destinations, Progress progressChannel) {
-			super(dirs, regionData, poiData, entitiesData);
-			this.chunksToBeExported = chunksToBeExported;
-			this.destinations = destinations;
-			this.progressChannel = progressChannel;
-		}
-
-		@Override
-		public void execute() {
 			try {
 				// only load headers, because we don't care for chunk data
-				Region region = Region.loadRegionHeaders(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
+				Region region = Region.loadRegionHeaders(getRegionDirectories(), regionData, poiData, entitiesData);
 
 				Set<Point2i> inverted = new HashSet<>(Tile.CHUNKS - chunksToBeExported.size());
 				Point2i origin = chunksToBeExported.iterator().next().chunkToRegion().regionToChunk();
@@ -145,7 +128,7 @@ public final class SelectionExporter {
 				}
 
 				region.deleteChunks(inverted);
-				MCAFilePipe.executeSaveData(new MCADeleteSelectionSaveJob(getRegionDirectories(), region, destinations, progressChannel));
+				JobHandler.executeSaveData(new MCADeleteSelectionSaveJob(getRegionDirectories(), region, to, progressChannel));
 
 			} catch (Exception ex) {
 				Debug.dumpException("error deleting chunk indices in " + getRegionDirectories().getLocationAsFileName(), ex);

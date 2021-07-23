@@ -11,7 +11,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.io.SelectionData;
@@ -181,7 +181,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		} while ((parser = overlayParsers.get(index)) == null || !parser.isActive() || !parser.isValid() || parser.getType() != overlayParser.get().getType());
 
 		setOverlay(parser);
-		MCAFilePipe.clearParserQueue();
+		JobHandler.cancelParserQueue();
 		update();
 	}
 
@@ -203,7 +203,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		} while ((parser = overlayParsers.get(index)) != null && (!parser.isActive() || !parser.isValid() || overlayParser.get() != null && parser.getType() == overlayParser.get().getType()));
 
 		setOverlay(parser);
-		MCAFilePipe.clearParserQueue();
+		JobHandler.cancelParserQueue();
 		update();
 	}
 
@@ -211,7 +211,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		if (overlays == null) {
 			overlayParsers = Collections.singletonList(null);
 			setOverlay(null);
-			MCAFilePipe.clearParserQueue();
+			JobHandler.cancelParserQueue();
 			return;
 		}
 		overlayParsers = new ArrayList<>(overlays.size() + 1);
@@ -219,7 +219,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		overlayParsers.sort(Comparator.comparing(OverlayParser::getType));
 		overlayParsers.add(null);
 		setOverlay(null);
-		MCAFilePipe.clearParserQueue();
+		JobHandler.cancelParserQueue();
 	}
 
 	public void setOverlay(OverlayParser overlay) {
@@ -456,8 +456,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		Timer t = new Timer();
 
 		// removes jobs from queue that are no longer needed
-		MCAFilePipe.validateJobs(j -> {
-			if (j instanceof RegionImageGenerator.MCAImageLoadJob job) {
+		JobHandler.validateJobs(j -> {
+			if (j instanceof RegionImageGenerator.MCAImageProcessJob job) {
 				if (!job.getTile().isVisible(this)) {
 					Debug.dumpf("removing %s for tile %s from queue", job.getClass().getSimpleName(), job.getTile().getLocation());
 					RegionImageGenerator.setLoading(job.getTile(), false);
