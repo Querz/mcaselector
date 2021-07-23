@@ -204,7 +204,7 @@ public class OptionBar extends BorderPane {
 		openRegion.setOnAction(e -> DialogHelper.openRegion(tileMap, primaryStage));
 		settings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage, false));
 		renderSettings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage, true));
-		quit.setOnAction(e -> System.exit(0));
+		quit.setOnAction(e -> DialogHelper.quit(tileMap, primaryStage));
 		chunkGrid.setOnAction(e -> tileMap.setShowChunkGrid(chunkGrid.isSelected()));
 		regionGrid.setOnAction(e -> tileMap.setShowRegionGrid(regionGrid.isSelected()));
 		goTo.setOnAction(e -> DialogHelper.gotoCoordinate(tileMap, primaryStage));

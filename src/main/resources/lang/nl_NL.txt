@@ -19,7 +19,7 @@ menu.about;Over
 menu.file.open_world;Open een wereld
 menu.file.open;Open een regio
 menu.file.settings;Instellingen
-menu.file.world_settings;Wereldinstellingen
+menu.file.render_settings;
 menu.file.quit;Stoppen
 menu.view.chunk_grid;Chunk Raster
 menu.view.region_grid;Region Raster
@@ -48,29 +48,43 @@ menu.tools.next_overlay;Volgende overlay
 menu.tools.next_overlay_type;Overlaytype
 dialog.select_world.title;Selecteer een dimensie
 dialog.settings.title;Instellingen
-dialog.settings.language;Taal
-dialog.settings.read_threads;Lees Threads
-dialog.settings.process_threads;Verwerk Threads
-dialog.settings.write_threads;Schrijf Threads
-dialog.settings.max_files;Maximaal geladen bestanden
-dialog.settings.region_color;Region selectie kleur
-dialog.settings.chunk_color;Chunk selectie kleur
-dialog.settings.pasted_chunks_color;Kleur van ingevoegde chunks
-dialog.settings.shade;Schaduw
-dialog.settings.shade_water;Shaduw water
-dialog.settings.show_nonexistent_regions;Toon niet-bestaande regio's
-dialog.settings.smooth_rendering;Glad maken
-dialog.settings.smooth_overlays;Vloeiende overlays
-dialog.settings.background_pattern;Patroon van de achtergrond
-dialog.settings.mc_saves_dir;Minecraft-map
-dialog.settings.print_debug;Print foutopsporingsberichten
-dialog.settings.show_log_file;Toon logbestand
+dialog.settings.global.language;
+dialog.settings.global.language.language;
+dialog.settings.processing.process.read_threads;
+dialog.settings.processing.process.process_threads;
+dialog.settings.processing.process;
+dialog.settings.processing.process.write_threads;
+dialog.settings.processing.files.max_files;
+dialog.settings.global.selection.region_color;
+dialog.settings.global.selection.chunk_color;
+dialog.settings.global.selection.pasted_chunks_color;
+dialog.settings.rendering.shade.shade;
+dialog.settings.rendering.shade;
+dialog.settings.rendering.shade.shade_water;
+dialog.settings.rendering.background.show_nonexistent_regions;
+dialog.settings.rendering.smooth.smooth_rendering;
+dialog.settings.rendering.smooth.smooth_overlays;
+dialog.settings.rendering.background.background_pattern;
+dialog.settings.rendering.background;
+dialog.settings.global.misc.mc_saves_dir;
+dialog.settings.global.misc.print_debug;
+dialog.settings.global.misc.show_log_file;
 dialog.settings.reset;Reset
-dialog.world_settings.title;Wereldinstellingen
-dialog.world_settings.poi;POI
-dialog.world_settings.entities;Entiteiten
-dialog.world_settings.render_height;Geef hoogte weer
-dialog.world_settings.render_layer_only;Alleen laag renderen
+dialog.settings.tab_global;
+dialog.settings.tab_processing;
+dialog.settings.tab_rendering;
+dialog.settings.tab_world;
+dialog.settings.global.misc;
+dialog.settings.processing.files;
+dialog.settings.rendering.smooth;
+dialog.settings.global.selection;
+dialog.settings.world.paths;
+dialog.settings.world.paths.poi;
+dialog.settings.world.paths.entities;
+dialog.settings.rendering.layers.render_height;
+dialog.settings.rendering.layers.render_layer_only;
+dialog.settings.rendering.layers;
+dialog.settings.rendering.layers.render_caves;
 dialog.goto.title;Ga naar locatie
 dialog.confirmation.question;Weet je het zeker?
 dialog.delete_chunks_confirmation.title;Chunks verwijderen
@@ -155,5 +169,7 @@ dialog.error.button.copy_to_clipboard;Kopieer naar klembord
 dialog.error.title;Fout
 dialog.error.header;Er is een fout opgetreden
 dialog.error.copied_to_clipboard;Gekopieerd naar het klembord!
+dialog.unsaved_changes.title;
+dialog.unsaved_changes.header;
 button.cancel;Annuleren
 button.ok;OK

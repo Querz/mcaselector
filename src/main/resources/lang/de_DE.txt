@@ -19,7 +19,7 @@ menu.about;Info
 menu.file.open_world;Welt öffnen
 menu.file.open;Region öffnen
 menu.file.settings;Einstellungen
-menu.file.world_settings;Welteinstellungen
+menu.file.render_settings;Rendereinstellungen
 menu.file.quit;Beenden
 menu.view.chunk_grid;Chunk Gitter
 menu.view.region_grid;Region Gitter
@@ -48,29 +48,43 @@ menu.tools.next_overlay;Nächstes Overlay
 menu.tools.next_overlay_type;Overlaytyp
 dialog.select_world.title;Dimension auswählen
 dialog.settings.title;Einstellungen
-dialog.settings.language;Sprache
-dialog.settings.read_threads;Threads (lesen)
-dialog.settings.process_threads;Threads (verarbeiten)
-dialog.settings.write_threads;Threads (schreiben)
-dialog.settings.max_files;Max. geladene Dateien
-dialog.settings.region_color;Farbe selektierte Region
-dialog.settings.chunk_color;Farbe selektierter Chunk
-dialog.settings.pasted_chunks_color;Farbe eingefügter Chunks
-dialog.settings.shade;Schatten
-dialog.settings.shade_water;Wassertiefe
-dialog.settings.show_nonexistent_regions;nicht vorhandene Regionen anzeigen
-dialog.settings.smooth_rendering;Glatt rendern
-dialog.settings.smooth_overlays;Glatte Overlays
-dialog.settings.background_pattern;Hintergrundmuster
-dialog.settings.mc_saves_dir;MC Speicherort
-dialog.settings.print_debug;Debug
-dialog.settings.show_log_file;Log-Datei anzeigen
+dialog.settings.global.language;Sprache
+dialog.settings.global.language.language;Sprache
+dialog.settings.processing.process.read_threads;Threads (lesen)
+dialog.settings.processing.process.process_threads;Threads (verarbeiten)
+dialog.settings.processing.process;Verarbeiten
+dialog.settings.processing.process.write_threads;Threads (schreiben)
+dialog.settings.processing.files.max_files;Max. geladene Dateien
+dialog.settings.global.selection.region_color;Farbe selektierter Region
+dialog.settings.global.selection.chunk_color;Farbe selektierter Chunks
+dialog.settings.global.selection.pasted_chunks_color;Farbe eingefügter Chunks
+dialog.settings.rendering.shade.shade;Schatten
+dialog.settings.rendering.shade;Schatten
+dialog.settings.rendering.shade.shade_water;Wassertiefe
+dialog.settings.rendering.background.show_nonexistent_regions;Nicht vorhandene Regionen anzeigen
+dialog.settings.rendering.smooth.smooth_rendering;Glatt rendern
+dialog.settings.rendering.smooth.smooth_overlays;Glatte Overlays
+dialog.settings.rendering.background.background_pattern;Hintergrundmuster
+dialog.settings.rendering.background;Hintergrund
+dialog.settings.global.misc.mc_saves_dir;MC Speicherort
+dialog.settings.global.misc.print_debug;Debug
+dialog.settings.global.misc.show_log_file;Logdatei anzeigen
 dialog.settings.reset;Zurücksetzen
-dialog.world_settings.title;Welteinstellungen
-dialog.world_settings.poi;POI
-dialog.world_settings.entities;Entities
-dialog.world_settings.render_height;Renderhöhe
-dialog.world_settings.render_layer_only;Nur Ebene rendern
+dialog.settings.tab_global;
+dialog.settings.tab_processing;Verarbeiten
+dialog.settings.tab_rendering;Rendern
+dialog.settings.tab_world;Welt
+dialog.settings.global.misc;Sonstiges
+dialog.settings.processing.files;Dateien
+dialog.settings.rendering.smooth;Glätten
+dialog.settings.global.selection;Selektion
+dialog.settings.world.paths;Pfade
+dialog.settings.world.paths.poi;POI
+dialog.settings.world.paths.entities;Entities
+dialog.settings.rendering.layers.render_height;Renderhöhe
+dialog.settings.rendering.layers.render_layer_only;Nur Ebene rendern
+dialog.settings.rendering.layers;Ebenen
+dialog.settings.rendering.layers.render_caves;Höhlen rendern
 dialog.goto.title;Gehe zu Koordinaten
 dialog.confirmation.question;Bist Du dir sicher?
 dialog.delete_chunks_confirmation.title;Chunks löschen
@@ -155,5 +169,7 @@ dialog.error.button.copy_to_clipboard;In die Zwischenablage
 dialog.error.title;Fehler
 dialog.error.header;Fehler
 dialog.error.copied_to_clipboard;In die Zwischenablage kopiert!
+dialog.unsaved_changes.title;Ungespeicherte Änderungen
+dialog.unsaved_changes.header;Es gibt ungespeicherte Änderungen.
 button.cancel;Abbrechen
 button.ok;OK

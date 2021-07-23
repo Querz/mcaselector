@@ -19,7 +19,7 @@ menu.about;Om
 menu.file.open_world;Öppna en värld
 menu.file.open;Öppna en region
 menu.file.settings;Inställningar
-menu.file.world_settings;Världsinställningar
+menu.file.render_settings;
 menu.file.quit;Avsluta
 menu.view.chunk_grid;Chunkrutnät
 menu.view.region_grid;Regionrutnät
@@ -48,29 +48,43 @@ menu.tools.next_overlay;Nästa överlägg
 menu.tools.next_overlay_type;Överläggstyp
 dialog.select_world.title;Välj en dimension
 dialog.settings.title;Inställningar
-dialog.settings.language;Språk
-dialog.settings.read_threads;Läsningstrådar
-dialog.settings.process_threads;Processeringstrådar
-dialog.settings.write_threads;Skrivningstrådar
-dialog.settings.max_files;Maximalt antal laddade filer
-dialog.settings.region_color;Regionmarkeringsfärg
-dialog.settings.chunk_color;Chunkmarkeringsfärg
-dialog.settings.pasted_chunks_color;Färg på inklistrade chunks
-dialog.settings.shade;Skugga
-dialog.settings.shade_water;Vattendjup
-dialog.settings.show_nonexistent_regions;Visa regioner som inte finns
-dialog.settings.smooth_rendering;Gör jämn
-dialog.settings.smooth_overlays;Mjuka överlägg
-dialog.settings.background_pattern;Bakgrundsmönster
-dialog.settings.mc_saves_dir;Minecraft-katalog
-dialog.settings.print_debug;Skriv ut felsökningsmeddelanden
-dialog.settings.show_log_file;Visa loggfil
+dialog.settings.global.language;
+dialog.settings.global.language.language;
+dialog.settings.processing.process.read_threads;
+dialog.settings.processing.process.process_threads;
+dialog.settings.processing.process;
+dialog.settings.processing.process.write_threads;
+dialog.settings.processing.files.max_files;
+dialog.settings.global.selection.region_color;
+dialog.settings.global.selection.chunk_color;
+dialog.settings.global.selection.pasted_chunks_color;
+dialog.settings.rendering.shade.shade;
+dialog.settings.rendering.shade;
+dialog.settings.rendering.shade.shade_water;
+dialog.settings.rendering.background.show_nonexistent_regions;
+dialog.settings.rendering.smooth.smooth_rendering;
+dialog.settings.rendering.smooth.smooth_overlays;
+dialog.settings.rendering.background.background_pattern;
+dialog.settings.rendering.background;
+dialog.settings.global.misc.mc_saves_dir;
+dialog.settings.global.misc.print_debug;
+dialog.settings.global.misc.show_log_file;
 dialog.settings.reset;Återställ
-dialog.world_settings.title;Världsinställningar
-dialog.world_settings.poi;POI
-dialog.world_settings.entities;Entities
-dialog.world_settings.render_height;Renderingshöjd
-dialog.world_settings.render_layer_only;Rendera endast lager
+dialog.settings.tab_global;
+dialog.settings.tab_processing;
+dialog.settings.tab_rendering;
+dialog.settings.tab_world;
+dialog.settings.global.misc;
+dialog.settings.processing.files;
+dialog.settings.rendering.smooth;
+dialog.settings.global.selection;
+dialog.settings.world.paths;
+dialog.settings.world.paths.poi;
+dialog.settings.world.paths.entities;
+dialog.settings.rendering.layers.render_height;
+dialog.settings.rendering.layers.render_layer_only;
+dialog.settings.rendering.layers;
+dialog.settings.rendering.layers.render_caves;
 dialog.goto.title;Gå till plats
 dialog.confirmation.question;Är du säker?
 dialog.delete_chunks_confirmation.title;Radera chunks
@@ -155,5 +169,7 @@ dialog.error.button.copy_to_clipboard;Kopiera till urklipp
 dialog.error.title;Fel
 dialog.error.header;Ett fel uppstod
 dialog.error.copied_to_clipboard;Kopieras till urklipp!
+dialog.unsaved_changes.title;
+dialog.unsaved_changes.header;
 button.cancel;Avbryt
 button.ok;OK

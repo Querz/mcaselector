@@ -19,7 +19,7 @@ menu.about;O programie...
 menu.file.open_world;Otwórz świat...
 menu.file.open;Otwórz region...
 menu.file.settings;Ustawienia
-menu.file.world_settings;Ustawienia świata
+menu.file.render_settings;
 menu.file.quit;Wyjdź
 menu.view.chunk_grid;Siatka chunków
 menu.view.region_grid;Siatka regionów
@@ -48,29 +48,43 @@ menu.tools.next_overlay;Następna nakładka
 menu.tools.next_overlay_type;Typ nakładki
 dialog.select_world.title;Wybierz wymiar
 dialog.settings.title;Ustawienia
-dialog.settings.language;Język
-dialog.settings.read_threads;Read Threads
-dialog.settings.process_threads;Process Threads
-dialog.settings.write_threads;Write Threads
-dialog.settings.max_files;Maks. liczba wczytanych plików
-dialog.settings.region_color;Kolor zaznaczenia regionu
-dialog.settings.chunk_color;Kolor zaznaczenia chunku
-dialog.settings.pasted_chunks_color;Kolor wstawionych chunku
-dialog.settings.shade;Cieniuj
-dialog.settings.shade_water;Cieniuj wodę
-dialog.settings.show_nonexistent_regions;Pokaż nieistniejące regiony
-dialog.settings.smooth_rendering;Renderuj gładko
-dialog.settings.smooth_overlays;Gładkie nakładki
-dialog.settings.background_pattern;Wzór tła
-dialog.settings.mc_saves_dir;Katalog Minecraft
-dialog.settings.print_debug;Wyświetlaj zaawansowane informacje
-dialog.settings.show_log_file;Pokaż plik dziennika
+dialog.settings.global.language;
+dialog.settings.global.language.language;
+dialog.settings.processing.process.read_threads;
+dialog.settings.processing.process.process_threads;
+dialog.settings.processing.process;
+dialog.settings.processing.process.write_threads;
+dialog.settings.processing.files.max_files;
+dialog.settings.global.selection.region_color;
+dialog.settings.global.selection.chunk_color;
+dialog.settings.global.selection.pasted_chunks_color;
+dialog.settings.rendering.shade.shade;
+dialog.settings.rendering.shade;
+dialog.settings.rendering.shade.shade_water;
+dialog.settings.rendering.background.show_nonexistent_regions;
+dialog.settings.rendering.smooth.smooth_rendering;
+dialog.settings.rendering.smooth.smooth_overlays;
+dialog.settings.rendering.background.background_pattern;
+dialog.settings.rendering.background;
+dialog.settings.global.misc.mc_saves_dir;
+dialog.settings.global.misc.print_debug;
+dialog.settings.global.misc.show_log_file;
 dialog.settings.reset;Resetuj
-dialog.world_settings.title;Ustawienia świata
-dialog.world_settings.poi;POI
-dialog.world_settings.entities;Podmioty
-dialog.world_settings.render_height;Wysokość renderowania
-dialog.world_settings.render_layer_only;Renderuj tylko warstwę
+dialog.settings.tab_global;
+dialog.settings.tab_processing;
+dialog.settings.tab_rendering;
+dialog.settings.tab_world;
+dialog.settings.global.misc;
+dialog.settings.processing.files;
+dialog.settings.rendering.smooth;
+dialog.settings.global.selection;
+dialog.settings.world.paths;
+dialog.settings.world.paths.poi;
+dialog.settings.world.paths.entities;
+dialog.settings.rendering.layers.render_height;
+dialog.settings.rendering.layers.render_layer_only;
+dialog.settings.rendering.layers;
+dialog.settings.rendering.layers.render_caves;
 dialog.goto.title;Idź do miejsca
 dialog.confirmation.question;Jesteś pewien?
 dialog.delete_chunks_confirmation.title;Usuń chunki
@@ -155,5 +169,7 @@ dialog.error.button.copy_to_clipboard;Skopiuj do schowka
 dialog.error.title;Błąd
 dialog.error.header;Wystąpił błąd
 dialog.error.copied_to_clipboard;Skopiowane do schowka!
+dialog.unsaved_changes.title;
+dialog.unsaved_changes.header;
 button.cancel;Anuluj
 button.ok;OK

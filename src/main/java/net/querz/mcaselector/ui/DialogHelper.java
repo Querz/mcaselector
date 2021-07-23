@@ -28,22 +28,8 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.TileMapSelection;
-import net.querz.mcaselector.ui.dialog.AboutDialog;
-import net.querz.mcaselector.ui.dialog.CancellableProgressDialog;
-import net.querz.mcaselector.ui.dialog.ChangeFieldsConfirmationDialog;
-import net.querz.mcaselector.ui.dialog.ChangeNBTDialog;
-import net.querz.mcaselector.ui.dialog.DeleteConfirmationDialog;
-import net.querz.mcaselector.ui.dialog.ErrorDialog;
-import net.querz.mcaselector.ui.dialog.ExportConfirmationDialog;
-import net.querz.mcaselector.ui.dialog.FilterChunksDialog;
-import net.querz.mcaselector.ui.dialog.GotoDialog;
-import net.querz.mcaselector.ui.dialog.ImageExportConfirmationDialog;
-import net.querz.mcaselector.ui.dialog.ImportConfirmationDialog;
-import net.querz.mcaselector.ui.dialog.NBTEditorDialog;
-import net.querz.mcaselector.ui.dialog.OverlayEditorDialog;
-import net.querz.mcaselector.ui.dialog.ProgressDialog;
-import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
-import net.querz.mcaselector.ui.dialog.SettingsDialog;
+import net.querz.mcaselector.ui.dialog.*;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -167,6 +153,19 @@ public class DialogHelper {
 				default -> Debug.dump("i have no idea how you got no selection there...");
 			}
 		});
+	}
+
+	public static void quit(TileMap tileMap, Stage primaryStage) {
+		if (tileMap.getSelectedChunks() > 0 || tileMap.isSelectionInverted()) {
+			Optional<ButtonType> result = new ConfirmationDialog(primaryStage, Translation.DIALOG_UNSAVED_CHANGES_TITLE, Translation.DIALOG_UNSAVED_CHANGES_HEADER, "unsaved-changes").showAndWait();
+			result.ifPresent(r -> {
+				if (r == ButtonType.OK) {
+					System.exit(0);
+				}
+			});
+		} else {
+			System.exit(0);
+		}
 	}
 
 	public static void editOverlays(TileMap tileMap, Stage primaryStage) {

@@ -19,7 +19,7 @@ menu.about;À propos
 menu.file.open_world;Ouvrir un monde
 menu.file.open;Ouvrir une région
 menu.file.settings;Options
-menu.file.world_settings;Paramètres du monde
+menu.file.render_settings;
 menu.file.quit;Quitter
 menu.view.chunk_grid;Grille des chunks
 menu.view.region_grid;Grille des régions
@@ -48,29 +48,43 @@ menu.tools.next_overlay;Superposition suivante
 menu.tools.next_overlay_type;Type de superposition
 dialog.select_world.title;Sélectionnez un monde
 dialog.settings.title;Options
-dialog.settings.language;Langage
-dialog.settings.read_threads;Threads de lecture
-dialog.settings.process_threads;Threads de calcul
-dialog.settings.write_threads;Threads d'écriture
-dialog.settings.max_files;Maximum de fichiers chargés
-dialog.settings.region_color;Couleur de sélection des régions
-dialog.settings.chunk_color;Couleur de sélection des chunks
-dialog.settings.pasted_chunks_color;Couleur des chunks insérés
-dialog.settings.shade;Ombre
-dialog.settings.shade_water;Profondeur d'eau
-dialog.settings.show_nonexistent_regions;Afficher les régions inexistantes
-dialog.settings.smooth_rendering;Rendre lisse
-dialog.settings.smooth_overlays;Superpositions lisses
-dialog.settings.background_pattern;Motif de fond
-dialog.settings.mc_saves_dir;Directoire de MC
-dialog.settings.print_debug;Logger des messages de debug
-dialog.settings.show_log_file;Afficher le fichier journal
+dialog.settings.global.language;
+dialog.settings.global.language.language;
+dialog.settings.processing.process.read_threads;
+dialog.settings.processing.process.process_threads;
+dialog.settings.processing.process;
+dialog.settings.processing.process.write_threads;
+dialog.settings.processing.files.max_files;
+dialog.settings.global.selection.region_color;
+dialog.settings.global.selection.chunk_color;
+dialog.settings.global.selection.pasted_chunks_color;
+dialog.settings.rendering.shade.shade;
+dialog.settings.rendering.shade;
+dialog.settings.rendering.shade.shade_water;
+dialog.settings.rendering.background.show_nonexistent_regions;
+dialog.settings.rendering.smooth.smooth_rendering;
+dialog.settings.rendering.smooth.smooth_overlays;
+dialog.settings.rendering.background.background_pattern;
+dialog.settings.rendering.background;
+dialog.settings.global.misc.mc_saves_dir;
+dialog.settings.global.misc.print_debug;
+dialog.settings.global.misc.show_log_file;
 dialog.settings.reset;Réinitialiser
-dialog.world_settings.title;Paramètres du monde
-dialog.world_settings.poi;POI
-dialog.world_settings.entities;Entités
-dialog.world_settings.render_height;Hauteur de rendu
-dialog.world_settings.render_layer_only;Couche de rendu uniquement
+dialog.settings.tab_global;
+dialog.settings.tab_processing;
+dialog.settings.tab_rendering;
+dialog.settings.tab_world;
+dialog.settings.global.misc;
+dialog.settings.processing.files;
+dialog.settings.rendering.smooth;
+dialog.settings.global.selection;
+dialog.settings.world.paths;
+dialog.settings.world.paths.poi;
+dialog.settings.world.paths.entities;
+dialog.settings.rendering.layers.render_height;
+dialog.settings.rendering.layers.render_layer_only;
+dialog.settings.rendering.layers;
+dialog.settings.rendering.layers.render_caves;
 dialog.goto.title;Aller à une position
 dialog.confirmation.question;Êtes-vous sur?
 dialog.delete_chunks_confirmation.title;Supprimer des chunks
@@ -155,5 +169,7 @@ dialog.error.button.copy_to_clipboard;Copier dans le presse-papier
 dialog.error.title;Erreur
 dialog.error.header;Une erreur s'est produite
 dialog.error.copied_to_clipboard;Copié dans le presse-papier!
+dialog.unsaved_changes.title;
+dialog.unsaved_changes.header;
 button.cancel;Annuler
 button.ok;OK
