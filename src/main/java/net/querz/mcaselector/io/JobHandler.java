@@ -16,13 +16,15 @@ import java.util.function.Predicate;
 
 public final class JobHandler {
 
-	private static ThreadPoolExecutor processExecutor;
+	private static PausableThreadPoolExecutor processExecutor;
 
 	private static ThreadPoolExecutor saveExecutor;
 
 	private static ThreadPoolExecutor parseExecutor;
 
 	private static final AtomicInteger allTasks = new AtomicInteger(0);
+
+	private static final AtomicInteger activeTasks = new AtomicInteger(0);
 
 	private static boolean trimSaveData = true;
 
@@ -52,7 +54,7 @@ public final class JobHandler {
 			parseExecutor.shutdownNow();
 		}
 
-		processExecutor = new ThreadPoolExecutor(
+		processExecutor = new PausableThreadPoolExecutor(
 				Config.getProcessThreads(), Config.getProcessThreads(),
 				0L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<>(),
@@ -78,10 +80,11 @@ public final class JobHandler {
 		}
 
 		// caching is not a priority over processing, so we just skip caching if caching is the bottleneck
-		if (saveExecutor.getQueue().size() > Config.getMaxLoadedFiles()) {
+		if (activeTasks.get() >= Config.getMaxLoadedFiles()) {
 			@SuppressWarnings({"unchecked", "rawtypes"})
 			LinkedBlockingDeque<WrapperJob> queue = (LinkedBlockingDeque) saveExecutor.getQueue();
-			while (queue.size() > Config.getMaxLoadedFiles()) {
+			System.out.println("trim active tasks: " + activeTasks.get());
+			while (activeTasks.get() >= Config.getMaxLoadedFiles()) {
 				WrapperJob job = queue.pollLast();
 				if (job != null) {
 					SaveDataJob<?> saveDataJob = (SaveDataJob<?>) job.job;
@@ -194,7 +197,7 @@ public final class JobHandler {
 
 		Job job;
 		boolean done = false;
-		final Object lock = new Object();
+		final static Object lock = new Object();
 
 		WrapperJob(Job job) {
 			allTasks.incrementAndGet();
@@ -204,8 +207,24 @@ public final class JobHandler {
 		@Override
 		public void run() {
 			try {
+				synchronized (lock) {
+					int i = activeTasks.incrementAndGet();
+					System.out.println("+ active tasks: " + i);
+					if (i >= Config.getMaxLoadedFiles()) {
+						processExecutor.pause("too many running tasks, waiting");
+					}
+				}
+
 				job.run();
 			} finally {
+				synchronized (lock) {
+					int i = activeTasks.decrementAndGet();
+					System.out.println("- active tasks: " + i);
+					if (i < Config.getMaxLoadedFiles()) {
+						processExecutor.resume("freed up enough space");
+					}
+				}
+
 				synchronized (lock) {
 					if (!done) {
 						allTasks.decrementAndGet();

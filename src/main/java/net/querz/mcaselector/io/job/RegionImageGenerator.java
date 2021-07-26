@@ -50,7 +50,7 @@ public final class RegionImageGenerator {
 				return;
 			}
 			if (cacheEligibilityChecker != null && cacheEligibilityChecker.apply(regionMCAFile.getLocation())) {
-				if (cachedMCAFiles.size() > Config.getMaxLoadedFiles()) {
+				if (cachedMCAFiles.size() > Math.min(Config.getMaxLoadedFiles(), 6)) {
 					cachedMCAFiles.entrySet().iterator().next();
 				}
 				if (!cachedMCAFiles.containsKey(regionMCAFile.getLocation())) {
