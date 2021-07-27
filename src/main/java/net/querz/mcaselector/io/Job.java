@@ -14,4 +14,14 @@ public abstract class Job implements Runnable {
 
 	// can be overwritten by individual jobs when something has to be done when this job is cancelled
 	public void cancel() {}
+
+	private boolean done;
+
+	public void done() {
+		this.done = true;
+	}
+
+	public boolean isDone() {
+		return done;
+	}
 }

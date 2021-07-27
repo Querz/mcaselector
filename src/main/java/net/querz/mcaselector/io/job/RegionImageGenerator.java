@@ -50,10 +50,10 @@ public final class RegionImageGenerator {
 				return;
 			}
 			if (cacheEligibilityChecker != null && cacheEligibilityChecker.apply(regionMCAFile.getLocation())) {
-				if (cachedMCAFiles.size() > Math.min(Config.getMaxLoadedFiles(), 6)) {
-					cachedMCAFiles.entrySet().iterator().next();
-				}
 				if (!cachedMCAFiles.containsKey(regionMCAFile.getLocation())) {
+					if (cachedMCAFiles.size() >= Config.getMaxLoadedFiles()) {
+						cachedMCAFiles.remove(cachedMCAFiles.keySet().iterator().next());
+					}
 					cachedMCAFiles.put(regionMCAFile.getLocation(), regionMCAFile.minimizeForRendering());
 				}
 			}
@@ -163,6 +163,7 @@ public final class RegionImageGenerator {
 				if (progressChannel != null) {
 					progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 				}
+				done();
 				return;
 			}
 
@@ -284,6 +285,8 @@ public final class RegionImageGenerator {
 			}
 
 			Debug.dumpf("took %s to cache image of %s to %s", t, tile.getMCAFile().getName(), FileHelper.createPNGFileName(tile.getLocation()));
+
+			done();
 		}
 
 		@Override
