@@ -52,7 +52,7 @@ public final class SelectionDeleter {
 		}
 
 		@Override
-		public void execute() {
+		public boolean execute() {
 			// delete whole files if everything is selected
 			if (selection == null) {
 				// delete region
@@ -77,7 +77,7 @@ public final class SelectionDeleter {
 				}
 
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				return true;
 			}
 
 			byte[] regionData = loadRegionHeader();
@@ -87,7 +87,7 @@ public final class SelectionDeleter {
 			if (regionData == null && poiData == null && entitiesData == null) {
 				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				return true;
 			}
 
 			// load MCAFile
@@ -98,11 +98,13 @@ public final class SelectionDeleter {
 				region.deleteChunks(selection);
 
 				JobHandler.executeSaveData(new MCADeleteSelectionSaveJob(getRegionDirectories(), region, progressChannel));
+				return false;
 
 			} catch (Exception ex) {
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				Debug.errorf("error deleting chunk indices in %s", getRegionDirectories().getLocationAsFileName());
 			}
+			return true;
 		}
 	}
 

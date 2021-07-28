@@ -152,7 +152,7 @@ public abstract class MCAFile<T extends Chunk> {
 			// loop over all offsets, readHeader the raw byte data (complete sections) and write it to new file
 			for (int i = 0; i < offsets.length; i++) {
 				// don't do anything if this chunk is empty
-				if (offsets[i] == 0 || sectors[i] == 0) {
+				if (offsets[i] == 0 || sectors[i] <= 0) {
 					skippedChunks++;
 					continue;
 				}

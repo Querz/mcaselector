@@ -252,10 +252,8 @@ public class DialogHelper {
 
 		Optional<SettingsDialog.Result> result = new SettingsDialog(primaryStage, renderSettings).showAndWait();
 		result.ifPresent(r -> {
-			if (Config.getLoadThreads() != r.readThreads
-					|| Config.getProcessThreads() != r.processThreads
+			if (Config.getProcessThreads() != r.processThreads
 					|| Config.getWriteThreads() != r.writeThreads) {
-				Config.setLoadThreads(r.readThreads);
 				Config.setProcessThreads(r.processThreads);
 				Config.setWriteThreads(r.writeThreads);
 				JobHandler.init();

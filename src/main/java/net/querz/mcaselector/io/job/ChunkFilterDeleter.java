@@ -52,14 +52,14 @@ public final class ChunkFilterDeleter {
 		}
 
 		@Override
-		public void execute() {
+		public boolean execute() {
 			// load all files
 			Point2i location = getRegionDirectories().getLocation();
 
 			if (!filter.appliesToRegion(location) || selection != null && !selection.isRegionSelected(location)) {
 				Debug.dump("filter does not apply to region " + getRegionDirectories().getLocation());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				return true;
 			}
 
 			byte[] regionData = loadRegion();
@@ -69,7 +69,7 @@ public final class ChunkFilterDeleter {
 			if (regionData == null && poiData == null && entitiesData == null) {
 				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				return true;
 			}
 
 
@@ -80,6 +80,7 @@ public final class ChunkFilterDeleter {
 				if (region.deleteChunks(filter, selection)) {
 					// only save file if we actually deleted something
 					JobHandler.executeSaveData(new MCADeleteFilterSaveJob(getRegionDirectories(), region, progressChannel));
+					return false;
 				} else {
 					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 					Debug.dumpf("nothing to delete in %s, not saving", getRegionDirectories().getLocationAsFileName());
@@ -88,6 +89,7 @@ public final class ChunkFilterDeleter {
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				Debug.errorf("error deleting chunk indices in %s", getRegionDirectories().getLocationAsFileName());
 			}
+			return true;
 		}
 	}
 

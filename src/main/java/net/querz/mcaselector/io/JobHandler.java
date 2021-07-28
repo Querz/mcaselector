@@ -36,10 +36,9 @@ public final class JobHandler {
 	static {
 		init();
 		ShutdownHooks.addShutdownHook(() -> processExecutor.shutdownNow());
+		ShutdownHooks.addShutdownHook(() -> saveExecutor.shutdownNow());
 		ShutdownHooks.addShutdownHook(() -> parseExecutor.shutdownNow());
 	}
-
-	private static final Object lock = new Object();
 
 	public static void init() {
 		// first shutdown everything if there were Threads initialized already
@@ -62,34 +61,37 @@ public final class JobHandler {
 			new LinkedBlockingQueue<>(),
 			new NamedThreadFactory("processPool"),
 			job -> {
-				int running = runningTasks.incrementAndGet();
-				if (running > Config.getProcessThreads() + 1) {
+				int i;
+				if ((i = runningTasks.incrementAndGet()) > Config.getProcessThreads() && !trimSaveData) {
 					processExecutor.pause("pausing process");
 				}
-				System.out.println("+ active tasks: " + running);
+				Debug.dumpf("+ active jobs: %d (%d queued)", i, processExecutor.getQueue().size());
 			},
 			job -> {
-				System.out.println("after execute process");
 				if (job.isDone()) {
-					System.out.println("- active tasks: " + runningTasks.decrementAndGet());
+					int i = runningTasks.decrementAndGet();
+					Debug.dumpf("- active jobs: %d (%d queued)", i, processExecutor.getQueue().size());
+
 					processExecutor.resume("freed up a task after processing");
 				}
 			});
+
 		Debug.dumpf("created data processor ThreadPoolExecutor with %d threads", Config.getProcessThreads());
+
 		saveExecutor = new PausableThreadPoolExecutor(
 			Config.getWriteThreads(), Config.getWriteThreads(),
 			0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingDeque<>(),
 			new NamedThreadFactory("savePool"),
 			job -> {
-				System.out.println("before execute save");
-				System.out.println("- active tasks: " + runningTasks.decrementAndGet());
+				int i = runningTasks.decrementAndGet();
+				Debug.dumpf("- active jobs: %d (%d queued)", i, processExecutor.getQueue().size());
 				processExecutor.resume("freed up a task after saving");
 			},
-			job -> {
-				System.out.println("after execute save");
-			});
+			job -> {});
+
 		Debug.dumpf("created data save ThreadPoolExecutor with %d threads", Config.getWriteThreads());
+
 		parseExecutor = new ThreadPoolExecutor(
 			1, 1,
 			0L, TimeUnit.MILLISECONDS,
@@ -108,13 +110,16 @@ public final class JobHandler {
 			saveExecutor.execute(new WrapperJob(job));
 		} else {
 			if (!trimSaveData) {
-				processExecutor.pause("can't trim and we have too many running tasks");
+				processExecutor.pause("waiting for save data");
 				saveExecutor.execute(new WrapperJob(job));
 			} else {
-				System.out.println("- active tasks: " + runningTasks.decrementAndGet());
-				if (runningTasks.get() <= Config.getProcessThreads() + 1) {
-					processExecutor.resume("trimming save data");
+				int i;
+				if ((i = runningTasks.decrementAndGet()) <= Config.getProcessThreads() + 1) {
+					processExecutor.resume("skipping save data");
+					Debug.dumpf("too many tasks: skipping save data");
 				}
+
+				Debug.dumpf("- active jobs: %d (%d queued)", i, processExecutor.getQueue().size());
 			}
 		}
 	}

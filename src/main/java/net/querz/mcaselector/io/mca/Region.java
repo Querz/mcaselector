@@ -332,7 +332,7 @@ public class Region {
 
 			ChunkData filterData = new ChunkData(region, poi, entities);
 
-			Point2i chunk = new Point2i(i >> 5, i & 31).add(regionChunk);
+			Point2i chunk = new Point2i(i & 31, i >> 5).add(regionChunk);
 			if ((selection == null || selection.isChunkSelected(chunk)) && filter.matches(filterData)) {
 				deleteChunkIndex(i);
 				deleted = true;
@@ -357,7 +357,7 @@ public class Region {
 
 			// keep chunk if filter AND selection applies
 			// ignore selection if it's null
-			Point2i chunk = new Point2i(i >> 5, i & 31).add(regionChunk);
+			Point2i chunk = new Point2i(i & 31, i >> 5).add(regionChunk);
 			if (!filter.matches(filterData) || selection != null && !selection.isChunkSelected(chunk)) {
 				deleteChunkIndex(i);
 				deleted = true;
@@ -399,7 +399,7 @@ public class Region {
 			}
 
 			try {
-				Point2i chunk = new Point2i(i >> 5, i & 31).add(regionChunk);
+				Point2i chunk = new Point2i(i & 31, i >> 5).add(regionChunk);
 				if ((selection == null || selection.isChunkSelected(chunk)) && filter.matches(filterData)) {
 					chunks.add(location);
 				}

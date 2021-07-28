@@ -59,14 +59,14 @@ public final class SelectionExporter {
 		}
 
 		@Override
-		public void execute() {
+		public boolean execute() {
 			File toRegion = new File(destination.getRegion(), getRegionDirectories().getLocationAsFileName());
 			File toPoi = new File(destination.getPoi(), getRegionDirectories().getLocationAsFileName());
 			File toEntities = new File(destination.getEntities(), getRegionDirectories().getLocationAsFileName());
 			if (toRegion.exists() || toPoi.exists() || toEntities.exists()) {
 				Debug.dumpf("%s exists, not overwriting", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				return true;
 			}
 
 			RegionDirectories to = new RegionDirectories(getRegionDirectories().getLocation(), toRegion, toPoi, toEntities);
@@ -98,7 +98,7 @@ public final class SelectionExporter {
 				}
 
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				return true;
 			}
 
 			byte[] regionData = loadRegionHeader();
@@ -108,7 +108,7 @@ public final class SelectionExporter {
 			if (regionData == null && poiData == null && entitiesData == null) {
 				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				return true;
 			}
 
 
@@ -129,12 +129,13 @@ public final class SelectionExporter {
 
 				region.deleteChunks(inverted);
 				JobHandler.executeSaveData(new MCADeleteSelectionSaveJob(getRegionDirectories(), region, to, progressChannel));
+				return false;
 
 			} catch (Exception ex) {
 				Debug.dumpException("error deleting chunk indices in " + getRegionDirectories().getLocationAsFileName(), ex);
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-
 			}
+			return true;
 		}
 	}
 

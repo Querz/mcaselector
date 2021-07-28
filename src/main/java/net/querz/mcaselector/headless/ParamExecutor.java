@@ -597,14 +597,12 @@ public final class ParamExecutor {
 			Config.setDebug(true);
 			Debug.initLogWriter();
 		}
-		Config.setLoadThreads(parsePositiveInt("read-threads", Config.DEFAULT_LOAD_THREADS));
 		Config.setProcessThreads(parsePositiveInt("process-threads", Config.DEFAULT_PROCESS_THREADS));
 		Config.setWriteThreads(parsePositiveInt("write-threads",Config.DEFAULT_WRITE_THREADS));
 		Config.setMaxLoadedFiles(parsePositiveInt("max-loaded-files", Config.DEFAULT_MAX_LOADED_FILES));
 	}
 
 	private void printHeadlessSettings() {
-		Debug.print("read threads:    " + Config.getLoadThreads());
 		Debug.print("process threads: " + Config.getProcessThreads());
 		Debug.print("write threads:   " + Config.getWriteThreads());
 	}

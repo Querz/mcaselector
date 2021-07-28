@@ -51,7 +51,6 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 	private final ComboBox<Locale> languages = new ComboBox<>();
 
-	private final Slider readThreadsSlider = createSlider(1, processorCount, 1, Config.getLoadThreads());
 	private final Slider processThreadsSlider = createSlider(1, processorCount * 2, 1, Config.getProcessThreads());
 	private final Slider writeThreadsSlider = createSlider(1, processorCount, 1, Config.getWriteThreads());
 	private final Slider maxLoadedFilesSlider = createSlider(1, (int) Math.max(Math.ceil(maxMemory / 1_000_000_000D) * 6, 4), 1, 6);
@@ -88,7 +87,6 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		getDialogPane().lookupButton(reset).addEventFilter(ActionEvent.ACTION, e -> {
 			e.consume();
 			languages.setValue(Config.DEFAULT_LOCALE);
-			readThreadsSlider.setValue(Config.DEFAULT_LOAD_THREADS);
 			processThreadsSlider.setValue(Config.DEFAULT_PROCESS_THREADS);
 			writeThreadsSlider.setValue(Config.DEFAULT_WRITE_THREADS);
 			maxLoadedFilesSlider.setValue(Config.DEFAULT_MAX_LOADED_FILES);
@@ -114,7 +112,6 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			if (c.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 				return new Result(
 					languages.getSelectionModel().getSelectedItem(),
-					(int) readThreadsSlider.getValue(),
 					(int) processThreadsSlider.getValue(),
 					(int) writeThreadsSlider.getValue(),
 					(int) maxLoadedFilesSlider.getValue(),
@@ -303,7 +300,6 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		VBox processingBox = new VBox();
 
 		GridPane threadGrid = createGrid();
-		addPairToGrid(threadGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_PROCESSING_PROCESS_READ_THREADS), readThreadsSlider, UIFactory.attachTextFieldToSlider(readThreadsSlider));
 		addPairToGrid(threadGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_PROCESSING_PROCESS_PROCESS_THREADS), processThreadsSlider, UIFactory.attachTextFieldToSlider(processThreadsSlider));
 		addPairToGrid(threadGrid, 2, UIFactory.label(Translation.DIALOG_SETTINGS_PROCESSING_PROCESS_WRITE_THREADS), writeThreadsSlider, UIFactory.attachTextFieldToSlider(writeThreadsSlider));
 		BorderedTitledPane threads = new BorderedTitledPane(Translation.DIALOG_SETTINGS_PROCESSING_PROCESS, threadGrid);
@@ -444,7 +440,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 	public static class Result {
 
-		public final int readThreads, processThreads, writeThreads, maxLoadedFiles;
+		public final int processThreads, writeThreads, maxLoadedFiles;
 		public final Color regionColor, chunkColor, pasteColor;
 		public final boolean shadeWater;
 		public final boolean shade;
@@ -458,14 +454,13 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		public final boolean layerOnly, caves;
 		public final File poi, entities;
 
-		public Result(Locale locale, int readThreads, int processThreads, int writeThreads, int maxLoadedFiles,
+		public Result(Locale locale, int processThreads, int writeThreads, int maxLoadedFiles,
 		              Color regionColor, Color chunkColor, Color pasteColor, boolean shade, boolean shadeWater,
 		              boolean showNonexistentRegions, boolean smoothRendering, boolean smoothOverlays,
 		              TileMapBox.TileMapBoxBackground tileMapBackground, File mcSavesDir, boolean debug, int height,
 		              boolean layerOnly, boolean caves, File poi, File entities) {
 
 			this.locale = locale;
-			this.readThreads = readThreads;
 			this.processThreads = processThreads;
 			this.writeThreads = writeThreads;
 			this.maxLoadedFiles = maxLoadedFiles;

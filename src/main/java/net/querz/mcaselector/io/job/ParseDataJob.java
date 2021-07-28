@@ -57,7 +57,7 @@ public class ParseDataJob extends ProcessDataJob {
 	}
 
 	@Override
-	public void execute() {
+	public boolean execute() {
 		Timer t = new Timer();
 
 		RegionMCAFile regionMCAFile = null;
@@ -109,7 +109,7 @@ public class ParseDataJob extends ProcessDataJob {
 			dataCallback.accept(null, world);
 			Debug.dumpf("no data to load and parse for region %s", getRegionDirectories().getLocation());
 			setLoading(tile, false);
-			return;
+			return true;
 		}
 
 		int[] data = new int[1024];
@@ -129,6 +129,7 @@ public class ParseDataJob extends ProcessDataJob {
 		setLoading(tile, false);
 
 		Debug.dumpf("took %s to load and parse data for region %s", t, getRegionDirectories().getLocation());
+		return true;
 	}
 
 	@Override

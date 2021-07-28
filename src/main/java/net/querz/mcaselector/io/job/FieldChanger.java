@@ -56,13 +56,13 @@ public final class FieldChanger {
 		}
 
 		@Override
-		public void execute() {
+		public boolean execute() {
 			if (selection != null) {
 				Point2i location = getRegionDirectories().getLocation();
 				if (!selection.isRegionSelected(location)) {
 					Debug.dumpf("will not apply nbt changes to %s", getRegionDirectories().getLocationAsFileName());
 					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-					return;
+					return true;
 				}
 			}
 
@@ -73,7 +73,7 @@ public final class FieldChanger {
 			if (regionData == null && poiData == null && entitiesData == null) {
 				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				return true;
 			}
 
 			//load MCAFile
@@ -83,11 +83,12 @@ public final class FieldChanger {
 				region.applyFieldChanges(fields, force, selection);
 
 				JobHandler.executeSaveData(new MCAFieldChangeSaveJob(getRegionDirectories(), region, progressChannel));
+				return false;
 			} catch (Exception ex) {
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				Debug.errorf("error changing fields in %s", getRegionDirectories().getLocationAsFileName());
-				ex.printStackTrace();
+				Debug.dumpException("error changing fields in " + getRegionDirectories().getLocationAsFileName(), ex);
 			}
+			return true;
 		}
 	}
 

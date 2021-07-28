@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io;
 
+import net.querz.mcaselector.debug.Debug;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
@@ -53,14 +54,20 @@ class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 	@Override
 	protected void afterExecute(Runnable r, Throwable t) {
 		super.afterExecute(r, t);
+		if (t != null) {
+			// mark this job as done when it threw an exception
+			((JobHandler.WrapperJob) r).job.done();
+		}
 		afterExecute.accept(((JobHandler.WrapperJob) r).job);
 	}
 
 	public void pause(String msg) {
 		pauseLock.lock();
 		try {
+			if (!isPaused) {
+				Debug.dumpf("paused process executor: %s", msg);
+			}
 			isPaused = true;
-			System.out.println("paused process executor: " + msg);
 		} finally {
 			pauseLock.unlock();
 		}
@@ -69,8 +76,10 @@ class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 	public void resume(String msg) {
 		pauseLock.lock();
 		try {
+			if (isPaused) {
+				Debug.dumpf("resumed process executor: %s", msg);
+			}
 			isPaused = false;
-			System.out.println("resumed process executor: " + msg);
 			unpaused.signalAll();
 		} finally {
 			pauseLock.unlock();

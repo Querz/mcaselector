@@ -68,7 +68,6 @@ public enum Translation {
 	DIALOG_SETTINGS_TITLE("dialog.settings.title"),
 	DIALOG_SETTINGS_GLOBAL_LANGUAGE("dialog.settings.global.language"),
 	DIALOG_SETTINGS_GLOBAL_LANGUAGE_LANGUAGE("dialog.settings.global.language.language"),
-	DIALOG_SETTINGS_PROCESSING_PROCESS_READ_THREADS("dialog.settings.processing.process.read_threads"),
 	DIALOG_SETTINGS_PROCESSING_PROCESS_PROCESS_THREADS("dialog.settings.processing.process.process_threads"),
 	DIALOG_SETTINGS_PROCESSING_PROCESS("dialog.settings.processing.process"),
 	DIALOG_SETTINGS_PROCESSING_PROCESS_WRITE_THREADS("dialog.settings.processing.process.write_threads"),

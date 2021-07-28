@@ -59,13 +59,13 @@ public final class ChunkFilterExporter {
 		}
 
 		@Override
-		public void execute() {
+		public boolean execute() {
 			Point2i location = getRegionDirectories().getLocation();
 
 			if (!filter.appliesToRegion(location) || selection != null && !selection.isRegionSelected(location)) {
 				Debug.dump("filter does not apply to region " + getRegionDirectories().getLocation());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				return true;
 			}
 
 			File toRegion = new File(destination.getRegion(), getRegionDirectories().getLocationAsFileName());
@@ -74,7 +74,7 @@ public final class ChunkFilterExporter {
 			if (toRegion.exists() || toPoi.exists() || toEntities.exists()) {
 				Debug.dumpf("%s exists, not overwriting", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				return true;
 			}
 
 			RegionDirectories to = new RegionDirectories(getRegionDirectories().getLocation(), toRegion, toPoi, toEntities);
@@ -86,7 +86,7 @@ public final class ChunkFilterExporter {
 			if (regionData == null && poiData == null && entitiesData == null) {
 				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				return true;
 			}
 
 
@@ -97,11 +97,12 @@ public final class ChunkFilterExporter {
 				region.keepChunks(filter, selection);
 
 				JobHandler.executeSaveData(new MCAExportFilterSaveJob(getRegionDirectories(), region, to, progressChannel));
-
+				return false;
 			} catch (Exception ex) {
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				Debug.errorf("error deleting chunk indices in %s", getRegionDirectories().getLocationAsFileName());
 			}
+			return true;
 		}
 	}
 

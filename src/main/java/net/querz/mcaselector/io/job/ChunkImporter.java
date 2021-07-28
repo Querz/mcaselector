@@ -189,7 +189,7 @@ public final class ChunkImporter {
 		}
 
 		@Override
-		public void execute() {
+		public boolean execute() {
 			// try to copy files directly if there is no offset, no selection and the target file does not exist
 			if (offset.getX() == 0 && offset.getZ() == 0 && (selection == null || selection.size() == 0)) {
 				boolean allCopied = true;
@@ -236,7 +236,7 @@ public final class ChunkImporter {
 
 				if (allCopied) {
 					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-					return;
+					return true;
 				}
 			}
 
@@ -310,7 +310,7 @@ public final class ChunkImporter {
 			if (sourceDataMappingRegion.isEmpty() && sourceDataMappingPoi.isEmpty() && sourceDataMappingEntities.isEmpty()) {
 				Debug.errorf("did not load any source mca files to merge into %s", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				return true;
 			}
 
 			// ---------------------------------------------------------------------------------------------------------
@@ -322,7 +322,7 @@ public final class ChunkImporter {
 				if (destDataRegion == null) {
 					Debug.errorf("failed to load destination mca file %s", getRegionDirectories().getRegion());
 					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-					return;
+					return true;
 				}
 			}
 
@@ -332,7 +332,7 @@ public final class ChunkImporter {
 				if (destDataPoi == null) {
 					Debug.errorf("failed to load destination mca file %s", getRegionDirectories().getPoi());
 					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-					return;
+					return true;
 				}
 			}
 
@@ -342,7 +342,7 @@ public final class ChunkImporter {
 				if (destDataEntities == null) {
 					Debug.errorf("failed to load destination mca file %s", getRegionDirectories().getEntities());
 					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-					return;
+					return true;
 				}
 			}
 
@@ -405,13 +405,15 @@ public final class ChunkImporter {
 				// -----------------------------------------------------------------------------------------------------
 
 				JobHandler.executeSaveData(new MCAChunkImporterSaveJob(getRegionDirectories(), targetRegion, progressChannel));
+				Debug.dumpf("took %s to merge chunks into %s with offset %s", t, getRegionDirectories().getLocation(), offset);
+				return false;
 
 			} catch (Exception ex) {
 				Debug.dumpException("failed to process chunk import for " + getRegionDirectories().getLocationAsFileName(), ex);
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 			}
 
-			Debug.dumpf("took %s to merge chunks into %s with offset %s", t, getRegionDirectories().getLocation(), offset);
+			return true;
 		}
 	}
 

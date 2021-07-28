@@ -94,7 +94,7 @@ public final class SelectionImageExporter {
 		}
 
 		@Override
-		public void execute() {
+		public boolean execute() {
 			Image image = null;
 
 			// test if the image is already in cache
@@ -109,7 +109,7 @@ public final class SelectionImageExporter {
 				byte[] data = load(regionFile);
 				if (data == null) {
 					progressChannel.incrementProgress(regionFile.getName());
-					return;
+					return true;
 				}
 
 				RegionMCAFile mcaFile = new RegionMCAFile(regionFile);
@@ -117,7 +117,7 @@ public final class SelectionImageExporter {
 					mcaFile.load(new ByteArrayPointer(data));
 				} catch (IOException ex) {
 					progressChannel.incrementProgress(regionFile.getName());
-					return;
+					return true;
 				}
 
 				image = TileImage.generateImage(mcaFile);
@@ -125,7 +125,7 @@ public final class SelectionImageExporter {
 
 			if (image == null) {
 				progressChannel.incrementProgress(regionFile.getName());
-				return;
+				return true;
 			}
 
 			Image overlay = null;
@@ -172,6 +172,7 @@ public final class SelectionImageExporter {
 				}
 			});
 			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
+			return true;
 		}
 	}
 

@@ -152,7 +152,7 @@ public final class RegionImageGenerator {
 		}
 
 		@Override
-		public void execute() {
+		public boolean execute() {
 			RegionMCAFile cachedRegion = getCachedRegionMCAFile(tile.getLocation());
 			byte[] data = null;
 			if (cachedRegion == null) {
@@ -163,8 +163,7 @@ public final class RegionImageGenerator {
 				if (progressChannel != null) {
 					progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 				}
-				done();
-				return;
+				return true;
 			}
 
 			Debug.dumpf("generating image for %s", tile.getMCAFile().getAbsolutePath());
@@ -202,11 +201,13 @@ public final class RegionImageGenerator {
 			if (image != null && !isCached) {
 				setSaving(tile, true);
 				JobHandler.executeSaveData(new MCAImageSaveCacheJob(image, tile, uniqueID, scaleSupplier, scaleOnly, progressChannel, canSkipSaving));
+				return false;
 			} else {
 				if (progressChannel != null) {
 					progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 				}
 			}
+			return true;
 		}
 
 		@Override

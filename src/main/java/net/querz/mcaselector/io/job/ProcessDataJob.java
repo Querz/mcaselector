@@ -67,8 +67,10 @@ public abstract class ProcessDataJob extends Job {
 
 	@Override
 	public void run() {
-		execute();
+		if (execute()) {
+			done();
+		}
 	}
 
-	public abstract void execute();
+	public abstract boolean execute();
 }

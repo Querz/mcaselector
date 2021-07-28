@@ -1306,7 +1306,6 @@ public class ChunkImporterTest {
 	public void before() throws IOException {
 		FileUtils.copyDirectory(getResourceFile("import"), new File("tmp/" + name.getMethodName() + "/import"));
 		Config.setWorldDir(new File("tmp/" + name.getMethodName() + "/import/target"));
-		Config.setLoadThreads(1);
 		Config.setProcessThreads(1);
 		Config.setWriteThreads(1);
 		Config.setMaxLoadedFiles(10);

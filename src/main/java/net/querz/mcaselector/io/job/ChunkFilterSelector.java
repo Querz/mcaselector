@@ -63,14 +63,14 @@ public final class ChunkFilterSelector {
 		}
 
 		@Override
-		public void execute() {
+		public boolean execute() {
 			// load all files
 			Point2i location = getRegionDirectories().getLocation();
 
 			if (!filter.appliesToRegion(location)) {
 				Debug.dumpf("filter does not apply to region %s", getRegionDirectories().getLocation());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				return true;
 			}
 
 			byte[] regionData = loadRegion();
@@ -80,7 +80,7 @@ public final class ChunkFilterSelector {
 			if (regionData == null && poiData == null && entitiesData == null) {
 				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				return true;
 			}
 
 			// load MCAFile
@@ -105,6 +105,7 @@ public final class ChunkFilterSelector {
 				Debug.dumpException("error selecting chunks in " + getRegionDirectories().getLocationAsFileName(), ex);
 			}
 			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
+			return true;
 		}
 
 		private Map<Point2i, Set<Point2i>> applyRadius(Map<Point2i, Set<Point2i>> region, SelectionData selection) {
