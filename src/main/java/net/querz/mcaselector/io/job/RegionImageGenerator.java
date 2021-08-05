@@ -292,6 +292,7 @@ public final class RegionImageGenerator {
 
 		@Override
 		public void cancel() {
+			onSaved.remove(tile.getLocation());
 			setSaving(tile, false);
 			if (progressChannel != null) {
 				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));

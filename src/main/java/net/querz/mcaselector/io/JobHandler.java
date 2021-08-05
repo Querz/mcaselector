@@ -115,6 +115,7 @@ public final class JobHandler {
 			} else {
 				int i;
 				if ((i = runningTasks.decrementAndGet()) <= Config.getProcessThreads() + 1) {
+					job.cancel();
 					processExecutor.resume("skipping save data");
 					Debug.dumpf("too many tasks: skipping save data");
 				}
