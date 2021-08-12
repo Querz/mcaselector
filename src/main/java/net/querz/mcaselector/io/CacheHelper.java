@@ -1,6 +1,5 @@
 package net.querz.mcaselector.io;
 
-import javafx.application.Platform;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.point.Point2i;
@@ -40,8 +39,8 @@ public final class CacheHelper {
 				int x = Integer.parseInt(m.group("regionX"));
 				int z = Integer.parseInt(m.group("regionZ"));
 				boolean scaleOnly = zoomLevel != null;
-				float zoomLevelSupplier = scaleOnly ? zoomLevel : 1;
-				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), (i, u) -> {}, () -> zoomLevelSupplier, scaleOnly, progressChannel, false);
+				int zoomLevelSupplier = scaleOnly ? zoomLevel : 1;
+				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), (i, u) -> {}, zoomLevelSupplier, scaleOnly, progressChannel, false);
 			}
 		}
 	}
@@ -69,10 +68,8 @@ public final class CacheHelper {
 			updateVersionFile();
 			updateWorldSettingsFile();
 
-			Platform.runLater(() -> {
-				tileMap.markAllTilesAsObsolete();
-				tileMap.update();
-			});
+			tileMap.markAllTilesAsObsolete();
+			tileMap.update();
 			callback.run();
 		});
 		clear.start();

@@ -100,18 +100,16 @@ public class OverlayPool {
 
 			if (data != null) {
 				Image overlay = parseColorGrades(data, parserClone.min(), parserClone.max(), parserClone.getMinHue(), parserClone.getMaxHue());
-				Platform.runLater(() -> {
-					if (parserClone.equals(this.parser)) {
-						tile.overlay = overlay;
-						tile.overlayLoaded = true;
-						tileMap.update();
-					}
-					ParseDataJob.setLoading(tile, false);
-				});
+				if (parserClone.equals(this.parser)) {
+					tile.overlay = overlay;
+					tile.overlayLoaded = true;
+					tileMap.update();
+				}
+				ParseDataJob.setLoading(tile, false);
 			} else {
 				// calculate data
 				JobHandler.executeParseData(new ParseDataJob(tile, FileHelper.createRegionDirectories(tile.location), Config.getWorldUUID(),
-						(d, u) -> Platform.runLater(() -> {
+						(d, u) -> {
 					if (u.equals(Config.getWorldUUID())) {
 						if (d == null) {
 							noData.add(tile.location);
@@ -125,7 +123,7 @@ public class OverlayPool {
 							tileMap.update();
 						}
 					}
-				}), parser));
+				}, parser));
 			}
 		});
 	}

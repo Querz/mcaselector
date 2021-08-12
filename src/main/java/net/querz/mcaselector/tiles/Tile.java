@@ -97,13 +97,20 @@ public class Tile {
 		if (image == null) {
 			return true;
 		} else {
-			return (int) (Tile.SIZE * (1D / image.getWidth())) == zoomLevel;
+			return (int) (Tile.SIZE / image.getWidth()) == zoomLevel;
 		}
 	}
 
-	public void unload(boolean overlay) {
+	public int getImageZoomLevel() {
+		return (int) (Tile.SIZE / image.getWidth());
+	}
+
+	public void unload(boolean overlay, boolean img) {
 		if (image != null) {
 			image.cancel();
+			if (img) {
+				image = null;
+			}
 		}
 		if (markedChunksImage != null) {
 			markedChunksImage.cancel();

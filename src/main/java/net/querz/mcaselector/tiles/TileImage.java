@@ -97,14 +97,20 @@ public final class TileImage {
 		tile.markedChunksImage = wImage;
 	}
 
-	public static Image generateImage(RegionMCAFile mcaFile) {
+	public static Image generateImage(RegionMCAFile mcaFile, int scale) {
+
+		int size = Tile.SIZE / scale;
+		int chunkSize = Tile.CHUNK_SIZE / scale;
+		int pixels = Tile.PIXELS / (scale * scale);
+
 		try {
-			WritableImage finalImage = new WritableImage(Tile.SIZE, Tile.SIZE);
+
+			WritableImage finalImage = new WritableImage(size, size);
 			PixelWriter writer = finalImage.getPixelWriter();
-			int[] pixelBuffer = new int[Tile.PIXELS];
-			int[] waterPixels = Config.shade() && Config.shadeWater() && !Config.renderCaves() ? new int[Tile.PIXELS] : null;
-			short[] terrainHeights = new short[Tile.PIXELS];
-			short[] waterHeights = Config.shade() && Config.shadeWater() && !Config.renderCaves() ? new short[Tile.PIXELS] : null;
+			int[] pixelBuffer = new int[pixels];
+			int[] waterPixels = Config.shade() && Config.shadeWater() && !Config.renderCaves() ? new int[pixels] : null;
+			short[] terrainHeights = new short[pixels];
+			short[] waterHeights = Config.shade() && Config.shadeWater() && !Config.renderCaves() ? new short[pixels] : null;
 
 			for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
 				for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
@@ -116,18 +122,17 @@ public final class TileImage {
 						continue;
 					}
 
-					drawChunkImage(data, cx * Tile.CHUNK_SIZE, cz * Tile.CHUNK_SIZE, pixelBuffer, waterPixels, terrainHeights, waterHeights);
+					drawChunkImage(data, cx * chunkSize, cz * chunkSize, scale, pixelBuffer, waterPixels, terrainHeights, waterHeights);
 				}
 			}
 
-
 			if (Config.renderCaves()) {
-				flatShade(pixelBuffer, terrainHeights);
+				flatShade(pixelBuffer, terrainHeights, scale);
 			} else if (Config.shade() && !Config.renderLayerOnly()) {
-				shade(pixelBuffer, waterPixels, terrainHeights, waterHeights);
+				shade(pixelBuffer, waterPixels, terrainHeights, waterHeights, scale);
 			}
 
-			writer.setPixels(0, 0, Tile.SIZE, Tile.SIZE, PixelFormat.getIntArgbPreInstance(), pixelBuffer,  0, Tile.SIZE);
+			writer.setPixels(0, 0, size, size, PixelFormat.getIntArgbPreInstance(), pixelBuffer,  0, size);
 
 			return finalImage;
 		} catch (Exception ex) {
@@ -136,7 +141,8 @@ public final class TileImage {
 		return null;
 	}
 
-	private static void drawChunkImage(Chunk chunkData, int x, int z, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights) {
+	private static void drawChunkImage(Chunk chunkData, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights) {
+
 		if (chunkData.getData() == null) {
 			return;
 		}
@@ -146,7 +152,7 @@ public final class TileImage {
 				VersionController.getChunkRenderer(dataVersion).drawCaves(
 						chunkData.getData(),
 						VersionController.getColorMapping(dataVersion),
-						x, z,
+						x, z, scale,
 						pixelBuffer,
 						terrainHeights,
 						Config.getRenderHeight()
@@ -155,7 +161,7 @@ public final class TileImage {
 				VersionController.getChunkRenderer(dataVersion).drawLayer(
 						chunkData.getData(),
 						VersionController.getColorMapping(dataVersion),
-						x, z,
+						x, z, scale,
 						pixelBuffer,
 						Config.getRenderHeight()
 				);
@@ -163,7 +169,7 @@ public final class TileImage {
 				VersionController.getChunkRenderer(dataVersion).drawChunk(
 						chunkData.getData(),
 						VersionController.getColorMapping(dataVersion),
-						x, z,
+						x, z, scale,
 						pixelBuffer,
 						waterPixels,
 						terrainHeights,
@@ -175,10 +181,11 @@ public final class TileImage {
 		} catch (Exception ex) {
 			Debug.dumpException("failed to draw chunk " + chunkData.getAbsoluteLocation(), ex);
 
-			for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
-				for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+			// TODO: scale corrupted image
+			for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
+				for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
 					int srcIndex = cz * Tile.CHUNK_SIZE + cx;
-					int dstIndex = (z + cz) * Tile.SIZE + (x + cx);
+					int dstIndex = (z + cz / scale) * Tile.SIZE / scale + (x + cx / scale);
 					pixelBuffer[dstIndex] = corruptedChunkOverlay[srcIndex];
 					terrainHeights[dstIndex] = 64;
 					waterHeights[dstIndex] = 64;
@@ -187,24 +194,27 @@ public final class TileImage {
 		}
 	}
 
-	private static void flatShade(int[] pixelBuffer, short[] terrainHeights) {
+	private static void flatShade(int[] pixelBuffer, short[] terrainHeights, int scale) {
+		int size = Tile.SIZE / scale;
 		int index = 0;
-		for (int z = 0; z < Tile.SIZE; z++) {
-			for (int x = 0; x < Tile.SIZE; x++, index++) {
+		for (int z = 0; z < size; z++) {
+			for (int x = 0; x < size; x++, index++) {
 				int altitudeShade = MathUtil.clamp(16 * terrainHeights[index] / 64, -50, 50);
 				pixelBuffer[index] = Color.shade(pixelBuffer[index], altitudeShade * 4);
 			}
 		}
 	}
 
-	private static void shade(int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights) {
+	private static void shade(int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, int scale) {
 		if (!Config.shadeWater() || !Config.shade()) {
 			waterHeights = terrainHeights;
 		}
 
+		int size = Tile.SIZE / scale;
+
 		int index = 0;
-		for (int z = 0; z < Tile.SIZE; z++) {
-			for (int x = 0; x < Tile.SIZE; x++, index++) {
+		for (int z = 0; z < size; z++) {
+			for (int x = 0; x < size; x++, index++) {
 				float xShade, zShade;
 
 				if (pixelBuffer[index] == 0) {
@@ -216,16 +226,16 @@ public final class TileImage {
 					pixelBuffer[index] = Color.blend(pixelBuffer[index], waterPixels[index], ratio);
 				} else {
 					if (z == 0) {
-						zShade = (waterHeights[index + Tile.SIZE]) - (waterHeights[index]);
-					} else if (z == Tile.SIZE - 1) {
-						zShade = (waterHeights[index]) - (waterHeights[index - Tile.SIZE]);
+						zShade = (waterHeights[index + size]) - (waterHeights[index]);
+					} else if (z == size - 1) {
+						zShade = (waterHeights[index]) - (waterHeights[index - size]);
 					} else {
-						zShade = ((waterHeights[index + Tile.SIZE]) - (waterHeights[index - Tile.SIZE])) * 2;
+						zShade = ((waterHeights[index + size]) - (waterHeights[index - size])) * 2;
 					}
 
 					if (x == 0) {
 						xShade = (waterHeights[index + 1]) - (waterHeights[index]);
-					} else if (x == Tile.SIZE - 1) {
+					} else if (x == size - 1) {
 						xShade = (waterHeights[index]) - (waterHeights[index - 1]);
 					} else {
 						xShade = ((waterHeights[index + 1]) - (waterHeights[index - 1])) * 2;

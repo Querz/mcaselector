@@ -23,7 +23,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public final class RegionImageGenerator {
 
@@ -36,8 +35,8 @@ public final class RegionImageGenerator {
 
 	private RegionImageGenerator() {}
 
-	public static void generate(Tile tile, BiConsumer<Image, UniqueID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel, boolean canSkipSaving) {
-		JobHandler.addJob(new MCAImageProcessJob(tile, new UniqueID(), callback, scaleSupplier, scaleOnly, progressChannel, canSkipSaving));
+	public static void generate(Tile tile, BiConsumer<Image, UniqueID> callback, int scale, boolean scaleOnly, Progress progressChannel, boolean canSkipSaving) {
+		JobHandler.addJob(new MCAImageProcessJob(tile, new UniqueID(), callback, scale, scaleOnly, progressChannel, canSkipSaving));
 	}
 
 	public static RegionMCAFile getCachedRegionMCAFile(Point2i region) {
@@ -135,17 +134,17 @@ public final class RegionImageGenerator {
 		private final Tile tile;
 		private final UniqueID uniqueID;
 		private final BiConsumer<Image, UniqueID> callback;
-		private final Supplier<Float> scaleSupplier;
+		private final int scale;
 		private final boolean scaleOnly;
 		private final Progress progressChannel;
 		private final boolean canSkipSaving;
 
-		private MCAImageProcessJob(Tile tile, UniqueID uniqueID, BiConsumer<Image, UniqueID> callback, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel, boolean canSkipSaving) {
+		private MCAImageProcessJob(Tile tile, UniqueID uniqueID, BiConsumer<Image, UniqueID> callback, int scale, boolean scaleOnly, Progress progressChannel, boolean canSkipSaving) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null));
 			this.tile = tile;
 			this.uniqueID = uniqueID;
 			this.callback = callback;
-			this.scaleSupplier = scaleSupplier;
+			this.scale = scale;
 			this.scaleOnly = scaleOnly;
 			this.progressChannel = progressChannel;
 			this.canSkipSaving = canSkipSaving;
@@ -184,23 +183,25 @@ public final class RegionImageGenerator {
 				isCached = true;
 			}
 
-			Image image = TileImage.generateImage(cachedRegion);
 
-			if (image != null) {
-				BufferedImage img = SwingFXUtils.fromFXImage(image, null);
-				int zoomLevel = Tile.getZoomLevel(scaleSupplier.get());
-				BufferedImage scaled = ImageHelper.scaleImage(img, (double) Tile.SIZE / zoomLevel);
-				Image scaledImage = SwingFXUtils.toFXImage(scaled, null);
-				callback.accept(scaledImage, uniqueID);
-			} else {
-				callback.accept(null, uniqueID);
-			}
+			Image image = TileImage.generateImage(cachedRegion, scale);
+
+//			if (image != null) {
+//				BufferedImage img = SwingFXUtils.fromFXImage(image, null);
+//				int zoomLevel = Tile.getZoomLevel(scaleSupplier.get());
+//				BufferedImage scaled = ImageHelper.scaleImage(img, (double) Tile.SIZE / zoomLevel);
+//				Image scaledImage = SwingFXUtils.toFXImage(scaled, null);
+//				callback.accept(scaledImage, uniqueID);
+//			} else {
+//				callback.accept(null, uniqueID);
+//			}
+			callback.accept(image, uniqueID);
 
 			cacheRegionMCAFile(cachedRegion, uniqueID);
 
 			if (image != null && !isCached) {
 				setSaving(tile, true);
-				JobHandler.executeSaveData(new MCAImageSaveCacheJob(image, tile, uniqueID, scaleSupplier, scaleOnly, progressChannel, canSkipSaving));
+				JobHandler.executeSaveData(new MCAImageSaveCacheJob(image, tile, uniqueID, scale, scaleOnly, progressChannel, canSkipSaving));
 				return false;
 			} else {
 				if (progressChannel != null) {
@@ -224,16 +225,16 @@ public final class RegionImageGenerator {
 
 		private final Tile tile;
 		private final UniqueID uniqueID;
-		private final Supplier<Float> scaleSupplier;
+		private final int scale;
 		private final boolean scaleOnly;
 		private final Progress progressChannel;
 		private final boolean canSkip;
 
-		private MCAImageSaveCacheJob(Image data, Tile tile, UniqueID uniqueID, Supplier<Float> scaleSupplier, boolean scaleOnly, Progress progressChannel, boolean canSkip) {
+		private MCAImageSaveCacheJob(Image data, Tile tile, UniqueID uniqueID, int scale, boolean scaleOnly, Progress progressChannel, boolean canSkip) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null), data);
 			this.tile = tile;
 			this.uniqueID = uniqueID;
-			this.scaleSupplier = scaleSupplier;
+			this.scale = scale;
 			this.scaleOnly = scaleOnly;
 			this.progressChannel = progressChannel;
 			this.canSkip = canSkip;
@@ -247,7 +248,7 @@ public final class RegionImageGenerator {
 			try {
 				BufferedImage img = SwingFXUtils.fromFXImage(getData(), null);
 				if (scaleOnly) {
-					int zoomLevel = Tile.getZoomLevel(scaleSupplier.get());
+					int zoomLevel = scale;
 					File cacheFile = FileHelper.createPNGFilePath(Config.getCacheDirForWorldUUID(uniqueID.world, zoomLevel), tile.getLocation());
 					if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
 						Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
@@ -258,7 +259,11 @@ public final class RegionImageGenerator {
 					ImageIO.write(scaled, "png", cacheFile);
 
 				} else {
-					for (int i = Config.getMinZoomLevel(); i <= Config.getMaxZoomLevel(); i *= 2) {
+//					for (int i = Config.getMinZoomLevel(); i <= Config.getMaxZoomLevel(); i *= 2) {
+
+						int i = scale;
+
+
 						File cacheFile = FileHelper.createPNGFilePath(Config.getCacheDirForWorldUUID(uniqueID.world, i), tile.getLocation());
 						if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
 							Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
@@ -267,7 +272,7 @@ public final class RegionImageGenerator {
 						BufferedImage scaled = ImageHelper.scaleImage(img, (double) Tile.SIZE / (double) i);
 						Debug.dumpf("writing cache file %s", cacheFile.getAbsolutePath());
 						ImageIO.write(scaled, "png", cacheFile);
-					}
+//					}
 				}
 			} catch (IOException ex) {
 				Debug.dumpException("failed to save images to cache for " + tile.getLocation(), ex);

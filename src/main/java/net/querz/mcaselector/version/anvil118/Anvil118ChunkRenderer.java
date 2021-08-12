@@ -15,7 +15,8 @@ import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
 public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 	@Override
-	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
+	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
+
 		CompoundTag level = withDefault(() -> root.getCompoundTag("Level"), null);
 		if (level == null) {
 			return;
@@ -56,9 +57,9 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 		int[] biomes = withDefault(() -> level.getIntArray("Biomes"), null);
 
-		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
+		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
 			zLoop:
-			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
 
 				//loop over sections
 				boolean waterDepth = false;
@@ -90,7 +91,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 						biome = MathUtil.clamp(biome, 0, 255);
 
 						if (!isEmpty(blockData)) {
-							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
+							int regionIndex = (z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale);
 							if (water) {
 								if (!waterDepth) {
 									pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome); // water color
@@ -121,7 +122,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 	}
 
 	@Override
-	public void drawLayer(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, int height) {
+	public void drawLayer(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int height) {
 		CompoundTag level = withDefault(() -> root.getCompoundTag("Level"), null);
 		if (level == null) {
 			return;
@@ -171,8 +172,8 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 		int bits = blockStates.length >> 6;
 		int clean = ((int) Math.pow(2, bits) - 1);
 
-		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
-			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
+			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
 				int paletteIndex = getPaletteIndex(getIndex(cx, cy, cz), blockStates, bits, clean);
 				CompoundTag blockData = palette.get(paletteIndex);
 
@@ -183,14 +184,14 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 				int biome = getBiomeAtBlock(biomes, cx, height, cz);
 				biome = MathUtil.clamp(biome, 0, 255);
 
-				int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
+				int regionIndex = (z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale);
 				pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome);
 			}
 		}
 	}
 
 	@Override
-	public void drawCaves(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, short[] terrainHeights, int height) {
+	public void drawCaves(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, short[] terrainHeights, int height) {
 		CompoundTag level = withDefault(() -> root.getCompoundTag("Level"), null);
 		if (level == null) {
 			return;
@@ -231,9 +232,9 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 		int[] biomes = withDefault(() -> level.getIntArray("Biomes"), null);
 
-		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
+		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
 			zLoop:
-			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
 
 				int ignored = 0;
 				boolean doneSkipping = false;
@@ -265,7 +266,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 						if (!isEmptyOrFoliage(blockData, colorMapping)) {
 							if (doneSkipping) {
-								int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
+								int regionIndex = (z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale);
 								int biome = getBiomeAtBlock(biomes, cx, sectionHeight + cy, cz);
 								biome = MathUtil.clamp(biome, 0, 255);
 								pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome);
