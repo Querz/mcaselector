@@ -53,7 +53,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 	private final Slider processThreadsSlider = createSlider(1, processorCount * 2, 1, Config.getProcessThreads());
 	private final Slider writeThreadsSlider = createSlider(1, processorCount, 1, Config.getWriteThreads());
-	private final Slider maxLoadedFilesSlider = createSlider(1, (int) Math.max(Math.ceil(maxMemory / 1_000_000_000D) * 6, 4), 1, 6);
+	private final Slider maxLoadedFilesSlider = createSlider(1, (int) Math.max(Math.ceil(maxMemory / 1_000_000_000D) * 6, 4), 1, Config.getMaxLoadedFiles());
 	private final Slider heightSlider = new Slider(-64, 319, 319);
 	private final CheckBox layerOnly = new CheckBox();
 	private final CheckBox caves = new CheckBox();

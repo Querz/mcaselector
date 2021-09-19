@@ -451,6 +451,8 @@ public final class Config {
 				Config.overlays = overlays;
 			}
 		}
+
+		System.out.println(asString());
 	}
 
 	public static void exportConfig() {
@@ -555,5 +557,61 @@ public final class Config {
 
 	public static int getMinZoomLevel() {
 		return Tile.getZoomLevel(MIN_SCALE);
+	}
+
+	public static String asString() {
+		final StringBuilder sb = new StringBuilder("Config{\n");
+		sb.append(" DEFAULT_BASE_DIR=").append(DEFAULT_BASE_DIR);
+		sb.append(",\n DEFAULT_BASE_CACHE_DIR=").append(DEFAULT_BASE_CACHE_DIR);
+		sb.append(",\n DEFAULT_BASE_LOG_FILE=").append(DEFAULT_BASE_LOG_FILE);
+		sb.append(",\n DEFAULT_BASE_CONFIG_FILE=").append(DEFAULT_BASE_CONFIG_FILE);
+		sb.append(",\n DEFAULT_BASE_OVERLAYS_FILE=").append(DEFAULT_BASE_OVERLAYS_FILE);
+		sb.append(",\n DEFAULT_REGION_SELECTION_COLOR=").append(DEFAULT_REGION_SELECTION_COLOR);
+		sb.append(",\n DEFAULT_CHUNK_SELECTION_COLOR=").append(DEFAULT_CHUNK_SELECTION_COLOR);
+		sb.append(",\n DEFAULT_PASTE_CHUNKS_COLOR=").append(DEFAULT_PASTE_CHUNKS_COLOR);
+		sb.append(",\n DEFAULT_LOCALE=").append(DEFAULT_LOCALE);
+		sb.append(",\n DEFAULT_PROCESS_THREADS=").append(DEFAULT_PROCESS_THREADS);
+		sb.append(",\n DEFAULT_WRITE_THREADS=").append(DEFAULT_WRITE_THREADS);
+		sb.append(",\n DEFAULT_MAX_LOADED_FILES=").append(DEFAULT_MAX_LOADED_FILES);
+		sb.append(",\n DEFAULT_SHADE=").append(DEFAULT_SHADE);
+		sb.append(",\n DEFAULT_SHADE_WATER=").append(DEFAULT_SHADE_WATER);
+		sb.append(",\n DEFAULT_SHOW_NONEXISTENT_REGIONS=").append(DEFAULT_SHOW_NONEXISTENT_REGIONS);
+		sb.append(",\n DEFAULT_SMOOTH_RENDERING=").append(DEFAULT_SMOOTH_RENDERING);
+		sb.append(",\n DEFAULT_SMOOTH_OVERLAYS=").append(DEFAULT_SMOOTH_OVERLAYS);
+		sb.append(",\n DEFAULT_TILEMAP_BACKGROUND='").append(DEFAULT_TILEMAP_BACKGROUND).append('\'');
+		sb.append(",\n DEFAULT_DEBUG=").append(DEFAULT_DEBUG);
+		sb.append(",\n DEFAULT_MC_SAVES_DIR='").append(DEFAULT_MC_SAVES_DIR).append('\'');
+		sb.append(",\n DEFAULT_RENDER_HEIGHT=").append(DEFAULT_RENDER_HEIGHT);
+		sb.append(",\n DEFAULT_RENDER_LAYER_ONLY=").append(DEFAULT_RENDER_LAYER_ONLY);
+		sb.append(",\n DEFAULT_RENDER_CAVES=").append(DEFAULT_RENDER_CAVES);
+		sb.append(",\n worldDir=").append(worldDir);
+		sb.append(",\n worldDirs=").append(worldDirs);
+		sb.append(",\n worldUUID=").append(worldUUID);
+		sb.append(",\n baseCacheDir=").append(baseCacheDir);
+		sb.append(",\n logFile=").append(logFile);
+		sb.append(",\n cacheDir=").append(cacheDir);
+		sb.append(",\n locale=").append(locale);
+		sb.append(",\n regionSelectionColor=").append(regionSelectionColor);
+		sb.append(",\n chunkSelectionColor=").append(chunkSelectionColor);
+		sb.append(",\n pasteChunksColor=").append(pasteChunksColor);
+		sb.append(",\n processThreads=").append(processThreads);
+		sb.append(",\n writeThreads=").append(writeThreads);
+		sb.append(",\n maxLoadedFiles=").append(maxLoadedFiles);
+		sb.append(",\n shade=").append(shade);
+		sb.append(",\n shadeWater=").append(shadeWater);
+		sb.append(",\n showNonexistentRegions=").append(showNonexistentRegions);
+		sb.append(",\n smoothRendering=").append(smoothRendering);
+		sb.append(",\n smoothOverlays=").append(smoothOverlays);
+		sb.append(",\n tileMapBackground='").append(tileMapBackground).append('\'');
+		sb.append(",\n mcSavesDir='").append(mcSavesDir).append('\'');
+		sb.append(",\n renderHeight=").append(renderHeight);
+		sb.append(",\n renderLayerOnly=").append(renderLayerOnly);
+		sb.append(",\n renderCaves=").append(renderCaves);
+		sb.append(",\n debug=").append(debug);
+		sb.append(",\n MAX_SCALE=").append(MAX_SCALE);
+		sb.append(",\n MIN_SCALE=").append(MIN_SCALE);
+		sb.append(",\n IMAGE_POOL_SIZE=").append(IMAGE_POOL_SIZE);
+		sb.append("\n}");
+		return sb.toString();
 	}
 }
