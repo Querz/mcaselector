@@ -78,6 +78,10 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		selectionOnly.setSelected(applyToSelectionOnly);
 		selectionOnly.setOnAction(e -> applyToSelectionOnly = selectionOnly.isSelected());
 
+		select.setOnAction(e -> selectionRadius.setDisable(!select.isSelected()));
+		export.setOnAction(e -> selectionRadius.setDisable(!select.isSelected()));
+		delete.setOnAction(e -> selectionRadius.setDisable(!select.isSelected()));
+
 		setResizable(true);
 
 		ScrollPane scrollPane = new ScrollPane();

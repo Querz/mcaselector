@@ -96,7 +96,7 @@ public final class ChunkFilterSelector {
 					Map<Point2i, Set<Point2i>> selection = new HashMap<>();
 					selection.put(location, chunks);
 
-					selection = applyRadius(selection, this.selection);
+					selection = applyRadius(selection, this.selection, this.radius);
 
 					callback.accept(selection);
 				}
@@ -107,61 +107,67 @@ public final class ChunkFilterSelector {
 			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 			return true;
 		}
+	}
 
-		private Map<Point2i, Set<Point2i>> applyRadius(Map<Point2i, Set<Point2i>> region, SelectionData selection) {
-			if (radius <= 0) {
-				return region;
-			}
+	/**
+	 * Adds a radius to a region selection. This may result in a selection in more regions than the initial selection.
+	 * @param region The initially selected chunks in a region.
+	 * @param selection The complete selection, in case we want to stay within the boundaries of a target selection.
+	 * @return A new selection with the radius applied.
+	 */
+	static Map<Point2i, Set<Point2i>> applyRadius(Map<Point2i, Set<Point2i>> region, SelectionData selection, int radius) {
+		if (radius <= 0) {
+			return region;
+		}
 
-			Map<Point2i, Set<Point2i>> output = new HashMap<>();
+		Map<Point2i, Set<Point2i>> output = new HashMap<>();
 
-			for (Map.Entry<Point2i, Set<Point2i>> reg : region.entrySet()) {
-				if (reg.getValue() == null) {
-					output.put(reg.getKey(), null);
-					// full region
-					Point2i startChunk = reg.getKey().regionToChunk();
-					Point2i endChunk = startChunk.add(Tile.SIZE_IN_CHUNKS - 1);
+		for (Map.Entry<Point2i, Set<Point2i>> reg : region.entrySet()) {
+			if (reg.getValue() == null) {
+				output.put(reg.getKey(), null);
+				// full region
+				Point2i startChunk = reg.getKey().regionToChunk();
+				Point2i endChunk = startChunk.add(Tile.SIZE_IN_CHUNKS - 1);
 
-					for (int x = startChunk.getX() - radius; x <= endChunk.getX() + radius; x++) {
-						for (int z = startChunk.getZ() - radius; z <= endChunk.getZ() + radius; z++) {
+				for (int x = startChunk.getX() - radius; x <= endChunk.getX() + radius; x++) {
+					for (int z = startChunk.getZ() - radius; z <= endChunk.getZ() + radius; z++) {
+						Point2i currentChunk = new Point2i(x, z);
+						if (selection != null && !selection.isChunkSelected(currentChunk)) {
+							continue;
+						}
+						Point2i currentRegion = currentChunk.chunkToRegion();
+
+						if (currentRegion.equals(reg.getKey())) {
+							z += Tile.SIZE_IN_CHUNKS - 1;
+							continue;
+						}
+
+						if (!output.containsKey(currentRegion)) {
+							output.put(currentRegion, new HashSet<>());
+						}
+
+						output.get(currentRegion).add(currentChunk);
+					}
+				}
+			} else {
+				output.put(reg.getKey(), new HashSet<>(reg.getValue()));
+				for (Point2i chunk : reg.getValue()) {
+					for (int x = chunk.getX() - radius; x <= chunk.getX() + radius; x++) {
+						for (int z = chunk.getZ() - radius; z <= chunk.getZ() + radius; z++) {
 							Point2i currentChunk = new Point2i(x, z);
-							if (!selection.isChunkSelected(currentChunk)) {
+							if (selection != null && !selection.isChunkSelected(currentChunk)) {
 								continue;
 							}
 							Point2i currentRegion = currentChunk.chunkToRegion();
-
-							if (currentRegion.equals(reg.getKey())) {
-								z += Tile.SIZE_IN_CHUNKS - 1;
-								continue;
-							}
-
 							if (!output.containsKey(currentRegion)) {
 								output.put(currentRegion, new HashSet<>());
 							}
-
 							output.get(currentRegion).add(currentChunk);
-						}
-					}
-				} else {
-					output.put(reg.getKey(), new HashSet<>(reg.getValue()));
-					for (Point2i chunk : reg.getValue()) {
-						for (int x = chunk.getX() - radius; x <= chunk.getX() + radius; x++) {
-							for (int z = chunk.getZ() - radius; z <= chunk.getZ() + radius; z++) {
-								Point2i currentChunk = new Point2i(x, z);
-								if (!selection.isChunkSelected(currentChunk)) {
-									continue;
-								}
-								Point2i currentRegion = currentChunk.chunkToRegion();
-								if (!output.containsKey(currentRegion)) {
-									output.put(currentRegion, new HashSet<>());
-								}
-								output.get(currentRegion).add(currentChunk);
-							}
 						}
 					}
 				}
 			}
-			return output;
 		}
+		return output;
 	}
 }
