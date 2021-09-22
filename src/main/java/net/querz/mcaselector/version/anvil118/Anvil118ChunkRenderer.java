@@ -43,12 +43,17 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 		ListTag<CompoundTag>[] palettes = (ListTag<CompoundTag>[]) new ListTag[24];
 		long[][] blockStatesArray = new long[24][];
 		sections.forEach(s -> {
-			if (!s.containsKey("Palette") || !s.containsKey("BlockStates")) {
+			if (!s.containsKey("block_states")) {
 				return;
 			}
-			ListTag<CompoundTag> p = withDefault(() -> s.getListTag("Palette").asCompoundTagList(), null);
+			CompoundTag blockStates = s.getCompoundTag("block_states");
+
+			if (!blockStates.containsKey("palette") || !blockStates.containsKey("data")) {
+				return;
+			}
+			ListTag<CompoundTag> p = withDefault(() -> blockStates.getListTag("palette").asCompoundTagList(), null);
 			int y = withDefault(() -> s.getNumber("Y").intValue(), -5);
-			long[] b = withDefault(() -> s.getLongArray("BlockStates"), null);
+			long[] b = withDefault(() -> blockStates.getLongArray("data"), null);
 			if (y >= -4 && y < 20 && p != null && b != null) {
 				palettes[y + 4] = p;
 				blockStatesArray[y + 4] = b;
@@ -56,6 +61,9 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 		});
 
 		int[] biomes = withDefault(() -> level.getIntArray("Biomes"), null);
+		if (biomes.length == 0) {
+			biomes = null;
+		}
 
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
 			zLoop:
