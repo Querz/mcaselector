@@ -11,4 +11,20 @@ public final class Bits {
 		int waste = 64 - to;
 		return (value << waste) >>> (waste + from);
 	}
+
+	// a shortened way to find the number of leading zeroes of an int that uses max 8 of its LSBs
+	public static int fastNumberOfLeadingZeroes(int i) {
+		int n = 25;
+		i <<= 24;
+		if (i >>> 28 == 0) {
+			n += 4;
+			i <<= 4;
+		}
+		if (i >>> 30 == 0) {
+			n += 2;
+			i <<= 2;
+		}
+		n -= i >>> 31;
+		return n;
+	}
 }
