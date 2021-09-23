@@ -48,18 +48,22 @@ public class RegionMCAFile extends MCAFile<RegionChunk> {
 				continue;
 			}
 
-			CompoundTag minData = new CompoundTag();
-			minData.put("DataVersion", chunk.data.get("DataVersion").clone());
-			CompoundTag level = new CompoundTag();
-			minData.put("Level", level);
-			level.put("Biomes", chunk.data.getCompoundTag("Level").get("Biomes").clone());
-			level.put("Sections", chunk.data.getCompoundTag("Level").get("Sections").clone());
-			level.put("Status", chunk.data.getCompoundTag("Level").get("Status").clone());
+			try {
+				CompoundTag minData = new CompoundTag();
+				minData.put("DataVersion", chunk.data.get("DataVersion").clone());
+				CompoundTag level = new CompoundTag();
+				minData.put("Level", level);
+				level.put("Biomes", chunk.data.getCompoundTag("Level").get("Biomes").clone());
+				level.put("Sections", chunk.data.getCompoundTag("Level").get("Sections").clone());
+				level.put("Status", chunk.data.getCompoundTag("Level").get("Status").clone());
 
-			RegionChunk minChunk = new RegionChunk(chunk.absoluteLocation.clone());
-			minChunk.data = minData;
+				RegionChunk minChunk = new RegionChunk(chunk.absoluteLocation.clone());
+				minChunk.data = minData;
 
-			min.chunks[index] = minChunk;
+				min.chunks[index] = minChunk;
+			} catch (Exception ex) {
+				min.chunks[index] = chunk;
+			}
 		}
 		return min;
 	}
