@@ -43,17 +43,26 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 		ListTag<CompoundTag>[] palettes = (ListTag<CompoundTag>[]) new ListTag[24];
 		long[][] blockStatesArray = new long[24][];
 		sections.forEach(s -> {
-			if (!s.containsKey("block_states")) {
-				return;
+			ListTag<CompoundTag> p;
+			long[] b;
+			if (s.containsKey("block_states")) {
+				CompoundTag blockStates = s.getCompoundTag("block_states");
+				if (blockStates.containsKey("palette") && blockStates.containsKey("data")) {
+					p = withDefault(() -> blockStates.getListTag("palette").asCompoundTagList(), null);
+					b = withDefault(() -> blockStates.getLongArray("data"), null);
+				} else {
+					return;
+				}
+			} else {
+				if (s.containsKey("Palette") && s.containsKey("BlockStates")) {
+					p = withDefault(() -> s.getListTag("Palette").asCompoundTagList(), null);
+					b = withDefault(() -> s.getLongArray("BlockStates"), null);
+				} else {
+					return;
+				}
 			}
-			CompoundTag blockStates = s.getCompoundTag("block_states");
 
-			if (!blockStates.containsKey("palette") || !blockStates.containsKey("data")) {
-				return;
-			}
-			ListTag<CompoundTag> p = withDefault(() -> blockStates.getListTag("palette").asCompoundTagList(), null);
 			int y = withDefault(() -> s.getNumber("Y").intValue(), -5);
-			long[] b = withDefault(() -> blockStates.getLongArray("data"), null);
 			if (y >= -4 && y < 20 && p != null && b != null) {
 				palettes[y + 4] = p;
 				blockStatesArray[y + 4] = b;
