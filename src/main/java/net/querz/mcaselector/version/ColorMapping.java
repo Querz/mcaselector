@@ -5,6 +5,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public interface ColorMapping {
@@ -29,6 +31,10 @@ public interface ColorMapping {
 	int[] biomeGrassTints = new int[256];
 	int[] biomeFoliageTints = new int[256];
 	int[] biomeWaterTints = new int[256];
+
+	Map<String, Integer> biomeNameGrassTints = new HashMap<>();
+	Map<String, Integer> biomeNameFoliageTints = new HashMap<>();
+	Map<String, Integer> biomeNameWaterTints = new HashMap<>();
 
 	TintInitializer tintInitializer = new TintInitializer();
 

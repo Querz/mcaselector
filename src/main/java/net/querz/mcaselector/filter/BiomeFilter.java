@@ -16,7 +16,7 @@ public class BiomeFilter extends TextFilter<List<Integer>> {
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Objects.requireNonNull(BiomeFilter.class.getClassLoader().getResourceAsStream("mapping/all_biomes.txt"))))) {
+				new InputStreamReader(Objects.requireNonNull(BiomeFilter.class.getClassLoader().getResourceAsStream("mapping/biome_name_to_id.txt"))))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
 				String[] split = line.split(";");
@@ -33,7 +33,7 @@ public class BiomeFilter extends TextFilter<List<Integer>> {
 				validIDs.add(id);
 			}
 		} catch (IOException ex) {
-			Debug.dumpException("error reading mapping/all_biomes.txt for BiomeFilter", ex);
+			Debug.dumpException("error reading mapping/biome_name_to_id.txt for BiomeFilter", ex);
 		}
 	}
 
