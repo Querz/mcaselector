@@ -1,5 +1,6 @@
 package net.querz.mcaselector.version.anvil113;
 
+import net.querz.mcaselector.io.BiomeRegistry;
 import net.querz.mcaselector.math.Bits;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
@@ -133,15 +134,15 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 	}
 
 	@Override
-	public boolean matchBiomeIDs(CompoundTag data, Collection<Integer> ids) {
+	public boolean matchBiomes(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes) {
 		if (!data.containsKey("Level") || withDefault(() -> data.getCompoundTag("Level").getIntArrayTag("Biomes"), null) == null) {
 			return false;
 		}
 
 		filterLoop:
-		for (int filterID : ids) {
+		for (BiomeRegistry.BiomeIdentifier identifier : biomes) {
 			for (int dataID : data.getCompoundTag("Level").getIntArray("Biomes")) {
-				if (filterID == dataID) {
+				if (identifier.matches(dataID)) {
 					continue filterLoop;
 				}
 			}
@@ -151,14 +152,14 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 	}
 
 	@Override
-	public boolean matchAnyBiomeID(CompoundTag data, Collection<Integer> ids) {
+	public boolean matchAnyBiome(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes) {
 		if (!data.containsKey("Level") || withDefault(() -> data.getCompoundTag("Level").getIntArrayTag("Biomes"), null) == null) {
 			return false;
 		}
 
-		for (int filterID : ids) {
+		for (BiomeRegistry.BiomeIdentifier identifier : biomes) {
 			for (int dataID : data.getCompoundTag("Level").getIntArray("Biomes")) {
-				if (filterID == dataID) {
+				if (identifier.matches(dataID)) {
 					return true;
 				}
 			}
@@ -167,18 +168,18 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 	}
 
 	@Override
-	public void changeBiome(CompoundTag data, int id) {
+	public void changeBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome) {
 		if (!data.containsKey("Level") || withDefault(() -> data.getCompoundTag("Level").getIntArrayTag("Biomes"), null) == null) {
 			return;
 		}
-		Arrays.fill(data.getCompoundTag("Level").getIntArray("Biomes"), id);
+		Arrays.fill(data.getCompoundTag("Level").getIntArray("Biomes"), biome.getID());
 	}
 
 	@Override
-	public void forceBiome(CompoundTag data, int id) {
+	public void forceBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome) {
 		if (data.containsKey("Level")) {
 			int[] biomes = new int[256];
-			Arrays.fill(biomes, id);
+			Arrays.fill(biomes, biome.getID());
 			data.getCompoundTag("Level").putIntArray("Biomes", biomes);
 		}
 	}
@@ -561,5 +562,19 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 			}
 		}
 		return result;
+	}
+
+	protected ListTag<CompoundTag> sectionsFromRoot(CompoundTag root) {
+		if (!root.containsKey("Level") || root.get("Level").getID() != CompoundTag.ID) {
+			return null;
+		}
+		ListTag<?> rawPalette = root.getCompoundTag("Level").getListTag("Sections");
+		if (rawPalette == null) {
+			return null;
+		}
+		if (rawPalette.getTypeClass() != CompoundTag.class) {
+			return null;
+		}
+		return rawPalette.asCompoundTagList();
 	}
 }

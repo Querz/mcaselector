@@ -1,5 +1,6 @@
 package net.querz.mcaselector.version.anvil117;
 
+import net.querz.mcaselector.io.BiomeRegistry;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.validation.ValidationHelper;
@@ -19,7 +20,7 @@ import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
 public class Anvil117ChunkFilter extends Anvil116ChunkFilter {
 
 	@Override
-	public void forceBiome(CompoundTag data, int id) {
+	public void forceBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome) {
 		if (data.containsKey("Level")) {
 			int[] biomes = ValidationHelper.withDefault(() -> data.getCompoundTag("Level").getIntArray("Biomes"), null);
 			if (biomes != null && (biomes.length == 1024 || biomes.length == 1536)) {
@@ -27,7 +28,7 @@ public class Anvil117ChunkFilter extends Anvil116ChunkFilter {
 			} else {
 				biomes = new int[1024];
 			}
-			Arrays.fill(biomes, id);
+			Arrays.fill(biomes, biome.getID());
 			data.getCompoundTag("Level").putIntArray("Biomes", biomes);
 		}
 	}
