@@ -53,7 +53,9 @@ public class RegionMCAFile extends MCAFile<RegionChunk> {
 				minData.put("DataVersion", chunk.data.get("DataVersion").clone());
 				CompoundTag level = new CompoundTag();
 				minData.put("Level", level);
-				level.put("Biomes", chunk.data.getCompoundTag("Level").get("Biomes").clone());
+				if (chunk.data.getCompoundTag("Level").containsKey("Biomes")) {
+					level.put("Biomes", chunk.data.getCompoundTag("Level").get("Biomes").clone());
+				}
 				level.put("Sections", chunk.data.getCompoundTag("Level").get("Sections").clone());
 				level.put("Status", chunk.data.getCompoundTag("Level").get("Status").clone());
 

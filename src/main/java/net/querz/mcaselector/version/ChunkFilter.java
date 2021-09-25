@@ -1,5 +1,6 @@
 package net.querz.mcaselector.version;
 
+import net.querz.mcaselector.io.BiomeRegistry;
 import net.querz.nbt.io.SNBTUtil;
 import net.querz.nbt.tag.CompoundTag;
 import java.io.IOException;
@@ -12,7 +13,7 @@ public interface ChunkFilter {
 	boolean matchBlockNames(CompoundTag data, Collection<String> names);
 
 	// returns true if ALL biomes are present
-	boolean matchBiomeIDs(CompoundTag data, Collection<Integer> ids);
+	boolean matchBiomes(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes);
 
 	// returns true if AT LEAST ONE block name is present
 	boolean matchAnyBlockName(CompoundTag data, Collection<String> names);
@@ -21,11 +22,11 @@ public interface ChunkFilter {
 	boolean paletteEquals(CompoundTag data, Collection<String> names);
 
 	// returns true if AT LEAST ONE biome is present
-	boolean matchAnyBiomeID(CompoundTag data, Collection<Integer> ids);
+	boolean matchAnyBiome(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes);
 
-	void changeBiome(CompoundTag data, int id);
+	void changeBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome);
 
-	void forceBiome(CompoundTag data, int id);
+	void forceBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome);
 
 	void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace);
 

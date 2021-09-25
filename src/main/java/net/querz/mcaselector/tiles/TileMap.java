@@ -285,14 +285,14 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	public static Point2f getRegionGridMin(Point2f offset, float scale) {
 		Point2i min = offset.toPoint2i().blockToRegion();
-		Point2i regionOffset = min.regionToBlock().sub((int) offset.getX(), (int) offset.getY());
-		return new Point2f(regionOffset.getX() / scale, regionOffset.getZ() / scale);
+		Point2f regionOffset = min.regionToBlock().toPoint2f().sub(offset.getX(), offset.getY());
+		return new Point2f(regionOffset.getX() / scale, regionOffset.getY() / scale);
 	}
 
 	public static Point2f getChunkGridMin(Point2f offset, float scale) {
 		Point2i min = offset.toPoint2i().blockToChunk();
-		Point2i chunkOffset = min.chunkToBlock().sub((int) offset.getX(), (int) offset.getY());
-		return new Point2f(chunkOffset.getX() / scale, chunkOffset.getZ() / scale);
+		Point2f chunkOffset = min.chunkToBlock().toPoint2f().sub(offset.getX(), offset.getY());
+		return new Point2f(chunkOffset.getX() / scale, chunkOffset.getY() / scale);
 	}
 
 	private void onKeyPressed(KeyEvent event) {

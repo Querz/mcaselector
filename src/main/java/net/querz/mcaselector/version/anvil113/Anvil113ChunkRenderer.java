@@ -309,7 +309,7 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 	private boolean isEmptyOrFoliage(CompoundTag blockData, ColorMapping colorMapping) {
 		String name;
 		return switch (name = withDefault(() -> blockData.getString("Name"), "")) {
-			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void" -> blockData.size() == 1;
+			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void", "minecraft:snow" -> blockData.size() == 1;
 			default -> colorMapping.isFoliage(name);
 		};
 	}

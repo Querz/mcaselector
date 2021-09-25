@@ -255,7 +255,7 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 
 	private boolean isEmptyOrFoliage(int blockID, ColorMapping colorMapping) {
 		return switch (blockID) {
-			case 0, 166, 217 -> true;
+			case 0, 166, 217, 78 -> true;
 			default -> colorMapping.isFoliage(blockID);
 		};
 	}

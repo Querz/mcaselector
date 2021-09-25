@@ -19,6 +19,14 @@ public class Anvil118ColorMapping implements ColorMapping {
 	private final Set<String> grass = new HashSet<>();
 	private final Set<String> foliage = new HashSet<>();
 
+	private final Map<String, Integer> biomeGrassTints = new HashMap<>();
+	private final Map<String, Integer> biomeFoliageTints = new HashMap<>();
+	private final Map<String, Integer> biomeWaterTints = new HashMap<>();
+
+	private final int[] biomeGrassTintsLegacy = new int[256];
+	private final int[] biomeFoliageTintsLegacy = new int[256];
+	private final int[] biomeWaterTintsLegacy = new int[256];
+
 	public Anvil118ColorMapping() {
 		// note_block:pitch=1,powered=true,instrument=flute;01ab9f
 		try (BufferedReader bis = new BufferedReader(
@@ -66,10 +74,75 @@ public class Anvil118ColorMapping implements ColorMapping {
 		} catch (IOException ex) {
 			throw new RuntimeException("failed to read mapping/117/colors.txt");
 		}
+
+		try (BufferedReader bis = new BufferedReader(
+			new InputStreamReader(Objects.requireNonNull(ColorMapping.class.getClassLoader().getResourceAsStream("mapping/118/biome_colors.txt"))))) {
+
+			String line;
+			while ((line = bis.readLine()) != null) {
+				String[] elements = line.split(";");
+				if (elements.length != 4) {
+					Debug.dumpf("invalid line in biome color file: \"%s\"", line);
+					continue;
+				}
+
+				String biomeName = elements[0];
+				int grassColor = Integer.parseInt(elements[1], 16);
+				int foliageColor = Integer.parseInt(elements[2], 16);
+				int waterColor = Integer.parseInt(elements[3], 16);
+
+				biomeGrassTints.put("minecraft:" + biomeName, grassColor);
+				biomeFoliageTints.put("minecraft:" + biomeName, foliageColor);
+				biomeWaterTints.put("minecraft:" + biomeName, waterColor);
+			}
+		} catch (IOException ex) {
+			throw new RuntimeException("failed to read mapping/118/biome_colors.txt");
+		}
+
+		Arrays.fill(biomeGrassTintsLegacy, DEFAULT_GRASS_TINT);
+		Arrays.fill(biomeFoliageTintsLegacy, DEFAULT_FOLIAGE_TINT);
+		Arrays.fill(biomeWaterTintsLegacy, DEFAULT_WATER_TINT);
+
+		try (BufferedReader bis = new BufferedReader(
+			new InputStreamReader(Objects.requireNonNull(ColorMapping.class.getClassLoader().getResourceAsStream("mapping/118/biome_colors_legacy.txt"))))) {
+
+			String line;
+			while ((line = bis.readLine()) != null) {
+				String[] elements = line.split(";");
+				if (elements.length != 4) {
+					Debug.dumpf("invalid line in biome color file: \"%s\"", line);
+					continue;
+				}
+
+				int biomeID = Integer.parseInt(elements[0]);
+				int grassColor = Integer.parseInt(elements[1], 16);
+				int foliageColor = Integer.parseInt(elements[2], 16);
+				int waterColor = Integer.parseInt(elements[3], 16);
+
+				biomeGrassTintsLegacy[biomeID] = grassColor;
+				biomeFoliageTintsLegacy[biomeID] = foliageColor;
+				biomeWaterTintsLegacy[biomeID] = waterColor;
+			}
+		} catch (IOException ex) {
+			throw new RuntimeException("failed to read mapping/118/biome_colors_legacy.txt");
+		}
 	}
 
 	@Override
 	public int getRGB(Object o, int biome) {
+		String name = withDefault(() -> ((CompoundTag) o).getString("Name"), "");
+		Object value = mapping.get(name);
+		if (value instanceof Integer) {
+			return applyBiomeTintLegacy(name, biome, (int) value);
+		} else if (value instanceof BlockStateMapping) {
+			int color = ((BlockStateMapping) value).getColor(withDefault(() -> ((CompoundTag) o).getCompoundTag("Properties"), null));
+			return applyBiomeTintLegacy(name, biome, color);
+		}
+		return 0xFF000000;
+	}
+
+	@Override
+	public int getRGB(Object o, String biome) {
 		String name = withDefault(() -> ((CompoundTag) o).getString("Name"), "");
 		Object value = mapping.get(name);
 		if (value instanceof Integer) {
@@ -87,18 +160,29 @@ public class Anvil118ColorMapping implements ColorMapping {
 			return true;
 		}
 		return switch ((String) name) {
-			case "minecraft:birch_leaves", "minecraft:spruce_leaves", "minecraft:azalea_leaves" -> true;
+			case "minecraft:birch_leaves", "minecraft:spruce_leaves", "minecraft:azalea_leaves", "minecraft:flowering_azalea_leaves" -> true;
 			default -> false;
 		};
 	}
 
-	private int applyBiomeTint(String name, int biome, int color) {
+	private int applyBiomeTintLegacy(String name, int biome, int color) {
 		if (grass.contains(name)) {
-			return applyTint(color, biomeGrassTints[biome]);
+			return applyTint(color, biomeGrassTintsLegacy[biome]);
 		} else if (foliage.contains(name)) {
-			return applyTint(color, biomeFoliageTints[biome]);
+			return applyTint(color, biomeFoliageTintsLegacy[biome]);
 		} else if (name.equals("minecraft:water")) {
-			return applyTint(color, biomeWaterTints[biome]);
+			return applyTint(color, biomeWaterTintsLegacy[biome]);
+		}
+		return color;
+	}
+
+	private int applyBiomeTint(String name, String biome, int color) {
+		if (grass.contains(name)) {
+			return applyTint(color, biomeGrassTints.getOrDefault(biome, DEFAULT_GRASS_TINT));
+		} else if (foliage.contains(name)) {
+			return applyTint(color, biomeFoliageTints.getOrDefault(biome, DEFAULT_FOLIAGE_TINT));
+		} else if (name.equals("minecraft:water")) {
+			return applyTint(color, biomeWaterTints.getOrDefault(biome, DEFAULT_WATER_TINT));
 		}
 		return color;
 	}
