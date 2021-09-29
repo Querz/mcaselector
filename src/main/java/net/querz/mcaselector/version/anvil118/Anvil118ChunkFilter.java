@@ -18,6 +18,10 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public boolean matchBlockNames(CompoundTag data, Collection<String> names) {
+		if (data.getInt("DataVersion") < 2834) {
+			return super.matchBlockNames(data, names);
+		}
+
 		ListTag<CompoundTag> sections = sectionsFromRoot(data);
 		if (sections == null) {
 			return false;
@@ -51,6 +55,10 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public boolean matchAnyBlockName(CompoundTag data, Collection<String> names) {
+		if (data.getInt("DataVersion") < 2834) {
+			return super.matchAnyBlockName(data, names);
+		}
+
 		ListTag<CompoundTag> sections = sectionsFromRoot(data);
 		if (sections == null) {
 			return false;
@@ -81,6 +89,10 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public boolean paletteEquals(CompoundTag data, Collection<String> names) {
+		if (data.getInt("DataVersion") < 2834) {
+			return super.paletteEquals(data, names);
+		}
+
 		ListTag<CompoundTag> sections = sectionsFromRoot(data);
 		if (sections == null) {
 			return false;
@@ -123,6 +135,10 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public boolean matchBiomes(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes) {
+		if (data.getInt("DataVersion") < 2834) {
+			return super.matchBiomes(data, biomes);
+		}
+
 		ListTag<CompoundTag> sections = sectionsFromRoot(data);
 		if (sections == null) {
 			return false;
@@ -148,6 +164,10 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public boolean matchAnyBiome(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes) {
+		if (data.getInt("DataVersion") < 2834) {
+			return super.matchAnyBiome(data, biomes);
+		}
+
 		ListTag<CompoundTag> sections = sectionsFromRoot(data);
 		if (sections == null) {
 			return false;
@@ -171,6 +191,11 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public void changeBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome) {
+		if (data.getInt("DataVersion") < 2834) {
+			super.changeBiome(data, biome);
+			return;
+		}
+
 		ListTag<CompoundTag> sections = sectionsFromRoot(data);
 		if (sections == null) {
 			return;
@@ -194,6 +219,11 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public void forceBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome) {
+		if (data.getInt("DataVersion") < 2834) {
+			super.forceBiome(data, biome);
+			return;
+		}
+
 		ListTag<CompoundTag> sections = sectionsFromRoot(data);
 		if (sections == null) {
 			return;
@@ -217,6 +247,11 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace) {
+		if (data.getInt("DataVersion") < 2834) {
+			super.replaceBlocks(data, replace);
+			return;
+		}
+
 		ListTag<CompoundTag> sections = sectionsFromRoot(data);
 		if (sections == null) {
 			return;
@@ -365,6 +400,10 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public int getAverageHeight(CompoundTag data) {
+		if (data.getInt("DataVersion") < 2834) {
+			return super.getAverageHeight(data);
+		}
+
 		ListTag<CompoundTag> sections = sectionsFromRoot(data);
 		if (sections == null) {
 			return 0;
@@ -414,6 +453,10 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public int getBlockAmount(CompoundTag data, String[] blocks) {
+		if (data.getInt("DataVersion") < 2834) {
+			return super.getBlockAmount(data, blocks);
+		}
+
 		ListTag<CompoundTag> sections = sectionsFromRoot(data);
 		if (sections == null) {
 			return 0;
