@@ -108,10 +108,10 @@ public final class Config {
 			return false;
 		}
 		try {
-			Files.createDirectories(parent.toPath());
+			Files.createDirectories(parent.getCanonicalFile().toPath());
 			return true;
 		} catch (IOException ex) {
-			System.out.println("failed to create directory " + parent + ": " + ex.getMessage());
+			System.out.println("failed to create directory " + parent + ": " + ex.getMessage() + "(" + ex.getClass().getSimpleName() + ")");
 			return false;
 		}
 	}
