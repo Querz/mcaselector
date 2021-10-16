@@ -1,15 +1,9 @@
 status.region;region
-status.region.tooltip;Region nad którym trzymasz kursor - wartości zgodne z nazwą pliku.
 status.chunk;chunk
-status.chunk.tooltip;Chunk nad którym trzymasz kursor.
 status.block;blok
-status.block.tooltip;Przybliżenie bloku nad którym trzymasz kursor.
 status.selected;zaznaczonych
-status.selected.tooltip;Obecnie zaznaczona liczba chunków.
-status.visible;widocznych
-status.visible.tooltip;Liczba załadowanych obrazów regionów.
+status.queue;kolejka
 status.total;łącznie
-status.total.tooltip;Całkowita liczba załadowanych regionów - z uwzględnieniem niewidocznych.
 status.overlay;nakładka
 menu.file;Plik
 menu.view;Widok

@@ -1,15 +1,9 @@
 status.region;region
-status.region.tooltip;Aktuálně zvýrazněný region reprezentovaný čísly z názvu souboru.
 status.chunk;chunk
-status.chunk.tooltip;Aktuálně zvýrazněný chunk.
 status.block;blok
-status.block.tooltip;Přibližně zvýrazněný block.
 status.selected;vybráno
-status.selected.tooltip;Počet aktuálně vybraných chunků.
-status.visible;viditelné regiony
-status.visible.tooltip;Počet obrázků regionů nahraných pro vykreslení.
+status.queue;fronta
 status.total;celkem regionů
-status.total.tooltip;Celkový počet nahraných regionů, včetně vybraných nezobrazených regionů.
 status.overlay;překrytí
 menu.file;Soubor
 menu.view;Pohled

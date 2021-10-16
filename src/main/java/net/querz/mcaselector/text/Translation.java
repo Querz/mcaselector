@@ -17,17 +17,11 @@ import java.util.regex.Pattern;
 public enum Translation {
 
 	STATUS_REGION("status.region"),
-	STATUS_REGION_TOOLTIP("status.region.tooltip"),
 	STATUS_CHUNK("status.chunk"),
-	STATUS_CHUNK_TOOLTIP("status.chunk.tooltip"),
 	STATUS_BLOCK("status.block"),
-	STATUS_BLOCK_TOOLTIP("status.block.tooltip"),
 	STATUS_SELECTED("status.selected"),
-	STATUS_SELECTED_TOOLTIP("status.selected.tooltip"),
-	STATUS_VISIBLE("status.visible"),
-	STATUS_VISIBLE_TOOLTIP("status.visible.tooltip"),
+	STATUS_QUEUE("status.queue"),
 	STATUS_TOTAL("status.total"),
-	STATUS_TOTAL_TOOLTIP("status.total.tooltip"),
 	STATUS_OVERLAY("status.overlay"),
 	MENU_FILE("menu.file"),
 	MENU_VIEW("menu.view"),

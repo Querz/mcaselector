@@ -202,10 +202,7 @@ public final class JobHandler {
 	}
 
 	public static int getActiveJobs() {
-		return processExecutor.getQueue().size() +
-			processExecutor.getActiveCount() +
-			saveExecutor.getQueue().size() +
-			saveExecutor.getActiveCount();
+		return allTasks.get();
 	}
 
 	private static AtomicLong jobIDCounter = new AtomicLong(0);
@@ -214,7 +211,7 @@ public final class JobHandler {
 		Queue<Runnable> queue = processExecutor.getQueue();
 
 		for (Runnable r : queue) {
-			System.out.println(r);
+			Debug.dump(r);
 		}
 	}
 

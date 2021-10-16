@@ -1,15 +1,9 @@
 status.region;region
-status.region.tooltip;De momenteel gekozen region, representeert de nummers in de bestandsnaam.
 status.chunk;chunk
-status.chunk.tooltip;De momenteel gekozen chunk.
 status.block;blok
-status.block.tooltip;Een benadering van het momenteel gekozen blok.
 status.selected;geselecteerd
-status.selected.tooltip;De momenteel geselecteerde hoeveelheid chunks.
-status.visible;zichtbaar
-status.visible.tooltip;De hoeveelheid geladen region afbeeldingen voor het renderen.
+status.queue;queue
 status.total;totaal
-status.total.tooltip;De totale hoeveelheid geladen regions, inclusief de niet zichtbare geselecteerde regions.
 status.overlay;overlay
 menu.file;Bestand
 menu.view;Beeld

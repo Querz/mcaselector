@@ -1,15 +1,9 @@
 status.region;region
-status.region.tooltip;Den nuvarande markerade regionen representerar numrerna i dess filnamn.
 status.chunk;chunk
-status.chunk.tooltip;Den nuvarande markerade chunken.
 status.block;block
-status.block.tooltip;En uppskattning av antalet markerade block.
 status.selected;valda
-status.selected.tooltip;Den nuvarande valda mängden chunks.
-status.visible;synliga
-status.visible.tooltip;Mängden laddade regionsbilder för rendering.
+status.queue;kö
 status.total;totalt
-status.total.tooltip;Den totala mängden laddade regioner, inkluderat ej visade valda regioner.
 status.overlay;överlägget
 menu.file;Fil
 menu.view;Visa

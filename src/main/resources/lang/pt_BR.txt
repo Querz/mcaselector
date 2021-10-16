@@ -1,15 +1,9 @@
 status.region;Região
-status.region.tooltip;A região atualmente superposta representa os números em seu nome de arquivo.
 status.chunk;Chunk
-status.chunk.tooltip;Chunk atualmente sobreposto.
 status.block;Bloco
-status.block.tooltip;Uma aproximação do bloco atualmente sobreposto.
 status.selected;Selecionado
-status.selected.tooltip;Quantidade de chunks atualmente selecionados.
-status.visible;Regiões visíveis
-status.visible.tooltip;Quantidade de imagens de região carregadas para renderizar.
+status.queue;Fila
 status.total;Região total
-status.total.tooltip;Quantidade total de regiões carregadas, incluindo as regiões selecionadas não visíveis.
 status.overlay;sobreposição
 menu.file;Arquivo
 menu.view;Visão

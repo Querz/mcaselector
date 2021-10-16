@@ -1,15 +1,9 @@
 status.region;regione
-status.region.tooltip;La regione attualmente coperta ha il proprio numero nel nome del file.
 status.chunk;chunk
-status.chunk.tooltip;Il numero di chunk coperti.
 status.block;blocco
-status.block.tooltip;Un'approssimazione del numero di blocchi coperti.
 status.selected;selezionato
-status.selected.tooltip;Il numero corrente di chunk selezionati.
-status.visible;visibile
-status.visible.tooltip;Il numero di immagini di regioni caricate per il rendering.
+status.queue;coda
 status.total;totale
-status.total.tooltip;Il numero totale di regioni caricate, incluse le regioni non visibili.
 status.overlay;sovrapposizione
 menu.file;File
 menu.view;Vista

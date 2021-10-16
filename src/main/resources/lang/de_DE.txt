@@ -1,15 +1,9 @@
 status.region;Region
-status.region.tooltip;Die sich unter dem Mauszeiger befindende Region, repräsentiert die Koordinaten im Dateinamen.
 status.chunk;Chunk
-status.chunk.tooltip;Der sich unter dem Mauszeiger befindende Chunk.
 status.block;Block
-status.block.tooltip;Der sich ungefähr unter dem Mauszeiger befindende Block.
 status.selected;Selektiert
-status.selected.tooltip;Die Anzahl der ausgewählten Chunks.
-status.visible;Sichtbar
-status.visible.tooltip;Die Anzahl gerenderter Regionen.
+status.queue;Queue
 status.total;Alle
-status.total.tooltip;Die gesamte Anzahl geladener Regionen, inklusive der nicht sichtbaren selektierten Regionen.
 status.overlay;overlay
 menu.file;Datei
 menu.view;Ansicht

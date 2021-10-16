@@ -1,15 +1,9 @@
 status.region;リージョン
-status.region.tooltip;ホバーされているリージョン
 status.chunk;チャンク
-status.chunk.tooltip;ホバーされているチャンク
 status.block;ブロック
-status.block.tooltip;ホバーされているブロックの概算
 status.selected;選択済み
-status.selected.tooltip;選択されているチャンク
-status.visible;表示中
-status.visible.tooltip;レンダリングされているリージョン
+status.queue;列
 status.total;ロード済み
-status.total.tooltip;ロードされたリージョン
 status.overlay;オーバーレイ
 menu.file;ファイル
 menu.view;ビュー

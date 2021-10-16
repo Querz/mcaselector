@@ -1,15 +1,9 @@
 status.region;区域
-status.region.tooltip;当前悬停区域,表示其文件名中的数字.
 status.chunk;区块
-status.chunk.tooltip;当前悬停的区块.
 status.block;方块
-status.block.tooltip;当前悬停方块的近似值.
 status.selected;选择
-status.selected.tooltip;当前选择的区块数量.
-status.visible;可见区域
-status.visible.tooltip;用于渲染的加载区域图像的数量.
+status.queue;队列
 status.total;区域总数
-status.total.tooltip;加载区域的总数, 包括不可见的选定区域.
 status.overlay;覆盖
 menu.file;文件
 menu.view;视图

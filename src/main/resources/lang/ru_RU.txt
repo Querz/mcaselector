@@ -1,15 +1,9 @@
 status.region;область
-status.region.tooltip;Указанная область, показывает числа в имени файла.
 status.chunk;чанк
-status.chunk.tooltip;Указанный чанк.
 status.block;блок
-status.block.tooltip;Приблизительные координаты указанного блока
 status.selected;выбрано
-status.selected.tooltip;Количество выбранных чанков.
-status.visible;отображено
-status.visible.tooltip;Количество прогруженных областей для отображения
+status.queue;очередь
 status.total;всего
-status.total.tooltip;Общее количество прогруженных областей, включая не отоброжаемые выбранные области.
 status.overlay;наложение
 menu.file;Файл
 menu.view;Вид
