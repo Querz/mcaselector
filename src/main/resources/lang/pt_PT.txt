@@ -13,7 +13,7 @@ menu.about;Sobre
 menu.file.open_world;Abra um mundo
 menu.file.open;Abra uma região
 menu.file.settings;Configuração
-menu.file.render_settings;
+menu.file.render_settings;Configurações de renderização
 menu.file.quit;Sair
 menu.view.chunk_grid;Grelha de chunks
 menu.view.region_grid;Grelha de regiões
@@ -42,43 +42,43 @@ menu.tools.next_overlay;Próxima sobreposição
 menu.tools.next_overlay_type;Tipo de sobreposição
 dialog.select_world.title;Selecione uma dimensão
 dialog.settings.title;Configuração
-dialog.settings.global.language;
-dialog.settings.global.language.language;
-dialog.settings.processing.process.read_threads;
-dialog.settings.processing.process.process_threads;
-dialog.settings.processing.process;
-dialog.settings.processing.process.write_threads;
-dialog.settings.processing.files.max_files;
-dialog.settings.global.selection.region_color;
-dialog.settings.global.selection.chunk_color;
-dialog.settings.global.selection.pasted_chunks_color;
-dialog.settings.rendering.shade.shade;
-dialog.settings.rendering.shade;
-dialog.settings.rendering.shade.shade_water;
-dialog.settings.rendering.background.show_nonexistent_regions;
-dialog.settings.rendering.smooth.smooth_rendering;
-dialog.settings.rendering.smooth.smooth_overlays;
-dialog.settings.rendering.background.background_pattern;
-dialog.settings.rendering.background;
-dialog.settings.global.misc.mc_saves_dir;
-dialog.settings.global.misc.print_debug;
-dialog.settings.global.misc.show_log_file;
+dialog.settings.global.language;Língua
+dialog.settings.global.language.language;Língua
+dialog.settings.processing.process.read_threads;Leia tópicos
+dialog.settings.processing.process.process_threads;Threads de processo
+dialog.settings.processing.process;Processo
+dialog.settings.processing.process.write_threads;Escreva tópicos
+dialog.settings.processing.files.max_files;Arquivos máximos
+dialog.settings.global.selection.region_color;Cor da região
+dialog.settings.global.selection.chunk_color;Cor do pedaço
+dialog.settings.global.selection.pasted_chunks_color;Cor dos pedaços colados
+dialog.settings.rendering.shade.shade;Sombra
+dialog.settings.rendering.shade;Sombra
+dialog.settings.rendering.shade.shade_water;Água de sombra
+dialog.settings.rendering.background.show_nonexistent_regions;Mostrar regiões inexistentes
+dialog.settings.rendering.smooth.smooth_rendering;Renderização suave
+dialog.settings.rendering.smooth.smooth_overlays;Sobreposições suaves
+dialog.settings.rendering.background.background_pattern;Padrão de fundo
+dialog.settings.rendering.background;Fundo
+dialog.settings.global.misc.mc_saves_dir;MC salva dir
+dialog.settings.global.misc.print_debug;Imprimir mensagens de depuração
+dialog.settings.global.misc.show_log_file;Mostrar arquivo de log
 dialog.settings.reset;Repor
-dialog.settings.tab_global;
-dialog.settings.tab_processing;
-dialog.settings.tab_rendering;
-dialog.settings.tab_world;
-dialog.settings.global.misc;
-dialog.settings.processing.files;
-dialog.settings.rendering.smooth;
-dialog.settings.global.selection;
-dialog.settings.world.paths;
-dialog.settings.world.paths.poi;
-dialog.settings.world.paths.entities;
-dialog.settings.rendering.layers.render_height;
-dialog.settings.rendering.layers.render_layer_only;
-dialog.settings.rendering.layers;
-dialog.settings.rendering.layers.render_caves;
+dialog.settings.tab_global;Global
+dialog.settings.tab_processing;Em processamento
+dialog.settings.tab_rendering;Renderização
+dialog.settings.tab_world;Mundo
+dialog.settings.global.misc;Diversos
+dialog.settings.processing.files;arquivos
+dialog.settings.rendering.smooth;Suave
+dialog.settings.global.selection;Seleção
+dialog.settings.world.paths;Caminhos
+dialog.settings.world.paths.poi;POI
+dialog.settings.world.paths.entities;Entidades
+dialog.settings.rendering.layers.render_height;Altura de renderização
+dialog.settings.rendering.layers.render_layer_only;Camada de renderização apenas
+dialog.settings.rendering.layers;Camadas
+dialog.settings.rendering.layers.render_caves;Renderizar cavernas
 dialog.goto.title;Ir para coordenadas
 dialog.confirmation.question;Tem a certeza?
 dialog.delete_chunks_confirmation.title;Apagar chunks
@@ -163,7 +163,7 @@ dialog.error.button.copy_to_clipboard;Copiar para área de transferência
 dialog.error.title;Erro
 dialog.error.header;Um erro ocorreu
 dialog.error.copied_to_clipboard;Copiado para a área de transferência!
-dialog.unsaved_changes.title;
-dialog.unsaved_changes.header;
+dialog.unsaved_changes.title;Alterações não salvas
+dialog.unsaved_changes.header;Você tem alterações não salvas.
 button.cancel;Cancelar
 button.ok;OK

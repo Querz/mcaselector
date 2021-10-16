@@ -13,7 +13,7 @@ menu.about;Om
 menu.file.open_world;Öppna en värld
 menu.file.open;Öppna en region
 menu.file.settings;Inställningar
-menu.file.render_settings;
+menu.file.render_settings;Render -inställningar
 menu.file.quit;Avsluta
 menu.view.chunk_grid;Chunkrutnät
 menu.view.region_grid;Regionrutnät
@@ -42,43 +42,43 @@ menu.tools.next_overlay;Nästa överlägg
 menu.tools.next_overlay_type;Överläggstyp
 dialog.select_world.title;Välj en dimension
 dialog.settings.title;Inställningar
-dialog.settings.global.language;
-dialog.settings.global.language.language;
-dialog.settings.processing.process.read_threads;
-dialog.settings.processing.process.process_threads;
-dialog.settings.processing.process;
-dialog.settings.processing.process.write_threads;
-dialog.settings.processing.files.max_files;
-dialog.settings.global.selection.region_color;
-dialog.settings.global.selection.chunk_color;
-dialog.settings.global.selection.pasted_chunks_color;
-dialog.settings.rendering.shade.shade;
-dialog.settings.rendering.shade;
-dialog.settings.rendering.shade.shade_water;
-dialog.settings.rendering.background.show_nonexistent_regions;
-dialog.settings.rendering.smooth.smooth_rendering;
-dialog.settings.rendering.smooth.smooth_overlays;
-dialog.settings.rendering.background.background_pattern;
-dialog.settings.rendering.background;
-dialog.settings.global.misc.mc_saves_dir;
-dialog.settings.global.misc.print_debug;
-dialog.settings.global.misc.show_log_file;
+dialog.settings.global.language;Språk
+dialog.settings.global.language.language;Språk
+dialog.settings.processing.process.read_threads;Läs trådar
+dialog.settings.processing.process.process_threads;Bearbeta trådar
+dialog.settings.processing.process;Bearbeta
+dialog.settings.processing.process.write_threads;Skriv trådar
+dialog.settings.processing.files.max_files;Max filer
+dialog.settings.global.selection.region_color;Regionfärg
+dialog.settings.global.selection.chunk_color;Chunk färg
+dialog.settings.global.selection.pasted_chunks_color;Klistrade bitar färg
+dialog.settings.rendering.shade.shade;Skugga
+dialog.settings.rendering.shade;Skugga
+dialog.settings.rendering.shade.shade_water;Skuggvatten
+dialog.settings.rendering.background.show_nonexistent_regions;Visa obefintliga regioner
+dialog.settings.rendering.smooth.smooth_rendering;Smidig återgivning
+dialog.settings.rendering.smooth.smooth_overlays;Smidiga överlägg
+dialog.settings.rendering.background.background_pattern;Bakgrundsmönster
+dialog.settings.rendering.background;Bakgrund
+dialog.settings.global.misc.mc_saves_dir;MC sparar dir
+dialog.settings.global.misc.print_debug;Skriv ut felsökningsmeddelanden
+dialog.settings.global.misc.show_log_file;Visa loggfil
 dialog.settings.reset;Återställ
-dialog.settings.tab_global;
-dialog.settings.tab_processing;
-dialog.settings.tab_rendering;
-dialog.settings.tab_world;
-dialog.settings.global.misc;
-dialog.settings.processing.files;
-dialog.settings.rendering.smooth;
-dialog.settings.global.selection;
-dialog.settings.world.paths;
-dialog.settings.world.paths.poi;
-dialog.settings.world.paths.entities;
-dialog.settings.rendering.layers.render_height;
-dialog.settings.rendering.layers.render_layer_only;
-dialog.settings.rendering.layers;
-dialog.settings.rendering.layers.render_caves;
+dialog.settings.tab_global;Global
+dialog.settings.tab_processing;Bearbetning
+dialog.settings.tab_rendering;Tolkning
+dialog.settings.tab_world;Värld
+dialog.settings.global.misc;Övrigt
+dialog.settings.processing.files;Filer
+dialog.settings.rendering.smooth;Slät
+dialog.settings.global.selection;Urval
+dialog.settings.world.paths;Banor
+dialog.settings.world.paths.poi;POI
+dialog.settings.world.paths.entities;Enheter
+dialog.settings.rendering.layers.render_height;Renderhöjd
+dialog.settings.rendering.layers.render_layer_only;Endast rendera lager
+dialog.settings.rendering.layers;Skikten
+dialog.settings.rendering.layers.render_caves;Gör grottor
 dialog.goto.title;Gå till plats
 dialog.confirmation.question;Är du säker?
 dialog.delete_chunks_confirmation.title;Radera chunks
@@ -163,7 +163,7 @@ dialog.error.button.copy_to_clipboard;Kopiera till urklipp
 dialog.error.title;Fel
 dialog.error.header;Ett fel uppstod
 dialog.error.copied_to_clipboard;Kopieras till urklipp!
-dialog.unsaved_changes.title;
-dialog.unsaved_changes.header;
+dialog.unsaved_changes.title;Ändringar som inte har sparats
+dialog.unsaved_changes.header;Du har ändringar som inte har sparats.
 button.cancel;Avbryt
 button.ok;OK

@@ -13,7 +13,7 @@ menu.about;О программе
 menu.file.open_world;Открой мир
 menu.file.open;Открыть регион
 menu.file.settings;Настройки
-menu.file.render_settings;
+menu.file.render_settings;Настройки рендеринга
 menu.file.quit;Выход
 menu.view.chunk_grid;Сетка чанков
 menu.view.region_grid;Сетка областей
@@ -42,43 +42,43 @@ menu.tools.next_overlay;Следующий оверлей
 menu.tools.next_overlay_type;Тип наложения
 dialog.select_world.title;Выберите размер
 dialog.settings.title;Настройки
-dialog.settings.global.language;
-dialog.settings.global.language.language;
-dialog.settings.processing.process.read_threads;
-dialog.settings.processing.process.process_threads;
-dialog.settings.processing.process;
-dialog.settings.processing.process.write_threads;
-dialog.settings.processing.files.max_files;
-dialog.settings.global.selection.region_color;
-dialog.settings.global.selection.chunk_color;
-dialog.settings.global.selection.pasted_chunks_color;
-dialog.settings.rendering.shade.shade;
-dialog.settings.rendering.shade;
-dialog.settings.rendering.shade.shade_water;
-dialog.settings.rendering.background.show_nonexistent_regions;
-dialog.settings.rendering.smooth.smooth_rendering;
-dialog.settings.rendering.smooth.smooth_overlays;
-dialog.settings.rendering.background.background_pattern;
-dialog.settings.rendering.background;
-dialog.settings.global.misc.mc_saves_dir;
-dialog.settings.global.misc.print_debug;
-dialog.settings.global.misc.show_log_file;
+dialog.settings.global.language;Язык
+dialog.settings.global.language.language;Язык
+dialog.settings.processing.process.read_threads;Читать темы
+dialog.settings.processing.process.process_threads;Технологические потоки
+dialog.settings.processing.process;Процесс
+dialog.settings.processing.process.write_threads;Писать темы
+dialog.settings.processing.files.max_files;Макс файлов
+dialog.settings.global.selection.region_color;Цвет региона
+dialog.settings.global.selection.chunk_color;Цвет чанка
+dialog.settings.global.selection.pasted_chunks_color;Цвет вставленных кусков
+dialog.settings.rendering.shade.shade;Оттенок
+dialog.settings.rendering.shade;Оттенок
+dialog.settings.rendering.shade.shade_water;Тень воды
+dialog.settings.rendering.background.show_nonexistent_regions;Показать несуществующие регионы
+dialog.settings.rendering.smooth.smooth_rendering;Плавный рендеринг
+dialog.settings.rendering.smooth.smooth_overlays;Гладкие накладки
+dialog.settings.rendering.background.background_pattern;Фоновый узор
+dialog.settings.rendering.background;Фон
+dialog.settings.global.misc.mc_saves_dir;MC сохраняет реж
+dialog.settings.global.misc.print_debug;Распечатать отладочные сообщения
+dialog.settings.global.misc.show_log_file;Показать файл журнала
 dialog.settings.reset;Сбросить
-dialog.settings.tab_global;
-dialog.settings.tab_processing;
-dialog.settings.tab_rendering;
-dialog.settings.tab_world;
-dialog.settings.global.misc;
-dialog.settings.processing.files;
-dialog.settings.rendering.smooth;
-dialog.settings.global.selection;
-dialog.settings.world.paths;
-dialog.settings.world.paths.poi;
-dialog.settings.world.paths.entities;
-dialog.settings.rendering.layers.render_height;
-dialog.settings.rendering.layers.render_layer_only;
-dialog.settings.rendering.layers;
-dialog.settings.rendering.layers.render_caves;
+dialog.settings.tab_global;Глобальный
+dialog.settings.tab_processing;Обработка
+dialog.settings.tab_rendering;Рендеринг
+dialog.settings.tab_world;Мир
+dialog.settings.global.misc;Разное
+dialog.settings.processing.files;Файлы
+dialog.settings.rendering.smooth;Гладкий; плавный
+dialog.settings.global.selection;Выбор
+dialog.settings.world.paths;Пути
+dialog.settings.world.paths.poi;POI
+dialog.settings.world.paths.entities;Сущности
+dialog.settings.rendering.layers.render_height;Высота рендеринга
+dialog.settings.rendering.layers.render_layer_only;Только слой рендеринга
+dialog.settings.rendering.layers;Слои
+dialog.settings.rendering.layers.render_caves;Рендеринг пещер
 dialog.goto.title;Перейти по координатам
 dialog.confirmation.question;Вы уверены?
 dialog.delete_chunks_confirmation.title;Удалить чанки
@@ -163,7 +163,7 @@ dialog.error.button.copy_to_clipboard;Скопировать в буфер об�
 dialog.error.title;Ошибка
 dialog.error.header;Произошла ошибка
 dialog.error.copied_to_clipboard;Скопировано в буфер обмена!
-dialog.unsaved_changes.title;
-dialog.unsaved_changes.header;
+dialog.unsaved_changes.title;Несохраненные изменения
+dialog.unsaved_changes.header;У вас есть несохраненные изменения.
 button.cancel;Отменить
 button.ok;OK

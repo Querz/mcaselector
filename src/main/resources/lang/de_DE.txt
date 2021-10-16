@@ -64,7 +64,7 @@ dialog.settings.global.misc.mc_saves_dir;MC Speicherort
 dialog.settings.global.misc.print_debug;Debug
 dialog.settings.global.misc.show_log_file;Logdatei anzeigen
 dialog.settings.reset;Zurücksetzen
-dialog.settings.tab_global;
+dialog.settings.tab_global;Global
 dialog.settings.tab_processing;Verarbeiten
 dialog.settings.tab_rendering;Rendern
 dialog.settings.tab_world;Welt

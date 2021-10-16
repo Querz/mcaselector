@@ -13,7 +13,7 @@ menu.about;O aplikaci
 menu.file.open_world;Otevřete svět
 menu.file.open;Otevřete region
 menu.file.settings;Nastavení
-menu.file.render_settings;
+menu.file.render_settings;Nastavení vykreslování
 menu.file.quit;Opustit
 menu.view.chunk_grid;Mřížka chunků
 menu.view.region_grid;Mřížka regionů
@@ -42,43 +42,43 @@ menu.tools.next_overlay;Další překrytí
 menu.tools.next_overlay_type;Typ překrytí
 dialog.select_world.title;Vyberte kótu
 dialog.settings.title;Nastavení
-dialog.settings.global.language;
-dialog.settings.global.language.language;
-dialog.settings.processing.process.read_threads;
-dialog.settings.processing.process.process_threads;
-dialog.settings.processing.process;
-dialog.settings.processing.process.write_threads;
-dialog.settings.processing.files.max_files;
-dialog.settings.global.selection.region_color;
-dialog.settings.global.selection.chunk_color;
-dialog.settings.global.selection.pasted_chunks_color;
-dialog.settings.rendering.shade.shade;
-dialog.settings.rendering.shade;
-dialog.settings.rendering.shade.shade_water;
-dialog.settings.rendering.background.show_nonexistent_regions;
-dialog.settings.rendering.smooth.smooth_rendering;
-dialog.settings.rendering.smooth.smooth_overlays;
-dialog.settings.rendering.background.background_pattern;
-dialog.settings.rendering.background;
-dialog.settings.global.misc.mc_saves_dir;
-dialog.settings.global.misc.print_debug;
-dialog.settings.global.misc.show_log_file;
+dialog.settings.global.language;Jazyk
+dialog.settings.global.language.language;Jazyk
+dialog.settings.processing.process.read_threads;Přečtěte si vlákna
+dialog.settings.processing.process.process_threads;Procesní vlákna
+dialog.settings.processing.process;Proces
+dialog.settings.processing.process.write_threads;Pište vlákna
+dialog.settings.processing.files.max_files;Maximální počet souborů
+dialog.settings.global.selection.region_color;Regionální barva
+dialog.settings.global.selection.chunk_color;Kusová barva
+dialog.settings.global.selection.pasted_chunks_color;Vložená barva kousků
+dialog.settings.rendering.shade.shade;Odstín
+dialog.settings.rendering.shade;Odstín
+dialog.settings.rendering.shade.shade_water;Stínovat vodu
+dialog.settings.rendering.background.show_nonexistent_regions;Zobrazit neexistující oblasti
+dialog.settings.rendering.smooth.smooth_rendering;Plynulé vykreslování
+dialog.settings.rendering.smooth.smooth_overlays;Hladké překrytí
+dialog.settings.rendering.background.background_pattern;Vzor pozadí
+dialog.settings.rendering.background;Pozadí
+dialog.settings.global.misc.mc_saves_dir;MC uloží dir
+dialog.settings.global.misc.print_debug;Tisk zpráv o ladění
+dialog.settings.global.misc.show_log_file;Zobrazit soubor protokolu
 dialog.settings.reset;Obnovit
-dialog.settings.tab_global;
-dialog.settings.tab_processing;
-dialog.settings.tab_rendering;
-dialog.settings.tab_world;
-dialog.settings.global.misc;
-dialog.settings.processing.files;
-dialog.settings.rendering.smooth;
-dialog.settings.global.selection;
-dialog.settings.world.paths;
-dialog.settings.world.paths.poi;
-dialog.settings.world.paths.entities;
-dialog.settings.rendering.layers.render_height;
-dialog.settings.rendering.layers.render_layer_only;
-dialog.settings.rendering.layers;
-dialog.settings.rendering.layers.render_caves;
+dialog.settings.tab_global;Globální
+dialog.settings.tab_processing;zpracovává se
+dialog.settings.tab_rendering;Vykreslování
+dialog.settings.tab_world;Svět
+dialog.settings.global.misc;Různé
+dialog.settings.processing.files;Soubory
+dialog.settings.rendering.smooth;Hladký
+dialog.settings.global.selection;Výběr
+dialog.settings.world.paths;Cesty
+dialog.settings.world.paths.poi;POI
+dialog.settings.world.paths.entities;Subjekty
+dialog.settings.rendering.layers.render_height;Výška vykreslení
+dialog.settings.rendering.layers.render_layer_only;Pouze rendrovací vrstva
+dialog.settings.rendering.layers;Vrstvy
+dialog.settings.rendering.layers.render_caves;Render jeskyně
 dialog.goto.title;Přejít na pozici
 dialog.confirmation.question;Jste si jisti?
 dialog.delete_chunks_confirmation.title;Smazat chunky
@@ -163,7 +163,7 @@ dialog.error.button.copy_to_clipboard;Zkopírovat do schránky
 dialog.error.title;Chyba
 dialog.error.header;Vyskytla se chyba
 dialog.error.copied_to_clipboard;Zkopírováno do schránky!
-dialog.unsaved_changes.title;
-dialog.unsaved_changes.header;
+dialog.unsaved_changes.title;Neuložené změny
+dialog.unsaved_changes.header;Máte neuložené změny.
 button.cancel;Zrušit
 button.ok;OK
