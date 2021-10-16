@@ -1,5 +1,8 @@
 package net.querz.mcaselector.headless;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.changer.ChangeParser;
 import net.querz.mcaselector.changer.Field;
@@ -127,7 +130,7 @@ public final class ParamExecutor {
 		SelectionData selectionData = loadSelection();
 		int radius = parseRadius();
 
-		Map<Point2i, Set<Point2i>> selection = new HashMap<>();
+		Long2ObjectOpenHashMap<LongOpenHashSet> selection = new Long2ObjectOpenHashMap<>();
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(() -> {
 			SelectionHelper.exportSelection(new SelectionData(selection, false), output);
@@ -351,24 +354,24 @@ public final class ParamExecutor {
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-	private synchronized void mergeSelections(Map<Point2i, Set<Point2i>> src, Map<Point2i, Set<Point2i>> target) {
-		for (Map.Entry<Point2i, Set<Point2i>> entry : src.entrySet()) {
+	private synchronized void mergeSelections(Long2ObjectOpenHashMap<LongOpenHashSet> src, Long2ObjectOpenHashMap<LongOpenHashSet> target) {
+		for (Long2ObjectMap.Entry<LongOpenHashSet> entry : src.long2ObjectEntrySet()) {
 			if (entry.getValue() == null) {
-				target.put(entry.getKey(), null);
+				target.put(entry.getLongKey(), null);
 				continue;
 			}
 
-			if (target.containsKey(entry.getKey())) {
-				Set<Point2i> targetRegionSelection = target.get(entry.getKey());
+			if (target.containsKey(entry.getLongKey())) {
+				LongOpenHashSet targetRegionSelection = target.get(entry.getLongKey());
 				if (targetRegionSelection != null) {
 					targetRegionSelection.addAll(entry.getValue());
 					// select full region
 					if (targetRegionSelection.size() == 1024) {
-						target.put(entry.getKey(), null);
+						target.put(entry.getLongKey(), null);
 					}
 				}
 			} else {
-				target.put(entry.getKey(), entry.getValue());
+				target.put(entry.getLongKey(), entry.getValue());
 			}
 		}
 	}

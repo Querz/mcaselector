@@ -12,8 +12,8 @@ import java.nio.file.StandardOpenOption;
 
 public abstract class ProcessDataJob extends Job {
 
-	public ProcessDataJob(RegionDirectories dirs) {
-		super(dirs);
+	public ProcessDataJob(RegionDirectories dirs, int priority) {
+		super(dirs, priority);
 	}
 
 	public byte[] loadPoi() {

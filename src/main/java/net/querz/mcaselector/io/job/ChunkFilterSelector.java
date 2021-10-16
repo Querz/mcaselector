@@ -1,5 +1,8 @@
 package net.querz.mcaselector.io.job;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.io.JobHandler;
@@ -13,17 +16,13 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.text.Translation;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public final class ChunkFilterSelector {
 
 	private ChunkFilterSelector() {}
 
-	public static void selectFilter(GroupFilter filter, SelectionData selection, int radius, Consumer<Map<Point2i, Set<Point2i>>> callback, Progress progressChannel, boolean headless) {
+	public static void selectFilter(GroupFilter filter, SelectionData selection, int radius, Consumer<Long2ObjectOpenHashMap<LongOpenHashSet>> callback, Progress progressChannel, boolean headless) {
 		WorldDirectories wd = Config.getWorldDirs();
 		RegionDirectories[] rd = wd.listRegions(selection);
 		if (rd == null || rd.length == 0) {
@@ -50,11 +49,11 @@ public final class ChunkFilterSelector {
 		private final Progress progressChannel;
 		private final GroupFilter filter;
 		private final SelectionData selection;
-		private final Consumer<Map<Point2i, Set<Point2i>>> callback;
+		private final Consumer<Long2ObjectOpenHashMap<LongOpenHashSet>> callback;
 		private final int radius;
 
-		private MCASelectFilterProcessJob(RegionDirectories dirs, GroupFilter filter, SelectionData selection, Consumer<Map<Point2i, Set<Point2i>>> callback, int radius,  Progress progressChannel) {
-			super(dirs);
+		private MCASelectFilterProcessJob(RegionDirectories dirs, GroupFilter filter, SelectionData selection, Consumer<Long2ObjectOpenHashMap<LongOpenHashSet>> callback, int radius,  Progress progressChannel) {
+			super(dirs, PRIORITY_LOW);
 			this.filter = filter;
 			this.selection = selection;
 			this.callback = callback;
@@ -88,13 +87,13 @@ public final class ChunkFilterSelector {
 			try {
 				Region region = Region.loadRegion(getRegionDirectories(), regionData, poiData, entitiesData);
 
-				Set<Point2i> chunks = region.getFilteredChunks(filter, this.selection);
+				LongOpenHashSet chunks = region.getFilteredChunks(filter, this.selection);
 				if (chunks.size() > 0) {
 					if (chunks.size() == Tile.CHUNKS) {
 						chunks = null;
 					}
-					Map<Point2i, Set<Point2i>> selection = new HashMap<>();
-					selection.put(location, chunks);
+					Long2ObjectOpenHashMap<LongOpenHashSet> selection = new Long2ObjectOpenHashMap<>();
+					selection.put(location.asLong(), chunks);
 
 					selection = applyRadius(selection, this.selection, this.radius);
 
@@ -115,18 +114,18 @@ public final class ChunkFilterSelector {
 	 * @param selection The complete selection, in case we want to stay within the boundaries of a target selection.
 	 * @return A new selection with the radius applied.
 	 */
-	static Map<Point2i, Set<Point2i>> applyRadius(Map<Point2i, Set<Point2i>> region, SelectionData selection, int radius) {
+	static Long2ObjectOpenHashMap<LongOpenHashSet> applyRadius(Long2ObjectOpenHashMap<LongOpenHashSet> region, SelectionData selection, int radius) {
 		if (radius <= 0) {
 			return region;
 		}
 
-		Map<Point2i, Set<Point2i>> output = new HashMap<>();
+		Long2ObjectOpenHashMap<LongOpenHashSet> output = new Long2ObjectOpenHashMap<>();
 
-		for (Map.Entry<Point2i, Set<Point2i>> reg : region.entrySet()) {
+		for (Long2ObjectMap.Entry<LongOpenHashSet> reg : region.long2ObjectEntrySet()) {
 			if (reg.getValue() == null) {
-				output.put(reg.getKey(), null);
+				output.put(reg.getLongKey(), null);
 				// full region
-				Point2i startChunk = reg.getKey().regionToChunk();
+				Point2i startChunk = new Point2i(reg.getLongKey()).regionToChunk();
 				Point2i endChunk = startChunk.add(Tile.SIZE_IN_CHUNKS - 1);
 
 				for (int x = startChunk.getX() - radius; x <= endChunk.getX() + radius; x++) {
@@ -135,34 +134,35 @@ public final class ChunkFilterSelector {
 						if (selection != null && !selection.isChunkSelected(currentChunk)) {
 							continue;
 						}
-						Point2i currentRegion = currentChunk.chunkToRegion();
+						long currentRegion = currentChunk.chunkToRegion().asLong();
 
-						if (currentRegion.equals(reg.getKey())) {
+						if (currentRegion == reg.getLongKey()) {
 							z += Tile.SIZE_IN_CHUNKS - 1;
 							continue;
 						}
 
 						if (!output.containsKey(currentRegion)) {
-							output.put(currentRegion, new HashSet<>());
+							output.put(currentRegion, new LongOpenHashSet());
 						}
 
-						output.get(currentRegion).add(currentChunk);
+						output.get(currentRegion).add(currentChunk.asLong());
 					}
 				}
 			} else {
-				output.put(reg.getKey(), new HashSet<>(reg.getValue()));
-				for (Point2i chunk : reg.getValue()) {
-					for (int x = chunk.getX() - radius; x <= chunk.getX() + radius; x++) {
-						for (int z = chunk.getZ() - radius; z <= chunk.getZ() + radius; z++) {
+				output.put(reg.getLongKey(), new LongOpenHashSet(reg.getValue()));
+				for (long chunk : reg.getValue()) {
+					Point2i c = new Point2i(chunk);
+					for (int x = c.getX() - radius; x <= c.getX() + radius; x++) {
+						for (int z = c.getZ() - radius; z <= c.getZ() + radius; z++) {
 							Point2i currentChunk = new Point2i(x, z);
 							if (selection != null && !selection.isChunkSelected(currentChunk)) {
 								continue;
 							}
-							Point2i currentRegion = currentChunk.chunkToRegion();
+							long currentRegion = currentChunk.chunkToRegion().asLong();
 							if (!output.containsKey(currentRegion)) {
-								output.put(currentRegion, new HashSet<>());
+								output.put(currentRegion, new LongOpenHashSet());
 							}
-							output.get(currentRegion).add(currentChunk);
+							output.get(currentRegion).add(currentChunk.asLong());
 						}
 					}
 				}

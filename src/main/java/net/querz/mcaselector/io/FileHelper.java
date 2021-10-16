@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io;
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import net.querz.mcaselector.Config;
@@ -226,16 +227,16 @@ public final class FileHelper {
 		});
 	}
 
-	public static Set<Point2i> parseAllMCAFileNames(File directory) {
+	public static LongOpenHashSet parseAllMCAFileNames(File directory) {
 		if (directory == null) {
-			return Collections.emptySet();
+			return LongOpenHashSet.of();
 		}
 		File[] files = directory.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
 		if (files == null) {
-			return Collections.emptySet();
+			return LongOpenHashSet.of();
 		}
-		Set<Point2i> regions = new HashSet<>(files.length);
-		Arrays.stream(files).forEach(f -> regions.add(FileHelper.parseMCAFileName(f)));
+		LongOpenHashSet regions = new LongOpenHashSet(files.length);
+		Arrays.stream(files).forEach(f -> regions.add(FileHelper.parseMCAFileName(f).asLong()));
 		return regions;
 	}
 

@@ -6,12 +6,14 @@ import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.ProcessDataJob;
 import net.querz.mcaselector.io.job.SaveDataJob;
 import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.validation.ShutdownHooks;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+
+import javax.xml.crypto.Data;
+import java.util.Queue;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
 public final class JobHandler {
@@ -58,7 +60,7 @@ public final class JobHandler {
 		processExecutor = new PausableThreadPoolExecutor(
 			Config.getProcessThreads(), Config.getProcessThreads(),
 			0L, TimeUnit.MILLISECONDS,
-			new LinkedBlockingQueue<>(),
+			new PriorityBlockingQueue<>(1024),
 			new NamedThreadFactory("processPool"),
 			job -> {
 				int i;
@@ -101,7 +103,7 @@ public final class JobHandler {
 	}
 
 	public static void addJob(ProcessDataJob job) {
-		Debug.dumpf("adding job %s for %s to executor queue", job.getClass().getSimpleName(), job.getRegionDirectories().getLocationAsFileName());
+		Debug.dumpf("adding job %s for %s to executor queue", job.getClass().getSimpleName(), job.getRegionDirectories().getLocation());
 		processExecutor.execute(new WrapperJob(job));
 	}
 
@@ -126,7 +128,7 @@ public final class JobHandler {
 	}
 
 	public static void executeParseData(ParseDataJob job) {
-		parseExecutor.execute(job);
+		parseExecutor.execute(new WrapperJob(job));
 	}
 
 	public static void validateJobs(Predicate<ProcessDataJob> p) {
@@ -147,9 +149,9 @@ public final class JobHandler {
 	}
 
 	public static void clearQueues() {
-		cancelExecutorQueue(processExecutor);
-		cancelExecutorQueue(saveExecutor);
-		cancelExecutorQueue(parseExecutor);
+		System.out.println("cancelled " + cancelExecutorQueue(processExecutor) + " jobs in process queue");
+		System.out.println("cancelled " + cancelExecutorQueue(saveExecutor) + " jobs in save queue");
+		System.out.println("cancelled " + cancelExecutorQueue(parseExecutor) + " jobs in parser queue");
 	}
 
 	public static void cancelParserQueue() {
@@ -163,15 +165,18 @@ public final class JobHandler {
 		}
 	}
 
-	private static void cancelExecutorQueue(ThreadPoolExecutor executor) {
+	private static int cancelExecutorQueue(ThreadPoolExecutor executor) {
+		DataProperty<Integer> cancelled = new DataProperty<>(0);
 		if (executor != null) {
 			synchronized (executor.getQueue()) {
 				executor.getQueue().removeIf(j -> {
 					((WrapperJob) j).cancel();
+					cancelled.set(cancelled.get() + 1);
 					return true;
 				});
 			}
 		}
+		return cancelled.get();
 	}
 
 	public static void cancelAllJobsAndFlushAsync(Runnable callback) {
@@ -203,13 +208,25 @@ public final class JobHandler {
 			saveExecutor.getActiveCount();
 	}
 
-	static class WrapperJob implements Runnable {
+	private static AtomicLong jobIDCounter = new AtomicLong(0);
+
+	public static void dumpMetrics() {
+		Queue<Runnable> queue = processExecutor.getQueue();
+
+		for (Runnable r : queue) {
+			System.out.println(r);
+		}
+	}
+
+	static class WrapperJob implements Runnable, Comparable<WrapperJob> {
 
 		Job job;
+		long jobID;
 		boolean done = false;
 		final static Object lock = new Object();
 
 		WrapperJob(Job job) {
+			jobID = jobIDCounter.incrementAndGet();
 			allTasks.incrementAndGet();
 			this.job = job;
 		}
@@ -239,6 +256,19 @@ public final class JobHandler {
 					done = true;
 				}
 			}
+		}
+
+		@Override
+		public int compareTo(WrapperJob o) {
+			if (job.getPriority() == o.job.getPriority()) {
+				return Long.compare(jobID, o.jobID);
+			}
+			return Integer.compare(o.job.getPriority(), job.getPriority());
+		}
+
+		@Override
+		public String toString() {
+			return jobID + "#" + job.toString();
 		}
 	}
 }

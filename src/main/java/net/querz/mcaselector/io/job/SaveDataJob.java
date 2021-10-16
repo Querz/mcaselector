@@ -8,7 +8,7 @@ public abstract class SaveDataJob<T> extends Job {
 	private final T data;
 
 	public SaveDataJob(RegionDirectories dirs, T data) {
-		super(dirs);
+		super(dirs, PRIORITY_LOW);
 		this.data = data;
 	}
 

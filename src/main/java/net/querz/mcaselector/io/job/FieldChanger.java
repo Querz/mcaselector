@@ -48,7 +48,7 @@ public final class FieldChanger {
 		private final SelectionData selection;
 
 		private MCAFieldChangeProcessJob(RegionDirectories dirs, List<Field<?>> fields, boolean force, SelectionData selection, Progress progressChannel) {
-			super(dirs);
+			super(dirs, PRIORITY_LOW);
 			this.fields = fields;
 			this.force = force;
 			this.selection = selection;

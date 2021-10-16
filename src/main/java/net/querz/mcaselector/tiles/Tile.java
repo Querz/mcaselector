@@ -1,13 +1,12 @@
 package net.querz.mcaselector.tiles;
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.scene.image.Image;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.io.ImageHelper;
 import java.io.*;
-import java.util.HashSet;
-import java.util.Set;
 
 public class Tile {
 
@@ -31,7 +30,7 @@ public class Tile {
 
 	boolean marked = false;
 	// a set of all marked chunks in the tile in chunk locations
-	Set<Point2i> markedChunks = new HashSet<>();
+	LongOpenHashSet markedChunks = new LongOpenHashSet();
 
 	Image overlay;
 	boolean overlayLoaded = false;
@@ -85,6 +84,10 @@ public class Tile {
 		return image == null || image == ImageHelper.getEmptyTileImage();
 	}
 
+	public boolean isObsolete() {
+		return image == null && !marked && (markedChunks == null || markedChunks.isEmpty());
+	}
+
 	public boolean isLoaded() {
 		return loaded;
 	}
@@ -125,11 +128,11 @@ public class Tile {
 
 	public void mark(boolean marked) {
 		this.marked = marked;
-		markedChunks = new HashSet<>();
+		markedChunks = new LongOpenHashSet();
 		markedChunksImage = null;
 	}
 
-	public void mark(Point2i chunk) {
+	public void mark(long chunk) {
 		// don't do anything if the entire tile is already marked
 		if (isMarked()) {
 			return;
@@ -147,7 +150,7 @@ public class Tile {
 		return marked;
 	}
 
-	public boolean isMarked(Point2i chunkBlock) {
+	public boolean isMarked(long chunkBlock) {
 		return isMarked() || markedChunks.contains(chunkBlock);
 	}
 
@@ -157,20 +160,20 @@ public class Tile {
 			Point2i regionChunk = location.regionToChunk();
 			for (int x = 0; x < SIZE_IN_CHUNKS; x++) {
 				for (int z = 0; z < SIZE_IN_CHUNKS; z++) {
-					markedChunks.add(regionChunk.add(x, z));
+					markedChunks.add(regionChunk.add(x, z).asLong());
 				}
 			}
 		}
-		markedChunks.remove(chunkBlock);
+		markedChunks.remove(chunkBlock.asLong());
 		markedChunksImage = null; // reset markedChunksImage
 	}
 
 	public void clearMarks() {
 		mark(false);
-		markedChunks = new HashSet<>();
+		markedChunks = new LongOpenHashSet();
 	}
 
-	public Set<Point2i> getMarkedChunks() {
+	public LongOpenHashSet getMarkedChunks() {
 		return markedChunks;
 	}
 

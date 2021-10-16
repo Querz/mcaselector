@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io.mca;
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
 import net.querz.nbt.tag.CompoundTag;
@@ -24,7 +25,7 @@ public class PoiMCAFile extends MCAFile<PoiChunk> {
 	}
 
 	@Override
-	public void mergeChunksInto(MCAFile<PoiChunk> destination, Point2i offset, boolean overwrite, Set<Point2i> sourceChunks, Set<Point2i> selection, List<Range> ranges) {
+	public void mergeChunksInto(MCAFile<PoiChunk> destination, Point2i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges) {
 		mergeChunksInto(destination, offset, overwrite, sourceChunks, selection, ranges, PoiMCAFile::newEmptyChunk);
 	}
 }

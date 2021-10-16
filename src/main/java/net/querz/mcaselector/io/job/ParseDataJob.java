@@ -27,7 +27,7 @@ public class ParseDataJob extends ProcessDataJob {
 	private final Tile tile;
 
 	public ParseDataJob(Tile tile, RegionDirectories dirs, UUID world, BiConsumer<int[], UUID> dataCallback, OverlayParser parser) {
-		super(dirs);
+		super(dirs, PRIORITY_LOW);
 		this.tile = tile;
 		this.dataCallback = dataCallback;
 		this.world = world;

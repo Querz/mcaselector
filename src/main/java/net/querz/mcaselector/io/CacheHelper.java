@@ -1,5 +1,8 @@
 package net.querz.mcaselector.io;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.point.Point2i;
@@ -16,8 +19,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 
 public final class CacheHelper {
@@ -38,9 +39,7 @@ public final class CacheHelper {
 			if (m.find()) {
 				int x = Integer.parseInt(m.group("regionX"));
 				int z = Integer.parseInt(m.group("regionZ"));
-				boolean scaleOnly = zoomLevel != null;
-				int zoomLevelSupplier = scaleOnly ? zoomLevel : 1;
-				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), (i, u) -> {}, zoomLevelSupplier, scaleOnly, progressChannel, false);
+				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), (i, u) -> {}, zoomLevel, progressChannel, false);
 			}
 		}
 	}
@@ -54,7 +53,7 @@ public final class CacheHelper {
 		updateWorldSettingsFile();
 		RegionImageGenerator.invalidateCachedMCAFiles();
 		tileMap.clear();
-		tileMap.update();
+		tileMap.draw();
 	}
 
 	// asynchronously cancels all jobs and marks all Tiles as "not loaded"
@@ -69,27 +68,27 @@ public final class CacheHelper {
 			updateWorldSettingsFile();
 
 			tileMap.markAllTilesAsObsolete();
-			tileMap.update();
+			tileMap.draw();
 			callback.run();
 		});
 		clear.start();
 	}
 
 	public static void clearViewCache(TileMap tileMap) {
-		for (Point2i regionBlock : tileMap.getVisibleRegions()) {
+		for (Point2i region : tileMap.getVisibleRegions()) {
 			for (File cacheDir : Config.getCacheDirs()) {
-				File file = FileHelper.createPNGFilePath(cacheDir, regionBlock);
+				File file = FileHelper.createPNGFilePath(cacheDir, region);
 				if (file.exists()) {
 					if (!file.delete()) {
 						Debug.error("could not delete file " + file);
 					}
 				}
-				tileMap.clearTile(regionBlock);
-				tileMap.getOverlayPool().discardData(regionBlock);
+				tileMap.clearTile(region.asLong());
+				tileMap.getOverlayPool().discardData(region);
 			}
 		}
 		RegionImageGenerator.invalidateCachedMCAFiles();
-		tileMap.update();
+		tileMap.draw();
 	}
 
 	public static void clearSelectionCache(TileMap tileMap) {
@@ -108,32 +107,33 @@ public final class CacheHelper {
 							Debug.error("could not delete file " + cacheFile);
 							continue;
 						}
-						tileMap.clearTile(cacheRegion);
+						tileMap.clearTile(cacheRegion.asLong());
 					}
 				}
 			}
 
-			Map<Point2i, Set<Point2i>> trueSelection = SelectionHelper.getTrueSelection(selection);
-			for (Point2i region : trueSelection.keySet()) {
-				tileMap.getOverlayPool().discardData(region);
+			Long2ObjectOpenHashMap<LongOpenHashSet> trueSelection = SelectionHelper.getTrueSelection(selection);
+			for (long region : trueSelection.keySet()) {
+				tileMap.getOverlayPool().discardData(new Point2i(region));
 			}
 		} else {
-			for (Map.Entry<Point2i, Set<Point2i>> entry : tileMap.getMarkedChunks().entrySet()) {
+			for (Long2ObjectMap.Entry<LongOpenHashSet> entry : tileMap.getMarkedChunks().long2ObjectEntrySet()) {
+				Point2i region = new Point2i(entry.getLongKey());
 				for (File cacheDir : Config.getCacheDirs()) {
-					File file = FileHelper.createPNGFilePath(cacheDir, entry.getKey());
+					File file = FileHelper.createPNGFilePath(cacheDir, region);
 					if (file.exists()) {
 						if (!file.delete()) {
 							Debug.error("could not delete file " + file);
 						}
 					}
-					tileMap.clearTile(entry.getKey());
+					tileMap.clearTile(entry.getLongKey());
 				}
-				tileMap.getOverlayPool().discardData(entry.getKey());
+				tileMap.getOverlayPool().discardData(region);
 
 			}
 		}
 		RegionImageGenerator.invalidateCachedMCAFiles();
-		tileMap.update();
+		tileMap.draw();
 	}
 
 	public static void validateCacheVersion(TileMap tileMap) {

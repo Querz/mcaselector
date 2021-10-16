@@ -1,5 +1,9 @@
 package net.querz.mcaselector.ui;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
@@ -147,7 +151,7 @@ public class DialogHelper {
 							r.getRadius(),
 							selection -> Platform.runLater(() -> {
 								tileMap.addMarkedChunks(selection);
-								tileMap.update();
+								tileMap.draw();
 							}), t, false));
 				}
 				default -> Debug.dump("i have no idea how you got no selection there...");
@@ -180,7 +184,7 @@ public class DialogHelper {
 						.showProgressBar(t -> SelectionDeleter.deleteSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), t));
 				CacheHelper.clearSelectionCache(tileMap);
 				tileMap.clear();
-				tileMap.update();
+				tileMap.draw();
 			}
 		});
 	}
@@ -298,7 +302,7 @@ public class DialogHelper {
 				worldDirectories.setEntities(r.entities);
 			}
 
-			tileMap.update();
+			tileMap.draw();
 		});
 	}
 
@@ -367,19 +371,21 @@ public class DialogHelper {
 	public static void swapChunks(TileMap tileMap, Stage primaryStage) {
 		new ProgressDialog(Translation.MENU_TOOLS_SWAP_CHUNKS, primaryStage).showProgressBar(t -> {
 			t.setMax(4);
-			Map<Point2i, Set<Point2i>> markedChunks = tileMap.getMarkedChunks();
-			ArrayList<Point2i> chunks = new ArrayList<>(2);
-			for (Map.Entry<Point2i, Set<Point2i>> entry : markedChunks.entrySet()) {
+			Long2ObjectOpenHashMap<LongOpenHashSet> markedChunks = tileMap.getMarkedChunks();
+			LongArrayList chunks = new LongArrayList(2);
+			for (Long2ObjectMap.Entry<LongOpenHashSet> entry : markedChunks.long2ObjectEntrySet()) {
 				chunks.addAll(entry.getValue());
 			}
 			if (chunks.size() != 2) {
 				throw new IllegalStateException("need 2 chunks to swap");
 			}
 
-			Point2i fromChunk = chunks.get(0);
-			Point2i toChunk = chunks.get(1);
+			Point2i fromChunk = new Point2i(chunks.getLong(0));
+			Point2i toChunk = new Point2i(chunks.getLong(1));
 			Point2i fromRegion = fromChunk.chunkToRegion();
 			Point2i toRegion = toChunk.chunkToRegion();
+
+			System.out.printf("swapping chunk %s:%s with %s:%s", fromChunk, fromRegion, toChunk, toRegion);
 
 			t.incrementProgress(FileHelper.createMCAFileName(fromRegion));
 
@@ -400,7 +406,7 @@ public class DialogHelper {
 				to = from;
 			} else {
 				try {
-					to = Region.loadOrCreateEmptyRegion(FileHelper.createRegionDirectories(fromRegion));
+					to = Region.loadOrCreateEmptyRegion(FileHelper.createRegionDirectories(toRegion));
 				} catch (IOException ex) {
 					Debug.dumpException("failed to load region files", ex);
 					t.done(null);
@@ -488,7 +494,7 @@ public class DialogHelper {
 					Selection selection = (Selection) data;
 
 					tileMap.setPastedChunks(selection.getSelectionData(), selection.isInverted(), selection.getMin(), selection.getMax(), selection.getWorld());
-					tileMap.update();
+					tileMap.draw();
 
 				} catch (UnsupportedFlavorException | IOException ex) {
 					Debug.dumpException("failed to paste chunks", ex);
@@ -524,7 +530,8 @@ public class DialogHelper {
 				Config.setWorldDir(file);
 				CacheHelper.validateCacheVersion(tileMap);
 				tileMap.clear();
-				tileMap.update();
+				tileMap.revalidateRegions();
+				tileMap.draw();
 				tileMap.disable(false);
 				tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
 				tileMap.getWindow().setTitleSuffix(file.toString());
@@ -569,7 +576,7 @@ public class DialogHelper {
 		RegionImageGenerator.invalidateCachedMCAFiles();
 		tileMap.getWindow().getOptionBar().setRenderHeight(Config.getRenderHeight());
 		tileMap.clear();
-		tileMap.update();
+		tileMap.draw();
 		tileMap.disable(false);
 		tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
 		tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent());
@@ -584,7 +591,7 @@ public class DialogHelper {
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
 			tileMap.setMarkedChunks(selection.selection());
 			tileMap.setSelectionInverted(selection.inverted());
-			tileMap.update();
+			tileMap.draw();
 		}
 	}
 
@@ -594,7 +601,7 @@ public class DialogHelper {
 		if (file != null) {
 			SelectionHelper.exportSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), file);
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
-			tileMap.update();
+			tileMap.draw();
 		}
 	}
 

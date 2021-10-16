@@ -1,5 +1,8 @@
 package net.querz.mcaselector.io.job;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
@@ -24,8 +27,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public final class SelectionImageExporter {
@@ -37,37 +38,37 @@ public final class SelectionImageExporter {
 		JobHandler.clearQueues();
 
 		progressChannel.setMax(selection.selection.size());
-		Point2i first = selection.selection.entrySet().iterator().next().getKey();
+		Point2i first = new Point2i(selection.selection.long2ObjectEntrySet().iterator().next().getLongKey());
 		progressChannel.updateProgress(FileHelper.createMCAFileName(first), 0);
 
 		Debug.dumpf("creating image generation jobs for image: %s", selection.selectionInfo);
 
 		int[] pixels = new int[(int) selection.selectionInfo.getWidth() * 16 * (int) selection.selectionInfo.getHeight() * 16];
 
-		for (Map.Entry<Point2i, Set<Point2i>> entry : selection.selection.entrySet()) {
-			JobHandler.addJob(new ExportSelectionImageProcessJob(entry.getKey(), entry.getValue(), selection.selectionInfo, pixels, overlayPool, progressChannel));
+		for (Long2ObjectMap.Entry<LongOpenHashSet> entry : selection.selection.long2ObjectEntrySet()) {
+			JobHandler.addJob(new ExportSelectionImageProcessJob(new Point2i(entry.getLongKey()), entry.getValue(), selection.selectionInfo, pixels, overlayPool, progressChannel));
 		}
 
 		return pixels;
 	}
 
 	public static SelectionDataInfo calculateSelectionInfo(SelectionData selection) {
-		Map<Point2i, Set<Point2i>> sel = SelectionHelper.getTrueSelection(selection);
+		Long2ObjectOpenHashMap<LongOpenHashSet> sel = SelectionHelper.getTrueSelection(selection);
 		SelectionInfo selectionInfo = SelectionHelper.getSelectionInfo(sel);
 		return new SelectionDataInfo(sel, selectionInfo);
 	}
 
 	public static class SelectionDataInfo {
 
-		private final Map<Point2i, Set<Point2i>> selection;
+		private final Long2ObjectOpenHashMap<LongOpenHashSet> selection;
 		private final SelectionInfo selectionInfo;
 
-		SelectionDataInfo(Map<Point2i, Set<Point2i>> selection, SelectionInfo selectionInfo) {
+		SelectionDataInfo(Long2ObjectOpenHashMap<LongOpenHashSet> selection, SelectionInfo selectionInfo) {
 			this.selection = selection;
 			this.selectionInfo = selectionInfo;
 		}
 
-		public Map<Point2i, Set<Point2i>> getSelectionData() {
+		public Long2ObjectOpenHashMap<LongOpenHashSet> getSelectionData() {
 			return selection;
 		}
 
@@ -79,13 +80,13 @@ public final class SelectionImageExporter {
 	private static class ExportSelectionImageProcessJob extends ProcessDataJob {
 
 		private final int[] pixels;
-		private final Set<Point2i> chunks;
+		private final LongOpenHashSet chunks;
 		private final SelectionInfo selectionInfo;
 		private final Progress progressChannel;
 		private final OverlayPool overlayPool;
 
-		public ExportSelectionImageProcessJob(Point2i region, Set<Point2i> chunks, SelectionInfo selectionInfo, int[] pixels, OverlayPool overlayPool, Progress progressChannel) {
-			super(new RegionDirectories(region, null, null, null));
+		public ExportSelectionImageProcessJob(Point2i region, LongOpenHashSet chunks, SelectionInfo selectionInfo, int[] pixels, OverlayPool overlayPool, Progress progressChannel) {
+			super(new RegionDirectories(region, null, null, null), PRIORITY_LOW);
 			this.pixels = pixels;
 			this.chunks = chunks;
 			this.selectionInfo = selectionInfo;
@@ -176,7 +177,7 @@ public final class SelectionImageExporter {
 		}
 	}
 
-	private static void iterateChunks(Set<Point2i> chunks, Point2i region, Consumer<Point2i> chunkConsumer) {
+	private static void iterateChunks(LongOpenHashSet chunks, Point2i region, Consumer<Point2i> chunkConsumer) {
 		if (chunks == null) {
 			Point2i regionChunk = region.regionToChunk();
 			for (int x = regionChunk.getX(); x < regionChunk.getX() + 32; x++) {
@@ -185,8 +186,8 @@ public final class SelectionImageExporter {
 				}
 			}
 		} else {
-			for (Point2i chunk : chunks) {
-				chunkConsumer.accept(chunk);
+			for (long chunk : chunks) {
+				chunkConsumer.accept(new Point2i(chunk));
 			}
 		}
 	}

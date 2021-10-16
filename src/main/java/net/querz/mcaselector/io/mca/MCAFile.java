@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io.mca;
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
@@ -19,7 +20,6 @@ import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -362,9 +362,9 @@ public abstract class MCAFile<T extends Chunk> {
 
 // DATA MANIPULATION STUFF ---------------------------------------------------------------------------------------------
 
-	public void deleteChunks(Set<Point2i> selection) {
-		for (Point2i chunk : selection) {
-			int index = getChunkIndex(chunk);
+	public void deleteChunks(LongOpenHashSet selection) {
+		for (long chunk : selection) {
+			int index = getChunkIndex(new Point2i(chunk));
 			timestamps[index] = 0;
 			chunks[index] = null;
 			sectors[index] = 0;
@@ -372,9 +372,9 @@ public abstract class MCAFile<T extends Chunk> {
 		}
 	}
 
-	public abstract void mergeChunksInto(MCAFile<T> destination, Point2i offset, boolean overwrite, Set<Point2i> sourceChunks, Set<Point2i> selection, List<Range> ranges);
+	public abstract void mergeChunksInto(MCAFile<T> destination, Point2i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges);
 
-	protected void mergeChunksInto(MCAFile<T> destination, Point2i offset, boolean overwrite, Set<Point2i> sourceChunks, Set<Point2i> selection, List<Range> ranges, BiFunction<Point2i, Integer, T> chunkCreator) {
+	protected void mergeChunksInto(MCAFile<T> destination, Point2i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges, BiFunction<Point2i, Integer, T> chunkCreator) {
 		Point2i relativeOffset = location.regionToChunk().add(offset).sub(destination.location.regionToChunk());
 		int startX = relativeOffset.getX() > 0 ? 0 : 32 - (32 + relativeOffset.getX());
 		int limitX = relativeOffset.getX() > 0 ? (32 - relativeOffset.getX()) : 32;
@@ -395,13 +395,13 @@ public abstract class MCAFile<T extends Chunk> {
 					continue;
 				}
 
-				if (sourceChunk == null || sourceChunk.isEmpty() || sourceChunks != null && !sourceChunks.contains(sourceChunk.getAbsoluteLocation())) {
+				if (sourceChunk == null || sourceChunk.isEmpty() || sourceChunks != null && !sourceChunks.contains(sourceChunk.getAbsoluteLocation().asLong())) {
 					continue;
 				}
 
 				Point2i destChunk = destination.location.regionToChunk().add(destX, destZ);
 
-				if (selection == null || selection.contains(destChunk)) {
+				if (selection == null || selection.contains(destChunk.asLong())) {
 					if (!sourceChunk.relocate(offset.chunkToBlock())) {
 						continue;
 					}

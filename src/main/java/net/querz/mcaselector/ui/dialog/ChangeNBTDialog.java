@@ -1,5 +1,7 @@
 package net.querz.mcaselector.ui.dialog;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -123,12 +125,12 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 	private void readSingleChunkAsync(TileMap tileMap, FieldView fieldView) {
 		new Thread(() -> {
-			Map<Point2i, Set<Point2i>> selection = tileMap.getMarkedChunks();
+			Long2ObjectOpenHashMap<LongOpenHashSet> selection = tileMap.getMarkedChunks();
 			DataProperty<Point2i> region = new DataProperty<>();
 			DataProperty<Point2i> chunk = new DataProperty<>();
 			selection.forEach((k, v) -> {
-				region.set(k);
-				v.forEach(chunk::set);
+				region.set(new Point2i(k));
+				v.forEach(c -> chunk.set(new Point2i(c)));
 			});
 			File file = FileHelper.createMCAFilePath(region.get());
 			Debug.dumpf("attempting to read single chunk from file: %s", chunk.get());

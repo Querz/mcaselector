@@ -103,7 +103,7 @@ public class OverlayPool {
 				if (parserClone.equals(this.parser)) {
 					tile.overlay = overlay;
 					tile.overlayLoaded = true;
-					tileMap.update();
+					tileMap.draw();
 				}
 				ParseDataJob.setLoading(tile, false);
 			} else {
@@ -120,7 +120,7 @@ public class OverlayPool {
 							push(tile.location, d);
 							tile.overlay = parseColorGrades(d, parser.min(), parser.max(), parser.getMinHue(), parser.getMaxHue());
 							tile.overlayLoaded = true;
-							tileMap.update();
+							tileMap.draw();
 						}
 					}
 				}, parser));

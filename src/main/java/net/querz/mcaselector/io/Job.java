@@ -3,9 +3,15 @@ package net.querz.mcaselector.io;
 public abstract class Job implements Runnable {
 
 	private final RegionDirectories rd;
+	private final int priority;
 
-	public Job(RegionDirectories rd) {
+	public static final int PRIORITY_LOW = 0;
+	public static final int PRIORITY_MEDIUM = 10;
+	public static final int PRIORITY_HIGH = 20;
+
+	public Job(RegionDirectories rd, int priority) {
 		this.rd = rd;
+		this.priority = priority;
 	}
 
 	public RegionDirectories getRegionDirectories() {
@@ -23,5 +29,14 @@ public abstract class Job implements Runnable {
 
 	public boolean isDone() {
 		return done;
+	}
+
+	public int getPriority() {
+		return priority;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + ": " + rd.getLocation();
 	}
 }

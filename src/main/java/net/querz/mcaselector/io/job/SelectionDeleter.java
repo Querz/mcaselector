@@ -1,5 +1,8 @@
 package net.querz.mcaselector.io.job;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.JobHandler;
@@ -10,8 +13,6 @@ import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
-import java.util.Map;
-import java.util.Set;
 
 public final class SelectionDeleter {
 
@@ -27,26 +28,26 @@ public final class SelectionDeleter {
 
 		progressChannel.setMessage("preparing");
 
-		Map<Point2i, Set<Point2i>> sel = SelectionHelper.getTrueSelection(selection);
+		Long2ObjectOpenHashMap<LongOpenHashSet> sel = SelectionHelper.getTrueSelection(selection);
 
 		progressChannel.setMax(sel.size());
 
-		Point2i first = sel.entrySet().iterator().next().getKey();
+		Point2i first = new Point2i(sel.long2ObjectEntrySet().iterator().next().getLongKey());
 
 		progressChannel.updateProgress(FileHelper.createMCAFileName(first), 0);
 
-		for (Map.Entry<Point2i, Set<Point2i>> entry : sel.entrySet()) {
-			JobHandler.addJob(new MCADeleteSelectionProcessJob(FileHelper.createRegionDirectories(entry.getKey()), entry.getValue(), progressChannel));
+		for (Long2ObjectMap.Entry<LongOpenHashSet> entry : sel.long2ObjectEntrySet()) {
+			JobHandler.addJob(new MCADeleteSelectionProcessJob(FileHelper.createRegionDirectories(new Point2i(entry.getLongKey())), entry.getValue(), progressChannel));
 		}
 	}
 
 	private static class MCADeleteSelectionProcessJob extends ProcessDataJob {
 
 		private final Progress progressChannel;
-		private final Set<Point2i> selection;
+		private final LongOpenHashSet selection;
 
-		private MCADeleteSelectionProcessJob(RegionDirectories dirs, Set<Point2i> selection, Progress progressChannel) {
-			super(dirs);
+		private MCADeleteSelectionProcessJob(RegionDirectories dirs, LongOpenHashSet selection, Progress progressChannel) {
+			super(dirs, PRIORITY_LOW);
 			this.selection = selection;
 			this.progressChannel = progressChannel;
 		}

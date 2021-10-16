@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io.mca;
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.filter.Filter;
@@ -306,7 +307,7 @@ public class Region {
 		}
 	}
 
-	public void deleteChunks(Set<Point2i> selection) {
+	public void deleteChunks(LongOpenHashSet selection) {
 		if (region != null) {
 			region.deleteChunks(selection);
 		}
@@ -378,8 +379,8 @@ public class Region {
 		}
 	}
 
-	public Set<Point2i> getFilteredChunks(Filter<?> filter, SelectionData selection) {
-		Set<Point2i> chunks = new HashSet<>();
+	public LongOpenHashSet getFilteredChunks(Filter<?> filter, SelectionData selection) {
+		LongOpenHashSet chunks = new LongOpenHashSet();
 
 		Point2i regionChunk = location.regionToChunk();
 		for (int i = 0; i < 1024; i++) {
@@ -401,7 +402,7 @@ public class Region {
 			try {
 				Point2i chunk = new Point2i(i & 31, i >> 5).add(regionChunk);
 				if ((selection == null || selection.isChunkSelected(chunk)) && filter.matches(filterData)) {
-					chunks.add(location);
+					chunks.add(location.asLong());
 				}
 			} catch (Exception ex) {
 				Debug.dumpException(String.format("failed to select chunk %s", location), ex);
@@ -428,7 +429,7 @@ public class Region {
 		Debug.printf("took %s to apply field changes to region %s", t, location);
 	}
 
-	public void mergeInto(Region region, Point2i offset, boolean overwrite, Set<Point2i> sourceChunks, Set<Point2i> selection, List<Range> ranges) {
+	public void mergeInto(Region region, Point2i offset, boolean overwrite, LongOpenHashSet sourceChunks,LongOpenHashSet selection, List<Range> ranges) {
 		if (this.region != null) {
 			this.region.mergeChunksInto(region.region, offset, overwrite, sourceChunks, selection, ranges);
 		}

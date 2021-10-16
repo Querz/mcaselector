@@ -45,7 +45,7 @@ public final class ChunkFilterDeleter {
 		private final SelectionData selection;
 
 		private MCADeleteFilterProcessJob(RegionDirectories dirs, GroupFilter filter, SelectionData selection, Progress progressChannel) {
-			super(dirs);
+			super(dirs, PRIORITY_LOW);
 			this.filter = filter;
 			this.selection = selection;
 			this.progressChannel = progressChannel;
