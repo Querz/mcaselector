@@ -273,6 +273,8 @@ public class DialogHelper {
 			Config.setChunkSelectionColor(new Color(r.regionColor));
 			Config.setPasteChunksColor(new Color(r.pasteColor));
 			tileMap.redrawOverlays();
+			Config.setMCSavesDir(r.mcSavesDir + "");
+			Config.setDebug(r.debug);
 
 			if (!tileMap.getDisabled()) {
 				Config.setShowNonExistentRegions(r.showNonexistentRegions);
@@ -282,8 +284,6 @@ public class DialogHelper {
 				Config.setSmoothOverlays(r.smoothOverlays);
 				Config.setTileMapBackground(r.tileMapBackground.name());
 				tileMap.getWindow().getTileMapBox().setBackground(r.tileMapBackground.getBackground());
-				Config.setMCSavesDir(r.mcSavesDir + "");
-				Config.setDebug(r.debug);
 
 				if (r.height != Config.getRenderHeight() || r.layerOnly != Config.renderLayerOnly()
 					|| r.shade != Config.shade() || r.shadeWater != Config.shadeWater() || r.caves != Config.renderCaves()) {
