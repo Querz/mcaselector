@@ -16,7 +16,7 @@ public class ValidationHelper {
 		}
 	}
 
-	public static <T> T withDefaultSilent(Supplier<T> s, T def) {
+	public static <T> T silent(Supplier<T> s, T def) {
 		try {
 			return s.get();
 		} catch (Exception ex) {

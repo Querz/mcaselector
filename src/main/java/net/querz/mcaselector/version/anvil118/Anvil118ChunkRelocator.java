@@ -1,8 +1,9 @@
-package net.querz.mcaselector.version.anvil117;
+package net.querz.mcaselector.version.anvil118;
 
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.version.ChunkRelocator;
 import net.querz.mcaselector.version.Helper;
+import net.querz.mcaselector.version.anvil117.Anvil117EntityRelocator;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.IntArrayTag;
 import net.querz.nbt.tag.ListTag;
@@ -12,12 +13,17 @@ import java.util.Map;
 import static net.querz.mcaselector.validation.ValidationHelper.silent;
 import static net.querz.mcaselector.version.anvil117.Anvil117EntityRelocator.*;
 
-public class Anvil117ChunkRelocator implements ChunkRelocator {
+public class Anvil118ChunkRelocator implements ChunkRelocator {
 
 	@Override
 	public boolean relocateChunk(CompoundTag root, Point3i offset) {
 		CompoundTag level = Helper.tagFromCompound(root, "Level");
 		if (level == null) {
+			return false;
+		}
+
+		Integer dataVersion = Helper.intFromCompoundTag(root, "DataVersion");
+		if (dataVersion == null) {
 			return false;
 		}
 
@@ -49,8 +55,10 @@ public class Anvil117ChunkRelocator implements ChunkRelocator {
 			applyOffsetToStructures(structures, offset);
 		}
 
-		// Biomes
-		applyOffsetToBiomes(Helper.tagFromCompound(level, "Biomes"), offset);
+		// Biomes as int array only exist in experimental snapshots. for everything above, moving the sections is enough.
+		if (dataVersion < 2834) {
+			applyOffsetToBiomes(Helper.tagFromCompound(level, "Biomes"), offset);
+		}
 
 		// Lights
 		Helper.applyOffsetToListOfShortTagLists(level, "Lights", offset);
@@ -69,7 +77,7 @@ public class Anvil117ChunkRelocator implements ChunkRelocator {
 		if (sections != null) {
 			ListTag<CompoundTag> newSections = new ListTag<>(CompoundTag.class);
 			for (CompoundTag section : sections) {
-				if (applyOffsetToSection(section, offset, 0, 15)) {
+				if (applyOffsetToSection(section, offset, -4, 19)) {
 					newSections.add(section);
 				}
 			}
@@ -79,18 +87,17 @@ public class Anvil117ChunkRelocator implements ChunkRelocator {
 	}
 
 	private void applyOffsetToBiomes(IntArrayTag biomes, Point3i offset) {
-		int[] biomesArray;
-		if (biomes == null || (biomesArray = biomes.getValue()) == null || (biomesArray.length != 1024 && biomesArray.length != 1536)) {
+		if (biomes == null || biomes.getValue() == null || biomes.getValue().length != 1536) {
 			return;
 		}
 
-		int[] newBiomes = new int[biomesArray.length];
-		int maxY = biomesArray.length / 16;
+		int[] biomesArray = biomes.getValue();
+		int[] newBiomes = new int[1536];
 
 		for (int x = 0; x < 4; x++) {
 			for (int z = 0; z < 4; z++) {
-				for (int y = 0; y < maxY; y++) {
-					if (y + offset.getY() * 4 < 0 || y + offset.getY() * 4 > maxY - 1) {
+				for (int y = 0; y < 96; y++) {
+					if (y + offset.getY() * 4 < 0 || y + offset.getY() * 4 > 95) {
 						break;
 					}
 					int biome = biomesArray[y * 16 + z * 4 + x];
@@ -208,7 +215,7 @@ public class Anvil117ChunkRelocator implements ChunkRelocator {
 			if (spawnPotentials != null) {
 				for (CompoundTag spawnPotential : spawnPotentials) {
 					CompoundTag entity = Helper.tagFromCompound(spawnPotential, "Entity");
-					applyOffsetToEntity(entity, offset);
+					Anvil117EntityRelocator.applyOffsetToEntity(entity, offset);
 				}
 			}
 		}

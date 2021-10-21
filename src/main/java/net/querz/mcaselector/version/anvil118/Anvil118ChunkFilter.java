@@ -4,42 +4,32 @@ import net.querz.mcaselector.io.BiomeRegistry;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.tiles.Tile;
-import net.querz.mcaselector.validation.ValidationHelper;
+import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.anvil117.Anvil117ChunkFilter;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.StringTag;
-import net.querz.nbt.tag.Tag;
 import java.util.*;
-import static net.querz.mcaselector.validation.ValidationHelper.catchClassCastException;
-import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
 
 public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public boolean matchBlockNames(CompoundTag data, Collection<String> names) {
-		ListTag<CompoundTag> sections = sectionsFromRoot(data);
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
+
 		int c = 0;
 		nameLoop:
 		for (String name : names) {
 			for (CompoundTag t : sections) {
-				CompoundTag blockStatesTag = withDefault(() -> t.getCompoundTag("block_states"), null);
-				if (blockStatesTag == null || blockStatesTag.size() == 0) {
-					continue;
-				}
-				ListTag<?> rawPalette = withDefault(() -> blockStatesTag.getListTag("palette"), null);
-				if (rawPalette == null) {
-					continue;
-				}
-				ListTag<CompoundTag> palette = catchClassCastException(rawPalette::asCompoundTagList);
+				ListTag<CompoundTag> palette = Helper.tagFromCompound(Helper.tagFromCompound(t, "block_states"), "palette");
 				if (palette == null) {
 					continue;
 				}
 				for (CompoundTag p : palette) {
-					if (name.equals(withDefault(() -> p.getString("Name"), null))) {
+					if (name.equals(Helper.stringFromCompound(p, "Name"))) {
 						c++;
 						continue nameLoop;
 					}
@@ -51,26 +41,19 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public boolean matchAnyBlockName(CompoundTag data, Collection<String> names) {
-		ListTag<CompoundTag> sections = sectionsFromRoot(data);
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
+
 		for (String name : names) {
 			for (CompoundTag t : sections) {
-				CompoundTag blockStatesTag = withDefault(() -> t.getCompoundTag("block_states"), null);
-				if (blockStatesTag == null || blockStatesTag.size() == 0) {
-					continue;
-				}
-				ListTag<?> rawPalette = withDefault(() -> blockStatesTag.getListTag("palette"), null);
-				if (rawPalette == null) {
-					continue;
-				}
-				ListTag<CompoundTag> palette = catchClassCastException(rawPalette::asCompoundTagList);
+				ListTag<CompoundTag> palette = Helper.tagFromCompound(Helper.tagFromCompound(t, "block_states"), "palette");
 				if (palette == null) {
 					continue;
 				}
 				for (CompoundTag p : palette) {
-					if (name.equals(withDefault(() -> p.getString("Name"), null))) {
+					if (name.equals(Helper.stringFromCompound(p, "Name"))) {
 						return true;
 					}
 				}
@@ -81,28 +64,20 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public boolean paletteEquals(CompoundTag data, Collection<String> names) {
-		ListTag<CompoundTag> sections = sectionsFromRoot(data);
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
 
 		Set<String> blocks = new HashSet<>();
 		for (CompoundTag t : sections) {
-			CompoundTag blockStatesTag = withDefault(() -> t.getCompoundTag("block_states"), null);
-			if (blockStatesTag == null || blockStatesTag.size() == 0) {
-				continue;
-			}
-			ListTag<?> rawPalette = withDefault(() -> blockStatesTag.getListTag("palette"), null);
-			if (rawPalette == null) {
-				continue;
-			}
-			ListTag<CompoundTag> palette = catchClassCastException(rawPalette::asCompoundTagList);
+			ListTag<CompoundTag> palette = Helper.tagFromCompound(Helper.tagFromCompound(t, "block_states"), "palette");
 			if (palette == null) {
 				continue;
 			}
 			for (CompoundTag p : palette) {
 				String n;
-				if ((n = withDefault(() -> p.getString("Name"), null)) != null) {
+				if ((n = Helper.stringFromCompound(p, "Name")) != null) {
 					if (!names.contains(n)) {
 						return false;
 					}
@@ -123,39 +98,41 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public boolean matchBiomes(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes) {
-		ListTag<CompoundTag> sections = sectionsFromRoot(data);
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
+
+		Set<String> names = new HashSet<>(biomes.size());
 
 		filterLoop:
 		for (BiomeRegistry.BiomeIdentifier identifier : biomes) {
 			for (CompoundTag section : sections) {
-				ListTag<StringTag> biomePalette = withDefault(() -> section.getCompoundTag("biomes").getListTag("palette").asStringTagList(), null);
+				ListTag<StringTag> biomePalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
 				if (biomePalette == null) {
-					return false;
+					continue filterLoop;
 				}
 				for (StringTag biomeName : biomePalette) {
 					if (identifier.matches(biomeName.getValue())) {
+						names.add(biomeName.getValue());
 						continue filterLoop;
 					}
 				}
 			}
-			return false;
 		}
-		return true;
+		return biomes.size() == names.size();
 	}
 
 	@Override
 	public boolean matchAnyBiome(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes) {
-		ListTag<CompoundTag> sections = sectionsFromRoot(data);
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
 
 		for (BiomeRegistry.BiomeIdentifier identifier : biomes) {
 			for (CompoundTag section : sections) {
-				ListTag<StringTag> biomePalette = withDefault(() -> section.getCompoundTag("biomes").getListTag("palette").asStringTagList(), null);
+				ListTag<StringTag> biomePalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
 				if (biomePalette == null) {
 					continue;
 				}
@@ -171,16 +148,13 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public void changeBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome) {
-		ListTag<CompoundTag> sections = sectionsFromRoot(data);
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return;
 		}
 
 		for (CompoundTag section : sections) {
-			if (!section.containsKey("biomes")) {
-				continue;
-			}
-			CompoundTag biomes = withDefault(() -> section.getCompoundTag("biomes"), null);
+			CompoundTag biomes = Helper.tagFromCompound(section, "biomes");
 			if (biomes == null) {
 				continue;
 			}
@@ -194,39 +168,34 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public void forceBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome) {
-		ListTag<CompoundTag> sections = sectionsFromRoot(data);
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return;
 		}
 
 		for (CompoundTag section : sections) {
-			if (!section.containsKey("biomes")) {
-				section.put("biomes", new CompoundTag());
-			}
-			CompoundTag biomes = withDefault(() -> section.getCompoundTag("biomes"), null);
-			if (biomes == null) {
-				section.put("biomes", biomes = new CompoundTag());
-			}
-
+			CompoundTag biomes = new CompoundTag();
 			ListTag<StringTag> newBiomePalette = new ListTag<>(StringTag.class);
 			newBiomePalette.addString(biome.getName());
 			biomes.put("palette", newBiomePalette);
 			biomes.putLongArray("data", new long[1]);
+			section.put("biomes", new CompoundTag());
 		}
 	}
 
 	@Override
 	public void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace) {
-		ListTag<CompoundTag> sections = sectionsFromRoot(data);
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return;
 		}
 
 		CompoundTag level = data.getCompoundTag("Level");
-		Point2i pos = withDefault(() -> new Point2i(level.getInt("xPos"), level.getInt("zPos")).chunkToBlock(), null);
+		Point2i pos = Helper.point2iFromCompound(level, "xPos", "zPos");
 		if (pos == null) {
 			return;
 		}
+		pos = pos.chunkToBlock();
 
 		// handle the special case when someone wants to replace air with something else
 		if (replace.containsKey("minecraft:air")) {
@@ -257,29 +226,23 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			}
 		}
 
-		ListTag<CompoundTag> tileEntities = catchClassCastException(() -> level.getListTag("TileEntities").asCompoundTagList());
+		ListTag<CompoundTag> tileEntities = Helper.tagFromCompound(level, "TileEntities");
 		if (tileEntities == null) {
 			tileEntities = new ListTag<>(CompoundTag.class);
 		}
 
 		for (CompoundTag section : sections) {
 			CompoundTag blockStatesTag = section.getCompoundTag("block_states");
-			Tag<?> rawPalette = blockStatesTag.getListTag("palette");
-			if (rawPalette == null || rawPalette.getID() != ListTag.ID) {
+			ListTag<CompoundTag> palette = Helper.tagFromCompound(blockStatesTag, "palette");
+			long[] blockStates = Helper.longArrayFromCompoundTag(blockStatesTag, "data");
+			if (palette == null || blockStates == null) {
 				continue;
 			}
 
-			ListTag<CompoundTag> palette = catchClassCastException(((ListTag<?>) rawPalette)::asCompoundTagList);
-			if (palette == null) {
+			int y = Helper.numberFromCompoundTag(section, "Y", -5).intValue();
+			if (y < -4 || y > 19) {
 				continue;
 			}
-
-			long[] blockStates = catchClassCastException(() -> blockStatesTag.getLongArray("data"));
-			if (blockStates == null) {
-				continue;
-			}
-
-			int y = section.getNumber("Y").intValue();
 
 			for (int i = 0; i < 4096; i++) {
 				CompoundTag blockState = getBlockAt(i, blockStates, palette);
@@ -365,7 +328,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public int getAverageHeight(CompoundTag data) {
-		ListTag<CompoundTag> sections = sectionsFromRoot(data);
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return 0;
 		}
@@ -377,23 +340,15 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
-				for (int i = 0; i < sections.size(); i++) {
-					CompoundTag section;
-					CompoundTag blockStatesTag;
-					ListTag<?> rawPalette;
-					ListTag<CompoundTag> palette;
-					if ((section = sections.get(i)) == null
-							|| (blockStatesTag = section.getCompoundTag("block_states")) == null
-							|| (rawPalette = blockStatesTag.getListTag("palette")) == null
-							|| (palette = rawPalette.asCompoundTagList()) == null) {
-						continue;
-					}
-					long[] blockStates = withDefault(() -> blockStatesTag.getLongArray("data"), null);
-					if (blockStates == null) {
+				for (CompoundTag section : sections) {
+					CompoundTag blockStatesTag = Helper.tagFromCompound(section, "block_states");
+					ListTag<CompoundTag> palette = Helper.tagFromCompound(blockStatesTag, "palette");
+					long[] blockStates = Helper.longArrayFromCompoundTag(blockStatesTag, "data");
+					if (palette == null || blockStates == null) {
 						continue;
 					}
 
-					Byte height = withDefault(() -> section.getByte("Y"), null);
+					Number height = Helper.numberFromCompoundTag(section, "Y", null);
 					if (height == null) {
 						continue;
 					}
@@ -402,7 +357,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 						int index = cy * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + cz * Tile.CHUNK_SIZE + cx;
 						CompoundTag block = getBlockAt(index, blockStates, palette);
 						if (!isEmpty(block)){
-							totalHeight += height * 16 + cy;
+							totalHeight += height.intValue() * 16 + cy;
 							continue zLoop;
 						}
 					}
@@ -414,7 +369,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public int getBlockAmount(CompoundTag data, String[] blocks) {
-		ListTag<CompoundTag> sections = sectionsFromRoot(data);
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return 0;
 		}
@@ -422,18 +377,16 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		int result = 0;
 
 		for (CompoundTag section : sections) {
-			CompoundTag blockStatesTag = ValidationHelper.withDefaultSilent(() -> section.getCompoundTag("block_states"), null);
-			if (blockStatesTag == null || blockStatesTag.size() == 0) {
-				continue;
-			}
-			ListTag<CompoundTag> palette = ValidationHelper.withDefaultSilent(() -> blockStatesTag.getListTag("palette").asCompoundTagList(), null);
-			if (palette == null) {
+			CompoundTag blockStatesTag = Helper.tagFromCompound(section, "block_states");
+			ListTag<CompoundTag> palette = Helper.tagFromCompound(blockStatesTag, "palette");
+			long[] blockStates = Helper.longArrayFromCompoundTag(blockStatesTag, "data");
+			if (palette == null || blockStates == null) {
 				continue;
 			}
 
 			for (int i = 0; i < palette.size(); i++) {
 				CompoundTag blockState = palette.get(i);
-				String name = ValidationHelper.withDefaultSilent(() -> blockState.getString("Name"), null);
+				String name = Helper.stringFromCompound(blockState, "Name");
 				if (name == null) {
 					continue;
 				}
@@ -441,12 +394,6 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				for (String block : blocks) {
 					if (name.equals(block)) {
 						// count blocks of this type
-
-						long[] blockStates = withDefault(() -> blockStatesTag.getLongArray("data"), null);
-						if (blockStates == null) {
-							break;
-						}
-
 						for (int k = 0; k < 4096; k++) {
 							if (blockState == getBlockAt(k, blockStates, palette)) {
 								result++;

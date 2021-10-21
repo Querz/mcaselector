@@ -33,7 +33,6 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.TileMapSelection;
 import net.querz.mcaselector.ui.dialog.*;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -42,12 +41,10 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import static net.querz.mcaselector.ui.dialog.ImportConfirmationDialog.ChunkImportConfirmationData;
 
 public class DialogHelper {
@@ -420,10 +417,10 @@ public class DialogHelper {
 			Point2i toOffset = fromChunk.sub(toChunk);
 
 			ChunkData fromData = from.getChunkDataAt(fromChunk);
-			fromData.relocate(fromOffset.chunkToBlock());
+			fromData.relocate(fromOffset.chunkToBlock().toPoint3i());
 
 			ChunkData toData = to.getChunkDataAt(toChunk);
-			toData.relocate(toOffset.chunkToBlock());
+			toData.relocate(toOffset.chunkToBlock().toPoint3i());
 
 			from.setChunkDataAt(toData, fromChunk);
 			to.setChunkDataAt(fromData, toChunk);
@@ -465,7 +462,7 @@ public class DialogHelper {
 	public static void pasteSelectedChunks(TileMap tileMap, Stage primaryStage) {
 		if (tileMap.isInPastingMode()) {
 			DataProperty<ImportConfirmationDialog.ChunkImportConfirmationData> dataProperty = new DataProperty<>();
-			ChunkImportConfirmationData preFill = new ChunkImportConfirmationData(tileMap.getPastedChunksOffset(), true, false, null);
+			ChunkImportConfirmationData preFill = new ChunkImportConfirmationData(tileMap.getPastedChunksOffset(), 0, true, false, null);
 			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, preFill, dataProperty::set).showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {

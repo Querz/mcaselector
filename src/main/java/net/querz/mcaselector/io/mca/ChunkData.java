@@ -2,6 +2,7 @@ package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class ChunkData {
 		return poi;
 	}
 
-	public boolean relocate(Point2i offset) {
+	public boolean relocate(Point3i offset) {
 		boolean result = true;
 		if (region != null && region.getData() != null && region.getData().containsKey("DataVersion")) {
 			result = region.relocate(offset);

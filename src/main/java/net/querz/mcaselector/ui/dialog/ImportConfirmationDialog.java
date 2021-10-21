@@ -9,6 +9,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
@@ -42,9 +43,9 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		LocationInput locationInput = new LocationInput(true);
 		locationInput.setOnValidityCheck(valid -> {
 			getDialogPane().lookupButton(ButtonType.OK).setDisable(!valid);
-			data.offset = locationInput.getValue();
+			data.xzOffset = locationInput.getValue();
 			dataAction.accept(data);
-			if (valid && (data.offset.getX() != 0 || data.offset.getZ() != 0)) {
+			if (valid && (data.xzOffset.getX() != 0 || data.xzOffset.getZ() != 0)) {
 				warning.getStyleClass().remove("import-chunks-warning-invisible");
 				warningVisible.set(true);
 			} else if (warningVisible.get()) {
@@ -84,7 +85,7 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 
 		overwrite.setSelected(true);
 
-		data.offset = locationInput.getValue();
+		data.xzOffset = locationInput.getValue();
 		data.overwrite = true;
 		dataAction.accept(data);
 
@@ -112,10 +113,10 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		getDialogPane().setContent(content);
 
 		if (preFill != null) {
-			if (preFill.offset != null) {
-				data.offset = preFill.offset;
-				locationInput.setX(preFill.offset.getX());
-				locationInput.setZ(preFill.offset.getZ());
+			if (preFill.xzOffset != null) {
+				data.xzOffset = preFill.xzOffset;
+				locationInput.setX(preFill.xzOffset.getX());
+				locationInput.setZ(preFill.xzOffset.getZ());
 			}
 			data.overwrite = preFill.overwrite;
 			overwrite.setSelected(preFill.overwrite);
@@ -130,22 +131,24 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 
 	public static class ChunkImportConfirmationData {
 
-		private Point2i offset;
+		private Point2i xzOffset;
+		private int yOffset;
 		private boolean overwrite;
 		private boolean selectionOnly;
 		private List<Range> ranges;
 
 		private ChunkImportConfirmationData() {}
 
-		public ChunkImportConfirmationData(Point2i offset, boolean overwrite, boolean selectionOnly, List<Range> ranges) {
-			this.offset = offset;
+		public ChunkImportConfirmationData(Point2i xzOffset, int yOffset, boolean overwrite, boolean selectionOnly, List<Range> ranges) {
+			this.xzOffset = xzOffset;
+			this.yOffset = yOffset;
 			this.overwrite = overwrite;
 			this.selectionOnly = selectionOnly;
 			this.ranges = ranges;
 		}
 
-		public Point2i getOffset() {
-			return offset;
+		public Point3i getOffset() {
+			return new Point3i(xzOffset.getX(), yOffset, xzOffset.getZ());
 		}
 
 		public boolean overwrite() {

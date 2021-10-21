@@ -16,6 +16,7 @@ import net.querz.mcaselector.io.mca.PoiMCAFile;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.property.DataProperty;
@@ -32,7 +33,7 @@ public final class ChunkImporter {
 
 	private ChunkImporter() {}
 
-	public static void importChunks(WorldDirectories source, Progress progressChannel, boolean headless, boolean overwrite, SelectionData sourceSelection, SelectionData targetSelection, List<Range> ranges, Point2i offset, DataProperty<Map<Point2i, RegionDirectories>> tempFiles) {
+	public static void importChunks(WorldDirectories source, Progress progressChannel, boolean headless, boolean overwrite, SelectionData sourceSelection, SelectionData targetSelection, List<Range> ranges, Point3i offset, DataProperty<Map<Point2i, RegionDirectories>> tempFiles) {
 		try {
 			WorldDirectories wd = Config.getWorldDirs();
 			RegionDirectories[] rd = wd.listRegions(targetSelection);
@@ -61,7 +62,7 @@ public final class ChunkImporter {
 			tempFiles.set(tempFilesMap);
 
 			// only pass regions here
-			Long2ObjectOpenHashMap<LongOpenHashSet> targetMapping = createTargetSourceMapping(source.getRegion(), sourceSelection, targetSelection, offset);
+			Long2ObjectOpenHashMap<LongOpenHashSet> targetMapping = createTargetSourceMapping(source.getRegion(), sourceSelection, targetSelection, offset.toPoint2i());
 
 			progressChannel.setMax(targetMapping.size());
 			progressChannel.updateProgress(rd[0].getLocationAsFileName(), 0);
@@ -163,7 +164,7 @@ public final class ChunkImporter {
 		private final WorldDirectories sourceDirs;
 		private final LongOpenHashSet sources;
 		private final Point2i target;
-		private final Point2i offset;
+		private final Point3i offset;
 		private final Progress progressChannel;
 		private final boolean overwrite;
 		private final Long2ObjectOpenHashMap<LongOpenHashSet> sourceChunks;
@@ -173,7 +174,7 @@ public final class ChunkImporter {
 		private final List<Range> ranges;
 		private final Map<Point2i, RegionDirectories> tempFilesMap;
 
-		private MCAChunkImporterProcessJob(RegionDirectories targetDirs, WorldDirectories sourceDirs, Point2i target, LongOpenHashSet sources, Point2i offset, Progress progressChannel, boolean overwrite, Long2ObjectOpenHashMap<LongOpenHashSet> sourceChunks, boolean sourceChunksInverted, LongOpenHashSet selection, boolean targetChunksInverted, List<Range> ranges, Map<Point2i, RegionDirectories> tempFilesMap) {
+		private MCAChunkImporterProcessJob(RegionDirectories targetDirs, WorldDirectories sourceDirs, Point2i target, LongOpenHashSet sources, Point3i offset, Progress progressChannel, boolean overwrite, Long2ObjectOpenHashMap<LongOpenHashSet> sourceChunks, boolean sourceChunksInverted, LongOpenHashSet selection, boolean targetChunksInverted, List<Range> ranges, Map<Point2i, RegionDirectories> tempFilesMap) {
 			super(targetDirs, PRIORITY_LOW);
 			this.sourceDirs = sourceDirs;
 			this.sources = sources;
@@ -192,7 +193,7 @@ public final class ChunkImporter {
 		@Override
 		public boolean execute() {
 			// try to copy files directly if there is no offset, no selection and the target file does not exist
-			if (offset.getX() == 0 && offset.getZ() == 0 && (selection == null || selection.size() == 0)) {
+			if (offset.getX() == 0 && offset.getY() == 0 && offset.getZ() == 0 && (selection == null || selection.size() == 0)) {
 				boolean allCopied = true;
 
 				if (!getRegionDirectories().getRegion().exists()) {

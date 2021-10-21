@@ -5,19 +5,15 @@ import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.ChunkRenderer;
 import net.querz.mcaselector.version.ColorMapping;
+import net.querz.mcaselector.version.Helper;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.LongArrayTag;
-import net.querz.nbt.tag.Tag;
-
-import static net.querz.mcaselector.validation.ValidationHelper.catchClassCastException;
-import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
 
 public class Anvil112ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
-		ListTag<CompoundTag> sections = withDefault(() -> root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(root, "Sections");
 		if (sections == null) {
 			return;
 		}
@@ -28,9 +24,9 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 			if (!s.containsKey("Blocks") || !s.containsKey("Data")) {
 				return;
 			}
-			int y = withDefault(() -> s.getNumber("Y").intValue(), -1);
-			byte[] b = withDefault(() -> s.getByteArray("Blocks"), null);
-			byte[] d = withDefault(() -> s.getByteArray("Data"), null);
+			int y = Helper.numberFromCompoundTag(s, "Y", -1).intValue();
+			byte[] b = Helper.byteArrayFromCompound(s, "Blocks");
+			byte[] d = Helper.byteArrayFromCompound(s, "Data");
 			if (y >= 0 && y < 16 && b != null && d != null) {
 				blocksArray[y] = b;
 				dataArray[y] = d;
@@ -39,7 +35,7 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 
 		height = MathUtil.clamp(height, 0, 255);
 
-		byte[] biomes = withDefault(() -> root.getCompoundTag("Level").getByteArray("Biomes"), null);
+		byte[] biomes = Helper.byteArrayFromCompound(Helper.tagFromCompound(root, "Level"), "Biomes");
 
 		// loop over x / z
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
@@ -105,14 +101,14 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawLayer(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int height) {
-		ListTag<CompoundTag> sections = withDefault(() -> root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(root, "Sections");
 		if (sections == null) {
 			return;
 		}
 
 		DataProperty<CompoundTag> section = new DataProperty<>();
 		for (CompoundTag s : sections) {
-			int y = withDefault(() -> s.getNumber("Y").intValue(), -1);
+			int y = Helper.numberFromCompoundTag(s, "Y", -1).intValue();
 			if (y == height >> 4) {
 				section.set(s);
 				break;
@@ -122,17 +118,13 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 			return;
 		}
 
-		if (!section.get().containsKey("Blocks") || !section.get().containsKey("Data")) {
-			return;
-		}
-
-		byte[] blocks = withDefault(() -> section.get().getByteArray("Blocks"), null);
-		byte[] data = withDefault(() -> section.get().getByteArray("Data"), null);
+		byte[] blocks = Helper.byteArrayFromCompound(section.get(), "Blocks");
+		byte[] data = Helper.byteArrayFromCompound(section.get(), "Data");
 		if (blocks == null || data == null) {
 			return;
 		}
 
-		byte[] biomes = withDefault(() -> root.getCompoundTag("Level").getByteArray("Biomes"), null);
+		byte[] biomes = Helper.byteArrayFromCompound(Helper.tagFromCompound(root, "Level"), "Biomes");
 
 		height = MathUtil.clamp(height, 0, 255);
 
@@ -163,7 +155,7 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawCaves(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, short[] terrainHeights, int height) {
-		ListTag<CompoundTag> sections = withDefault(() -> root.getCompoundTag("Level").getListTag("Sections").asCompoundTagList(), null);
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(root, "Sections");
 		if (sections == null) {
 			return;
 		}
@@ -174,9 +166,9 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 			if (!s.containsKey("Blocks") || !s.containsKey("Data")) {
 				return;
 			}
-			int y = withDefault(() -> s.getNumber("Y").intValue(), -1);
-			byte[] b = withDefault(() -> s.getByteArray("Blocks"), null);
-			byte[] d = withDefault(() -> s.getByteArray("Data"), null);
+			int y = Helper.numberFromCompoundTag(s, "Y", -1).intValue();
+			byte[] b = Helper.byteArrayFromCompound(s, "Blocks");
+			byte[] d = Helper.byteArrayFromCompound(s, "Data");
 			if (y >= 0 && y < 16 && b != null && d != null) {
 				blocksArray[y] = b;
 				dataArray[y] = d;
@@ -185,7 +177,7 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 
 		height = MathUtil.clamp(height, 0, 255);
 
-		byte[] biomes = withDefault(() -> root.getCompoundTag("Level").getByteArray("Biomes"), null);
+		byte[] biomes = Helper.byteArrayFromCompound(Helper.tagFromCompound(root, "Level"), "Biomes");
 
 		// loop over x / z
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {

@@ -2,6 +2,7 @@ package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.nbt.io.NBTDeserializer;
 import net.querz.nbt.io.NBTSerializer;
@@ -115,7 +116,7 @@ public abstract class Chunk {
 		}
 	}
 
-	public abstract boolean relocate(Point2i offset);
+	public abstract boolean relocate(Point3i offset);
 
 	public abstract File getMCCFile();
 

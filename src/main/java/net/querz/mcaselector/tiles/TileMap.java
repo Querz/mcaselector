@@ -2,13 +2,11 @@ package net.querz.mcaselector.tiles;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -33,7 +31,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -41,7 +38,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -80,7 +76,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private final KeyActivator keyActivator = new KeyActivator();
 
-	private long totalUpdates = 0;
 	private long totalDraws = 0;
 
 	private boolean disabled = true;
@@ -980,9 +975,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 		if (pastedChunks != null) {
 			runOnVisibleRegions(region -> {
-				Point2i regionOffset = region.regionToBlock().sub((int) offset.getX(), (int) offset.getY());
-				Point2f p = new Point2f(regionOffset.getX() / scale, regionOffset.getZ() / scale);
-				p = p.add(pastedChunksOffset.mul(16).div(scale).toPoint2f());
+				Point2f regionOffset = region.regionToBlock().toPoint2f().sub(offset.getX(), offset.getY());
+				Point2f p = regionOffset.div(scale).add(pastedChunksOffset.mul(16).toPoint2f().div(scale));
 				drawPastedChunks(ctx, region, p);
 			}, pastedChunksOffset.mul(16).toPoint2f(), () -> scale, Integer.MAX_VALUE);
 		}

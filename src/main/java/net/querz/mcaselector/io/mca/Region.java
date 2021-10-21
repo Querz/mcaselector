@@ -8,13 +8,12 @@ import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.range.Range;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 // holds data for chunks, poi and entities
 public class Region {
@@ -429,7 +428,7 @@ public class Region {
 		Debug.printf("took %s to apply field changes to region %s", t, location);
 	}
 
-	public void mergeInto(Region region, Point2i offset, boolean overwrite, LongOpenHashSet sourceChunks,LongOpenHashSet selection, List<Range> ranges) {
+	public void mergeInto(Region region, Point3i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges) {
 		if (this.region != null) {
 			this.region.mergeChunksInto(region.region, offset, overwrite, sourceChunks, selection, ranges);
 		}

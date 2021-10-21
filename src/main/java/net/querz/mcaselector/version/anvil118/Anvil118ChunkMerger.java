@@ -1,17 +1,15 @@
-package net.querz.mcaselector.version.anvil115;
+package net.querz.mcaselector.version.anvil118;
 
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.version.ChunkMerger;
 import net.querz.mcaselector.version.Helper;
 import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.IntArrayTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.Tag;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class Anvil115ChunkMerger implements ChunkMerger {
+public class Anvil118ChunkMerger implements ChunkMerger {
 
 	@Override
 	public void mergeChunks(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset) {
@@ -28,78 +26,6 @@ public class Anvil115ChunkMerger implements ChunkMerger {
 
 		// we need to fix entity UUIDs, because Minecraft doesn't like duplicates
 		fixEntityUUIDs(destination);
-
-		mergeBiomes(source, destination, ranges, yOffset);
-	}
-
-	protected void mergeBiomes(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset) {
-		IntArrayTag sourceBiomes = Helper.tagFromLevelFromRoot(source, "Biomes");
-		IntArrayTag destinationBiomes = Helper.tagFromLevelFromRoot(destination, "Biomes");
-
-		if (destinationBiomes == null) {
-			// if there is no destination, we will let minecraft set the biome
-			destinationBiomes = new IntArrayTag(new int[1024]);
-			Arrays.fill(destinationBiomes.getValue(), -1);
-		}
-
-		if (sourceBiomes == null) {
-			// if there is no source biome, we set the biome to -1
-			// merge biomes
-			for (Range range : ranges) {
-				int m = Math.min(range.getTo() + yOffset, 15);
-				for (int i = Math.max(range.getFrom() + yOffset, 0); i <= m; i++) {
-					setSectionBiomes(-1, destinationBiomes.getValue(), i);
-				}
-			}
-		} else {
-			for (Range range : ranges) {
-				int m = Math.min(range.getTo() - yOffset, 15);
-				for (int i = Math.max(range.getFrom() - yOffset, 0); i <= m; i++) {
-					copySectionBiomes(sourceBiomes.getValue(), destinationBiomes.getValue(), i);
-				}
-			}
-		}
-	}
-
-	private void copySectionBiomes(int[] sourceBiomes, int[] destinationBiomes, int sectionY) {
-		for (int y = 0; y < 4; y++) {
-			int biomeY = sectionY * 4 + y;
-			for (int x = 0; x < 4; x++) {
-				for (int z = 0; z < 4; z++) {
-					setBiomeAt(destinationBiomes, x, biomeY, z, getBiomeAt(sourceBiomes, x, biomeY, z));
-				}
-			}
-		}
-	}
-
-	private void setSectionBiomes(int biome, int[] destinationBiomes, int sectionY) {
-		for (int y = 0; y < 4; y++) {
-			int biomeY = sectionY * 4 + y;
-			for (int x = 0; x < 4; x++) {
-				for (int z = 0; z < 4; z++) {
-					setBiomeAt(destinationBiomes, x, biomeY, z, biome);
-				}
-			}
-		}
-	}
-
-	private int getBiomeAt(int[] biomes, int biomeX, int biomeY, int biomeZ) {
-		if (biomes == null || biomes.length != 1024) {
-			return -1;
-		}
-		return biomes[getBiomeIndex(biomeX, biomeY, biomeZ)];
-	}
-
-	private void setBiomeAt(int[] biomes, int biomeX, int biomeY, int biomeZ, int biomeID) {
-		if (biomes == null || biomes.length != 1024) {
-			biomes = new int[1024];
-			Arrays.fill(biomes, -1);
-		}
-		biomes[getBiomeIndex(biomeX, biomeY, biomeZ)] = biomeID;
-	}
-
-	private int getBiomeIndex(int x, int y, int z) {
-		return y * 16 + z * 4 + x;
 	}
 
 	private void mergeStructures(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset) {

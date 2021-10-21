@@ -20,6 +20,7 @@ import net.querz.mcaselector.io.job.SelectionDeleter;
 import net.querz.mcaselector.io.job.SelectionExporter;
 import net.querz.mcaselector.io.job.SelectionImageExporter;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
@@ -172,7 +173,7 @@ public final class ParamExecutor {
 		progress.onDone(future);
 
 		DataProperty<Map<Point2i, RegionDirectories>> tempFiles = new DataProperty<>();
-		ChunkImporter.importChunks(inputDirectories, progress, true, overwrite, sourceSelection, targetSelection, sections, new Point2i(offsetX, offsetZ), tempFiles);
+		ChunkImporter.importChunks(inputDirectories, progress, true, overwrite, sourceSelection, targetSelection, sections, new Point3i(offsetX, 0, offsetZ), tempFiles);
 		if (tempFiles.get() != null) {
 			for (RegionDirectories tempFile : tempFiles.get().values()) {
 				if (!tempFile.getRegion().delete()) {

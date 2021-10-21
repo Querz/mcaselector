@@ -60,11 +60,11 @@ public class StructureFilter extends TextFilter<List<String>> {
 		CompoundTag rawStructures = data.getRegion().getData().getCompoundTag("Level").getCompoundTag("Structures").getCompoundTag("References");
 
 		for (String name : getFilterValue()) {
-			long[] references = ValidationHelper.withDefaultSilent(() -> rawStructures.getLongArray(name), null);
+			long[] references = ValidationHelper.silent(() -> rawStructures.getLongArray(name), null);
 			if (references != null && references.length > 0) {
 				return true;
 			}
-			references = ValidationHelper.withDefaultSilent(() -> rawStructures.getLongArray(validNames.get(name)), null);
+			references = ValidationHelper.silent(() -> rawStructures.getLongArray(validNames.get(name)), null);
 			if (references != null && references.length > 0) {
 				return true;
 			}

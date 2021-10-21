@@ -72,6 +72,8 @@ public class BiomeFilter extends TextFilter<List<BiomeRegistry.BiomeIdentifier>>
 				if (name.startsWith("'") && name.endsWith("'") && name.length() > 1) {
 					name = name.substring(1, name.length() - 1);
 					quoted = true;
+				} else if (!name.startsWith("minecraft:")) {
+					name = "minecraft:" + name;
 				}
 
 				if (name.matches("^[0-9]+$")) {

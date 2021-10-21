@@ -2,11 +2,11 @@ package net.querz.mcaselector.io.mca;
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
 import net.querz.nbt.tag.CompoundTag;
 import java.io.File;
 import java.util.List;
-import java.util.Set;
 
 public class EntitiesMCAFile extends MCAFile<EntitiesChunk> {
 
@@ -25,7 +25,7 @@ public class EntitiesMCAFile extends MCAFile<EntitiesChunk> {
 	}
 
 	@Override
-	public void mergeChunksInto(MCAFile<EntitiesChunk> destination, Point2i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges) {
+	public void mergeChunksInto(MCAFile<EntitiesChunk> destination, Point3i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges) {
 		mergeChunksInto(destination, offset, overwrite, sourceChunks, selection, ranges, EntitiesMCAFile::newEmptyChunk);
 	}
 }

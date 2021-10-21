@@ -3,6 +3,7 @@ package net.querz.mcaselector.version.anvil118;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.version.ColorMapping;
+import net.querz.mcaselector.version.Helper;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.StringTag;
 import net.querz.nbt.tag.Tag;
@@ -10,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
-import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
 
 public class Anvil118ColorMapping implements ColorMapping {
 
@@ -130,12 +130,12 @@ public class Anvil118ColorMapping implements ColorMapping {
 
 	@Override
 	public int getRGB(Object o, int biome) {
-		String name = withDefault(() -> ((CompoundTag) o).getString("Name"), "");
+		String name = Helper.stringFromCompound((CompoundTag) o, "Name", "");
 		Object value = mapping.get(name);
 		if (value instanceof Integer) {
 			return applyBiomeTintLegacy(name, biome, (int) value);
 		} else if (value instanceof BlockStateMapping) {
-			int color = ((BlockStateMapping) value).getColor(withDefault(() -> ((CompoundTag) o).getCompoundTag("Properties"), null));
+			int color = ((BlockStateMapping) value).getColor(Helper.tagFromCompound((CompoundTag) o, "Properties"));
 			return applyBiomeTintLegacy(name, biome, color);
 		}
 		return 0xFF000000;
@@ -143,12 +143,12 @@ public class Anvil118ColorMapping implements ColorMapping {
 
 	@Override
 	public int getRGB(Object o, String biome) {
-		String name = withDefault(() -> ((CompoundTag) o).getString("Name"), "");
+		String name = Helper.stringFromCompound((CompoundTag) o, "Name", "");
 		Object value = mapping.get(name);
 		if (value instanceof Integer) {
 			return applyBiomeTint(name, biome, (int) value);
 		} else if (value instanceof BlockStateMapping) {
-			int color = ((BlockStateMapping) value).getColor(withDefault(() -> ((CompoundTag) o).getCompoundTag("Properties"), null));
+			int color = ((BlockStateMapping) value).getColor(Helper.tagFromCompound((CompoundTag) o, "Properties"));
 			return applyBiomeTint(name, biome, color);
 		}
 		return 0xFF000000;

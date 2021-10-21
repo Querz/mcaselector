@@ -35,8 +35,8 @@ public final class BiomeRegistry {
 					Debug.dumpf("invalid biome id: %s", line);
 					continue;
 				}
-				idMapping.put(id, split[0]);
-				nameMapping.put(split[0], id);
+				idMapping.put(id, "minecraft:" + split[0]);
+				nameMapping.put("minecraft:" + split[0], id);
 			}
 		} catch (IOException ex) {
 			Debug.dumpException("error reading mapping/biome_name_to_id.txt", ex);
@@ -46,7 +46,7 @@ public final class BiomeRegistry {
 				new InputStreamReader(Objects.requireNonNull(BiomeFilter.class.getClassLoader().getResourceAsStream("mapping/all_biome_names.txt"))))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
-				mapping.add(line);
+				mapping.add("minecraft:" + line);
 			}
 		} catch (IOException ex) {
 			Debug.dumpException("error reading mapping/all_biome_names.txt", ex);

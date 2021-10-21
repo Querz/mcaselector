@@ -17,7 +17,7 @@ public class InhabitedTimeParser extends OverlayParser {
 
 	@Override
 	public int parseValue(ChunkData chunkData) {
-		return ValidationHelper.withDefaultSilent(() -> chunkData.getRegion().getData().getCompoundTag("Level").getNumber("InhabitedTime").intValue(), 0);
+		return ValidationHelper.silent(() -> chunkData.getRegion().getData().getCompoundTag("Level").getNumber("InhabitedTime").intValue(), 0);
 	}
 
 	@Override

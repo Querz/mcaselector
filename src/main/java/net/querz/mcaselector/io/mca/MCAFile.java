@@ -5,6 +5,7 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.version.ChunkMerger;
 import net.querz.mcaselector.version.VersionController;
@@ -372,10 +373,10 @@ public abstract class MCAFile<T extends Chunk> {
 		}
 	}
 
-	public abstract void mergeChunksInto(MCAFile<T> destination, Point2i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges);
+	public abstract void mergeChunksInto(MCAFile<T> destination, Point3i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges);
 
-	protected void mergeChunksInto(MCAFile<T> destination, Point2i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges, BiFunction<Point2i, Integer, T> chunkCreator) {
-		Point2i relativeOffset = location.regionToChunk().add(offset).sub(destination.location.regionToChunk());
+	protected void mergeChunksInto(MCAFile<T> destination, Point3i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges, BiFunction<Point2i, Integer, T> chunkCreator) {
+		Point2i relativeOffset = location.regionToChunk().add(offset.toPoint2i()).sub(destination.location.regionToChunk());
 		int startX = relativeOffset.getX() > 0 ? 0 : 32 - (32 + relativeOffset.getX());
 		int limitX = relativeOffset.getX() > 0 ? (32 - relativeOffset.getX()) : 32;
 		int startZ = relativeOffset.getZ() > 0 ? 0 : 32 - (32 + relativeOffset.getZ());
@@ -421,7 +422,7 @@ public abstract class MCAFile<T extends Chunk> {
 
 							ChunkMerger m = VersionController.getChunkMerger(sourceChunk.getData().getInt("DataVersion"));
 							try {
-								m.mergeChunks(sourceChunk.getData(), destinationChunk.getData(), ranges);
+								m.mergeChunks(sourceChunk.getData(), destinationChunk.getData(), ranges, offset.getY());
 							} catch (Exception ex) {
 								Point2i srcChunk = location.regionToChunk().add(x, z);
 								Debug.dump(new Exception("failed to merge chunk " + srcChunk + " into " + destChunk, ex));

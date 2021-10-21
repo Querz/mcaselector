@@ -65,7 +65,7 @@ public final class VersionController {
 		ANVIL115(2202, 2526, Anvil115ChunkFilter::new, Anvil115ChunkMerger::new, Anvil115ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil115ChunkRenderer::new, Anvil115ColorMapping::new),
 		ANVIL116(2527, 2686, Anvil116ChunkFilter::new, Anvil115ChunkMerger::new, Anvil116ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil116ChunkRenderer::new, Anvil116ColorMapping::new),
 		ANVIL117(2687, 2824, Anvil117ChunkFilter::new, Anvil115ChunkMerger::new, Anvil117ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil117EntityRelocator::new, Anvil117EntityFilter::new, Anvil117ChunkRenderer::new, Anvil117ColorMapping::new),
-		ANVIL118(2825, Integer.MAX_VALUE, Anvil117ChunkFilter::new, Anvil115ChunkMerger::new, Anvil117ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil117EntityRelocator::new, Anvil117EntityFilter::new, Anvil118ChunkRenderer::new, Anvil118ColorMapping::new);
+		ANVIL118(2825, Integer.MAX_VALUE, Anvil118ChunkFilter::new, Anvil115ChunkMerger::new, Anvil118ChunkRelocator::new, Anvil118PoiRelocator::new, Anvil117EntityRelocator::new, Anvil117EntityFilter::new, Anvil118ChunkRenderer::new, Anvil118ColorMapping::new);
 
 
 		private final int minVersion, maxVersion;
