@@ -31,7 +31,7 @@ public class Anvil114PoiRelocator implements PoiRelocator {
 				ListTag<CompoundTag> records = Helper.tagFromCompound(section, "Records");
 				if (records != null) {
 					for (CompoundTag record : records) {
-						int[] pos = Helper.intArrayFromCompoundTag(record, "pos");
+						int[] pos = Helper.intArrayFromCompound(record, "pos");
 						Helper.applyOffsetToIntArrayPos(pos, offset);
 					}
 				}

@@ -404,7 +404,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 						continue;
 					}
 
-					Number height = Helper.numberFromCompoundTag(section, "Y", null);
+					Number height = Helper.numberFromCompound(section, "Y", null);
 					if (height == null) {
 						continue;
 					}
@@ -427,7 +427,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 	}
 
 	private int filterSections(CompoundTag sectionA, CompoundTag sectionB) {
-		return Helper.numberFromCompoundTag(sectionB, "Y", -1).intValue() - Helper.numberFromCompoundTag(sectionA, "Y", -1).intValue();
+		return Helper.numberFromCompound(sectionB, "Y", -1).intValue() - Helper.numberFromCompound(sectionA, "Y", -1).intValue();
 	}
 
 	@Override

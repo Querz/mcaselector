@@ -8,8 +8,6 @@ import java.util.Random;
 
 public interface ChunkRelocator {
 
-	Random random = new Random();
-
 	boolean relocateChunk(CompoundTag root, Point3i offset);
 
 	default boolean applyOffsetToSection(CompoundTag section, Point3i offset, int minY, int maxY) {
@@ -24,6 +22,9 @@ public interface ChunkRelocator {
 				return false;
 			}
 			section.putByte("Y", (byte) y);
+
+			section.remove("BlockLight");
+			section.remove("SkyLight");
 		}
 		return true;
 	}

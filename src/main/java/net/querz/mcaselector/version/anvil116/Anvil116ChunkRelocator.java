@@ -253,7 +253,7 @@ public class Anvil116ChunkRelocator implements ChunkRelocator {
 				}
 				Helper.applyIntIfPresent(structure, "ChunkX", chunkOffset.getX());
 				Helper.applyIntIfPresent(structure, "ChunkZ", chunkOffset.getZ());
-				Helper.applyOffsetToBB(Helper.intArrayFromCompoundTag(structure, "BB"), offset);
+				Helper.applyOffsetToBB(Helper.intArrayFromCompound(structure, "BB"), offset);
 
 				ListTag<CompoundTag> processed = Helper.tagFromCompound(structure, "Processed");
 				if (processed != null) {
@@ -268,7 +268,7 @@ public class Anvil116ChunkRelocator implements ChunkRelocator {
 					for (CompoundTag child : children) {
 						Helper.applyIntOffsetIfRootPresent(child, "TPX", "TPY", "TPZ", offset);
 						Helper.applyIntOffsetIfRootPresent(child, "PosX", "PosY", "PosZ", offset);
-						Helper.applyOffsetToBB(Helper.intArrayFromCompoundTag(child, "BB"), offset);
+						Helper.applyOffsetToBB(Helper.intArrayFromCompound(child, "BB"), offset);
 
 						ListTag<IntArrayTag> entrances = Helper.tagFromCompound(child, "Entrances");
 						if (entrances != null) {

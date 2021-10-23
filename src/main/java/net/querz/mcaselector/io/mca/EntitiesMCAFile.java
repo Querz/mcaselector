@@ -8,7 +8,7 @@ import net.querz.nbt.tag.CompoundTag;
 import java.io.File;
 import java.util.List;
 
-public class EntitiesMCAFile extends MCAFile<EntitiesChunk> {
+public class EntitiesMCAFile extends MCAFile<EntitiesChunk> implements Cloneable {
 
 	public EntitiesMCAFile(File file) {
 		super(file, EntitiesChunk::new);
@@ -27,5 +27,10 @@ public class EntitiesMCAFile extends MCAFile<EntitiesChunk> {
 	@Override
 	public void mergeChunksInto(MCAFile<EntitiesChunk> destination, Point3i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges) {
 		mergeChunksInto(destination, offset, overwrite, sourceChunks, selection, ranges, EntitiesMCAFile::newEmptyChunk);
+	}
+
+	@Override
+	public EntitiesMCAFile clone() {
+		return clone(EntitiesMCAFile::new);
 	}
 }

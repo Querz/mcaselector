@@ -14,7 +14,7 @@ public class Anvil117EntityRelocator implements EntityRelocator {
 
 	@Override
 	public boolean relocateEntities(CompoundTag root, Point3i offset) {
-		int[] position = Helper.intArrayFromCompoundTag(root, "Position");
+		int[] position = Helper.intArrayFromCompound(root, "Position");
 		if (position == null || position.length != 2) {
 			return false;
 		}

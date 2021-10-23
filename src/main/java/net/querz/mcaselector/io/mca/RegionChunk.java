@@ -7,7 +7,7 @@ import net.querz.mcaselector.version.ChunkRelocator;
 import net.querz.mcaselector.version.VersionController;
 import java.io.File;
 
-public class RegionChunk extends Chunk {
+public class RegionChunk extends Chunk implements Cloneable {
 
 	public RegionChunk(Point2i absoluteLocation) {
 		super(absoluteLocation);
@@ -22,5 +22,10 @@ public class RegionChunk extends Chunk {
 	@Override
 	public File getMCCFile() {
 		return FileHelper.createRegionMCCFilePath(absoluteLocation);
+	}
+
+	@Override
+	public RegionChunk clone() {
+		return clone(RegionChunk::new);
 	}
 }

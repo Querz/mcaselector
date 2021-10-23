@@ -39,10 +39,10 @@ public class Anvil118ChunkMerger implements ChunkMerger {
 				if (children != null) {
 					child: for (int i = 0; i < children.size(); i++) {
 						CompoundTag child = children.get(i);
-						int[] bb = Helper.intArrayFromCompoundTag(child, "BB");
+						int[] bb = Helper.intArrayFromCompound(child, "BB");
 						if (bb != null && bb.length == 6) {
 							for (Range range : ranges) {
-								if (range.contains(bb[1] >> 4) && range.contains(bb[4] >> 4)) {
+								if (range.contains(bb[1] >> 4 - yOffset) && range.contains(bb[4] >> 4 - yOffset)) {
 									children.remove(i);
 									i--;
 									continue child;
@@ -54,10 +54,10 @@ public class Anvil118ChunkMerger implements ChunkMerger {
 
 				// if we removed all children, we check the start BB
 				if (children == null || children.size() == 0) {
-					int[] bb = Helper.intArrayFromCompoundTag(start.getValue(), "BB");
+					int[] bb = Helper.intArrayFromCompound(start.getValue(), "BB");
 					if (bb != null && bb.length == 6) {
 						for (Range range : ranges) {
-							if (range.contains(bb[1] >> 4) && range.contains(bb[4] >> 4)) {
+							if (range.contains(bb[1] >> 4 - yOffset) && range.contains(bb[4] >> 4 - yOffset)) {
 								CompoundTag emptyStart = new CompoundTag();
 								emptyStart.putString("id", "INVALID");
 								destinationStarts.put(start.getKey(), emptyStart);
@@ -77,7 +77,7 @@ public class Anvil118ChunkMerger implements ChunkMerger {
 				child:
 				for (int i = 0; i < children.size(); i++) {
 					CompoundTag child = children.get(i);
-					int[] bb = Helper.intArrayFromCompoundTag(child, "BB");
+					int[] bb = Helper.intArrayFromCompound(child, "BB");
 					if (bb == null) {
 						continue;
 					}

@@ -302,6 +302,11 @@
 	-fx-effect: dropshadow(gaussian, -color-text-field-focused-shadow, 4, 0, 0, 0);
 }
 
+.text-field:invalid {
+	-fx-background-color: -color-filter-box-invalid-background;
+	-fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
+}
+
 /*---------- SCROLL PANE ----------*/
 
 .scroll-pane {
@@ -775,11 +780,6 @@
 .import-chunks-options-grid {
 	-fx-vgap: 15;
 	-fx-hgap: 10;
-}
-
-.range-text-field:invalid {
-	-fx-background-color: -color-filter-box-invalid-background;
-	-fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
 }
 
 /*---------- Slider ----------*/

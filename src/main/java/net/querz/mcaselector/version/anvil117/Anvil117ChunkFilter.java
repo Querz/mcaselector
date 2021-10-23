@@ -12,7 +12,7 @@ public class Anvil117ChunkFilter extends Anvil116ChunkFilter {
 	public void forceBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome) {
 		CompoundTag level = Helper.levelFromRoot(data);
 		if (level != null) {
-			int[] biomes = Helper.intArrayFromCompoundTag(level, "Biomes");
+			int[] biomes = Helper.intArrayFromCompound(level, "Biomes");
 			if (biomes != null && (biomes.length == 1024 || biomes.length == 1536)) {
 				biomes = new int[biomes.length];
 			} else {

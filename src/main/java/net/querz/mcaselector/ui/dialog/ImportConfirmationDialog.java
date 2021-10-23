@@ -54,11 +54,29 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 			}
 		});
 
+		TextField yOffsetInput = new TextField();
+		yOffsetInput.textProperty().addListener((v, o, n) -> {
+			if (o != null && !o.equals(n)) {
+				try {
+					data.yOffset = Integer.parseInt(n);
+					yOffsetInput.pseudoClassStateChanged(invalid, false);
+				} catch (NumberFormatException ex) {
+					data.yOffset = 0;
+					yOffsetInput.pseudoClassStateChanged(invalid, n != null && !n.isEmpty());
+				}
+			}
+		});
+
 		CheckBox overwrite = new CheckBox();
 		overwrite.setOnAction(e -> {
 			data.overwrite = overwrite.isSelected();
 			dataAction.accept(data);
 		});
+
+//		CheckBox overwriteSections = new CheckBox();
+//		overwriteSections.setOnAction(e -> {
+//			data.overwriteSections
+//		});
 
 		CheckBox selectionOnly = new CheckBox();
 		selectionOnly.setOnAction(e -> {
@@ -97,8 +115,10 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		optionGrid.add(overwrite, 1, 1);
 		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_SELECTION_ONLY), 0, 2);
 		optionGrid.add(selectionOnly, 1, 2);
-		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_SECTIONS), 0, 3);
-		optionGrid.add(range, 1, 3);
+		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_OFFSET), 0, 3);
+		optionGrid.add(yOffsetInput, 1, 3);
+		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_SECTIONS), 0, 4);
+		optionGrid.add(range, 1, 4);
 
 		BorderedTitledPane options = new BorderedTitledPane(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS, optionGrid);
 
@@ -122,6 +142,8 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 			overwrite.setSelected(preFill.overwrite);
 			data.selectionOnly = preFill.selectionOnly;
 			selectionOnly.setSelected(preFill.selectionOnly);
+			data.yOffset = preFill.yOffset;
+			yOffsetInput.setText("" + preFill.yOffset);
 			if (preFill.ranges != null) {
 				data.ranges = preFill.ranges;
 				range.setText(preFill.ranges.stream().map(Range::toString).collect(Collectors.joining(",")));

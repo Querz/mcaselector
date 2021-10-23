@@ -234,12 +234,12 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		for (CompoundTag section : sections) {
 			CompoundTag blockStatesTag = section.getCompoundTag("block_states");
 			ListTag<CompoundTag> palette = Helper.tagFromCompound(blockStatesTag, "palette");
-			long[] blockStates = Helper.longArrayFromCompoundTag(blockStatesTag, "data");
+			long[] blockStates = Helper.longArrayFromCompound(blockStatesTag, "data");
 			if (palette == null || blockStates == null) {
 				continue;
 			}
 
-			int y = Helper.numberFromCompoundTag(section, "Y", -5).intValue();
+			int y = Helper.numberFromCompound(section, "Y", -5).intValue();
 			if (y < -4 || y > 19) {
 				continue;
 			}
@@ -343,12 +343,12 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				for (CompoundTag section : sections) {
 					CompoundTag blockStatesTag = Helper.tagFromCompound(section, "block_states");
 					ListTag<CompoundTag> palette = Helper.tagFromCompound(blockStatesTag, "palette");
-					long[] blockStates = Helper.longArrayFromCompoundTag(blockStatesTag, "data");
+					long[] blockStates = Helper.longArrayFromCompound(blockStatesTag, "data");
 					if (palette == null || blockStates == null) {
 						continue;
 					}
 
-					Number height = Helper.numberFromCompoundTag(section, "Y", null);
+					Number height = Helper.numberFromCompound(section, "Y", null);
 					if (height == null) {
 						continue;
 					}
@@ -379,7 +379,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		for (CompoundTag section : sections) {
 			CompoundTag blockStatesTag = Helper.tagFromCompound(section, "block_states");
 			ListTag<CompoundTag> palette = Helper.tagFromCompound(blockStatesTag, "palette");
-			long[] blockStates = Helper.longArrayFromCompoundTag(blockStatesTag, "data");
+			long[] blockStates = Helper.longArrayFromCompound(blockStatesTag, "data");
 			if (palette == null || blockStates == null) {
 				continue;
 			}

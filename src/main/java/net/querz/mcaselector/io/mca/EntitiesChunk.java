@@ -7,7 +7,7 @@ import net.querz.mcaselector.version.EntityRelocator;
 import net.querz.mcaselector.version.VersionController;
 import java.io.File;
 
-public class EntitiesChunk extends Chunk {
+public class EntitiesChunk extends Chunk implements Cloneable {
 
 	public EntitiesChunk(Point2i absoluteLocation) {
 		super(absoluteLocation);
@@ -22,5 +22,10 @@ public class EntitiesChunk extends Chunk {
 	@Override
 	public File getMCCFile() {
 		return FileHelper.createEntitiesMCCFilePath(absoluteLocation);
+	}
+
+	@Override
+	public EntitiesChunk clone() {
+		return clone(EntitiesChunk::new);
 	}
 }

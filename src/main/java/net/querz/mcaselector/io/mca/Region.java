@@ -439,4 +439,23 @@ public class Region {
 			this.entities.mergeChunksInto(region.entities, offset, overwrite, sourceChunks, selection, ranges);
 		}
 	}
+
+	@Override
+	protected Region clone() throws CloneNotSupportedException {
+		Region clone = (Region) super.clone();
+		if (region != null) {
+			clone.region = region.clone();
+		}
+		if (poi != null) {
+			clone.poi = poi.clone();
+		}
+		if (entities != null) {
+			clone.entities = entities.clone();
+		}
+		if (directories != null) {
+			clone.directories = directories.clone();
+		}
+		clone.location = location.clone();
+		return clone;
+	}
 }

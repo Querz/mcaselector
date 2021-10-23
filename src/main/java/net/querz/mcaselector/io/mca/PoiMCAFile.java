@@ -8,7 +8,7 @@ import net.querz.nbt.tag.CompoundTag;
 import java.io.File;
 import java.util.List;
 
-public class PoiMCAFile extends MCAFile<PoiChunk> {
+public class PoiMCAFile extends MCAFile<PoiChunk> implements Cloneable {
 
 	public PoiMCAFile(File file) {
 		super(file, PoiChunk::new);
@@ -27,5 +27,10 @@ public class PoiMCAFile extends MCAFile<PoiChunk> {
 	@Override
 	public void mergeChunksInto(MCAFile<PoiChunk> destination, Point3i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges) {
 		mergeChunksInto(destination, offset, overwrite, sourceChunks, selection, ranges, PoiMCAFile::newEmptyChunk);
+	}
+
+	@Override
+	public PoiMCAFile clone() {
+		return clone(PoiMCAFile::new);
 	}
 }

@@ -18,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.function.Function;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -161,5 +162,15 @@ public abstract class Chunk {
 			s = "error";
 		}
 		return "<absoluteLoaction=" + absoluteLocation + ", compressionType=" + compressionType + ", data=" + s + ">";
+	}
+
+	protected <T extends Chunk> T clone(Function<Point2i, T> chunkConstructor) {
+		T clone = chunkConstructor.apply(absoluteLocation);
+		clone.compressionType = compressionType;
+		clone.timestamp = timestamp;
+		if (data != null) {
+			clone.data = data.clone();
+		}
+		return clone;
 	}
 }

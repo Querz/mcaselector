@@ -409,24 +409,26 @@ public abstract class MCAFile<T extends Chunk> {
 
 					if (ranges != null) {
 						int sourceVersion = sourceChunk.getData().getInt("DataVersion");
-						if (sourceVersion != 0) {
-							int destinationVersion;
-							if (destinationChunk == null || destinationChunk.isEmpty()) {
-								destinationChunk = chunkCreator.apply(destChunk, sourceVersion);
-								destination.chunks[destIndex] = destinationChunk;
-							} else if (sourceVersion != (destinationVersion = destinationChunk.getData().getInt("DataVersion"))) {
-								Point2i srcChunk = location.regionToChunk().add(x, z);
-								Debug.errorf("failed to merge chunk at %s into chunk at %s because their DataVersion does not match (%d != %d)",
-										srcChunk, destChunk, sourceVersion, destinationVersion);
-							}
+						if (sourceVersion == 0) {
+							continue;
+						}
 
-							ChunkMerger m = VersionController.getChunkMerger(sourceChunk.getData().getInt("DataVersion"));
-							try {
-								m.mergeChunks(sourceChunk.getData(), destinationChunk.getData(), ranges, offset.getY());
-							} catch (Exception ex) {
-								Point2i srcChunk = location.regionToChunk().add(x, z);
-								Debug.dump(new Exception("failed to merge chunk " + srcChunk + " into " + destChunk, ex));
-							}
+						int destinationVersion;
+						if (destinationChunk == null || destinationChunk.isEmpty()) {
+							destinationChunk = chunkCreator.apply(destChunk, sourceVersion);
+							destination.chunks[destIndex] = destinationChunk;
+						} else if (sourceVersion != (destinationVersion = destinationChunk.getData().getInt("DataVersion"))) {
+							Point2i srcChunk = location.regionToChunk().add(x, z);
+							Debug.errorf("failed to merge chunk at %s into chunk at %s because their DataVersion does not match (%d != %d)",
+									srcChunk, destChunk, sourceVersion, destinationVersion);
+						}
+
+						ChunkMerger m = VersionController.getChunkMerger(sourceChunk.getData().getInt("DataVersion"));
+						try {
+							m.mergeChunks(sourceChunk.getData(), destinationChunk.getData(), ranges, offset.getY());
+						} catch (Exception ex) {
+							Point2i srcChunk = location.regionToChunk().add(x, z);
+							Debug.dump(new Exception("failed to merge chunk " + srcChunk + " into " + destChunk, ex));
 						}
 					} else {
 						destination.chunks[destIndex] = sourceChunk;
@@ -502,5 +504,16 @@ public abstract class MCAFile<T extends Chunk> {
 			}
 		}
 		return true;
+	}
+
+	protected <V extends MCAFile<T>> V clone(Function<File, V> mcaFileConstructor) {
+		V clone = mcaFileConstructor.apply(file);
+		for (int i = 0; i < chunks.length; i++) {
+			if (chunks[i] != null) {
+				clone.chunks[i] = chunks[i].clone(clone.chunkConstructor);
+			}
+		}
+		clone.timestamps = timestamps.clone();
+		return clone;
 	}
 }

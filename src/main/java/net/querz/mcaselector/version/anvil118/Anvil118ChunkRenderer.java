@@ -25,7 +25,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			return;
 		}
 
-		Integer dataVersion = Helper.intFromCompoundTag(root, "DataVersion");
+		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
 		if (dataVersion == null) {
 			return;
 		}
@@ -44,25 +44,25 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			if (dataVersion >= 2834) {
 				CompoundTag blockStates = s.getCompoundTag("block_states");
 				p = Helper.tagFromCompound(blockStates, "palette");
-				b = Helper.longArrayFromCompoundTag(blockStates, "data");
+				b = Helper.longArrayFromCompound(blockStates, "data");
 			} else {
 				p = Helper.tagFromCompound(s, "Palette");
-				b = Helper.longArrayFromCompoundTag(s, "BlockStates");
+				b = Helper.longArrayFromCompound(s, "BlockStates");
 			}
 
-			int y = Helper.numberFromCompoundTag(s, "Y", -5).intValue();
+			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
 			if (y >= -4 && y < 20 && p != null && b != null) {
 				palettes[y + 4] = p;
 				blockStatesArray[y + 4] = b;
 
 				if (dataVersion >= 2834) {
 					biomePalettes[y + 4] = Helper.tagFromCompound(Helper.tagFromCompound(s, "biomes"), "palette");
-					biomesArray[y + 4] = Helper.longArrayFromCompoundTag(Helper.tagFromCompound(s, "biomes"), "data");
+					biomesArray[y + 4] = Helper.longArrayFromCompound(Helper.tagFromCompound(s, "biomes"), "data");
 				}
 			}
 		});
 
-		int[] biomes = Helper.intArrayFromCompoundTag(level, "Biomes");
+		int[] biomes = Helper.intArrayFromCompound(level, "Biomes");
 
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
 			zLoop:
@@ -156,14 +156,14 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			return;
 		}
 
-		Integer dataVersion = Helper.intFromCompoundTag(root, "DataVersion");
+		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
 		if (dataVersion == null) {
 			return;
 		}
 
 		CompoundTag section = null;
 		for (CompoundTag s : sections) {
-			int y = Helper.numberFromCompoundTag(s, "Y", -5).intValue();
+			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
 			if (y == height >> 4) {
 				section = s;
 				break;
@@ -181,19 +181,19 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 		if (dataVersion >= 2834) {
 			CompoundTag blockStatesTag = Helper.tagFromCompound(section, "block_states");
 			palette = Helper.tagFromCompound(blockStatesTag, "palette");
-			blockStates = Helper.longArrayFromCompoundTag(blockStatesTag, "data");
+			blockStates = Helper.longArrayFromCompound(blockStatesTag, "data");
 
 			biomesPalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
-			biomeIndices = Helper.longArrayFromCompoundTag(Helper.tagFromCompound(section, "biomes"), "data");
+			biomeIndices = Helper.longArrayFromCompound(Helper.tagFromCompound(section, "biomes"), "data");
 		} else {
 			palette = Helper.tagFromCompound(section, "Palette");
-			blockStates = Helper.longArrayFromCompoundTag(section, "BlockStates");
+			blockStates = Helper.longArrayFromCompound(section, "BlockStates");
 		}
 		if (palette == null || blockStates == null) {
 			return;
 		}
 
-		int[] biomes = Helper.intArrayFromCompoundTag(level, "Biomes");
+		int[] biomes = Helper.intArrayFromCompound(level, "Biomes");
 
 		height = height + 64;
 
@@ -245,7 +245,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			return;
 		}
 
-		Integer dataVersion = Helper.intFromCompoundTag(root, "DataVersion");
+		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
 		if (dataVersion == null) {
 			return;
 		}
@@ -264,25 +264,25 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			if (dataVersion >= 2834) {
 				CompoundTag blockStates = s.getCompoundTag("block_states");
 				p = Helper.tagFromCompound(blockStates, "palette");
-				b = Helper.longArrayFromCompoundTag(blockStates, "data");
+				b = Helper.longArrayFromCompound(blockStates, "data");
 			} else {
 				p = Helper.tagFromCompound(s, "Palette");
-				b = Helper.longArrayFromCompoundTag(s, "BlockStates");
+				b = Helper.longArrayFromCompound(s, "BlockStates");
 			}
 
-			int y = Helper.numberFromCompoundTag(s, "Y", -5).intValue();
+			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
 			if (y >= -4 && y < 20 && p != null && b != null) {
 				palettes[y + 4] = p;
 				blockStatesArray[y + 4] = b;
 
 				if (dataVersion >= 2834) {
 					biomePalettes[y + 4] = Helper.tagFromCompound(Helper.tagFromCompound(s, "biomes"), "palette");
-					biomesArray[y + 4] = Helper.longArrayFromCompoundTag(Helper.tagFromCompound(s, "biomes"), "data");
+					biomesArray[y + 4] = Helper.longArrayFromCompound(Helper.tagFromCompound(s, "biomes"), "data");
 				}
 			}
 		});
 
-		int[] biomes = Helper.intArrayFromCompoundTag(level, "Biomes");
+		int[] biomes = Helper.intArrayFromCompound(level, "Biomes");
 
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
 			zLoop:

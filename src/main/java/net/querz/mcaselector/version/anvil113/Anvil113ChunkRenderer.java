@@ -31,15 +31,15 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 		long[][] blockStatesArray = new long[16][];
 		sections.forEach(s -> {
 			ListTag<CompoundTag> p = Helper.tagFromCompound(s, "Palette");
-			long[] b = Helper.longArrayFromCompoundTag(s, "BlockStates");
-			int y = Helper.numberFromCompoundTag(s, "Y", -1).intValue();
+			long[] b = Helper.longArrayFromCompound(s, "BlockStates");
+			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
 			if (y >= 0 && y <= 15 && p != null && b != null) {
 				palettes[y] = p;
 				blockStatesArray[y] = b;
 			}
 		});
 
-		int[] biomes = Helper.intArrayFromCompoundTag(level, "Biomes");
+		int[] biomes = Helper.intArrayFromCompound(level, "Biomes");
 
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
 			zLoop:
@@ -123,7 +123,7 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 
 		CompoundTag section = null;
 		for (CompoundTag s : sections) {
-			int y = Helper.numberFromCompoundTag(s, "Y", -1).intValue();
+			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
 			if (y == height >> 4) {
 				section = s;
 				break;
@@ -134,12 +134,12 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 		}
 
 		ListTag<CompoundTag> palette = Helper.tagFromCompound(section, "Palette");
-		long[] blockStates = Helper.longArrayFromCompoundTag(section, "BlockStates");
+		long[] blockStates = Helper.longArrayFromCompound(section, "BlockStates");
 		if (blockStates == null || palette == null) {
 			return;
 		}
 
-		int[] biomes = Helper.intArrayFromCompoundTag(level, "Biomes");
+		int[] biomes = Helper.intArrayFromCompound(level, "Biomes");
 
 		int cy = height % 16;
 		int bits = blockStates.length >> 6;
@@ -184,15 +184,15 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 		long[][] blockStatesArray = new long[16][];
 		sections.forEach(s -> {
 			ListTag<CompoundTag> p = Helper.tagFromCompound(s, "Palette");
-			long[] b = Helper.longArrayFromCompoundTag(s, "BlockStates");
-			int y = Helper.numberFromCompoundTag(s, "Y", -1).intValue();
+			long[] b = Helper.longArrayFromCompound(s, "BlockStates");
+			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
 			if (y >= 0 && y <= 15 && p != null && b != null) {
 				palettes[y] = p;
 				blockStatesArray[y] = b;
 			}
 		});
 
-		int[] biomes = Helper.intArrayFromCompoundTag(level, "Biomes");
+		int[] biomes = Helper.intArrayFromCompound(level, "Biomes");
 
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
 			zLoop:

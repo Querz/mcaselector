@@ -3,7 +3,7 @@ package net.querz.mcaselector.io;
 import net.querz.mcaselector.point.Point2i;
 import java.io.File;
 
-public class RegionDirectories {
+public class RegionDirectories implements Cloneable {
 
 	private Point2i location;
 	private File region;
@@ -78,5 +78,12 @@ public class RegionDirectories {
 	@Override
 	public String toString() {
 		return "<region=" + region + ", poi=" + poi + ", entities=" + entities + ">";
+	}
+
+	@Override
+	public RegionDirectories clone() throws CloneNotSupportedException {
+		RegionDirectories clone = (RegionDirectories) super.clone();
+		clone.location = location.clone();
+		return clone;
 	}
 }

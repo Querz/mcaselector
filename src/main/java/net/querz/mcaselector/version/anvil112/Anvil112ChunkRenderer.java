@@ -24,7 +24,7 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 			if (!s.containsKey("Blocks") || !s.containsKey("Data")) {
 				return;
 			}
-			int y = Helper.numberFromCompoundTag(s, "Y", -1).intValue();
+			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
 			byte[] b = Helper.byteArrayFromCompound(s, "Blocks");
 			byte[] d = Helper.byteArrayFromCompound(s, "Data");
 			if (y >= 0 && y < 16 && b != null && d != null) {
@@ -108,7 +108,7 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 
 		DataProperty<CompoundTag> section = new DataProperty<>();
 		for (CompoundTag s : sections) {
-			int y = Helper.numberFromCompoundTag(s, "Y", -1).intValue();
+			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
 			if (y == height >> 4) {
 				section.set(s);
 				break;
@@ -166,7 +166,7 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 			if (!s.containsKey("Blocks") || !s.containsKey("Data")) {
 				return;
 			}
-			int y = Helper.numberFromCompoundTag(s, "Y", -1).intValue();
+			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
 			byte[] b = Helper.byteArrayFromCompound(s, "Blocks");
 			byte[] d = Helper.byteArrayFromCompound(s, "Data");
 			if (y >= 0 && y < 16 && b != null && d != null) {

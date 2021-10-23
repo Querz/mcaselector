@@ -22,20 +22,20 @@ public interface ChunkMerger {
 			resultSet.add(dest);
 		}
 
-		elem: for (T destinationElement : destination) {
+		for (T destinationElement : destination) {
 			for (Range range : ranges) {
-				if (range.contains(ySupplier.apply(destinationElement))) {
+				if (range.contains(ySupplier.apply(destinationElement) - yOffset)) {
 					resultSet.remove(destinationElement);
-					continue elem;
+					break;
 				}
 			}
 		}
 
-		elem: for (T sourceElement : source) {
+		for (T sourceElement : source) {
 			for (Range range : ranges) {
 				if (range.contains(ySupplier.apply(sourceElement) - yOffset)) {
 					resultSet.add(sourceElement);
-					continue elem;
+					break;
 				}
 			}
 		}

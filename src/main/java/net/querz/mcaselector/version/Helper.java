@@ -50,7 +50,7 @@ public final class Helper {
 		return new Point2i(x.asInt(), z.asInt());
 	}
 
-	public static Number numberFromCompoundTag(Tag<?> compound, String key, Number def) {
+	public static Number numberFromCompound(Tag<?> compound, String key, Number def) {
 		NumberTag<?> t = tagFromCompound(compound, key, null);
 		if (t == null) {
 			return def;
@@ -58,7 +58,7 @@ public final class Helper {
 		return ((CompoundTag) compound).getNumber(key);
 	}
 
-	public static Byte byteFromCompoundTag(Tag<?> compound, String key) {
+	public static Byte byteFromCompound(Tag<?> compound, String key) {
 		ByteTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asByte();
@@ -66,7 +66,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static Short shortFromCompoundTag(Tag<?> compound, String key) {
+	public static Short shortFromCompound(Tag<?> compound, String key) {
 		ShortTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asShort();
@@ -74,7 +74,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static Integer intFromCompoundTag(Tag<?> compound, String key) {
+	public static Integer intFromCompound(Tag<?> compound, String key) {
 		IntTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asInt();
@@ -82,7 +82,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static Long longFromCompoundTag(Tag<?> compound, String key) {
+	public static Long longFromCompound(Tag<?> compound, String key) {
 		LongTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asLong();
@@ -90,7 +90,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static Double doubleFromCompoundTag(Tag<?> compound, String key) {
+	public static Double doubleFromCompound(Tag<?> compound, String key) {
 		DoubleTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asDouble();
@@ -98,7 +98,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static Float floatFromCompoundTag(Tag<?> compound, String key) {
+	public static Float floatFromCompound(Tag<?> compound, String key) {
 		FloatTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asFloat();
@@ -114,7 +114,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static int[] intArrayFromCompoundTag(Tag<?> compound, String key) {
+	public static int[] intArrayFromCompound(Tag<?> compound, String key) {
 		IntArrayTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.getValue();
@@ -122,7 +122,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static long[] longArrayFromCompoundTag(Tag<?> compound, String key) {
+	public static long[] longArrayFromCompound(Tag<?> compound, String key) {
 		LongArrayTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.getValue();
@@ -156,7 +156,7 @@ public final class Helper {
 
 	public static void applyIntIfPresent(CompoundTag root, String key, int offset) {
 		Integer value;
-		if ((value = intFromCompoundTag(root, key)) != null) {
+		if ((value = intFromCompound(root, key)) != null) {
 			root.putInt(key, value + offset);
 		}
 	}

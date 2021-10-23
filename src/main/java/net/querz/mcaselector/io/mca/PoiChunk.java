@@ -7,7 +7,7 @@ import net.querz.mcaselector.version.PoiRelocator;
 import net.querz.mcaselector.version.VersionController;
 import java.io.File;
 
-public class PoiChunk extends Chunk {
+public class PoiChunk extends Chunk implements Cloneable {
 
 	public PoiChunk(Point2i absoluteLocation) {
 		super(absoluteLocation);
@@ -22,5 +22,10 @@ public class PoiChunk extends Chunk {
 	@Override
 	public File getMCCFile() {
 		return FileHelper.createPoiMCCFilePath(absoluteLocation);
+	}
+
+	@Override
+	public PoiChunk clone() {
+		return clone(PoiChunk::new);
 	}
 }

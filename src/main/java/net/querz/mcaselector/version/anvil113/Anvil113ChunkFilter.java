@@ -206,12 +206,12 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 				continue;
 			}
 
-			long[] blockStates = Helper.longArrayFromCompoundTag(section, "BlockStates");
+			long[] blockStates = Helper.longArrayFromCompound(section, "BlockStates");
 			if (blockStates == null) {
 				continue;
 			}
 
-			int y = Helper.numberFromCompoundTag(section, "Y", -1).intValue();
+			int y = Helper.numberFromCompound(section, "Y", -1).intValue();
 			if (y < 0 || y > 15) {
 				continue;
 			}
@@ -422,12 +422,12 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 						continue;
 					}
 
-					long[] blockStates = Helper.longArrayFromCompoundTag(section, "BlockStates");
+					long[] blockStates = Helper.longArrayFromCompound(section, "BlockStates");
 					if (blockStates == null) {
 						continue;
 					}
 
-					Number height = Helper.numberFromCompoundTag(section, "Y", null);
+					Number height = Helper.numberFromCompound(section, "Y", null);
 					if (height == null) {
 						continue;
 					}
@@ -458,7 +458,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 	}
 
 	protected int filterSections(CompoundTag sectionA, CompoundTag sectionB) {
-		return Helper.numberFromCompoundTag(sectionB, "Y", -1).intValue() - Helper.numberFromCompoundTag(sectionA, "Y", -1).intValue();
+		return Helper.numberFromCompound(sectionB, "Y", -1).intValue() - Helper.numberFromCompound(sectionA, "Y", -1).intValue();
 	}
 
 	@Override
@@ -487,7 +487,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 					if (name.equals(block)) {
 						// count blocks of this type
 
-						long[] blockStates = Helper.longArrayFromCompoundTag(section, "BlockStates");
+						long[] blockStates = Helper.longArrayFromCompound(section, "BlockStates");
 						if (blockStates == null) {
 							break;
 						}
