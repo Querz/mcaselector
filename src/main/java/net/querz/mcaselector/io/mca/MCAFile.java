@@ -300,6 +300,11 @@ public abstract class MCAFile<T extends Chunk> {
 	}
 
 	public T loadSingleChunk(Point2i chunk) throws IOException {
+		// ignore files that don't have a full header
+		if (file.length() < 8192) {
+			return null;
+		}
+
 		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
 			// read offset, sector count and timestamp for specific chunk
 

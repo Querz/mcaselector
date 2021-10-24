@@ -173,7 +173,8 @@ public final class ImagePool {
 
 	public void loadRegions() {
 		regions.clear();
-		File[] files = Config.getWorldDirs().getRegion().listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
+		// get all files that match the "r.<x>.<z>.mca" name and that have more data than just the header
+		File[] files = Config.getWorldDirs().getRegion().listFiles(f -> f.getName().matches(FileHelper.MCA_FILE_PATTERN) && f.length() > 8192);
 		if (files == null) {
 			return;
 		}
@@ -196,8 +197,12 @@ public final class ImagePool {
 		for (Int2ObjectMap.Entry<Long2ObjectLinkedOpenHashMap<Image>> entry : pool.int2ObjectEntrySet()) {
 			Debug.dumpf("pool%d:", entry.getIntKey());
 			for (Long2ObjectMap.Entry<Image> cache : entry.getValue().long2ObjectEntrySet()) {
-				Debug.dumpf("  %s: %dx%d", new Point2i(cache.getLongKey()), (int) cache.getValue().getWidth(), (int) cache.getValue().getHeight());
+				Debug.dumpf("  %s: %dx%d", new Point2i(cache.getLongKey()), cache.getValue() == null ? 0 : (int) cache.getValue().getWidth(),  cache.getValue() == null ? 0 : (int) cache.getValue().getHeight());
 			}
+		}
+		Debug.dump("Regions:");
+		for (Long region : regions) {
+			Debug.dumpf("  %s", new Point2i(region));
 		}
 	}
 

@@ -243,7 +243,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 			if (mcaFile.getFile().exists()) {
 				try {
 					T chunkData = mcaFile.loadSingleChunk(selectedChunk);
-					if (chunkData.getData() == null) {
+					if (chunkData == null || chunkData.getData() == null) {
 						Debug.dump("no chunk data found for: " + selectedChunk);
 						enableAddTagLabels(new int[]{10}, addTagLabels);
 						Platform.runLater(() -> treeViewHolder.setCenter(UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_NO_CHUNK_DATA)));

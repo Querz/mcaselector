@@ -30,7 +30,6 @@ public final class RegionImageGenerator {
 	private RegionImageGenerator() {}
 
 	public static void generate(Tile tile, BiConsumer<Image, UniqueID> callback, int scale, Progress progressChannel, boolean canSkipSaving) {
-
 		Debug.dumpf("adding job %s, tile:%s, scale:%d, loading:%s, image:%s, loaded:%s",
 			MCAImageProcessJob.class.getSimpleName(), tile.getLocation(), scale, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
 		JobHandler.addJob(new MCAImageProcessJob(tile, new UniqueID(), callback, scale, progressChannel, canSkipSaving));
