@@ -4,9 +4,8 @@ import net.querz.mcaselector.range.Range;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.Tag;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
 import java.util.function.Function;
 
 public interface ChunkMerger {
@@ -14,33 +13,25 @@ public interface ChunkMerger {
 	void mergeChunks(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset);
 
 	default <T extends Tag<?>> ListTag<T> mergeLists(ListTag<T> source, ListTag<T> destination, List<Range> ranges, Function<T, Integer> ySupplier, int yOffset) {
-		@SuppressWarnings("unchecked")
-		ListTag<T> resultList = (ListTag<T>) ListTag.createUnchecked(null);
 
-		Set<T> resultSet = new HashSet<>();
+		Map<Integer, T> resultSet = new HashMap<>();
 		for (T dest : destination) {
-			resultSet.add(dest);
-		}
-
-		for (T destinationElement : destination) {
-			for (Range range : ranges) {
-				if (range.contains(ySupplier.apply(destinationElement) - yOffset)) {
-					resultSet.remove(destinationElement);
-					break;
-				}
-			}
+			resultSet.put(ySupplier.apply(dest), dest);
 		}
 
 		for (T sourceElement : source) {
 			for (Range range : ranges) {
-				if (range.contains(ySupplier.apply(sourceElement) - yOffset)) {
-					resultSet.add(sourceElement);
+				int y = ySupplier.apply(sourceElement);
+				if (range.contains(y - yOffset)) {
+					resultSet.put(y, sourceElement);
 					break;
 				}
 			}
 		}
 
-		resultList.addAll(resultSet);
+		@SuppressWarnings("unchecked")
+		ListTag<T> resultList = (ListTag<T>) ListTag.createUnchecked(null);
+		resultList.addAll(resultSet.values());
 		return resultList;
 	}
 
