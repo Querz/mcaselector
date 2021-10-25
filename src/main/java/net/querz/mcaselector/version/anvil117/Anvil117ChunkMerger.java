@@ -1,4 +1,4 @@
-package net.querz.mcaselector.version.anvil113;
+package net.querz.mcaselector.version.anvil117;
 
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.version.ChunkMerger;
@@ -9,12 +9,11 @@ import net.querz.nbt.tag.Tag;
 import java.util.List;
 import java.util.Map;
 
-public class Anvil113ChunkMerger implements ChunkMerger {
+public class Anvil117ChunkMerger implements ChunkMerger {
 
 	@Override
 	public void mergeChunks(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset) {
 		mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "Sections", c -> (int) c.getByte("Y"));
-		mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "Entities", c -> c.getListTag("Pos").asDoubleTagList().get(1).asInt() >> 4);
 		mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "TileEntities", c -> c.getInt("y") >> 4);
 		mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "TileTicks", c -> c.getInt("y") >> 4);
 		mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "LiquidTicks", c -> c.getInt("y") >> 4);
@@ -23,9 +22,6 @@ public class Anvil113ChunkMerger implements ChunkMerger {
 		mergeListTagLists(source, destination, ranges, yOffset, "ToBeTicked");
 		mergeListTagLists(source, destination, ranges, yOffset, "PostProcessing");
 		mergeStructures(source, destination, ranges, yOffset);
-
-		// we need to fix entity UUIDs, because Minecraft doesn't like duplicates
-		fixEntityUUIDs(Helper.levelFromRoot(destination));
 	}
 
 	private void mergeStructures(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset) {
@@ -42,7 +38,7 @@ public class Anvil113ChunkMerger implements ChunkMerger {
 						int[] bb = Helper.intArrayFromCompound(child, "BB");
 						if (bb != null && bb.length == 6) {
 							for (Range range : ranges) {
-								if (range.contains(bb[1] >> 4) && range.contains(bb[4] >> 4)) {
+								if (range.contains(bb[1] >> 4 - yOffset) && range.contains(bb[4] >> 4 - yOffset)) {
 									children.remove(i);
 									i--;
 									continue child;
@@ -57,7 +53,7 @@ public class Anvil113ChunkMerger implements ChunkMerger {
 					int[] bb = Helper.intArrayFromCompound(start.getValue(), "BB");
 					if (bb != null && bb.length == 6) {
 						for (Range range : ranges) {
-							if (range.contains(bb[1] >> 4) && range.contains(bb[4] >> 4)) {
+							if (range.contains(bb[1] >> 4 - yOffset) && range.contains(bb[4] >> 4 - yOffset)) {
 								CompoundTag emptyStart = new CompoundTag();
 								emptyStart.putString("id", "INVALID");
 								destinationStarts.put(start.getKey(), emptyStart);

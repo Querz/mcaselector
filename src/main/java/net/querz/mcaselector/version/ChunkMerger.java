@@ -53,11 +53,36 @@ public interface ChunkMerger {
 		initLevel(destination).put(name, destinationList);
 	}
 
-	default void mergeCompoundTagLists(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset, String name, Function<CompoundTag, Integer> ySupplier) {
+	default void mergeCompoundTagListsFromLevel(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset, String name, Function<CompoundTag, Integer> ySupplier) {
 		ListTag<CompoundTag> sourceElements = Helper.tagFromLevelFromRoot(source, name, new ListTag<>(CompoundTag.class));
 		ListTag<CompoundTag> destinationElements = Helper.tagFromLevelFromRoot(destination, name, new ListTag<>(CompoundTag.class));
 
 		initLevel(destination).put(name, mergeLists(sourceElements, destinationElements, ranges, ySupplier, yOffset));
+	}
+
+	default void mergeCompoundTagLists(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset, String name, Function<CompoundTag, Integer> ySupplier) {
+		ListTag<CompoundTag> sourceElements = Helper.tagFromCompound(source, name, new ListTag<>(CompoundTag.class));
+		ListTag<CompoundTag> destinationElements = Helper.tagFromCompound(destination, name, new ListTag<>(CompoundTag.class));
+
+		destination.put(name, mergeLists(sourceElements, destinationElements, ranges, ySupplier, yOffset));
+	}
+
+	// merge based on compound tag keys, assuming compound tag keys are ints
+	default void mergeCompoundTags(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset, String name) {
+		CompoundTag sourceElements = Helper.tagFromCompound(source, name, new CompoundTag());
+		CompoundTag destinationElements = Helper.tagFromCompound(destination, name, new CompoundTag());
+
+		for (Map.Entry<String, Tag<?>> sourceElement : sourceElements) {
+			if (sourceElement.getKey().matches("^-?[0-9]{1,2}$")) {
+				int y = Integer.parseInt(sourceElement.getKey());
+				for (Range range : ranges) {
+					if (range.contains(y - yOffset)) {
+						destinationElements.put(sourceElement.getKey(), sourceElement.getValue());
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	default CompoundTag initLevel(CompoundTag c) {
@@ -69,7 +94,7 @@ public interface ChunkMerger {
 	}
 
 	default void fixEntityUUIDs(CompoundTag root) {
-		ListTag<CompoundTag> entities = Helper.tagFromLevelFromRoot(root, "Entities", null);
+		ListTag<CompoundTag> entities = Helper.tagFromCompound(root, "Entities", null);
 		if (entities != null) {
 			entities.forEach(ChunkMerger::fixEntityUUID);
 		}

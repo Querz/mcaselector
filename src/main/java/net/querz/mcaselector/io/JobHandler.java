@@ -8,8 +8,6 @@ import net.querz.mcaselector.io.job.SaveDataJob;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.validation.ShutdownHooks;
-
-import javax.xml.crypto.Data;
 import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -140,8 +138,8 @@ public final class JobHandler {
 			return false;
 		});
 		parseExecutor.getQueue().removeIf(r -> {
-			if (p.test((ProcessDataJob) r)) {
-				((Job) r).cancel();
+			if (p.test((ProcessDataJob) ((WrapperJob) r).job)) {
+				((WrapperJob) r).cancel();
 				return true;
 			}
 			return false;
@@ -149,9 +147,13 @@ public final class JobHandler {
 	}
 
 	public static void clearQueues() {
-		System.out.println("cancelled " + cancelExecutorQueue(processExecutor) + " jobs in process queue");
-		System.out.println("cancelled " + cancelExecutorQueue(saveExecutor) + " jobs in save queue");
-		System.out.println("cancelled " + cancelExecutorQueue(parseExecutor) + " jobs in parser queue");
+		int cancelledProcessJobs = cancelExecutorQueue(processExecutor);
+		int cancelledSaveJobs = cancelExecutorQueue(saveExecutor);
+		int cancelledParseJobs = cancelExecutorQueue(parseExecutor);
+
+		Debug.dumpf("cancelled %d jobs in process queue", cancelledProcessJobs);
+		Debug.dumpf("cancelled %d jobs in save queue", cancelledSaveJobs);
+		Debug.dumpf("canceleld %d jobs in parser queue", cancelledParseJobs);
 	}
 
 	public static void cancelParserQueue() {
@@ -205,7 +207,7 @@ public final class JobHandler {
 		return allTasks.get();
 	}
 
-	private static AtomicLong jobIDCounter = new AtomicLong(0);
+	private static final AtomicLong jobIDCounter = new AtomicLong(0);
 
 	public static void dumpMetrics() {
 		Queue<Runnable> queue = processExecutor.getQueue();

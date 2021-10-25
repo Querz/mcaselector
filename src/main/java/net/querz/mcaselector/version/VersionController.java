@@ -24,6 +24,14 @@ public final class VersionController {
 		return Mapping.match(dataVersion).getChunkMerger();
 	}
 
+	public static ChunkMerger getPoiMerger(int dataVersion) {
+		return Mapping.match(dataVersion).getPoiMerger();
+	}
+
+	public static ChunkMerger getEntityMerger(int dataVersion) {
+		return Mapping.match(dataVersion).getEntityMerger();
+	}
+
 	public static ChunkRelocator getChunkRelocator(int dataVersion) {
 		return Mapping.match(dataVersion).getChunkRelocator();
 	}
@@ -36,11 +44,11 @@ public final class VersionController {
 		return Mapping.match(dataVersion).getColorMapping();
 	}
 
-	public static PoiRelocator getPoiRelocator(int dataVersion) {
+	public static ChunkRelocator getPoiRelocator(int dataVersion) {
 		return Mapping.match(dataVersion).getPOIRelocator();
 	}
 
-	public static EntityRelocator getEntityRelocator(int dataVersion) {
+	public static ChunkRelocator getEntityRelocator(int dataVersion) {
 		return Mapping.match(dataVersion).getEntityRelocator();
 	}
 
@@ -50,30 +58,34 @@ public final class VersionController {
 
 	private static final Map<Supplier<? extends ChunkFilter>, ChunkFilter> chunkFilterInstances = new ConcurrentHashMap<>();
 	private static final Map<Supplier<? extends ChunkMerger>, ChunkMerger> chunkMergerInstances = new ConcurrentHashMap<>();
+	private static final Map<Supplier<? extends ChunkMerger>, ChunkMerger> poiMergerInstances = new ConcurrentHashMap<>();
+	private static final Map<Supplier<? extends ChunkMerger>, ChunkMerger> entityMergerInstances = new ConcurrentHashMap<>();
 	private static final Map<Supplier<? extends ChunkRelocator>, ChunkRelocator> chunkRelocatorInstances = new ConcurrentHashMap<>();
-	private static final Map<Supplier<? extends PoiRelocator>, PoiRelocator> poiRelocatorInstances = new ConcurrentHashMap<>();
-	private static final Map<Supplier<? extends EntityRelocator>, EntityRelocator> entityRelocatorInstances = new ConcurrentHashMap<>();
+	private static final Map<Supplier<? extends ChunkRelocator>, ChunkRelocator> poiRelocatorInstances = new ConcurrentHashMap<>();
+	private static final Map<Supplier<? extends ChunkRelocator>, ChunkRelocator> entityRelocatorInstances = new ConcurrentHashMap<>();
 	private static final Map<Supplier<? extends EntityFilter>, EntityFilter> entityFilterInstances = new ConcurrentHashMap<>();
 	private static final Map<Supplier<? extends ChunkRenderer>, ChunkRenderer> chunkRendererInstances = new ConcurrentHashMap<>();
 	private static final Map<Supplier<? extends ColorMapping>, ColorMapping> colorMappingInstances = new ConcurrentHashMap<>();
 
 	private enum Mapping {
 
-		ANVIL112(0, 1343, Anvil112ChunkFilter::new, Anvil112ChunkMerger::new, Anvil112ChunkRelocator::new, Anvil112PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil112ChunkRenderer::new, Anvil112ColorMapping::new),
-		ANVIL113(1344, 1631, Anvil113ChunkFilter::new, Anvil113ChunkMerger::new, Anvil113ChunkRelocator::new, Anvil112PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil113ChunkRenderer::new, Anvil113ColorMapping::new),
-		ANVIL114(1632, 2201, Anvil113ChunkFilter::new, Anvil113ChunkMerger::new, Anvil114ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil113ChunkRenderer::new, Anvil114ColorMapping::new),
-		ANVIL115(2202, 2526, Anvil115ChunkFilter::new, Anvil115ChunkMerger::new, Anvil115ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil115ChunkRenderer::new, Anvil115ColorMapping::new),
-		ANVIL116(2527, 2686, Anvil116ChunkFilter::new, Anvil115ChunkMerger::new, Anvil116ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil116ChunkRenderer::new, Anvil116ColorMapping::new),
-		ANVIL117(2687, 2824, Anvil117ChunkFilter::new, Anvil115ChunkMerger::new, Anvil117ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil117EntityRelocator::new, Anvil117EntityFilter::new, Anvil117ChunkRenderer::new, Anvil117ColorMapping::new),
-		ANVIL118(2825, Integer.MAX_VALUE, Anvil118ChunkFilter::new, Anvil115ChunkMerger::new, Anvil118ChunkRelocator::new, Anvil118PoiRelocator::new, Anvil117EntityRelocator::new, Anvil117EntityFilter::new, Anvil118ChunkRenderer::new, Anvil118ColorMapping::new);
+		ANVIL112(0,    1343, Anvil112ChunkFilter::new, Anvil112ChunkMerger::new, Anvil112PoiMerger::new, Anvil112EntityMerger::new, Anvil112ChunkRelocator::new, Anvil112PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil112ChunkRenderer::new, Anvil112ColorMapping::new),
+		ANVIL113(1344, 1631, Anvil113ChunkFilter::new, Anvil113ChunkMerger::new, Anvil112PoiMerger::new, Anvil112EntityMerger::new, Anvil113ChunkRelocator::new, Anvil112PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil113ChunkRenderer::new, Anvil113ColorMapping::new),
+		ANVIL114(1632, 2201, Anvil113ChunkFilter::new, Anvil113ChunkMerger::new, Anvil114PoiMerger::new, Anvil112EntityMerger::new, Anvil114ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil113ChunkRenderer::new, Anvil114ColorMapping::new),
+		ANVIL115(2202, 2526, Anvil115ChunkFilter::new, Anvil115ChunkMerger::new, Anvil114PoiMerger::new, Anvil112EntityMerger::new, Anvil115ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil115ChunkRenderer::new, Anvil115ColorMapping::new),
+		ANVIL116(2527, 2686, Anvil116ChunkFilter::new, Anvil115ChunkMerger::new, Anvil114PoiMerger::new, Anvil112EntityMerger::new, Anvil116ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil116ChunkRenderer::new, Anvil116ColorMapping::new),
+		ANVIL117(2687, 2824, Anvil117ChunkFilter::new, Anvil115ChunkMerger::new, Anvil114PoiMerger::new, Anvil117EntityMerger::new, Anvil117ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil117EntityRelocator::new, Anvil117EntityFilter::new, Anvil117ChunkRenderer::new, Anvil117ColorMapping::new),
+		ANVIL118(2825, Integer.MAX_VALUE, Anvil118ChunkFilter::new, Anvil115ChunkMerger::new, Anvil114PoiMerger::new, Anvil117EntityMerger::new, Anvil118ChunkRelocator::new, Anvil118PoiRelocator::new, Anvil117EntityRelocator::new, Anvil117EntityFilter::new, Anvil118ChunkRenderer::new, Anvil118ColorMapping::new);
 
 
 		private final int minVersion, maxVersion;
 		private final Supplier<? extends ChunkFilter> chunkFilter;
 		private final Supplier<? extends ChunkMerger> chunkMerger;
+		private final Supplier<? extends ChunkMerger> poiMerger;
+		private final Supplier<? extends ChunkMerger> entityMerger;
 		private final Supplier<? extends ChunkRelocator> chunkRelocator;
-		private final Supplier<? extends PoiRelocator> poiRelocator;
-		private final Supplier<? extends EntityRelocator> entityRelocator;
+		private final Supplier<? extends ChunkRelocator> poiRelocator;
+		private final Supplier<? extends ChunkRelocator> entityRelocator;
 		private final Supplier<? extends EntityFilter> entityFilter;
 
 		private final Supplier<? extends ChunkRenderer> chunkRenderer;
@@ -86,9 +98,11 @@ public final class VersionController {
 				int maxVersion,
 				Supplier<? extends ChunkFilter> chunkFilter,
 				Supplier<? extends ChunkMerger> chunkMerger,
+				Supplier<? extends ChunkMerger> poiMerger,
+				Supplier<? extends ChunkMerger> entityMerger,
 				Supplier<? extends ChunkRelocator> chunkRelocator,
-				Supplier<? extends PoiRelocator> poiRelocator,
-				Supplier<? extends EntityRelocator> entityRelocator,
+				Supplier<? extends ChunkRelocator> poiRelocator,
+				Supplier<? extends ChunkRelocator> entityRelocator,
 				Supplier<? extends EntityFilter> entityFilter,
 				Supplier<? extends ChunkRenderer> chunkRenderer,
 				Supplier<? extends ColorMapping> colorMapping) {
@@ -96,6 +110,8 @@ public final class VersionController {
 			this.maxVersion = maxVersion;
 			this.chunkFilter = chunkFilter;
 			this.chunkMerger = chunkMerger;
+			this.poiMerger = poiMerger;
+			this.entityMerger = entityMerger;
 			this.chunkRelocator = chunkRelocator;
 			this.poiRelocator = poiRelocator;
 			this.entityRelocator = entityRelocator;
@@ -112,15 +128,23 @@ public final class VersionController {
 			return chunkMergerInstances.computeIfAbsent(chunkMerger, Supplier::get);
 		}
 
+		ChunkMerger getPoiMerger() {
+			return poiMergerInstances.computeIfAbsent(poiMerger, Supplier::get);
+		}
+
+		ChunkMerger getEntityMerger() {
+			return entityMergerInstances.computeIfAbsent(entityMerger, Supplier::get);
+		}
+
 		ChunkRelocator getChunkRelocator() {
 			return chunkRelocatorInstances.computeIfAbsent(chunkRelocator, Supplier::get);
 		}
 
-		PoiRelocator getPOIRelocator() {
+		ChunkRelocator getPOIRelocator() {
 			return poiRelocatorInstances.computeIfAbsent(poiRelocator, Supplier::get);
 		}
 
-		EntityRelocator getEntityRelocator() {
+		ChunkRelocator getEntityRelocator() {
 			return entityRelocatorInstances.computeIfAbsent(entityRelocator, Supplier::get);
 		}
 

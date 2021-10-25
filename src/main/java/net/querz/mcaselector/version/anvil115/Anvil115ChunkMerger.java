@@ -15,11 +15,11 @@ public class Anvil115ChunkMerger implements ChunkMerger {
 
 	@Override
 	public void mergeChunks(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset) {
-		mergeCompoundTagLists(source, destination, ranges, yOffset, "Sections", c -> (int) c.getByte("Y"));
-		mergeCompoundTagLists(source, destination, ranges, yOffset, "Entities", c -> c.getListTag("Pos").asDoubleTagList().get(1).asInt() >> 4);
-		mergeCompoundTagLists(source, destination, ranges, yOffset, "TileEntities", c -> c.getInt("y") >> 4);
-		mergeCompoundTagLists(source, destination, ranges, yOffset, "TileTicks", c -> c.getInt("y") >> 4);
-		mergeCompoundTagLists(source, destination, ranges, yOffset, "LiquidTicks", c -> c.getInt("y") >> 4);
+		mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "Sections", c -> (int) c.getByte("Y"));
+		mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "Entities", c -> c.getListTag("Pos").asDoubleTagList().get(1).asInt() >> 4);
+		mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "TileEntities", c -> c.getInt("y") >> 4);
+		mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "TileTicks", c -> c.getInt("y") >> 4);
+		mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "LiquidTicks", c -> c.getInt("y") >> 4);
 		mergeListTagLists(source, destination, ranges, yOffset, "Lights");
 		mergeListTagLists(source, destination, ranges, yOffset, "LiquidsToBeTicked");
 		mergeListTagLists(source, destination, ranges, yOffset, "ToBeTicked");
@@ -27,7 +27,7 @@ public class Anvil115ChunkMerger implements ChunkMerger {
 		mergeStructures(source, destination, ranges, yOffset);
 
 		// we need to fix entity UUIDs, because Minecraft doesn't like duplicates
-		fixEntityUUIDs(destination);
+		fixEntityUUIDs(Helper.levelFromRoot(destination));
 
 		mergeBiomes(source, destination, ranges, yOffset);
 	}

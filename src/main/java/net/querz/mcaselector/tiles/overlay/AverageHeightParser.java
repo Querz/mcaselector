@@ -1,6 +1,7 @@
 package net.querz.mcaselector.tiles.overlay;
 
 import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
 
 public class AverageHeightParser extends OverlayParser {
@@ -14,7 +15,14 @@ public class AverageHeightParser extends OverlayParser {
 
 	@Override
 	public int parseValue(ChunkData chunkData) {
-		return VersionController.getChunkFilter(chunkData.getRegion().getData().getInt("DataVersion")).getAverageHeight(chunkData.getRegion().getData());
+		if (chunkData.getRegion() == null || chunkData.getRegion().getData() == null) {
+			return 0;
+		}
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.getRegion().getData().getInt("DataVersion"));
+		if (chunkFilter == null) {
+			return 0;
+		}
+		return chunkFilter.getAverageHeight(chunkData.getRegion().getData());
 	}
 
 	@Override

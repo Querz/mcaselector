@@ -15,7 +15,7 @@ import static net.querz.mcaselector.version.anvil117.Anvil117EntityRelocator.*;
 public class Anvil117ChunkRelocator implements ChunkRelocator {
 
 	@Override
-	public boolean relocateChunk(CompoundTag root, Point3i offset) {
+	public boolean relocate(CompoundTag root, Point3i offset) {
 		CompoundTag level = Helper.tagFromCompound(root, "Level");
 		if (level == null) {
 			return false;

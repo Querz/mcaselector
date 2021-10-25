@@ -1,7 +1,7 @@
 package net.querz.mcaselector.version.anvil117;
 
 import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.version.EntityRelocator;
+import net.querz.mcaselector.version.ChunkRelocator;
 import net.querz.mcaselector.version.Helper;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.DoubleTag;
@@ -10,10 +10,10 @@ import net.querz.nbt.tag.IntTag;
 import net.querz.nbt.tag.ListTag;
 import static net.querz.mcaselector.version.anvil117.Anvil117ChunkRelocator.*;
 
-public class Anvil117EntityRelocator implements EntityRelocator {
+public class Anvil117EntityRelocator implements ChunkRelocator {
 
 	@Override
-	public boolean relocateEntities(CompoundTag root, Point3i offset) {
+	public boolean relocate(CompoundTag root, Point3i offset) {
 		int[] position = Helper.intArrayFromCompound(root, "Position");
 		if (position == null || position.length != 2) {
 			return false;

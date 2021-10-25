@@ -428,9 +428,8 @@ public abstract class MCAFile<T extends Chunk> {
 									srcChunk, destChunk, sourceVersion, destinationVersion);
 						}
 
-						ChunkMerger m = VersionController.getChunkMerger(sourceChunk.getData().getInt("DataVersion"));
 						try {
-							m.mergeChunks(sourceChunk.getData(), destinationChunk.getData(), ranges, offset.getY());
+							sourceChunk.merge(destinationChunk.getData(), ranges, offset.getY());
 						} catch (Exception ex) {
 							Point2i srcChunk = location.regionToChunk().add(x, z);
 							Debug.dump(new Exception("failed to merge chunk " + srcChunk + " into " + destChunk, ex));

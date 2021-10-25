@@ -382,7 +382,7 @@ public class DialogHelper {
 			Point2i fromRegion = fromChunk.chunkToRegion();
 			Point2i toRegion = toChunk.chunkToRegion();
 
-			System.out.printf("swapping chunk %s:%s with %s:%s", fromChunk, fromRegion, toChunk, toRegion);
+			Debug.dumpf("swapping chunk %s:%s with %s:%s", fromChunk, fromRegion, toChunk, toRegion);
 
 			t.incrementProgress(FileHelper.createMCAFileName(fromRegion));
 

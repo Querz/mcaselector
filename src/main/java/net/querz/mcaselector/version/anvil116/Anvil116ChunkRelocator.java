@@ -16,7 +16,7 @@ import static net.querz.mcaselector.validation.ValidationHelper.silent;
 public class Anvil116ChunkRelocator implements ChunkRelocator {
 
 	@Override
-	public boolean relocateChunk(CompoundTag root, Point3i offset) {
+	public boolean relocate(CompoundTag root, Point3i offset) {
 		CompoundTag level = Helper.tagFromCompound(root, "Level");
 		if (level == null) {
 			return false;

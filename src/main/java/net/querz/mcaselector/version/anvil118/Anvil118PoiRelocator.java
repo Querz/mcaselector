@@ -1,8 +1,8 @@
 package net.querz.mcaselector.version.anvil118;
 
 import net.querz.mcaselector.point.Point3i;
+import net.querz.mcaselector.version.ChunkRelocator;
 import net.querz.mcaselector.version.Helper;
-import net.querz.mcaselector.version.PoiRelocator;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.LongArrayTag;
@@ -10,10 +10,10 @@ import net.querz.nbt.tag.Tag;
 import java.util.Map;
 import static net.querz.mcaselector.validation.ValidationHelper.catchClassCastException;
 
-public class Anvil118PoiRelocator implements PoiRelocator {
+public class Anvil118PoiRelocator implements ChunkRelocator {
 
 	@Override
-	public boolean relocatePoi(CompoundTag root, Point3i offset) {
+	public boolean relocate(CompoundTag root, Point3i offset) {
 		if (root == null || !root.containsKey("Sections")) {
 			return false;
 		}

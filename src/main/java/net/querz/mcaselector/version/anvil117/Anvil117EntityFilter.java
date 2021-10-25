@@ -9,7 +9,7 @@ import net.querz.nbt.tag.ListTag;
 public class Anvil117EntityFilter implements EntityFilter {
 
 	public void deleteEntities(ChunkData data) {
-		ListTag<CompoundTag> rawEntities = Helper.tagFromLevelFromRoot(data.getEntities().getData(), "Entities", null);
+		ListTag<CompoundTag> rawEntities = Helper.tagFromCompound(data.getEntities().getData(), "Entities", null);
 		if (rawEntities != null) {
 			rawEntities.clear();
 		}
@@ -17,6 +17,9 @@ public class Anvil117EntityFilter implements EntityFilter {
 
 	@Override
 	public ListTag<?> getEntities(ChunkData data) {
-		return Helper.tagFromLevelFromRoot(data.getEntities().getData(), "Entities", null);
+		if (data.getEntities() == null) {
+			return null;
+		}
+		return Helper.tagFromCompound(data.getEntities().getData(), "Entities", null);
 	}
 }

@@ -13,7 +13,7 @@ public class TileEntityAmountParser extends AmountParser {
 
 	@Override
 	public int parseValue(ChunkData chunkData) {
-		if (chunkData.getRegion() == null) {
+		if (chunkData.getRegion() == null || chunkData.getRegion().getData() == null) {
 			return 0;
 		}
 		Tag<?> rawTileEntities = chunkData.getRegion().getData().getCompoundTag("Level").get("TileEntities");

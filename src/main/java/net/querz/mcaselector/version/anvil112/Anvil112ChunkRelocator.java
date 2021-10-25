@@ -12,7 +12,7 @@ import net.querz.nbt.tag.NumberTag;
 
 public class Anvil112ChunkRelocator implements ChunkRelocator {
 
-	public boolean relocateChunk(CompoundTag root, Point3i offset) {
+	public boolean relocate(CompoundTag root, Point3i offset) {
 		CompoundTag level = Helper.tagFromCompound(root, "Level");
 		if (level == null) {
 			return false;

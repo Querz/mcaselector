@@ -3,6 +3,7 @@ package net.querz.mcaselector.io.mca;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
+import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.nbt.io.NBTDeserializer;
 import net.querz.nbt.io.NBTSerializer;
@@ -18,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.List;
 import java.util.function.Function;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
@@ -118,6 +120,8 @@ public abstract class Chunk {
 	}
 
 	public abstract boolean relocate(Point3i offset);
+
+	public abstract void merge(CompoundTag destination, List<Range> ranges, int yOffset);
 
 	public abstract File getMCCFile();
 
