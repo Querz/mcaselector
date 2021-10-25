@@ -44,7 +44,6 @@ dialog.select_world.title;選擇維度
 dialog.settings.title;設置
 dialog.settings.global.language;語
 dialog.settings.global.language.language;語
-dialog.settings.processing.process.read_threads;閱讀線程
 dialog.settings.processing.process.process_threads;進程線程
 dialog.settings.processing.process;過程
 dialog.settings.processing.process.write_threads;寫線程
@@ -93,6 +92,7 @@ dialog.import_chunks_confirmation.options;選項
 dialog.import_chunks_confirmation.options.offset;偏移
 dialog.import_chunks_confirmation.options.overwrite;覆蓋現有區塊
 dialog.import_chunks_confirmation.options.selection_only;僅適用於已選擇的內容
+dialog.import_chunks_confirmation.options.y_offset;Y偏移
 dialog.import_chunks_confirmation.options.sections;部分
 dialog.import_chunks_confirmation.warning;警告：匯入區塊時使用偏移並不會更新指令方塊的內容。
 dialog.export_chunks_confirmation.title;匯出區塊

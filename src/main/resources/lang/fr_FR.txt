@@ -44,7 +44,6 @@ dialog.select_world.title;Sélectionnez un monde
 dialog.settings.title;Options
 dialog.settings.global.language;Langue
 dialog.settings.global.language.language;Langue
-dialog.settings.processing.process.read_threads;Lire les fils de discussion
 dialog.settings.processing.process.process_threads;Traiter les threads
 dialog.settings.processing.process;Traiter
 dialog.settings.processing.process.write_threads;Écrire des fils de discussion
@@ -93,6 +92,7 @@ dialog.import_chunks_confirmation.options;Options
 dialog.import_chunks_confirmation.options.offset;Décalage
 dialog.import_chunks_confirmation.options.overwrite;Écraser les chunks existants
 dialog.import_chunks_confirmation.options.selection_only;Appliquer seulement à la sélection
+dialog.import_chunks_confirmation.options.y_offset;Décalage Y
 dialog.import_chunks_confirmation.options.sections;Sections
 dialog.import_chunks_confirmation.warning;Attention: Importer des chunks avec un décalage ne mettra pas à jour le contenu des blocs de commande.
 dialog.export_chunks_confirmation.title;Exporter les chunks

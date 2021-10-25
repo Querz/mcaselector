@@ -44,7 +44,6 @@ dialog.select_world.title;Dimension auswählen
 dialog.settings.title;Einstellungen
 dialog.settings.global.language;Sprache
 dialog.settings.global.language.language;Sprache
-dialog.settings.processing.process.read_threads;Threads (lesen)
 dialog.settings.processing.process.process_threads;Threads (verarbeiten)
 dialog.settings.processing.process;Verarbeiten
 dialog.settings.processing.process.write_threads;Threads (schreiben)
@@ -93,6 +92,7 @@ dialog.import_chunks_confirmation.options;Optionen
 dialog.import_chunks_confirmation.options.offset;Offset
 dialog.import_chunks_confirmation.options.overwrite;Existierende Chunks überschreiben
 dialog.import_chunks_confirmation.options.selection_only;Nur auf Selektion anwenden
+dialog.import_chunks_confirmation.options.y_offset;Y-Offset
 dialog.import_chunks_confirmation.options.sections;Sektionen
 dialog.import_chunks_confirmation.warning;Warnung: Der Import von Chunks ändert nicht den Inhalt von Kommandoblöcken.
 dialog.export_chunks_confirmation.title;Chunks exportieren

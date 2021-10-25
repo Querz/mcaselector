@@ -44,7 +44,6 @@ dialog.select_world.title;Välj en dimension
 dialog.settings.title;Inställningar
 dialog.settings.global.language;Språk
 dialog.settings.global.language.language;Språk
-dialog.settings.processing.process.read_threads;Läs trådar
 dialog.settings.processing.process.process_threads;Bearbeta trådar
 dialog.settings.processing.process;Bearbeta
 dialog.settings.processing.process.write_threads;Skriv trådar
@@ -93,6 +92,7 @@ dialog.import_chunks_confirmation.options;Inställningar
 dialog.import_chunks_confirmation.options.offset;Offset
 dialog.import_chunks_confirmation.options.overwrite;Skriv över existerande chunks
 dialog.import_chunks_confirmation.options.selection_only;Tillämpa endast till markering
+dialog.import_chunks_confirmation.options.y_offset;Y Offset
 dialog.import_chunks_confirmation.options.sections;Sektioner
 dialog.import_chunks_confirmation.warning;Warning: Att importera chunks med en offset kommer inte att uppdatera kommandoblock-innehåll.
 dialog.export_chunks_confirmation.title;Exportera chunks

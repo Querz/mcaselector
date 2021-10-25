@@ -44,7 +44,6 @@ dialog.select_world.title;Selecteer een dimensie
 dialog.settings.title;Instellingen
 dialog.settings.global.language;Taal
 dialog.settings.global.language.language;Taal
-dialog.settings.processing.process.read_threads;Discussies lezen
 dialog.settings.processing.process.process_threads;Procesdraden
 dialog.settings.processing.process;Proces
 dialog.settings.processing.process.write_threads;Discussies schrijven
@@ -93,6 +92,7 @@ dialog.import_chunks_confirmation.options;Opties
 dialog.import_chunks_confirmation.options.offset;Verplaatsing
 dialog.import_chunks_confirmation.options.overwrite;Schrijf bestaande chunks over
 dialog.import_chunks_confirmation.options.selection_only;Alleen van toepassing op selectie
+dialog.import_chunks_confirmation.options.y_offset;Y-offset
 dialog.import_chunks_confirmation.options.sections;Secties
 dialog.import_chunks_confirmation.warning;Waarschuwing: Importeren van verplaatste chunks update niet de inhoud van command blocks.
 dialog.export_chunks_confirmation.title;Chunks exporteren

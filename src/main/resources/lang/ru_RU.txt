@@ -44,7 +44,6 @@ dialog.select_world.title;Выберите размер
 dialog.settings.title;Настройки
 dialog.settings.global.language;Язык
 dialog.settings.global.language.language;Язык
-dialog.settings.processing.process.read_threads;Читать темы
 dialog.settings.processing.process.process_threads;Технологические потоки
 dialog.settings.processing.process;Процесс
 dialog.settings.processing.process.write_threads;Писать темы
@@ -93,6 +92,7 @@ dialog.import_chunks_confirmation.options;Опции
 dialog.import_chunks_confirmation.options.offset;Смещение
 dialog.import_chunks_confirmation.options.overwrite;Заменить существующие чанки
 dialog.import_chunks_confirmation.options.selection_only;Применить только к выбранным
+dialog.import_chunks_confirmation.options.y_offset;Смещение по Y
 dialog.import_chunks_confirmation.options.sections;разделы
 dialog.import_chunks_confirmation.warning;Внимание: Импорт чанков со смещением не обновит содержимое командных блоков.
 dialog.export_chunks_confirmation.title;Экспорт чанков

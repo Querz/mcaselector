@@ -44,7 +44,6 @@ dialog.select_world.title;ディメンションの選択
 dialog.settings.title;設定
 dialog.settings.global.language;言語
 dialog.settings.global.language.language;言語
-dialog.settings.processing.process.read_threads;スレッドを読む
 dialog.settings.processing.process.process_threads;プロセススレッド
 dialog.settings.processing.process;プロセス
 dialog.settings.processing.process.write_threads;スレッドを書く
@@ -93,6 +92,7 @@ dialog.import_chunks_confirmation.options;オプション
 dialog.import_chunks_confirmation.options.offset;オフセット
 dialog.import_chunks_confirmation.options.overwrite;既存のチャンクを上書き
 dialog.import_chunks_confirmation.options.selection_only;選択範囲のみに適用
+dialog.import_chunks_confirmation.options.y_offset;Yオフセット
 dialog.import_chunks_confirmation.options.sections;セクション
 dialog.import_chunks_confirmation.warning;警告:オフセットを使用してチャンクをインポートしても、コマンドブロックの内容は更新されません
 dialog.export_chunks_confirmation.title;チャンクをエクスポート

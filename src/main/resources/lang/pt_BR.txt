@@ -44,7 +44,6 @@ dialog.select_world.title;Selecione uma dimensão
 dialog.settings.title;Configuração
 dialog.settings.global.language;Língua
 dialog.settings.global.language.language;Língua
-dialog.settings.processing.process.read_threads;Leia tópicos
 dialog.settings.processing.process.process_threads;Threads de processo
 dialog.settings.processing.process;Processo
 dialog.settings.processing.process.write_threads;Escreva tópicos
@@ -93,6 +92,7 @@ dialog.import_chunks_confirmation.options;Opções
 dialog.import_chunks_confirmation.options.offset;Descolamento
 dialog.import_chunks_confirmation.options.overwrite;Sobrescrever chunks existentes
 dialog.import_chunks_confirmation.options.selection_only;Aplicar somente na seleção.
+dialog.import_chunks_confirmation.options.y_offset;Deslocamento Y
 dialog.import_chunks_confirmation.options.sections;Seções
 dialog.import_chunks_confirmation.warning;Advertencia:A importação de chunks deslocados no espaço não atualizará as coordenadas dos blocos de comandos.
 dialog.export_chunks_confirmation.title;Exportar chunks

@@ -44,7 +44,6 @@ dialog.select_world.title;Wybierz wymiar
 dialog.settings.title;Ustawienia
 dialog.settings.global.language;Język
 dialog.settings.global.language.language;Język
-dialog.settings.processing.process.read_threads;Przeczytaj wątki
 dialog.settings.processing.process.process_threads;Wątki procesowe
 dialog.settings.processing.process;Proces
 dialog.settings.processing.process.write_threads;Napisz wątki
@@ -93,6 +92,7 @@ dialog.import_chunks_confirmation.options;Opcje
 dialog.import_chunks_confirmation.options.offset;Offset
 dialog.import_chunks_confirmation.options.overwrite;Nadpisz istniejące chunki
 dialog.import_chunks_confirmation.options.selection_only;Zastosuj tylko do zaznaczenia
+dialog.import_chunks_confirmation.options.y_offset;Y-Offset
 dialog.import_chunks_confirmation.options.sections;Sekcje
 dialog.import_chunks_confirmation.warning;Uwaga: Importowanie chunków z offsetem nie zmieni zawartości bloków poleceń.
 dialog.export_chunks_confirmation.title;Eksportuj chunki

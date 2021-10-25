@@ -73,11 +73,6 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 			dataAction.accept(data);
 		});
 
-//		CheckBox overwriteSections = new CheckBox();
-//		overwriteSections.setOnAction(e -> {
-//			data.overwriteSections
-//		});
-
 		CheckBox selectionOnly = new CheckBox();
 		selectionOnly.setOnAction(e -> {
 			data.selectionOnly = selectionOnly.isSelected();
@@ -115,7 +110,7 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		optionGrid.add(overwrite, 1, 1);
 		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_SELECTION_ONLY), 0, 2);
 		optionGrid.add(selectionOnly, 1, 2);
-		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_OFFSET), 0, 3);
+		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_Y_OFFSET), 0, 3);
 		optionGrid.add(yOffsetInput, 1, 3);
 		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_SECTIONS), 0, 4);
 		optionGrid.add(range, 1, 4);

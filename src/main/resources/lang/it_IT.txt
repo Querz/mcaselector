@@ -44,7 +44,6 @@ dialog.select_world.title;Seleziona una dimensione
 dialog.settings.title;Impostazioni
 dialog.settings.global.language;Lingua
 dialog.settings.global.language.language;Lingua
-dialog.settings.processing.process.read_threads;Leggi le discussioni
 dialog.settings.processing.process.process_threads;Discussioni di processo
 dialog.settings.processing.process;Processi
 dialog.settings.processing.process.write_threads;Scrivi discussioni
@@ -93,6 +92,7 @@ dialog.import_chunks_confirmation.options;Opzioni
 dialog.import_chunks_confirmation.options.offset;Offset
 dialog.import_chunks_confirmation.options.overwrite;Sovrascrivi chunk esistenti
 dialog.import_chunks_confirmation.options.selection_only;Applica solo alla selezione
+dialog.import_chunks_confirmation.options.y_offset;Offset Y
 dialog.import_chunks_confirmation.options.sections;Sezioni
 dialog.import_chunks_confirmation.warning;Attenzione Importare chunk con offset non modificher� le impostazioni dei command block.
 dialog.export_chunks_confirmation.title;Esporta chunk
