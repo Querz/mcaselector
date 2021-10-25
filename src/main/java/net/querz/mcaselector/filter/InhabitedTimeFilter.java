@@ -9,7 +9,7 @@ public class InhabitedTimeFilter extends LongFilter {
 		this(Operator.AND, Comparator.EQUAL, 0);
 	}
 
-	private InhabitedTimeFilter(Operator operator, Comparator comparator, long value) {
+	public InhabitedTimeFilter(Operator operator, Comparator comparator, long value) {
 		super(FilterType.INHABITED_TIME, operator, comparator, value);
 	}
 

@@ -18,12 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.filter.Comparator;
-import net.querz.mcaselector.filter.GroupFilter;
-import net.querz.mcaselector.filter.Operator;
-import net.querz.mcaselector.filter.XPosFilter;
-import net.querz.mcaselector.filter.ZPosFilter;
-import net.querz.mcaselector.filter.FilterParser;
+import net.querz.mcaselector.filter.*;
 import net.querz.mcaselector.exception.ParseException;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.GroupFilterBox;
@@ -33,10 +28,9 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 	private static GroupFilter gf = new GroupFilter();
 	static {
-		gf.addFilter(new XPosFilter(Operator.AND, Comparator.SMALLER_EQUAL, 100));
-		gf.addFilter(new XPosFilter(Operator.AND, Comparator.LARGER_EQUAL, -100));
-		gf.addFilter(new ZPosFilter(Operator.AND, Comparator.SMALLER_EQUAL, 100));
-		gf.addFilter(new ZPosFilter(Operator.AND, Comparator.LARGER_EQUAL, -100));
+		InhabitedTimeFilter fiveMins = new InhabitedTimeFilter(Operator.AND, Comparator.SMALLER, 6000);
+		fiveMins.setFilterValue("5 minutes");
+		gf.addFilter(fiveMins);
 	}
 
 	private GroupFilter value = gf;
