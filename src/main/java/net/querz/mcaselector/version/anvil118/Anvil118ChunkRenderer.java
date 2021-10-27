@@ -13,20 +13,18 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(root, "Sections", null);
+		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
+		if (dataVersion == null) {
+			return;
+		}
+
+		ListTag<CompoundTag> sections = LegacyHelper.getSections(root, dataVersion);
 		if (sections == null) {
 			return;
 		}
 
-		CompoundTag level = Helper.tagFromCompound(root, "Level");
-
-		String status = Helper.stringFromCompound(level, "Status");
+		String status = LegacyHelper.getStatus(root, dataVersion);
 		if (status == null || "empty".equals(status)) {
-			return;
-		}
-
-		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
-		if (dataVersion == null) {
 			return;
 		}
 
@@ -39,16 +37,8 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 		ListTag<StringTag>[] biomePalettes = (ListTag<StringTag>[]) new ListTag[24];
 		long[][] biomesArray = new long[24][];
 		sections.forEach(s -> {
-			ListTag<CompoundTag> p;
-			long[] b;
-			if (dataVersion >= 2834) {
-				CompoundTag blockStates = s.getCompoundTag("block_states");
-				p = Helper.tagFromCompound(blockStates, "palette");
-				b = Helper.longArrayFromCompound(blockStates, "data");
-			} else {
-				p = Helper.tagFromCompound(s, "Palette");
-				b = Helper.longArrayFromCompound(s, "BlockStates");
-			}
+			ListTag<CompoundTag> p = LegacyHelper.getPalette(s, dataVersion);
+			long[] b = LegacyHelper.getBlockStates(s, dataVersion);
 
 			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
 			if (y >= -4 && y < 20 && p != null && b != null) {
@@ -62,7 +52,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			}
 		});
 
-		int[] biomes = Helper.intArrayFromCompound(level, "Biomes");
+		int[] biomes = LegacyHelper.getLegacyBiomes(root, dataVersion);
 
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
 			zLoop:
@@ -144,20 +134,18 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawLayer(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int height) {
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(root, "Sections", null);
+		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
+		if (dataVersion == null) {
+			return;
+		}
+
+		ListTag<CompoundTag> sections = LegacyHelper.getSections(root, dataVersion);
 		if (sections == null) {
 			return;
 		}
 
-		CompoundTag level = Helper.tagFromCompound(root, "Level");
-
-		String status = Helper.stringFromCompound(level, "Status");
+		String status = LegacyHelper.getStatus(root, dataVersion);
 		if (status == null || "empty".equals(status)) {
-			return;
-		}
-
-		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
-		if (dataVersion == null) {
 			return;
 		}
 
@@ -173,27 +161,21 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			return;
 		}
 
-		ListTag<CompoundTag> palette;
-		long[] blockStates;
 		ListTag<StringTag> biomesPalette = null;
 		long[] biomeIndices = null;
 
-		if (dataVersion >= 2834) {
-			CompoundTag blockStatesTag = Helper.tagFromCompound(section, "block_states");
-			palette = Helper.tagFromCompound(blockStatesTag, "palette");
-			blockStates = Helper.longArrayFromCompound(blockStatesTag, "data");
-
-			biomesPalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
-			biomeIndices = Helper.longArrayFromCompound(Helper.tagFromCompound(section, "biomes"), "data");
-		} else {
-			palette = Helper.tagFromCompound(section, "Palette");
-			blockStates = Helper.longArrayFromCompound(section, "BlockStates");
-		}
+		ListTag<CompoundTag> palette = LegacyHelper.getPalette(section, dataVersion);
+		long[] blockStates = LegacyHelper.getBlockStates(section, dataVersion);
 		if (palette == null || blockStates == null) {
 			return;
 		}
 
-		int[] biomes = Helper.intArrayFromCompound(level, "Biomes");
+		if (dataVersion >= 2834) {
+			biomesPalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
+			biomeIndices = Helper.longArrayFromCompound(Helper.tagFromCompound(section, "biomes"), "data");
+		}
+
+		int[] biomes = LegacyHelper.getLegacyBiomes(root, dataVersion);
 
 		height = height + 64;
 
@@ -233,20 +215,18 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawCaves(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, short[] terrainHeights, int height) {
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(root, "Sections", null);
+		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
+		if (dataVersion == null) {
+			return;
+		}
+
+		ListTag<CompoundTag> sections = LegacyHelper.getSections(root, dataVersion);
 		if (sections == null) {
 			return;
 		}
 
-		CompoundTag level = Helper.tagFromCompound(root, "Level");
-
-		String status = Helper.stringFromCompound(level, "Status");
+		String status = LegacyHelper.getStatus(root, dataVersion);
 		if (status == null || "empty".equals(status)) {
-			return;
-		}
-
-		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
-		if (dataVersion == null) {
 			return;
 		}
 
@@ -259,16 +239,8 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 		ListTag<StringTag>[] biomePalettes = (ListTag<StringTag>[]) new ListTag[24];
 		long[][] biomesArray = new long[24][];
 		sections.forEach(s -> {
-			ListTag<CompoundTag> p;
-			long[] b;
-			if (dataVersion >= 2834) {
-				CompoundTag blockStates = s.getCompoundTag("block_states");
-				p = Helper.tagFromCompound(blockStates, "palette");
-				b = Helper.longArrayFromCompound(blockStates, "data");
-			} else {
-				p = Helper.tagFromCompound(s, "Palette");
-				b = Helper.longArrayFromCompound(s, "BlockStates");
-			}
+			ListTag<CompoundTag> p = LegacyHelper.getPalette(s, dataVersion);
+			long[] b = LegacyHelper.getBlockStates(s, dataVersion);
 
 			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
 			if (y >= -4 && y < 20 && p != null && b != null) {
@@ -282,7 +254,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			}
 		});
 
-		int[] biomes = Helper.intArrayFromCompound(level, "Biomes");
+		int[] biomes = LegacyHelper.getLegacyBiomes(root, dataVersion);
 
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
 			zLoop:
@@ -416,4 +388,5 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 		int startBit = (index % indicesPerLong) * bits;
 		return (int) (blockStates[blockStatesIndex] >> startBit) & clean;
 	}
+
 }

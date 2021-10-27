@@ -17,63 +17,60 @@ public class Anvil118ChunkRelocator implements ChunkRelocator {
 
 	@Override
 	public boolean relocate(CompoundTag root, Point3i offset) {
-		CompoundTag level = Helper.tagFromCompound(root, "Level");
-		if (level == null) {
-			return false;
-		}
-
 		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
 		if (dataVersion == null) {
 			return false;
 		}
 
 		// adjust or set chunk position
-		level.putInt("xPos", level.getInt("xPos") + offset.blockToChunk().getX());
-		level.putInt("zPos", level.getInt("zPos") + offset.blockToChunk().getZ());
+		LegacyHelper.applyOffsetToChunkCoordinates(root, offset, dataVersion);
 
 		// adjust tile entity positions
-		ListTag<CompoundTag> tileEntities = Helper.tagFromCompound(level, "TileEntities");
+		ListTag<CompoundTag> tileEntities = LegacyHelper.getTileEntities(root, dataVersion);
 		if (tileEntities != null) {
 			tileEntities.forEach(v -> applyOffsetToTileEntity(v, offset));
 		}
 
 		// adjust tile ticks
-		ListTag<CompoundTag> tileTicks = Helper.tagFromCompound(level, "TileTicks");
+		ListTag<CompoundTag> tileTicks = LegacyHelper.getTileTicks(root, dataVersion);
 		if (tileTicks != null) {
 			tileTicks.forEach(v -> applyOffsetToTick(v, offset));
 		}
 
 		// adjust liquid ticks
-		ListTag<CompoundTag> liquidTicks = Helper.tagFromCompound(level, "LiquidTicks");
+		ListTag<CompoundTag> liquidTicks = LegacyHelper.getLiquidTicks(root, dataVersion);
 		if (liquidTicks != null) {
 			liquidTicks.forEach(v -> applyOffsetToTick(v, offset));
 		}
 
 		// adjust structures
-		CompoundTag structures = Helper.tagFromCompound(level, "Structures");
+		CompoundTag structures = LegacyHelper.getStructures(root, dataVersion);
 		if (structures != null) {
-			applyOffsetToStructures(structures, offset);
+			applyOffsetToStructures(structures, offset, dataVersion);
 		}
 
 		// Biomes as int array only exist in experimental snapshots. for everything above, moving the sections is enough.
 		if (dataVersion < 2834) {
-			applyOffsetToBiomes(Helper.tagFromCompound(level, "Biomes"), offset);
+			applyOffsetToBiomes(Helper.tagFromLevelFromRoot(root, "Biomes"), offset);
 		}
 
-		// Lights
-		Helper.applyOffsetToListOfShortTagLists(level, "Lights", offset);
+		if (dataVersion < 2844) {
+			// LiquidsToBeTicked
+			Helper.applyOffsetToListOfShortTagLists(Helper.levelFromRoot(root), "LiquidsToBeTicked", offset);
 
-		// LiquidsToBeTicked
-		Helper.applyOffsetToListOfShortTagLists(level, "LiquidsToBeTicked", offset);
-
-		// ToBeTicked
-		Helper.applyOffsetToListOfShortTagLists(level, "ToBeTicked", offset);
+			// ToBeTicked
+			Helper.applyOffsetToListOfShortTagLists(Helper.levelFromRoot(root), "ToBeTicked", offset);
+		}
 
 		// PostProcessing
-		Helper.applyOffsetToListOfShortTagLists(level, "PostProcessing", offset);
+		if (dataVersion < 2844) {
+			Helper.applyOffsetToListOfShortTagLists(Helper.levelFromRoot(root), "PostProcessing", offset);
+		} else {
+			Helper.applyOffsetToListOfShortTagLists(root, "PostProcessing", offset);
+		}
 
 		// adjust sections vertically
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(root, "Sections");
+		ListTag<CompoundTag> sections = LegacyHelper.getSections(root, dataVersion);
 		if (sections != null) {
 			ListTag<CompoundTag> newSections = new ListTag<>(CompoundTag.class);
 			for (CompoundTag section : sections) {
@@ -81,7 +78,7 @@ public class Anvil118ChunkRelocator implements ChunkRelocator {
 					newSections.add(section);
 				}
 			}
-			root.getCompoundTag("Level").put("Sections", newSections);
+			LegacyHelper.putSections(root, newSections, dataVersion);
 		}
 
 		return true;
@@ -110,7 +107,7 @@ public class Anvil118ChunkRelocator implements ChunkRelocator {
 		biomes.setValue(newBiomes);
 	}
 
-	private void applyOffsetToStructures(CompoundTag structures, Point3i offset) { // 1.13
+	private void applyOffsetToStructures(CompoundTag structures, Point3i offset, int dataVersion) { // 1.13
 		Point3i chunkOffset = offset.blockToChunk();
 
 		// update references
@@ -129,7 +126,7 @@ public class Anvil118ChunkRelocator implements ChunkRelocator {
 		}
 
 		// update starts
-		CompoundTag starts = Helper.tagFromCompound(structures, "Starts");
+		CompoundTag starts = LegacyHelper.getStructureStartsFromStructures(structures, dataVersion);
 		if (starts != null) {
 			for (Map.Entry<String, Tag<?>> entry : starts) {
 				CompoundTag structure = silent(() -> (CompoundTag) entry.getValue(), null);

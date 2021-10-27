@@ -10,7 +10,6 @@ deep_cold_ocean;8eb971;71a74d;3d57d6
 deep_frozen_ocean;8eb971;71a74d;3938c9
 deep_lukewarm_ocean;8eb971;71a74d;45adf2
 deep_ocean;8eb971;71a74d;3f76e4
-deep_warm_ocean;8eb971;71a74d;43d5ee
 desert;bfb755;aea42a;3f76e4
 dripstone_caves;91bd59;77ab2f;3f76e4
 end_barrens;8eb971;71a74d;3f76e4
