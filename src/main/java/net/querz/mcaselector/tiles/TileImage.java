@@ -41,7 +41,9 @@ public final class TileImage {
 
 		if (tile != null) {
 			if (tile.image != null) {
+				ctx.setImageSmoothing(Config.smoothRendering());
 				ctx.drawImage(tile.image, offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
+				ctx.setImageSmoothing(false);
 			}
 
 			if (overlay && tile.overlay != null) {
@@ -49,7 +51,7 @@ public final class TileImage {
 				ctx.setImageSmoothing(Config.smoothOverlays());
 				ctx.drawImage(tile.getOverlay(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 				ctx.setGlobalAlpha(1);
-				ctx.setImageSmoothing(Config.smoothRendering());
+				ctx.setImageSmoothing(false);
 			}
 
 			if (tile.marked && tile.markedChunks.isEmpty() && !selectionInverted || !tile.marked && tile.markedChunks.isEmpty() && selectionInverted) {

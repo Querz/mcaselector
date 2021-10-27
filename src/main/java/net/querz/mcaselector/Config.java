@@ -504,8 +504,6 @@ public final class Config {
 				Debug.dumpException("error writing overlays", ex);
 			}
 		}
-
-		CacheHelper.updateWorldSettingsFile();
 	}
 
 	private static void addSettingsLine(String key, Object value, Object def, List<String> lines) {

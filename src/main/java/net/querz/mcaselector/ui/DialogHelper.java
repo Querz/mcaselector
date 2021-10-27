@@ -297,6 +297,8 @@ public class DialogHelper {
 				WorldDirectories worldDirectories = Config.getWorldDirs();
 				worldDirectories.setPoi(r.poi);
 				worldDirectories.setEntities(r.entities);
+
+				CacheHelper.updateWorldSettingsFile();
 			}
 
 			tileMap.draw();
