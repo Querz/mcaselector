@@ -46,22 +46,22 @@ dialog.settings.global.language;言語
 dialog.settings.global.language.language;言語
 dialog.settings.processing.process.process_threads;プロセススレッド
 dialog.settings.processing.process;プロセス
-dialog.settings.processing.process.write_threads;スレッドを書く
-dialog.settings.processing.files.max_files;最大ファイル数
-dialog.settings.global.selection.region_color;地域の色
-dialog.settings.global.selection.chunk_color;チャンクカラー
-dialog.settings.global.selection.pasted_chunks_color;貼り付けたチャンクの色
-dialog.settings.rendering.shade.shade;シェード
-dialog.settings.rendering.shade;シェード
-dialog.settings.rendering.shade.shade_water;シェードウォーター
-dialog.settings.rendering.background.show_nonexistent_regions;存在しない地域を表示する
-dialog.settings.rendering.smooth.smooth_rendering;スムーズなレンダリング
-dialog.settings.rendering.smooth.smooth_overlays;スムーズなオーバーレイ
-dialog.settings.rendering.background.background_pattern;背景パターン
+dialog.settings.processing.process.write_threads;書き込むスレッド
+dialog.settings.processing.files.max_files;読み込めるファイル
+dialog.settings.global.selection.region_color;選択しているリージョンの色
+dialog.settings.global.selection.chunk_color;選択しているチャンクの色
+dialog.settings.global.selection.pasted_chunks_color;ペーストするチャンクの色
+dialog.settings.rendering.shade.shade;影/透過
+dialog.settings.rendering.shade;影/透過
+dialog.settings.rendering.shade.shade_water;水の透過
+dialog.settings.rendering.background.show_nonexistent_regions;存在しないリージョンを表示する
+dialog.settings.rendering.smooth.smooth_rendering;滑らかなレンダリング
+dialog.settings.rendering.smooth.smooth_overlays;滑らかなオーバーレイ
+dialog.settings.rendering.background.background_pattern;背景
 dialog.settings.rendering.background;バックグラウンド
-dialog.settings.global.misc.mc_saves_dir;MCはディレクトリを保存します
-dialog.settings.global.misc.print_debug;デバッグメッセージを出力する
-dialog.settings.global.misc.show_log_file;ログファイルを表示する
+dialog.settings.global.misc.mc_saves_dir;セーブデータのフォルダ
+dialog.settings.global.misc.print_debug;デバッグ情報を出力
+dialog.settings.global.misc.show_log_file;ログを表示
 dialog.settings.reset;リセット
 dialog.settings.tab_global;グローバル
 dialog.settings.tab_processing;処理
@@ -132,13 +132,13 @@ dialog.edit_nbt.placeholder.no_chunk_data;チャンクデータが存在しま�
 dialog.edit_nbt.placeholder.no_region_file;リージョンファイルが存在しません
 dialog.edit_array.index;インデックス
 dialog.edit_array.value;値
-dialog.about.title;About
+dialog.about.title;詳細
 dialog.about.header;MCA Selectorについて
 dialog.about.version;バージョン:
 dialog.about.version.unknown;不明
-dialog.about.version.check;更新をチェック
-dialog.about.version.checking;更新をチェックしています...
-dialog.about.version.up_to_date;更新はありません
+dialog.about.version.check;更新
+dialog.about.version.checking;確認中...
+dialog.about.version.up_to_date;なし
 dialog.about.version.error;エラー
 dialog.about.license;ライセンス:
 dialog.about.copyright;著作権:
@@ -162,7 +162,7 @@ dialog.progress.title.saving_chunk;チャンクを保存しています...
 dialog.error.button.copy_to_clipboard;クリップボードにコピー
 dialog.error.title;エラー
 dialog.error.header;エラーが発生しました
-dialog.error.copied_to_clipboard;クリップボードにコピーしました
+dialog.error.copied_to_clipboard;コピーしました
 dialog.unsaved_changes.title;保存されていない変更
 dialog.unsaved_changes.header;保存されていない変更があります。
 button.cancel;キャンセル
