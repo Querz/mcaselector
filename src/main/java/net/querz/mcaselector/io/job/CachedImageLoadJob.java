@@ -77,7 +77,7 @@ public class CachedImageLoadJob extends ProcessDataJob {
 		Debug.dump("image loaded: " + cachedImgFile.getAbsolutePath());
 
 		if (loadZoomLevel != targetZoomLevel) {
-			cachedImg = ImageHelper.scaleFXImage(cachedImg, Tile.SIZE / targetZoomLevel);
+			cachedImg = ImageHelper.scaleDownFXImage(cachedImg, Tile.SIZE / targetZoomLevel);
 		}
 
 		return cachedImg;

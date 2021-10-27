@@ -123,7 +123,7 @@ public class OverlayPool {
 							tileMap.draw();
 						}
 					}
-				}, parser));
+				}, parser, () -> tileMap.getTilePriority(tile.location)));
 			}
 		});
 	}
@@ -149,7 +149,8 @@ public class OverlayPool {
 						image.set(parseColorGrades(i, parser.min(), parser.max(), parser.getMinHue(), parser.getMaxHue()));
 					}
 				},
-				parser
+				parser,
+				null
 		).execute();
 		return image.get();
 	}

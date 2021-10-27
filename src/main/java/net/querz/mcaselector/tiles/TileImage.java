@@ -33,35 +33,38 @@ public final class TileImage {
 	private TileImage() {}
 
 	public static void draw(Tile tile, GraphicsContext ctx, float scale, Point2f offset, boolean selectionInverted, boolean overlay, boolean showNonexistentRegions) {
-		if (tile == null || tile.image == null) {
+		if (tile == null || tile.image == null){
 			if (showNonexistentRegions) {
 				ctx.drawImage(ImageHelper.getEmptyTileImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 			}
-			return;
 		}
 
-		ctx.drawImage(tile.getImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
-
-		if (overlay && tile.overlay != null) {
-			ctx.setGlobalAlpha(0.5);
-			ctx.setImageSmoothing(Config.smoothOverlays());
-			ctx.drawImage(tile.getOverlay(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
-			ctx.setGlobalAlpha(1);
-			ctx.setImageSmoothing(Config.smoothRendering());
-		}
-
-		if (tile.marked && tile.markedChunks.isEmpty() && !selectionInverted || !tile.marked && tile.markedChunks.isEmpty() && selectionInverted) {
-			// draw marked region
-			ctx.setFill(Config.getRegionSelectionColor().makeJavaFXColor());
-			ctx.fillRect(offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
-		} else if (tile.markedChunks.size() > 0) {
-
-			if (tile.markedChunksImage == null) {
-				createMarkedChunksImage(tile, Tile.getZoomLevel(scale), selectionInverted);
+		if (tile != null) {
+			if (tile.image != null) {
+				ctx.drawImage(tile.image, offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 			}
 
-			// apply markedChunksImage to ctx
-			ctx.drawImage(tile.markedChunksImage, offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
+			if (overlay && tile.overlay != null) {
+				ctx.setGlobalAlpha(0.5);
+				ctx.setImageSmoothing(Config.smoothOverlays());
+				ctx.drawImage(tile.getOverlay(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
+				ctx.setGlobalAlpha(1);
+				ctx.setImageSmoothing(Config.smoothRendering());
+			}
+
+			if (tile.marked && tile.markedChunks.isEmpty() && !selectionInverted || !tile.marked && tile.markedChunks.isEmpty() && selectionInverted) {
+				// draw marked region
+				ctx.setFill(Config.getRegionSelectionColor().makeJavaFXColor());
+				ctx.fillRect(offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
+			} else if (tile.markedChunks.size() > 0) {
+
+				if (tile.markedChunksImage == null) {
+					createMarkedChunksImage(tile, Tile.getZoomLevel(scale), selectionInverted);
+				}
+
+				// apply markedChunksImage to ctx
+				ctx.drawImage(tile.markedChunksImage, offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
+			}
 		}
 	}
 

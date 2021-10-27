@@ -68,7 +68,7 @@ public final class ImagePool {
 				if (zl < zoomLevel) {
 					// image is larger than needed
 					// scale down and set image to tile
-					tile.image = ImageHelper.scaleFXImage(image, Tile.SIZE / zl);
+					tile.image = ImageHelper.scaleDownFXImage(image, Tile.SIZE / zl);
 					tile.setLoaded(true);
 					push(zoomLevel, tile.location, tile.image);
 					return;
@@ -131,7 +131,7 @@ public final class ImagePool {
 			RegionImageGenerator.setLoading(tile, false);
 			push(zoomLevel, tile.location, img);
 			tileMap.draw();
-		}, zoomLevel, null, true);
+		}, zoomLevel, null, true, () -> tileMap.getTilePriority(tile.getLocation()));
 	}
 
 	private void push(int scale, Point2i location, Image img) {

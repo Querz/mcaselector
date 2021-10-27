@@ -58,7 +58,7 @@ public final class JobHandler {
 		processExecutor = new PausableThreadPoolExecutor(
 			Config.getProcessThreads(), Config.getProcessThreads(),
 			0L, TimeUnit.MILLISECONDS,
-			new PriorityBlockingQueue<>(1024),
+			new DynamicPriorityBlockingQueue<>(),
 			new NamedThreadFactory("processPool"),
 			job -> {
 				int i;
@@ -95,7 +95,7 @@ public final class JobHandler {
 		parseExecutor = new ThreadPoolExecutor(
 			1, 1,
 			0L, TimeUnit.MILLISECONDS,
-			new LinkedBlockingQueue<>(),
+			new DynamicPriorityBlockingQueue<>(),
 			new NamedThreadFactory("parsePool"));
 		Debug.dumpf("created data parser ThreadPoolExecutor with %d threads", 1);
 	}
@@ -259,10 +259,14 @@ public final class JobHandler {
 
 		@Override
 		public int compareTo(WrapperJob o) {
-			if (job.getPriority() == o.job.getPriority()) {
+			int a = job.getPriority();
+			int b = o.job.getPriority();
+
+			if (a == b) {
 				return Long.compare(jobID, o.jobID);
 			}
-			return Integer.compare(o.job.getPriority(), job.getPriority());
+
+			return Integer.compare(a, b);
 		}
 
 		@Override

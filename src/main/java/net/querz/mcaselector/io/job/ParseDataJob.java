@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 public class ParseDataJob extends ProcessDataJob {
 
@@ -25,13 +26,15 @@ public class ParseDataJob extends ProcessDataJob {
 	private final UUID world;
 	private final OverlayParser parser;
 	private final Tile tile;
+	private final Supplier<Integer> prioritySupplier;
 
-	public ParseDataJob(Tile tile, RegionDirectories dirs, UUID world, BiConsumer<int[], UUID> dataCallback, OverlayParser parser) {
+	public ParseDataJob(Tile tile, RegionDirectories dirs, UUID world, BiConsumer<int[], UUID> dataCallback, OverlayParser parser, Supplier<Integer> prioritySupplier) {
 		super(dirs, PRIORITY_LOW);
 		this.tile = tile;
 		this.dataCallback = dataCallback;
 		this.world = world;
 		this.parser = parser;
+		this.prioritySupplier = prioritySupplier;
 		setLoading(tile, true);
 	}
 
@@ -135,5 +138,13 @@ public class ParseDataJob extends ProcessDataJob {
 	@Override
 	public void cancel() {
 		setLoading(tile, false);
+	}
+
+	@Override
+	public int getPriority() {
+		if (prioritySupplier == null) {
+			return super.getPriority();
+		}
+		return super.getBasePriority() + prioritySupplier.get();
 	}
 }

@@ -39,7 +39,7 @@ public final class CacheHelper {
 			if (m.find()) {
 				int x = Integer.parseInt(m.group("regionX"));
 				int z = Integer.parseInt(m.group("regionZ"));
-				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), (i, u) -> {}, zoomLevel, progressChannel, false);
+				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), (i, u) -> {}, zoomLevel, progressChannel, false, null);
 			}
 		}
 	}
@@ -251,6 +251,8 @@ public final class CacheHelper {
 			ex.printStackTrace();
 		}
 		Config.setShowNonExistentRegions(showNonexistentRegions);
+
+		System.out.println(Config.asString());
 	}
 
 	public static void updateWorldSettingsFile() {

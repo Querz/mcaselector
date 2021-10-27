@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public final class RegionImageGenerator {
 
@@ -29,10 +30,10 @@ public final class RegionImageGenerator {
 
 	private RegionImageGenerator() {}
 
-	public static void generate(Tile tile, BiConsumer<Image, UniqueID> callback, int scale, Progress progressChannel, boolean canSkipSaving) {
+	public static void generate(Tile tile, BiConsumer<Image, UniqueID> callback, int scale, Progress progressChannel, boolean canSkipSaving, Supplier<Integer> prioritySupplier) {
 		Debug.dumpf("adding job %s, tile:%s, scale:%d, loading:%s, image:%s, loaded:%s",
 			MCAImageProcessJob.class.getSimpleName(), tile.getLocation(), scale, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
-		JobHandler.addJob(new MCAImageProcessJob(tile, new UniqueID(), callback, scale, progressChannel, canSkipSaving));
+		JobHandler.addJob(new MCAImageProcessJob(tile, new UniqueID(), callback, scale, progressChannel, canSkipSaving, prioritySupplier));
 	}
 
 	public static RegionMCAFile getCachedRegionMCAFile(Point2i region) {
@@ -116,8 +117,9 @@ public final class RegionImageGenerator {
 		private final int scale;
 		private final Progress progressChannel;
 		private final boolean canSkipSaving;
+		private final Supplier<Integer> prioritySupplier;
 
-		private MCAImageProcessJob(Tile tile, UniqueID uniqueID, BiConsumer<Image, UniqueID> callback, int scale, Progress progressChannel, boolean canSkipSaving) {
+		private MCAImageProcessJob(Tile tile, UniqueID uniqueID, BiConsumer<Image, UniqueID> callback, int scale, Progress progressChannel, boolean canSkipSaving, Supplier<Integer> prioritySupplier) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null), PRIORITY_LOW);
 			this.tile = tile;
 			this.uniqueID = uniqueID;
@@ -125,6 +127,7 @@ public final class RegionImageGenerator {
 			this.scale = scale;
 			this.progressChannel = progressChannel;
 			this.canSkipSaving = canSkipSaving;
+			this.prioritySupplier = prioritySupplier;
 		}
 
 		@Override
@@ -192,6 +195,14 @@ public final class RegionImageGenerator {
 		public Tile getTile() {
 			return tile;
 		}
+
+		@Override
+		public int getPriority() {
+			if (prioritySupplier == null) {
+				return super.getPriority();
+			}
+			return super.getBasePriority() + prioritySupplier.get();
+		}
 	}
 
 	private static class MCAImageSaveCacheJob extends SaveDataJob<Image> {
@@ -222,9 +233,8 @@ public final class RegionImageGenerator {
 				if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
 					Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
 				}
-				BufferedImage scaled = ImageHelper.scaleImage(img, (double) Tile.SIZE / (double) zoomLevel);
 				Debug.dumpf("writing cache file %s", cacheFile.getAbsolutePath());
-				ImageIO.write(scaled, "png", cacheFile);
+				ImageIO.write(img, "png", cacheFile);
 			} catch (IOException ex) {
 				Debug.dumpException("failed to save images to cache for " + tile.getLocation(), ex);
 			}

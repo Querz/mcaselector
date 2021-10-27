@@ -25,21 +25,17 @@ public final class ImageHelper {
 
 	private ImageHelper() {}
 
-	public static BufferedImage scaleImage(BufferedImage before, double newSize) {
+	public static BufferedImage scaleImage(BufferedImage before, double newSize, boolean smooth) {
 		double w = before.getWidth();
 		double h = before.getHeight();
 		BufferedImage after = new BufferedImage((int) newSize, (int) newSize, BufferedImage.TYPE_INT_ARGB);
 		AffineTransform at = new AffineTransform();
 		at.scale(newSize / w, newSize / h);
-		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+		AffineTransformOp scaleOp = new AffineTransformOp(at, smooth ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
 		return scaleOp.filter(before, after);
 	}
 
-	public static Image scaleFXImage(Image before, int newSize) {
-		if (newSize < 64) {
-			Arrays.stream(Thread.currentThread().getStackTrace()).forEach(System.out::println);
-		}
-
+	public static Image scaleDownFXImage(Image before, int newSize) {
 		WritableImage after = new WritableImage(newSize, newSize);
 		PixelReader reader = before.getPixelReader();
 		PixelWriter writer = after.getPixelWriter();

@@ -134,7 +134,7 @@ public final class SelectionImageExporter {
 				// load overlay image
 				overlay = overlayPool.getImage(getRegionDirectories().getLocation());
 				// scale up
-				BufferedImage scaled = ImageHelper.scaleImage(SwingFXUtils.fromFXImage(overlay, null), 512);
+				BufferedImage scaled = ImageHelper.scaleImage(SwingFXUtils.fromFXImage(overlay, null), 512, Config.smoothOverlays());
 				overlay = SwingFXUtils.toFXImage(scaled, null);
 			}
 
