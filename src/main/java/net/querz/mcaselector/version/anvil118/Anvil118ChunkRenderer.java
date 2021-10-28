@@ -41,7 +41,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			long[] b = LegacyHelper.getBlockStates(s, dataVersion);
 
 			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
-			if (y >= -4 && y < 20 && p != null && b != null) {
+			if (y >= -4 && y < 20 && p != null) {
 				palettes[y + 4] = p;
 				blockStatesArray[y + 4] = b;
 
@@ -61,16 +61,12 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 				//loop over sections
 				boolean waterDepth = false;
 				for (int i = palettes.length - (24 - (absHeight >> 4)); i >= 0; i--) {
-					if (blockStatesArray[i] == null) {
-						continue;
-					}
-
 					long[] blockStates = blockStatesArray[i];
 					ListTag<CompoundTag> palette = palettes[i];
 
 					int sectionHeight = (i - 4) * Tile.CHUNK_SIZE;
 
-					int bits = blockStates.length >> 6;
+					int bits = blockStates == null ? 0 : blockStates.length >> 6;
 					int clean = ((int) Math.pow(2, bits) - 1);
 
 					long[] biomeIndices = biomesArray[i];
@@ -166,7 +162,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 		ListTag<CompoundTag> palette = LegacyHelper.getPalette(section, dataVersion);
 		long[] blockStates = LegacyHelper.getBlockStates(section, dataVersion);
-		if (palette == null || blockStates == null) {
+		if (palette == null) {
 			return;
 		}
 
@@ -180,7 +176,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 		height = height + 64;
 
 		int cy = height % 16;
-		int bits = blockStates.length >> 6;
+		int bits = blockStates == null ? 0 : blockStates.length >> 6;
 		int clean = ((int) Math.pow(2, bits) - 1);
 
 		int biomeBits = 1;
@@ -243,7 +239,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			long[] b = LegacyHelper.getBlockStates(s, dataVersion);
 
 			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
-			if (y >= -4 && y < 20 && p != null && b != null) {
+			if (y >= -4 && y < 20 && p != null) {
 				palettes[y + 4] = p;
 				blockStatesArray[y + 4] = b;
 
@@ -265,16 +261,12 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 				// loop over sections
 				for (int i = palettes.length - (24 - (absHeight >> 4)); i >= 0; i--) {
-					if (blockStatesArray[i] == null) {
-						continue;
-					}
-
 					long[] blockStates = blockStatesArray[i];
 					ListTag<CompoundTag> palette = palettes[i];
 
 					int sectionHeight = (i - 4) * Tile.CHUNK_SIZE;
 
-					int bits = blockStates.length >> 6;
+					int bits = blockStates == null ? 0 : blockStates.length >> 6;
 					int clean = ((int) Math.pow(2, bits) - 1);
 
 					long[] biomeIndices = biomesArray[i];
@@ -383,6 +375,9 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 	}
 
 	private int getPaletteIndex(int index, long[] blockStates, int bits, int clean) {
+		if (blockStates == null) {
+			return 0;
+		}
 		int indicesPerLong = (int) (64D / bits);
 		int blockStatesIndex = index / indicesPerLong;
 		int startBit = (index % indicesPerLong) * bits;

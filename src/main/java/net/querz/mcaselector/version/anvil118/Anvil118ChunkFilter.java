@@ -1,6 +1,7 @@
 package net.querz.mcaselector.version.anvil118;
 
 import net.querz.mcaselector.io.BiomeRegistry;
+import net.querz.mcaselector.math.Bits;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.tiles.Tile;
@@ -332,8 +333,12 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				CompoundTag blockStatesTag = section.getCompoundTag("block_states");
 				ListTag<CompoundTag> palette = Helper.tagFromCompound(blockStatesTag, "palette");
 				long[] blockStates = Helper.longArrayFromCompound(blockStatesTag, "data");
-				if (palette == null || blockStates == null) {
+				if (palette == null) {
 					continue;
+				}
+
+				if (palette.size() == 1 && blockStates == null) {
+					blockStates = new long[256];
 				}
 
 				int y = Helper.numberFromCompound(section, "Y", -5).intValue();
@@ -381,7 +386,11 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 					throw new RuntimeException("failed to cleanup section " + y, ex);
 				}
 
-				blockStatesTag.putLongArray("data", blockStates);
+				if (blockStates == null) {
+					blockStatesTag.remove("data");
+				} else {
+					blockStatesTag.putLongArray("data", blockStates);
+				}
 			}
 
 			LegacyHelper.putTileEntities(data, tileEntities, dataVersion);
@@ -491,6 +500,22 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		}
 	}
 
+	@Override
+	protected long[] adjustBlockStateBits(ListTag<CompoundTag> palette, long[] blockStates, Map<Integer, Integer> oldToNewMapping) {
+		if (palette.size() == 1) {
+			return null;
+		}
+		return super.adjustBlockStateBits(palette, blockStates, oldToNewMapping);
+	}
+
+	@Override
+	protected int getPaletteIndex(int blockIndex, long[] blockStates) {
+		if (blockStates == null) {
+			return 0;
+		}
+		return super.getPaletteIndex(blockIndex, blockStates);
+	}
+
 	protected CompoundTag completeSection(CompoundTag section, int y) {
 		section.putByte("Y", (byte) y);
 		if (!section.containsKey("block_states")) {
@@ -549,7 +574,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				for (CompoundTag section : sections) {
 					ListTag<CompoundTag> palette = LegacyHelper.getPalette(section, dataVersion);
 					long[] blockStates = LegacyHelper.getBlockStates(section, dataVersion);
-					if (palette == null || blockStates == null) {
+					if (palette == null) {
 						continue;
 					}
 
@@ -587,9 +612,9 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		int result = 0;
 
 		for (CompoundTag section : sections) {
-			ListTag<CompoundTag> palette = LegacyHelper.getPalette(data, dataVersion);
-			long[] blockStates = LegacyHelper.getBlockStates(data, dataVersion);
-			if (palette == null || blockStates == null) {
+			ListTag<CompoundTag> palette = LegacyHelper.getPalette(section, dataVersion);
+			long[] blockStates = LegacyHelper.getBlockStates(section, dataVersion);
+			if (palette == null) {
 				continue;
 			}
 
