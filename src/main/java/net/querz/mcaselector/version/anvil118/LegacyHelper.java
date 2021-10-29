@@ -98,12 +98,12 @@ public final class LegacyHelper {
 
 	static void applyOffsetToChunkCoordinates(CompoundTag root, Point3i offset, int dataVersion) {
 		if (dataVersion < 2844) {
-			root.putInt("xPos", root.getInt("xPos") + offset.blockToChunk().getX());
-			root.putInt("zPos", root.getInt("zPos") + offset.blockToChunk().getZ());
-		} else {
 			CompoundTag level = Helper.levelFromRoot(root);
 			level.putInt("xPos", level.getInt("xPos") + offset.blockToChunk().getX());
 			level.putInt("zPos", level.getInt("zPos") + offset.blockToChunk().getZ());
+		} else {
+			root.putInt("xPos", root.getInt("xPos") + offset.blockToChunk().getX());
+			root.putInt("zPos", root.getInt("zPos") + offset.blockToChunk().getZ());
 		}
 	}
 
