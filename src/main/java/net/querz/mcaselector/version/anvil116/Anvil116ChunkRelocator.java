@@ -57,26 +57,26 @@ public class Anvil116ChunkRelocator implements ChunkRelocator {
 		}
 
 		// Biomes
-		applyOffsetToBiomes(Helper.tagFromCompound(level, "Biomes"), offset);
+		applyOffsetToBiomes(Helper.tagFromCompound(level, "Biomes"), offset.blockToSection());
 
 		// Lights
-		Helper.applyOffsetToListOfShortTagLists(level, "Lights", offset);
+		Helper.applyOffsetToListOfShortTagLists(level, "Lights", offset.blockToSection());
 
 		// LiquidsToBeTicked
-		Helper.applyOffsetToListOfShortTagLists(level, "LiquidsToBeTicked", offset);
+		Helper.applyOffsetToListOfShortTagLists(level, "LiquidsToBeTicked", offset.blockToSection());
 
 		// ToBeTicked
-		Helper.applyOffsetToListOfShortTagLists(level, "ToBeTicked", offset);
+		Helper.applyOffsetToListOfShortTagLists(level, "ToBeTicked", offset.blockToSection());
 
 		// PostProcessing
-		Helper.applyOffsetToListOfShortTagLists(level, "PostProcessing", offset);
+		Helper.applyOffsetToListOfShortTagLists(level, "PostProcessing", offset.blockToSection());
 
 		// adjust sections vertically
 		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(root, "Sections");
 		if (sections != null) {
 			ListTag<CompoundTag> newSections = new ListTag<>(CompoundTag.class);
 			for (CompoundTag section : sections) {
-				if (applyOffsetToSection(section, offset, 0, 15)) {
+				if (applyOffsetToSection(section, offset.blockToSection(), 0, 15)) {
 					newSections.add(section);
 				}
 			}

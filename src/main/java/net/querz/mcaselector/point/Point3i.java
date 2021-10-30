@@ -177,6 +177,14 @@ public class Point3i implements Cloneable, Serializable {
 		return new Point2i(x, z);
 	}
 
+	public Point3i sectionToBlock() {
+		return shiftLeft(4);
+	}
+
+	public Point3i blockToSection() {
+		return shiftRight(4);
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(x, y, z);

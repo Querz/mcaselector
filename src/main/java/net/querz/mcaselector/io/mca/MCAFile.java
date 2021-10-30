@@ -408,7 +408,7 @@ public abstract class MCAFile<T extends Chunk> {
 				Point2i destChunk = destination.location.regionToChunk().add(destX, destZ);
 
 				if (selection == null || selection.contains(destChunk.asLong())) {
-					if (!sourceChunk.relocate(offset.chunkToBlock())) {
+					if (!sourceChunk.relocate(offset.sectionToBlock())) {
 						continue;
 					}
 

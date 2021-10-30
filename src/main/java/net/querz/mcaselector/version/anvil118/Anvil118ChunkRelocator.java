@@ -51,22 +51,22 @@ public class Anvil118ChunkRelocator implements ChunkRelocator {
 
 		// Biomes as int array only exist in experimental snapshots. for everything above, moving the sections is enough.
 		if (dataVersion < 2834) {
-			applyOffsetToBiomes(Helper.tagFromLevelFromRoot(root, "Biomes"), offset);
+			applyOffsetToBiomes(Helper.tagFromLevelFromRoot(root, "Biomes"), offset.blockToSection());
 		}
 
 		if (dataVersion < 2844) {
 			// LiquidsToBeTicked
-			Helper.applyOffsetToListOfShortTagLists(Helper.levelFromRoot(root), "LiquidsToBeTicked", offset);
+			Helper.applyOffsetToListOfShortTagLists(Helper.levelFromRoot(root), "LiquidsToBeTicked", offset.blockToSection());
 
 			// ToBeTicked
-			Helper.applyOffsetToListOfShortTagLists(Helper.levelFromRoot(root), "ToBeTicked", offset);
+			Helper.applyOffsetToListOfShortTagLists(Helper.levelFromRoot(root), "ToBeTicked", offset.blockToSection());
 		}
 
 		// PostProcessing
 		if (dataVersion < 2844) {
-			Helper.applyOffsetToListOfShortTagLists(Helper.levelFromRoot(root), "PostProcessing", offset);
+			Helper.applyOffsetToListOfShortTagLists(Helper.levelFromRoot(root), "PostProcessing", offset.blockToSection());
 		} else {
-			Helper.applyOffsetToListOfShortTagLists(root, "PostProcessing", offset);
+			Helper.applyOffsetToListOfShortTagLists(root, "PostProcessing", offset.blockToSection());
 		}
 
 		// adjust sections vertically
@@ -74,7 +74,7 @@ public class Anvil118ChunkRelocator implements ChunkRelocator {
 		if (sections != null) {
 			ListTag<CompoundTag> newSections = new ListTag<>(CompoundTag.class);
 			for (CompoundTag section : sections) {
-				if (applyOffsetToSection(section, offset, -4, 19)) {
+				if (applyOffsetToSection(section, offset.blockToSection(), -4, 19)) {
 					newSections.add(section);
 				}
 			}
