@@ -15,6 +15,7 @@ menu.file.open;Öppna en region
 menu.file.settings;Inställningar
 menu.file.render_settings;Render -inställningar
 menu.file.quit;Avsluta
+menu.view.reload;Ladda om
 menu.view.chunk_grid;Chunkrutnät
 menu.view.region_grid;Regionrutnät
 menu.view.goto;Gå till

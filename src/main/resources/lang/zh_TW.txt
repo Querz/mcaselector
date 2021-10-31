@@ -15,6 +15,7 @@ menu.file.open;打開區域
 menu.file.settings;設置
 menu.file.render_settings;渲染設置
 menu.file.quit;退出
+menu.view.reload;重新加載
 menu.view.chunk_grid;區塊網格
 menu.view.region_grid;區域網格
 menu.view.goto;轉到

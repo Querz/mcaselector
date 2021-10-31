@@ -56,6 +56,10 @@ public final class RegionImageGenerator {
 		}
 	}
 
+	public static void uncacheRegionMCAFile(Point2i region) {
+		cachedMCAFiles.remove(region);
+	}
+
 	public static void setCacheEligibilityChecker(Function<Point2i, Boolean> checker) {
 		RegionImageGenerator.cacheEligibilityChecker = checker;
 	}

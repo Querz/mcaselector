@@ -15,6 +15,7 @@ menu.file.open;Open Region
 menu.file.settings;Settings
 menu.file.render_settings;Render Settings
 menu.file.quit;Quit
+menu.view.reload;Reload
 menu.view.chunk_grid;Chunk Grid
 menu.view.region_grid;Region Grid
 menu.view.goto;Goto

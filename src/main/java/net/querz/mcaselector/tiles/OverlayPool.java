@@ -44,7 +44,7 @@ public class OverlayPool {
 			new LinkedBlockingQueue<>(),
 			new NamedThreadFactory("overlayValuePool"));
 
-	private final CacheDBController dataCache = new CacheDBController();
+	private final CacheDBController dataCache = CacheDBController.getInstance();
 	private OverlayParser parser;
 
 	private Point2i hoveredRegion;

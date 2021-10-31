@@ -15,6 +15,7 @@ menu.file.open;Region öffnen
 menu.file.settings;Einstellungen
 menu.file.render_settings;Rendereinstellungen
 menu.file.quit;Beenden
+menu.view.reload;Neu laden
 menu.view.chunk_grid;Chunk Gitter
 menu.view.region_grid;Region Gitter
 menu.view.goto;Gehe zu

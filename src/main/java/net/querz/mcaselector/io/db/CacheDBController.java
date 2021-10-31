@@ -23,10 +23,14 @@ import java.util.zip.GZIPOutputStream;
 
 public final class CacheDBController {
 
-	private Connection connection;
+	private volatile Connection connection;
 	private String dbPath;
 	private ShutdownHooks.ShutdownJob closeShutdownHook;
 	private List<String> allTables;
+
+	private static final CacheDBController instance;
+
+	private CacheDBController() {}
 
 	static {
 		try {
@@ -37,6 +41,12 @@ public final class CacheDBController {
 			ex.printStackTrace();
 			System.exit(0);
 		}
+
+		instance = new CacheDBController();
+	}
+
+	public static CacheDBController getInstance() {
+		return instance;
 	}
 
 	public void switchTo(String dbPath, List<OverlayParser> parsers) throws SQLException {
@@ -81,6 +91,10 @@ public final class CacheDBController {
 							"d BLOB);", parser.name(), parser.getMultiValuesID()));
 		}
 
+		statement.executeUpdate("CREATE TABLE IF NOT EXISTS file_times (" +
+			"p BIGINT PRIMARY KEY, " +
+			"t BIGINT);");
+
 		allTables = new ArrayList<>();
 		ResultSet result = statement.executeQuery("SELECT name FROM sqlite_master WHERE type='table';");
 		while (result.next()) {
@@ -122,6 +136,34 @@ public final class CacheDBController {
 			ShutdownHooks.removeShutdownHook(closeShutdownHook);
 			closeShutdownHook = null;
 		}
+	}
+
+	public long getFileTime(Point2i region) throws SQLException {
+		while (connection == null) {
+			Thread.onSpinWait();
+		}
+		Statement statement = connection.createStatement();
+		ResultSet result = statement.executeQuery(String.format("SELECT t FROM file_times WHERE p=%s;", region.asLong()));
+		if (!result.next()) {
+			return -1;
+		}
+		return result.getLong(1);
+	}
+
+	public void setFileTime(Point2i region, long time) throws SQLException {
+		while (connection == null) {
+			Thread.onSpinWait();
+		}
+		PreparedStatement ps = connection.prepareStatement(
+			"INSERT INTO file_times (p, t) " +
+				"VALUES (?, ?) " +
+				"ON CONFLICT(p) DO UPDATE " +
+				"SET t=?;");
+		ps.setLong(1, region.asLong());
+		ps.setLong(2, time);
+		ps.setLong(3, time);
+		ps.addBatch();
+		ps.executeBatch();
 	}
 
 	public int[] getData(OverlayParser parser, Point2i region) throws IOException, SQLException {

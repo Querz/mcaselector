@@ -9,10 +9,15 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
+import net.querz.mcaselector.io.db.CacheDBController;
 import net.querz.mcaselector.io.job.CachedImageLoadJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.point.Point2i;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.SQLException;
 
 public final class ImagePool {
 
@@ -21,6 +26,8 @@ public final class ImagePool {
 	private final LongSet regions = new LongOpenHashSet(2048);
 	private final TileMap tileMap;
 	private final double poolSize;
+
+	private final CacheDBController cache = CacheDBController.getInstance();
 
 	// poolSize is a percentage indicating the amount of images cached in relation to the visible region
 	public ImagePool(TileMap tileMap, double poolSize) {
@@ -90,6 +97,10 @@ public final class ImagePool {
 				CachedImageLoadJob.setLoading(tile, false);
 				push(zoomLevel, tile.location, img);
 				tileMap.draw();
+				if (isImageOutdated(tile.location)) {
+					discardCachedImage(tile.location);
+					tile.setLoaded(false);
+				}
 			});
 			return;
 		}
@@ -109,6 +120,10 @@ public final class ImagePool {
 						CachedImageLoadJob.setLoading(tile, false);
 						push(zoomLevel, tile.location, img);
 						tileMap.draw();
+						if (isImageOutdated(tile.location)) {
+							discardCachedImage(tile.location);
+							tile.setLoaded(false);
+						}
 					});
 					return;
 				} else {
@@ -118,6 +133,10 @@ public final class ImagePool {
 					CachedImageLoadJob.load(tile, diskCacheImageFile, zl, zl, img -> {
 						CachedImageLoadJob.setLoading(tile, false);
 						tileMap.draw();
+						if (isImageOutdated(tile.location)) {
+							discardCachedImage(tile.location);
+							tile.setLoaded(false);
+						}
 					});
 					break;
 				}
@@ -131,7 +150,35 @@ public final class ImagePool {
 			RegionImageGenerator.setLoading(tile, false);
 			push(zoomLevel, tile.location, img);
 			tileMap.draw();
+			try {
+				cache.setFileTime(tile.location, readLastModifiedDate(tile.location));
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}, zoomLevel, null, true, () -> tileMap.getTilePriority(tile.getLocation()));
+	}
+
+	public boolean isImageOutdated(Point2i region) {
+		try {
+			BasicFileAttributes bfa = Files.readAttributes(FileHelper.createMCAFilePath(region).toPath(), BasicFileAttributes.class);
+			long time = cache.getFileTime(region);
+			if (time == -1) {
+				return false;
+			}
+			return time != bfa.lastModifiedTime().toMillis();
+		} catch (SQLException | IOException e) {
+			return false;
+		}
+	}
+
+	private long readLastModifiedDate(Point2i region) {
+		try {
+			BasicFileAttributes bfa = Files.readAttributes(FileHelper.createMCAFilePath(region).toPath(), BasicFileAttributes.class);
+			return bfa.lastModifiedTime().toMillis();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 
 	private void push(int scale, Point2i location, Image img) {
@@ -189,7 +236,22 @@ public final class ImagePool {
 		for (Int2ObjectMap.Entry<Long2ObjectLinkedOpenHashMap<Image>> scale : pool.int2ObjectEntrySet()) {
 			scale.getValue().remove(region.asLong());
 		}
+		try {
+			cache.deleteData(region);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		Debug.dumpf("removed images for %s from image pool", region);
+	}
+
+	public void discardCachedImage(Point2i region) {
+		discardImage(region);
+		RegionImageGenerator.uncacheRegionMCAFile(region);
+		int maxZoomLevel = Config.getMaxZoomLevel();
+		for (int i = 1; i <= maxZoomLevel; i *= 2) {
+			File png = FileHelper.createPNGFilePath(Config.getCacheDir(), i, region);
+			png.delete();
+		}
 	}
 
 	public void dumpMetrics() {

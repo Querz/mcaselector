@@ -57,6 +57,7 @@ public class OptionBar extends BorderPane {
 	private final MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
 	private final MenuItem renderSettings = UIFactory.menuItem(Translation.MENU_FILE_RENDER_SETTINGS);
 	private final MenuItem quit = UIFactory.menuItem(Translation.MENU_FILE_QUIT);
+	private final MenuItem reload = UIFactory.menuItem(Translation.MENU_VIEW_RELOAD);
 	private final CheckMenuItem chunkGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_CHUNK_GRID, true);
 	private final CheckMenuItem regionGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_REGION_GRID, true);
 	private final MenuItem goTo = UIFactory.menuItem(Translation.MENU_VIEW_GOTO);
@@ -99,6 +100,7 @@ public class OptionBar extends BorderPane {
 				settings, renderSettings, UIFactory.separator(),
 				quit);
 		view.getItems().addAll(
+				reload, UIFactory.separator(),
 				chunkGrid, regionGrid, UIFactory.separator(),
 				goTo, resetZoom, UIFactory.separator(),
 				saveScreenshot, UIFactory.separator(),
@@ -205,6 +207,7 @@ public class OptionBar extends BorderPane {
 		settings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage, false));
 		renderSettings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage, true));
 		quit.setOnAction(e -> DialogHelper.quit(tileMap, primaryStage));
+		reload.setOnAction(e -> tileMap.reload());
 		chunkGrid.setOnAction(e -> tileMap.setShowChunkGrid(chunkGrid.isSelected()));
 		regionGrid.setOnAction(e -> tileMap.setShowRegionGrid(regionGrid.isSelected()));
 		goTo.setOnAction(e -> DialogHelper.gotoCoordinate(tileMap, primaryStage));
@@ -236,6 +239,7 @@ public class OptionBar extends BorderPane {
 		settings.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCodeCombination.SHORTCUT_DOWN));
 		renderSettings.setAccelerator(new KeyCodeCombination(KeyCode.E));
 		quit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCodeCombination.SHORTCUT_DOWN));
+		reload.setAccelerator(new KeyCodeCombination(KeyCode.F5));
 		chunkGrid.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCodeCombination.SHORTCUT_DOWN));
 		regionGrid.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCodeCombination.SHORTCUT_DOWN));
 		goTo.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCodeCombination.SHORTCUT_DOWN));

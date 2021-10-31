@@ -256,7 +256,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 					if (overlayParser.get() != null && !tile.isOverlayLoaded()) {
 						overlayPool.requestImage(tile, overlayParser.get());
 					}
-
 				}, new Point2f(), () -> scale, Integer.MAX_VALUE);
 
 				tilePriorities = newTilePriorities;
@@ -285,6 +284,19 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			drawRequested.set(false);
 
 		}, 1000 / 60, 1000 / 60, TimeUnit.MILLISECONDS);
+	}
+
+	public void reload() {
+		runOnVisibleRegions(region -> {
+			Tile tile = tiles.get(region.asLong());
+			if (imgPool.isImageOutdated(region)) {
+				imgPool.discardCachedImage(region);
+				if (tile != null) {
+					tile.loaded = false;
+				}
+				System.out.println("reloaded " + region);
+			}
+		}, new Point2f(), () -> scale, Integer.MAX_VALUE);
 	}
 
 	public int getTilePriority(Point2i region) {

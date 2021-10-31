@@ -33,6 +33,7 @@ public enum Translation {
 	MENU_FILE_SETTINGS("menu.file.settings"),
 	MENU_FILE_RENDER_SETTINGS("menu.file.render_settings"),
 	MENU_FILE_QUIT("menu.file.quit"),
+	MENU_VIEW_RELOAD("menu.view.reload"),
 	MENU_VIEW_CHUNK_GRID("menu.view.chunk_grid"),
 	MENU_VIEW_REGION_GRID("menu.view.region_grid"),
 	MENU_VIEW_GOTO("menu.view.goto"),

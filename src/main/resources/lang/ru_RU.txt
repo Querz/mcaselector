@@ -15,6 +15,7 @@ menu.file.open;Открыть регион
 menu.file.settings;Настройки
 menu.file.render_settings;Настройки рендеринга
 menu.file.quit;Выход
+menu.view.reload;Перезагрузить
 menu.view.chunk_grid;Сетка чанков
 menu.view.region_grid;Сетка областей
 menu.view.goto;Перейти по координатам
@@ -36,7 +37,7 @@ menu.tools.import_chunks;Импортировать чанки
 menu.tools.filter_chunks;Отфильтровать чанки
 menu.tools.change_fields;Изменить параметры
 menu.tools.edit_nbt;Редактировать чанк
-menu.tools.swap_chunks;поменять чанки
+menu.tools.swap_chunks;Поменять чанки
 menu.tools.edit_overlays;Редактировать наложения
 menu.tools.next_overlay;Следующий оверлей
 menu.tools.next_overlay_type;Тип наложения

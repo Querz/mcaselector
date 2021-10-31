@@ -15,6 +15,7 @@ menu.file.open;Otevřete region
 menu.file.settings;Nastavení
 menu.file.render_settings;Nastavení vykreslování
 menu.file.quit;Opustit
+menu.view.reload;Znovu načíst
 menu.view.chunk_grid;Mřížka chunků
 menu.view.region_grid;Mřížka regionů
 menu.view.goto;Přejít

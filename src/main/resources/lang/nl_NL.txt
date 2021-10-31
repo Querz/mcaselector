@@ -15,6 +15,7 @@ menu.file.open;Open een regio
 menu.file.settings;Instellingen
 menu.file.render_settings;Renderinstellingen
 menu.file.quit;Stoppen
+menu.view.reload;Herladen
 menu.view.chunk_grid;Chunk Raster
 menu.view.region_grid;Region Raster
 menu.view.goto;Ga naar

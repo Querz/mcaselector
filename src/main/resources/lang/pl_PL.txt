@@ -15,6 +15,7 @@ menu.file.open;Otwórz region...
 menu.file.settings;Ustawienia
 menu.file.render_settings;Ustawienia renderowania
 menu.file.quit;Wyjdź
+menu.view.reload;Przeładować
 menu.view.chunk_grid;Siatka chunków
 menu.view.region_grid;Siatka regionów
 menu.view.goto;Idź do...

@@ -15,6 +15,7 @@ menu.file.open;リージョンを開く
 menu.file.settings;設定
 menu.file.render_settings;レンダリング設定
 menu.file.quit;終了
+menu.view.reload;リロード
 menu.view.chunk_grid;チャンクの境界
 menu.view.region_grid;リージョンの境界
 menu.view.goto;移動

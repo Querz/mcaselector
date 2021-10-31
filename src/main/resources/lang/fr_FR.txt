@@ -15,6 +15,7 @@ menu.file.open;Ouvrir une région
 menu.file.settings;Options
 menu.file.render_settings;Paramètres de rendu
 menu.file.quit;Quitter
+menu.view.reload;Recharger
 menu.view.chunk_grid;Grille des chunks
 menu.view.region_grid;Grille des régions
 menu.view.goto;Aller à
