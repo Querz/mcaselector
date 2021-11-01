@@ -199,8 +199,9 @@ public final class JobHandler {
 	}
 
 	private static void flushExecutor() {
-		//noinspection StatementWithEmptyBody
-		while (allTasks.get() > 0);
+		while (allTasks.get() > 0) {
+			Thread.onSpinWait();
+		}
 	}
 
 	public static int getActiveJobs() {
