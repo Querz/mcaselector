@@ -3,6 +3,8 @@ package net.querz.mcaselector.version;
 import net.querz.mcaselector.io.BiomeRegistry;
 import net.querz.nbt.io.SNBTUtil;
 import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.ListTag;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
@@ -33,6 +35,8 @@ public interface ChunkFilter {
 	int getAverageHeight(CompoundTag data);
 
 	int getBlockAmount(CompoundTag data, String[] blocks);
+
+	ListTag<CompoundTag> getTileEntities(CompoundTag data);
 
 	class BlockReplaceData {
 

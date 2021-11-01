@@ -472,4 +472,9 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		}
 		return result;
 	}
+
+	@Override
+	public ListTag<CompoundTag> getTileEntities(CompoundTag data) {
+		return Helper.tagFromLevelFromRoot(data, "TileEntities");
+	}
 }

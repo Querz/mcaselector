@@ -640,4 +640,13 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		}
 		return result;
 	}
+
+	@Override
+	public ListTag<CompoundTag> getTileEntities(CompoundTag data) {
+		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		if (dataVersion == null) {
+			return null;
+		}
+		return LegacyHelper.getTileEntities(data, dataVersion);
+	}
 }
