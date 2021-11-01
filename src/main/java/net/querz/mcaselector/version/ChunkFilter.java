@@ -2,8 +2,7 @@ package net.querz.mcaselector.version;
 
 import net.querz.mcaselector.io.BiomeRegistry;
 import net.querz.nbt.io.SNBTUtil;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.*;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -37,6 +36,28 @@ public interface ChunkFilter {
 	int getBlockAmount(CompoundTag data, String[] blocks);
 
 	ListTag<CompoundTag> getTileEntities(CompoundTag data);
+
+	CompoundTag getStructures(CompoundTag data);
+
+	ListTag<CompoundTag> getSections(CompoundTag data);
+
+	LongTag getInhabitedTime(CompoundTag data);
+
+	void setInhabitedTime(CompoundTag data, long inhabitedTime);
+
+	StringTag getStatus(CompoundTag data);
+
+	void setStatus(CompoundTag data, String status);
+
+	LongTag getLastUpdate(CompoundTag data);
+
+	void setLastUpdate(CompoundTag data, long lastUpdate);
+
+	IntTag getXPos(CompoundTag data);
+
+	IntTag getYPos(CompoundTag data);
+
+	IntTag getZPos(CompoundTag data);
 
 	class BlockReplaceData {
 

@@ -2,7 +2,8 @@ package net.querz.mcaselector.tiles.overlay;
 
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.text.TextHelper;
-import net.querz.mcaselector.validation.ValidationHelper;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionController;
 
 public class InhabitedTimeParser extends OverlayParser {
 
@@ -17,7 +18,8 @@ public class InhabitedTimeParser extends OverlayParser {
 
 	@Override
 	public int parseValue(ChunkData chunkData) {
-		return ValidationHelper.silent(() -> chunkData.getRegion().getData().getCompoundTag("Level").getNumber("InhabitedTime").intValue(), 0);
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.getRegion().getData().getInt("DataVersion"));
+		return chunkFilter.getInhabitedTime(chunkData.getRegion().getData()).asInt();
 	}
 
 	@Override

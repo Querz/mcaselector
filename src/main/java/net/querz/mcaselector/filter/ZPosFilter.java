@@ -2,6 +2,8 @@ package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionController;
 
 public class ZPosFilter extends IntFilter implements RegionMatcher {
 
@@ -18,7 +20,8 @@ public class ZPosFilter extends IntFilter implements RegionMatcher {
 		if (data.getRegion() == null) {
 			return null;
 		}
-		return data.getRegion().getData().getCompoundTag("Level").getInt("zPos");
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		return chunkFilter.getZPos(data.getRegion().getData()).asInt();
 	}
 
 	@Override

@@ -176,7 +176,8 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 
 	@Override
 	public void change(ChunkData data) {
-		VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion")).replaceBlocks(data.getRegion().getData(), getNewValue());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		chunkFilter.replaceBlocks(data.getRegion().getData(), getNewValue());
 	}
 
 	@Override

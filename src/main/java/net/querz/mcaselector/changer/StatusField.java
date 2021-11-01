@@ -3,7 +3,8 @@ package net.querz.mcaselector.changer;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.filter.BiomeFilter;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.validation.ValidationHelper;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.StringTag;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,7 +35,9 @@ public class StatusField extends Field<String> {
 
 	@Override
 	public String getOldValue(ChunkData data) {
-		return ValidationHelper.withDefault(() -> data.getRegion().getData().getCompoundTag("Level").getString("Status"), null);
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		StringTag status = chunkFilter.getStatus(data.getRegion().getData());
+		return status == null ? null : status.getValue();
 	}
 
 	@Override
@@ -48,7 +51,8 @@ public class StatusField extends Field<String> {
 
 	@Override
 	public void change(ChunkData data) {
-		StringTag tag = data.getRegion().getData().getCompoundTag("Level").getStringTag("Status");
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		StringTag tag = chunkFilter.getStatus(data.getRegion().getData());
 		if (tag != null) {
 			tag.setValue(getNewValue());
 		}
@@ -56,6 +60,7 @@ public class StatusField extends Field<String> {
 
 	@Override
 	public void force(ChunkData data) {
-		data.getRegion().getData().getCompoundTag("Level").putString("Status", getNewValue());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		chunkFilter.setStatus(data.getRegion().getData(), getNewValue());
 	}
 }

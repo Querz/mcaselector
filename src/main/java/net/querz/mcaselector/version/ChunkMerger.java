@@ -1,5 +1,6 @@
 package net.querz.mcaselector.version;
 
+import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
@@ -11,6 +12,8 @@ import java.util.function.Function;
 public interface ChunkMerger {
 
 	void mergeChunks(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset);
+
+	CompoundTag newEmptyChunk(Point2i absoluteLocation, int dataVersion);
 
 	default <T extends Tag<?>> ListTag<T> mergeLists(ListTag<T> source, ListTag<T> destination, List<Range> ranges, Function<T, Integer> ySupplier, int yOffset) {
 

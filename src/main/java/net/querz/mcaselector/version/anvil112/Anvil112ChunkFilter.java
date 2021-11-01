@@ -5,9 +5,8 @@ import net.querz.mcaselector.io.BiomeRegistry;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.Helper;
-import net.querz.nbt.tag.ByteArrayTag;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -476,5 +475,69 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 	@Override
 	public ListTag<CompoundTag> getTileEntities(CompoundTag data) {
 		return Helper.tagFromLevelFromRoot(data, "TileEntities");
+	}
+
+	@Override
+	public CompoundTag getStructures(CompoundTag data) {
+		return Helper.tagFromLevelFromRoot(data, "Structures");
+	}
+
+	@Override
+	public ListTag<CompoundTag> getSections(CompoundTag data) {
+		return Helper.tagFromLevelFromRoot(data, "Sections");
+	}
+
+	@Override
+	public LongTag getInhabitedTime(CompoundTag data) {
+		return Helper.tagFromLevelFromRoot(data, "InhabitedTime");
+	}
+
+	@Override
+	public void setInhabitedTime(CompoundTag data, long inhabitedTime) {
+		CompoundTag level = Helper.levelFromRoot(data);
+		if (level != null) {
+			level.putLong("InhabitedTime", inhabitedTime);
+		}
+	}
+
+	@Override
+	public StringTag getStatus(CompoundTag data) {
+		return Helper.tagFromLevelFromRoot(data, "Status");
+	}
+
+	@Override
+	public void setStatus(CompoundTag data, String status) {
+		CompoundTag level = Helper.levelFromRoot(data);
+		if (level != null) {
+			level.putString("Status", status);
+		}
+	}
+
+	@Override
+	public LongTag getLastUpdate(CompoundTag data) {
+		return Helper.tagFromLevelFromRoot(data, "LastUpdate");
+	}
+
+	@Override
+	public void setLastUpdate(CompoundTag data, long lastUpdate) {
+		CompoundTag level = Helper.levelFromRoot(data);
+		if (level != null) {
+			level.putLong("Status", lastUpdate);
+		}
+	}
+
+	@Override
+	public IntTag getXPos(CompoundTag data) {
+		return Helper.tagFromLevelFromRoot(data, "xPos");
+	}
+
+	@Override
+	public IntTag getYPos(CompoundTag data) {
+		return null;
+	}
+
+	@Override
+	public IntTag getZPos(CompoundTag data) {
+		return Helper.tagFromLevelFromRoot(data, "zPos");
 	}
 }

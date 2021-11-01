@@ -3,10 +3,10 @@ package net.querz.mcaselector.changer;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.LongArrayTag;
-import net.querz.nbt.tag.Tag;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -36,11 +36,11 @@ public class DeleteSectionsField extends Field<List<Range>> {
 
 	@Override
 	public void change(ChunkData data) {
-		Tag<?> rawSections = data.getRegion().getData().getCompoundTag("Level").get("Sections");
-		if (rawSections == null || rawSections.getID() == LongArrayTag.ID) {
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		ListTag<CompoundTag> sections = chunkFilter.getSections(data.getRegion().getData());
+		if (sections == null) {
 			return;
 		}
-		ListTag<CompoundTag> sections = ((ListTag<?>) rawSections).asCompoundTagList();
 		for (int i = 0; i < sections.size(); i++) {
 			CompoundTag section = sections.get(i);
 			for (Range range : getNewValue()) {

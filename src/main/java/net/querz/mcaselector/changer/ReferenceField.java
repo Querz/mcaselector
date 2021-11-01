@@ -1,6 +1,8 @@
 package net.querz.mcaselector.changer;
 
 import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.LongArrayTag;
 import net.querz.nbt.tag.Tag;
@@ -34,9 +36,10 @@ public class ReferenceField extends Field<Boolean> {
 
 		// attempt to fix chunk coordinates of structure references
 
-		CompoundTag references = data.getRegion().getData().getCompoundTag("Level").getCompoundTag("Structures").getCompoundTag("References");
-		int xPos = data.getRegion().getData().getCompoundTag("Level").getInt("xPos");
-		int zPos = data.getRegion().getData().getCompoundTag("Level").getInt("zPos");
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		CompoundTag references = chunkFilter.getStructures(data.getRegion().getData()).getCompoundTag("References");
+		int xPos = chunkFilter.getXPos(data.getRegion().getData()).asInt();
+		int zPos = chunkFilter.getZPos(data.getRegion().getData()).asInt();
 		for (Map.Entry<String, Tag<?>> entry : references) {
 			if (entry.getValue() instanceof LongArrayTag) {
 				long[] structureReferences = ((LongArrayTag) entry.getValue()).getValue();

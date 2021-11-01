@@ -9,6 +9,7 @@ public enum FilterType {
 	DATA_VERSION("DataVersion", DataVersionFilter::new, Format.NUMBER),
 	INHABITED_TIME("InhabitedTime", InhabitedTimeFilter::new, Format.NUMBER),
 	X_POS("xPos", XPosFilter::new, Format.NUMBER),
+	Y_POS("yPos", YPosFilter::new, Format.NUMBER),
 	Z_POS("zPos", ZPosFilter::new, Format.NUMBER),
 	TIMESTAMP("Timestamp", TimestampFilter::new, Format.NUMBER),
 	LAST_UPDATE("LastUpdate", LastUpdateFilter::new, Format.NUMBER),

@@ -3,6 +3,8 @@ package net.querz.mcaselector.filter;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.validation.ValidationHelper;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.Tag;
 import java.io.BufferedReader;
@@ -37,7 +39,8 @@ public class StructureFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean contains(List<String> value, ChunkData data) {
-		CompoundTag rawStructures = data.getRegion().getData().getCompoundTag("Level").getCompoundTag("Structures").getCompoundTag("References");
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		CompoundTag rawStructures = chunkFilter.getStructures(data.getRegion().getData()).getCompoundTag("References");
 		for (String name : value) {
 			Tag<?> structure = rawStructures.get(name);
 			if (structure == null || structure.valueToString().equals("[]")) {
@@ -57,8 +60,8 @@ public class StructureFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean intersects(List<String> value, ChunkData data) {
-		CompoundTag rawStructures = data.getRegion().getData().getCompoundTag("Level").getCompoundTag("Structures").getCompoundTag("References");
-
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		CompoundTag rawStructures = chunkFilter.getStructures(data.getRegion().getData()).getCompoundTag("References");
 		for (String name : getFilterValue()) {
 			long[] references = ValidationHelper.silent(() -> rawStructures.getLongArray(name), null);
 			if (references != null && references.length > 0) {

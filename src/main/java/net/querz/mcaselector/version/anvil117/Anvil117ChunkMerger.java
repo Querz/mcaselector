@@ -1,5 +1,6 @@
 package net.querz.mcaselector.version.anvil117;
 
+import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.version.ChunkMerger;
 import net.querz.mcaselector.version.Helper;
@@ -104,5 +105,17 @@ public class Anvil117ChunkMerger implements ChunkMerger {
 				}
 			}
 		}
+	}
+
+	@Override
+	public CompoundTag newEmptyChunk(Point2i absoluteLocation, int dataVersion) {
+		CompoundTag root = new CompoundTag();
+		CompoundTag level = new CompoundTag();
+		level.putInt("xPos", absoluteLocation.getX());
+		level.putInt("zPos", absoluteLocation.getZ());
+		level.putString("Status", "full");
+		root.put("Level", level);
+		root.putInt("DataVersion", dataVersion);
+		return root;
 	}
 }

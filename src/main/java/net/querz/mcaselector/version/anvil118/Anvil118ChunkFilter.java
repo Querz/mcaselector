@@ -7,10 +7,8 @@ import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.anvil117.Anvil117ChunkFilter;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.IntArrayTag;
-import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.StringTag;
+import net.querz.nbt.tag.*;
+
 import java.util.*;
 
 public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
@@ -648,5 +646,104 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			return null;
 		}
 		return LegacyHelper.getTileEntities(data, dataVersion);
+	}
+
+	@Override
+	public CompoundTag getStructures(CompoundTag data) {
+		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		if (dataVersion == null) {
+			return null;
+		}
+		return LegacyHelper.getStructures(data, dataVersion);
+	}
+
+	@Override
+	public ListTag<CompoundTag> getSections(CompoundTag data) {
+		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		if (dataVersion == null) {
+			return null;
+		}
+		return LegacyHelper.getSections(data, dataVersion);
+	}
+
+	@Override
+	public LongTag getInhabitedTime(CompoundTag data) {
+		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		if (dataVersion == null) {
+			return null;
+		}
+		return LegacyHelper.getInhabitedTime(data, dataVersion);
+	}
+
+	@Override
+	public void setInhabitedTime(CompoundTag data, long inhabitedTime) {
+		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		if (dataVersion == null) {
+			return;
+		}
+		LegacyHelper.setInhabitedTime(data, inhabitedTime, dataVersion);
+	}
+
+	@Override
+	public StringTag getStatus(CompoundTag data) {
+		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		if (dataVersion == null) {
+			return null;
+		}
+		return LegacyHelper.getStatus(data, dataVersion);
+	}
+
+	@Override
+	public void setStatus(CompoundTag data, String status) {
+		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		if (dataVersion == null) {
+			return;
+		}
+		LegacyHelper.setStatus(data, status, dataVersion);
+	}
+
+	@Override
+	public LongTag getLastUpdate(CompoundTag data) {
+		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		if (dataVersion == null) {
+			return null;
+		}
+		return LegacyHelper.getLastUpdate(data, dataVersion);
+	}
+
+	@Override
+	public void setLastUpdate(CompoundTag data, long lastUpdate) {
+		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		if (dataVersion == null) {
+			return;
+		}
+		LegacyHelper.setLastUpdate(data, lastUpdate, dataVersion);
+	}
+
+	@Override
+	public IntTag getXPos(CompoundTag data) {
+		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		if (dataVersion == null) {
+			return null;
+		}
+		return LegacyHelper.getXPos(data, dataVersion);
+	}
+
+	@Override
+	public IntTag getYPos(CompoundTag data) {
+		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		if (dataVersion == null) {
+			return null;
+		}
+		return LegacyHelper.getYPos(data, dataVersion);
+	}
+
+	@Override
+	public IntTag getZPos(CompoundTag data) {
+		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		if (dataVersion == null) {
+			return null;
+		}
+		return LegacyHelper.getZPos(data, dataVersion);
 	}
 }

@@ -245,6 +245,18 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 		}
 	}
 
+	@Override
+	public CompoundTag minimizeChunk(CompoundTag root) {
+		CompoundTag minData = new CompoundTag();
+		minData.put("DataVersion", root.get("DataVersion").clone());
+		CompoundTag level = new CompoundTag();
+		minData.put("Level", level);
+		level.put("Biomes", root.getCompoundTag("Level").get("Biomes").clone());
+		level.put("Sections", root.getCompoundTag("Level").get("Sections").clone());
+		level.put("Status", root.getCompoundTag("Level").get("Status").clone());
+		return minData;
+	}
+
 	private static final CompoundTag waterDummy = new CompoundTag();
 
 	static {

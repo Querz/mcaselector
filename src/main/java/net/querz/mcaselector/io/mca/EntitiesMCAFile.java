@@ -4,6 +4,8 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.version.ChunkMerger;
+import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.CompoundTag;
 import java.io.File;
 import java.util.List;
@@ -16,9 +18,9 @@ public class EntitiesMCAFile extends MCAFile<EntitiesChunk> implements Cloneable
 	}
 
 	static EntitiesChunk newEmptyChunk(Point2i absoluteLocation, int dataVersion) {
+		ChunkMerger chunkMerger = VersionController.getEntityMerger(dataVersion);
+		CompoundTag root = chunkMerger.newEmptyChunk(absoluteLocation, dataVersion);
 		EntitiesChunk chunk = new EntitiesChunk(absoluteLocation);
-		CompoundTag root = new CompoundTag();
-		root.putInt("DataVersion", dataVersion);
 		chunk.data = root;
 		chunk.compressionType = CompressionType.ZLIB;
 		return chunk;

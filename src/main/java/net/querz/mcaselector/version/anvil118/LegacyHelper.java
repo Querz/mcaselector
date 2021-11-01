@@ -3,10 +3,7 @@ package net.querz.mcaselector.version.anvil118;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.version.Helper;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.IntArrayTag;
-import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.StringTag;
+import net.querz.nbt.tag.*;
 
 public final class LegacyHelper {
 
@@ -44,16 +41,67 @@ public final class LegacyHelper {
 		}
 	}
 
-	static String getStatus(CompoundTag root, int dataVersion) {
+	static LongTag getInhabitedTime(CompoundTag root, int dataVersion) {
 		if (dataVersion > 2843) { // 21w42a
-			return Helper.stringFromCompound(root, "Status");
+			return Helper.tagFromCompound(root, "InhabitedTime");
 		} else {
-			StringTag t = Helper.tagFromLevelFromRoot(root, "Status");
-			if (t != null) {
-				return t.getValue();
+			return Helper.tagFromLevelFromRoot(root, "InhabitedTime");
+		}
+	}
+
+	static void setInhabitedTime(CompoundTag root, long inhabitedTime, int dataVersion) {
+		if (dataVersion > 2843) {
+			if (root != null) {
+				root.putLong("InhabitedTime", inhabitedTime);
+			}
+		} else {
+			CompoundTag level = Helper.levelFromRoot(root);
+			if (level != null) {
+				level.putLong("InhabitedTime", inhabitedTime);
 			}
 		}
-		return null;
+	}
+
+	static LongTag getLastUpdate(CompoundTag root, int dataVersion) {
+		if (dataVersion > 2843) { // 21w42a
+			return Helper.tagFromCompound(root, "LastUpdate");
+		} else {
+			return Helper.tagFromLevelFromRoot(root, "LastUpdate");
+		}
+	}
+
+	static void setLastUpdate(CompoundTag root, long lastUpdate, int dataVersion) {
+		if (dataVersion > 2843) {
+			if (root != null) {
+				root.putLong("LastUpdate", lastUpdate);
+			}
+		} else {
+			CompoundTag level = Helper.levelFromRoot(root);
+			if (level != null) {
+				level.putLong("LastUpdate", lastUpdate);
+			}
+		}
+	}
+
+	static StringTag getStatus(CompoundTag root, int dataVersion) {
+		if (dataVersion > 2843) {
+			return Helper.tagFromCompound(root, "Status");
+		} else {
+			return Helper.tagFromLevelFromRoot(root, "Status");
+		}
+	}
+
+	static void setStatus(CompoundTag root, String status, int dataVersion) {
+		if (dataVersion > 2843) {
+			if (root != null) {
+				root.putString("Status", status);
+			}
+		} else {
+			CompoundTag level = Helper.levelFromRoot(root);
+			if (level != null) {
+				level.putString("Status", status);
+			}
+		}
 	}
 
 	static ListTag<CompoundTag> getTileEntities(CompoundTag root, int dataVersion) {
@@ -138,6 +186,30 @@ public final class LegacyHelper {
 			return Helper.tagFromLevelFromRoot(structures, "Starts");
 		} else {
 			return Helper.tagFromCompound(structures, "starts");
+		}
+	}
+
+	static IntTag getXPos(CompoundTag data, int dataVersion) {
+		if (dataVersion > 2843) {
+			return Helper.tagFromCompound(data, "xPos");
+		} else {
+			return Helper.tagFromLevelFromRoot(data, "xPos");
+		}
+	}
+
+	static IntTag getYPos(CompoundTag data, int dataVersion) {
+		if (dataVersion > 2843) {
+			return Helper.tagFromCompound(data, "yPos");
+		} else {
+			return null;
+		}
+	}
+
+	static IntTag getZPos(CompoundTag data, int dataVersion) {
+		if (dataVersion > 2843) {
+			return Helper.tagFromCompound(data, "zPos");
+		} else {
+			return Helper.tagFromLevelFromRoot(data, "zPos");
 		}
 	}
 }

@@ -23,8 +23,8 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			return;
 		}
 
-		String status = LegacyHelper.getStatus(root, dataVersion);
-		if (status == null || "empty".equals(status)) {
+		StringTag status = LegacyHelper.getStatus(root, dataVersion);
+		if (status == null || "empty".equals(status.getValue())) {
 			return;
 		}
 
@@ -140,8 +140,8 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			return;
 		}
 
-		String status = LegacyHelper.getStatus(root, dataVersion);
-		if (status == null || "empty".equals(status)) {
+		StringTag status = LegacyHelper.getStatus(root, dataVersion);
+		if (status == null || "empty".equals(status.getValue())) {
 			return;
 		}
 
@@ -221,8 +221,8 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			return;
 		}
 
-		String status = LegacyHelper.getStatus(root, dataVersion);
-		if (status == null || "empty".equals(status)) {
+		StringTag status = LegacyHelper.getStatus(root, dataVersion);
+		if (status == null || "empty".equals(status.getValue())) {
 			return;
 		}
 
@@ -313,6 +313,30 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 				}
 			}
 		}
+	}
+
+	@Override
+	public CompoundTag minimizeChunk(CompoundTag root) {
+		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
+		if (dataVersion == null) {
+			return root;
+		}
+
+		CompoundTag minData = new CompoundTag();
+		minData.put("DataVersion", root.get("DataVersion").clone());
+		CompoundTag level = new CompoundTag();
+		minData.put("Level", level);
+		if (dataVersion < 2834) {
+			level.put("Biomes", root.getCompoundTag("Level").get("Biomes").clone());
+		}
+		if (dataVersion > 2843) {
+			level.put("Sections", root.get("sections").clone());
+			level.put("Status", root.get("Status").clone());
+		} else {
+			level.put("Sections", root.getCompoundTag("Level").get("Sections").clone());
+			level.put("Status", root.getCompoundTag("Level").get("Status").clone());
+		}
+		return minData;
 	}
 
 	private static final CompoundTag waterDummy = new CompoundTag();
