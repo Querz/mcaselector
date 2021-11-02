@@ -1,14 +1,12 @@
 package net.querz.mcaselector.version.anvil118;
 
 import net.querz.mcaselector.io.BiomeRegistry;
-import net.querz.mcaselector.math.Bits;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.anvil117.Anvil117ChunkFilter;
 import net.querz.nbt.tag.*;
-
 import java.util.*;
 
 public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
@@ -745,5 +743,23 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			return null;
 		}
 		return LegacyHelper.getZPos(data, dataVersion);
+	}
+
+	@Override
+	public ByteTag getLightPopulated(CompoundTag data) {
+		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		if (dataVersion == null) {
+			return null;
+		}
+		return LegacyHelper.getIsLightOn(data, dataVersion);
+	}
+
+	@Override
+	public void setLightPopulated(CompoundTag data, byte lightPopulated) {
+		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		if (dataVersion == null) {
+			return;
+		}
+		LegacyHelper.setIsLightOn(data, lightPopulated, dataVersion);
 	}
 }

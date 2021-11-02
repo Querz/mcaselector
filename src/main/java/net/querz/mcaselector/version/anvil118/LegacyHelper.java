@@ -212,4 +212,25 @@ public final class LegacyHelper {
 			return Helper.tagFromLevelFromRoot(data, "zPos");
 		}
 	}
+
+	static ByteTag getIsLightOn(CompoundTag data, int dataVersion) {
+		if (dataVersion > 2843) {
+			return Helper.tagFromCompound(data, "isLightOn");
+		} else {
+			return Helper.tagFromLevelFromRoot(data, "isLightOn");
+		}
+	}
+
+	static void setIsLightOn(CompoundTag root, byte isLightOn, int dataVersion) {
+		if (dataVersion > 2843) {
+			if (root != null) {
+				root.putByte("isLightOn", isLightOn);
+			}
+		} else {
+			CompoundTag level = Helper.levelFromRoot(root);
+			if (level != null) {
+				level.putByte("isLightOn", isLightOn);
+			}
+		}
+	}
 }

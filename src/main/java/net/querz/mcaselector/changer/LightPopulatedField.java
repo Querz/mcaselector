@@ -1,7 +1,8 @@
 package net.querz.mcaselector.changer;
 
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.validation.ValidationHelper;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.ByteTag;
 
 public class LightPopulatedField extends Field<Byte> {
@@ -12,7 +13,9 @@ public class LightPopulatedField extends Field<Byte> {
 
 	@Override
 	public Byte getOldValue(ChunkData data) {
-		return ValidationHelper.withDefault(() -> data.getRegion().getData().getCompoundTag("Level").getByte("LightPopulated"), null);
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		ByteTag lightPopulated = chunkFilter.getLightPopulated(data.getRegion().getData());
+		return lightPopulated == null ? null : lightPopulated.asByte();
 	}
 
 	@Override
@@ -30,7 +33,8 @@ public class LightPopulatedField extends Field<Byte> {
 
 	@Override
 	public void change(ChunkData data) {
-		ByteTag tag = data.getRegion().getData().getCompoundTag("Level").getByteTag("LightPopulated");
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		ByteTag tag = chunkFilter.getLightPopulated(data.getRegion().getData());
 		if (tag != null) {
 			tag.setValue(getNewValue());
 		}
@@ -38,6 +42,7 @@ public class LightPopulatedField extends Field<Byte> {
 
 	@Override
 	public void force(ChunkData data) {
-		data.getRegion().getData().getCompoundTag("Level").putByte("LightPopulated", getNewValue());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		chunkFilter.setLightPopulated(data.getRegion().getData(), getNewValue());
 	}
 }

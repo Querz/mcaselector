@@ -4,6 +4,7 @@ import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
+import net.querz.nbt.tag.LongTag;
 
 public class InhabitedTimeParser extends OverlayParser {
 
@@ -19,7 +20,8 @@ public class InhabitedTimeParser extends OverlayParser {
 	@Override
 	public int parseValue(ChunkData chunkData) {
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.getRegion().getData().getInt("DataVersion"));
-		return chunkFilter.getInhabitedTime(chunkData.getRegion().getData()).asInt();
+		LongTag tag = chunkFilter.getInhabitedTime(chunkData.getRegion().getData());
+		return tag == null ? 0 : tag.asInt();
 	}
 
 	@Override

@@ -18,15 +18,12 @@ public class TileEntityAmountFilter extends IntFilter {
 
 	@Override
 	protected Integer getNumber(ChunkData data) {
-		if (data.getRegion() == null) {
+		if (data.getRegion() == null || data.getRegion().getData() == null) {
 			return 0;
 		}
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
 		ListTag<CompoundTag> tileEntities = chunkFilter.getTileEntities(data.getRegion().getData());
-		if (tileEntities == null) {
-			return 0;
-		}
-		return tileEntities.size();
+		return tileEntities == null ? 0 : tileEntities.size();
 	}
 
 	@Override

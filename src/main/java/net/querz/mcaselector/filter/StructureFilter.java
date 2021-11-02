@@ -39,12 +39,22 @@ public class StructureFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean contains(List<String> value, ChunkData data) {
+		if (data.getRegion() == null || data.getRegion().getData() == null) {
+			return false;
+		}
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		CompoundTag rawStructures = chunkFilter.getStructures(data.getRegion().getData()).getCompoundTag("References");
+		CompoundTag structures = chunkFilter.getStructures(data.getRegion().getData());
+		if (structures == null) {
+			return false;
+		}
+		CompoundTag references = structures.getCompoundTag("References");
+		if (references == null) {
+			return false;
+		}
 		for (String name : value) {
-			Tag<?> structure = rawStructures.get(name);
+			Tag<?> structure = references.get(name);
 			if (structure == null || structure.valueToString().equals("[]")) {
-				structure = rawStructures.get(validNames.get(name));
+				structure = references.get(validNames.get(name));
 				if (structure == null || structure.valueToString().equals("[]")) {
 					return false;
 				}
@@ -60,15 +70,25 @@ public class StructureFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean intersects(List<String> value, ChunkData data) {
+		if (data.getRegion() == null || data.getRegion().getData() == null) {
+			return false;
+		}
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		CompoundTag rawStructures = chunkFilter.getStructures(data.getRegion().getData()).getCompoundTag("References");
+		CompoundTag structures = chunkFilter.getStructures(data.getRegion().getData());
+		if (structures == null) {
+			return false;
+		}
+		CompoundTag references = structures.getCompoundTag("References");
+		if (references == null) {
+			return false;
+		}
 		for (String name : getFilterValue()) {
-			long[] references = ValidationHelper.silent(() -> rawStructures.getLongArray(name), null);
-			if (references != null && references.length > 0) {
+			long[] refs = ValidationHelper.silent(() -> references.getLongArray(name), null);
+			if (refs != null && refs.length > 0) {
 				return true;
 			}
-			references = ValidationHelper.silent(() -> rawStructures.getLongArray(validNames.get(name)), null);
-			if (references != null && references.length > 0) {
+			refs = ValidationHelper.silent(() -> references.getLongArray(validNames.get(name)), null);
+			if (refs != null && refs.length > 0) {
 				return true;
 			}
 		}

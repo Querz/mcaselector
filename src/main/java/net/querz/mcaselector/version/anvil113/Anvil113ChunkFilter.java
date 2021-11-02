@@ -572,4 +572,17 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 	public IntTag getZPos(CompoundTag data) {
 		return Helper.tagFromLevelFromRoot(data, "zPos");
 	}
+
+	@Override
+	public ByteTag getLightPopulated(CompoundTag data) {
+		return Helper.tagFromLevelFromRoot(data, "LightPopulated");
+	}
+
+	@Override
+	public void setLightPopulated(CompoundTag data, byte lightPopulated) {
+		CompoundTag level = Helper.levelFromRoot(data);
+		if (level != null) {
+			level.putLong("LightPopulated", lightPopulated);
+		}
+	}
 }

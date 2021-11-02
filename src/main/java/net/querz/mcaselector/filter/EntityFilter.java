@@ -47,6 +47,9 @@ public class EntityFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean contains(List<String> value, ChunkData data) {
+		if (data.getRegion() == null || data.getRegion().getData() == null) {
+			return false;
+		}
 		Tag<?> rawEntities = VersionController.getEntityFilter(data.getRegion().getData().getInt("DataVersion")).getEntities(data);
 		if (rawEntities == null || rawEntities.getID() == LongArrayTag.ID) {
 			return false;
@@ -67,6 +70,9 @@ public class EntityFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean intersects(List<String> value, ChunkData data) {
+		if (data.getRegion() == null || data.getRegion().getData() == null) {
+			return false;
+		}
 		Tag<?> rawEntities = VersionController.getEntityFilter(data.getRegion().getData().getInt("DataVersion")).getEntities(data);
 		if (rawEntities == null || rawEntities.getID() == LongArrayTag.ID) {
 			return false;

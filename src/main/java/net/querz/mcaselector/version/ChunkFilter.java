@@ -59,6 +59,10 @@ public interface ChunkFilter {
 
 	IntTag getZPos(CompoundTag data);
 
+	ByteTag getLightPopulated(CompoundTag data);
+
+	void setLightPopulated(CompoundTag data, byte lightPopulated);
+
 	class BlockReplaceData {
 
 		private String name;

@@ -31,7 +31,7 @@ public class Anvil112ChunkMerger implements ChunkMerger {
 		CompoundTag level = new CompoundTag();
 		level.putInt("xPos", absoluteLocation.getX());
 		level.putInt("zPos", absoluteLocation.getZ());
-		level.putString("Status", "full");
+		level.putString("Status", "postprocessed");
 		root.put("Level", level);
 		root.putInt("DataVersion", dataVersion);
 		return root;

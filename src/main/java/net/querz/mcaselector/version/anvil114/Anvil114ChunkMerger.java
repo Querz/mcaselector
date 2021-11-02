@@ -1,4 +1,4 @@
-package net.querz.mcaselector.version.anvil113;
+package net.querz.mcaselector.version.anvil114;
 
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
@@ -10,7 +10,7 @@ import net.querz.nbt.tag.Tag;
 import java.util.List;
 import java.util.Map;
 
-public class Anvil113ChunkMerger implements ChunkMerger {
+public class Anvil114ChunkMerger implements ChunkMerger {
 
 	@Override
 	public void mergeChunks(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset) {
@@ -117,7 +117,7 @@ public class Anvil113ChunkMerger implements ChunkMerger {
 		CompoundTag level = new CompoundTag();
 		level.putInt("xPos", absoluteLocation.getX());
 		level.putInt("zPos", absoluteLocation.getZ());
-		level.putString("Status", "postprocessed");
+		level.putString("Status", "full");
 		root.put("Level", level);
 		root.putInt("DataVersion", dataVersion);
 		return root;

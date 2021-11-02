@@ -18,10 +18,7 @@ public class EntityAmountParser extends AmountParser {
 		}
 		EntityFilter entityFilter = VersionController.getEntityFilter(chunkData.getRegion().getData().getInt("DataVersion"));
 		ListTag<?> entities = entityFilter.getEntities(chunkData);
-		if (entities == null) {
-			return 0;
-		}
-		return entities.size();
+		return entities == null ? 0 : entities.size();
 	}
 
 	@Override

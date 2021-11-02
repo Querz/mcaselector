@@ -19,11 +19,12 @@ public class XPosFilter extends IntFilter implements RegionMatcher {
 
 	@Override
 	protected Integer getNumber(ChunkData data) {
-		if (data.getRegion() == null) {
+		if (data.getRegion() == null || data.getRegion().getData() == null) {
 			return null;
 		}
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		return chunkFilter.getXPos(data.getRegion().getData()).asInt();
+		IntTag tag = chunkFilter.getXPos(data.getRegion().getData());
+		return tag == null ? 0 : tag.asInt();
 	}
 
 	@Override

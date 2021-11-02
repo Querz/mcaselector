@@ -1,7 +1,6 @@
 package net.querz.mcaselector.tiles.overlay;
 
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.validation.ValidationHelper;
 
 public class DataVersionParser extends OverlayParser {
 
@@ -11,7 +10,10 @@ public class DataVersionParser extends OverlayParser {
 
 	@Override
 	public int parseValue(ChunkData chunkData) {
-		return ValidationHelper.silent(() -> chunkData.getRegion().getData().getInt("DataVersion"), 0);
+		if (chunkData.getRegion() == null || chunkData.getRegion().getData() == null) {
+			return 0;
+		}
+		return chunkData.getRegion().getData().getInt("DataVersion");
 	}
 
 	@Override

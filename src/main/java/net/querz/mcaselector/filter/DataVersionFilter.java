@@ -14,7 +14,7 @@ public class DataVersionFilter extends IntFilter {
 
 	@Override
 	protected Integer getNumber(ChunkData data) {
-		if (data.getRegion() == null) {
+		if (data.getRegion() == null || data.getRegion().getData() == null) {
 			return 0;
 		}
 		return data.getRegion().getData().getInt("DataVersion");

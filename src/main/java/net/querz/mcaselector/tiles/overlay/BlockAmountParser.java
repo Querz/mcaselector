@@ -21,9 +21,6 @@ public class BlockAmountParser extends OverlayParser {
 			return 0;
 		}
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.getRegion().getData().getInt("DataVersion"));
-		if (chunkFilter == null) {
-			return 0;
-		}
 		return chunkFilter.getBlockAmount(chunkData.getRegion().getData(), multiValues());
 	}
 
