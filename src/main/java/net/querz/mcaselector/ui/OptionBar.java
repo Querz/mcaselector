@@ -31,7 +31,7 @@ public class OptionBar extends BorderPane {
 	* - Open World		- Chunk Grid		- Clear         			- Import chunks
 	* - Open Region		- Region Grid		- Invert        			- Filter chunks
 	* - Settings		- Goto				- Copy chunks				- Change fields
-	* - World Settings	- Reset Zoom    	- Paste chunks				- Edit chunk
+	* - Render Settings	- Reset Zoom    	- Paste chunks				- Edit chunk
 	* - Quit			- Save Screenshot	- Export selected chunks	- Swap chunks
 	*					- Clear cache   	- Delete selected chunks	- Edit overlays
 	*					- Clear all cache	- Import selection			- Next overlay
@@ -55,8 +55,9 @@ public class OptionBar extends BorderPane {
 	private final MenuItem openWorld = UIFactory.menuItem(Translation.MENU_FILE_OPEN_WORLD);
 	private final MenuItem openRegion = UIFactory.menuItem(Translation.MENU_FILE_OPEN);
 	private final MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
-	private final MenuItem worldSettings = UIFactory.menuItem(Translation.MENU_FILE_WORLD_SETTINGS);
+	private final MenuItem renderSettings = UIFactory.menuItem(Translation.MENU_FILE_RENDER_SETTINGS);
 	private final MenuItem quit = UIFactory.menuItem(Translation.MENU_FILE_QUIT);
+	private final MenuItem reload = UIFactory.menuItem(Translation.MENU_VIEW_RELOAD);
 	private final CheckMenuItem chunkGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_CHUNK_GRID, true);
 	private final CheckMenuItem regionGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_REGION_GRID, true);
 	private final MenuItem goTo = UIFactory.menuItem(Translation.MENU_VIEW_GOTO);
@@ -96,9 +97,10 @@ public class OptionBar extends BorderPane {
 
 		file.getItems().addAll(
 				openWorld, openRegion, UIFactory.separator(),
-				settings, worldSettings, UIFactory.separator(),
+				settings, renderSettings, UIFactory.separator(),
 				quit);
 		view.getItems().addAll(
+				reload, UIFactory.separator(),
 				chunkGrid, regionGrid, UIFactory.separator(),
 				goTo, resetZoom, UIFactory.separator(),
 				saveScreenshot, UIFactory.separator(),
@@ -202,9 +204,10 @@ public class OptionBar extends BorderPane {
 
 		openWorld.setOnAction(e -> DialogHelper.openWorld(tileMap, primaryStage));
 		openRegion.setOnAction(e -> DialogHelper.openRegion(tileMap, primaryStage));
-		settings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage));
-		worldSettings.setOnAction(e -> DialogHelper.editWorldSettings(tileMap, primaryStage));
-		quit.setOnAction(e -> System.exit(0));
+		settings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage, false));
+		renderSettings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage, true));
+		quit.setOnAction(e -> DialogHelper.quit(tileMap, primaryStage));
+		reload.setOnAction(e -> tileMap.reload());
 		chunkGrid.setOnAction(e -> tileMap.setShowChunkGrid(chunkGrid.isSelected()));
 		regionGrid.setOnAction(e -> tileMap.setShowRegionGrid(regionGrid.isSelected()));
 		goTo.setOnAction(e -> DialogHelper.gotoCoordinate(tileMap, primaryStage));
@@ -234,8 +237,9 @@ public class OptionBar extends BorderPane {
 
 		openWorld.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN));
 		settings.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCodeCombination.SHORTCUT_DOWN));
-		worldSettings.setAccelerator(new KeyCodeCombination(KeyCode.E));
+		renderSettings.setAccelerator(new KeyCodeCombination(KeyCode.E));
 		quit.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCodeCombination.SHORTCUT_DOWN));
+		reload.setAccelerator(new KeyCodeCombination(KeyCode.F5));
 		chunkGrid.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCodeCombination.SHORTCUT_DOWN));
 		regionGrid.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCodeCombination.SHORTCUT_DOWN));
 		goTo.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCodeCombination.SHORTCUT_DOWN));
@@ -282,7 +286,7 @@ public class OptionBar extends BorderPane {
 	}
 
 	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap) {
-		worldSettings.setDisable(!enabled);
+		renderSettings.setDisable(!enabled);
 		clearViewCache.setDisable(!enabled);
 		clearAllCache.setDisable(!enabled);
 		saveScreenshot.setDisable(!enabled);

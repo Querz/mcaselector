@@ -1,51 +1,52 @@
 package net.querz.mcaselector.version.anvil114;
 
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.version.PoiRelocator;
+import net.querz.mcaselector.point.Point3i;
+import net.querz.mcaselector.version.ChunkRelocator;
+import net.querz.mcaselector.version.Helper;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.LongArrayTag;
 import net.querz.nbt.tag.Tag;
-import static net.querz.mcaselector.validation.ValidationHelper.catchClassCastException;
+import java.util.Map;
+import static net.querz.mcaselector.validation.ValidationHelper.silent;
 
-public class Anvil114PoiRelocator implements PoiRelocator {
+public class Anvil114PoiRelocator implements ChunkRelocator {
 
 	@Override
-	public boolean relocatePoi(CompoundTag root, Point2i offset) {
-		if (root == null || !root.containsKey("Sections")) {
+	public boolean relocate(CompoundTag root, Point3i offset) {
+		CompoundTag sections = Helper.tagFromCompound(root, "Sections");
+		if (sections == null) {
 			return false;
 		}
 
-		CompoundTag sections = catchClassCastException(() -> root.getCompoundTag("Sections"));
-		if (sections == null) {
-			return true;
-		}
+		CompoundTag newSections = new CompoundTag();
 
-		for (Tag<?> s : sections.values()) {
-			CompoundTag section = catchClassCastException(() -> (CompoundTag) s);
+		for (Map.Entry<String, Tag<?>> s : sections) {
+			CompoundTag section = silent(() -> (CompoundTag) s.getValue(), null);
 			if (section == null) {
 				continue;
 			}
 
 			if (section.containsKey("Records") && section.get("Records").getID() != LongArrayTag.ID) {
-				ListTag<CompoundTag> records = catchClassCastException(() -> section.getListTag("Records").asCompoundTagList());
-				if (records == null) {
-					continue;
+				ListTag<CompoundTag> records = Helper.tagFromCompound(section, "Records");
+				if (records != null) {
+					for (CompoundTag record : records) {
+						int[] pos = Helper.intArrayFromCompound(record, "pos");
+						Helper.applyOffsetToIntArrayPos(pos, offset);
+					}
 				}
+			}
 
-				for (CompoundTag record : records) {
-					int[] pos = catchClassCastException(() -> record.getIntArray("pos"));
-					applyOffsetToIntArrayPos(pos, offset);
+			if (s.getKey().matches("^[0-9]{1,2}$")) {
+				int y = Integer.parseInt(s.getKey()) + offset.getY();
+				if (y >= 0 && y <= 15) {
+					newSections.put("" + y, section);
 				}
 			}
 		}
-		return true;
-	}
 
-	private void applyOffsetToIntArrayPos(int[] pos, Point2i offset) {
-		if (pos != null && pos.length == 3) {
-			pos[0] += offset.getX();
-			pos[2] += offset.getZ();
-		}
+		root.put("Sections", newSections);
+
+		return true;
 	}
 }

@@ -16,6 +16,11 @@ public class Point2i implements Cloneable, Serializable {
 		this.z = z;
 	}
 
+	public Point2i(long l) {
+		this.x = (int) (l >> 32);
+		this.z = (int) l;
+	}
+
 	public int getX() {
 		return x;
 	}
@@ -126,6 +131,14 @@ public class Point2i implements Cloneable, Serializable {
 
 	public Point2f toPoint2f() {
 		return new Point2f((float) x, (float) z);
+	}
+
+	public Point3i toPoint3i() {
+		return new Point3i(x, 0, z);
+	}
+
+	public Point3i toPoint3i(int y) {
+		return new Point3i(x, y, z);
 	}
 
 	@Override

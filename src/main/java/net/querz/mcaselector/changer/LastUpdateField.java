@@ -1,7 +1,8 @@
 package net.querz.mcaselector.changer;
 
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.validation.ValidationHelper;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.LongTag;
 
 public class LastUpdateField extends Field<Long> {
@@ -12,7 +13,9 @@ public class LastUpdateField extends Field<Long> {
 
 	@Override
 	public Long getOldValue(ChunkData data) {
-		return ValidationHelper.withDefault(() -> data.getRegion().getData().getCompoundTag("Level").getLong("LastUpdate"), null);
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		LongTag lastUpdate = chunkFilter.getLastUpdate(data.getRegion().getData());
+		return lastUpdate == null ? null : lastUpdate.asLong();
 	}
 
 	@Override
@@ -27,7 +30,8 @@ public class LastUpdateField extends Field<Long> {
 
 	@Override
 	public void change(ChunkData data) {
-		LongTag tag = data.getRegion().getData().getCompoundTag("Level").getLongTag("LastUpdate");
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		LongTag tag = chunkFilter.getLastUpdate(data.getRegion().getData());
 		if (tag != null) {
 			tag.setValue(getNewValue());
 		}
@@ -35,6 +39,7 @@ public class LastUpdateField extends Field<Long> {
 
 	@Override
 	public void force(ChunkData data) {
-		data.getRegion().getData().getCompoundTag("Level").putLong("LastUpdate", getNewValue());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		chunkFilter.setLastUpdate(data.getRegion().getData(), getNewValue());
 	}
 }

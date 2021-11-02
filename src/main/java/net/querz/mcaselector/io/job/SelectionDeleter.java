@@ -1,8 +1,11 @@
 package net.querz.mcaselector.io.job;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.SelectionHelper;
@@ -10,8 +13,6 @@ import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
-import java.util.Map;
-import java.util.Set;
 
 public final class SelectionDeleter {
 
@@ -23,34 +24,36 @@ public final class SelectionDeleter {
 			return;
 		}
 
-		MCAFilePipe.clearQueues();
+		JobHandler.clearQueues();
 
-		Map<Point2i, Set<Point2i>> sel = SelectionHelper.getTrueSelection(selection);
+		progressChannel.setMessage("preparing");
+
+		Long2ObjectOpenHashMap<LongOpenHashSet> sel = SelectionHelper.getTrueSelection(selection);
 
 		progressChannel.setMax(sel.size());
 
-		Point2i first = sel.entrySet().iterator().next().getKey();
+		Point2i first = new Point2i(sel.long2ObjectEntrySet().iterator().next().getLongKey());
 
 		progressChannel.updateProgress(FileHelper.createMCAFileName(first), 0);
 
-		for (Map.Entry<Point2i, Set<Point2i>> entry : sel.entrySet()) {
-			MCAFilePipe.addJob(new MCADeleteSelectionLoadJob(FileHelper.createRegionDirectories(entry.getKey()), entry.getValue(), progressChannel));
+		for (Long2ObjectMap.Entry<LongOpenHashSet> entry : sel.long2ObjectEntrySet()) {
+			JobHandler.addJob(new MCADeleteSelectionProcessJob(FileHelper.createRegionDirectories(new Point2i(entry.getLongKey())), entry.getValue(), progressChannel));
 		}
 	}
 
-	private static class MCADeleteSelectionLoadJob extends LoadDataJob {
+	private static class MCADeleteSelectionProcessJob extends ProcessDataJob {
 
-		private final Set<Point2i> selection;
 		private final Progress progressChannel;
+		private final LongOpenHashSet selection;
 
-		private MCADeleteSelectionLoadJob(RegionDirectories dirs, Set<Point2i> selection, Progress progressChannel) {
-			super(dirs);
+		private MCADeleteSelectionProcessJob(RegionDirectories dirs, LongOpenHashSet selection, Progress progressChannel) {
+			super(dirs, PRIORITY_LOW);
 			this.selection = selection;
 			this.progressChannel = progressChannel;
 		}
 
 		@Override
-		public void execute() {
+		public boolean execute() {
 			// delete whole files if everything is selected
 			if (selection == null) {
 				// delete region
@@ -75,7 +78,7 @@ public final class SelectionDeleter {
 				}
 
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				return true;
 			}
 
 			byte[] regionData = loadRegionHeader();
@@ -85,39 +88,24 @@ public final class SelectionDeleter {
 			if (regionData == null && poiData == null && entitiesData == null) {
 				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-			} else {
-				MCAFilePipe.executeProcessData(new MCADeleteSelectionProcessJob(getRegionDirectories(), regionData, poiData, entitiesData, selection, progressChannel));
-
+				return true;
 			}
-		}
-	}
 
-	private static class MCADeleteSelectionProcessJob extends ProcessDataJob {
-
-		private final Progress progressChannel;
-		private final Set<Point2i> selection;
-
-		private MCADeleteSelectionProcessJob(RegionDirectories dirs, byte[] regionData, byte[] poiData, byte[] entitiesData, Set<Point2i> selection, Progress progressChannel) {
-			super(dirs, regionData, poiData, entitiesData);
-			this.selection = selection;
-			this.progressChannel = progressChannel;
-		}
-
-		@Override
-		public void execute() {
 			// load MCAFile
 			try {
 				// only load headers, we don't care for chunk contents
-				Region region = Region.loadRegionHeaders(getRegionDirectories(), getRegionData(), getPoiData(), getEntitiesData());
+				Region region = Region.loadRegionHeaders(getRegionDirectories(), regionData, poiData, entitiesData);
 
 				region.deleteChunks(selection);
 
-				MCAFilePipe.executeSaveData(new MCADeleteSelectionSaveJob(getRegionDirectories(), region, progressChannel));
+				JobHandler.executeSaveData(new MCADeleteSelectionSaveJob(getRegionDirectories(), region, progressChannel));
+				return false;
 
 			} catch (Exception ex) {
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				Debug.errorf("error deleting chunk indices in %s", getRegionDirectories().getLocationAsFileName());
 			}
+			return true;
 		}
 	}
 

@@ -71,7 +71,10 @@ public class Window extends Application {
 			}
 		});
 
-		primaryStage.setOnCloseRequest(e -> System.exit(0));
+		primaryStage.setOnCloseRequest(e -> {
+			DialogHelper.quit(tileMap, primaryStage);
+			e.consume();
+		});
 		primaryStage.setScene(scene);
 
 		if (version.contains("pre")) {

@@ -176,7 +176,8 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 
 	@Override
 	public void change(ChunkData data) {
-		VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion")).replaceBlocks(data.getRegion().getData(), getNewValue());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		chunkFilter.replaceBlocks(data.getRegion().getData(), getNewValue());
 	}
 
 	@Override
@@ -186,20 +187,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder(getType().toString());
-		sb.append(" = \"");
-		boolean first = true;
-		for (Map.Entry<String, ChunkFilter.BlockReplaceData> entry : getNewValue().entrySet()) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(", ");
-			}
-			sb.append(entry.getKey()).append("=");
-			sb.append(escapeString(entry.getValue().toString()));
-		}
-		sb.append("\"");
-		return sb.toString();
+		return getType().toString() + " = \"" + valueToString() + "\"";
 	}
 
 	@Override
@@ -212,8 +200,14 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 			} else {
 				sb.append(", ");
 			}
-			sb.append(entry.getKey()).append("=");
-			sb.append(entry.getValue().toString());
+			String from = entry.getKey();
+			if (!from.startsWith("minecraft:")) {
+				sb.append("'").append(from).append("'");
+			} else {
+				sb.append(entry.getKey());
+			}
+			sb.append("=");
+			sb.append(escapeString(entry.getValue().toString()));
 		}
 		return sb.toString();
 	}

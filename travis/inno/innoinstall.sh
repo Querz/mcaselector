@@ -4,7 +4,7 @@ rm -rf build/tmp/inno
 mkdir -p build/tmp/inno
 cd build/tmp/inno
 
-wget https://constexpr.org/innoextract/files/innoextract-1.9/innoextract-1.9-linux.tar.xz -O innoextract.tar.xz
+wget https://constexpr.org/innoextract/files/innoextract-1.9/innoextract-1.9-linux.tar.xz --no-check-certificate -O innoextract.tar.xz
 tar -xf innoextract.tar.xz
 rm innoextract.tar.xz
 

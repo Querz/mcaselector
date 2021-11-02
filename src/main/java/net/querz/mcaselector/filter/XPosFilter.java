@@ -2,6 +2,10 @@ package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionController;
+import net.querz.nbt.tag.IntTag;
+import net.querz.nbt.tag.StringTag;
 
 public class XPosFilter extends IntFilter implements RegionMatcher {
 
@@ -15,10 +19,12 @@ public class XPosFilter extends IntFilter implements RegionMatcher {
 
 	@Override
 	protected Integer getNumber(ChunkData data) {
-		if (data.getRegion() == null) {
+		if (data.getRegion() == null || data.getRegion().getData() == null) {
 			return null;
 		}
-		return data.getRegion().getData().getCompoundTag("Level").getInt("xPos");
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		IntTag tag = chunkFilter.getXPos(data.getRegion().getData());
+		return tag == null ? 0 : tag.asInt();
 	}
 
 	@Override

@@ -1,5 +1,9 @@
 package net.querz.mcaselector.ui;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
@@ -28,23 +32,7 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.TileMapSelection;
-import net.querz.mcaselector.ui.dialog.AboutDialog;
-import net.querz.mcaselector.ui.dialog.CancellableProgressDialog;
-import net.querz.mcaselector.ui.dialog.ChangeFieldsConfirmationDialog;
-import net.querz.mcaselector.ui.dialog.ChangeNBTDialog;
-import net.querz.mcaselector.ui.dialog.DeleteConfirmationDialog;
-import net.querz.mcaselector.ui.dialog.ErrorDialog;
-import net.querz.mcaselector.ui.dialog.ExportConfirmationDialog;
-import net.querz.mcaselector.ui.dialog.FilterChunksDialog;
-import net.querz.mcaselector.ui.dialog.GotoDialog;
-import net.querz.mcaselector.ui.dialog.ImageExportConfirmationDialog;
-import net.querz.mcaselector.ui.dialog.ImportConfirmationDialog;
-import net.querz.mcaselector.ui.dialog.NBTEditorDialog;
-import net.querz.mcaselector.ui.dialog.OverlayEditorDialog;
-import net.querz.mcaselector.ui.dialog.ProgressDialog;
-import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
-import net.querz.mcaselector.ui.dialog.SettingsDialog;
-import net.querz.mcaselector.ui.dialog.WorldSettingsDialog;
+import net.querz.mcaselector.ui.dialog.*;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -53,12 +41,10 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import static net.querz.mcaselector.ui.dialog.ImportConfirmationDialog.ChunkImportConfirmationData;
 
 public class DialogHelper {
@@ -162,12 +148,25 @@ public class DialogHelper {
 							r.getRadius(),
 							selection -> Platform.runLater(() -> {
 								tileMap.addMarkedChunks(selection);
-								tileMap.update();
+								tileMap.draw();
 							}), t, false));
 				}
 				default -> Debug.dump("i have no idea how you got no selection there...");
 			}
 		});
+	}
+
+	public static void quit(TileMap tileMap, Stage primaryStage) {
+		if (tileMap.getSelectedChunks() > 0 || tileMap.isSelectionInverted()) {
+			Optional<ButtonType> result = new ConfirmationDialog(primaryStage, Translation.DIALOG_UNSAVED_CHANGES_TITLE, Translation.DIALOG_UNSAVED_CHANGES_HEADER, "unsaved-changes").showAndWait();
+			result.ifPresent(r -> {
+				if (r == ButtonType.OK) {
+					System.exit(0);
+				}
+			});
+		} else {
+			System.exit(0);
+		}
 	}
 
 	public static void editOverlays(TileMap tileMap, Stage primaryStage) {
@@ -182,7 +181,7 @@ public class DialogHelper {
 						.showProgressBar(t -> SelectionDeleter.deleteSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), t));
 				CacheHelper.clearSelectionCache(tileMap);
 				tileMap.clear();
-				tileMap.update();
+				tileMap.draw();
 			}
 		});
 	}
@@ -246,56 +245,63 @@ public class DialogHelper {
 		result.ifPresent(r -> tileMap.goTo(r.getX(), r.getZ()));
 	}
 
-	public static void editSettings(TileMap tileMap, Stage primaryStage) {
-		Optional<SettingsDialog.Result> result = new SettingsDialog(primaryStage).showAndWait();
-		result.ifPresent(r -> {
-			if (Config.getLoadThreads() != r.getReadThreads()
-					|| Config.getProcessThreads() != r.getProcessThreads()
-					|| Config.getWriteThreads() != r.getWriteThreads()) {
-				Config.setLoadThreads(r.getReadThreads());
-				Config.setProcessThreads(r.getProcessThreads());
-				Config.setWriteThreads(r.getWriteThreads());
-				MCAFilePipe.init();
-			}
-			Config.setMaxLoadedFiles(r.getMaxLoadedFiles());
+	public static void editSettings(TileMap tileMap, Stage primaryStage, boolean renderSettings) {
+		// ignore request to display render settings directly if there is no world
+		if (tileMap.getDisabled() && renderSettings) {
+			return;
+		}
 
-			if (!Config.getLocale().equals(r.getLocale())) {
-				Config.setLocale(r.getLocale());
+		Optional<SettingsDialog.Result> result = new SettingsDialog(primaryStage, renderSettings).showAndWait();
+		result.ifPresent(r -> {
+			if (Config.getProcessThreads() != r.processThreads
+					|| Config.getWriteThreads() != r.writeThreads) {
+				Config.setProcessThreads(r.processThreads);
+				Config.setWriteThreads(r.writeThreads);
+				JobHandler.init();
+			}
+			Config.setMaxLoadedFiles(r.maxLoadedFiles);
+
+			if (!Config.getLocale().equals(r.locale)) {
+				Config.setLocale(r.locale);
 				Locale.setDefault(Config.getLocale());
 				Translation.load(Config.getLocale());
 			}
-			Config.setRegionSelectionColor(new Color(r.getRegionColor()));
-			Config.setChunkSelectionColor(new Color(r.getChunkColor()));
-			Config.setPasteChunksColor(new Color(r.getPasteColor()));
-			if (r.getShade() != Config.shade() || r.getShadeWater() != Config.shadeWater()) {
-				Config.setShade(r.getShade());
-				Config.setShadeWater(r.getShadeWater());
-				CacheHelper.clearAllCache(tileMap);
-			}
-			Config.setShowNonExistentRegions(r.getShowNonexistentRegions());
-			tileMap.setShowNonexistentRegions(r.getShowNonexistentRegions());
-			Config.setSmoothRendering(r.getSmoothRendering());
-			tileMap.setSmoothRendering(r.getSmoothRendering());
-			Config.setSmoothOverlays(r.getSmoothOverlays());
-			Config.setTileMapBackground(r.getTileMapBackground().name());
-			tileMap.getWindow().getTileMapBox().setBackground(r.getTileMapBackground().getBackground());
-			Config.setMCSavesDir(r.getMcSavesDir() + "");
-			Config.setDebug(r.getDebug());
+			Config.setRegionSelectionColor(new Color(r.regionColor));
+			Config.setChunkSelectionColor(new Color(r.regionColor));
+			Config.setPasteChunksColor(new Color(r.pasteColor));
 			tileMap.redrawOverlays();
-			tileMap.update();
-		});
-	}
+			Config.setMCSavesDir(r.mcSavesDir + "");
+			Config.setDebug(r.debug);
 
-	public static void editWorldSettings(TileMap tileMap, Stage primaryStage) {
-		Optional<WorldSettingsDialog.Result> result = new WorldSettingsDialog(primaryStage).showAndWait();
-		result.ifPresent(r -> {
-			Config.setWorldDirs(r.getWorldDirectories());
-			if (r.getHeight() != Config.getRenderHeight() || r.layerOnly() != Config.renderLayerOnly()) {
-				Config.setRenderHeight(r.getHeight());
-				Config.setRenderLayerOnly(r.layerOnly());
-				tileMap.getWindow().getOptionBar().setRenderHeight(r.getHeight());
-				CacheHelper.clearAllCache(tileMap);
+			if (!tileMap.getDisabled()) {
+				Config.setShowNonExistentRegions(r.showNonexistentRegions);
+				tileMap.setShowNonexistentRegions(r.showNonexistentRegions);
+				Config.setSmoothRendering(r.smoothRendering);
+				tileMap.setSmoothRendering(r.smoothRendering);
+				Config.setSmoothOverlays(r.smoothOverlays);
+				Config.setTileMapBackground(r.tileMapBackground.name());
+				tileMap.getWindow().getTileMapBox().setBackground(r.tileMapBackground.getBackground());
+
+				if (r.height != Config.getRenderHeight() || r.layerOnly != Config.renderLayerOnly()
+					|| r.shade != Config.shade() || r.shadeWater != Config.shadeWater() || r.caves != Config.renderCaves()) {
+					Config.setRenderHeight(r.height);
+					Config.setRenderLayerOnly(r.layerOnly);
+					Config.setRenderCaves(r.caves);
+					tileMap.getWindow().getOptionBar().setRenderHeight(r.height);
+					Config.setShade(r.shade);
+					Config.setShadeWater(r.shadeWater);
+					// only clear the cache if the actual image rendering changed
+					CacheHelper.clearAllCache(tileMap);
+				}
+
+				WorldDirectories worldDirectories = Config.getWorldDirs();
+				worldDirectories.setPoi(r.poi);
+				worldDirectories.setEntities(r.entities);
+
+				CacheHelper.updateWorldSettingsFile();
 			}
+
+			tileMap.draw();
 		});
 	}
 
@@ -364,19 +370,21 @@ public class DialogHelper {
 	public static void swapChunks(TileMap tileMap, Stage primaryStage) {
 		new ProgressDialog(Translation.MENU_TOOLS_SWAP_CHUNKS, primaryStage).showProgressBar(t -> {
 			t.setMax(4);
-			Map<Point2i, Set<Point2i>> markedChunks = tileMap.getMarkedChunks();
-			ArrayList<Point2i> chunks = new ArrayList<>(2);
-			for (Map.Entry<Point2i, Set<Point2i>> entry : markedChunks.entrySet()) {
+			Long2ObjectOpenHashMap<LongOpenHashSet> markedChunks = tileMap.getMarkedChunks();
+			LongArrayList chunks = new LongArrayList(2);
+			for (Long2ObjectMap.Entry<LongOpenHashSet> entry : markedChunks.long2ObjectEntrySet()) {
 				chunks.addAll(entry.getValue());
 			}
 			if (chunks.size() != 2) {
 				throw new IllegalStateException("need 2 chunks to swap");
 			}
 
-			Point2i fromChunk = chunks.get(0);
-			Point2i toChunk = chunks.get(1);
+			Point2i fromChunk = new Point2i(chunks.getLong(0));
+			Point2i toChunk = new Point2i(chunks.getLong(1));
 			Point2i fromRegion = fromChunk.chunkToRegion();
 			Point2i toRegion = toChunk.chunkToRegion();
+
+			Debug.dumpf("swapping chunk %s:%s with %s:%s", fromChunk, fromRegion, toChunk, toRegion);
 
 			t.incrementProgress(FileHelper.createMCAFileName(fromRegion));
 
@@ -397,7 +405,7 @@ public class DialogHelper {
 				to = from;
 			} else {
 				try {
-					to = Region.loadOrCreateEmptyRegion(FileHelper.createRegionDirectories(fromRegion));
+					to = Region.loadOrCreateEmptyRegion(FileHelper.createRegionDirectories(toRegion));
 				} catch (IOException ex) {
 					Debug.dumpException("failed to load region files", ex);
 					t.done(null);
@@ -411,10 +419,10 @@ public class DialogHelper {
 			Point2i toOffset = fromChunk.sub(toChunk);
 
 			ChunkData fromData = from.getChunkDataAt(fromChunk);
-			fromData.relocate(fromOffset.chunkToBlock());
+			fromData.relocate(fromOffset.chunkToBlock().toPoint3i());
 
 			ChunkData toData = to.getChunkDataAt(toChunk);
-			toData.relocate(toOffset.chunkToBlock());
+			toData.relocate(toOffset.chunkToBlock().toPoint3i());
 
 			from.setChunkDataAt(toData, fromChunk);
 			to.setChunkDataAt(fromData, toChunk);
@@ -456,7 +464,7 @@ public class DialogHelper {
 	public static void pasteSelectedChunks(TileMap tileMap, Stage primaryStage) {
 		if (tileMap.isInPastingMode()) {
 			DataProperty<ImportConfirmationDialog.ChunkImportConfirmationData> dataProperty = new DataProperty<>();
-			ChunkImportConfirmationData preFill = new ChunkImportConfirmationData(tileMap.getPastedChunksOffset(), true, false, null);
+			ChunkImportConfirmationData preFill = new ChunkImportConfirmationData(tileMap.getPastedChunksOffset(), 0, true, false, null);
 			Optional<ButtonType> result = new ImportConfirmationDialog(primaryStage, preFill, dataProperty::set).showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
@@ -485,7 +493,7 @@ public class DialogHelper {
 					Selection selection = (Selection) data;
 
 					tileMap.setPastedChunks(selection.getSelectionData(), selection.isInverted(), selection.getMin(), selection.getMax(), selection.getWorld());
-					tileMap.update();
+					tileMap.draw();
 
 				} catch (UnsupportedFlavorException | IOException ex) {
 					Debug.dumpException("failed to paste chunks", ex);
@@ -521,7 +529,8 @@ public class DialogHelper {
 				Config.setWorldDir(file);
 				CacheHelper.validateCacheVersion(tileMap);
 				tileMap.clear();
-				tileMap.update();
+				tileMap.revalidateRegions();
+				tileMap.draw();
 				tileMap.disable(false);
 				tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
 				tileMap.getWindow().setTitleSuffix(file.toString());
@@ -562,11 +571,11 @@ public class DialogHelper {
 	public static void setWorld(WorldDirectories worldDirectories, TileMap tileMap) {
 		Config.setWorldDirs(worldDirectories);
 		CacheHelper.validateCacheVersion(tileMap);
-		CacheHelper.readWorldSettingsFile();
+		CacheHelper.readWorldSettingsFile(tileMap);
 		RegionImageGenerator.invalidateCachedMCAFiles();
 		tileMap.getWindow().getOptionBar().setRenderHeight(Config.getRenderHeight());
 		tileMap.clear();
-		tileMap.update();
+		tileMap.draw();
 		tileMap.disable(false);
 		tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
 		tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent());
@@ -581,7 +590,7 @@ public class DialogHelper {
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
 			tileMap.setMarkedChunks(selection.selection());
 			tileMap.setSelectionInverted(selection.inverted());
-			tileMap.update();
+			tileMap.draw();
 		}
 	}
 
@@ -591,7 +600,7 @@ public class DialogHelper {
 		if (file != null) {
 			SelectionHelper.exportSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), file);
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
-			tileMap.update();
+			tileMap.draw();
 		}
 	}
 

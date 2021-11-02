@@ -9,6 +9,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
@@ -42,14 +43,27 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		LocationInput locationInput = new LocationInput(true);
 		locationInput.setOnValidityCheck(valid -> {
 			getDialogPane().lookupButton(ButtonType.OK).setDisable(!valid);
-			data.offset = locationInput.getValue();
+			data.xzOffset = locationInput.getValue();
 			dataAction.accept(data);
-			if (valid && (data.offset.getX() != 0 || data.offset.getZ() != 0)) {
+			if (valid && (data.xzOffset.getX() != 0 || data.xzOffset.getZ() != 0)) {
 				warning.getStyleClass().remove("import-chunks-warning-invisible");
 				warningVisible.set(true);
 			} else if (warningVisible.get()) {
 				warning.getStyleClass().add("import-chunks-warning-invisible");
 				warningVisible.set(false);
+			}
+		});
+
+		TextField yOffsetInput = new TextField();
+		yOffsetInput.textProperty().addListener((v, o, n) -> {
+			if (o != null && !o.equals(n)) {
+				try {
+					data.yOffset = Integer.parseInt(n);
+					yOffsetInput.pseudoClassStateChanged(invalid, false);
+				} catch (NumberFormatException ex) {
+					data.yOffset = 0;
+					yOffsetInput.pseudoClassStateChanged(invalid, n != null && !n.isEmpty());
+				}
 			}
 		});
 
@@ -84,7 +98,7 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 
 		overwrite.setSelected(true);
 
-		data.offset = locationInput.getValue();
+		data.xzOffset = locationInput.getValue();
 		data.overwrite = true;
 		dataAction.accept(data);
 
@@ -96,8 +110,10 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		optionGrid.add(overwrite, 1, 1);
 		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_SELECTION_ONLY), 0, 2);
 		optionGrid.add(selectionOnly, 1, 2);
-		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_SECTIONS), 0, 3);
-		optionGrid.add(range, 1, 3);
+		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_Y_OFFSET), 0, 3);
+		optionGrid.add(yOffsetInput, 1, 3);
+		optionGrid.add(UIFactory.label(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS_SECTIONS), 0, 4);
+		optionGrid.add(range, 1, 4);
 
 		BorderedTitledPane options = new BorderedTitledPane(Translation.DIALOG_IMPORT_CHUNKS_CONFIRMATION_OPTIONS, optionGrid);
 
@@ -112,15 +128,17 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 		getDialogPane().setContent(content);
 
 		if (preFill != null) {
-			if (preFill.offset != null) {
-				data.offset = preFill.offset;
-				locationInput.setX(preFill.offset.getX());
-				locationInput.setZ(preFill.offset.getZ());
+			if (preFill.xzOffset != null) {
+				data.xzOffset = preFill.xzOffset;
+				locationInput.setX(preFill.xzOffset.getX());
+				locationInput.setZ(preFill.xzOffset.getZ());
 			}
 			data.overwrite = preFill.overwrite;
 			overwrite.setSelected(preFill.overwrite);
 			data.selectionOnly = preFill.selectionOnly;
 			selectionOnly.setSelected(preFill.selectionOnly);
+			data.yOffset = preFill.yOffset;
+			yOffsetInput.setText("" + preFill.yOffset);
 			if (preFill.ranges != null) {
 				data.ranges = preFill.ranges;
 				range.setText(preFill.ranges.stream().map(Range::toString).collect(Collectors.joining(",")));
@@ -130,22 +148,24 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 
 	public static class ChunkImportConfirmationData {
 
-		private Point2i offset;
+		private Point2i xzOffset;
+		private int yOffset;
 		private boolean overwrite;
 		private boolean selectionOnly;
 		private List<Range> ranges;
 
 		private ChunkImportConfirmationData() {}
 
-		public ChunkImportConfirmationData(Point2i offset, boolean overwrite, boolean selectionOnly, List<Range> ranges) {
-			this.offset = offset;
+		public ChunkImportConfirmationData(Point2i xzOffset, int yOffset, boolean overwrite, boolean selectionOnly, List<Range> ranges) {
+			this.xzOffset = xzOffset;
+			this.yOffset = yOffset;
 			this.overwrite = overwrite;
 			this.selectionOnly = selectionOnly;
 			this.ranges = ranges;
 		}
 
-		public Point2i getOffset() {
-			return offset;
+		public Point3i getOffset() {
+			return new Point3i(xzOffset.getX(), yOffset, xzOffset.getZ());
 		}
 
 		public boolean overwrite() {

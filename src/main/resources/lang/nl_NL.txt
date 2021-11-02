@@ -1,15 +1,9 @@
 status.region;region
-status.region.tooltip;De momenteel gekozen region, representeert de nummers in de bestandsnaam.
 status.chunk;chunk
-status.chunk.tooltip;De momenteel gekozen chunk.
 status.block;blok
-status.block.tooltip;Een benadering van het momenteel gekozen blok.
 status.selected;geselecteerd
-status.selected.tooltip;De momenteel geselecteerde hoeveelheid chunks.
-status.visible;zichtbaar
-status.visible.tooltip;De hoeveelheid geladen region afbeeldingen voor het renderen.
+status.queue;queue
 status.total;totaal
-status.total.tooltip;De totale hoeveelheid geladen regions, inclusief de niet zichtbare geselecteerde regions.
 status.overlay;overlay
 menu.file;Bestand
 menu.view;Beeld
@@ -19,8 +13,9 @@ menu.about;Over
 menu.file.open_world;Open een wereld
 menu.file.open;Open een regio
 menu.file.settings;Instellingen
-menu.file.world_settings;Wereldinstellingen
+menu.file.render_settings;Renderinstellingen
 menu.file.quit;Stoppen
+menu.view.reload;Herladen
 menu.view.chunk_grid;Chunk Raster
 menu.view.region_grid;Region Raster
 menu.view.goto;Ga naar
@@ -48,29 +43,42 @@ menu.tools.next_overlay;Volgende overlay
 menu.tools.next_overlay_type;Overlaytype
 dialog.select_world.title;Selecteer een dimensie
 dialog.settings.title;Instellingen
-dialog.settings.language;Taal
-dialog.settings.read_threads;Lees Threads
-dialog.settings.process_threads;Verwerk Threads
-dialog.settings.write_threads;Schrijf Threads
-dialog.settings.max_files;Maximaal geladen bestanden
-dialog.settings.region_color;Region selectie kleur
-dialog.settings.chunk_color;Chunk selectie kleur
-dialog.settings.pasted_chunks_color;Kleur van ingevoegde chunks
-dialog.settings.shade;Schaduw
-dialog.settings.shade_water;Shaduw water
-dialog.settings.show_nonexistent_regions;Toon niet-bestaande regio's
-dialog.settings.smooth_rendering;Glad maken
-dialog.settings.smooth_overlays;Vloeiende overlays
-dialog.settings.background_pattern;Patroon van de achtergrond
-dialog.settings.mc_saves_dir;Minecraft-map
-dialog.settings.print_debug;Print foutopsporingsberichten
-dialog.settings.show_log_file;Toon logbestand
+dialog.settings.global.language;Taal
+dialog.settings.global.language.language;Taal
+dialog.settings.processing.process.process_threads;Procesdraden
+dialog.settings.processing.process;Proces
+dialog.settings.processing.process.write_threads;Discussies schrijven
+dialog.settings.processing.files.max_files;Max. bestanden
+dialog.settings.global.selection.region_color;Regio kleur
+dialog.settings.global.selection.chunk_color;Chunk kleur
+dialog.settings.global.selection.pasted_chunks_color;Geplakte brokken kleur
+dialog.settings.rendering.shade.shade;Schaduw
+dialog.settings.rendering.shade;Schaduw
+dialog.settings.rendering.shade.shade_water;schaduw water
+dialog.settings.rendering.background.show_nonexistent_regions;Niet-bestaande regio's weergeven
+dialog.settings.rendering.smooth.smooth_rendering;Vloeiende weergave
+dialog.settings.rendering.smooth.smooth_overlays;Vloeiende overlays
+dialog.settings.rendering.background.background_pattern;Achtergrondpatroon
+dialog.settings.rendering.background;Achtergrond
+dialog.settings.global.misc.mc_saves_dir;MC slaat map op
+dialog.settings.global.misc.print_debug;Foutopsporingsberichten afdrukken
+dialog.settings.global.misc.show_log_file;Toon logbestand
 dialog.settings.reset;Reset
-dialog.world_settings.title;Wereldinstellingen
-dialog.world_settings.poi;POI
-dialog.world_settings.entities;Entiteiten
-dialog.world_settings.render_height;Geef hoogte weer
-dialog.world_settings.render_layer_only;Alleen laag renderen
+dialog.settings.tab_global;Globaal
+dialog.settings.tab_processing;Verwerken
+dialog.settings.tab_rendering;weergave
+dialog.settings.tab_world;Wereld
+dialog.settings.global.misc;Diversen
+dialog.settings.processing.files;Bestanden
+dialog.settings.rendering.smooth;Zacht
+dialog.settings.global.selection;Selectie
+dialog.settings.world.paths;Paden
+dialog.settings.world.paths.poi;POI
+dialog.settings.world.paths.entities;Entiteiten
+dialog.settings.rendering.layers.render_height;Render hoogte
+dialog.settings.rendering.layers.render_layer_only;Alleen laag renderen
+dialog.settings.rendering.layers;Lagen
+dialog.settings.rendering.layers.render_caves;Grotten renderen
 dialog.goto.title;Ga naar locatie
 dialog.confirmation.question;Weet je het zeker?
 dialog.delete_chunks_confirmation.title;Chunks verwijderen
@@ -85,6 +93,7 @@ dialog.import_chunks_confirmation.options;Opties
 dialog.import_chunks_confirmation.options.offset;Verplaatsing
 dialog.import_chunks_confirmation.options.overwrite;Schrijf bestaande chunks over
 dialog.import_chunks_confirmation.options.selection_only;Alleen van toepassing op selectie
+dialog.import_chunks_confirmation.options.y_offset;Y-offset
 dialog.import_chunks_confirmation.options.sections;Secties
 dialog.import_chunks_confirmation.warning;Waarschuwing: Importeren van verplaatste chunks update niet de inhoud van command blocks.
 dialog.export_chunks_confirmation.title;Chunks exporteren
@@ -155,5 +164,7 @@ dialog.error.button.copy_to_clipboard;Kopieer naar klembord
 dialog.error.title;Fout
 dialog.error.header;Er is een fout opgetreden
 dialog.error.copied_to_clipboard;Gekopieerd naar het klembord!
+dialog.unsaved_changes.title;Niet-opgeslagen wijzigingen
+dialog.unsaved_changes.header;U heeft niet-opgeslagen wijzigingen.
 button.cancel;Annuleren
 button.ok;OK

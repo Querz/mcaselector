@@ -75,7 +75,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 			if (!closedWithOK.get()) {
 				tileMap.setOverlays(originalOverlays);
 				tileMap.setOverlay(originalOverlay);
-				tileMap.update();
+				tileMap.draw();
 				tileMap.getWindow().getOptionBar().setEditOverlaysEnabled(true);
 				tileMap.getWindow().untrackDialog(this);
 			}
@@ -102,7 +102,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 			add(newParser);
 			tileMap.setOverlays(overlays);
 			tileMap.setOverlay(newParser);
-			tileMap.update();
+			tileMap.draw();
 		});
 
 		VBox content = new VBox();
@@ -133,7 +133,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		tileMap.clearOverlay();
 		tileMap.setOverlays(overlays);
 		tileMap.setOverlay(newValue);
-		tileMap.update();
+		tileMap.draw();
 	}
 
 	private void onDelete(OverlayParser deleted) {
@@ -141,7 +141,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		overlays.remove(index);
 		overlaysList.getChildren().remove(index);
 		tileMap.setOverlays(overlays);
-		tileMap.update();
+		tileMap.draw();
 	}
 
 	private void add(OverlayParser parser) {
@@ -153,10 +153,10 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 					tileMap.setOverlays(overlays);
 				}
 				tileMap.setOverlay(p);
-				tileMap.update();
+				tileMap.draw();
 			} else if (p == tileMap.getOverlay()) {
 				tileMap.clearOverlay();
-				tileMap.update();
+				tileMap.draw();
 			}
 		});
 		box.setOnDelete(this::onDelete);

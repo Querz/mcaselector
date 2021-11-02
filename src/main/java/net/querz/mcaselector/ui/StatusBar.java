@@ -6,12 +6,11 @@ import javafx.animation.RotateTransition;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.text.Translation;
@@ -26,8 +25,8 @@ public class StatusBar extends StackPane {
 	private final Label hoveredRegion = new Label(Translation.STATUS_REGION + ": -, -");
 	private final Label hoveredChunk = new Label(Translation.STATUS_CHUNK + ": -, -");
 	private final Label hoveredBlock = new Label(Translation.STATUS_BLOCK + ": -, -");
-	private final Label visibleRegions = new Label(Translation.STATUS_VISIBLE + ": 0");
 	private final Label totalRegions = new Label(Translation.STATUS_TOTAL + ": 0");
+	private final Label queuedJobs = new Label(Translation.STATUS_QUEUE + ": 0");
 	private final Label overlay = new Label(Translation.STATUS_OVERLAY + ": -");
 
 	ImageView loadIcon = new ImageView(FileHelper.getIconFromResources("img/load"));
@@ -46,18 +45,12 @@ public class StatusBar extends StackPane {
 			constraints.setFillWidth(true);
 			grid.getColumnConstraints().add(constraints);
 		}
-		hoveredRegion.setTooltip(new Tooltip(Translation.STATUS_REGION_TOOLTIP.toString()));
-		hoveredChunk.setTooltip(new Tooltip(Translation.STATUS_CHUNK_TOOLTIP.toString()));
-		hoveredBlock.setTooltip(new Tooltip(Translation.STATUS_BLOCK_TOOLTIP.toString()));
-		selectedChunks.setTooltip(new Tooltip(Translation.STATUS_SELECTED_TOOLTIP.toString()));
-		visibleRegions.setTooltip(new Tooltip(Translation.STATUS_VISIBLE_TOOLTIP.toString()));
-		totalRegions.setTooltip(new Tooltip(Translation.STATUS_TOTAL_TOOLTIP.toString()));
 		grid.add(hoveredBlock, 0, 0, 1, 1);
 		grid.add(hoveredChunk, 1, 0, 1, 1);
 		grid.add(hoveredRegion, 2, 0, 1 ,1);
 		grid.add(selectedChunks, 3, 0, 1, 1);
-		grid.add(visibleRegions, 4, 0, 1, 1);
-		grid.add(totalRegions, 5, 0, 1, 1);
+		grid.add(totalRegions, 4, 0, 1, 1);
+		grid.add(queuedJobs, 5, 0, 1, 1);
 		grid.add(overlay, 6, 0, 1, 1);
 
 		StackPane.setAlignment(grid, Pos.CENTER_LEFT);
@@ -80,7 +73,7 @@ public class StatusBar extends StackPane {
 				} catch (InterruptedException ex) {
 					return;
 				}
-				int activeJobs = MCAFilePipe.getActiveJobs();
+				int activeJobs = JobHandler.getActiveJobs();
 				if (before.get() == 0 && activeJobs != 0) {
 					Platform.runLater(() -> {
 						rt.play();
@@ -104,7 +97,7 @@ public class StatusBar extends StackPane {
 
 	private void update(TileMap tileMap) {
 		selectedChunks.setText(Translation.STATUS_SELECTED + ": " + (tileMap.isSelectionInverted() ? "?" : tileMap.getSelectedChunks()));
-		visibleRegions.setText(Translation.STATUS_VISIBLE + ": " + tileMap.getVisibleTiles());
+		queuedJobs.setText(Translation.STATUS_QUEUE + ": " + JobHandler.getActiveJobs());
 		totalRegions.setText(Translation.STATUS_TOTAL + ": " + tileMap.getLoadedTiles());
 		Point2i b = tileMap.getHoveredBlock();
 		if (b != null) {

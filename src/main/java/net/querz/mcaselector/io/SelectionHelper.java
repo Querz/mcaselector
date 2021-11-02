@@ -1,5 +1,8 @@
 package net.querz.mcaselector.io;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.debug.Debug;
@@ -10,7 +13,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
 
 public class SelectionHelper {
 
@@ -21,10 +23,11 @@ public class SelectionHelper {
 			if (data.inverted()) {
 				bw.write("inverted\n");
 			}
-			for (Map.Entry<Point2i, Set<Point2i>> entry : data.selection().entrySet()) {
-				Point2i r = entry.getKey();
+			for (Long2ObjectMap.Entry<LongOpenHashSet> entry : data.selection().long2ObjectEntrySet()) {
+				Point2i r = new Point2i(entry.getLongKey());
 				if (entry.getValue() != null) {
-					for (Point2i c : entry.getValue()) {
+					for (long chunk : entry.getValue()) {
+						Point2i c = new Point2i(chunk);
 						bw.write(r.getX() + ";" + r.getZ() + ";" + c.getX() + ";" + c.getZ() + "\n");
 					}
 				} else {
@@ -37,7 +40,7 @@ public class SelectionHelper {
 	}
 
 	public static SelectionData importSelection(File file) {
-		Map<Point2i, Set<Point2i>> chunks = new HashMap<>();
+		Long2ObjectOpenHashMap<LongOpenHashSet> chunks = new Long2ObjectOpenHashMap<>();
 		boolean inverted = false;
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
@@ -65,15 +68,15 @@ public class SelectionHelper {
 							continue;
 						}
 					}
-					Point2i region = new Point2i(x, z);
+					long region = new Point2i(x, z).asLong();
 					if (cx == null) {
 						// don't overwrite possibly selected chunks in this region with null
 						if (!chunks.containsKey(region)) {
 							chunks.put(region, null);
 						}
 					} else {
-						chunks.computeIfAbsent(region, k -> new HashSet<>());
-						chunks.get(region).add(new Point2i(cx, cz));
+						chunks.computeIfAbsent(region, k -> new LongOpenHashSet());
+						chunks.get(region).add(new Point2i(cx, cz).asLong());
 					}
 				}
 			}
@@ -83,21 +86,21 @@ public class SelectionHelper {
 		return new SelectionData(chunks, inverted);
 	}
 
-	public static Map<Point2i, Set<Point2i>> getTrueSelection(SelectionData selection) {
-		Map<Point2i, Set<Point2i>> sel = selection == null ? null : selection.selection();
+	public static Long2ObjectOpenHashMap<LongOpenHashSet> getTrueSelection(SelectionData selection) {
+		Long2ObjectOpenHashMap<LongOpenHashSet> sel = selection == null ? null : selection.selection();
 		if (selection != null && selection.inverted()) {
-			sel = new HashMap<>();
-			Set<Point2i> allRegions = FileHelper.parseAllMCAFileNames(Config.getWorldDir());
-			Set<Point2i> allPoi = FileHelper.parseAllMCAFileNames(Config.getWorldDirs().getPoi());
-			Set<Point2i> allEntities = FileHelper.parseAllMCAFileNames(Config.getWorldDirs().getEntities());
+			sel = new Long2ObjectOpenHashMap<>();
+			LongOpenHashSet allRegions = FileHelper.parseAllMCAFileNames(Config.getWorldDir());
+			LongOpenHashSet allPoi = FileHelper.parseAllMCAFileNames(Config.getWorldDirs().getPoi());
+			LongOpenHashSet allEntities = FileHelper.parseAllMCAFileNames(Config.getWorldDirs().getEntities());
 			allRegions.addAll(allPoi);
 			allRegions.addAll(allEntities);
-			for (Point2i region : allRegions) {
+			for (long region : allRegions) {
 				if (selection.isRegionSelected(region)) {
 					if (!selection.selection().containsKey(region)) {
 						sel.put(region, null);
 					} else if (selection.selection().get(region) != null) {
-						sel.put(region, SelectionData.createInvertedRegionSet(region, selection.selection().get(region)));
+						sel.put(region, SelectionData.createInvertedRegionSet(new Point2i(region), selection.selection().get(region)));
 					}
 				}
 			}
@@ -105,14 +108,14 @@ public class SelectionHelper {
 		return sel;
 	}
 
-	public static SelectionInfo getSelectionInfo(Map<Point2i, Set<Point2i>> selection) {
+	public static SelectionInfo getSelectionInfo(Long2ObjectOpenHashMap<LongOpenHashSet> selection) {
 		int minX, maxX, minZ, maxZ;
 		minX = minZ = Integer.MAX_VALUE;
 		maxX = maxZ = Integer.MIN_VALUE;
-		for (Map.Entry<Point2i, Set<Point2i>> entry : selection.entrySet()) {
+		for (Long2ObjectMap.Entry<LongOpenHashSet> entry : selection.long2ObjectEntrySet()) {
 			if (entry.getValue() == null) {
-				Point2i min = entry.getKey().regionToChunk();
-				Point2i max = entry.getKey().regionToChunk().add(31);
+				Point2i min = new Point2i(entry.getLongKey()).regionToChunk();
+				Point2i max = new Point2i(entry.getLongKey()).regionToChunk().add(31);
 				if (min.getX() < minX) {
 					minX = min.getX();
 				}
@@ -126,18 +129,19 @@ public class SelectionHelper {
 					maxZ = max.getZ();
 				}
 			} else {
-				for (Point2i chunk : entry.getValue()) {
-					if (chunk.getX() < minX) {
-						minX = chunk.getX();
+				for (long chunk : entry.getValue()) {
+					Point2i c = new Point2i(chunk);
+					if (c.getX() < minX) {
+						minX = c.getX();
 					}
-					if (chunk.getZ() < minZ) {
-						minZ = chunk.getZ();
+					if (c.getZ() < minZ) {
+						minZ = c.getZ();
 					}
-					if (chunk.getX() > maxX) {
-						maxX = chunk.getX();
+					if (c.getX() > maxX) {
+						maxX = c.getX();
 					}
-					if (chunk.getZ() > maxZ) {
-						maxZ = chunk.getZ();
+					if (c.getZ() > maxZ) {
+						maxZ = c.getZ();
 					}
 				}
 			}

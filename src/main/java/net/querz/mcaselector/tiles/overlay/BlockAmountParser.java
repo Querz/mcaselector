@@ -2,6 +2,7 @@ package net.querz.mcaselector.tiles.overlay;
 
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.text.TextHelper;
+import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
 
 public class BlockAmountParser extends OverlayParser {
@@ -16,7 +17,11 @@ public class BlockAmountParser extends OverlayParser {
 
 	@Override
 	public int parseValue(ChunkData chunkData) {
-		return VersionController.getChunkFilter(chunkData.getRegion().getData().getInt("DataVersion")).getBlockAmount(chunkData.getRegion().getData(), multiValues());
+		if (chunkData.getRegion() == null || chunkData.getRegion().getData() == null) {
+			return 0;
+		}
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.getRegion().getData().getInt("DataVersion"));
+		return chunkFilter.getBlockAmount(chunkData.getRegion().getData(), multiValues());
 	}
 
 	@Override

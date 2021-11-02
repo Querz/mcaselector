@@ -28,7 +28,6 @@ attached_melon_stem
 attached_pumpkin_stem
 azalea
 azalea_leaves
-azalea_leaves_flowers
 azure_bluet
 bamboo
 bamboo_sapling
@@ -320,6 +319,7 @@ fire_coral_wall_fan
 fletching_table
 flower_pot
 flowering_azalea
+flowering_azalea_leaves
 frosted_ice
 furnace
 gilded_blackstone
@@ -603,6 +603,7 @@ poppy
 potatoes
 potted_acacia_sapling
 potted_allium
+potted_azalea_bush
 potted_azure_bluet
 potted_bamboo
 potted_birch_sapling
@@ -616,6 +617,7 @@ potted_dandelion
 potted_dark_oak_sapling
 potted_dead_bush
 potted_fern
+potted_flowering_azalea_bush
 potted_jungle_sapling
 potted_lily_of_the_valley
 potted_oak_sapling
@@ -666,6 +668,9 @@ quartz_pillar
 quartz_slab
 quartz_stairs
 rail
+raw_copper_block
+raw_gold_block
+raw_iron_block
 red_banner
 red_bed
 red_candle

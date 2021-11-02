@@ -164,11 +164,11 @@ public final class Debug {
 				System.exit(0);
 			}
 			// logs need to be closed last, because other shutdown hooks might need logs
-			shutdownHook = ShutdownHooks.addShutdownHook(this::close, 0);
+			shutdownHook = ShutdownHooks.addShutdownHook(() -> close(false), 0);
 			new Thread(this::repeatedFlush).start();
 		}
 
-		public synchronized void close() {
+		public synchronized void close(boolean removeShutdownHook) {
 			try {
 				System.out.println("closing log file");
 				if (br != null) {
@@ -185,13 +185,15 @@ public final class Debug {
 						ex.printStackTrace();
 					}
 				}
-				try {
-					ShutdownHooks.removeShutdownHook(shutdownHook);
-				} catch (IllegalStateException ex) {
-					// do nothing, we are already shutting down
-				} catch (Exception ex) {
-					System.out.println("failed to remove shutdown hook for log writer");
-					ex.printStackTrace();
+				if (removeShutdownHook) {
+					try {
+						ShutdownHooks.removeShutdownHook(shutdownHook);
+					} catch (IllegalStateException ex) {
+						// do nothing, we are already shutting down
+					} catch (Exception ex) {
+						System.out.println("failed to remove shutdown hook for log writer");
+						ex.printStackTrace();
+					}
 				}
 			} finally {
 				br = null;
@@ -249,7 +251,7 @@ public final class Debug {
 		if (logWriter == null) {
 			return;
 		}
-		logWriter.close();
+		logWriter.close(true);
 		logWriter = null;
 	}
 

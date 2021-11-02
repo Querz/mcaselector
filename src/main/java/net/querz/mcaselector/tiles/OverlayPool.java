@@ -7,7 +7,7 @@ import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.NamedThreadFactory;
 import net.querz.mcaselector.io.db.CacheDBController;
 import net.querz.mcaselector.io.job.ParseDataJob;
@@ -44,7 +44,7 @@ public class OverlayPool {
 			new LinkedBlockingQueue<>(),
 			new NamedThreadFactory("overlayValuePool"));
 
-	private final CacheDBController dataCache = new CacheDBController();
+	private final CacheDBController dataCache = CacheDBController.getInstance();
 	private OverlayParser parser;
 
 	private Point2i hoveredRegion;
@@ -100,18 +100,16 @@ public class OverlayPool {
 
 			if (data != null) {
 				Image overlay = parseColorGrades(data, parserClone.min(), parserClone.max(), parserClone.getMinHue(), parserClone.getMaxHue());
-				Platform.runLater(() -> {
-					if (parserClone.equals(this.parser)) {
-						tile.overlay = overlay;
-						tile.overlayLoaded = true;
-						tileMap.update();
-					}
-					ParseDataJob.setLoading(tile, false);
-				});
+				if (parserClone.equals(this.parser)) {
+					tile.overlay = overlay;
+					tile.overlayLoaded = true;
+					tileMap.draw();
+				}
+				ParseDataJob.setLoading(tile, false);
 			} else {
 				// calculate data
-				MCAFilePipe.executeParseData(new ParseDataJob(tile, FileHelper.createRegionDirectories(tile.location), Config.getWorldUUID(),
-						(d, u) -> Platform.runLater(() -> {
+				JobHandler.executeParseData(new ParseDataJob(tile, FileHelper.createRegionDirectories(tile.location), Config.getWorldUUID(),
+						(d, u) -> {
 					if (u.equals(Config.getWorldUUID())) {
 						if (d == null) {
 							noData.add(tile.location);
@@ -122,10 +120,10 @@ public class OverlayPool {
 							push(tile.location, d);
 							tile.overlay = parseColorGrades(d, parser.min(), parser.max(), parser.getMinHue(), parser.getMaxHue());
 							tile.overlayLoaded = true;
-							tileMap.update();
+							tileMap.draw();
 						}
 					}
-				}), parser));
+				}, parser, () -> tileMap.getTilePriority(tile.location)));
 			}
 		});
 	}
@@ -151,7 +149,8 @@ public class OverlayPool {
 						image.set(parseColorGrades(i, parser.min(), parser.max(), parser.getMinHue(), parser.getMaxHue()));
 					}
 				},
-				parser
+				parser,
+				null
 		).execute();
 		return image.get();
 	}

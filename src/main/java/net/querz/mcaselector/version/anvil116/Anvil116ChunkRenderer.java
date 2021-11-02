@@ -1,38 +1,26 @@
 package net.querz.mcaselector.version.anvil116;
 
 import net.querz.mcaselector.math.MathUtil;
-import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.ChunkRenderer;
 import net.querz.mcaselector.version.ColorMapping;
+import net.querz.mcaselector.version.Helper;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.LongArrayTag;
-import net.querz.nbt.tag.Tag;
-import static net.querz.mcaselector.validation.ValidationHelper.catchClassCastException;
-import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
 
 public class Anvil116ChunkRenderer implements ChunkRenderer {
 
 	@Override
-	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
-		CompoundTag level = withDefault(() -> root.getCompoundTag("Level"), null);
-		if (level == null) {
-			return;
-		}
-
-		String status = withDefault(() -> level.getString("Status"), null);
-		if (status == null || "empty".equals(status)) {
-			return;
-		}
-
-		Tag<?> rawSections = level.get("Sections");
-		if (rawSections == null || rawSections.getID() == LongArrayTag.ID) {
-			return;
-		}
-
-		ListTag<CompoundTag> sections = catchClassCastException(((ListTag<?>) rawSections)::asCompoundTagList);
+	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(root, "Sections", null);
 		if (sections == null) {
+			return;
+		}
+
+		CompoundTag level = Helper.tagFromCompound(root, "Level");
+
+		String status = Helper.stringFromCompound(level, "Status");
+		if (status == null || "empty".equals(status)) {
 			return;
 		}
 
@@ -42,23 +30,20 @@ public class Anvil116ChunkRenderer implements ChunkRenderer {
 		ListTag<CompoundTag>[] palettes = (ListTag<CompoundTag>[]) new ListTag[16];
 		long[][] blockStatesArray = new long[16][];
 		sections.forEach(s -> {
-			if (!s.containsKey("Palette") || !s.containsKey("BlockStates")) {
-				return;
-			}
-			ListTag<CompoundTag> p = withDefault(() -> s.getListTag("Palette").asCompoundTagList(), null);
-			int y = withDefault(() -> s.getNumber("Y").intValue(), -1);
-			long[] b = withDefault(() -> s.getLongArray("BlockStates"), null);
-			if (y >= 0 && y < 16 && p != null && b != null) {
+			ListTag<CompoundTag> p = Helper.tagFromCompound(s, "Palette");
+			long[] b = Helper.longArrayFromCompound(s, "BlockStates");
+			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
+			if (y >= 0 && y <= 15 && p != null && b != null) {
 				palettes[y] = p;
 				blockStatesArray[y] = b;
 			}
 		});
 
-		int[] biomes = withDefault(() -> level.getIntArray("Biomes"), null);
+		int[] biomes = Helper.intArrayFromCompound(level, "Biomes");
 
-		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
+		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
 			zLoop:
-			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
 
 				//loop over sections
 				boolean waterDepth = false;
@@ -90,7 +75,7 @@ public class Anvil116ChunkRenderer implements ChunkRenderer {
 						biome = MathUtil.clamp(biome, 0, 255);
 
 						if (!isEmpty(blockData)) {
-							int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
+							int regionIndex = ((z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale));
 							if (water) {
 								if (!waterDepth) {
 									pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome); // water color
@@ -121,58 +106,47 @@ public class Anvil116ChunkRenderer implements ChunkRenderer {
 	}
 
 	@Override
-	public void drawLayer(CompoundTag root, ColorMapping colorMapping, int x, int z, int[] pixelBuffer, int height) {
-		CompoundTag level = withDefault(() -> root.getCompoundTag("Level"), null);
-		if (level == null) {
-			return;
-		}
-
-		String status = withDefault(() -> level.getString("Status"), null);
-		if (status == null || "empty".equals(status)) {
-			return;
-		}
-
-		Tag<?> rawSections = level.get("Sections");
-		if (rawSections == null || rawSections.getID() == LongArrayTag.ID) {
-			return;
-		}
-
-		ListTag<CompoundTag> sections = catchClassCastException(((ListTag<?>) rawSections)::asCompoundTagList);
+	public void drawLayer(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int height) {
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(root, "Sections", null);
 		if (sections == null) {
+			return;
+		}
+
+		CompoundTag level = Helper.tagFromCompound(root, "Level");
+
+		String status = Helper.stringFromCompound(level, "Status");
+		if (status == null || "empty".equals(status)) {
 			return;
 		}
 
 		height = MathUtil.clamp(height, 0, 255);
 
-		DataProperty<CompoundTag> section = new DataProperty<>();
+		CompoundTag section = null;
 		for (CompoundTag s : sections) {
-			int y = withDefault(() -> s.getNumber("Y").intValue(), -1);
+			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
 			if (y == height >> 4) {
-				section.set(s);
+				section = s;
 				break;
 			}
 		}
-		if (section.get() == null) {
+		if (section == null) {
 			return;
 		}
 
-		if (!section.get().containsKey("Palette") || !section.get().containsKey("BlockStates")) {
-			return;
-		}
-		ListTag<CompoundTag> palette = withDefault(() -> section.get().getListTag("Palette").asCompoundTagList(), null);
-		long[] blockStates = withDefault(() -> section.get().getLongArray("BlockStates"), null);
+		ListTag<CompoundTag> palette = Helper.tagFromCompound(section, "Palette");
+		long[] blockStates = Helper.longArrayFromCompound(section, "BlockStates");
 		if (blockStates == null || palette == null) {
 			return;
 		}
 
-		int[] biomes = withDefault(() -> level.getIntArray("Biomes"), null);
+		int[] biomes = Helper.intArrayFromCompound(level, "Biomes");
 
 		int cy = height % 16;
 		int bits = blockStates.length >> 6;
 		int clean = ((int) Math.pow(2, bits) - 1);
 
-		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
-			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
+			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
 				int paletteIndex = getPaletteIndex(getIndex(cx, cy, cz), blockStates, bits, clean);
 				CompoundTag blockData = palette.get(paletteIndex);
 
@@ -183,10 +157,104 @@ public class Anvil116ChunkRenderer implements ChunkRenderer {
 				int biome = getBiomeAtBlock(biomes, cx, height, cz);
 				biome = MathUtil.clamp(biome, 0, 255);
 
-				int regionIndex = (z + cz) * Tile.SIZE + (x + cx);
+				int regionIndex = (z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale);
 				pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome);
 			}
 		}
+	}
+
+	@Override
+	public void drawCaves(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, short[] terrainHeights, int height) {
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(root, "Sections", null);
+		if (sections == null) {
+			return;
+		}
+
+		CompoundTag level = Helper.tagFromCompound(root, "Level");
+
+		String status = Helper.stringFromCompound(level, "Status");
+		if (status == null || "empty".equals(status)) {
+			return;
+		}
+
+		height = MathUtil.clamp(height, 0, 255);
+
+		@SuppressWarnings("unchecked")
+		ListTag<CompoundTag>[] palettes = (ListTag<CompoundTag>[]) new ListTag[16];
+		long[][] blockStatesArray = new long[16][];
+		sections.forEach(s -> {
+			ListTag<CompoundTag> p = Helper.tagFromCompound(s, "Palette");
+			long[] b = Helper.longArrayFromCompound(s, "BlockStates");
+			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
+			if (y >= 0 && y <= 15 && p != null && b != null) {
+				palettes[y] = p;
+				blockStatesArray[y] = b;
+			}
+		});
+
+		int[] biomes = Helper.intArrayFromCompound(level, "Biomes");
+
+		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
+			zLoop:
+			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
+
+				int ignored = 0;
+				boolean doneSkipping = false;
+
+				// loop over sections
+				for (int i = palettes.length - (16 - (height >> 4)); i >= 0; i--) {
+					if (blockStatesArray[i] == null) {
+						continue;
+					}
+
+					long[] blockStates = blockStatesArray[i];
+					ListTag<CompoundTag> palette = palettes[i];
+
+					int sectionHeight = i * Tile.CHUNK_SIZE;
+
+					int bits = blockStates.length >> 6;
+					int clean = ((int) Math.pow(2, bits) - 1);
+
+					int startHeight;
+					if (height >> 4 == i) {
+						startHeight = Tile.CHUNK_SIZE - (16 - height % 16) - 1;
+					} else {
+						startHeight = Tile.CHUNK_SIZE - 1;
+					}
+
+					for (int cy = startHeight; cy >= 0; cy--) {
+						int paletteIndex = getPaletteIndex(getIndex(cx, cy, cz), blockStates, bits, clean);
+						CompoundTag blockData = palette.get(paletteIndex);
+
+						if (!isEmptyOrFoliage(blockData, colorMapping)) {
+							if (doneSkipping) {
+								int regionIndex = (z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale);
+								int biome = getBiomeAtBlock(biomes, cx, sectionHeight + cy, cz);
+								biome = MathUtil.clamp(biome, 0, 255);
+								pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome);
+								terrainHeights[regionIndex] = (short) (sectionHeight + cy);
+								continue zLoop;
+							}
+							ignored++;
+						} else if (ignored > 0) {
+							doneSkipping = true;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	public CompoundTag minimizeChunk(CompoundTag root) {
+		CompoundTag minData = new CompoundTag();
+		minData.put("DataVersion", root.get("DataVersion").clone());
+		CompoundTag level = new CompoundTag();
+		minData.put("Level", level);
+		level.put("Biomes", root.getCompoundTag("Level").get("Biomes").clone());
+		level.put("Sections", root.getCompoundTag("Level").get("Sections").clone());
+		level.put("Status", root.getCompoundTag("Level").get("Status").clone());
+		return minData;
 	}
 
 	private static final CompoundTag waterDummy = new CompoundTag();
@@ -196,20 +264,28 @@ public class Anvil116ChunkRenderer implements ChunkRenderer {
 	}
 
 	private boolean isWater(CompoundTag blockData) {
-		return switch (blockData.getString("Name")) {
+		return switch (Helper.stringFromCompound(blockData, "Name", "")) {
 			case "minecraft:water", "minecraft:bubble_column" -> true;
 			default -> false;
 		};
 	}
 
 	private boolean isWaterlogged(CompoundTag data) {
-		return data.get("Properties") != null && "true".equals(withDefault(() -> data.getCompoundTag("Properties").getString("waterlogged"), null));
+		return data.get("Properties") != null && "true".equals(Helper.stringFromCompound(Helper.tagFromCompound(data, "Properties"), "waterlogged", null));
 	}
 
 	private boolean isEmpty(CompoundTag blockData) {
-		return switch (blockData.getString("Name")) {
+		return switch (Helper.stringFromCompound(blockData, "Name", "")) {
 			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void" -> blockData.size() == 1;
 			default -> false;
+		};
+	}
+
+	private boolean isEmptyOrFoliage(CompoundTag blockData, ColorMapping colorMapping) {
+		String name;
+		return switch (name = Helper.stringFromCompound(blockData, "Name", "")) {
+			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void", "minecraft:snow" -> blockData.size() == 1;
+			default -> colorMapping.isFoliage(name);
 		};
 	}
 

@@ -1,15 +1,9 @@
 status.region;region
-status.region.tooltip;Aktuálně zvýrazněný region reprezentovaný čísly z názvu souboru.
 status.chunk;chunk
-status.chunk.tooltip;Aktuálně zvýrazněný chunk.
 status.block;blok
-status.block.tooltip;Přibližně zvýrazněný block.
 status.selected;vybráno
-status.selected.tooltip;Počet aktuálně vybraných chunků.
-status.visible;viditelné regiony
-status.visible.tooltip;Počet obrázků regionů nahraných pro vykreslení.
+status.queue;fronta
 status.total;celkem regionů
-status.total.tooltip;Celkový počet nahraných regionů, včetně vybraných nezobrazených regionů.
 status.overlay;překrytí
 menu.file;Soubor
 menu.view;Pohled
@@ -19,8 +13,9 @@ menu.about;O aplikaci
 menu.file.open_world;Otevřete svět
 menu.file.open;Otevřete region
 menu.file.settings;Nastavení
-menu.file.world_settings;Nastavení světa
+menu.file.render_settings;Nastavení vykreslování
 menu.file.quit;Opustit
+menu.view.reload;Znovu načíst
 menu.view.chunk_grid;Mřížka chunků
 menu.view.region_grid;Mřížka regionů
 menu.view.goto;Přejít
@@ -48,29 +43,42 @@ menu.tools.next_overlay;Další překrytí
 menu.tools.next_overlay_type;Typ překrytí
 dialog.select_world.title;Vyberte kótu
 dialog.settings.title;Nastavení
-dialog.settings.language;Jazyk
-dialog.settings.read_threads;Vláken pro načítání
-dialog.settings.process_threads;Vláken pro zpracování
-dialog.settings.write_threads;Vláken pro zápis
-dialog.settings.max_files;Max nahraných souborů
-dialog.settings.region_color;Barva vybraného regionu
-dialog.settings.chunk_color;Barva vybraného chunku
-dialog.settings.pasted_chunks_color;Barva vložených chunku
-dialog.settings.shade;Odstín
-dialog.settings.shade_water;Hloubka vody
-dialog.settings.show_nonexistent_regions;Zobrazit neexistující oblasti
-dialog.settings.smooth_rendering;Vykreslení hladké
-dialog.settings.smooth_overlays;Hladké překryvy
-dialog.settings.background_pattern;Vzorek pozadí
-dialog.settings.mc_saves_dir;Adresář Minecraft
-dialog.settings.print_debug;Vypisovat ladící zprávy
-dialog.settings.show_log_file;Zobrazit soubor protokolu
+dialog.settings.global.language;Jazyk
+dialog.settings.global.language.language;Jazyk
+dialog.settings.processing.process.process_threads;Procesní vlákna
+dialog.settings.processing.process;Proces
+dialog.settings.processing.process.write_threads;Pište vlákna
+dialog.settings.processing.files.max_files;Maximální počet souborů
+dialog.settings.global.selection.region_color;Regionální barva
+dialog.settings.global.selection.chunk_color;Kusová barva
+dialog.settings.global.selection.pasted_chunks_color;Vložená barva kousků
+dialog.settings.rendering.shade.shade;Odstín
+dialog.settings.rendering.shade;Odstín
+dialog.settings.rendering.shade.shade_water;Stínovat vodu
+dialog.settings.rendering.background.show_nonexistent_regions;Zobrazit neexistující oblasti
+dialog.settings.rendering.smooth.smooth_rendering;Plynulé vykreslování
+dialog.settings.rendering.smooth.smooth_overlays;Hladké překrytí
+dialog.settings.rendering.background.background_pattern;Vzor pozadí
+dialog.settings.rendering.background;Pozadí
+dialog.settings.global.misc.mc_saves_dir;MC uloží dir
+dialog.settings.global.misc.print_debug;Tisk zpráv o ladění
+dialog.settings.global.misc.show_log_file;Zobrazit soubor protokolu
 dialog.settings.reset;Obnovit
-dialog.world_settings.title;Nastavení světa
-dialog.world_settings.poi;POI
-dialog.world_settings.entities;Subjekty
-dialog.world_settings.render_height;Výška vykreslení
-dialog.world_settings.render_layer_only;Pouze vykreslení vrstvy
+dialog.settings.tab_global;Globální
+dialog.settings.tab_processing;zpracovává se
+dialog.settings.tab_rendering;Vykreslování
+dialog.settings.tab_world;Svět
+dialog.settings.global.misc;Různé
+dialog.settings.processing.files;Soubory
+dialog.settings.rendering.smooth;Hladký
+dialog.settings.global.selection;Výběr
+dialog.settings.world.paths;Cesty
+dialog.settings.world.paths.poi;POI
+dialog.settings.world.paths.entities;Subjekty
+dialog.settings.rendering.layers.render_height;Výška vykreslení
+dialog.settings.rendering.layers.render_layer_only;Pouze rendrovací vrstva
+dialog.settings.rendering.layers;Vrstvy
+dialog.settings.rendering.layers.render_caves;Render jeskyně
 dialog.goto.title;Přejít na pozici
 dialog.confirmation.question;Jste si jisti?
 dialog.delete_chunks_confirmation.title;Smazat chunky
@@ -85,6 +93,7 @@ dialog.import_chunks_confirmation.options;Volby
 dialog.import_chunks_confirmation.options.offset;Posun
 dialog.import_chunks_confirmation.options.overwrite;Přepsat existující chunky
 dialog.import_chunks_confirmation.options.selection_only;Aplikovat pouze na výběr
+dialog.import_chunks_confirmation.options.y_offset;Y offset
 dialog.import_chunks_confirmation.options.sections;Sekce
 dialog.import_chunks_confirmation.warning;Upozornění: Při importování bloků s posunem se neaktualizuje obsah příkazových bloků.
 dialog.export_chunks_confirmation.title;Exportovat chunky
@@ -155,5 +164,7 @@ dialog.error.button.copy_to_clipboard;Zkopírovat do schránky
 dialog.error.title;Chyba
 dialog.error.header;Vyskytla se chyba
 dialog.error.copied_to_clipboard;Zkopírováno do schránky!
+dialog.unsaved_changes.title;Neuložené změny
+dialog.unsaved_changes.header;Máte neuložené změny.
 button.cancel;Zrušit
 button.ok;OK

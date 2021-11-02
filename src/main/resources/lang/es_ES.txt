@@ -1,15 +1,9 @@
 status.region;región
-status.region.tooltip;La región superpuesta actualmente representa los números en su nombre de archivo.
 status.chunk;chunk
-status.chunk.tooltip;El chunk sobrepuesto actualmente.
 status.block;bloque
-status.block.tooltip;Una aproximación del bloque actualmente superpuesto.
 status.selected;seleccionado
-status.selected.tooltip;La cantidad de chunks actualmente seleccionados.
-status.visible;regiones visibles
-status.visible.tooltip;La cantidad de imágenes de región cargadas para renderizar.
+status.queue;cola
 status.total;región total
-status.total.tooltip;La cantidad total de regiones cargadas, incluidas las regiones seleccionadas no visibles.
 status.overlay;superposición
 menu.file;Archivo
 menu.view;Vista
@@ -19,8 +13,9 @@ menu.about;Acerca de
 menu.file.open_world;Abrir un mundo
 menu.file.open;Abrir una región
 menu.file.settings;Configuración
-menu.file.world_settings;Configuración mundial
+menu.file.render_settings;Configuración de renderizado
 menu.file.quit;Salir
+menu.view.reload;Recargar
 menu.view.chunk_grid;Cuadrícula de Chunks
 menu.view.region_grid;Cuadrícula de Regiones
 menu.view.goto;Ir a
@@ -48,29 +43,42 @@ menu.tools.next_overlay;Siguiente superposición
 menu.tools.next_overlay_type;Tipo de superposición
 dialog.select_world.title;Seleccione una dimensión
 dialog.settings.title;Configuración
-dialog.settings.language;Idioma
-dialog.settings.read_threads;Leer hilos
-dialog.settings.process_threads;Procesar hilos
-dialog.settings.write_threads;Escribir hilos
-dialog.settings.max_files;Carga máxima de archivos
-dialog.settings.region_color;Color de las Regiones
-dialog.settings.chunk_color;Color de los Chunks
-dialog.settings.pasted_chunks_color;Color de los Chunks insertados
-dialog.settings.shade;Volumen 3D
-dialog.settings.shade_water;Profundidad del agua
-dialog.settings.show_nonexistent_regions;Mostrar regiones inexistentes
-dialog.settings.smooth_rendering;Renderizado suave
-dialog.settings.smooth_overlays;Superposiciones suaves
-dialog.settings.background_pattern;Patrón de fondo
-dialog.settings.mc_saves_dir;Directorio de Minecraft
-dialog.settings.print_debug;Mostrar mensajes de desarrolador
-dialog.settings.show_log_file;Mostrar archivo de registro
+dialog.settings.global.language;Idioma
+dialog.settings.global.language.language;Idioma
+dialog.settings.processing.process.process_threads;Hilos de proceso
+dialog.settings.processing.process;Proceso
+dialog.settings.processing.process.write_threads;Escribir hilos
+dialog.settings.processing.files.max_files;Archivos máximos
+dialog.settings.global.selection.region_color;Color de la región
+dialog.settings.global.selection.chunk_color;Color del trozo
+dialog.settings.global.selection.pasted_chunks_color;Color de trozos pegados
+dialog.settings.rendering.shade.shade;Sombra
+dialog.settings.rendering.shade;Sombra
+dialog.settings.rendering.shade.shade_water;Agua de sombra
+dialog.settings.rendering.background.show_nonexistent_regions;Mostrar regiones inexistentes
+dialog.settings.rendering.smooth.smooth_rendering;Renderizado suave
+dialog.settings.rendering.smooth.smooth_overlays;Superposiciones suaves
+dialog.settings.rendering.background.background_pattern;Patrón de fondo
+dialog.settings.rendering.background;Fondo
+dialog.settings.global.misc.mc_saves_dir;MC guarda dir
+dialog.settings.global.misc.print_debug;Imprimir mensajes de depuración
+dialog.settings.global.misc.show_log_file;Mostrar archivo de registro
 dialog.settings.reset;Resetear
-dialog.world_settings.title;Configuración mundial
-dialog.world_settings.poi;POI
-dialog.world_settings.entities;Entidades
-dialog.world_settings.render_height;Altura de renderizado
-dialog.world_settings.render_layer_only;Solo capa de renderizado
+dialog.settings.tab_global;Global
+dialog.settings.tab_processing;Procesando
+dialog.settings.tab_rendering;Representación
+dialog.settings.tab_world;Mundo
+dialog.settings.global.misc;Misc
+dialog.settings.processing.files;Archivos
+dialog.settings.rendering.smooth;Liso
+dialog.settings.global.selection;Selección
+dialog.settings.world.paths;Caminos
+dialog.settings.world.paths.poi;PDI
+dialog.settings.world.paths.entities;Entidades
+dialog.settings.rendering.layers.render_height;Altura de renderizado
+dialog.settings.rendering.layers.render_layer_only;Solo capa de renderizado
+dialog.settings.rendering.layers;Capas
+dialog.settings.rendering.layers.render_caves;Cuevas de render
 dialog.goto.title;Ir a coordenadas
 dialog.confirmation.question;¿Está seguro?
 dialog.delete_chunks_confirmation.title;Borrar chunks
@@ -85,6 +93,7 @@ dialog.import_chunks_confirmation.options;Opciones
 dialog.import_chunks_confirmation.options.offset;Desplazamiento
 dialog.import_chunks_confirmation.options.overwrite;Sobrescribir chunks existentes
 dialog.import_chunks_confirmation.options.selection_only;Aplicar solo en la selección.
+dialog.import_chunks_confirmation.options.y_offset;Desplazamiento Y
 dialog.import_chunks_confirmation.options.sections;Secciones
 dialog.import_chunks_confirmation.warning;Advertencia: La importación de Chunks desplazados en el espacio no actualizará las coordenadas de los bloques de comandos.
 dialog.export_chunks_confirmation.title;Exportar chunks
@@ -155,5 +164,7 @@ dialog.error.button.copy_to_clipboard;Copiar al portapapeles
 dialog.error.title;Error
 dialog.error.header;Ocurrió un error
 dialog.error.copied_to_clipboard;¡Copiado al portapapeles!
+dialog.unsaved_changes.title;Cambios no guardados
+dialog.unsaved_changes.header;Usted tiene cambios no guardados.
 button.cancel;Cancelar
 button.ok;OK

@@ -47,7 +47,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean contains(List<String> value, ChunkData data) {
-		if (data.getEntities() == null) {
+		if (data.getRegion() == null || data.getRegion().getData() == null) {
 			return false;
 		}
 		Tag<?> rawEntities = VersionController.getEntityFilter(data.getRegion().getData().getInt("DataVersion")).getEntities(data);
@@ -70,7 +70,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean intersects(List<String> value, ChunkData data) {
-		if (data.getEntities() == null) {
+		if (data.getRegion() == null || data.getRegion().getData() == null) {
 			return false;
 		}
 		Tag<?> rawEntities = VersionController.getEntityFilter(data.getRegion().getData().getInt("DataVersion")).getEntities(data);
@@ -96,24 +96,24 @@ public class EntityFilter extends TextFilter<List<String>> {
 
 	@Override
 	public void setFilterValue(String raw) {
-		String[] rawBlockNames = raw.replace(" ", "").split(",");
-		if (raw.isEmpty() || rawBlockNames.length == 0) {
+		String[] rawEntityNames = raw.replace(" ", "").split(",");
+		if (raw.isEmpty() || rawEntityNames.length == 0) {
 			setValid(false);
 			setValue(null);
 		} else {
-			for (int i = 0; i < rawBlockNames.length; i++) {
-				String name = rawBlockNames[i];
+			for (int i = 0; i < rawEntityNames.length; i++) {
+				String name = rawEntityNames[i];
 				Matcher m = entityNamePattern.matcher(name);
 				if (m.matches()) {
 					if (m.group("id").isEmpty()) {
 						name = "minecraft:" + m.group("space");
-						rawBlockNames[i] = name;
+						rawEntityNames[i] = name;
 					}
 				}
 
 				if (!validNames.contains(name)) {
 					if (name.startsWith("'") && name.endsWith("'") && name.length() >= 2 && !name.contains("\"")) {
-						rawBlockNames[i] = name.substring(1, name.length() - 1);
+						rawEntityNames[i] = name.substring(1, name.length() - 1);
 						continue;
 					}
 					setValue(null);
@@ -122,7 +122,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 				}
 			}
 			setValid(true);
-			setValue(Arrays.asList(rawBlockNames));
+			setValue(Arrays.asList(rawEntityNames));
 			setRawValue(raw);
 		}
 	}

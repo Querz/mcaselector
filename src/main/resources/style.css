@@ -302,6 +302,11 @@
 	-fx-effect: dropshadow(gaussian, -color-text-field-focused-shadow, 4, 0, 0, 0);
 }
 
+.text-field:invalid {
+	-fx-background-color: -color-filter-box-invalid-background;
+	-fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
+}
+
 /*---------- SCROLL PANE ----------*/
 
 .scroll-pane {
@@ -465,28 +470,6 @@
 
 .error-dialog-pane .copied-to-clipboard-label {
 	-fx-padding: 10 0 -10 0;
-}
-
-/*---------- WORLD SETTINGS DIALOG ----------*/
-
-.world-settings-dialog-pane .grid-pane .label {
-	-fx-padding: 5 10 5 0;
-}
-
-.world-settings-dialog-pane .text-field {
-	-fx-pref-width: 300px;
-}
-
-.world-settings-dialog-pane .slider-value-field {
-	-fx-pref-width: 38;
-}
-
-.world-settings-dialog-pane .slider {
-	-fx-pref-width: 300;
-}
-
-.world-settings-dialog-pane .height-box {
-	-fx-spacing: 5;
 }
 
 /*---------- FILE TEXT FIELD ----------*/
@@ -799,11 +782,6 @@
 	-fx-hgap: 10;
 }
 
-.range-text-field:invalid {
-	-fx-background-color: -color-filter-box-invalid-background;
-	-fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
-}
-
 /*---------- Slider ----------*/
 
 .slider {
@@ -833,29 +811,60 @@
 /*---------- Settings Dialog ----------*/
 
 .slider-grid-pane .slider {
-	-fx-pref-width: 200;
+	-fx-pref-width: 240;
 	-fx-padding: 0 10 0 0;
 }
 
-.color-preview-button {
-	-fx-pref-width: 240;
+.slider-grid-pane .color-preview-button, .slider-grid-pane .file-text-field, .slider-grid-pane .combo-box {
+	-fx-pref-width: 280;
 }
 
 .slider-grid-pane .label {
 	-fx-padding: 10 10 10 0;
+	-fx-min-width: 200;
 }
 
 .slider-grid-pane .debug-box {
 	-fx-padding: 4 0 -3 0;
 }
 
-.languages-combo-box, .tilemap-backgrounds-combo-box {
-	-fx-alignment: center;
-	-fx-pref-width: 240;
-}
-
 .settings-dialog-pane .file-text-field {
 	-fx-padding: 8 0 0 0;
+}
+
+.settings-dialog-pane .tab-pane {
+	-fx-tab-min-height: 0;
+	-fx-tab-max-height: 0;
+}
+
+.settings-dialog-pane .tab-pane .tab-header-area {
+	-fx-padding: 0 0 0 0;
+}
+
+.settings-dialog-pane .tab-pane .tab-header-area .headers-region .tab {
+	-fx-padding: 0 0 1 0;
+}
+
+.settings-dialog-pane .toggle-button {
+	-fx-background-color: -color-button-background;
+}
+
+.settings-dialog-pane .toggle-button:hover {
+	-fx-background-color: -color-button-hover-background;
+}
+
+.settings-dialog-pane .toggle-button {
+	-fx-text-fill: -color-text-light;
+}
+.settings-dialog-pane .toggle-button:selected {
+	-fx-border-color: -color-text-field-focused-shadow;
+	-fx-border-insets: -1;
+	-fx-border-radius: 2;
+	-fx-border-width: 1;
+}
+
+.settings-dialog-pane .tab-box {
+	-fx-spacing: 1;
 }
 
 /*---------- Transparent Stage ----------*/
@@ -931,7 +940,7 @@
 }
 
 .bordered-titled-content {
-  -fx-padding: 30 10 10 22;
+  -fx-padding: 20 10 10 22;
 }
 
 /*---------- import confirmation dialog ----------*/

@@ -1,9 +1,11 @@
 package net.querz.mcaselector.io.mca;
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.version.ChunkMerger;
 import net.querz.mcaselector.version.VersionController;
@@ -19,7 +21,6 @@ import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -47,6 +48,10 @@ public abstract class MCAFile<T extends Chunk> {
 		this.file = file;
 		this.timestamps = new int[1024];
 		this.chunkConstructor = chunkConstructor;
+	}
+
+	protected MCAFile(Point2i location) {
+		this.location = location;
 	}
 
 // IO STUFF ------------------------------------------------------------------------------------------------------------
@@ -148,7 +153,7 @@ public abstract class MCAFile<T extends Chunk> {
 			// loop over all offsets, readHeader the raw byte data (complete sections) and write it to new file
 			for (int i = 0; i < offsets.length; i++) {
 				// don't do anything if this chunk is empty
-				if (offsets[i] == 0 || sectors[i] == 0) {
+				if (offsets[i] == 0 || sectors[i] <= 0) {
 					skippedChunks++;
 					continue;
 				}
@@ -295,6 +300,11 @@ public abstract class MCAFile<T extends Chunk> {
 	}
 
 	public T loadSingleChunk(Point2i chunk) throws IOException {
+		// ignore files that don't have a full header
+		if (file.length() < 8192) {
+			return null;
+		}
+
 		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
 			// read offset, sector count and timestamp for specific chunk
 
@@ -358,9 +368,9 @@ public abstract class MCAFile<T extends Chunk> {
 
 // DATA MANIPULATION STUFF ---------------------------------------------------------------------------------------------
 
-	public void deleteChunks(Set<Point2i> selection) {
-		for (Point2i chunk : selection) {
-			int index = getChunkIndex(chunk);
+	public void deleteChunks(LongOpenHashSet selection) {
+		for (long chunk : selection) {
+			int index = getChunkIndex(new Point2i(chunk));
 			timestamps[index] = 0;
 			chunks[index] = null;
 			sectors[index] = 0;
@@ -368,10 +378,10 @@ public abstract class MCAFile<T extends Chunk> {
 		}
 	}
 
-	public abstract void mergeChunksInto(MCAFile<T> destination, Point2i offset, boolean overwrite, Set<Point2i> sourceChunks, Set<Point2i> selection, List<Range> ranges);
+	public abstract void mergeChunksInto(MCAFile<T> destination, Point3i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges);
 
-	protected void mergeChunksInto(MCAFile<T> destination, Point2i offset, boolean overwrite, Set<Point2i> sourceChunks, Set<Point2i> selection, List<Range> ranges, BiFunction<Point2i, Integer, T> chunkCreator) {
-		Point2i relativeOffset = location.regionToChunk().add(offset).sub(destination.location.regionToChunk());
+	protected void mergeChunksInto(MCAFile<T> destination, Point3i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges, BiFunction<Point2i, Integer, T> chunkCreator) {
+		Point2i relativeOffset = location.regionToChunk().add(offset.toPoint2i()).sub(destination.location.regionToChunk());
 		int startX = relativeOffset.getX() > 0 ? 0 : 32 - (32 + relativeOffset.getX());
 		int limitX = relativeOffset.getX() > 0 ? (32 - relativeOffset.getX()) : 32;
 		int startZ = relativeOffset.getZ() > 0 ? 0 : 32 - (32 + relativeOffset.getZ());
@@ -391,37 +401,38 @@ public abstract class MCAFile<T extends Chunk> {
 					continue;
 				}
 
-				if (sourceChunk == null || sourceChunk.isEmpty() || sourceChunks != null && !sourceChunks.contains(sourceChunk.getAbsoluteLocation())) {
+				if (sourceChunk == null || sourceChunk.isEmpty() || sourceChunks != null && !sourceChunks.contains(sourceChunk.getAbsoluteLocation().asLong())) {
 					continue;
 				}
 
 				Point2i destChunk = destination.location.regionToChunk().add(destX, destZ);
 
-				if (selection == null || selection.contains(destChunk)) {
-					if (!sourceChunk.relocate(offset.chunkToBlock())) {
+				if (selection == null || selection.contains(destChunk.asLong())) {
+					if (!sourceChunk.relocate(offset.sectionToBlock())) {
 						continue;
 					}
 
 					if (ranges != null) {
 						int sourceVersion = sourceChunk.getData().getInt("DataVersion");
-						if (sourceVersion != 0) {
-							int destinationVersion;
-							if (destinationChunk == null || destinationChunk.isEmpty()) {
-								destinationChunk = chunkCreator.apply(destChunk, sourceVersion);
-								destination.chunks[destIndex] = destinationChunk;
-							} else if (sourceVersion != (destinationVersion = destinationChunk.getData().getInt("DataVersion"))) {
-								Point2i srcChunk = location.regionToChunk().add(x, z);
-								Debug.errorf("failed to merge chunk at %s into chunk at %s because their DataVersion does not match (%d != %d)",
-										srcChunk, destChunk, sourceVersion, destinationVersion);
-							}
+						if (sourceVersion == 0) {
+							continue;
+						}
 
-							ChunkMerger m = VersionController.getChunkMerger(sourceChunk.getData().getInt("DataVersion"));
-							try {
-								m.mergeChunks(sourceChunk.getData(), destinationChunk.getData(), ranges);
-							} catch (Exception ex) {
-								Point2i srcChunk = location.regionToChunk().add(x, z);
-								Debug.dump(new Exception("failed to merge chunk " + srcChunk + " into " + destChunk, ex));
-							}
+						int destinationVersion;
+						if (destinationChunk == null || destinationChunk.isEmpty()) {
+							destinationChunk = chunkCreator.apply(destChunk, sourceVersion);
+							destination.chunks[destIndex] = destinationChunk;
+						} else if (sourceVersion != (destinationVersion = destinationChunk.getData().getInt("DataVersion"))) {
+							Point2i srcChunk = location.regionToChunk().add(x, z);
+							Debug.errorf("failed to merge chunk at %s into chunk at %s because their DataVersion does not match (%d != %d)",
+									srcChunk, destChunk, sourceVersion, destinationVersion);
+						}
+
+						try {
+							sourceChunk.merge(destinationChunk.getData(), ranges, offset.getY());
+						} catch (Exception ex) {
+							Point2i srcChunk = location.regionToChunk().add(x, z);
+							Debug.dump(new Exception("failed to merge chunk " + srcChunk + " into " + destChunk, ex));
 						}
 					} else {
 						destination.chunks[destIndex] = sourceChunk;
@@ -497,5 +508,16 @@ public abstract class MCAFile<T extends Chunk> {
 			}
 		}
 		return true;
+	}
+
+	protected <V extends MCAFile<T>> V clone(Function<File, V> mcaFileConstructor) {
+		V clone = mcaFileConstructor.apply(file);
+		for (int i = 0; i < chunks.length; i++) {
+			if (chunks[i] != null) {
+				clone.chunks[i] = chunks[i].clone(clone.chunkConstructor);
+			}
+		}
+		clone.timestamps = timestamps.clone();
+		return clone;
 	}
 }

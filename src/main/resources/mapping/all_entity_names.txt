@@ -55,6 +55,7 @@ lightning_bolt
 llama
 llama_spit
 magma_cube
+marker
 minecart
 mooshroom
 mule
@@ -67,6 +68,7 @@ pig
 piglin
 piglin_brute
 pillager
+player
 polar_bear
 potion
 pufferfish

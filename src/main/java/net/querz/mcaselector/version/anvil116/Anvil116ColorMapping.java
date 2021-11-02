@@ -3,6 +3,7 @@ package net.querz.mcaselector.version.anvil116;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.version.ColorMapping;
+import net.querz.mcaselector.version.Helper;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.StringTag;
 import net.querz.nbt.tag.Tag;
@@ -11,14 +12,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-import static net.querz.mcaselector.validation.ValidationHelper.withDefault;
-
 public class Anvil116ColorMapping implements ColorMapping {
 
 	// value can either be an Integer (color) or a BlockStateMapping
 	private final Map<String, Object> mapping = new TreeMap<>();
 	private final Set<String> grass = new HashSet<>();
 	private final Set<String> foliage = new HashSet<>();
+
+	private final int[] biomeGrassTints = new int[256];
+	private final int[] biomeFoliageTints = new int[256];
+	private final int[] biomeWaterTints = new int[256];
 
 	public Anvil116ColorMapping() {
 		// note_block:pitch=1,powered=true,instrument=flute;01ab9f
@@ -67,19 +70,63 @@ public class Anvil116ColorMapping implements ColorMapping {
 		} catch (IOException ex) {
 			throw new RuntimeException("failed to read mapping/116/colors.txt");
 		}
+
+		Arrays.fill(biomeGrassTints, DEFAULT_GRASS_TINT);
+		Arrays.fill(biomeFoliageTints, DEFAULT_FOLIAGE_TINT);
+		Arrays.fill(biomeWaterTints, DEFAULT_WATER_TINT);
+
+		try (BufferedReader bis = new BufferedReader(
+			new InputStreamReader(Objects.requireNonNull(ColorMapping.class.getClassLoader().getResourceAsStream("mapping/116/biome_colors.txt"))))) {
+
+			String line;
+			while ((line = bis.readLine()) != null) {
+				String[] elements = line.split(";");
+				if (elements.length != 4) {
+					Debug.dumpf("invalid line in biome color file: \"%s\"", line);
+					continue;
+				}
+
+				int biomeID = Integer.parseInt(elements[0]);
+				int grassColor = Integer.parseInt(elements[1], 16);
+				int foliageColor = Integer.parseInt(elements[2], 16);
+				int waterColor = Integer.parseInt(elements[3], 16);
+
+				biomeGrassTints[biomeID] = grassColor;
+				biomeFoliageTints[biomeID] = foliageColor;
+				biomeWaterTints[biomeID] = waterColor;
+			}
+		} catch (IOException ex) {
+			throw new RuntimeException("failed to read mapping/116/biome_colors.txt");
+		}
 	}
 
 	@Override
 	public int getRGB(Object o, int biome) {
-		String name = withDefault(() -> ((CompoundTag) o).getString("Name"), "");
+		String name = Helper.stringFromCompound((CompoundTag) o, "Name", "");
 		Object value = mapping.get(name);
 		if (value instanceof Integer) {
 			return applyBiomeTint(name, biome, (int) value);
 		} else if (value instanceof BlockStateMapping) {
-			int color = ((BlockStateMapping) value).getColor(withDefault(() -> ((CompoundTag) o).getCompoundTag("Properties"), null));
+			int color = ((BlockStateMapping) value).getColor(Helper.tagFromCompound((CompoundTag) o, "Properties"));
 			return applyBiomeTint(name, biome, color);
 		}
 		return 0xFF000000;
+	}
+
+	@Override
+	public int getRGB(Object o, String biome) {
+		throw new UnsupportedOperationException("color mapping for 1.16 does not support biome names");
+	}
+
+	@Override
+	public boolean isFoliage(Object name) {
+		if (foliage.contains((String) name)) {
+			return true;
+		}
+		return switch ((String) name) {
+			case "minecraft:birch_leaves", "minecraft:spruce_leaves" -> true;
+			default -> false;
+		};
 	}
 
 	private int applyBiomeTint(String name, int biome, int color) {

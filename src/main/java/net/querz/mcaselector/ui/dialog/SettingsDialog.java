@@ -1,18 +1,18 @@
 package net.querz.mcaselector.ui.dialog;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.io.WorldDirectories;
+import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.FileTextField;
 import net.querz.mcaselector.ui.TileMapBox;
@@ -43,12 +43,20 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private static final int processorCount = Runtime.getRuntime().availableProcessors();
 	private static final long maxMemory = Runtime.getRuntime().maxMemory();
 
+	private final TabPane tabPane = new TabPane();
+	private final ToggleGroup toggleGroup = new ToggleGroup();
+
+	// use a custom box containing a group of ToggleButtons to be able to freely align the tabs
+	private final BorderPane tabBox = new BorderPane();
+
 	private final ComboBox<Locale> languages = new ComboBox<>();
 
-	private final Slider readThreadsSlider = createSlider(1, processorCount, 1, Config.getLoadThreads());
 	private final Slider processThreadsSlider = createSlider(1, processorCount * 2, 1, Config.getProcessThreads());
 	private final Slider writeThreadsSlider = createSlider(1, processorCount, 1, Config.getWriteThreads());
 	private final Slider maxLoadedFilesSlider = createSlider(1, (int) Math.max(Math.ceil(maxMemory / 1_000_000_000D) * 6, 4), 1, Config.getMaxLoadedFiles());
+	private final Slider heightSlider = new Slider(-64, 319, 319);
+	private final CheckBox layerOnly = new CheckBox();
+	private final CheckBox caves = new CheckBox();
 	private final Button regionSelectionColorPreview = new Button();
 	private final Button chunkSelectionColorPreview = new Button();
 	private final Button pasteChunksColorPreview = new Button();
@@ -60,6 +68,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private final ComboBox<TileMapBox.TileMapBoxBackground> tileMapBackgrounds = new ComboBox<>();
 	private final FileTextField mcSavesDir = new FileTextField();
 	private final CheckBox debugCheckBox = new CheckBox();
+	private final FileTextField poiField = new FileTextField();
+	private final FileTextField entitiesField = new FileTextField();
 
 	private Color regionSelectionColor = Config.getRegionSelectionColor().makeJavaFXColor();
 	private Color chunkSelectionColor = Config.getChunkSelectionColor().makeJavaFXColor();
@@ -67,7 +77,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 	private final ButtonType reset = new ButtonType(Translation.DIALOG_SETTINGS_RESET.toString(), ButtonBar.ButtonData.LEFT);
 
-	public SettingsDialog(Stage primaryStage) {
+	public SettingsDialog(Stage primaryStage, boolean renderSettings) {
 		titleProperty().bind(Translation.DIALOG_SETTINGS_TITLE.getProperty());
 		initStyle(StageStyle.UTILITY);
 		getDialogPane().getStyleClass().add("settings-dialog-pane");
@@ -77,7 +87,6 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		getDialogPane().lookupButton(reset).addEventFilter(ActionEvent.ACTION, e -> {
 			e.consume();
 			languages.setValue(Config.DEFAULT_LOCALE);
-			readThreadsSlider.setValue(Config.DEFAULT_LOAD_THREADS);
 			processThreadsSlider.setValue(Config.DEFAULT_PROCESS_THREADS);
 			writeThreadsSlider.setValue(Config.DEFAULT_WRITE_THREADS);
 			maxLoadedFilesSlider.setValue(Config.DEFAULT_MAX_LOADED_FILES);
@@ -92,6 +101,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			showNonexistentRegionsCheckBox.setSelected(Config.DEFAULT_SHOW_NONEXISTENT_REGIONS);
 			smoothRendering.setSelected(Config.DEFAULT_SMOOTH_RENDERING);
 			smoothOverlays.setSelected(Config.DEFAULT_SMOOTH_OVERLAYS);
+			heightSlider.setValue(heightSlider.getMax());
+			caves.setSelected(Config.DEFAULT_RENDER_CAVES);
 			tileMapBackgrounds.setValue(TileMapBox.TileMapBoxBackground.valueOf(Config.DEFAULT_TILEMAP_BACKGROUND));
 			mcSavesDir.setFile(Config.DEFAULT_MC_SAVES_DIR == null ? null : new File(Config.DEFAULT_MC_SAVES_DIR));
 			debugCheckBox.setSelected(Config.DEFAULT_DEBUG);
@@ -100,22 +111,26 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		setResultConverter(c -> {
 			if (c.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 				return new Result(
-						languages.getSelectionModel().getSelectedItem(),
-						(int) readThreadsSlider.getValue(),
-						(int) processThreadsSlider.getValue(),
-						(int) writeThreadsSlider.getValue(),
-						(int) maxLoadedFilesSlider.getValue(),
-						regionSelectionColor,
-						chunkSelectionColor,
-						pasteChunksColor,
-						shadeCheckBox.isSelected(),
-						shadeWaterCheckBox.isSelected(),
-						showNonexistentRegionsCheckBox.isSelected(),
-						smoothRendering.isSelected(),
-						smoothOverlays.isSelected(),
-						tileMapBackgrounds.getSelectionModel().getSelectedItem(),
-						mcSavesDir.getFile(),
-						debugCheckBox.isSelected()
+					languages.getSelectionModel().getSelectedItem(),
+					(int) processThreadsSlider.getValue(),
+					(int) writeThreadsSlider.getValue(),
+					(int) maxLoadedFilesSlider.getValue(),
+					regionSelectionColor,
+					chunkSelectionColor,
+					pasteChunksColor,
+					shadeCheckBox.isSelected(),
+					shadeWaterCheckBox.isSelected(),
+					showNonexistentRegionsCheckBox.isSelected(),
+					smoothRendering.isSelected(),
+					smoothOverlays.isSelected(),
+					tileMapBackgrounds.getSelectionModel().getSelectedItem(),
+					mcSavesDir.getFile(),
+					debugCheckBox.isSelected(),
+					(int) heightSlider.getValue(),
+					layerOnly.isSelected(),
+					caves.isSelected(),
+					poiField.getFile(),
+					entitiesField.getFile()
 				);
 			}
 			return null;
@@ -155,6 +170,9 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		showNonexistentRegionsCheckBox.setSelected(Config.showNonExistentRegions());
 		smoothRendering.setSelected(Config.smoothRendering());
 		smoothOverlays.setSelected(Config.smoothOverlays());
+		heightSlider.setValue(Config.getRenderHeight());
+		layerOnly.setSelected(Config.renderLayerOnly());
+		caves.setSelected(Config.renderCaves());
 		tileMapBackgrounds.getItems().addAll(TileMapBox.TileMapBoxBackground.values());
 
 		tileMapBackgrounds.setCellFactory((listView) -> {
@@ -204,53 +222,208 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		});
 
 		shadeCheckBox.setOnAction(e -> shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected()));
-		shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected());
+		shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected() || caves.isSelected() || layerOnly.isSelected());
+		shadeCheckBox.setDisable(caves.isSelected() || layerOnly.isSelected());
+
+		layerOnly.setOnAction(e -> caves.setDisable(layerOnly.isSelected()));
+		caves.setDisable(layerOnly.isSelected());
+		layerOnly.setDisable(caves.isSelected());
+		caves.setOnAction(e -> {
+			layerOnly.setDisable(caves.isSelected());
+			shadeCheckBox.setDisable(caves.isSelected());
+			shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected() || caves.isSelected());
+		});
+		layerOnly.setOnAction(e -> {
+			caves.setDisable(layerOnly.isSelected());
+			shadeCheckBox.setDisable(layerOnly.isSelected());
+			shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected() || layerOnly.isSelected());
+		});
 
 		HBox debugBox = new HBox();
 		debugBox.getStyleClass().add("debug-box");
-		Hyperlink logFileLink = UIFactory.explorerLink(Translation.DIALOG_SETTINGS_SHOW_LOG_FILE, Config.getLogFile().getParentFile(), null);
+		Hyperlink logFileLink = UIFactory.explorerLink(Translation.DIALOG_SETTINGS_GLOBAL_MISC_SHOW_LOG_FILE, Config.getLogFile().getParentFile(), null);
 		debugBox.getChildren().addAll(debugCheckBox, logFileLink);
 
+		if (Config.getWorldDirs() != null) {
+			WorldDirectories worldDirectories = Config.getWorldDirs().clone();
+			poiField.setFile(worldDirectories.getPoi());
+			entitiesField.setFile(worldDirectories.getEntities());
+		}
+
+		heightSlider.setValue(Config.getRenderHeight());
+		heightSlider.setSnapToTicks(true);
+		heightSlider.setMajorTickUnit(64);
+		heightSlider.setMinorTickCount(384);
+		heightSlider.setBlockIncrement(1);
+
+		toggleGroup.selectedToggleProperty().addListener((v, o, n) -> {
+			if (n == null) {
+				toggleGroup.selectToggle(o);
+			} else {
+				tabPane.getSelectionModel().select((Tab) n.getUserData());
+			}
+		});
+
+		HBox leftTabs = new HBox();
+		leftTabs.getStyleClass().add("tab-box");
+		HBox rightTabs = new HBox();
+		rightTabs.getStyleClass().add("tab-box");
+
+		// -------------------------------------------------------------------------------------------------------------
+
+		// GLOBAL
+		Tab globalTab = createTab(Translation.DIALOG_SETTINGS_TAB_GLOBAL);
+		VBox globalBox = new VBox();
+
+		GridPane languageGrid = createGrid();
+		addPairToGrid(languageGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_GLOBAL_LANGUAGE_LANGUAGE), languages);
+		BorderedTitledPane lang = new BorderedTitledPane(Translation.DIALOG_SETTINGS_GLOBAL_LANGUAGE, languageGrid);
+
+		GridPane selectionsGrid = createGrid();
+		addPairToGrid(selectionsGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_GLOBAL_SELECTION_REGION_COLOR), regionSelectionColorPreview);
+		addPairToGrid(selectionsGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_GLOBAL_SELECTION_CHUNK_COLOR), chunkSelectionColorPreview);
+		addPairToGrid(selectionsGrid, 2, UIFactory.label(Translation.DIALOG_SETTINGS_GLOBAL_SELECTION_PASTED_CHUNKS_COLOR), pasteChunksColorPreview);
+		BorderedTitledPane selections = new BorderedTitledPane(Translation.DIALOG_SETTINGS_GLOBAL_SELECTION, selectionsGrid);
+
+		GridPane miscGrid = createGrid();
+		addPairToGrid(miscGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_GLOBAL_MISC_MC_SAVES_DIR), mcSavesDir);
+		addPairToGrid(miscGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_GLOBAL_MISC_PRINT_DEBUG), debugBox);
+		BorderedTitledPane misc = new BorderedTitledPane(Translation.DIALOG_SETTINGS_GLOBAL_MISC, miscGrid);
+
+		globalBox.getChildren().addAll(lang, selections, misc);
+		globalTab.setContent(globalBox);
+		ToggleButton globalToggleButton = createToggleButton(globalTab, Translation.DIALOG_SETTINGS_TAB_GLOBAL);
+		leftTabs.getChildren().add(globalToggleButton);
+
+		// PROCESSING
+		Tab processingTab = createTab(Translation.DIALOG_SETTINGS_TAB_PROCESSING);
+		VBox processingBox = new VBox();
+
+		GridPane threadGrid = createGrid();
+		addPairToGrid(threadGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_PROCESSING_PROCESS_PROCESS_THREADS), processThreadsSlider, UIFactory.attachTextFieldToSlider(processThreadsSlider));
+		addPairToGrid(threadGrid, 2, UIFactory.label(Translation.DIALOG_SETTINGS_PROCESSING_PROCESS_WRITE_THREADS), writeThreadsSlider, UIFactory.attachTextFieldToSlider(writeThreadsSlider));
+		BorderedTitledPane threads = new BorderedTitledPane(Translation.DIALOG_SETTINGS_PROCESSING_PROCESS, threadGrid);
+
+		GridPane filesGrid = createGrid();
+		addPairToGrid(filesGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_PROCESSING_FILES_MAX_FILES), maxLoadedFilesSlider, UIFactory.attachTextFieldToSlider(maxLoadedFilesSlider));
+		BorderedTitledPane files = new BorderedTitledPane(Translation.DIALOG_SETTINGS_PROCESSING_FILES, filesGrid);
+
+		processingBox.getChildren().addAll(threads, files);
+		processingTab.setContent(processingBox);
+		leftTabs.getChildren().add(createToggleButton(processingTab, Translation.DIALOG_SETTINGS_TAB_PROCESSING));
+
+		// RENDERING
+		Tab renderingTab = createTab(Translation.DIALOG_SETTINGS_TAB_RENDERING);
+		VBox renderingBox = new VBox();
+
+		HBox shadingAndSmooth = new HBox();
+
+		GridPane shadingGrid = createGrid();
+		addPairToGrid(shadingGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_SHADE_SHADE), shadeCheckBox);
+		addPairToGrid(shadingGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_SHADE_SHADE_WATER), shadeWaterCheckBox);
+		BorderedTitledPane shade = new BorderedTitledPane(Translation.DIALOG_SETTINGS_RENDERING_SHADE, shadingGrid);
+
+		GridPane smoothGrid = createGrid();
+		addPairToGrid(smoothGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_SMOOTH_SMOOTH_RENDERING), smoothRendering);
+		addPairToGrid(smoothGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_SMOOTH_SMOOTH_OVERLAYS), smoothOverlays);
+		BorderedTitledPane smooth = new BorderedTitledPane(Translation.DIALOG_SETTINGS_RENDERING_SMOOTH, smoothGrid);
+
+		HBox.setHgrow(shade, Priority.ALWAYS);
+		HBox.setHgrow(smooth, Priority.ALWAYS);
+		shadingAndSmooth.getChildren().addAll(shade, smooth);
+
+		GridPane layerGrid = createGrid();
+		addPairToGrid(layerGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_LAYERS_RENDER_HEIGHT), heightSlider, UIFactory.attachTextFieldToSlider(heightSlider));
+		addPairToGrid(layerGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_LAYERS_RENDER_LAYER_ONLY), layerOnly);
+		addPairToGrid(layerGrid, 2, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_LAYERS_RENDER_CAVES), caves);
+		BorderedTitledPane layers = new BorderedTitledPane(Translation.DIALOG_SETTINGS_RENDERING_LAYERS, layerGrid);
+
+		GridPane backgroundGrid = createGrid();
+		addPairToGrid(backgroundGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_BACKGROUND_BACKGROUND_PATTERN), tileMapBackgrounds);
+		addPairToGrid(backgroundGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_BACKGROUND_SHOW_NONEXISTENT_REGIONS), showNonexistentRegionsCheckBox);
+		BorderedTitledPane background = new BorderedTitledPane(Translation.DIALOG_SETTINGS_RENDERING_BACKGROUND, backgroundGrid);
+
+		renderingBox.getChildren().addAll(shadingAndSmooth, layers, background);
+		renderingTab.setContent(renderingBox);
+		ToggleButton renderingToggleButton = createToggleButton(renderingTab, Translation.DIALOG_SETTINGS_TAB_RENDERING);
+		rightTabs.getChildren().add(renderingToggleButton);
+
+		// WORLD
+		Tab worldTab = createTab(Translation.DIALOG_SETTINGS_TAB_WORLD);
+		VBox worldBox = new VBox();
+
+		GridPane worldGrid = createGrid();
+		addPairToGrid(worldGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_WORLD_PATHS_POI), poiField);
+		addPairToGrid(worldGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_WORLD_PATHS_ENTITIES), entitiesField);
+		BorderedTitledPane world = new BorderedTitledPane(Translation.DIALOG_SETTINGS_WORLD_PATHS, worldGrid);
+
+		worldBox.getChildren().addAll(world);
+		worldTab.setContent(worldBox);
+		ToggleButton worldToggleButton = createToggleButton(worldTab, Translation.DIALOG_SETTINGS_TAB_WORLD);
+		rightTabs.getChildren().add(worldToggleButton);
+
+		// -------------------------------------------------------------------------------------------------------------
+
+		renderingTab.setDisable(Config.getWorldDirs() == null);
+		worldTab.setDisable(Config.getWorldDirs() == null);
+		renderingToggleButton.setDisable(Config.getWorldDirs() == null);
+		worldToggleButton.setDisable(Config.getWorldDirs() == null);
+
+		tabPane.getTabs().addAll(globalTab, processingTab, renderingTab, worldTab);
+
+		final DataProperty<Tab> focusedTab = new DataProperty<>(globalTab);
+		if (Config.getWorldDirs() != null && renderSettings) {
+			focusedTab.set(renderingTab);
+			toggleGroup.selectToggle(renderingToggleButton);
+		} else {
+			toggleGroup.selectToggle(globalToggleButton);
+		}
+
+		Platform.runLater(() -> focusedTab.get().getContent().requestFocus());
+
+		tabBox.setLeft(leftTabs);
+		tabBox.setRight(rightTabs);
+
+		VBox content = new VBox();
+		content.getChildren().addAll(tabBox, tabPane);
+
+		getDialogPane().setContent(content);
+	}
+
+	private <T extends Node> T withAlignment(T node) {
+		GridPane.setFillWidth(node, true);
+		return node;
+	}
+
+	private Tab createTab(Translation name) {
+		Tab tab = new Tab();
+		tab.setClosable(false);
+		tab.textProperty().bind(name.getProperty());
+		return tab;
+	}
+
+	private ToggleButton createToggleButton(Tab tab, Translation name) {
+		ToggleButton toggleButton = new ToggleButton();
+		toggleButton.textProperty().bind(name.getProperty());
+		toggleButton.setToggleGroup(toggleGroup);
+		toggleButton.setUserData(tab);
+		return toggleButton;
+	}
+
+	private GridPane createGrid() {
 		GridPane grid = new GridPane();
 		grid.getStyleClass().add("slider-grid-pane");
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_LANGUAGE), 0, 0, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_READ_THREADS), 0, 1, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_PROCESS_THREADS), 0, 2, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_WRITE_THREADS), 0, 3, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_MAX_FILES), 0, 4, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_REGION_COLOR), 0, 5, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_CHUNK_COLOR), 0, 6, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_PASTED_CHUNKS_COLOR), 0, 7, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SHADE), 0, 8, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SHADE_WATER), 0, 9, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SHOW_NONEXISTENT_REGIONS), 0, 10, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SMOOTH_RENDERING), 0, 11, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_SMOOTH_OVERLAYS), 0, 12, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_BACKGROUND_PATTERN), 0, 13, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_MC_SAVES_DIR), 0, 14, 1, 1);
-		grid.add(UIFactory.label(Translation.DIALOG_SETTINGS_PRINT_DEBUG), 0, 15, 1, 1);
-		grid.add(languages, 1, 0, 2, 1);
-		grid.add(readThreadsSlider, 1, 1, 1, 1);
-		grid.add(processThreadsSlider, 1, 2, 1, 1);
-		grid.add(writeThreadsSlider, 1, 3, 1, 1);
-		grid.add(maxLoadedFilesSlider, 1, 4, 1, 1);
-		grid.add(regionSelectionColorPreview, 1, 5, 2, 1);
-		grid.add(chunkSelectionColorPreview, 1, 6, 2, 1);
-		grid.add(pasteChunksColorPreview, 1, 7, 2, 1);
-		grid.add(shadeCheckBox, 1, 8, 2, 1);
-		grid.add(shadeWaterCheckBox, 1, 9, 2, 1);
-		grid.add(showNonexistentRegionsCheckBox, 1, 10, 2, 1);
-		grid.add(smoothRendering, 1, 11, 2, 1);
-		grid.add(smoothOverlays, 1, 12, 2, 1);
-		grid.add(tileMapBackgrounds, 1, 13, 2, 1);
-		grid.add(mcSavesDir, 1, 14, 2, 1);
-		grid.add(debugBox, 1, 15, 2, 1);
-		grid.add(UIFactory.attachTextFieldToSlider(readThreadsSlider), 2, 1, 1, 1);
-		grid.add(UIFactory.attachTextFieldToSlider(processThreadsSlider), 2, 2, 1, 1);
-		grid.add(UIFactory.attachTextFieldToSlider(writeThreadsSlider), 2, 3, 1, 1);
-		grid.add(UIFactory.attachTextFieldToSlider(maxLoadedFilesSlider), 2, 4, 1, 1);
+		return grid;
+	}
 
-		getDialogPane().setContent(grid);
+	private void addPairToGrid(GridPane grid, int y, Label key, Node... value) {
+		if (value.length == 0 || value.length > 2) {
+			throw new IllegalArgumentException("invalid number of arguments (" + value.length + ") for addPairToGrid");
+		}
+		grid.add(key, 0, y, 1, 1);
+		for (int i = 0; i < value.length; i++) {
+			grid.add(withAlignment(value[i]), i + 1, y, value.length == 1 ? 2 : 1, 1);
+		}
 	}
 
 	private Slider createSlider(int min, int max, int steps, int init) {
@@ -267,24 +440,27 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 	public static class Result {
 
-		private final int readThreads, processThreads, writeThreads, maxLoadedFiles;
-		private final Color regionColor, chunkColor, pasteColor;
-		private final boolean shadeWater;
-		private final boolean shade;
-		private final boolean showNonexistentRegions;
-		private final boolean smoothRendering, smoothOverlays;
-		private final TileMapBox.TileMapBoxBackground tileMapBackground;
-		private final File mcSavesDir;
-		private final boolean debug;
-		private final Locale locale;
+		public final int processThreads, writeThreads, maxLoadedFiles;
+		public final Color regionColor, chunkColor, pasteColor;
+		public final boolean shadeWater;
+		public final boolean shade;
+		public final boolean showNonexistentRegions;
+		public final boolean smoothRendering, smoothOverlays;
+		public final TileMapBox.TileMapBoxBackground tileMapBackground;
+		public final File mcSavesDir;
+		public final boolean debug;
+		public final Locale locale;
+		public final int height;
+		public final boolean layerOnly, caves;
+		public final File poi, entities;
 
-		public Result(Locale locale, int readThreads, int processThreads, int writeThreads, int maxLoadedFiles,
+		public Result(Locale locale, int processThreads, int writeThreads, int maxLoadedFiles,
 		              Color regionColor, Color chunkColor, Color pasteColor, boolean shade, boolean shadeWater,
 		              boolean showNonexistentRegions, boolean smoothRendering, boolean smoothOverlays,
-		              TileMapBox.TileMapBoxBackground tileMapBackground, File mcSavesDir, boolean debug) {
+		              TileMapBox.TileMapBoxBackground tileMapBackground, File mcSavesDir, boolean debug, int height,
+		              boolean layerOnly, boolean caves, File poi, File entities) {
 
 			this.locale = locale;
-			this.readThreads = readThreads;
 			this.processThreads = processThreads;
 			this.writeThreads = writeThreads;
 			this.maxLoadedFiles = maxLoadedFiles;
@@ -299,70 +475,11 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			this.tileMapBackground = tileMapBackground;
 			this.mcSavesDir = Objects.requireNonNullElseGet(mcSavesDir, () -> new File(Config.DEFAULT_MC_SAVES_DIR));
 			this.debug = debug;
-		}
-
-		public Locale getLocale() {
-			return locale;
-		}
-
-		public int getReadThreads() {
-			return readThreads;
-		}
-
-		public int getProcessThreads() {
-			return processThreads;
-		}
-
-		public int getWriteThreads() {
-			return writeThreads;
-		}
-
-		public int getMaxLoadedFiles() {
-			return maxLoadedFiles;
-		}
-
-		public Color getRegionColor() {
-			return regionColor;
-		}
-
-		public Color getChunkColor() {
-			return chunkColor;
-		}
-
-		public Color getPasteColor() {
-			return pasteColor;
-		}
-
-		public boolean getShade() {
-			return shade;
-		}
-
-		public boolean getShadeWater() {
-			return shadeWater;
-		}
-
-		public boolean getShowNonexistentRegions() {
-			return showNonexistentRegions;
-		}
-
-		public boolean getSmoothRendering() {
-			return smoothRendering;
-		}
-
-		public boolean getSmoothOverlays() {
-			return smoothOverlays;
-		}
-
-		public TileMapBox.TileMapBoxBackground getTileMapBackground() {
-			return tileMapBackground;
-		}
-
-		public File getMcSavesDir() {
-			return mcSavesDir;
-		}
-
-		public boolean getDebug() {
-			return debug;
+			this.height = height;
+			this.layerOnly = layerOnly;
+			this.caves = caves;
+			this.poi = poi;
+			this.entities = entities;
 		}
 	}
 }

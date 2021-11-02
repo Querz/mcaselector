@@ -1,139 +1,161 @@
 package net.querz.mcaselector.version.anvil117;
 
-import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.version.ChunkRelocator;
+import net.querz.mcaselector.version.Helper;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.IntArrayTag;
-import net.querz.nbt.tag.IntTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.LongArrayTag;
 import net.querz.nbt.tag.Tag;
 import java.util.Map;
-import static net.querz.mcaselector.validation.ValidationHelper.catchClassCastException;
+import static net.querz.mcaselector.validation.ValidationHelper.silent;
 import static net.querz.mcaselector.version.anvil117.Anvil117EntityRelocator.*;
 
 public class Anvil117ChunkRelocator implements ChunkRelocator {
 
 	@Override
-	public boolean relocateChunk(CompoundTag root, Point2i offset) {
-		if (root == null || !root.containsKey("Level")) {
-			return false;
-		}
-
-		CompoundTag level = catchClassCastException(() -> root.getCompoundTag("Level"));
+	public boolean relocate(CompoundTag root, Point3i offset) {
+		CompoundTag level = Helper.tagFromCompound(root, "Level");
 		if (level == null) {
-			return true;
+			return false;
 		}
 
 		// adjust or set chunk position
 		level.putInt("xPos", level.getInt("xPos") + offset.blockToChunk().getX());
 		level.putInt("zPos", level.getInt("zPos") + offset.blockToChunk().getZ());
 
-
 		// adjust tile entity positions
-		if (level.containsKey("TileEntities") && level.get("TileEntities").getID() != LongArrayTag.ID) {
-			ListTag<CompoundTag> tileEntities = catchClassCastException(() -> level.getListTag("TileEntities").asCompoundTagList());
-			if (tileEntities != null) {
-				tileEntities.forEach(v -> applyOffsetToTileEntity(v, offset));
-			}
+		ListTag<CompoundTag> tileEntities = Helper.tagFromCompound(level, "TileEntities");
+		if (tileEntities != null) {
+			tileEntities.forEach(v -> applyOffsetToTileEntity(v, offset));
 		}
 
 		// adjust tile ticks
-		if (level.containsKey("TileTicks")) {
-			ListTag<CompoundTag> tileTicks = catchClassCastException(() -> level.getListTag("TileTicks").asCompoundTagList());
-			if (tileTicks != null) {
-				tileTicks.forEach(v -> applyOffsetToTick(v, offset));
-			}
+		ListTag<CompoundTag> tileTicks = Helper.tagFromCompound(level, "TileTicks");
+		if (tileTicks != null) {
+			tileTicks.forEach(v -> applyOffsetToTick(v, offset));
 		}
 
 		// adjust liquid ticks
-		if (level.containsKey("LiquidTicks")) {
-			ListTag<CompoundTag> liquidTicks = catchClassCastException(() -> level.getListTag("LiquidTicks").asCompoundTagList());
-			if (liquidTicks != null) {
-				liquidTicks.forEach(v -> applyOffsetToTick(v, offset));
-			}
+		ListTag<CompoundTag> liquidTicks = Helper.tagFromCompound(level, "LiquidTicks");
+		if (liquidTicks != null) {
+			liquidTicks.forEach(v -> applyOffsetToTick(v, offset));
 		}
 
 		// adjust structures
-		if (level.containsKey("Structures")) { // 1.13
-			CompoundTag structures = catchClassCastException(() -> level.getCompoundTag("Structures"));
-			if (structures != null) {
-				applyOffsetToStructures(structures, offset);
+		CompoundTag structures = Helper.tagFromCompound(level, "Structures");
+		if (structures != null) {
+			applyOffsetToStructures(structures, offset);
+		}
+
+		// Biomes
+		applyOffsetToBiomes(Helper.tagFromCompound(level, "Biomes"), offset.blockToSection());
+
+		// Lights
+		Helper.applyOffsetToListOfShortTagLists(level, "Lights", offset.blockToSection());
+
+		// LiquidsToBeTicked
+		Helper.applyOffsetToListOfShortTagLists(level, "LiquidsToBeTicked", offset.blockToSection());
+
+		// ToBeTicked
+		Helper.applyOffsetToListOfShortTagLists(level, "ToBeTicked", offset.blockToSection());
+
+		// PostProcessing
+		Helper.applyOffsetToListOfShortTagLists(level, "PostProcessing", offset.blockToSection());
+
+		// adjust sections vertically
+		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(root, "Sections");
+		if (sections != null) {
+			ListTag<CompoundTag> newSections = new ListTag<>(CompoundTag.class);
+			for (CompoundTag section : sections) {
+				if (applyOffsetToSection(section, offset.blockToSection(), 0, 15)) {
+					newSections.add(section);
+				}
 			}
 		}
 
 		return true;
 	}
 
-	private void applyOffsetToStructures(CompoundTag structures, Point2i offset) {
-		Point2i chunkOffset = offset.blockToChunk();
+	private void applyOffsetToBiomes(IntArrayTag biomes, Point3i offset) {
+		int[] biomesArray;
+		if (biomes == null || (biomesArray = biomes.getValue()) == null || (biomesArray.length != 1024 && biomesArray.length != 1536)) {
+			return;
+		}
+
+		int[] newBiomes = new int[biomesArray.length];
+		int maxY = biomesArray.length / 16;
+
+		for (int x = 0; x < 4; x++) {
+			for (int z = 0; z < 4; z++) {
+				for (int y = 0; y < maxY; y++) {
+					if (y + offset.getY() * 4 < 0 || y + offset.getY() * 4 > maxY - 1) {
+						break;
+					}
+					int biome = biomesArray[y * 16 + z * 4 + x];
+					newBiomes[(y + offset.getY() * 4) * 16 + z * 4 + x] = biome;
+				}
+			}
+		}
+
+		biomes.setValue(newBiomes);
+	}
+
+	private void applyOffsetToStructures(CompoundTag structures, Point3i offset) { // 1.13
+		Point3i chunkOffset = offset.blockToChunk();
 
 		// update references
-		if (structures.containsKey("References")) {
-			CompoundTag references = catchClassCastException(() -> structures.getCompoundTag("References"));
-			if (references != null) {
-				for (Map.Entry<String, Tag<?>> entry : references) {
-					long[] reference = catchClassCastException(() -> ((LongArrayTag) entry.getValue()).getValue());
-					if (reference != null) {
-						for (int i = 0; i < reference.length; i++) {
-							int x = (int) (reference[i]);
-							int z = (int) (reference[i] >> 32);
-							reference[i] = ((long) (z + chunkOffset.getZ()) & 0xFFFFFFFFL) << 32 | (long) (x + chunkOffset.getX()) & 0xFFFFFFFFL;
-						}
+		CompoundTag references = Helper.tagFromCompound(structures, "References");
+		if (references != null) {
+			for (Map.Entry<String, Tag<?>> entry : references) {
+				long[] reference = silent(() -> ((LongArrayTag) entry.getValue()).getValue(), null);
+				if (reference != null) {
+					for (int i = 0; i < reference.length; i++) {
+						int x = (int) (reference[i]);
+						int z = (int) (reference[i] >> 32);
+						reference[i] = ((long) (z + chunkOffset.getZ()) & 0xFFFFFFFFL) << 32 | (long) (x + chunkOffset.getX()) & 0xFFFFFFFFL;
 					}
 				}
 			}
 		}
 
 		// update starts
-		if (structures.containsKey("Starts")) {
-			CompoundTag starts = catchClassCastException(() -> structures.getCompoundTag("Starts"));
-			if (starts != null) {
-				for (Map.Entry<String, Tag<?>> entry : starts) {
-					CompoundTag structure = catchClassCastException(() -> (CompoundTag) entry.getValue());
-					if (structure == null || "INVALID".equals(catchClassCastException(() -> structure.getString("id")))) {
-						continue;
-					}
-					applyIntIfPresent(structure, "ChunkX", chunkOffset.getX());
-					applyIntIfPresent(structure, "ChunkZ", chunkOffset.getZ());
-					applyOffsetToBB(catchClassCastException(() -> structure.getIntArray("BB")), offset);
+		CompoundTag starts = Helper.tagFromCompound(structures, "Starts");
+		if (starts != null) {
+			for (Map.Entry<String, Tag<?>> entry : starts) {
+				CompoundTag structure = silent(() -> (CompoundTag) entry.getValue(), null);
+				if ("INVALID".equals(Helper.stringFromCompound(structure, "id"))) {
+					continue;
+				}
+				Helper.applyIntIfPresent(structure, "ChunkX", chunkOffset.getX());
+				Helper.applyIntIfPresent(structure, "ChunkZ", chunkOffset.getZ());
+				Helper.applyOffsetToBB(Helper.intArrayFromCompound(structure, "BB"), offset);
 
-					if (structure.containsKey("Processed")) {
-						ListTag<CompoundTag> processed = catchClassCastException(() -> structure.getListTag("Processed").asCompoundTagList());
-						if (processed != null) {
-							for (CompoundTag chunk : processed) {
-								applyIntIfPresent(chunk, "X", chunkOffset.getX());
-								applyIntIfPresent(chunk, "Z", chunkOffset.getZ());
-							}
+				ListTag<CompoundTag> processed = Helper.tagFromCompound(structure, "Processed");
+				if (processed != null) {
+					for (CompoundTag chunk : processed) {
+						Helper.applyIntIfPresent(chunk, "X", chunkOffset.getX());
+						Helper.applyIntIfPresent(chunk, "Z", chunkOffset.getZ());
+					}
+				}
+
+				ListTag<CompoundTag> children = Helper.tagFromCompound(structure, "Children");
+				if (children != null) {
+					for (CompoundTag child : children) {
+						Helper.applyIntOffsetIfRootPresent(child, "TPX", "TPY", "TPZ", offset);
+						Helper.applyIntOffsetIfRootPresent(child, "PosX", "PosY", "PosZ", offset);
+						Helper.applyOffsetToBB(Helper.intArrayFromCompound(child, "BB"), offset);
+
+						ListTag<IntArrayTag> entrances = Helper.tagFromCompound(child, "Entrances");
+						if (entrances != null) {
+							entrances.forEach(e -> Helper.applyOffsetToBB(e.getValue(), offset));
 						}
-					}
 
-					if (structure.containsKey("Children")) {
-						ListTag<CompoundTag> children = catchClassCastException(() -> structure.getListTag("Children").asCompoundTagList());
-						if (children != null) {
-							for (CompoundTag child : children) {
-								applyIntIfPresent(child, "TPX", offset.getX());
-								applyIntIfPresent(child, "TPZ", offset.getZ());
-								applyIntIfPresent(child, "PosX", offset.getX());
-								applyIntIfPresent(child, "PosZ", offset.getZ());
-								applyOffsetToBB(catchClassCastException(() -> child.getIntArray("BB")), offset);
-
-								if (child.containsKey("Entrances")) {
-									ListTag<IntArrayTag> entrances = catchClassCastException(() -> child.getListTag("Entrances").asIntArrayTagList());
-									if (entrances != null) {
-										entrances.forEach(e -> applyOffsetToBB(e.getValue(), offset));
-									}
-								}
-
-								if (child.containsKey("junctions")) {
-									ListTag<CompoundTag> junctions = catchClassCastException(() -> child.getListTag("junctions").asCompoundTagList());
-									if (junctions != null) {
-										for (CompoundTag junction : junctions) {
-											applyIntIfPresent(junction, "source_x", offset.getX());
-											applyIntIfPresent(junction, "source_z", offset.getZ());
-										}
-									}
-								}
+						ListTag<CompoundTag> junctions = Helper.tagFromCompound(child, "junctions");
+						if (junctions != null) {
+							for (CompoundTag junction : junctions) {
+								Helper.applyIntOffsetIfRootPresent(junction, "source_x", "source_y", "source_z", offset);
 							}
 						}
 					}
@@ -142,141 +164,84 @@ public class Anvil117ChunkRelocator implements ChunkRelocator {
 		}
 	}
 
-	private void applyOffsetToBB(int[] bb, Point2i offset) {
-		if (bb == null || bb.length != 6) {
-			return;
-		}
-		bb[0] += offset.getX();
-		bb[2] += offset.getZ();
-		bb[3] += offset.getX();
-		bb[5] += offset.getZ();
+	private void applyOffsetToTick(CompoundTag tick, Point3i offset) {
+		Helper.applyIntOffsetIfRootPresent(tick, "x", "y", "z", offset);
 	}
 
-	private void applyOffsetToTick(CompoundTag tick, Point2i offset) {
-		applyIntIfPresent(tick, "x", offset.getX());
-		applyIntIfPresent(tick, "z", offset.getZ());
-	}
-
-	static void applyOffsetToTileEntity(CompoundTag tileEntity, Point2i offset) {
+	static void applyOffsetToTileEntity(CompoundTag tileEntity, Point3i offset) {
 		if (tileEntity == null) {
 			return;
 		}
 
-		applyIntIfPresent(tileEntity, "x", offset.getX());
-		applyIntIfPresent(tileEntity, "z", offset.getZ());
+		Helper.applyIntOffsetIfRootPresent(tileEntity, "x", "y", "z", offset);
 
-		String id = catchClassCastException(() -> tileEntity.getString("id"));
-		if (id != null) {
-			switch (id) {
-				case "minecraft:bee_nest":
-				case "minecraft:beehive":
-					CompoundTag flowerPos = catchClassCastException(() -> tileEntity.getCompoundTag("FlowerPos"));
-					applyIntOffsetIfRootPresent(flowerPos, "X", "Z", offset);
-					if (tileEntity.containsKey("Bees")) {
-						ListTag<CompoundTag> bees = catchClassCastException(() -> tileEntity.getListTag("Bees").asCompoundTagList());
-						if (bees != null) {
-							for (CompoundTag bee : bees) {
-								if (bee.containsKey("EntityData")) {
-									applyOffsetToEntity(catchClassCastException(() -> bee.getCompoundTag("EntityData")), offset);
-								}
-							}
-						}
-					}
-					break;
-				case "minecraft:end_gateway":
-					CompoundTag exitPortal = catchClassCastException(() -> tileEntity.getCompoundTag("ExitPortal"));
-					applyIntOffsetIfRootPresent(exitPortal, "X", "Z", offset);
-					break;
-				case "minecraft:structure_block":
-					applyIntIfPresent(tileEntity, "posX", offset.getX());
-					applyIntIfPresent(tileEntity, "posX", offset.getZ());
-					break;
-				case "minecraft:jukebox": // 1.16 (lodestone)
-					CompoundTag recordItem = catchClassCastException(() -> tileEntity.getCompoundTag("RecordItem"));
-					applyOffsetToItem(recordItem, offset);
-					break;
-				case "minecraft:lectern": // 1.14
-					CompoundTag book = catchClassCastException(() -> tileEntity.getCompoundTag("Book"));
-					applyOffsetToItem(book, offset);
-					break;
-				case "minecraft:mob_spawner":
-					if (tileEntity.containsKey("SpawnPotentials")) {
-						ListTag<CompoundTag> spawnPotentials = catchClassCastException(() -> tileEntity.getListTag("SpawnPotentials").asCompoundTagList());
-						if (spawnPotentials != null) {
-							for (CompoundTag spawnPotential : spawnPotentials) {
-								CompoundTag entity = catchClassCastException(() -> spawnPotential.getCompoundTag("Entity"));
-								if (entity != null) {
-									applyOffsetToEntity(entity, offset);
-								}
-							}
-						}
-					}
-			}
-		}
-
-		if (tileEntity.containsKey("Items")) {
-			ListTag<CompoundTag> items = catchClassCastException(() -> tileEntity.getListTag("Items").asCompoundTagList());
-			if (items != null) {
-				items.forEach(i -> applyOffsetToItem(i, offset));
-			}
-		}
-	}
-
-	static void applyOffsetToItem(CompoundTag item, Point2i offset) {
-		if (item != null) {
-			String id = catchClassCastException(() -> item.getString("id"));
-			CompoundTag tag = catchClassCastException(() -> item.getCompoundTag("tag"));
-
-			if (id != null && tag != null) {
-				// using a switch-case here for the future
-				// noinspection SwitchStatementWithTooFewBranches
-				switch (id) {
-					case "minecraft:compass":
-						CompoundTag lodestonePos = catchClassCastException(() -> tag.getCompoundTag("LodestonePos"));
-						applyIntOffsetIfRootPresent(lodestonePos, "X", "Z", offset);
-						break;
+		String id = Helper.stringFromCompound(tileEntity, "id", "");
+		switch (id) {
+		case "minecraft:bee_nest":
+		case "minecraft:beehive":
+			CompoundTag flowerPos = Helper.tagFromCompound(tileEntity, "FlowerPos");
+			Helper.applyIntOffsetIfRootPresent(flowerPos, "X", "Y", "Z", offset);
+			ListTag<CompoundTag> bees = Helper.tagFromCompound(tileEntity, "Bees");
+			if (bees != null) {
+				for (CompoundTag bee : bees) {
+					applyOffsetToEntity(Helper.tagFromCompound(bee, "EntityData"), offset);
 				}
-
-				// recursively update all items in child containers
-
-				CompoundTag blockEntityTag = catchClassCastException(() -> tag.getCompoundTag("BlockEntityTag"));
-				if (blockEntityTag != null) {
-					if (blockEntityTag.containsKey("Items")) {
-						ListTag<CompoundTag> items = catchClassCastException(() -> blockEntityTag.getListTag("Items").asCompoundTagList());
-						if (items != null) {
-							items.forEach(i -> applyOffsetToItem(i, offset));
-						}
-					}
+			}
+			break;
+		case "minecraft:end_gateway":
+			CompoundTag exitPortal = Helper.tagFromCompound(tileEntity, "ExitPortal");
+			Helper.applyIntOffsetIfRootPresent(exitPortal, "X", "Y", "Z", offset);
+			break;
+		case "minecraft:structure_block":
+			Helper.applyIntOffsetIfRootPresent(tileEntity, "posX", "posY", "posZ", offset);
+			break;
+		case "minecraft:jukebox":
+			CompoundTag recordItem = Helper.tagFromCompound(tileEntity, "RecordItem");
+			applyOffsetToItem(recordItem, offset);
+			break;
+		case "minecraft:lectern": // 1.14
+			CompoundTag book = Helper.tagFromCompound(tileEntity, "Book");
+			applyOffsetToItem(book, offset);
+			break;
+		case "minecraft:mob_spawner":
+			ListTag<CompoundTag> spawnPotentials = Helper.tagFromCompound(tileEntity, "SpawnPotentials");
+			if (spawnPotentials != null) {
+				for (CompoundTag spawnPotential : spawnPotentials) {
+					CompoundTag entity = Helper.tagFromCompound(spawnPotential, "Entity");
+					applyOffsetToEntity(entity, offset);
 				}
 			}
 		}
-	}
 
-	static void applyIntOffsetIfRootPresent(CompoundTag root, String xKey, String zKey, Point2i offset) {
-		if (root != null) {
-			applyIntIfPresent(root, xKey, offset.getX());
-			applyIntIfPresent(root, zKey, offset.getZ());
+		ListTag<CompoundTag> items = Helper.tagFromCompound(tileEntity, "Items");
+		if (items != null) {
+			items.forEach(i -> applyOffsetToItem(i, offset));
 		}
 	}
 
-	static void applyIntIfPresent(CompoundTag root, String key, int offset) {
-		Integer value;
-		if (root.containsKey(key) && (value = catchClassCastException(() -> root.getInt(key))) != null) {
-			root.putInt(key, value + offset);
+	static void applyOffsetToItem(CompoundTag item, Point3i offset) {
+		if (item == null) {
+			return;
 		}
-	}
 
-	static void applyOffsetToIntListPos(ListTag<IntTag> pos, Point2i offset) {
-		if (pos != null && pos.size() == 3) {
-			pos.set(0, new IntTag(pos.get(0).asInt() + offset.getX()));
-			pos.set(2, new IntTag(pos.get(2).asInt() + offset.getZ()));
+		CompoundTag tag = Helper.tagFromCompound(item, "tag");
+		if (tag == null) {
+			return;
 		}
-	}
 
-	static void applyOffsetToIntArrayPos(int[] pos, Point2i offset) {
-		if (pos != null && pos.length == 3) {
-			pos[0] += offset.getX();
-			pos[2] += offset.getZ();
+		String id = Helper.stringFromCompound(item, "id", "");
+		switch (id) {
+		case "minecraft:compass":
+			CompoundTag lodestonePos = Helper.tagFromCompound(tag, "LodestonePos");
+			Helper.applyIntOffsetIfRootPresent(lodestonePos, "X", "Y", "Z", offset);
+			break;
+		}
+
+		// recursively update all items in child containers
+		CompoundTag blockEntityTag = Helper.tagFromCompound(tag, "BlockEntityTag");
+		ListTag<CompoundTag> items = Helper.tagFromCompound(blockEntityTag, "Items");
+		if (items != null) {
+			items.forEach(i -> applyOffsetToItem(i, offset));
 		}
 	}
 }

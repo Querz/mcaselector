@@ -1,15 +1,9 @@
 status.region;область
-status.region.tooltip;Указанная область, показывает числа в имени файла.
 status.chunk;чанк
-status.chunk.tooltip;Указанный чанк.
 status.block;блок
-status.block.tooltip;Приблизительные координаты указанного блока
 status.selected;выбрано
-status.selected.tooltip;Количество выбранных чанков.
-status.visible;отображено
-status.visible.tooltip;Количество прогруженных областей для отображения
+status.queue;очередь
 status.total;всего
-status.total.tooltip;Общее количество прогруженных областей, включая не отоброжаемые выбранные области.
 status.overlay;наложение
 menu.file;Файл
 menu.view;Вид
@@ -19,8 +13,9 @@ menu.about;О программе
 menu.file.open_world;Открой мир
 menu.file.open;Открыть регион
 menu.file.settings;Настройки
-menu.file.world_settings;Мировые настройки
+menu.file.render_settings;Настройки рендеринга
 menu.file.quit;Выход
+menu.view.reload;Перезагрузить
 menu.view.chunk_grid;Сетка чанков
 menu.view.region_grid;Сетка областей
 menu.view.goto;Перейти по координатам
@@ -42,35 +37,48 @@ menu.tools.import_chunks;Импортировать чанки
 menu.tools.filter_chunks;Отфильтровать чанки
 menu.tools.change_fields;Изменить параметры
 menu.tools.edit_nbt;Редактировать чанк
-menu.tools.swap_chunks;поменять чанки
+menu.tools.swap_chunks;Поменять чанки
 menu.tools.edit_overlays;Редактировать наложения
 menu.tools.next_overlay;Следующий оверлей
 menu.tools.next_overlay_type;Тип наложения
 dialog.select_world.title;Выберите размер
 dialog.settings.title;Настройки
-dialog.settings.language;Язык
-dialog.settings.read_threads;Чтение потоков
-dialog.settings.process_threads;Обработка потоков
-dialog.settings.write_threads;Написание потоков
-dialog.settings.max_files;Максимум загружаемых файлов
-dialog.settings.region_color;Цвет выделяемых областей
-dialog.settings.chunk_color;Цвет выделяемых чанков
-dialog.settings.pasted_chunks_color;Цвет вставленных чанков
-dialog.settings.shade;тень
-dialog.settings.shade_water;Глубина воды
-dialog.settings.show_nonexistent_regions;Показать несуществующие регионы
-dialog.settings.smooth_rendering;Сделать гладким
-dialog.settings.smooth_overlays;Гладкие накладки
-dialog.settings.background_pattern;Фоновый узор
-dialog.settings.mc_saves_dir;Каталог Minecraft
-dialog.settings.print_debug;Отображать системные сообщения
-dialog.settings.show_log_file;Показать файл журнала
+dialog.settings.global.language;Язык
+dialog.settings.global.language.language;Язык
+dialog.settings.processing.process.process_threads;Технологические потоки
+dialog.settings.processing.process;Процесс
+dialog.settings.processing.process.write_threads;Писать темы
+dialog.settings.processing.files.max_files;Макс файлов
+dialog.settings.global.selection.region_color;Цвет региона
+dialog.settings.global.selection.chunk_color;Цвет чанка
+dialog.settings.global.selection.pasted_chunks_color;Цвет вставленных кусков
+dialog.settings.rendering.shade.shade;Оттенок
+dialog.settings.rendering.shade;Оттенок
+dialog.settings.rendering.shade.shade_water;Тень воды
+dialog.settings.rendering.background.show_nonexistent_regions;Показать несуществующие регионы
+dialog.settings.rendering.smooth.smooth_rendering;Плавный рендеринг
+dialog.settings.rendering.smooth.smooth_overlays;Гладкие накладки
+dialog.settings.rendering.background.background_pattern;Фоновый узор
+dialog.settings.rendering.background;Фон
+dialog.settings.global.misc.mc_saves_dir;MC сохраняет реж
+dialog.settings.global.misc.print_debug;Распечатать отладочные сообщения
+dialog.settings.global.misc.show_log_file;Показать файл журнала
 dialog.settings.reset;Сбросить
-dialog.world_settings.title;Мировые настройки
-dialog.world_settings.poi;POI
-dialog.world_settings.entities;Сущности
-dialog.world_settings.render_height;Высота рендеринга
-dialog.world_settings.render_layer_only;Только слой рендеринга
+dialog.settings.tab_global;Глобальный
+dialog.settings.tab_processing;Обработка
+dialog.settings.tab_rendering;Рендеринг
+dialog.settings.tab_world;Мир
+dialog.settings.global.misc;Разное
+dialog.settings.processing.files;Файлы
+dialog.settings.rendering.smooth;Гладкий; плавный
+dialog.settings.global.selection;Выбор
+dialog.settings.world.paths;Пути
+dialog.settings.world.paths.poi;POI
+dialog.settings.world.paths.entities;Сущности
+dialog.settings.rendering.layers.render_height;Высота рендеринга
+dialog.settings.rendering.layers.render_layer_only;Только слой рендеринга
+dialog.settings.rendering.layers;Слои
+dialog.settings.rendering.layers.render_caves;Рендеринг пещер
 dialog.goto.title;Перейти по координатам
 dialog.confirmation.question;Вы уверены?
 dialog.delete_chunks_confirmation.title;Удалить чанки
@@ -85,6 +93,7 @@ dialog.import_chunks_confirmation.options;Опции
 dialog.import_chunks_confirmation.options.offset;Смещение
 dialog.import_chunks_confirmation.options.overwrite;Заменить существующие чанки
 dialog.import_chunks_confirmation.options.selection_only;Применить только к выбранным
+dialog.import_chunks_confirmation.options.y_offset;Смещение по Y
 dialog.import_chunks_confirmation.options.sections;разделы
 dialog.import_chunks_confirmation.warning;Внимание: Импорт чанков со смещением не обновит содержимое командных блоков.
 dialog.export_chunks_confirmation.title;Экспорт чанков
@@ -155,5 +164,7 @@ dialog.error.button.copy_to_clipboard;Скопировать в буфер об�
 dialog.error.title;Ошибка
 dialog.error.header;Произошла ошибка
 dialog.error.copied_to_clipboard;Скопировано в буфер обмена!
+dialog.unsaved_changes.title;Несохраненные изменения
+dialog.unsaved_changes.header;У вас есть несохраненные изменения.
 button.cancel;Отменить
 button.ok;OK

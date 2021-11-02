@@ -50,7 +50,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean contains(List<String> value, ChunkData data) {
-		if (data.getRegion() == null) {
+		if (data.getRegion() == null || data.getRegion().getData() == null) {
 			return false;
 		}
 		return VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"))
@@ -64,7 +64,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean intersects(List<String> value, ChunkData data) {
-		if (data.getRegion() == null) {
+		if (data.getRegion() == null || data.getRegion().getData() == null) {
 			return false;
 		}
 		return VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"))
@@ -72,7 +72,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 	}
 
 	public boolean equals(List<String> value, ChunkData data) {
-		if (data.getRegion() == null) {
+		if (data.getRegion() == null || data.getRegion().getData() == null) {
 			return false;
 		}
 		return VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"))

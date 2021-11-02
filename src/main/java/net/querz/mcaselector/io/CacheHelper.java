@@ -1,6 +1,8 @@
 package net.querz.mcaselector.io;
 
-import javafx.application.Platform;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.point.Point2i;
@@ -8,6 +10,7 @@ import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.progress.Progress;
+import net.querz.mcaselector.ui.TileMapBox;
 import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,8 +19,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 
 public final class CacheHelper {
@@ -38,15 +39,13 @@ public final class CacheHelper {
 			if (m.find()) {
 				int x = Integer.parseInt(m.group("regionX"));
 				int z = Integer.parseInt(m.group("regionZ"));
-				boolean scaleOnly = zoomLevel != null;
-				float zoomLevelSupplier = scaleOnly ? zoomLevel : 1;
-				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), (i, u) -> {}, () -> zoomLevelSupplier, scaleOnly, progressChannel, false);
+				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), (i, u) -> {}, zoomLevel, progressChannel, false, null);
 			}
 		}
 	}
 
 	public static void clearAllCache(TileMap tileMap) {
-		MCAFilePipe.cancelAllJobsAndFlush();
+		JobHandler.cancelAllJobsAndFlush();
 		for (File cacheDir : Config.getCacheDirs()) {
 			FileHelper.deleteDirectory(cacheDir);
 		}
@@ -54,44 +53,42 @@ public final class CacheHelper {
 		updateWorldSettingsFile();
 		RegionImageGenerator.invalidateCachedMCAFiles();
 		tileMap.clear();
-		tileMap.update();
+		tileMap.draw();
 	}
 
 	// asynchronously cancels all jobs and marks all Tiles as "not loaded"
 	// but doesn't remove their images from memory.
 	public static void clearAllCacheAsync(TileMap tileMap, Runnable callback) {
 		Thread clear = new Thread(() -> {
-			MCAFilePipe.cancelAllJobsAndFlush();
+			JobHandler.cancelAllJobsAndFlush();
 			for (File cacheDir : Config.getCacheDirs()) {
 				FileHelper.deleteDirectory(cacheDir);
 			}
 			updateVersionFile();
 			updateWorldSettingsFile();
 
-			Platform.runLater(() -> {
-				tileMap.markAllTilesAsObsolete();
-				tileMap.update();
-			});
+			tileMap.markAllTilesAsObsolete();
+			tileMap.draw();
 			callback.run();
 		});
 		clear.start();
 	}
 
 	public static void clearViewCache(TileMap tileMap) {
-		for (Point2i regionBlock : tileMap.getVisibleRegions()) {
+		for (Point2i region : tileMap.getVisibleRegions()) {
 			for (File cacheDir : Config.getCacheDirs()) {
-				File file = FileHelper.createPNGFilePath(cacheDir, regionBlock);
+				File file = FileHelper.createPNGFilePath(cacheDir, region);
 				if (file.exists()) {
 					if (!file.delete()) {
 						Debug.error("could not delete file " + file);
 					}
 				}
-				tileMap.clearTile(regionBlock);
-				tileMap.getOverlayPool().discardData(regionBlock);
+				tileMap.clearTile(region.asLong());
+				tileMap.getOverlayPool().discardData(region);
 			}
 		}
 		RegionImageGenerator.invalidateCachedMCAFiles();
-		tileMap.update();
+		tileMap.draw();
 	}
 
 	public static void clearSelectionCache(TileMap tileMap) {
@@ -110,32 +107,33 @@ public final class CacheHelper {
 							Debug.error("could not delete file " + cacheFile);
 							continue;
 						}
-						tileMap.clearTile(cacheRegion);
+						tileMap.clearTile(cacheRegion.asLong());
 					}
 				}
 			}
 
-			Map<Point2i, Set<Point2i>> trueSelection = SelectionHelper.getTrueSelection(selection);
-			for (Point2i region : trueSelection.keySet()) {
-				tileMap.getOverlayPool().discardData(region);
+			Long2ObjectOpenHashMap<LongOpenHashSet> trueSelection = SelectionHelper.getTrueSelection(selection);
+			for (long region : trueSelection.keySet()) {
+				tileMap.getOverlayPool().discardData(new Point2i(region));
 			}
 		} else {
-			for (Map.Entry<Point2i, Set<Point2i>> entry : tileMap.getMarkedChunks().entrySet()) {
+			for (Long2ObjectMap.Entry<LongOpenHashSet> entry : tileMap.getMarkedChunks().long2ObjectEntrySet()) {
+				Point2i region = new Point2i(entry.getLongKey());
 				for (File cacheDir : Config.getCacheDirs()) {
-					File file = FileHelper.createPNGFilePath(cacheDir, entry.getKey());
+					File file = FileHelper.createPNGFilePath(cacheDir, region);
 					if (file.exists()) {
 						if (!file.delete()) {
 							Debug.error("could not delete file " + file);
 						}
 					}
-					tileMap.clearTile(entry.getKey());
+					tileMap.clearTile(entry.getLongKey());
 				}
-				tileMap.getOverlayPool().discardData(entry.getKey());
+				tileMap.getOverlayPool().discardData(region);
 
 			}
 		}
 		RegionImageGenerator.invalidateCachedMCAFiles();
-		tileMap.update();
+		tileMap.draw();
 	}
 
 	public static void validateCacheVersion(TileMap tileMap) {
@@ -197,7 +195,7 @@ public final class CacheHelper {
 		}
 	}
 
-	public static void readWorldSettingsFile() {
+	public static void readWorldSettingsFile(TileMap tileMap) {
 		File worldSettingsFile = new File(Config.getCacheDir(), "world_settings.json");
 		if (!worldSettingsFile.exists()) {
 			return;
@@ -207,6 +205,13 @@ public final class CacheHelper {
 		String entities = null;
 		int height = Config.DEFAULT_RENDER_HEIGHT;
 		boolean layerOnly = Config.DEFAULT_RENDER_LAYER_ONLY;
+		boolean caves = Config.DEFAULT_RENDER_CAVES;
+		boolean shade = Config.DEFAULT_SHADE;
+		boolean shadeWater = Config.DEFAULT_SHADE_WATER;
+		boolean smooth = Config.DEFAULT_SMOOTH_RENDERING;
+		boolean smoothOverlays = Config.DEFAULT_SMOOTH_OVERLAYS;
+		String tileMapBackground = Config.DEFAULT_TILEMAP_BACKGROUND;
+		boolean showNonexistentRegions = Config.DEFAULT_SHOW_NONEXISTENT_REGIONS;
 
 		try {
 			byte[] data = Files.readAllBytes(worldSettingsFile.toPath());
@@ -215,8 +220,15 @@ public final class CacheHelper {
 			entities = root.has("entities") ? root.getString("entities") : null;
 			height = root.has("height") ? root.getInt("height") : Config.DEFAULT_RENDER_HEIGHT;
 			layerOnly = root.has("layerOnly") ? root.getBoolean("layerOnly") : Config.DEFAULT_RENDER_LAYER_ONLY;
-		} catch (IOException e) {
-			e.printStackTrace();
+			caves = root.has("caves") ? root.getBoolean("caves") : Config.DEFAULT_RENDER_CAVES;
+			shade = root.has("shade") ? root.getBoolean("shade") : Config.DEFAULT_SHADE;
+			shadeWater = root.has("shadeWater") ? root.getBoolean("shadeWater") : Config.DEFAULT_SHADE_WATER;
+			smooth = root.has("smooth") ? root.getBoolean("smooth") : Config.DEFAULT_SMOOTH_RENDERING;
+			smoothOverlays = root.has("smoothOverlays") ? root.getBoolean("smoothOverlays") : Config.DEFAULT_SMOOTH_OVERLAYS;
+			tileMapBackground = root.has("tileMapBackground") ? root.getString("tileMapBackground") : Config.DEFAULT_TILEMAP_BACKGROUND;
+			showNonexistentRegions = root.has("showNonexistentRegions") ? root.getBoolean("showNonexistentRegions") : Config.DEFAULT_SHOW_NONEXISTENT_REGIONS;
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 
 		if (poi != null && !poi.isEmpty() && !poi.equals("null")) {
@@ -227,6 +239,20 @@ public final class CacheHelper {
 		}
 		Config.setRenderHeight(height);
 		Config.setRenderLayerOnly(layerOnly);
+		Config.setRenderCaves(caves);
+		Config.setShade(shade);
+		Config.setShadeWater(shadeWater);
+		Config.setSmoothRendering(smooth);
+		Config.setSmoothOverlays(smoothOverlays);
+		Config.setTileMapBackground(tileMapBackground);
+		try {
+			tileMap.getWindow().getTileMapBox().setBackground(TileMapBox.TileMapBoxBackground.valueOf(tileMapBackground).getBackground());
+		} catch (IllegalArgumentException ex) {
+			ex.printStackTrace();
+		}
+		Config.setShowNonExistentRegions(showNonexistentRegions);
+
+		System.out.println(Config.asString());
 	}
 
 	public static void updateWorldSettingsFile() {
@@ -242,6 +268,13 @@ public final class CacheHelper {
 		root.put("entities", Config.getWorldDirs().getEntities());
 		root.put("height", Config.getRenderHeight());
 		root.put("layerOnly", Config.renderLayerOnly());
+		root.put("caves", Config.renderCaves());
+		root.put("shade", Config.shade());
+		root.put("shadeWater", Config.shadeWater());
+		root.put("smooth", Config.smoothRendering());
+		root.put("smoothOverlays", Config.smoothOverlays());
+		root.put("tileMapBackground", Config.getTileMapBackground());
+		root.put("showNonexistentRegions", Config.showNonExistentRegions());
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(worldSettingsFile))) {
 			bw.write(root.toString());

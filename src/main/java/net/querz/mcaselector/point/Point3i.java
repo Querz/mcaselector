@@ -133,12 +133,56 @@ public class Point3i implements Cloneable, Serializable {
 		return new Point3i(x << i, y << i, z << i);
 	}
 
+	private Point3i shift2Right(int i) {
+		return new Point3i(x >> i, y, z >> i);
+	}
+
+	private Point3i shift2Left(int i) {
+		return new Point3i(x << i, y, z << i);
+	}
+
 	@Override
 	public boolean equals(Object other) {
 		return other instanceof Point3i
 				&& ((Point3i) other).x == x
 				&& ((Point3i) other).y == y
 				&& ((Point3i) other).z == z;
+	}
+
+	public Point3i blockToRegion() {
+		return shift2Right(9);
+	}
+
+	public Point3i regionToBlock() {
+		return shift2Left(9);
+	}
+
+	public Point3i regionToChunk() {
+		return shift2Left(5);
+	}
+
+	public Point3i blockToChunk() {
+		return shift2Right(4);
+	}
+
+	public Point3i chunkToBlock() {
+		return shift2Left(4);
+	}
+
+	public Point3i chunkToRegion() {
+		return shift2Right(5);
+	}
+
+	public Point2i toPoint2i() {
+		return new Point2i(x, z);
+	}
+
+	public Point3i sectionToBlock() {
+		return shiftLeft(4);
+	}
+
+	public Point3i blockToSection() {
+		return shiftRight(4);
 	}
 
 	@Override

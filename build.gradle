@@ -9,7 +9,7 @@ plugins {
 }
 
 group 'net.querz.mcaselector'
-version '1.16.3'
+version '1.17'
 def appName = 'MCA Selector'
 def appUrl = 'https://github.com/Querz/mcaselector'
 def appAuthor = 'Querz'
@@ -36,6 +36,7 @@ dependencies {
 	implementation 'org.json:json:20201115'
 	implementation 'ar.com.hjg:pngj:2.1.0'
 	implementation 'org.xerial:sqlite-jdbc:3.34.0'
+	implementation 'it.unimi.dsi:fastutil:8.5.6'
 	testImplementation 'junit:junit:4.12'
 	testImplementation 'commons-io:commons-io:2.6'
 }

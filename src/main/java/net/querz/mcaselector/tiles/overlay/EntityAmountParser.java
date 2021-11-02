@@ -13,12 +13,12 @@ public class EntityAmountParser extends AmountParser {
 
 	@Override
 	public int parseValue(ChunkData chunkData) {
-		EntityFilter entityFilter = VersionController.getEntityFilter(chunkData.getRegion().getData().getInt("DataVersion"));
-		ListTag<?> entities = entityFilter.getEntities(chunkData);
-		if (entities == null) {
+		if (chunkData.getRegion() == null || chunkData.getRegion().getData() == null) {
 			return 0;
 		}
-		return entities.size();
+		EntityFilter entityFilter = VersionController.getEntityFilter(chunkData.getRegion().getData().getInt("DataVersion"));
+		ListTag<?> entities = entityFilter.getEntities(chunkData);
+		return entities == null ? 0 : entities.size();
 	}
 
 	@Override

@@ -2,6 +2,8 @@ package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
+import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.nbt.io.NBTDeserializer;
 import net.querz.nbt.io.NBTSerializer;
@@ -17,6 +19,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.List;
+import java.util.function.Function;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -115,7 +119,9 @@ public abstract class Chunk {
 		}
 	}
 
-	public abstract boolean relocate(Point2i offset);
+	public abstract boolean relocate(Point3i offset);
+
+	public abstract void merge(CompoundTag destination, List<Range> ranges, int yOffset);
 
 	public abstract File getMCCFile();
 
@@ -160,5 +166,15 @@ public abstract class Chunk {
 			s = "error";
 		}
 		return "<absoluteLoaction=" + absoluteLocation + ", compressionType=" + compressionType + ", data=" + s + ">";
+	}
+
+	protected <T extends Chunk> T clone(Function<Point2i, T> chunkConstructor) {
+		T clone = chunkConstructor.apply(absoluteLocation);
+		clone.compressionType = compressionType;
+		clone.timestamp = timestamp;
+		if (data != null) {
+			clone.data = data.clone();
+		}
+		return clone;
 	}
 }

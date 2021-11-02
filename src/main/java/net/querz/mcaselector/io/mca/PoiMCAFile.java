@@ -1,13 +1,16 @@
 package net.querz.mcaselector.io.mca;
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.version.ChunkMerger;
+import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.CompoundTag;
 import java.io.File;
 import java.util.List;
-import java.util.Set;
 
-public class PoiMCAFile extends MCAFile<PoiChunk> {
+public class PoiMCAFile extends MCAFile<PoiChunk> implements Cloneable {
 
 	public PoiMCAFile(File file) {
 		super(file, PoiChunk::new);
@@ -15,16 +18,21 @@ public class PoiMCAFile extends MCAFile<PoiChunk> {
 	}
 
 	static PoiChunk newEmptyChunk(Point2i absoluteLocation, int dataVersion) {
+		ChunkMerger chunkMerger = VersionController.getPoiMerger(dataVersion);
+		CompoundTag root = chunkMerger.newEmptyChunk(absoluteLocation, dataVersion);
 		PoiChunk chunk = new PoiChunk(absoluteLocation);
-		CompoundTag root = new CompoundTag();
-		root.putInt("DataVersion", dataVersion);
 		chunk.data = root;
 		chunk.compressionType = CompressionType.ZLIB;
 		return chunk;
 	}
 
 	@Override
-	public void mergeChunksInto(MCAFile<PoiChunk> destination, Point2i offset, boolean overwrite, Set<Point2i> sourceChunks, Set<Point2i> selection, List<Range> ranges) {
+	public void mergeChunksInto(MCAFile<PoiChunk> destination, Point3i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges) {
 		mergeChunksInto(destination, offset, overwrite, sourceChunks, selection, ranges, PoiMCAFile::newEmptyChunk);
+	}
+
+	@Override
+	public PoiMCAFile clone() {
+		return clone(PoiMCAFile::new);
 	}
 }

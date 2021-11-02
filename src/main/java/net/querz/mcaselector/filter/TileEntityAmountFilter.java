@@ -1,9 +1,10 @@
 package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionController;
+import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.LongArrayTag;
-import net.querz.nbt.tag.Tag;
 
 public class TileEntityAmountFilter extends IntFilter {
 
@@ -17,14 +18,12 @@ public class TileEntityAmountFilter extends IntFilter {
 
 	@Override
 	protected Integer getNumber(ChunkData data) {
-		if (data.getRegion() == null) {
+		if (data.getRegion() == null || data.getRegion().getData() == null) {
 			return 0;
 		}
-		Tag<?> rawTileEntities = data.getRegion().getData().getCompoundTag("Level").get("TileEntities");
-		if (rawTileEntities == null || rawTileEntities.getID() == LongArrayTag.ID) {
-			return 0;
-		}
-		return ((ListTag<?>) rawTileEntities).asCompoundTagList().size();
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		ListTag<CompoundTag> tileEntities = chunkFilter.getTileEntities(data.getRegion().getData());
+		return tileEntities == null ? 0 : tileEntities.size();
 	}
 
 	@Override

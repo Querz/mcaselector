@@ -1306,20 +1306,19 @@ public class ChunkImporterTest {
 	public void before() throws IOException {
 		FileUtils.copyDirectory(getResourceFile("import"), new File("tmp/" + name.getMethodName() + "/import"));
 		Config.setWorldDir(new File("tmp/" + name.getMethodName() + "/import/target"));
-		Config.setLoadThreads(1);
 		Config.setProcessThreads(1);
 		Config.setWriteThreads(1);
 		Config.setMaxLoadedFiles(10);
 		Config.setDebug(true);
 		Config.setCacheDir(new File("tmp/" + name.getMethodName()));
 		Config.getCacheDir().mkdirs();
-		MCAFilePipe.init();
+		JobHandler.init();
 	}
 
 	@After
 	public void after() throws InterruptedException, TimeoutException, ExecutionException {
 		FutureTask<Object> f = new FutureTask<>(() -> {}, null);
-		MCAFilePipe.cancelAllJobsAndFlushAsync(f);
+		JobHandler.cancelAllJobsAndFlushAsync(f);
 		f.get(60, TimeUnit.SECONDS);
 	}
 

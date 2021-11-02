@@ -16,8 +16,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
-public class ParseDataJob extends LoadDataJob {
+public class ParseDataJob extends ProcessDataJob {
 
 	private static final Set<Point2i> loading = ConcurrentHashMap.newKeySet();
 
@@ -25,13 +26,15 @@ public class ParseDataJob extends LoadDataJob {
 	private final UUID world;
 	private final OverlayParser parser;
 	private final Tile tile;
+	private final Supplier<Integer> prioritySupplier;
 
-	public ParseDataJob(Tile tile, RegionDirectories dirs, UUID world, BiConsumer<int[], UUID> dataCallback, OverlayParser parser) {
-		super(dirs);
+	public ParseDataJob(Tile tile, RegionDirectories dirs, UUID world, BiConsumer<int[], UUID> dataCallback, OverlayParser parser, Supplier<Integer> prioritySupplier) {
+		super(dirs, PRIORITY_LOW);
 		this.tile = tile;
 		this.dataCallback = dataCallback;
 		this.world = world;
 		this.parser = parser;
+		this.prioritySupplier = prioritySupplier;
 		setLoading(tile, true);
 	}
 
@@ -57,7 +60,7 @@ public class ParseDataJob extends LoadDataJob {
 	}
 
 	@Override
-	public void execute() {
+	public boolean execute() {
 		Timer t = new Timer();
 
 		RegionMCAFile regionMCAFile = null;
@@ -109,7 +112,7 @@ public class ParseDataJob extends LoadDataJob {
 			dataCallback.accept(null, world);
 			Debug.dumpf("no data to load and parse for region %s", getRegionDirectories().getLocation());
 			setLoading(tile, false);
-			return;
+			return true;
 		}
 
 		int[] data = new int[1024];
@@ -129,10 +132,19 @@ public class ParseDataJob extends LoadDataJob {
 		setLoading(tile, false);
 
 		Debug.dumpf("took %s to load and parse data for region %s", t, getRegionDirectories().getLocation());
+		return true;
 	}
 
 	@Override
 	public void cancel() {
 		setLoading(tile, false);
+	}
+
+	@Override
+	public int getPriority() {
+		if (prioritySupplier == null) {
+			return super.getPriority();
+		}
+		return super.getBasePriority() + prioritySupplier.get();
 	}
 }

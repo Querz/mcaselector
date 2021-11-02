@@ -1,7 +1,9 @@
 package net.querz.mcaselector.version;
 
+import net.querz.mcaselector.io.BiomeRegistry;
 import net.querz.nbt.io.SNBTUtil;
-import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.*;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
@@ -12,7 +14,7 @@ public interface ChunkFilter {
 	boolean matchBlockNames(CompoundTag data, Collection<String> names);
 
 	// returns true if ALL biomes are present
-	boolean matchBiomeIDs(CompoundTag data, Collection<Integer> ids);
+	boolean matchBiomes(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes);
 
 	// returns true if AT LEAST ONE block name is present
 	boolean matchAnyBlockName(CompoundTag data, Collection<String> names);
@@ -21,17 +23,45 @@ public interface ChunkFilter {
 	boolean paletteEquals(CompoundTag data, Collection<String> names);
 
 	// returns true if AT LEAST ONE biome is present
-	boolean matchAnyBiomeID(CompoundTag data, Collection<Integer> ids);
+	boolean matchAnyBiome(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes);
 
-	void changeBiome(CompoundTag data, int id);
+	void changeBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome);
 
-	void forceBiome(CompoundTag data, int id);
+	void forceBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome);
 
 	void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace);
 
 	int getAverageHeight(CompoundTag data);
 
 	int getBlockAmount(CompoundTag data, String[] blocks);
+
+	ListTag<CompoundTag> getTileEntities(CompoundTag data);
+
+	CompoundTag getStructures(CompoundTag data);
+
+	ListTag<CompoundTag> getSections(CompoundTag data);
+
+	LongTag getInhabitedTime(CompoundTag data);
+
+	void setInhabitedTime(CompoundTag data, long inhabitedTime);
+
+	StringTag getStatus(CompoundTag data);
+
+	void setStatus(CompoundTag data, String status);
+
+	LongTag getLastUpdate(CompoundTag data);
+
+	void setLastUpdate(CompoundTag data, long lastUpdate);
+
+	IntTag getXPos(CompoundTag data);
+
+	IntTag getYPos(CompoundTag data);
+
+	IntTag getZPos(CompoundTag data);
+
+	ByteTag getLightPopulated(CompoundTag data);
+
+	void setLightPopulated(CompoundTag data, byte lightPopulated);
 
 	class BlockReplaceData {
 

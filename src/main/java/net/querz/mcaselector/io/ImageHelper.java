@@ -5,9 +5,8 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLineHelper;
 import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.PngWriter;
+import javafx.scene.image.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
@@ -26,14 +25,31 @@ public final class ImageHelper {
 
 	private ImageHelper() {}
 
-	public static BufferedImage scaleImage(BufferedImage before, double newSize) {
+	public static BufferedImage scaleImage(BufferedImage before, double newSize, boolean smooth) {
 		double w = before.getWidth();
 		double h = before.getHeight();
 		BufferedImage after = new BufferedImage((int) newSize, (int) newSize, BufferedImage.TYPE_INT_ARGB);
 		AffineTransform at = new AffineTransform();
 		at.scale(newSize / w, newSize / h);
-		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+		AffineTransformOp scaleOp = new AffineTransformOp(at, smooth ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
 		return scaleOp.filter(before, after);
+	}
+
+	public static Image scaleDownFXImage(Image before, int newSize) {
+		WritableImage after = new WritableImage(newSize, newSize);
+		PixelReader reader = before.getPixelReader();
+		PixelWriter writer = after.getPixelWriter();
+
+		int scaleFactor = (int) (before.getWidth() / after.getWidth());
+
+		for (int y = 0; y < newSize; y++) {
+			for (int x = 0; x < newSize; x++) {
+				int argb = reader.getArgb(x * scaleFactor, y * scaleFactor);
+				writer.setArgb(x, y, argb);
+			}
+		}
+
+		return after;
 	}
 
 	public static Image renderGradient(int width, float min, float max, float low, float high, boolean inverted) {

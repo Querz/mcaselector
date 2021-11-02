@@ -1,5 +1,6 @@
 package net.querz.mcaselector;
 
+import net.querz.mcaselector.io.CacheHelper;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.tiles.Tile;
@@ -108,10 +109,10 @@ public final class Config {
 			return false;
 		}
 		try {
-			Files.createDirectories(parent.toPath());
+			Files.createDirectories(parent.getCanonicalFile().toPath());
 			return true;
 		} catch (IOException ex) {
-			System.out.println("failed to create directory " + parent + ": " + ex.getMessage());
+			System.out.println("failed to create directory " + parent + ": " + ex.getMessage() + "(" + ex.getClass().getSimpleName() + ")");
 			return false;
 		}
 	}
@@ -127,7 +128,6 @@ public final class Config {
 	public static final Color DEFAULT_CHUNK_SELECTION_COLOR = new Color(1, 0.45, 0, 0.8);
 	public static final Color DEFAULT_PASTE_CHUNKS_COLOR = new Color(0, 1, 0, 0.8);
 	public static final Locale DEFAULT_LOCALE = Locale.UK;
-	public static final int DEFAULT_LOAD_THREADS = 1;
 	public static final int DEFAULT_PROCESS_THREADS = Math.max(Runtime.getRuntime().availableProcessors() - 2, 1);
 	public static final int DEFAULT_WRITE_THREADS = Math.min(Runtime.getRuntime().availableProcessors(), 4);
 	public static final int DEFAULT_MAX_LOADED_FILES = (int) Math.max(Math.ceil(Runtime.getRuntime().maxMemory() / 1_000_000_000D) * 2, 1);
@@ -142,6 +142,7 @@ public final class Config {
 
 	public static final int DEFAULT_RENDER_HEIGHT = 319;
 	public static final boolean DEFAULT_RENDER_LAYER_ONLY = false;
+	public static final boolean DEFAULT_RENDER_CAVES = false;
 
 	private static File worldDir = null;
 	private static WorldDirectories worldDirs = null;
@@ -154,7 +155,6 @@ public final class Config {
 	private static Color regionSelectionColor = DEFAULT_REGION_SELECTION_COLOR;
 	private static Color chunkSelectionColor = DEFAULT_CHUNK_SELECTION_COLOR;
 	private static Color pasteChunksColor = DEFAULT_PASTE_CHUNKS_COLOR;
-	private static int loadThreads = DEFAULT_LOAD_THREADS;
 	private static int processThreads = DEFAULT_PROCESS_THREADS;
 	private static int writeThreads = DEFAULT_WRITE_THREADS;
 	private static int maxLoadedFiles = DEFAULT_MAX_LOADED_FILES;
@@ -168,6 +168,7 @@ public final class Config {
 
 	private static int renderHeight = DEFAULT_RENDER_HEIGHT;
 	private static boolean renderLayerOnly = DEFAULT_RENDER_LAYER_ONLY;
+	private static boolean renderCaves = DEFAULT_RENDER_CAVES;
 
 	private static boolean debug = DEFAULT_DEBUG;
 
@@ -324,6 +325,14 @@ public final class Config {
 		return Config.renderLayerOnly;
 	}
 
+	public static void setRenderCaves(boolean renderCaves) {
+		Config.renderCaves = renderCaves;
+	}
+
+	public static boolean renderCaves() {
+		return Config.renderCaves;
+	}
+
 	public static void setMCSavesDir(String mcSavesDir) {
 		Config.mcSavesDir = mcSavesDir;
 	}
@@ -409,16 +418,9 @@ public final class Config {
 				regionSelectionColor = new Color(config.getOrDefault("RegionSelectionColor", DEFAULT_REGION_SELECTION_COLOR.toString()));
 				chunkSelectionColor = new Color(config.getOrDefault("ChunkSelectionColor", DEFAULT_CHUNK_SELECTION_COLOR.toString()));
 				pasteChunksColor = new Color(config.getOrDefault("PasteChunksColor", DEFAULT_PASTE_CHUNKS_COLOR.toString()));
-				loadThreads = Integer.parseInt(config.getOrDefault("LoadThreads", DEFAULT_LOAD_THREADS + ""));
 				processThreads = Integer.parseInt(config.getOrDefault("ProcessThreads", DEFAULT_PROCESS_THREADS + ""));
 				writeThreads = Integer.parseInt(config.getOrDefault("WriteThreads", DEFAULT_WRITE_THREADS + ""));
 				maxLoadedFiles = Integer.parseInt(config.getOrDefault("MaxLoadedFiles", DEFAULT_MAX_LOADED_FILES + ""));
-				shade = Boolean.parseBoolean(config.getOrDefault("Shade", DEFAULT_SHADE + ""));
-				shadeWater = Boolean.parseBoolean(config.getOrDefault("ShadeWater", DEFAULT_SHADE_WATER + ""));
-				showNonexistentRegions = Boolean.parseBoolean(config.getOrDefault("ShowNonexistentRegions", DEFAULT_SHOW_NONEXISTENT_REGIONS + ""));
-				smoothRendering = Boolean.parseBoolean(config.getOrDefault("SmoothRendering", DEFAULT_SMOOTH_RENDERING + ""));
-				smoothOverlays = Boolean.parseBoolean(config.getOrDefault("SmoothOverlays", DEFAULT_SMOOTH_OVERLAYS + ""));
-				tileMapBackground = config.getOrDefault("TileMapBackground", DEFAULT_TILEMAP_BACKGROUND);
 				mcSavesDir = config.getOrDefault("MCSavesDir", DEFAULT_MC_SAVES_DIR);
 				if (!new File(mcSavesDir).exists()) {
 					mcSavesDir = DEFAULT_MC_SAVES_DIR;
@@ -450,6 +452,8 @@ public final class Config {
 				Config.overlays = overlays;
 			}
 		}
+
+		System.out.println(asString());
 	}
 
 	public static void exportConfig() {
@@ -467,16 +471,9 @@ public final class Config {
 		addSettingsLine("RegionSelectionColor", regionSelectionColor.toString(), DEFAULT_REGION_SELECTION_COLOR.toString(), lines);
 		addSettingsLine("ChunkSelectionColor", chunkSelectionColor.toString(), DEFAULT_CHUNK_SELECTION_COLOR.toString(), lines);
 		addSettingsLine("PasteChunksColor", pasteChunksColor.toString(), DEFAULT_PASTE_CHUNKS_COLOR.toString(), lines);
-		addSettingsLine("LoadThreads", loadThreads, DEFAULT_LOAD_THREADS, lines);
 		addSettingsLine("ProcessThreads", processThreads, DEFAULT_PROCESS_THREADS, lines);
 		addSettingsLine("WriteThreads", writeThreads, DEFAULT_WRITE_THREADS, lines);
 		addSettingsLine("MaxLoadedFiles", maxLoadedFiles, DEFAULT_MAX_LOADED_FILES, lines);
-		addSettingsLine("Shade", shade, DEFAULT_SHADE, lines);
-		addSettingsLine("ShadeWater", shadeWater, DEFAULT_SHADE_WATER, lines);
-		addSettingsLine("ShowNonexistentRegions", showNonexistentRegions, DEFAULT_SHOW_NONEXISTENT_REGIONS, lines);
-		addSettingsLine("SmoothRendering", smoothRendering, DEFAULT_SMOOTH_RENDERING, lines);
-		addSettingsLine("SmoothOverlays", smoothOverlays, DEFAULT_SMOOTH_OVERLAYS, lines);
-		addSettingsLine("TileMapBackground", tileMapBackground, DEFAULT_TILEMAP_BACKGROUND, lines);
 		addSettingsLine("MCSavesDir", mcSavesDir, DEFAULT_MC_SAVES_DIR, lines);
 		addSettingsLine("Debug", debug, DEFAULT_DEBUG, lines);
 		if (lines.size() == 0) {
@@ -531,14 +528,6 @@ public final class Config {
 		Config.pasteChunksColor = pasteChunksColor;
 	}
 
-	public static int getLoadThreads() {
-		return loadThreads;
-	}
-
-	public static void setLoadThreads(int loadThreads) {
-		Config.loadThreads = loadThreads;
-	}
-
 	public static int getProcessThreads() {
 		return processThreads;
 	}
@@ -569,5 +558,61 @@ public final class Config {
 
 	public static int getMinZoomLevel() {
 		return Tile.getZoomLevel(MIN_SCALE);
+	}
+
+	public static String asString() {
+		final StringBuilder sb = new StringBuilder("Config{\n");
+		sb.append(" DEFAULT_BASE_DIR=").append(DEFAULT_BASE_DIR);
+		sb.append(",\n DEFAULT_BASE_CACHE_DIR=").append(DEFAULT_BASE_CACHE_DIR);
+		sb.append(",\n DEFAULT_BASE_LOG_FILE=").append(DEFAULT_BASE_LOG_FILE);
+		sb.append(",\n DEFAULT_BASE_CONFIG_FILE=").append(DEFAULT_BASE_CONFIG_FILE);
+		sb.append(",\n DEFAULT_BASE_OVERLAYS_FILE=").append(DEFAULT_BASE_OVERLAYS_FILE);
+		sb.append(",\n DEFAULT_REGION_SELECTION_COLOR=").append(DEFAULT_REGION_SELECTION_COLOR);
+		sb.append(",\n DEFAULT_CHUNK_SELECTION_COLOR=").append(DEFAULT_CHUNK_SELECTION_COLOR);
+		sb.append(",\n DEFAULT_PASTE_CHUNKS_COLOR=").append(DEFAULT_PASTE_CHUNKS_COLOR);
+		sb.append(",\n DEFAULT_LOCALE=").append(DEFAULT_LOCALE);
+		sb.append(",\n DEFAULT_PROCESS_THREADS=").append(DEFAULT_PROCESS_THREADS);
+		sb.append(",\n DEFAULT_WRITE_THREADS=").append(DEFAULT_WRITE_THREADS);
+		sb.append(",\n DEFAULT_MAX_LOADED_FILES=").append(DEFAULT_MAX_LOADED_FILES);
+		sb.append(",\n DEFAULT_SHADE=").append(DEFAULT_SHADE);
+		sb.append(",\n DEFAULT_SHADE_WATER=").append(DEFAULT_SHADE_WATER);
+		sb.append(",\n DEFAULT_SHOW_NONEXISTENT_REGIONS=").append(DEFAULT_SHOW_NONEXISTENT_REGIONS);
+		sb.append(",\n DEFAULT_SMOOTH_RENDERING=").append(DEFAULT_SMOOTH_RENDERING);
+		sb.append(",\n DEFAULT_SMOOTH_OVERLAYS=").append(DEFAULT_SMOOTH_OVERLAYS);
+		sb.append(",\n DEFAULT_TILEMAP_BACKGROUND='").append(DEFAULT_TILEMAP_BACKGROUND).append('\'');
+		sb.append(",\n DEFAULT_DEBUG=").append(DEFAULT_DEBUG);
+		sb.append(",\n DEFAULT_MC_SAVES_DIR='").append(DEFAULT_MC_SAVES_DIR).append('\'');
+		sb.append(",\n DEFAULT_RENDER_HEIGHT=").append(DEFAULT_RENDER_HEIGHT);
+		sb.append(",\n DEFAULT_RENDER_LAYER_ONLY=").append(DEFAULT_RENDER_LAYER_ONLY);
+		sb.append(",\n DEFAULT_RENDER_CAVES=").append(DEFAULT_RENDER_CAVES);
+		sb.append(",\n worldDir=").append(worldDir);
+		sb.append(",\n worldDirs=").append(worldDirs);
+		sb.append(",\n worldUUID=").append(worldUUID);
+		sb.append(",\n baseCacheDir=").append(baseCacheDir);
+		sb.append(",\n logFile=").append(logFile);
+		sb.append(",\n cacheDir=").append(cacheDir);
+		sb.append(",\n locale=").append(locale);
+		sb.append(",\n regionSelectionColor=").append(regionSelectionColor);
+		sb.append(",\n chunkSelectionColor=").append(chunkSelectionColor);
+		sb.append(",\n pasteChunksColor=").append(pasteChunksColor);
+		sb.append(",\n processThreads=").append(processThreads);
+		sb.append(",\n writeThreads=").append(writeThreads);
+		sb.append(",\n maxLoadedFiles=").append(maxLoadedFiles);
+		sb.append(",\n shade=").append(shade);
+		sb.append(",\n shadeWater=").append(shadeWater);
+		sb.append(",\n showNonexistentRegions=").append(showNonexistentRegions);
+		sb.append(",\n smoothRendering=").append(smoothRendering);
+		sb.append(",\n smoothOverlays=").append(smoothOverlays);
+		sb.append(",\n tileMapBackground='").append(tileMapBackground).append('\'');
+		sb.append(",\n mcSavesDir='").append(mcSavesDir).append('\'');
+		sb.append(",\n renderHeight=").append(renderHeight);
+		sb.append(",\n renderLayerOnly=").append(renderLayerOnly);
+		sb.append(",\n renderCaves=").append(renderCaves);
+		sb.append(",\n debug=").append(debug);
+		sb.append(",\n MAX_SCALE=").append(MAX_SCALE);
+		sb.append(",\n MIN_SCALE=").append(MIN_SCALE);
+		sb.append(",\n IMAGE_POOL_SIZE=").append(IMAGE_POOL_SIZE);
+		sb.append("\n}");
+		return sb.toString();
 	}
 }

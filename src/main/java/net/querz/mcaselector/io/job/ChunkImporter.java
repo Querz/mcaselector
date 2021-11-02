@@ -1,10 +1,13 @@
 package net.querz.mcaselector.io.job;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.MCAFilePipe;
+import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
@@ -13,6 +16,7 @@ import net.querz.mcaselector.io.mca.PoiMCAFile;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.property.DataProperty;
@@ -21,18 +25,15 @@ import net.querz.mcaselector.text.Translation;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public final class ChunkImporter {
 
 	private ChunkImporter() {}
 
-	public static void importChunks(WorldDirectories source, Progress progressChannel, boolean headless, boolean overwrite, SelectionData sourceSelection, SelectionData targetSelection, List<Range> ranges, Point2i offset, DataProperty<Map<Point2i, RegionDirectories>> tempFiles) {
+	public static void importChunks(WorldDirectories source, Progress progressChannel, boolean headless, boolean overwrite, SelectionData sourceSelection, SelectionData targetSelection, List<Range> ranges, Point3i offset, DataProperty<Map<Point2i, RegionDirectories>> tempFiles) {
 		try {
 			WorldDirectories wd = Config.getWorldDirs();
 			RegionDirectories[] rd = wd.listRegions(targetSelection);
@@ -45,7 +46,7 @@ public final class ChunkImporter {
 				return;
 			}
 
-			MCAFilePipe.clearQueues();
+			JobHandler.clearQueues();
 
 			if (headless) {
 				progressChannel.setMessage("collecting data...");
@@ -61,43 +62,44 @@ public final class ChunkImporter {
 			tempFiles.set(tempFilesMap);
 
 			// only pass regions here
-			Map<Point2i, Set<Point2i>> targetMapping = createTargetSourceMapping(source.getRegion(), sourceSelection, targetSelection, offset);
+			Long2ObjectOpenHashMap<LongOpenHashSet> targetMapping = createTargetSourceMapping(source.getRegion(), sourceSelection, targetSelection, offset.toPoint2i());
 
 			progressChannel.setMax(targetMapping.size());
 			progressChannel.updateProgress(rd[0].getLocationAsFileName(), 0);
 
 			// create local source and local target selections
-			for (Map.Entry<Point2i, Set<Point2i>> entry : targetMapping.entrySet()) {
-				Point2i targetRegion = entry.getKey();
-				Set<Point2i> sourceRegions = entry.getValue();
+			for (Long2ObjectMap.Entry<LongOpenHashSet> entry : targetMapping.long2ObjectEntrySet()) {
+				long targetRegion = entry.getLongKey();
+				LongOpenHashSet sourceRegions = entry.getValue();
 
-				Map<Point2i, Set<Point2i>> localSourceSelection = new HashMap<>();
-				Set<Point2i> localTargetSelection;
+				Long2ObjectOpenHashMap<LongOpenHashSet> localSourceSelection = new Long2ObjectOpenHashMap<>();
+				LongOpenHashSet localTargetSelection;
 
 				// creating local source selection
 				if (sourceSelection == null) {
-					localSourceSelection = Collections.emptyMap();
+					localSourceSelection = new Long2ObjectOpenHashMap<>(0);
 				} else {
-					for (Point2i sourceRegion : sourceRegions) {
-						Set<Point2i> localSourceChunks;
-						localSourceChunks = sourceSelection.selection().getOrDefault(sourceRegion, Collections.emptySet());
+					for (long sourceRegion : sourceRegions) {
+						LongOpenHashSet localSourceChunks;
+						localSourceChunks = sourceSelection.selection().getOrDefault(sourceRegion, new LongOpenHashSet(0));
 						localSourceSelection.put(sourceRegion, localSourceChunks);
 					}
 				}
 
 				// creating local target selection
 				if (targetSelection == null) {
-					localTargetSelection = Collections.emptySet();
+					localTargetSelection = new LongOpenHashSet(0);
 				} else {
-					localTargetSelection = targetSelection.selection().getOrDefault(targetRegion, Collections.emptySet());
+					localTargetSelection = targetSelection.selection().getOrDefault(targetRegion, new LongOpenHashSet(0));
 				}
 
 				boolean sourceInverted = sourceSelection != null && sourceSelection.inverted();
 				boolean targetInverted = targetSelection != null && targetSelection.inverted();
 
-				RegionDirectories targetDirs = FileHelper.createRegionDirectories(targetRegion);
+				Point2i target = new Point2i(targetRegion);
+				RegionDirectories targetDirs = FileHelper.createRegionDirectories(target);
 
-				MCAFilePipe.addJob(new MCAChunkImporterLoadJob(targetDirs, source, targetRegion, sourceRegions, offset, progressChannel, overwrite, localSourceSelection, sourceInverted, localTargetSelection, targetInverted, ranges, tempFilesMap));
+				JobHandler.addJob(new MCAChunkImporterProcessJob(targetDirs, source, target, sourceRegions, offset, progressChannel, overwrite, localSourceSelection, sourceInverted, localTargetSelection, targetInverted, ranges, tempFilesMap));
 			}
 		} catch (Exception ex) {
 			Debug.dumpException("failed creating jobs to import chunks", ex);
@@ -105,18 +107,18 @@ public final class ChunkImporter {
 	}
 
 	// returns a map where the key is a target region and the value is a set of all source regions, if they exist
-	private static Map<Point2i, Set<Point2i>> createTargetSourceMapping(File sourceDirectory, SelectionData sourceSelection, SelectionData targetSelection, Point2i offset) {
-		Map<Point2i, Set<Point2i>> sourceTargetMapping = new HashMap<>();
+	private static Long2ObjectOpenHashMap<LongOpenHashSet> createTargetSourceMapping(File sourceDirectory, SelectionData sourceSelection, SelectionData targetSelection, Point2i offset) {
+		Long2ObjectOpenHashMap<LongOpenHashSet> sourceTargetMapping = new Long2ObjectOpenHashMap<>();
 
 		// get all possible source files
-		Set<Point2i> sourceRegions = FileHelper.parseAllMCAFileNames(sourceDirectory);
+		LongOpenHashSet sourceRegions = FileHelper.parseAllMCAFileNames(sourceDirectory);
 		if (sourceSelection != null) {
 			sourceRegions.removeIf(s -> !sourceSelection.isRegionSelected(s));
 		}
 
 		// get target regions with offset based on source regions, target selection and inversion
-		for (Point2i sourceRegion : sourceRegions) {
-			Set<Point2i> targetRegions = getTargetRegions(sourceRegion, offset);
+		for (long sourceRegion : sourceRegions) {
+			LongOpenHashSet targetRegions = getTargetRegions(new Point2i(sourceRegion), offset);
 			if (targetSelection != null) {
 				targetRegions.removeIf(t -> !targetSelection.isRegionSelected(t));
 			}
@@ -127,16 +129,16 @@ public final class ChunkImporter {
 		}
 
 		// now we invert the mapping to create a target -> sources mapping
-		Map<Point2i, Set<Point2i>> targetSourceMapping = new HashMap<>();
+		Long2ObjectOpenHashMap<LongOpenHashSet> targetSourceMapping = new Long2ObjectOpenHashMap<>();
 		int initSize = Math.min((offset.getX() % 32 != 0 ? 2 : 0) + (offset.getZ() % 32 != 0 ? 2 : 0), 1); // init with 1, 2, 4
-		for (Map.Entry<Point2i, Set<Point2i>> entry : sourceTargetMapping.entrySet()) {
-			for (Point2i target : entry.getValue()) {
+		for (Long2ObjectMap.Entry<LongOpenHashSet> entry : sourceTargetMapping.long2ObjectEntrySet()) {
+			for (long target : entry.getValue()) {
 				if (targetSourceMapping.containsKey(target)) {
-					targetSourceMapping.get(target).add(entry.getKey());
+					targetSourceMapping.get(target).add(entry.getLongKey());
 				} else {
 					targetSourceMapping.compute(target, (k, o) -> {
-						Set<Point2i> sources = new HashSet<>(initSize);
-						sources.add(entry.getKey());
+						LongOpenHashSet sources = new LongOpenHashSet(initSize);
+						sources.add(entry.getLongKey());
 						return sources;
 					});
 				}
@@ -147,36 +149,36 @@ public final class ChunkImporter {
 	}
 
 	// source is a region coordinate, offset is a chunk coordinate
-	private static Set<Point2i> getTargetRegions(Point2i source, Point2i offset) {
-		Set<Point2i> result = new HashSet<>(4);
+	private static LongOpenHashSet getTargetRegions(Point2i source, Point2i offset) {
+		LongOpenHashSet result = new LongOpenHashSet(4);
 		Point2i sourceChunk = source.regionToChunk().add(offset);
-		result.add(sourceChunk.chunkToRegion());
-		result.add(sourceChunk.add(31, 0).chunkToRegion());
-		result.add(sourceChunk.add(0, 31).chunkToRegion());
-		result.add(sourceChunk.add(31, 31).chunkToRegion());
+		result.add(sourceChunk.chunkToRegion().asLong());
+		result.add(sourceChunk.add(31, 0).chunkToRegion().asLong());
+		result.add(sourceChunk.add(0, 31).chunkToRegion().asLong());
+		result.add(sourceChunk.add(31, 31).chunkToRegion().asLong());
 		return result;
 	}
 
-	private static class MCAChunkImporterLoadJob extends LoadDataJob {
+	private static class MCAChunkImporterProcessJob extends ProcessDataJob {
 
-		private final Point2i target;
-		private final Set<Point2i> sources;
 		private final WorldDirectories sourceDirs;
-		private final Point2i offset;
+		private final LongOpenHashSet sources;
+		private final Point2i target;
+		private final Point3i offset;
 		private final Progress progressChannel;
 		private final boolean overwrite;
-		private final Map<Point2i, Set<Point2i>> sourceChunks;
+		private final Long2ObjectOpenHashMap<LongOpenHashSet> sourceChunks;
 		private final boolean sourceChunksInverted;
-		private final Set<Point2i> selection;
+		private final LongOpenHashSet selection;
 		private final boolean targetChunksInverted;
 		private final List<Range> ranges;
 		private final Map<Point2i, RegionDirectories> tempFilesMap;
 
-		private MCAChunkImporterLoadJob(RegionDirectories targetDirs, WorldDirectories sourceDirs, Point2i target, Set<Point2i> sources, Point2i offset, Progress progressChannel, boolean overwrite, Map<Point2i, Set<Point2i>> sourceChunks, boolean sourceChunksInverted, Set<Point2i> selection, boolean targetChunksInverted, List<Range> ranges, Map<Point2i, RegionDirectories> tempFilesMap) {
-			super(targetDirs);
-			this.target = target;
-			this.sources = sources;
+		private MCAChunkImporterProcessJob(RegionDirectories targetDirs, WorldDirectories sourceDirs, Point2i target, LongOpenHashSet sources, Point3i offset, Progress progressChannel, boolean overwrite, Long2ObjectOpenHashMap<LongOpenHashSet> sourceChunks, boolean sourceChunksInverted, LongOpenHashSet selection, boolean targetChunksInverted, List<Range> ranges, Map<Point2i, RegionDirectories> tempFilesMap) {
+			super(targetDirs, PRIORITY_LOW);
 			this.sourceDirs = sourceDirs;
+			this.sources = sources;
+			this.target = target;
 			this.offset = offset;
 			this.progressChannel = progressChannel;
 			this.overwrite = overwrite;
@@ -189,10 +191,9 @@ public final class ChunkImporter {
 		}
 
 		@Override
-		public void execute() {
-
+		public boolean execute() {
 			// try to copy files directly if there is no offset, no selection and the target file does not exist
-			if (offset.getX() == 0 && offset.getZ() == 0 && (selection == null || selection.size() == 0)) {
+			if (offset.getX() == 0 && offset.getY() == 0 && offset.getZ() == 0 && (selection == null || selection.size() == 0)) {
 				boolean allCopied = true;
 
 				if (!getRegionDirectories().getRegion().exists()) {
@@ -237,7 +238,7 @@ public final class ChunkImporter {
 
 				if (allCopied) {
 					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-					return;
+					return true;
 				}
 			}
 
@@ -248,10 +249,11 @@ public final class ChunkImporter {
 			Map<Point2i, byte[]> sourceDataMappingPoi = new HashMap<>();
 			Map<Point2i, byte[]> sourceDataMappingEntities = new HashMap<>();
 
-			for (Point2i source : sources) {
+			for (long source : sources) {
+				Point2i s = new Point2i(source);
 				RegionDirectories sourceDirs;
-				if (tempFilesMap != null && tempFilesMap.containsKey(source)) {
-					sourceDirs = tempFilesMap.get(source);
+				if (tempFilesMap != null && tempFilesMap.containsKey(s)) {
+					sourceDirs = tempFilesMap.get(s);
 				} else {
 					sourceDirs = new RegionDirectories();
 				}
@@ -263,14 +265,14 @@ public final class ChunkImporter {
 				if (sourceDirs.getRegion() != null) {
 					sourceFile = sourceDirs.getRegion();
 				} else {
-					sourceFile = new File(this.sourceDirs.getRegion(), FileHelper.createMCAFileName(source));
+					sourceFile = new File(this.sourceDirs.getRegion(), FileHelper.createMCAFileName(s));
 				}
 				if (sourceFile.exists()) {
 					sourceData = load(sourceFile);
 					if (sourceData == null) {
 						Debug.errorf("failed to load source mca file %s", sourceFile);
 					} else {
-						sourceDataMappingRegion.put(source, sourceData);
+						sourceDataMappingRegion.put(s, sourceData);
 					}
 				}
 
@@ -278,14 +280,14 @@ public final class ChunkImporter {
 				if (sourceDirs.getPoi() != null) {
 					sourceFile = sourceDirs.getPoi();
 				} else {
-					sourceFile = new File(this.sourceDirs.getPoi(), FileHelper.createMCAFileName(source));
+					sourceFile = new File(this.sourceDirs.getPoi(), FileHelper.createMCAFileName(s));
 				}
 				if (sourceFile.exists()) {
 					sourceData = load(sourceFile);
 					if (sourceData == null) {
 						Debug.errorf("failed to load source mca file %s", sourceFile);
 					} else {
-						sourceDataMappingPoi.put(source, sourceData);
+						sourceDataMappingPoi.put(s, sourceData);
 					}
 				}
 
@@ -293,14 +295,14 @@ public final class ChunkImporter {
 				if (sourceDirs.getEntities() != null) {
 					sourceFile = sourceDirs.getEntities();
 				} else {
-					sourceFile = new File(this.sourceDirs.getEntities(), FileHelper.createMCAFileName(source));
+					sourceFile = new File(this.sourceDirs.getEntities(), FileHelper.createMCAFileName(s));
 				}
 				if (sourceFile.exists()) {
 					sourceData = load(sourceFile);
 					if (sourceData == null) {
 						Debug.errorf("failed to load source mca file %s", sourceFile);
 					} else {
-						sourceDataMappingEntities.put(source, sourceData);
+						sourceDataMappingEntities.put(s, sourceData);
 					}
 				}
 			}
@@ -311,7 +313,7 @@ public final class ChunkImporter {
 			if (sourceDataMappingRegion.isEmpty() && sourceDataMappingPoi.isEmpty() && sourceDataMappingEntities.isEmpty()) {
 				Debug.errorf("did not load any source mca files to merge into %s", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return;
+				return true;
 			}
 
 			// ---------------------------------------------------------------------------------------------------------
@@ -323,7 +325,7 @@ public final class ChunkImporter {
 				if (destDataRegion == null) {
 					Debug.errorf("failed to load destination mca file %s", getRegionDirectories().getRegion());
 					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-					return;
+					return true;
 				}
 			}
 
@@ -333,7 +335,7 @@ public final class ChunkImporter {
 				if (destDataPoi == null) {
 					Debug.errorf("failed to load destination mca file %s", getRegionDirectories().getPoi());
 					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-					return;
+					return true;
 				}
 			}
 
@@ -343,59 +345,22 @@ public final class ChunkImporter {
 				if (destDataEntities == null) {
 					Debug.errorf("failed to load destination mca file %s", getRegionDirectories().getEntities());
 					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-					return;
+					return true;
 				}
 			}
 
-			MCAFilePipe.executeProcessData(new MCAChunkImporterProcessJob(getRegionDirectories(), sourceDirs, target, sourceDataMappingRegion, sourceDataMappingPoi, sourceDataMappingEntities, destDataRegion, destDataPoi, destDataEntities, offset, progressChannel, overwrite, sourceChunks, sourceChunksInverted, selection, targetChunksInverted, ranges));
-		}
-	}
-
-	private static class MCAChunkImporterProcessJob extends ProcessDataJob {
-
-		private final WorldDirectories sourceDirs;
-		private final Point2i target;
-		private final Map<Point2i, byte[]> sourceDataMappingRegion, sourceDataMappingPoi, sourceDataMappingEntities;
-		private final Point2i offset;
-		private final Progress progressChannel;
-		private final boolean overwrite;
-		private final Map<Point2i, Set<Point2i>> sourceChunks;
-		private final boolean sourceChunksInverted;
-		private final Set<Point2i> selection;
-		private final boolean targetChunksInverted;
-		private final List<Range> ranges;
-
-		private MCAChunkImporterProcessJob(RegionDirectories targetDirs, WorldDirectories sourceDirs, Point2i target, Map<Point2i, byte[]> sourceDataMappingRegion, Map<Point2i, byte[]> sourceDataMappingPoi, Map<Point2i, byte[]> sourceDataMappingEntities, byte[] destDataRegion, byte[] destDataPoi, byte[] destDataEntities, Point2i offset, Progress progressChannel, boolean overwrite, Map<Point2i, Set<Point2i>> sourceChunks, boolean sourceChunksInverted, Set<Point2i> selection, boolean targetChunksInverted, List<Range> ranges) {
-			super(targetDirs, destDataRegion, destDataPoi, destDataEntities);
-			this.sourceDirs = sourceDirs;
-			this.target = target;
-			this.sourceDataMappingRegion = sourceDataMappingRegion;
-			this.sourceDataMappingPoi = sourceDataMappingPoi;
-			this.sourceDataMappingEntities = sourceDataMappingEntities;
-			this.offset = offset;
-			this.progressChannel = progressChannel;
-			this.overwrite = overwrite;
-			this.sourceChunks = sourceChunks;
-			this.sourceChunksInverted = sourceChunksInverted;
-			this.selection = selection;
-			this.targetChunksInverted = targetChunksInverted;
-			this.ranges = ranges;
-		}
-
-		@Override
-		public void execute() {
 			Timer t = new Timer();
 			try {
 				// load target region
-				Region targetRegion = Region.loadRegion(getRegionDirectories(), getRegionData(), getPoiData(),getEntitiesData());
+				Region targetRegion = Region.loadRegion(getRegionDirectories(), destDataRegion, destDataPoi, destDataEntities);
 
-				Set<Point2i> selection = this.selection;
+				LongOpenHashSet selection = this.selection;
 				// invert target selection if necessary
 				if (targetChunksInverted) {
 					selection = SelectionData.createInvertedRegionSet(target, selection);
 				}
 
-				Map<Point2i, Set<Point2i>> sourceChunks = this.sourceChunks;
+				Long2ObjectOpenHashMap<LongOpenHashSet> sourceChunks = this.sourceChunks;
 				// invert source selection if necessary
 				if (sourceChunksInverted) {
 					sourceChunks.replaceAll(SelectionData::createInvertedRegionSet);
@@ -411,7 +376,7 @@ public final class ChunkImporter {
 						targetRegion.setRegion(new RegionMCAFile(getRegionDirectories().getRegion()));
 					}
 
-					source.mergeChunksInto(targetRegion.getRegion(), offset, overwrite, sourceChunks == null ? null : sourceChunks.get(sourceData.getKey()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
+					source.mergeChunksInto(targetRegion.getRegion(), offset, overwrite, sourceChunks == null ? null : sourceChunks.get(sourceData.getKey().asLong()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
 				}
 
 				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMappingPoi.entrySet()) {
@@ -424,7 +389,7 @@ public final class ChunkImporter {
 						targetRegion.setPoi(new PoiMCAFile(getRegionDirectories().getPoi()));
 					}
 
-					source.mergeChunksInto(targetRegion.getPoi(), offset, overwrite, sourceChunks == null ? null : sourceChunks.get(sourceData.getKey()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
+					source.mergeChunksInto(targetRegion.getPoi(), offset, overwrite, sourceChunks == null ? null : sourceChunks.get(sourceData.getKey().asLong()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
 				}
 
 				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMappingEntities.entrySet()) {
@@ -437,19 +402,21 @@ public final class ChunkImporter {
 						targetRegion.setEntities(new EntitiesMCAFile(getRegionDirectories().getEntities()));
 					}
 
-					source.mergeChunksInto(targetRegion.getEntities(), offset, overwrite, sourceChunks == null ? null : sourceChunks.get(sourceData.getKey()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
+					source.mergeChunksInto(targetRegion.getEntities(), offset, overwrite, sourceChunks == null ? null : sourceChunks.get(sourceData.getKey().asLong()), selection == null ? null : selection.size() == 0 ? null : selection, ranges);
 				}
 
 				// -----------------------------------------------------------------------------------------------------
 
-				MCAFilePipe.executeSaveData(new MCAChunkImporterSaveJob(getRegionDirectories(), targetRegion, progressChannel));
+				JobHandler.executeSaveData(new MCAChunkImporterSaveJob(getRegionDirectories(), targetRegion, progressChannel));
+				Debug.dumpf("took %s to merge chunks into %s with offset %s", t, getRegionDirectories().getLocation(), offset);
+				return false;
 
 			} catch (Exception ex) {
 				Debug.dumpException("failed to process chunk import for " + getRegionDirectories().getLocationAsFileName(), ex);
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 			}
 
-			Debug.dumpf("took %s to merge chunks into %s with offset %s", t, getRegionDirectories().getLocation(), offset);
+			return true;
 		}
 	}
 

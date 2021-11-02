@@ -1,7 +1,6 @@
 package net.querz.mcaselector.io.job;
 
 import net.querz.mcaselector.io.Job;
-import net.querz.mcaselector.io.MCAFilePipe;
 import net.querz.mcaselector.io.RegionDirectories;
 
 public abstract class SaveDataJob<T> extends Job {
@@ -9,7 +8,7 @@ public abstract class SaveDataJob<T> extends Job {
 	private final T data;
 
 	public SaveDataJob(RegionDirectories dirs, T data) {
-		super(dirs);
+		super(dirs, PRIORITY_LOW);
 		this.data = data;
 	}
 
@@ -19,7 +18,6 @@ public abstract class SaveDataJob<T> extends Job {
 
 	@Override
 	public void run() {
-		MCAFilePipe.refillDataLoadExecutorQueue();
 		execute();
 	}
 

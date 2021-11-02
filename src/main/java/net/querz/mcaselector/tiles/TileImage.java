@@ -13,6 +13,7 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
+import net.querz.mcaselector.math.MathUtil;
 import net.querz.mcaselector.point.Point2f;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.ui.Color;
@@ -32,32 +33,40 @@ public final class TileImage {
 	private TileImage() {}
 
 	public static void draw(Tile tile, GraphicsContext ctx, float scale, Point2f offset, boolean selectionInverted, boolean overlay, boolean showNonexistentRegions) {
-		if (tile.image != null) {
-			ctx.drawImage(tile.getImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
+		if (tile == null || tile.image == null){
+			if (showNonexistentRegions) {
+				ctx.drawImage(ImageHelper.getEmptyTileImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
+			}
+		}
+
+		if (tile != null) {
+			if (tile.image != null) {
+				ctx.setImageSmoothing(Config.smoothRendering());
+				ctx.drawImage(tile.image, offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
+				ctx.setImageSmoothing(false);
+			}
 
 			if (overlay && tile.overlay != null) {
 				ctx.setGlobalAlpha(0.5);
 				ctx.setImageSmoothing(Config.smoothOverlays());
 				ctx.drawImage(tile.getOverlay(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 				ctx.setGlobalAlpha(1);
-				ctx.setImageSmoothing(Config.smoothRendering());
-			}
-		} else if (showNonexistentRegions) {
-			ctx.drawImage(ImageHelper.getEmptyTileImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
-		}
-
-		if (tile.marked && tile.markedChunks.isEmpty() && !selectionInverted || !tile.marked && tile.markedChunks.isEmpty() && selectionInverted) {
-			// draw marked region
-			ctx.setFill(Config.getRegionSelectionColor().makeJavaFXColor());
-			ctx.fillRect(offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
-		} else if (tile.markedChunks.size() > 0) {
-
-			if (tile.markedChunksImage == null) {
-				createMarkedChunksImage(tile, Tile.getZoomLevel(scale), selectionInverted);
+				ctx.setImageSmoothing(false);
 			}
 
-			// apply markedChunksImage to ctx
-			ctx.drawImage(tile.markedChunksImage, offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
+			if (tile.marked && tile.markedChunks.isEmpty() && !selectionInverted || !tile.marked && tile.markedChunks.isEmpty() && selectionInverted) {
+				// draw marked region
+				ctx.setFill(Config.getRegionSelectionColor().makeJavaFXColor());
+				ctx.fillRect(offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
+			} else if (tile.markedChunks.size() > 0) {
+
+				if (tile.markedChunksImage == null) {
+					createMarkedChunksImage(tile, Tile.getZoomLevel(scale), selectionInverted);
+				}
+
+				// apply markedChunksImage to ctx
+				ctx.drawImage(tile.markedChunksImage, offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
+			}
 		}
 	}
 
@@ -72,8 +81,8 @@ public final class TileImage {
 			ctx.fillRect(0, 0, Tile.SIZE, Tile.SIZE);
 		}
 
-		for (Point2i markedChunk : tile.markedChunks) {
-			Point2i regionChunk = markedChunk.mod(Tile.SIZE_IN_CHUNKS);
+		for (long markedChunk : tile.markedChunks) {
+			Point2i regionChunk = new Point2i(markedChunk).mod(Tile.SIZE_IN_CHUNKS);
 			if (regionChunk.getX() < 0) {
 				regionChunk.setX(regionChunk.getX() + Tile.SIZE_IN_CHUNKS);
 			}
@@ -96,14 +105,20 @@ public final class TileImage {
 		tile.markedChunksImage = wImage;
 	}
 
-	public static Image generateImage(RegionMCAFile mcaFile) {
+	public static Image generateImage(RegionMCAFile mcaFile, int scale) {
+
+		int size = Tile.SIZE / scale;
+		int chunkSize = Tile.CHUNK_SIZE / scale;
+		int pixels = Tile.PIXELS / (scale * scale);
+
 		try {
-			WritableImage finalImage = new WritableImage(Tile.SIZE, Tile.SIZE);
+
+			WritableImage finalImage = new WritableImage(size, size);
 			PixelWriter writer = finalImage.getPixelWriter();
-			int[] pixelBuffer = new int[Tile.PIXELS];
-			int[] waterPixels = Config.shade() && Config.shadeWater() ? new int[Tile.PIXELS] : null;
-			short[] terrainHeights = new short[Tile.PIXELS];
-			short[] waterHeights = Config.shade() && Config.shadeWater() ? new short[Tile.PIXELS] : null;
+			int[] pixelBuffer = new int[pixels];
+			int[] waterPixels = Config.shade() && Config.shadeWater() && !Config.renderCaves() ? new int[pixels] : null;
+			short[] terrainHeights = new short[pixels];
+			short[] waterHeights = Config.shade() && Config.shadeWater() && !Config.renderCaves() ? new short[pixels] : null;
 
 			for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
 				for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
@@ -115,15 +130,17 @@ public final class TileImage {
 						continue;
 					}
 
-					drawChunkImage(data, cx * Tile.CHUNK_SIZE, cz * Tile.CHUNK_SIZE, pixelBuffer, waterPixels, terrainHeights, waterHeights);
+					drawChunkImage(data, cx * chunkSize, cz * chunkSize, scale, pixelBuffer, waterPixels, terrainHeights, waterHeights);
 				}
 			}
 
-			if (Config.shade() && !Config.renderLayerOnly()) {
-				shade(pixelBuffer, waterPixels, terrainHeights, waterHeights);
+			if (Config.renderCaves()) {
+				flatShade(pixelBuffer, terrainHeights, scale);
+			} else if (Config.shade() && !Config.renderLayerOnly()) {
+				shade(pixelBuffer, waterPixels, terrainHeights, waterHeights, scale);
 			}
 
-			writer.setPixels(0, 0, Tile.SIZE, Tile.SIZE, PixelFormat.getIntArgbPreInstance(), pixelBuffer,  0, Tile.SIZE);
+			writer.setPixels(0, 0, size, size, PixelFormat.getIntArgbPreInstance(), pixelBuffer,  0, size);
 
 			return finalImage;
 		} catch (Exception ex) {
@@ -132,17 +149,27 @@ public final class TileImage {
 		return null;
 	}
 
-	private static void drawChunkImage(Chunk chunkData, int x, int z, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights) {
+	private static void drawChunkImage(Chunk chunkData, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights) {
+
 		if (chunkData.getData() == null) {
 			return;
 		}
 		int dataVersion = chunkData.getData().getInt("DataVersion");
 		try {
-			if (Config.renderLayerOnly()) {
+			if (Config.renderCaves()) {
+				VersionController.getChunkRenderer(dataVersion).drawCaves(
+						chunkData.getData(),
+						VersionController.getColorMapping(dataVersion),
+						x, z, scale,
+						pixelBuffer,
+						terrainHeights,
+						Config.getRenderHeight()
+				);
+			} else if (Config.renderLayerOnly()) {
 				VersionController.getChunkRenderer(dataVersion).drawLayer(
 						chunkData.getData(),
 						VersionController.getColorMapping(dataVersion),
-						x, z,
+						x, z, scale,
 						pixelBuffer,
 						Config.getRenderHeight()
 				);
@@ -150,7 +177,7 @@ public final class TileImage {
 				VersionController.getChunkRenderer(dataVersion).drawChunk(
 						chunkData.getData(),
 						VersionController.getColorMapping(dataVersion),
-						x, z,
+						x, z, scale,
 						pixelBuffer,
 						waterPixels,
 						terrainHeights,
@@ -162,10 +189,11 @@ public final class TileImage {
 		} catch (Exception ex) {
 			Debug.dumpException("failed to draw chunk " + chunkData.getAbsoluteLocation(), ex);
 
-			for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
-				for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+			// TODO: scale corrupted image
+			for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
+				for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
 					int srcIndex = cz * Tile.CHUNK_SIZE + cx;
-					int dstIndex = (z + cz) * Tile.SIZE + (x + cx);
+					int dstIndex = (z + cz / scale) * Tile.SIZE / scale + (x + cx / scale);
 					pixelBuffer[dstIndex] = corruptedChunkOverlay[srcIndex];
 					terrainHeights[dstIndex] = 64;
 					waterHeights[dstIndex] = 64;
@@ -174,14 +202,27 @@ public final class TileImage {
 		}
 	}
 
-	private static void shade(int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights) {
+	private static void flatShade(int[] pixelBuffer, short[] terrainHeights, int scale) {
+		int size = Tile.SIZE / scale;
+		int index = 0;
+		for (int z = 0; z < size; z++) {
+			for (int x = 0; x < size; x++, index++) {
+				int altitudeShade = MathUtil.clamp(16 * terrainHeights[index] / 64, -50, 50);
+				pixelBuffer[index] = Color.shade(pixelBuffer[index], altitudeShade * 4);
+			}
+		}
+	}
+
+	private static void shade(int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, int scale) {
 		if (!Config.shadeWater() || !Config.shade()) {
 			waterHeights = terrainHeights;
 		}
 
+		int size = Tile.SIZE / scale;
+
 		int index = 0;
-		for (int z = 0; z < Tile.SIZE; z++) {
-			for (int x = 0; x < Tile.SIZE; x++, index++) {
+		for (int z = 0; z < size; z++) {
+			for (int x = 0; x < size; x++, index++) {
 				float xShade, zShade;
 
 				if (pixelBuffer[index] == 0) {
@@ -193,16 +234,16 @@ public final class TileImage {
 					pixelBuffer[index] = Color.blend(pixelBuffer[index], waterPixels[index], ratio);
 				} else {
 					if (z == 0) {
-						zShade = (waterHeights[index + Tile.SIZE]) - (waterHeights[index]);
-					} else if (z == Tile.SIZE - 1) {
-						zShade = (waterHeights[index]) - (waterHeights[index - Tile.SIZE]);
+						zShade = (waterHeights[index + size]) - (waterHeights[index]);
+					} else if (z == size - 1) {
+						zShade = (waterHeights[index]) - (waterHeights[index - size]);
 					} else {
-						zShade = ((waterHeights[index + Tile.SIZE]) - (waterHeights[index - Tile.SIZE])) * 2;
+						zShade = ((waterHeights[index + size]) - (waterHeights[index - size])) * 2;
 					}
 
 					if (x == 0) {
 						xShade = (waterHeights[index + 1]) - (waterHeights[index]);
-					} else if (x == Tile.SIZE - 1) {
+					} else if (x == size - 1) {
 						xShade = (waterHeights[index]) - (waterHeights[index - 1]);
 					} else {
 						xShade = ((waterHeights[index + 1]) - (waterHeights[index - 1])) * 2;
@@ -216,7 +257,7 @@ public final class TileImage {
 						shade = 8;
 					}
 
-					int altitudeShade = 16 * ((waterHeights[index]) - 64) / 255;
+					int altitudeShade = 16 * (waterHeights[index] - 64) / 255;
 					if (altitudeShade < -4) {
 						altitudeShade = -4;
 					}

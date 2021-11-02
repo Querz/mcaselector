@@ -1,15 +1,9 @@
 status.region;regione
-status.region.tooltip;La regione attualmente coperta ha il proprio numero nel nome del file.
 status.chunk;chunk
-status.chunk.tooltip;Il numero di chunk coperti.
 status.block;blocco
-status.block.tooltip;Un'approssimazione del numero di blocchi coperti.
 status.selected;selezionato
-status.selected.tooltip;Il numero corrente di chunk selezionati.
-status.visible;visibile
-status.visible.tooltip;Il numero di immagini di regioni caricate per il rendering.
+status.queue;coda
 status.total;totale
-status.total.tooltip;Il numero totale di regioni caricate, incluse le regioni non visibili.
 status.overlay;sovrapposizione
 menu.file;File
 menu.view;Vista
@@ -19,8 +13,9 @@ menu.about;Info
 menu.file.open_world;Apri un mondo
 menu.file.open;Apri una regione
 menu.file.settings;Impostazioni
-menu.file.world_settings;Impostazioni del mondo
+menu.file.render_settings;Impostazioni di rendering
 menu.file.quit;Esci
+menu.view.reload;Ricaricare
 menu.view.chunk_grid;Griglia dei chunk
 menu.view.region_grid;Griglia della regione
 menu.view.goto;Vai a
@@ -48,29 +43,42 @@ menu.tools.next_overlay;Sovrapposizione successiva
 menu.tools.next_overlay_type;Tipo di sovrapposizione
 dialog.select_world.title;Seleziona una dimensione
 dialog.settings.title;Impostazioni
-dialog.settings.language;Lingua
-dialog.settings.read_threads;Leggi i thread
-dialog.settings.process_threads;Processa i thread
-dialog.settings.write_threads;Scrivi i thread
-dialog.settings.max_files;Numero massimo di file caricati
-dialog.settings.region_color;Colore della regione selezionata
-dialog.settings.chunk_color;Colore del chunk selezionato
-dialog.settings.pasted_chunks_color;Colore dei chunk inseriti
-dialog.settings.shade;Ombra
-dialog.settings.shade_water;Sfumatura dell'acqua
-dialog.settings.show_nonexistent_regions;Mostra regioni inesistenti
-dialog.settings.smooth_rendering;Rendi liscio
-dialog.settings.smooth_overlays;Sovrapposizioni lisce
-dialog.settings.background_pattern;Pattern di sfondo
-dialog.settings.mc_saves_dir;Directory di Minecraft
-dialog.settings.print_debug;Scrivi il messaggio di debug
-dialog.settings.show_log_file;Mostra il file dei log
+dialog.settings.global.language;Lingua
+dialog.settings.global.language.language;Lingua
+dialog.settings.processing.process.process_threads;Discussioni di processo
+dialog.settings.processing.process;Processi
+dialog.settings.processing.process.write_threads;Scrivi discussioni
+dialog.settings.processing.files.max_files;File massimi
+dialog.settings.global.selection.region_color;Colore della regione
+dialog.settings.global.selection.chunk_color;Colore del pezzo
+dialog.settings.global.selection.pasted_chunks_color;Colore pezzi incollati
+dialog.settings.rendering.shade.shade;Ombra
+dialog.settings.rendering.shade;Ombra
+dialog.settings.rendering.shade.shade_water;Ombra acqua
+dialog.settings.rendering.background.show_nonexistent_regions;Mostra regioni inesistenti
+dialog.settings.rendering.smooth.smooth_rendering;Rendering uniforme
+dialog.settings.rendering.smooth.smooth_overlays;Sovrapposizioni lisce
+dialog.settings.rendering.background.background_pattern;Motivo di sfondo
+dialog.settings.rendering.background;Sfondo
+dialog.settings.global.misc.mc_saves_dir;MC salva dir
+dialog.settings.global.misc.print_debug;Stampa messaggi di debug
+dialog.settings.global.misc.show_log_file;Mostra file di registro
 dialog.settings.reset;Reset
-dialog.world_settings.title;Impostazioni del mondo
-dialog.world_settings.poi;POI
-dialog.world_settings.entities;Entità
-dialog.world_settings.render_height;Altezza di rendering
-dialog.world_settings.render_layer_only;Renderizza solo il livello
+dialog.settings.tab_global;Globale
+dialog.settings.tab_processing;in lavorazione
+dialog.settings.tab_rendering;Rendering
+dialog.settings.tab_world;Mondo
+dialog.settings.global.misc;Varie
+dialog.settings.processing.files;File
+dialog.settings.rendering.smooth;Liscio
+dialog.settings.global.selection;Selezione
+dialog.settings.world.paths;percorsi
+dialog.settings.world.paths.poi;POI
+dialog.settings.world.paths.entities;Entità
+dialog.settings.rendering.layers.render_height;Altezza di rendering
+dialog.settings.rendering.layers.render_layer_only;Rendering solo livello
+dialog.settings.rendering.layers;strati
+dialog.settings.rendering.layers.render_caves;Render grotte
 dialog.goto.title;Vai in un posto
 dialog.confirmation.question;Sei sicuro
 dialog.delete_chunks_confirmation.title;Elimina chunk
@@ -85,6 +93,7 @@ dialog.import_chunks_confirmation.options;Opzioni
 dialog.import_chunks_confirmation.options.offset;Offset
 dialog.import_chunks_confirmation.options.overwrite;Sovrascrivi chunk esistenti
 dialog.import_chunks_confirmation.options.selection_only;Applica solo alla selezione
+dialog.import_chunks_confirmation.options.y_offset;Offset Y
 dialog.import_chunks_confirmation.options.sections;Sezioni
 dialog.import_chunks_confirmation.warning;Attenzione Importare chunk con offset non modificher� le impostazioni dei command block.
 dialog.export_chunks_confirmation.title;Esporta chunk
@@ -155,5 +164,7 @@ dialog.error.button.copy_to_clipboard;Copia negli appunti
 dialog.error.title;Errore
 dialog.error.header;Si è verificato un errore
 dialog.error.copied_to_clipboard;Copiato negli appunti!
+dialog.unsaved_changes.title;Modifiche non salvate
+dialog.unsaved_changes.header;Hai modifiche non salvate.
 button.cancel;Annulla
 button.ok;Va bene

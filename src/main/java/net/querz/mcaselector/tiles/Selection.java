@@ -1,26 +1,27 @@
 package net.querz.mcaselector.tiles;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.point.Point2i;
 import java.io.Serializable;
-import java.util.Map;
-import java.util.Set;
 
 public class Selection implements Serializable {
 
-	private final Map<Point2i, Set<Point2i>> selection;
+	private final Long2ObjectOpenHashMap<LongOpenHashSet> selection;
 	private final boolean inverted;
 	private Point2i min, max;
 	private final WorldDirectories world;
 
-	public Selection(Map<Point2i, Set<Point2i>> selection, boolean inverted, WorldDirectories world) {
+	public Selection(Long2ObjectOpenHashMap<LongOpenHashSet> selection, boolean inverted, WorldDirectories world) {
 		this.selection = selection;
 		this.inverted = inverted;
 		this.world = world;
 		calculateMinMax();
 	}
 
-	public Map<Point2i, Set<Point2i>> getSelectionData() {
+	public Long2ObjectOpenHashMap<LongOpenHashSet> getSelectionData() {
 		return selection;
 	}
 
@@ -55,54 +56,59 @@ public class Selection implements Serializable {
 		int maxRegionX = Integer.MIN_VALUE;
 		int maxRegionZ = Integer.MIN_VALUE;
 
-		for (Map.Entry<Point2i, Set<Point2i>> entry : selection.entrySet()) {
-			if (entry.getKey().getX() <= minRegionX) {
+		for (Long2ObjectMap.Entry<LongOpenHashSet> entry : selection.long2ObjectEntrySet()) {
+			Point2i region = new Point2i(entry.getLongKey());
+			if (region.getX() <= minRegionX) {
 				if (entry.getValue() == null) {
-					min.setX(entry.getKey().regionToChunk().getX());
+					min.setX(region.regionToChunk().getX());
 				} else {
-					for (Point2i chunk : entry.getValue()) {
-						if (chunk.getX() < min.getX()) {
-							min.setX(chunk.getX());
+					for (long chunk : entry.getValue()) {
+						Point2i c = new Point2i(chunk);
+						if (c.getX() < min.getX()) {
+							min.setX(c.getX());
 						}
 					}
 				}
-				minRegionX = entry.getKey().getX();
+				minRegionX = region.getX();
 			}
-			if (entry.getKey().getZ() <= minRegionZ) {
+			if (region.getZ() <= minRegionZ) {
 				if (entry.getValue() == null) {
-					min.setZ(entry.getKey().regionToChunk().getZ());
+					min.setZ(region.regionToChunk().getZ());
 				} else {
-					for (Point2i chunk : entry.getValue()) {
-						if (chunk.getZ() < min.getZ()) {
-							min.setZ(chunk.getZ());
+					for (long chunk : entry.getValue()) {
+						Point2i c = new Point2i(chunk);
+						if (c.getZ() < min.getZ()) {
+							min.setZ(c.getZ());
 						}
 					}
 				}
-				minRegionZ = entry.getKey().getZ();
+				minRegionZ = region.getZ();
 			}
-			if (entry.getKey().getX() >= maxRegionX) {
+			if (region.getX() >= maxRegionX) {
 				if (entry.getValue() == null) {
-					max.setX(entry.getKey().regionToChunk().getX() + 31);
+					max.setX(region.regionToChunk().getX() + 31);
 				} else {
-					for (Point2i chunk : entry.getValue()) {
-						if (chunk.getX() > max.getX()) {
-							max.setX(chunk.getX());
+					for (long chunk : entry.getValue()) {
+						Point2i c = new Point2i(chunk);
+						if (c.getX() > max.getX()) {
+							max.setX(c.getX());
 						}
 					}
 				}
-				maxRegionX = entry.getKey().getX();
+				maxRegionX = region.getX();
 			}
-			if (entry.getKey().getZ() >= maxRegionZ) {
+			if (region.getZ() >= maxRegionZ) {
 				if (entry.getValue() == null) {
-					max.setZ(entry.getKey().regionToChunk().getZ() + 31);
+					max.setZ(region.regionToChunk().getZ() + 31);
 				} else {
-					for (Point2i chunk : entry.getValue()) {
-						if (chunk.getZ() > max.getZ()) {
-							max.setZ(chunk.getZ());
+					for (long chunk : entry.getValue()) {
+						Point2i c = new Point2i(chunk);
+						if (c.getZ() > max.getZ()) {
+							max.setZ(c.getZ());
 						}
 					}
 				}
-				maxRegionZ = entry.getKey().getZ();
+				maxRegionZ = region.getZ();
 			}
 		}
 	}

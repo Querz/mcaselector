@@ -2,6 +2,8 @@ package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.StringTag;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -51,20 +53,19 @@ public class StatusFilter extends TextFilter<String> {
 
 	@Override
 	public boolean matches(ChunkData data) {
-		switch (getComparator()) {
-			case EQUAL:
-				return isEqual(value, data);
-			case NOT_EQUAL:
-				return !isEqual(value, data);
-		}
-		return false;
+		return switch (getComparator()) {
+			case EQUAL -> isEqual(value, data);
+			case NOT_EQUAL -> !isEqual(value, data);
+			default -> false;
+		};
 	}
 
 	public boolean isEqual(String value, ChunkData data) {
 		if (data.getRegion() == null) {
 			return false;
 		}
-		StringTag tag = data.getRegion().getData().getCompoundTag("Level").getStringTag("Status");
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		StringTag tag = chunkFilter.getStatus(data.getRegion().getData());
 		return tag != null && value.equals(tag.getValue());
 	}
 

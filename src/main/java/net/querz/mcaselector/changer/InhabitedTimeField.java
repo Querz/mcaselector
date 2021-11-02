@@ -1,7 +1,8 @@
 package net.querz.mcaselector.changer;
 
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.validation.ValidationHelper;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.LongTag;
 
 public class InhabitedTimeField extends Field<Long> {
@@ -12,7 +13,9 @@ public class InhabitedTimeField extends Field<Long> {
 
 	@Override
 	public Long getOldValue(ChunkData data) {
-		return ValidationHelper.withDefault(() -> data.getRegion().getData().getCompoundTag("Level").getLong("InhabitedTime"), null);
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		LongTag inhabitedTime = chunkFilter.getInhabitedTime(data.getRegion().getData());
+		return inhabitedTime == null ? null : inhabitedTime.asLong();
 	}
 
 	@Override
@@ -27,7 +30,8 @@ public class InhabitedTimeField extends Field<Long> {
 
 	@Override
 	public void change(ChunkData data) {
-		LongTag tag = data.getRegion().getData().getCompoundTag("Level").getLongTag("InhabitedTime");
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		LongTag tag = chunkFilter.getInhabitedTime(data.getRegion().getData());
 		if (tag != null) {
 			tag.setValue(getNewValue());
 		}
@@ -35,6 +39,7 @@ public class InhabitedTimeField extends Field<Long> {
 
 	@Override
 	public void force(ChunkData data) {
-		data.getRegion().getData().getCompoundTag("Level").putLong("InhabitedTime", getNewValue());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
+		chunkFilter.setInhabitedTime(data.getRegion().getData(), getNewValue());
 	}
 }

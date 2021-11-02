@@ -1,5 +1,8 @@
 package net.querz.mcaselector.ui.dialog;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ButtonType;
@@ -35,7 +38,6 @@ import net.querz.nbt.tag.*;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -105,20 +107,20 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 	}
 
 	private Point2i getSelectedChunk(TileMap tileMap) {
-		Map<Point2i, Set<Point2i>> selection = tileMap.getMarkedChunks();
+		Long2ObjectOpenHashMap<LongOpenHashSet> selection = tileMap.getMarkedChunks();
 		if (selection.size() != 1) {
 			throw new RuntimeException("only one chunk can be selected, but found selection of " + selection.size() + " regions");
 		}
 		Point2i location = null;
-		for (Map.Entry<Point2i, Set<Point2i>> entry : selection.entrySet()) {
+		for (Long2ObjectMap.Entry<LongOpenHashSet> entry : selection.long2ObjectEntrySet()) {
 			if (entry.getValue() == null) {
-				throw new RuntimeException("only one chunk can be selected, but found entire region " + entry.getKey() + " selected");
+				throw new RuntimeException("only one chunk can be selected, but found entire region " + new Point2i(entry.getLongKey()) + " selected");
 			}
 			if (entry.getValue().size() != 1) {
 				throw new RuntimeException("only one chunk can be selected, but found selection of " + entry.getValue().size() + " chunks");
 			}
-			for (Point2i p : entry.getValue()) {
-				location = p;
+			for (long p : entry.getValue()) {
+				location = new Point2i(p);
 			}
 		}
 		if (location == null) {
@@ -241,7 +243,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 			if (mcaFile.getFile().exists()) {
 				try {
 					T chunkData = mcaFile.loadSingleChunk(selectedChunk);
-					if (chunkData.getData() == null) {
+					if (chunkData == null || chunkData.getData() == null) {
 						Debug.dump("no chunk data found for: " + selectedChunk);
 						enableAddTagLabels(new int[]{10}, addTagLabels);
 						Platform.runLater(() -> treeViewHolder.setCenter(UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_NO_CHUNK_DATA)));
