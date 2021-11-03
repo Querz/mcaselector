@@ -528,13 +528,14 @@ public class DialogHelper {
 				FileHelper.setLastOpenedDirectory("open_world", file.getAbsolutePath());
 				Config.setWorldDir(file);
 				CacheHelper.validateCacheVersion(tileMap);
+				CacheHelper.readWorldSettingsFile(tileMap);
+				RegionImageGenerator.invalidateCachedMCAFiles();
 				tileMap.clear();
-				tileMap.revalidateRegions();
-				tileMap.draw();
 				tileMap.disable(false);
 				tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
 				tileMap.getWindow().setTitleSuffix(file.toString());
 				tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString());
+				tileMap.draw();
 			} else {
 				new ErrorDialog(primaryStage, String.format("no mca files found in %s", file));
 			}

@@ -753,9 +753,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		pastedChunksInverted = false;
 	}
 
-	public void revalidateRegions() {
-	}
-
 	public void markAllTilesAsObsolete() {
 		for (Tile tile : tiles.values()) {
 			tile.setLoaded(false);
