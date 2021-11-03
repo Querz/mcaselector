@@ -13,7 +13,7 @@ menu.about;Om
 menu.file.open_world;Öppna en värld
 menu.file.open;Öppna en region
 menu.file.settings;Inställningar
-menu.file.render_settings;Render -inställningar
+menu.file.render_settings;Renderingsinställningar
 menu.file.quit;Avsluta
 menu.view.reload;Ladda om
 menu.view.chunk_grid;Chunkrutnät
@@ -41,64 +41,64 @@ menu.tools.swap_chunks;Byt chunks
 menu.tools.edit_overlays;Redigera överlägg
 menu.tools.next_overlay;Nästa överlägg
 menu.tools.next_overlay_type;Överläggstyp
-dialog.select_world.title;Välj en dimension
+dialog.select_world.title;Välj dimension
 dialog.settings.title;Inställningar
 dialog.settings.global.language;Språk
 dialog.settings.global.language.language;Språk
-dialog.settings.processing.process.process_threads;Bearbeta trådar
-dialog.settings.processing.process;Bearbeta
-dialog.settings.processing.process.write_threads;Skriv trådar
-dialog.settings.processing.files.max_files;Max filer
+dialog.settings.processing.process.process_threads;Processeringstrådar
+dialog.settings.processing.process;Processering
+dialog.settings.processing.process.write_threads;Skrivningtrådar
+dialog.settings.processing.files.max_files;Max antal filer
 dialog.settings.global.selection.region_color;Regionfärg
-dialog.settings.global.selection.chunk_color;Chunk färg
-dialog.settings.global.selection.pasted_chunks_color;Klistrade bitar färg
+dialog.settings.global.selection.chunk_color;Chunkfärg
+dialog.settings.global.selection.pasted_chunks_color;Inklistringsfärg
 dialog.settings.rendering.shade.shade;Skugga
 dialog.settings.rendering.shade;Skugga
-dialog.settings.rendering.shade.shade_water;Skuggvatten
-dialog.settings.rendering.background.show_nonexistent_regions;Visa obefintliga regioner
-dialog.settings.rendering.smooth.smooth_rendering;Smidig återgivning
-dialog.settings.rendering.smooth.smooth_overlays;Smidiga överlägg
+dialog.settings.rendering.shade.shade_water;Skugga vatten
+dialog.settings.rendering.background.show_nonexistent_regions;Visa ogenererade regioner
+dialog.settings.rendering.smooth.smooth_rendering;Jämn återgivning
+dialog.settings.rendering.smooth.smooth_overlays;Jämna överlägg
 dialog.settings.rendering.background.background_pattern;Bakgrundsmönster
 dialog.settings.rendering.background;Bakgrund
-dialog.settings.global.misc.mc_saves_dir;MC sparar dir
+dialog.settings.global.misc.mc_saves_dir;Minecraft-sparmapp
 dialog.settings.global.misc.print_debug;Skriv ut felsökningsmeddelanden
 dialog.settings.global.misc.show_log_file;Visa loggfil
 dialog.settings.reset;Återställ
 dialog.settings.tab_global;Global
-dialog.settings.tab_processing;Bearbetning
-dialog.settings.tab_rendering;Tolkning
+dialog.settings.tab_processing;Processering
+dialog.settings.tab_rendering;Rendering
 dialog.settings.tab_world;Värld
 dialog.settings.global.misc;Övrigt
 dialog.settings.processing.files;Filer
-dialog.settings.rendering.smooth;Slät
+dialog.settings.rendering.smooth;Jämnhet
 dialog.settings.global.selection;Urval
 dialog.settings.world.paths;Banor
 dialog.settings.world.paths.poi;POI
 dialog.settings.world.paths.entities;Enheter
-dialog.settings.rendering.layers.render_height;Renderhöjd
-dialog.settings.rendering.layers.render_layer_only;Endast rendera lager
-dialog.settings.rendering.layers;Skikten
-dialog.settings.rendering.layers.render_caves;Gör grottor
+dialog.settings.rendering.layers.render_height;Renderingshöjd
+dialog.settings.rendering.layers.render_layer_only;Rendera endast lager
+dialog.settings.rendering.layers;Skikt
+dialog.settings.rendering.layers.render_caves;Rendera grottor
 dialog.goto.title;Gå till plats
 dialog.confirmation.question;Är du säker?
 dialog.delete_chunks_confirmation.title;Radera chunks
-dialog.delete_chunks_confirmation.header_short;Du håller på att radera ett okänt antal chunks från denna värld.
-dialog.delete_chunks_confirmation.header_verbose;Du håller på att radera %d chunks från denna värld.
+dialog.delete_chunks_confirmation.header_short;Du är på väg att radera ett okänt antal chunks från denna värld.
+dialog.delete_chunks_confirmation.header_verbose;Du är på väg att radera %d chunks från denna värld.
 dialog.image_export_confirmation.title;Exportera bild
-dialog.image_export_confirmation.header_short;Du håller på att skapa en bild av okända proportioner.
-dialog.image_export_confirmation.header_verbose;Du håller på att skapa en bild med dimensionerna %dx%d.
+dialog.image_export_confirmation.header_short;Du är på väg att skapa en bild av okända proportioner.
+dialog.image_export_confirmation.header_verbose;Du är på väg att skapa en bild med dimensionerna %dx%d.
 dialog.import_chunks_confirmation.title;Importera chunks
-dialog.import_chunks_confirmation.header;Du håller på att importera ett okänt antal chunks till denna värld.
+dialog.import_chunks_confirmation.header;Du är på väg att importera ett okänt antal chunks till denna värld.
 dialog.import_chunks_confirmation.options;Inställningar
 dialog.import_chunks_confirmation.options.offset;Offset
 dialog.import_chunks_confirmation.options.overwrite;Skriv över existerande chunks
 dialog.import_chunks_confirmation.options.selection_only;Tillämpa endast till markering
-dialog.import_chunks_confirmation.options.y_offset;Y Offset
+dialog.import_chunks_confirmation.options.y_offset;Y-offset
 dialog.import_chunks_confirmation.options.sections;Sektioner
 dialog.import_chunks_confirmation.warning;Warning: Att importera chunks med en offset kommer inte att uppdatera kommandoblock-innehåll.
 dialog.export_chunks_confirmation.title;Exportera chunks
-dialog.export_chunks_confirmation.header_short;Du håller på att exportera ett okänt antal chunks från denna värld.
-dialog.export_chunks_confirmation.header_verbose;Du håller på att exportera %d chunks från denna värld.
+dialog.export_chunks_confirmation.header_short;Du är på väg att exportera ett okänt antal chunks från denna värld.
+dialog.export_chunks_confirmation.header_verbose;Du är på väg att exportera %d chunks från denna värld.
 dialog.filter_chunks.title;Filtrera chunks
 dialog.filter_chunks.filter.add.tooltip;Lägg till ett nytt villkor nedanför detta.
 dialog.filter_chunks.filter.delete.tooltip;Radera detta villkor.
@@ -125,8 +125,8 @@ dialog.change_nbt.force.tooltip;Skapar fältet om det inte existerar.
 dialog.change_nbt.selection_only;Tillämpa endast till markering
 dialog.change_nbt.selection_only.tooltip;Om detta filter enbart ska appliceras till den nuvarande markeringen.
 dialog.change_nbt_confirmation.title;Ändra NBT
-dialog.change_nbt_confirmation.header_short;Du håller på att förändra data i ett okänt antal chunks i denna värld.
-dialog.change_nbt_confirmation.header_verbose;Du håller på att förändra data i %d chunks i denna värld.
+dialog.change_nbt_confirmation.header_short;Du är på väg att förändra data i ett okänt antal chunks i denna värld.
+dialog.change_nbt_confirmation.header_verbose;Du är på väg att förändra data i %d chunks i denna värld.
 dialog.edit_nbt.title;Ändra chunk
 dialog.edit_nbt.placeholder.loading;laddar...
 dialog.edit_nbt.placeholder.no_chunk_data;ingen chunkdata hittades
@@ -137,8 +137,8 @@ dialog.about.title;Om
 dialog.about.header;Om MCA Selector
 dialog.about.version;Version:
 dialog.about.version.unknown;okänt
-dialog.about.version.check;kolla
-dialog.about.version.checking;kollar...
+dialog.about.version.check;kontrollera
+dialog.about.version.checking;kontrollerar...
 dialog.about.version.up_to_date;Uppdaterad
 dialog.about.version.error;Fel
 dialog.about.license;Licens:
