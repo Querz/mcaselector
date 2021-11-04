@@ -294,7 +294,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				if (tile != null) {
 					tile.loaded = false;
 				}
-				System.out.println("reloaded " + region);
 			}
 		}, new Point2f(), () -> scale, Integer.MAX_VALUE);
 	}

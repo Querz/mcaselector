@@ -453,7 +453,7 @@ public final class Config {
 			}
 		}
 
-		System.out.println(asString());
+		Debug.dump(asString());
 	}
 
 	public static void exportConfig() {

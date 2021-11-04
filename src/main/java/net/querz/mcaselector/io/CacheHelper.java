@@ -252,7 +252,7 @@ public final class CacheHelper {
 		}
 		Config.setShowNonExistentRegions(showNonexistentRegions);
 
-		System.out.println(Config.asString());
+		Debug.dump(Config.asString());
 	}
 
 	public static void updateWorldSettingsFile() {
