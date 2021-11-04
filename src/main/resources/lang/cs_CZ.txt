@@ -36,12 +36,12 @@ menu.selection.clear_cache;Smazat keš
 menu.tools.import_chunks;Importovat chunky
 menu.tools.filter_chunks;Filtrovat chunky
 menu.tools.change_fields;Změnit pole
-menu.tools.edit_nbt;Upravit chunků
+menu.tools.edit_nbt;Upravit chunk
 menu.tools.swap_chunks;Vyměňovat chunky
 menu.tools.edit_overlays;Upravit překryvy
 menu.tools.next_overlay;Další překrytí
 menu.tools.next_overlay_type;Typ překrytí
-dialog.select_world.title;Vyberte kótu
+dialog.select_world.title;Vyberte Dimenzi
 dialog.settings.title;Nastavení
 dialog.settings.global.language;Jazyk
 dialog.settings.global.language.language;Jazyk
@@ -49,9 +49,9 @@ dialog.settings.processing.process.process_threads;Procesní vlákna
 dialog.settings.processing.process;Proces
 dialog.settings.processing.process.write_threads;Pište vlákna
 dialog.settings.processing.files.max_files;Maximální počet souborů
-dialog.settings.global.selection.region_color;Regionální barva
-dialog.settings.global.selection.chunk_color;Kusová barva
-dialog.settings.global.selection.pasted_chunks_color;Vložená barva kousků
+dialog.settings.global.selection.region_color;Barva regionů
+dialog.settings.global.selection.chunk_color;Barva chunků
+dialog.settings.global.selection.pasted_chunks_color;Barva vkládaných chunků
 dialog.settings.rendering.shade.shade;Odstín
 dialog.settings.rendering.shade;Odstín
 dialog.settings.rendering.shade.shade_water;Stínovat vodu
@@ -60,7 +60,7 @@ dialog.settings.rendering.smooth.smooth_rendering;Plynulé vykreslování
 dialog.settings.rendering.smooth.smooth_overlays;Hladké překrytí
 dialog.settings.rendering.background.background_pattern;Vzor pozadí
 dialog.settings.rendering.background;Pozadí
-dialog.settings.global.misc.mc_saves_dir;MC uloží dir
+dialog.settings.global.misc.mc_saves_dir;Umístění MC světů
 dialog.settings.global.misc.print_debug;Tisk zpráv o ladění
 dialog.settings.global.misc.show_log_file;Zobrazit soubor protokolu
 dialog.settings.reset;Obnovit
@@ -85,7 +85,7 @@ dialog.delete_chunks_confirmation.title;Smazat chunky
 dialog.delete_chunks_confirmation.header_short;Chcete smazat neznámý počet chunků vybraného světa.
 dialog.delete_chunks_confirmation.header_verbose;Chcete smazat  %d chunků vybraného světa.
 dialog.image_export_confirmation.title;Exportovat obrázek
-dialog.image_export_confirmation.header_short;Chystáte se vytvořit obraz neznámých rozměrů.
+dialog.image_export_confirmation.header_short;Chystáte se vytvořit obrázek neznámých rozměrů.
 dialog.image_export_confirmation.header_verbose;Chystáte se vytvořit obrázek s rozměry %dx%d.
 dialog.import_chunks_confirmation.title;Importovat chunky
 dialog.import_chunks_confirmation.header;Chcete importovat neznámý počet chunků do vybraného světa.
@@ -95,7 +95,7 @@ dialog.import_chunks_confirmation.options.overwrite;Přepsat existující chunky
 dialog.import_chunks_confirmation.options.selection_only;Aplikovat pouze na výběr
 dialog.import_chunks_confirmation.options.y_offset;Y offset
 dialog.import_chunks_confirmation.options.sections;Sekce
-dialog.import_chunks_confirmation.warning;Upozornění: Při importování bloků s posunem se neaktualizuje obsah příkazových bloků.
+dialog.import_chunks_confirmation.warning;Upozornění: Při importování chunků s posunem se neaktualizuje obsah příkazových bloků.
 dialog.export_chunks_confirmation.title;Exportovat chunky
 dialog.export_chunks_confirmation.header_short;Chcete exportovat neznámý počet chunků vybraného světa.
 dialog.export_chunks_confirmation.header_verbose;Chcete exportovat %d chunků vybraného světa.
@@ -129,7 +129,7 @@ dialog.change_nbt_confirmation.header_short;Chcete změnit data v neznámém po�
 dialog.change_nbt_confirmation.header_verbose;Chcete změnit data v %d chunků vybraného světa.
 dialog.edit_nbt.title;Upravit chunků
 dialog.edit_nbt.placeholder.loading;načítání...
-dialog.edit_nbt.placeholder.no_chunk_data;nebyly nalezeny žádné údaje o chunk
+dialog.edit_nbt.placeholder.no_chunk_data;nebyly nalezeny žádné údaje o chunku
 dialog.edit_nbt.placeholder.no_region_file;soubor regionu neexistuje
 dialog.edit_array.index;Index
 dialog.edit_array.value;Hodnota
