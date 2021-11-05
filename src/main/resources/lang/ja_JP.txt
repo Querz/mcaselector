@@ -19,7 +19,7 @@ menu.view.reload;リロード
 menu.view.chunk_grid;チャンクの境界
 menu.view.region_grid;リージョンの境界
 menu.view.goto;移動
-menu.view.reset_zoom;拡大をリセット
+menu.view.reset_zoom;拡大率をリセット
 menu.view.save_screenshot;スクリーンショットを保存
 menu.view.clear_cache;キャッシュをクリア
 menu.view.clear_all_cache;すべてのキャッシュをクリア
@@ -58,8 +58,8 @@ dialog.settings.rendering.shade.shade_water;水の透過
 dialog.settings.rendering.background.show_nonexistent_regions;存在しないリージョンを表示する
 dialog.settings.rendering.smooth.smooth_rendering;滑らかなレンダリング
 dialog.settings.rendering.smooth.smooth_overlays;滑らかなオーバーレイ
-dialog.settings.rendering.background.background_pattern;背景
-dialog.settings.rendering.background;バックグラウンド
+dialog.settings.rendering.background.background_pattern;背景パターン
+dialog.settings.rendering.background;背景
 dialog.settings.global.misc.mc_saves_dir;セーブフォルダ
 dialog.settings.global.misc.print_debug;デバッグ情報を出力
 dialog.settings.global.misc.show_log_file;ログを表示
