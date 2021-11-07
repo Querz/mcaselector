@@ -19,14 +19,11 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
@@ -96,7 +93,7 @@ public final class FileHelper {
 	}
 
 	public static Point2i parseCacheFileName(File file) {
-		return parseMCAFileName(file.getName());
+		return parseCacheFileName(file.getName());
 	}
 
 	public static Point2i parseCacheFileName(String name) {
