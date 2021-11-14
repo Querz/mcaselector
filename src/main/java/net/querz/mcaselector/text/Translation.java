@@ -3,6 +3,8 @@ package net.querz.mcaselector.text;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.FileHelper;
+
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -326,7 +328,7 @@ public enum Translation {
 		}
 
 		if (dirURL != null && dirURL.getProtocol().equals("jar")) {
-			String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!"));
+			String jarPath = dirURL.getPath().substring(5, dirURL.getPath().lastIndexOf('!'));
 			JarFile jar;
 			try {
 				jar = new JarFile(URLDecoder.decode(jarPath, StandardCharsets.UTF_8));
