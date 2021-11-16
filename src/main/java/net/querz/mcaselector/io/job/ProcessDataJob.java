@@ -52,6 +52,9 @@ public abstract class ProcessDataJob extends Job {
 	}
 
 	protected byte[] load(File file, int length) {
+		if (file == null || !file.exists() || file.length() < length) {
+			return null;
+		}
 		Timer t = new Timer();
 		int read;
 		byte[] data = new byte[length];
