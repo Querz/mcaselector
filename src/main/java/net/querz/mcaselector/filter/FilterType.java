@@ -16,6 +16,7 @@ public enum FilterType {
 	PALETTE("Palette", PaletteFilter::new, Format.TEXT),
 	BIOME("Biome", BiomeFilter::new, Format.TEXT),
 	STATUS("Status", StatusFilter::new, Format.TEXT),
+	PLAYER_DATA("PlayerData", PlayerDataFilter::new, Format.TEXT),
 	LIGHT_POPULATED("LightPopulated", LightPopulatedFilter::new, Format.NUMBER),
 	ENTITIES("Entities", EntityFilter::new, Format.TEXT),
 	STRUCTURES("Structures", StructureFilter::new, Format.TEXT),
