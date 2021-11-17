@@ -3,6 +3,7 @@ package net.querz.mcaselector.filter;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.io.NBTUtil;
@@ -13,26 +14,31 @@ import net.querz.nbt.tag.IntTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.StringTag;
 import net.querz.nbt.tag.Tag;
-
 import java.io.File;
 
-public class PlayerDataFilter extends TextFilter<PlayerDataFilter.PlayerDataFilterDefinition> {
+public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.PlayerLocationFilterDefinition> implements RegionMatcher {
 
-	private LongOpenHashSet playerChunks = new LongOpenHashSet();
-	private final Object lock = new Object();
-	private boolean loaded = false;
+	protected LongOpenHashSet playerChunks = new LongOpenHashSet();
+	protected LongOpenHashSet playerRegions = new LongOpenHashSet();
+	protected final Object lock;
+	protected DataProperty<Boolean> loaded = new DataProperty<>(false);
 
 	private static final Comparator[] comparators = {
 			Comparator.CONTAINS,
 			Comparator.CONTAINS_NOT,
 	};
 
-	public PlayerDataFilter() {
+	public PlayerLocationFilter() {
 		this(Operator.AND, Comparator.CONTAINS, null);
 	}
 
-	private PlayerDataFilter(Operator operator, Comparator comparator, PlayerDataFilterDefinition value) {
-		super(FilterType.PLAYER_DATA, operator, comparator, value);
+	private PlayerLocationFilter(Operator operator, Comparator comparator, PlayerLocationFilterDefinition value) {
+		this(FilterType.PLAYER_DATA, operator, comparator, value, new Object());
+	}
+
+	protected PlayerLocationFilter(FilterType type, Operator operator, Comparator comparator, PlayerLocationFilterDefinition value, Object lock) {
+		super(type, operator, comparator, value);
+		this.lock = lock;
 		setRawValue(value == null ? "" : value.toString());
 	}
 
@@ -43,7 +49,7 @@ public class PlayerDataFilter extends TextFilter<PlayerDataFilter.PlayerDataFilt
 
 	@Override
 	public void setFilterValue(String raw) {
-		String[] separated = raw.split(File.pathSeparator);
+		String[] separated = raw.split(File.pathSeparator, 2);
 		if (separated.length != 2) {
 			setValid(false);
 			setValue(null);
@@ -69,12 +75,17 @@ public class PlayerDataFilter extends TextFilter<PlayerDataFilter.PlayerDataFilt
 		}
 
 		setValid(true);
-		setValue(new PlayerDataFilterDefinition(file, dimension));
+		setValue(new PlayerLocationFilterDefinition(file, dimension));
+		setRawValue(raw);
 	}
 
 	@Override
-	public PlayerDataFilter clone() {
-		return new PlayerDataFilter(getOperator(), getComparator(), getFilterValue() == null ? null : getFilterValue().clone());
+	public PlayerLocationFilter clone() {
+		PlayerLocationFilter clone = new PlayerLocationFilter(getType(), getOperator(), getComparator(), getFilterValue() == null ? null : getFilterValue().clone(), lock);
+		clone.playerChunks = playerChunks;
+		clone.playerRegions = playerRegions;
+		clone.loaded = loaded;
+		return clone;
 	}
 
 	@Override
@@ -83,12 +94,12 @@ public class PlayerDataFilter extends TextFilter<PlayerDataFilter.PlayerDataFilt
 	}
 
 	@Override
-	public boolean contains(PlayerDataFilterDefinition value, ChunkData data) {
+	public boolean contains(PlayerLocationFilterDefinition value, ChunkData data) {
 		if (data.getRegion() == null || data.getRegion().getData() == null) {
 			return false;
 		}
 
-		if (!loaded) {
+		if (!loaded.get()) {
 			synchronized (lock) {
 				if (playerChunks.isEmpty()) {
 					loadPlayerData(value);
@@ -106,38 +117,52 @@ public class PlayerDataFilter extends TextFilter<PlayerDataFilter.PlayerDataFilt
 	}
 
 	@Override
-	public boolean containsNot(PlayerDataFilterDefinition value, ChunkData data) {
+	public boolean containsNot(PlayerLocationFilterDefinition value, ChunkData data) {
 		return !contains(value, data);
 	}
 
 	@Override
-	public boolean intersects(PlayerDataFilterDefinition value, ChunkData data) {
-		throw new UnsupportedOperationException("\"intersects\" not allowed in PlayerDataFilter");
+	public boolean intersects(PlayerLocationFilterDefinition value, ChunkData data) {
+		throw new UnsupportedOperationException("\"intersects\" not allowed in player filter");
 	}
 
-	public static class PlayerDataFilterDefinition {
+	@Override
+	public boolean matchesRegion(Point2i region) {
+		if (!loaded.get()) {
+			synchronized (lock) {
+				if (playerRegions.isEmpty()) {
+					loadPlayerData(value);
+				}
+			}
+		}
+
+		return playerRegions.contains(region.asLong());
+	}
+
+	public static class PlayerLocationFilterDefinition {
 
 		File directory;
 		Object dimension; // can be Integer or String
 
-		public PlayerDataFilterDefinition(File directory, Object dimension) {
+		public PlayerLocationFilterDefinition(File directory, Object dimension) {
 			this.directory = directory;
 			this.dimension = dimension;
 		}
 
 		@Override
 		public String toString() {
-			return directory.toString() + File.pathSeparator + dimension;
+			return directory + File.pathSeparator + dimension;
 		}
 
 		@Override
-		public PlayerDataFilterDefinition clone() {
-			return new PlayerDataFilterDefinition(directory, dimension);
+		public PlayerLocationFilterDefinition clone() {
+			return new PlayerLocationFilterDefinition(directory, dimension);
 		}
 	}
 
-	private void loadPlayerData(PlayerDataFilterDefinition value) {
-		playerChunks = new LongOpenHashSet();
+	protected void loadPlayerData(PlayerLocationFilterDefinition value) {
+		playerChunks.clear();
+		playerRegions.clear();
 
 		File[] playerFiles = value.directory.listFiles((d, f) -> f.matches("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.dat$"));
 		if (playerFiles == null || playerFiles.length == 0) {
@@ -165,11 +190,18 @@ public class PlayerDataFilter extends TextFilter<PlayerDataFilter.PlayerDataFilt
 					continue;
 				}
 
-				playerChunks.add(new Point2i(pos.get(0).asInt(), pos.get(2).asInt()).blockToChunk().asLong());
+				Point2i playerLocation = new Point2i(pos.get(0).asInt(), pos.get(2).asInt());
+				playerChunks.add(playerLocation.blockToChunk().asLong());
+				playerRegions.add(playerLocation.blockToRegion().asLong());
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
-		loaded = true;
+		loaded.set(true);
+	}
+
+	@Override
+	public String toString() {
+		return "PlayerLocation " + getComparator().getQueryString() + " \"" + getRawValue().replace("\\", "\\\\") + "\"";
 	}
 }
