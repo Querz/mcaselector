@@ -197,8 +197,8 @@ carrots:age=3;347828
 carrots:age=4;387125
 carrots:age=5;387125
 carrots:age=6;387125
-carrots:age=7;517b25
-cartography_table;685743
+carrots:age=7;517c25
+cartography_table;675743
 carved_pumpkin;c67618
 cauldron;49484a
 cave_vines:berries=false;5a6d28
@@ -247,10 +247,10 @@ cobblestone_slab;7f7f7f
 cobblestone_stairs;7f7f7f
 cobblestone_wall;7f7f7f
 cobweb;e4e9ea
-cocoa:age=0,facing=east;85873e
-cocoa:age=0,facing=north;85873e
-cocoa:age=0,facing=south;85873e
-cocoa:age=0,facing=west;85873e
+cocoa:age=0,facing=east;85863e
+cocoa:age=0,facing=north;85863e
+cocoa:age=0,facing=south;85863e
+cocoa:age=0,facing=west;85863e
 cocoa:age=1,facing=east;926e38
 cocoa:age=1,facing=north;926e38
 cocoa:age=1,facing=south;926e38
@@ -313,7 +313,7 @@ crimson_roots;7e0829
 crimson_sign;653046
 crimson_slab;653046
 crimson_stairs;653046
-crimson_stem;6b334a
+crimson_stem;703146
 crimson_trapdoor;673248
 crimson_wall_sign;653046
 crying_obsidian;200a3c
@@ -352,7 +352,7 @@ dark_oak_door;4c3319
 dark_oak_fence;422b14
 dark_oak_fence_gate;422b14
 dark_oak_leaves;969696;f
-dark_oak_log;402a15
+dark_oak_log;432d16
 dark_oak_planks;422b14
 dark_oak_pressure_plate;422b14
 dark_oak_sapling;3d5a1e
@@ -484,7 +484,7 @@ frosted_ice:age=3;87b2fc
 furnace;6e6d6d
 gilded_blackstone;372a26
 glass;afd5db
-glass_pane;d3eff4
+glass_pane;aad2d9
 glow_lichen;708279
 glowstone;ab8354
 gold_block;f6d03d
@@ -559,7 +559,7 @@ infested_stone;7d7d7d
 infested_stone_bricks;7a797a
 iron_bars;888b87
 iron_block;dcdcdc
-iron_door;c1c0c0
+iron_door;c2c1c1
 iron_ore;88817a
 iron_trapdoor;cacaca
 jack_o_lantern;c67618
@@ -748,7 +748,7 @@ netherite_block;423d3f
 netherrack;612626
 note_block;583a28
 oak_button;a2824e
-oak_door;8b6e41
+oak_door;8c6e42
 oak_fence;a2824e
 oak_fence_gate;a2824e
 oak_leaves;909090;f
@@ -990,7 +990,7 @@ red_sandstone_slab;b5611f
 red_sandstone_stairs;b5611f
 red_sandstone_wall;ba631d
 red_shulker_box;8c1f1e
-red_stained_glass;993333
+red_stained_glass;993232
 red_stained_glass_pane;933030
 red_terracotta;8f3d2e
 red_tulip;598020
@@ -1185,7 +1185,7 @@ stripped_birch_wood;c4b076
 stripped_crimson_hyphae;89395a
 stripped_crimson_stem;793852
 stripped_dark_oak_log;412c16
-stripped_dark_oak_wood;604c31
+stripped_dark_oak_wood;483824
 stripped_jungle_log;a57a51
 stripped_jungle_wood;ab8454
 stripped_oak_log;a0814d
@@ -1252,7 +1252,7 @@ warped_roots;148a7c
 warped_sign;2b6863
 warped_slab;2b6863
 warped_stairs;2b6863
-warped_stem;396767
+warped_stem;356d6e
 warped_trapdoor;2f776f
 warped_wall_sign;2b6863
 warped_wart_block;167779
