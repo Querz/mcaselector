@@ -33,7 +33,7 @@ public final class TileImage {
 	private TileImage() {}
 
 	public static void draw(Tile tile, GraphicsContext ctx, float scale, Point2f offset, boolean selectionInverted, boolean overlay, boolean showNonexistentRegions) {
-		if (tile == null || tile.image == null){
+		if (tile == null || tile.image == null) {
 			if (showNonexistentRegions) {
 				ctx.drawImage(ImageHelper.getEmptyTileImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 			}
@@ -67,6 +67,9 @@ public final class TileImage {
 				// apply markedChunksImage to ctx
 				ctx.drawImage(tile.markedChunksImage, offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 			}
+		} else if (selectionInverted) {
+			ctx.setFill(Config.getRegionSelectionColor().makeJavaFXColor());
+			ctx.fillRect(offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		}
 	}
 
@@ -81,6 +84,8 @@ public final class TileImage {
 			ctx.fillRect(0, 0, Tile.SIZE, Tile.SIZE);
 		}
 
+		float size = Tile.CHUNK_SIZE / (float) zoomLevel;
+
 		for (long markedChunk : tile.markedChunks) {
 			Point2i regionChunk = new Point2i(markedChunk).mod(Tile.SIZE_IN_CHUNKS);
 			if (regionChunk.getX() < 0) {
@@ -91,9 +96,9 @@ public final class TileImage {
 			}
 
 			if (inverted) {
-				ctx.clearRect(regionChunk.getX() * Tile.CHUNK_SIZE / (float) zoomLevel, regionChunk.getZ() * Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel);
+				ctx.clearRect(regionChunk.getX() * size, regionChunk.getZ() * size, size, size);
 			} else {
-				ctx.fillRect(regionChunk.getX() * Tile.CHUNK_SIZE / (float) zoomLevel, regionChunk.getZ() * Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel);
+				ctx.fillRect(regionChunk.getX() * size, regionChunk.getZ() * size, size, size);
 			}
 		}
 
