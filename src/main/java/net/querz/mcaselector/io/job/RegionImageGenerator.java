@@ -28,6 +28,8 @@ public final class RegionImageGenerator {
 	private static final LinkedHashMap<Point2i, RegionMCAFile> cachedMCAFiles = new LinkedHashMap<>();
 	private static Function<Point2i, Boolean> cacheEligibilityChecker = null;
 
+	private static final Object cacheLock = new Object();
+
 	private RegionImageGenerator() {}
 
 	public static void generate(Tile tile, BiConsumer<Image, UniqueID> callback, int scale, Progress progressChannel, boolean canSkipSaving, Supplier<Integer> prioritySupplier) {
@@ -37,11 +39,13 @@ public final class RegionImageGenerator {
 	}
 
 	public static RegionMCAFile getCachedRegionMCAFile(Point2i region) {
-		return cachedMCAFiles.get(region);
+		synchronized (cacheLock) {
+			return cachedMCAFiles.get(region);
+		}
 	}
 
 	public static void cacheRegionMCAFile(RegionMCAFile regionMCAFile, UniqueID uniqueID) {
-		synchronized (cachedMCAFiles) {
+		synchronized (cacheLock) {
 			if (!uniqueID.matchesCurrentConfig()) {
 				return;
 			}
@@ -57,7 +61,9 @@ public final class RegionImageGenerator {
 	}
 
 	public static void uncacheRegionMCAFile(Point2i region) {
-		cachedMCAFiles.remove(region);
+		synchronized (cacheLock) {
+			cachedMCAFiles.remove(region);
+		}
 	}
 
 	public static void setCacheEligibilityChecker(Function<Point2i, Boolean> checker) {
@@ -65,7 +71,7 @@ public final class RegionImageGenerator {
 	}
 
 	public static void invalidateCachedMCAFiles() {
-		synchronized (cachedMCAFiles) {
+		synchronized (cacheLock) {
 			cachedMCAFiles.clear();
 		}
 	}

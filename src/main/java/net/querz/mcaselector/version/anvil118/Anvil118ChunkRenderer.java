@@ -324,17 +324,19 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 		CompoundTag minData = new CompoundTag();
 		minData.put("DataVersion", root.get("DataVersion").clone());
-		CompoundTag level = new CompoundTag();
-		minData.put("Level", level);
-		if (dataVersion < 2834) {
-			level.put("Biomes", root.getCompoundTag("Level").get("Biomes").clone());
-		}
+
 		if (dataVersion > 2843) {
-			level.put("Sections", root.get("sections").clone());
-			level.put("Status", root.get("Status").clone());
+			minData.put("sections", root.get("sections").clone());
+			minData.put("Status", root.get("Status").clone());
 		} else {
-			level.put("Sections", root.getCompoundTag("Level").get("Sections").clone());
-			level.put("Status", root.getCompoundTag("Level").get("Status").clone());
+			CompoundTag level = new CompoundTag();
+			CompoundTag oldLevel = root.getCompoundTag("Level");
+			if (dataVersion < 2834) {
+				level.put("Biomes",oldLevel.get("Biomes").clone());
+			}
+			level.put("Sections", oldLevel.get("Sections").clone());
+			level.put("Status", oldLevel.get("Status").clone());
+			minData.put("Level", level);
 		}
 		return minData;
 	}

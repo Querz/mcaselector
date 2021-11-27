@@ -49,9 +49,9 @@ public final class CacheHelper {
 		for (File cacheDir : Config.getCacheDirs()) {
 			FileHelper.deleteDirectory(cacheDir);
 		}
+		RegionImageGenerator.invalidateCachedMCAFiles();
 		updateVersionFile();
 		updateWorldSettingsFile();
-		RegionImageGenerator.invalidateCachedMCAFiles();
 		tileMap.clear();
 		tileMap.draw();
 	}
