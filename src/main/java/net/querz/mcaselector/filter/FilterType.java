@@ -22,7 +22,8 @@ public enum FilterType {
 	ENTITIES("Entities", EntityFilter::new, Format.TEXT),
 	STRUCTURES("Structures", StructureFilter::new, Format.TEXT),
 	ENTITY_AMOUNT("#Entities", EntityAmountFilter::new, Format.NUMBER),
-	TILE_ENTITY_AMOUNT("#TileEntities", TileEntityAmountFilter::new, Format.NUMBER);
+	TILE_ENTITY_AMOUNT("#TileEntities", TileEntityAmountFilter::new, Format.NUMBER),
+	CIRCLE("Circle", CircleFilter::new, Format.TEXT);
 
 	private final String string;
 	private final Supplier<? extends Filter<?>> creator;

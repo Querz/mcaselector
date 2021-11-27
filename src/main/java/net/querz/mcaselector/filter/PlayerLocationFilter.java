@@ -15,6 +15,7 @@ import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.StringTag;
 import net.querz.nbt.tag.Tag;
 import java.io.File;
+import java.io.Serializable;
 
 public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.PlayerLocationFilterDefinition> implements RegionMatcher {
 
@@ -136,10 +137,14 @@ public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.Player
 			}
 		}
 
-		return playerRegions.contains(region.asLong());
+		return switch (getComparator()) {
+			case CONTAINS -> playerRegions.contains(region.asLong());
+			case CONTAINS_NOT -> !playerRegions.contains(region.asLong());
+			default -> false;
+		};
 	}
 
-	public static class PlayerLocationFilterDefinition {
+	public static class PlayerLocationFilterDefinition implements Serializable {
 
 		File directory;
 		Object dimension; // can be Integer or String

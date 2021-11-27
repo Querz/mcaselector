@@ -301,6 +301,8 @@ public class DialogHelper {
 				CacheHelper.updateWorldSettingsFile();
 			}
 
+			Config.exportConfig();
+
 			tileMap.draw();
 		});
 	}

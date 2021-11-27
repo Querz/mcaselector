@@ -58,7 +58,7 @@ public final class ImagePool {
 		// try to get the matching res image from memory cache
 		Image image;
 		if ((image = pool.get(zoomLevel).get(tile.location.asLong())) != null) {
-			tile.image = image;
+			tile.setImage(image);
 			tile.setLoaded(true);
 			return;
 		}
@@ -75,13 +75,13 @@ public final class ImagePool {
 				if (zl < zoomLevel) {
 					// image is larger than needed
 					// scale down and set image to tile
-					tile.image = ImageHelper.scaleDownFXImage(image, Tile.SIZE / zl);
+					tile.setImage(ImageHelper.scaleDownFXImage(image, Tile.SIZE / zl));
 					tile.setLoaded(true);
 					push(zoomLevel, tile.location, tile.image);
 					return;
 				} else {
 					// image is lower res, but we set it anyway, so we can at least display something
-					tile.image = image;
+					tile.setImage(image);
 					tile.setLoaded(true);
 					// don't give up here, find image in disk cache!
 					break;
@@ -145,7 +145,7 @@ public final class ImagePool {
 
 		RegionImageGenerator.setLoading(tile, true);
 		RegionImageGenerator.generate(tile, (img, uuid) -> {
-			tile.image = img;
+			tile.setImage(img);
 			tile.loaded = true;
 			RegionImageGenerator.setLoading(tile, false);
 			push(zoomLevel, tile.location, img);

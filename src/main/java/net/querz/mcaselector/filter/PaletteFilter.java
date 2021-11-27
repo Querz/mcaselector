@@ -33,19 +33,14 @@ public class PaletteFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean matches(ChunkData data) {
-		switch (getComparator()) {
-			case CONTAINS:
-				return contains(value, data);
-			case CONTAINS_NOT:
-				return containsNot(value, data);
-			case INTERSECTS:
-				return intersects(value, data);
-			case EQUAL:
-				return equals(value, data);
-			case NOT_EQUAL:
-				return notEquals(value, data);
-		}
-		return false;
+		return switch (getComparator()) {
+			case CONTAINS -> contains(value, data);
+			case CONTAINS_NOT -> containsNot(value, data);
+			case INTERSECTS -> intersects(value, data);
+			case EQUAL -> equals(value, data);
+			case NOT_EQUAL -> notEquals(value, data);
+			default -> false;
+		};
 	}
 
 	@Override

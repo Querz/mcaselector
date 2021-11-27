@@ -39,27 +39,21 @@ public abstract class NumberFilter<T extends Number> extends Filter<T> {
 		this.comparator = comparator;
 	}
 
-	public boolean matches(T value, T data) {
-		switch (comparator) {
-			case EQUAL:
-				return isEqual(data, value);
-			case NOT_EQUAL:
-				return isNotEqual(data, value);
-			case LARGER:
-				return isLargerThan(data, value);
-			case SMALLER:
-				return isSmallerThan(data, value);
-			case LARGER_EQUAL:
-				return isLargerEqual(data, value);
-			case SMALLER_EQUAL:
-				return isSmallerEqual(data, value);
-		}
-		return false;
+	public boolean matches(T value, T data, Comparator comparator) {
+		return switch (comparator) {
+			case EQUAL -> isEqual(data, value);
+			case NOT_EQUAL -> isNotEqual(data, value);
+			case LARGER -> isLargerThan(data, value);
+			case SMALLER -> isSmallerThan(data, value);
+			case LARGER_EQUAL -> isLargerEqual(data, value);
+			case SMALLER_EQUAL -> isSmallerEqual(data, value);
+			default -> false;
+		};
 	}
 
 	@Override
 	public boolean matches(ChunkData data) {
-		return matches(getFilterNumber(), getNumber(data));
+		return matches(getFilterNumber(), getNumber(data), comparator);
 	}
 
 	@Override

@@ -36,15 +36,12 @@ public abstract class TextFilter<T> extends Filter<T> {
 
 	@Override
 	public boolean matches(ChunkData data) {
-		switch (comparator) {
-		case CONTAINS:
-			return contains(value, data);
-		case CONTAINS_NOT:
-			return containsNot(value, data);
-		case INTERSECTS:
-			return intersects(value, data);
-		}
-		return false;
+		return switch (comparator) {
+			case CONTAINS -> contains(value, data);
+			case CONTAINS_NOT -> containsNot(value, data);
+			case INTERSECTS -> intersects(value, data);
+			default -> false;
+		};
 	}
 
 	@Override

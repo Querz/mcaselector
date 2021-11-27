@@ -5,7 +5,6 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.IntTag;
-import net.querz.nbt.tag.StringTag;
 
 public class XPosFilter extends IntFilter implements RegionMatcher {
 
@@ -32,7 +31,7 @@ public class XPosFilter extends IntFilter implements RegionMatcher {
 		Point2i chunk = region.regionToChunk();
 		for (int i = 0; i < 32; i++) {
 			Point2i p = chunk.add(i);
-			if (matches(getFilterNumber(), p.getX())) {
+			if (matches(getFilterNumber(), p.getX(), getComparator())) {
 				return true;
 			}
 		}

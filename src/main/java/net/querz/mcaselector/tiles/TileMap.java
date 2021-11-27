@@ -238,7 +238,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 								// image is larger than needed
 								if (tile.getImageZoomLevel() < zoomLevel) {
 									// scale down immediately
-									tile.image = ImageHelper.scaleDownFXImage(tile.image, Tile.SIZE / zoomLevel);
+									tile.setImage(ImageHelper.scaleDownFXImage(tile.image, Tile.SIZE / zoomLevel));
 									// DONE
 								} else {
 									imgPool.requestImage(tile, zoomLevel);
@@ -288,12 +288,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	public void reload() {
 		runOnVisibleRegions(region -> {
+			imgPool.discardCachedImage(region);
 			Tile tile = tiles.get(region.asLong());
-			if (imgPool.isImageOutdated(region)) {
-				imgPool.discardCachedImage(region);
-				if (tile != null) {
-					tile.loaded = false;
-				}
+			if (tile != null) {
+				tile.loaded = false;
 			}
 		}, new Point2f(), () -> scale, Integer.MAX_VALUE);
 	}
