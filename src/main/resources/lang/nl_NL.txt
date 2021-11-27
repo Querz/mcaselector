@@ -25,6 +25,7 @@ menu.view.clear_cache;Cache wissen
 menu.view.clear_all_cache;Wis alle cache
 menu.selection.clear;Wissen
 menu.selection.invert;Omkeren
+menu.selection.invert_regions;Geselecteerde regio's omkeren
 menu.selection.copy_chunks;Kopiëer chunks
 menu.selection.paste_chunks;Plak chunks
 menu.selection.export_chunks;Geselecteerde chunks exporteren

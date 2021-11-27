@@ -787,6 +787,20 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		draw();
 	}
 
+	public void invertRegionsWithSelection() {
+		for (Tile tile : tiles.values()) {
+			int selectedChunksBefore = tile.getSelectionSize();
+			if (selectedChunksBefore > 0) {
+				tile.invertSelectedChunks();
+				selectedChunks -= selectedChunksBefore;
+				selectedChunks += tile.getSelectionSize();
+			}
+		}
+		runUpdateListeners();
+		redrawOverlays();
+		draw();
+	}
+
 	public void setSelectionInverted(boolean inverted) {
 		selectionInverted = inverted;
 	}

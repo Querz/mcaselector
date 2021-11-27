@@ -25,6 +25,7 @@ menu.view.clear_cache;Svuota la cache
 menu.view.clear_all_cache;Svuota tutta la cache
 menu.selection.clear;Svuota
 menu.selection.invert;Invertire
+menu.selection.invert_regions;Inverti le regioni selezionate
 menu.selection.copy_chunks;Copia i chunk
 menu.selection.paste_chunks;Incolla i chunk
 menu.selection.export_chunks;Esporta i chunk selezionati

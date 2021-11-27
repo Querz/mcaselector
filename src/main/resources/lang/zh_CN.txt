@@ -25,6 +25,7 @@ menu.view.clear_cache;清除缓存
 menu.view.clear_all_cache;清除所有缓存
 menu.selection.clear;清除
 menu.selection.invert;倒置
+menu.selection.invert_regions;反转选定区域
 menu.selection.copy_chunks;复制区块
 menu.selection.paste_chunks;粘贴区块
 menu.selection.export_chunks;导出选定的区块

@@ -25,6 +25,7 @@ menu.view.clear_cache;Önbelleği Temizle
 menu.view.clear_all_cache;Tüm Önbelleği Temizle
 menu.selection.clear;Temizle
 menu.selection.invert;Ters Çevir
+menu.selection.invert_regions;Seçili bölgeleri ters çevir
 menu.selection.copy_chunks;Kopyala 
 menu.selection.paste_chunks;Yapıştır
 menu.selection.export_chunks;Dışa Aktar

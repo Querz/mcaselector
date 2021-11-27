@@ -177,11 +177,38 @@ public class Tile {
 		return markedChunks;
 	}
 
+	public int getSelectionSize() {
+		if (marked) {
+			return 1024;
+		}
+		return markedChunks != null ? markedChunks.size() : 0;
+	}
+
 	public File getMCAFile() {
 		return FileHelper.createMCAFilePath(location);
 	}
 
 	public void setImage(Image image) {
 		this.image = image;
+	}
+
+	public void invertSelectedChunks() {
+		if (marked) {
+			marked = false;
+			return;
+		}
+		if (markedChunks != null) {
+			Point2i chunkLocation = location.regionToChunk();
+			LongOpenHashSet chunks = new LongOpenHashSet();
+			for (int x = 0; x < 32; x++) {
+				for (int z = 0; z < 32; z++) {
+					long chunk = chunkLocation.add(x, z).asLong();
+					if (!markedChunks.contains(chunk)) {
+						chunks.add(chunk);
+					}
+				}
+			}
+			markedChunks = chunks;
+		}
 	}
 }

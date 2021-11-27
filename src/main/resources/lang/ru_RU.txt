@@ -25,6 +25,7 @@ menu.view.clear_cache;Отчистить кэш
 menu.view.clear_all_cache;Отчистить весь кэш
 menu.selection.clear;Сбросить
 menu.selection.invert;Инвертировать
+menu.selection.invert_regions;Инвертировать выбранные регионы
 menu.selection.copy_chunks;Копировать чанки
 menu.selection.paste_chunks;Вставить чанки
 menu.selection.export_chunks;Экспортировать выбранные чанки

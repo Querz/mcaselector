@@ -67,6 +67,7 @@ public class OptionBar extends BorderPane {
 	private final MenuItem clearAllCache = UIFactory.menuItem(Translation.MENU_VIEW_CLEAR_ALL_CACHE);
 	private final MenuItem clear = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR);
 	private final MenuItem invert = UIFactory.menuItem(Translation.MENU_SELECTION_INVERT);
+	private final MenuItem invertRegions = UIFactory.menuItem(Translation.MENU_SELECTION_INVERT_REGIONS);
 	private final MenuItem copy = UIFactory.menuItem(Translation.MENU_SELECTION_COPY_CHUNKS);
 	private final MenuItem paste = UIFactory.menuItem(Translation.MENU_SELECTION_PASTE_CHUNKS);
 	private final MenuItem exportChunks = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_CHUNKS);
@@ -106,7 +107,7 @@ public class OptionBar extends BorderPane {
 				saveScreenshot, UIFactory.separator(),
 				clearViewCache, clearAllCache);
 		selection.getItems().addAll(
-				clear, invert, UIFactory.separator(),
+				clear, invert, invertRegions, UIFactory.separator(),
 				copy, paste, UIFactory.separator(),
 				exportChunks, delete, UIFactory.separator(),
 				importSelection, exportSelection, UIFactory.separator(),
@@ -217,6 +218,7 @@ public class OptionBar extends BorderPane {
 		clearViewCache.setOnAction(e -> CacheHelper.clearViewCache(tileMap));
 		clear.setOnAction(e -> tileMap.clearSelection());
 		invert.setOnAction(e -> tileMap.invertSelection());
+		invertRegions.setOnAction(e -> tileMap.invertRegionsWithSelection());
 		copy.setOnAction(e -> DialogHelper.copySelectedChunks(tileMap));
 		paste.setOnAction(e -> DialogHelper.pasteSelectedChunks(tileMap, primaryStage));
 		exportChunks.setOnAction(e -> DialogHelper.exportSelectedChunks(tileMap, primaryStage));
@@ -294,6 +296,7 @@ public class OptionBar extends BorderPane {
 		changeFields.setDisable(!enabled);
 		importChunks.setDisable(!enabled);
 		invert.setDisable(!enabled);
+		invertRegions.setDisable(!enabled || tileMap.getSelectedChunks() == 0);
 		paste.setDisable(!enabled || !hasValidClipboardContent(tileMap));
 		nextOverlay.setDisable(!enabled);
 		nextOverlayType.setDisable(!enabled);
@@ -317,6 +320,7 @@ public class OptionBar extends BorderPane {
 		editNBT.setDisable(selected != 1 || inverted);
 		swapChunks.setDisable(selected != 2 || inverted);
 		copy.setDisable(selected == 0 && !inverted);
+		invertRegions.setDisable(selected == 0 || inverted);
 	}
 
 	private boolean hasValidClipboardContent(TileMap tileMap) {

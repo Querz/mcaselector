@@ -25,6 +25,7 @@ menu.view.clear_cache;キャッシュをクリア
 menu.view.clear_all_cache;すべてのキャッシュをクリア
 menu.selection.clear;クリア
 menu.selection.invert;反転
+menu.selection.invert_regions;選択した領域を反転します
 menu.selection.copy_chunks;チャンクをコピー
 menu.selection.paste_chunks;チャンクをペースト
 menu.selection.export_chunks;チャンクのエクスポート
