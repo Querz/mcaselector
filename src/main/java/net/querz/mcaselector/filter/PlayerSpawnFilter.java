@@ -49,7 +49,9 @@ public class PlayerSpawnFilter extends PlayerLocationFilter {
 					continue;
 				}
 
-				playerChunks.add(new Point2i(spawnX.asInt(), spawnZ.asInt()).blockToChunk().asLong());
+				Point2i playerLocation = new Point2i(spawnX.asInt(), spawnZ.asInt());
+				playerChunks.add(playerLocation.blockToChunk().asLong());
+				playerRegions.add(playerLocation.blockToRegion().asLong());
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
