@@ -250,6 +250,7 @@ The MCA Selector currently supports the following Minecraft versions:
 | 1.15 - 1.15.2     | 2200 - 2230 |
 | 1.16 - 1.16.5     | 2566 - 2586 |
 | 1.17 - 1.17.1     | 2724 - 2730 |
+| 1.18 - ?          | 2825 - ?    |
 
 There is no guarantee for worlds generated in a Snapshot version to work, even if it is specified in the table above.
 This only represents the current development status towards the next Minecraft release. Old Snapshots of past 
@@ -433,6 +434,7 @@ The following languages are available:
 * Italian (Italy) (thanks to @valeilsimpaticone for translating)
 * Polish (Poland) (thanks to [@Marcinolak](https://github.com/Marcinolak) for translating)
 * Japanese (Japan) (thanks to [@Uguisu64J](https://github.com/Uguisu64J) for translating)
+* Turkish (Turkey) (thanks to [@EReaXe](https://github.com/EReaXe) for translating)
 
 If you would like to contribute a translation, you can find the language files in 
 [resources/lang/](https://github.com/Querz/mcaselector/tree/master/src/main/resources/lang). The files 
