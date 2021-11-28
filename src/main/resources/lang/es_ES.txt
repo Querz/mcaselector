@@ -113,6 +113,7 @@ dialog.filter_chunks.export.tooltip;Exporta todos los chunks afectados a una nue
 dialog.filter_chunks.delete;Borrar
 dialog.filter_chunks.delete.tooltip;Elimina todos los chunks afectados del mundo actual.
 dialog.filter_chunks.selection_only;Aplicar solo a la selección.
+dialog.filter_chunks.overwrite_selection;Sobrescribir selección
 dialog.filter_chunks.selection_radius;Radio de selección
 dialog.filter_chunks.selection_only.tooltip;Si este filtro solo se aplica a la selección actual.
 dialog.edit_overlays.title;Editar superposiciones

@@ -113,6 +113,7 @@ dialog.filter_chunks.export.tooltip;將所有受影響的區塊匯出到新目�
 dialog.filter_chunks.delete;刪除
 dialog.filter_chunks.delete.tooltip;從這個世界中刪除所有受影響的區塊。
 dialog.filter_chunks.selection_only;僅適用於已選擇的內容
+dialog.filter_chunks.overwrite_selection;覆蓋選擇
 dialog.filter_chunks.selection_radius;選擇半徑
 dialog.filter_chunks.selection_only.tooltip;此篩選器是否只套用於已選擇的內容。
 dialog.edit_overlays.title;編輯疊加

@@ -113,6 +113,7 @@ dialog.filter_chunks.export.tooltip;Eksportuje wszystkie wybrane przez filtr chu
 dialog.filter_chunks.delete;Usuń
 dialog.filter_chunks.delete.tooltip;Usuwa ze świata chunki wybrane przez filtr.
 dialog.filter_chunks.selection_only;Zastosuj tylko do zaznaczenia
+dialog.filter_chunks.overwrite_selection;Zastąp zaznaczenie
 dialog.filter_chunks.selection_radius;Promień zaznaczenia
 dialog.filter_chunks.selection_only.tooltip;Zaznacz jeśli chcesz filtrować tylko obecne zaznaczenie.
 dialog.edit_overlays.title;Edytuj nakładki

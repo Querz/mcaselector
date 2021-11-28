@@ -113,6 +113,7 @@ dialog.filter_chunks.export.tooltip;Exporteert alle aangepaste chunks in een nie
 dialog.filter_chunks.delete;Verwijderen
 dialog.filter_chunks.delete.tooltip;Verwijdert alle aangepaste chunks uit de huidige wereld.
 dialog.filter_chunks.selection_only;Alleen van toepassing op selectie
+dialog.filter_chunks.overwrite_selection;Selectie overschrijven
 dialog.filter_chunks.selection_radius;Selectie radius
 dialog.filter_chunks.selection_only.tooltip;Of dit filter alleen van toepassing is op de huidige selectie.
 dialog.edit_overlays.title;Bewerk overlays

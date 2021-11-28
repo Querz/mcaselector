@@ -113,6 +113,7 @@ dialog.filter_chunks.export.tooltip;Etkilenen tüm chunkları yeni bir dizine ak
 dialog.filter_chunks.delete;Sil
 dialog.filter_chunks.delete.tooltip;Geçerli dünyadan etkilenen tüm chunkları siler.
 dialog.filter_chunks.selection_only;Yalnızca seçime uygula
+dialog.filter_chunks.overwrite_selection;Seçimin üzerine yaz
 dialog.filter_chunks.selection_radius;Seçim yarıçapı
 dialog.filter_chunks.selection_only.tooltip;Bu filtre yalnızca geçerli seçim için geçerliyse.
 dialog.edit_overlays.title;Düzenle

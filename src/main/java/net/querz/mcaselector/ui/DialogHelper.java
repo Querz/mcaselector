@@ -140,7 +140,9 @@ public class DialogHelper {
 				}
 				case SELECT -> {
 					SelectionData selectionData = new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted());
-					tileMap.clearSelection();
+					if (r.isOverwriteSelection()) {
+						tileMap.clearSelection();
+					}
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS, primaryStage)
 						.showProgressBar(t -> ChunkFilterSelector.selectFilter(
 							r.getFilter(),

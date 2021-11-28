@@ -113,6 +113,7 @@ dialog.filter_chunks.export.tooltip;Exporterar alla påverkade chunks till en ny
 dialog.filter_chunks.delete;Radera
 dialog.filter_chunks.delete.tooltip;Raderar alla påverkade chunks från världen.
 dialog.filter_chunks.selection_only;Tillämpa endast till markering
+dialog.filter_chunks.overwrite_selection;Skriv över urval
 dialog.filter_chunks.selection_radius;Urvalsradie
 dialog.filter_chunks.selection_only.tooltip;Om detta filter enbart ska appliceras till den nuvarande markeringen.
 dialog.edit_overlays.title;Redigera överlägg

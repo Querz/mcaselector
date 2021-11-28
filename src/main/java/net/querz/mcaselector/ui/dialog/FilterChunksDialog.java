@@ -1,5 +1,7 @@
 package net.querz.mcaselector.ui.dialog;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
@@ -40,12 +42,15 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 	private final RadioButton export = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_EXPORT);
 	private final RadioButton delete = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_DELETE);
 	private final Label selectionOnlyLabel = UIFactory.label(Translation.DIALOG_FILTER_CHUNKS_SELECTION_ONLY);
+	private final Label overwriteSelectionLabel = UIFactory.label(Translation.DIALOG_FILTER_CHUNKS_OVERWRITE_SELECTION);
 	private final Label selectionRadiusLabel = UIFactory.label(Translation.DIALOG_FILTER_CHUNKS_SELECTION_RADIUS);
 	private final CheckBox selectionOnly = new CheckBox();
+	private final CheckBox overwriteSelection = new CheckBox();
 	private final TextField selectionRadius = new TextField();
 
 	private static int radius;
 	private static boolean applyToSelectionOnly;
+	private static boolean applyOverwriteSelection = true;
 
 	public FilterChunksDialog(Stage primaryStage) {
 		titleProperty().bind(Translation.DIALOG_FILTER_CHUNKS_TITLE.getProperty());
@@ -54,7 +59,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 		getDialogPane().getStyleClass().add("filter-dialog-pane");
 
-		setResultConverter(p -> p == ButtonType.OK ? new Result(value, getHandleType(), applyToSelectionOnly, radius) : null);
+		setResultConverter(p -> p == ButtonType.OK ? new Result(value, getHandleType(), applyToSelectionOnly, applyOverwriteSelection, radius) : null);
 
 		// apply same stylesheets to this dialog
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
@@ -72,9 +77,17 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		selectionOnly.setSelected(applyToSelectionOnly);
 		selectionOnly.setOnAction(e -> applyToSelectionOnly = selectionOnly.isSelected());
 
-		select.setOnAction(e -> selectionRadius.setDisable(!select.isSelected()));
-		export.setOnAction(e -> selectionRadius.setDisable(!select.isSelected()));
-		delete.setOnAction(e -> selectionRadius.setDisable(!select.isSelected()));
+		overwriteSelection.setSelected(applyOverwriteSelection);
+		overwriteSelection.setOnAction(e -> applyOverwriteSelection = overwriteSelection.isSelected());
+
+		EventHandler<ActionEvent> selectEnable = e -> {
+			selectionRadius.setDisable(!select.isSelected());
+			overwriteSelection.setDisable(!select.isSelected());
+		};
+
+		select.setOnAction(selectEnable);
+		export.setOnAction(selectEnable);
+		delete.setOnAction(selectEnable);
 
 		setResizable(true);
 
@@ -114,8 +127,10 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		optionBox.getStyleClass().add("filter-dialog-option-box");
 		optionBox.add(selectionOnlyLabel, 0, 0, 1, 1);
 		optionBox.add(withStackPane(selectionOnly), 1, 0, 1, 1);
-		optionBox.add(selectionRadiusLabel, 0, 1, 1, 1);
-		optionBox.add(withStackPane(selectionRadius), 1, 1, 1, 1);
+		optionBox.add(overwriteSelectionLabel, 0, 1, 1, 1);
+		optionBox.add(withStackPane(overwriteSelection), 1, 1, 1, 1);
+		optionBox.add(selectionRadiusLabel, 0, 2, 1, 1);
+		optionBox.add(withStackPane(selectionRadius), 1, 2, 1, 1);
 
 		HBox selectionBox = new HBox();
 		selectionBox.getChildren().addAll(actionBox, optionBox);
@@ -160,13 +175,15 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 		private final HandleType type;
 		private final boolean selectionOnly;
+		private final boolean overwriteSelection;
 		private final GroupFilter filter;
 		private final int radius;
 
-		public Result(GroupFilter filter, HandleType type, boolean selectionOnly, int radius) {
+		public Result(GroupFilter filter, HandleType type, boolean selectionOnly, boolean overwriteSelection, int radius) {
 			this.filter = filter;
 			this.type = type;
 			this.selectionOnly = selectionOnly;
+			this.overwriteSelection = overwriteSelection;
 			this.radius = radius;
 		}
 
@@ -180,6 +197,10 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 		public boolean isSelectionOnly() {
 			return selectionOnly;
+		}
+
+		public boolean isOverwriteSelection() {
+			return overwriteSelection;
 		}
 
 		public int getRadius() {

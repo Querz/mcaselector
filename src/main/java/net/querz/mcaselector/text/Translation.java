@@ -133,6 +133,7 @@ public enum Translation {
 	DIALOG_FILTER_CHUNKS_DELETE("dialog.filter_chunks.delete"),
 	DIALOG_FILTER_CHUNKS_DELETE_TOOLTIP("dialog.filter_chunks.delete.tooltip"),
 	DIALOG_FILTER_CHUNKS_SELECTION_ONLY("dialog.filter_chunks.selection_only"),
+	DIALOG_FILTER_CHUNKS_OVERWRITE_SELECTION("dialog.filter_chunks.overwrite_selection"),
 	DIALOG_FILTER_CHUNKS_SELECTION_RADIUS("dialog.filter_chunks.selection_radius"),
 	DIALOG_FILTER_CHUNKS_SELECTION_ONLY_TOOLTIP("dialog.filter_chunks.selection_only.tooltip"),
 	DIALOG_EDIT_OVERLAYS_TITLE("dialog.edit_overlays.title"),

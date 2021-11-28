@@ -113,6 +113,7 @@ dialog.filter_chunks.export.tooltip;Экспортирует все подвер
 dialog.filter_chunks.delete;Удалить
 dialog.filter_chunks.delete.tooltip;Удаляет все подверженные чанки из этого мира.
 dialog.filter_chunks.selection_only;Применить только к выбранным
+dialog.filter_chunks.overwrite_selection;Перезаписать выбор
 dialog.filter_chunks.selection_radius;Радиус выбора
 dialog.filter_chunks.selection_only.tooltip;Если этот фильтр должен применяться только к выбранным
 dialog.edit_overlays.title;Редактировать наложения
