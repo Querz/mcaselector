@@ -153,14 +153,14 @@ public final class JobHandler {
 
 		Debug.dumpf("cancelled %d jobs in process queue", cancelledProcessJobs);
 		Debug.dumpf("cancelled %d jobs in save queue", cancelledSaveJobs);
-		Debug.dumpf("canceleld %d jobs in parser queue", cancelledParseJobs);
+		Debug.dumpf("cancelled %d jobs in parser queue", cancelledParseJobs);
 	}
 
 	public static void cancelParserQueue() {
 		if (parseExecutor != null) {
 			synchronized (parseExecutor.getQueue()) {
 				parseExecutor.getQueue().removeIf(j -> {
-					((Job) j).cancel();
+					((WrapperJob) j).cancel();
 					return true;
 				});
 			}
