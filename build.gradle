@@ -9,7 +9,7 @@ plugins {
 }
 
 group 'net.querz.mcaselector'
-version '1.17'
+version '1.17.1'
 def appName = 'MCA Selector'
 def appUrl = 'https://github.com/Querz/mcaselector'
 def appAuthor = 'Querz'
@@ -152,14 +152,6 @@ task updateReadme {
 			fileset dir: '.', includes: 'README.md'
 		}
 
-		// update TOC in README
-		ant.replaceregexp(
-				match: '<!--toc-start-->[\\s\\S]*<!--toc-end-->',
-				replace: createTOC(new File("${rootProject.projectDir}/README.md"), '<!--toc-start-->', '<!--toc-end-->', true, true),
-				flags: 'g') {
-			fileset dir: '.', includes: 'README.md'
-		}
-
 		// replace version for exe
 		if ("${version}".split("\\.").length == 2) {
 			ant.replaceregexp(
@@ -218,45 +210,6 @@ assemble.dependsOn shadowJar
 installer.dependsOn jar
 
 // ---------------------------------------------------------------------------------------------------------------------
-
-/**
- * Creates a Table Of Contents from headings in a markdown file.
- *
- * @param f  The file to be checked for headings
- * @param st The prefix to the TOC
- * @param en The suffix of the TOC
- * @param it Whether to ignore the title
- * @param is Whether to ignore the subtitle: a subtitle is a level 4 heading prefixed by ####
- * @return   The TOC as a string with prefix and suffix
- * @throws IOException If the input file could not be read
- * @throws IllegalArgumentException If the input file is not a file
- */
-static String createTOC(File f, String st, String en, boolean it, boolean is) throws IOException {
-	if (!f.isFile())
-		throw new IllegalArgumentException('file doesn\'t exist or is not a file: ' + f)
-	StringBuilder b = new StringBuilder(st + '\n' as String)
-	int l, s = 0
-	BufferedReader br = new BufferedReader(new FileReader(f))
-	try {
-		for (String n in br.lines()) {
-			String t
-			if ((t = n.trim()).startsWith('#')) {
-				for (l = 0; l < t.length() && t.charAt(l) == '#' as char; l++) {/**/}
-				s += l == 4 ? 1 : 0
-				if (t.length() == l || t.charAt(l) != ' ' as char || it && l == 1 || is && l == 4 && s == 1)
-					continue
-				for (int i = it ? 2 : 1; i < l; i++)
-					b.append('  ')
-				String x = t.substring(l + 1)
-				String k = x.toLowerCase().replaceAll('[^a-z0-9 \\-_]', '').replace(' ', '-')
-				b.append('* [').append(x).append('](#').append(k).append(')\n')
-			}
-		}
-	} finally {
-		br.close()
-	}
-	return b.append(en).toString()
-}
 
 /**
  * "Minifies" a css file by removing all comments, \n, \t and all duplicate spaces.
