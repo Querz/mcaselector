@@ -100,6 +100,15 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 			if (value.isValid()) {
 				filterQuery.setText(value.toString());
 			}
+
+			if (value.selectionOnly()) {
+				if (delete.isSelected()) {
+					select.fire();
+				}
+				delete.setDisable(true);
+			} else {
+				delete.setDisable(false);
+			}
 		});
 
 		filterQuery.setText(gf.toString());

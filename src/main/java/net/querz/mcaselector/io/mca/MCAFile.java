@@ -344,6 +344,47 @@ public abstract class MCAFile<T extends Chunk> {
 		}
 	}
 
+	public void loadBorderChunks(ByteArrayPointer ptr) throws IOException {
+		loadHeader(ptr);
+
+		// top row / bottom row
+		for (int x = 0; x < 32; x++) {
+			loadChunk(ptr, x);
+			loadChunk(ptr, x + 992);
+		}
+
+		// left row / right row
+		for (int z = 1; z < 31; z++) {
+			loadChunk(ptr, z * 32);
+			loadChunk(ptr, 31 + z * 32);
+		}
+	}
+
+	private void loadChunk(ByteArrayPointer ptr, int index) throws IOException {
+		try {
+			if (offsets[index] == 0) {
+				chunks[index] = null;
+				return;
+			}
+			ptr.seek(offsets[index] * 4096L);
+
+			Point2i origin = location.regionToChunk();
+
+			Point2i chunkLocation = origin.add(getChunkOffsetFromIndex(index));
+
+			try {
+				chunks[index] = chunkConstructor.apply(chunkLocation);
+				chunks[index].setTimestamp(timestamps[index]);
+				chunks[index].load(ptr);
+			} catch (Exception ex) {
+				chunks[index] = null;
+				Debug.dumpException("failed to load chunk at " + chunkLocation, ex);
+			}
+		} catch (ArrayIndexOutOfBoundsException ex) {
+			throw new IOException(ex);
+		}
+	}
+
 	public void saveSingleChunk(Point2i location, T chunk) throws IOException {
 		if (file.exists() && file.length() > 0) {
 			load();
@@ -484,6 +525,10 @@ public abstract class MCAFile<T extends Chunk> {
 
 	public T getChunk(int index) {
 		return chunks[index];
+	}
+
+	public boolean hasChunkIndex(Point2i location) {
+		return offsets[getChunkIndex(location)] != 0;
 	}
 
 	public void setChunkAt(Point2i location, T chunk) {

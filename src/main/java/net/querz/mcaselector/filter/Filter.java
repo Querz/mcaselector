@@ -56,6 +56,12 @@ public abstract class Filter<T> implements Serializable {
 		return parent;
 	}
 
+	public void resetTempData() {}
+
+	public boolean selectionOnly() {
+		return false;
+	}
+
 	public abstract T getFilterValue();
 
 	public abstract void setFilterValue(String raw);

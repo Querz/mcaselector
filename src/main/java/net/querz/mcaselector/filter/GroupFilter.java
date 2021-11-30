@@ -221,4 +221,21 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 		clone.children = cloneChildren;
 		return clone;
 	}
+
+	@Override
+	public void resetTempData() {
+		for (Filter<?> child : children) {
+			child.resetTempData();
+		}
+	}
+
+	@Override
+	public boolean selectionOnly() {
+		for (Filter<?> child : children) {
+			if (child.selectionOnly()) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

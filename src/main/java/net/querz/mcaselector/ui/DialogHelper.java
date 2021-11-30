@@ -100,6 +100,7 @@ public class DialogHelper {
 									t,
 									false
 								));
+							r.getFilter().resetTempData();
 							if (r.isSelectionOnly()) {
 								CacheHelper.clearSelectionCache(tileMap);
 							} else {
@@ -132,6 +133,7 @@ public class DialogHelper {
 										t,
 										false
 									));
+								r.getFilter().resetTempData();
 							}
 						});
 					} else {
@@ -152,6 +154,7 @@ public class DialogHelper {
 								tileMap.addMarkedChunks(selection);
 								tileMap.draw();
 							}), t, false));
+					r.getFilter().resetTempData();
 				}
 				default -> Debug.dump("i have no idea how you got no selection there...");
 			}

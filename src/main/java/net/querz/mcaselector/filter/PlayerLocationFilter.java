@@ -209,4 +209,13 @@ public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.Player
 	public String toString() {
 		return "PlayerLocation " + getComparator().getQueryString() + " \"" + getRawValue().replace("\\", "\\\\") + "\"";
 	}
+
+	@Override
+	public void resetTempData() {
+		synchronized (lock) {
+			playerChunks.clear();
+			playerRegions.clear();
+			loaded.set(false);
+		}
+	}
 }
