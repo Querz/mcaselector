@@ -53,5 +53,5 @@ Minecraft releases are not officially supported.
 ---
 ## Sponsoring
 
-| <a href="https://raw.githubusercontent.com/wiki/Querz/mcaselector/images/Sponsor/icon-intellij-idea.png"></a> | IntelliJ IDEA Ultimate was sponsored by [JetBrains](https://jb.gg/OpenSource) through their Open Source program. |
+| <a href="https://jb.gg/OpenSource"><img width="64" alt="IntelliJ IDEA Logo" src="https://raw.githubusercontent.com/wiki/Querz/mcaselector/images/Sponsor/icon-intellij-idea.png"></a> | IntelliJ IDEA Ultimate was sponsored by [JetBrains](https://jb.gg/OpenSource) through their Open Source program. |
 | --- | --- |
