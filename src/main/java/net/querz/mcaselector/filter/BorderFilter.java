@@ -36,13 +36,13 @@ public class BorderFilter extends IntFilter {
 	protected Integer getNumber(ChunkData data) {
 		// if there is no data, we don't have to do anything
 		if (data.getRegion() == null || data.getRegion().getData() == null) {
-			return 5;
+			return 9;
 		}
 
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
 		StringTag tag = chunkFilter.getStatus(data.getRegion().getData());
 		if (tag == null || !tag.getValue().equals("full")) {
-			return 5;
+			return 9;
 		}
 
 		int count = 0;
@@ -52,81 +52,125 @@ public class BorderFilter extends IntFilter {
 		RegionMCAFile self = getRegionHeader(location.chunkToRegion());
 		if (self == null) {
 			// shouldn't happen
-			System.out.println("shouldn't happen");
-			return 5;
+			return 9;
 		}
 
-		boolean print = location.equals(new Point2i(-15, 28));
-		if (print) {
-			System.out.println("absolute: " + location);
-			System.out.println("relative: " + relative);
-		}
+		RegionMCAFile mcaFileTop = null;
+		RegionMCAFile mcaFileRight = null;
+		RegionMCAFile mcaFileBottom = null;
+		RegionMCAFile mcaFileLeft = null;
+		RegionMCAFile mcaFileTopLeft = null;
+		RegionMCAFile mcaFileTopRight = null;
+		RegionMCAFile mcaFileBottomRight = null;
+		RegionMCAFile mcaFileBottomLeft = null;
 
 		// check if this chunk is at the left-most border of this region
-		if (relative.getX() % 32 == 0) {
+		if (relative.getX() == 0) {
 			Point2i left = location.add(-1, 0);
-			RegionMCAFile regionMCAFile = getRegionHeader(left.chunkToRegion());
-			if (regionMCAFile == null || !regionMCAFile.hasChunkIndex(left)) {
-				if (print) {
-					System.out.println("empty chunk left");
-				}
-				count++;
+			mcaFileLeft = getRegionHeader(left.chunkToRegion());
+
+			if (relative.getZ() == 0) {
+				Point2i topLeft = location.add(-1, -1);
+				mcaFileTopLeft = getRegionHeader(topLeft.chunkToRegion());
+			} else {
+				mcaFileTopLeft = mcaFileLeft;
 			}
-		} else if (!self.hasChunkIndex(location.add(-1, 0))) {
-			if (print) {
-				System.out.println("empty chunk left (self)");
-			}
-			count++;
 		}
 
 		// check if this chunk is at the right-most border of this region
-		if (relative.getX() % 32 == 31) {
+		if (relative.getX() == 31) {
 			Point2i right = location.add(1, 0);
-			RegionMCAFile regionMCAFile = getRegionHeader(right.chunkToRegion());
-			if (regionMCAFile == null || !regionMCAFile.hasChunkIndex(right)) {
-				if (print) {
-					System.out.println("empty chunk right");
-				}
-				count++;
+			mcaFileRight = getRegionHeader(right.chunkToRegion());
+
+			if (relative.getZ() == 31) {
+				Point2i bottomRight = location.add(1, 1);
+				mcaFileBottomRight = getRegionHeader(bottomRight.chunkToRegion());
+			} else {
+				mcaFileBottomRight = mcaFileRight;
 			}
-		} else if (!self.hasChunkIndex(location.add(1, 0))) {
-			if (print) {
-				System.out.println("empty chunk right (self)");
-			}
-			count++;
 		}
 
 		// check if this chunk is at the top-most border of this region
-		if (relative.getZ() % 32 == 0) {
+		if (relative.getZ() == 0) {
 			Point2i top = location.add(0, -1);
-			RegionMCAFile regionMCAFile = getRegionHeader(top.chunkToRegion());
-			if (regionMCAFile == null || !regionMCAFile.hasChunkIndex(top)) {
-				if (print) {
-					System.out.println("empty chunk top");
-				}
-				count++;
+			mcaFileTop = getRegionHeader(top.chunkToRegion());
+
+			if (relative.getX() == 31) {
+				Point2i topRight = location.add(1, -1);
+				mcaFileTopRight = getRegionHeader(topRight.chunkToRegion());
+			} else {
+				mcaFileTopRight = mcaFileTop;
 			}
-		} else if (!self.hasChunkIndex(location.add(0, -1))) {
-			if (print) {
-				System.out.println("empty chunk top (self)");
+		} else {
+			mcaFileTop = self;
+			if (relative.getX() != 31) {
+				mcaFileTopRight = self;
+			} else {
+				mcaFileTopRight = mcaFileRight;
 			}
-			count++;
 		}
 
 		// check if this chunk is at the bottom-most border of this region
-		if (relative.getZ() % 32 == 31) {
+		if (relative.getZ() == 31) {
 			Point2i bottom = location.add(0, 1);
-			RegionMCAFile regionMCAFile = getRegionHeader(bottom.chunkToRegion());
-			if (regionMCAFile == null || !regionMCAFile.hasChunkIndex(bottom)) {
-				if (print) {
-					System.out.println("empty chunk bottom");
-				}
-				count++;
+			mcaFileBottom = getRegionHeader(bottom.chunkToRegion());
+
+			if (relative.getX() == 0) {
+				Point2i bottomLeft = location.add(-1, 1);
+				mcaFileBottomLeft = getRegionHeader(bottomLeft.chunkToRegion());
+			} else {
+				mcaFileBottomLeft = mcaFileBottom;
 			}
-		} else if (!self.hasChunkIndex(location.add(0, 1))) {
-			if (print) {
-				System.out.println("empty chunk bottom (self)");
+		} else {
+			mcaFileBottom = self;
+			if (relative.getX() != 0) {
+				mcaFileBottomLeft = self;
+			} else {
+				mcaFileBottomLeft = mcaFileLeft;
 			}
+		}
+
+		if (relative.getX() != 0){
+			mcaFileLeft = self;
+			if (relative.getZ() != 0) {
+				mcaFileTopLeft = self;
+			} else {
+				mcaFileTopLeft = mcaFileTop;
+			}
+		}
+
+		if (relative.getX() != 31) {
+			mcaFileRight = self;
+			if (relative.getZ() != 31) {
+				mcaFileBottomRight = self;
+			} else {
+				mcaFileBottomRight = mcaFileBottom;
+			}
+		}
+
+		if (mcaFileTop == null || !mcaFileTop.hasChunkIndex(location.add(0, -1))) {
+			count++;
+		}
+		if (mcaFileRight == null || !mcaFileRight.hasChunkIndex(location.add(1, 0))) {
+			count++;
+		}
+		if (mcaFileBottom == null || !mcaFileBottom.hasChunkIndex(location.add(0, 1))) {
+			count++;
+		}
+		if (mcaFileLeft == null || !mcaFileLeft.hasChunkIndex(location.add(-1, 0))) {
+			count++;
+		}
+
+		if (mcaFileTopLeft == null || !mcaFileTopLeft.hasChunkIndex(location.add(-1, -1))) {
+			count++;
+		}
+		if (mcaFileTopRight == null || !mcaFileTopRight.hasChunkIndex(location.add(1, -1))) {
+			count++;
+		}
+		if (mcaFileBottomRight == null || !mcaFileBottomRight.hasChunkIndex(location.add(1, 1))) {
+			count++;
+		}
+		if (mcaFileBottomLeft == null || !mcaFileBottomLeft.hasChunkIndex(location.add(-1, 1))) {
 			count++;
 		}
 
