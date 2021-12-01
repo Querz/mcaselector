@@ -103,6 +103,7 @@ public class DialogHelper {
 							r.getFilter().resetTempData();
 							if (r.isSelectionOnly()) {
 								CacheHelper.clearSelectionCache(tileMap);
+								tileMap.clear();
 							} else {
 								CacheHelper.clearAllCache(tileMap);
 							}
@@ -159,6 +160,7 @@ public class DialogHelper {
 				default -> Debug.dump("i have no idea how you got no selection there...");
 			}
 		});
+		tileMap.draw();
 	}
 
 	public static void quit(TileMap tileMap, Stage primaryStage) {
