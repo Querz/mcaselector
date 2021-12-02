@@ -221,7 +221,7 @@ public final class ParamExecutor {
 		FieldChanger.changeNBTFields(fields, force, selection, progress, true);
 	}
 
-	private void cache(FutureTask<Boolean> future) throws IOException {
+	private void cache(FutureTask<Boolean> future) throws Exception {
 		Config.setWorldDirs(parseWorldDirectories("region", "poi", "entities"));
 		if (!HeadlessHelper.hasJavaFX()) {
 			throw new IOException("no JavaFX installation found");
@@ -231,13 +231,15 @@ public final class ParamExecutor {
 		Config.setCacheDir(output);
 		Integer zoomLevel = parseZoomLevel();
 
+		HeadlessJFX.launch();
+
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(future);
 
 		CacheHelper.forceGenerateCache(zoomLevel, progress);
 	}
 
-	private void image(FutureTask<Boolean> future) throws IOException {
+	private void image(FutureTask<Boolean> future) throws Exception {
 		Config.setWorldDirs(parseWorldDirectories("region", "poi", "entities"));
 		if (!HeadlessHelper.hasJavaFX()) {
 			throw new IOException("no JavaFX installation found");
@@ -251,6 +253,8 @@ public final class ParamExecutor {
 			throw new IOException(String.format("dimensions are too large to generate an image: %dx%d",
 					info.getSelectionInfo().getWidth() * 16, info.getSelectionInfo().getHeight() * 16));
 		}
+
+		HeadlessJFX.launch();
 
 		DataProperty<int[]> pixels = new DataProperty<>();
 		DataProperty<IOException> saveException = new DataProperty<>();
