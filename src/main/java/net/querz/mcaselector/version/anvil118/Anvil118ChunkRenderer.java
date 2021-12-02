@@ -61,8 +61,11 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 				//loop over sections
 				boolean waterDepth = false;
 				for (int i = palettes.length - (24 - (absHeight >> 4)); i >= 0; i--) {
-					long[] blockStates = blockStatesArray[i];
 					ListTag<CompoundTag> palette = palettes[i];
+					if (palette == null) {
+						continue;
+					}
+					long[] blockStates = blockStatesArray[i];
 
 					int sectionHeight = (i - 4) * Tile.CHUNK_SIZE;
 
@@ -261,8 +264,11 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 				// loop over sections
 				for (int i = palettes.length - (24 - (absHeight >> 4)); i >= 0; i--) {
-					long[] blockStates = blockStatesArray[i];
 					ListTag<CompoundTag> palette = palettes[i];
+					if (palette == null) {
+						continue;
+					}
+					long[] blockStates = blockStatesArray[i];
 
 					int sectionHeight = (i - 4) * Tile.CHUNK_SIZE;
 
