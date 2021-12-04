@@ -42,7 +42,7 @@ menu.tools.swap_chunks;청크 교환
 menu.tools.edit_overlays;오버레이 수정
 menu.tools.next_overlay;다음 오버레이
 menu.tools.next_overlay_type;다음 오버레이 타입
-dialog.select_world.title;Select Dimension
+dialog.select_world.title;월드 선택
 dialog.settings.title;설정
 dialog.settings.global.language;언어
 dialog.settings.global.language.language;언어
@@ -162,7 +162,7 @@ dialog.progress.title.exporting_filtered_chunks;필터링된 청크를 내보내
 dialog.progress.title.selecting_filtered_chunks;필터링된 청크를 선택 중...
 dialog.progress.title.changing_nbt_data;NBT 데이터를 변경하는 중 입니다....
 dialog.progress.title.saving_chunk;청크를 저장하는 중입니다...
-dialog.error.button.copy_to_clipboard;복사하기
+dialog.error.button.copy_to_clipboard;클립보드에 복사하기
 dialog.error.title;오류
 dialog.error.header;오류가 발생하였습니다.
 dialog.error.copied_to_clipboard;클립보드에 복사되었습니다!
