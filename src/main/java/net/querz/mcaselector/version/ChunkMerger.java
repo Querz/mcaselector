@@ -42,7 +42,7 @@ public interface ChunkMerger {
 		ListTag<ListTag<?>> sourceList = Helper.tagFromLevelFromRoot(source, name);
 		ListTag<ListTag<?>> destinationList = Helper.tagFromLevelFromRoot(destination, name, sourceList);
 
-		if (sourceList.size() != destinationList.size()) {
+		if (sourceList == null || destinationList == null || sourceList.size() != destinationList.size()) {
 			return;
 		}
 
