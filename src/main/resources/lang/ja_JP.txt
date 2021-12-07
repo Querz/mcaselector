@@ -25,7 +25,7 @@ menu.view.clear_cache;キャッシュをクリア
 menu.view.clear_all_cache;すべてのキャッシュをクリア
 menu.selection.clear;クリア
 menu.selection.invert;反転
-menu.selection.invert_regions;選択した領域を反転します
+menu.selection.invert_regions;選択範囲を反転する
 menu.selection.copy_chunks;チャンクをコピー
 menu.selection.paste_chunks;チャンクをペースト
 menu.selection.export_chunks;チャンクのエクスポート
@@ -38,7 +38,7 @@ menu.tools.import_chunks;チャンクのインポート
 menu.tools.filter_chunks;フィルター
 menu.tools.change_fields;フィールドを変更
 menu.tools.edit_nbt;NBTを編集
-menu.tools.swap_chunks;チャンクを交換
+menu.tools.swap_chunks;チャンクを入れ替える
 menu.tools.edit_overlays;オーバーレイ
 menu.tools.next_overlay;次のオーバーレイ
 menu.tools.next_overlay_type;次のオーバーレイのタイプ
@@ -77,7 +77,7 @@ dialog.settings.world.paths;パス
 dialog.settings.world.paths.poi;POI
 dialog.settings.world.paths.entities;エンティティ
 dialog.settings.rendering.layers.render_height;描画する高さ
-dialog.settings.rendering.layers.render_layer_only;レイヤーのみを描画する
+dialog.settings.rendering.layers.render_layer_only;この高さのみを描画する
 dialog.settings.rendering.layers;レイヤー
 dialog.settings.rendering.layers.render_caves;洞窟を描画する
 dialog.goto.title;入力した座標に移動
@@ -113,7 +113,7 @@ dialog.filter_chunks.export.tooltip;当てはまるチャンクを新しいデ�
 dialog.filter_chunks.delete;削除
 dialog.filter_chunks.delete.tooltip;当てはまるチャンクをワールドから削除します
 dialog.filter_chunks.selection_only;選択範囲のみに適用
-dialog.filter_chunks.overwrite_selection;選択を上書きする
+dialog.filter_chunks.overwrite_selection;選択範囲を上書きする
 dialog.filter_chunks.selection_radius;選択範囲の半径
 dialog.filter_chunks.selection_only.tooltip;このフィルターを現在の選択範囲のみに適用する必要がある場合
 dialog.edit_overlays.title;オーバレイ

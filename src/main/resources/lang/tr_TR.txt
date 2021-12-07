@@ -1,6 +1,6 @@
 status.region;bölge
 status.chunk;chunk
-status.block;blok
+status.block;konum
 status.selected;seçildi
 status.queue;sıra
 status.total;toplam
@@ -29,7 +29,7 @@ menu.selection.invert_regions;Seçili bölgeleri ters çevir
 menu.selection.copy_chunks;Kopyala 
 menu.selection.paste_chunks;Yapıştır
 menu.selection.export_chunks;Dışa Aktar
-menu.selection.delete_chunks;Sil
+menu.selection.delete_chunks;Seçilen Chunkları Sil
 menu.selection.import_selection;Seçimi İçe Aktar
 menu.selection.export_selection;Seçimi Dışa Aktar
 menu.selection.export_image;Resim olarak dışa aktar
@@ -46,9 +46,9 @@ dialog.select_world.title;Boyut Seç
 dialog.settings.title;Ayarlar
 dialog.settings.global.language;Dil
 dialog.settings.global.language.language;Dil
-dialog.settings.processing.process.process_threads;İşlem Konuları
-dialog.settings.processing.process;İşlem
-dialog.settings.processing.process.write_threads;Konu Yaz
+dialog.settings.processing.process.process_threads;Process threads
+dialog.settings.processing.process;Process
+dialog.settings.processing.process.write_threads;Write threads
 dialog.settings.processing.files.max_files;Maksimum Dosya
 dialog.settings.global.selection.region_color;Bölge Rengi
 dialog.settings.global.selection.chunk_color;Chunk Rengi
@@ -61,12 +61,12 @@ dialog.settings.rendering.smooth.smooth_rendering;Pürüzsüz işleme
 dialog.settings.rendering.smooth.smooth_overlays;Pürüzsüz kaplama
 dialog.settings.rendering.background.background_pattern;Arka plan deseni
 dialog.settings.rendering.background;Arka plan
-dialog.settings.global.misc.mc_saves_dir;MC dir kaydet
+dialog.settings.global.misc.mc_saves_dir;Varsayılan Dünya Konumu
 dialog.settings.global.misc.print_debug;Hata ayıklama mesajlarını göster
 dialog.settings.global.misc.show_log_file;Log dosyalarını göster
 dialog.settings.reset;Sıfırla
 dialog.settings.tab_global;Küresel
-dialog.settings.tab_processing;İşelem
+dialog.settings.tab_processing;İşlem
 dialog.settings.tab_rendering;Render
 dialog.settings.tab_world;Dünya
 dialog.settings.global.misc;Çeşitli
@@ -74,7 +74,7 @@ dialog.settings.processing.files;Dosyalar
 dialog.settings.rendering.smooth;Yumuşak
 dialog.settings.global.selection;Seçim
 dialog.settings.world.paths;Yollar
-dialog.settings.world.paths.poi;POI
+dialog.settings.world.paths.poi;İlgi Konusu
 dialog.settings.world.paths.entities;Varlıklar
 dialog.settings.rendering.layers.render_height;Render Yüksekliği
 dialog.settings.rendering.layers.render_layer_only;Yalnızca Katmanı Renderla
