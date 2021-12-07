@@ -452,8 +452,6 @@ public final class Config {
 				Config.overlays = overlays;
 			}
 		}
-
-		Debug.dump(asString());
 	}
 
 	public static void exportConfig() {

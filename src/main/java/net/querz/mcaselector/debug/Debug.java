@@ -245,6 +245,7 @@ public final class Debug {
 		Debug.dumpf("java.version:                 %s", System.getProperty("java.version"));
 		Debug.dumpf("java.vm.specification.vendor: %s", System.getProperty("java.vm.specification.vendor"));
 		Debug.dumpf("jvm.max.mem:                  %d", Runtime.getRuntime().maxMemory());
+		Debug.dump(Config.asString());
 	}
 
 	public static void flushAndCloseLogWriter() {
