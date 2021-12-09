@@ -14,7 +14,7 @@ def appName = 'MCA Selector'
 def appUrl = 'https://github.com/Querz/mcaselector'
 def appAuthor = 'Querz'
 
-sourceCompatibility = 16
+sourceCompatibility = 17
 
 idea {
 	module.downloadSources = true
