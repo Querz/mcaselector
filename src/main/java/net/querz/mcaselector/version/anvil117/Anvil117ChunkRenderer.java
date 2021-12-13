@@ -19,11 +19,6 @@ public class Anvil117ChunkRenderer implements ChunkRenderer {
 
 		CompoundTag level = Helper.tagFromCompound(root, "Level");
 
-		String status = Helper.stringFromCompound(level, "Status");
-		if (status == null || "empty".equals(status)) {
-			return;
-		}
-
 		int absHeight = height + 64;
 
 		@SuppressWarnings("unchecked")
@@ -114,11 +109,6 @@ public class Anvil117ChunkRenderer implements ChunkRenderer {
 
 		CompoundTag level = Helper.tagFromCompound(root, "Level");
 
-		String status = Helper.stringFromCompound(level, "Status");
-		if (status == null || "empty".equals(status)) {
-			return;
-		}
-
 		CompoundTag section = null;
 		for (CompoundTag s : sections) {
 			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
@@ -169,11 +159,6 @@ public class Anvil117ChunkRenderer implements ChunkRenderer {
 		}
 
 		CompoundTag level = Helper.tagFromCompound(root, "Level");
-
-		String status = Helper.stringFromCompound(level, "Status");
-		if (status == null || "empty".equals(status)) {
-			return;
-		}
 
 		int absHeight = height + 64;
 

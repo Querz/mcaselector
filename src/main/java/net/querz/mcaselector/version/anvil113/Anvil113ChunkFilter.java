@@ -1,6 +1,6 @@
 package net.querz.mcaselector.version.anvil113;
 
-import net.querz.mcaselector.io.BiomeRegistry;
+import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.math.Bits;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
@@ -510,8 +510,15 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 	}
 
 	@Override
-	public CompoundTag getStructures(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "Structures");
+	public CompoundTag getStructureReferences(CompoundTag data) {
+		CompoundTag structures = Helper.tagFromLevelFromRoot(data, "Structures");
+		return Helper.tagFromCompound(structures, "References");
+	}
+
+	@Override
+	public CompoundTag getStructureStarts(CompoundTag data) {
+		CompoundTag structures = Helper.tagFromLevelFromRoot(data, "Structures");
+		return Helper.tagFromCompound(structures, "Starts");
 	}
 
 	@Override

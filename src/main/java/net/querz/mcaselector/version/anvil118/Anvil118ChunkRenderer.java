@@ -23,11 +23,6 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			return;
 		}
 
-		StringTag status = LegacyHelper.getStatus(root, dataVersion);
-		if (status == null || "empty".equals(status.getValue())) {
-			return;
-		}
-
 		int absHeight = height + 64;
 
 		@SuppressWarnings("unchecked")
@@ -143,11 +138,6 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			return;
 		}
 
-		StringTag status = LegacyHelper.getStatus(root, dataVersion);
-		if (status == null || "empty".equals(status.getValue())) {
-			return;
-		}
-
 		CompoundTag section = null;
 		for (CompoundTag s : sections) {
 			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
@@ -221,11 +211,6 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 		ListTag<CompoundTag> sections = LegacyHelper.getSections(root, dataVersion);
 		if (sections == null) {
-			return;
-		}
-
-		StringTag status = LegacyHelper.getStatus(root, dataVersion);
-		if (status == null || "empty".equals(status.getValue())) {
 			return;
 		}
 

@@ -1,32 +1,15 @@
 package net.querz.mcaselector.filter;
 
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.io.registry.StructureRegistry;
 import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.Tag;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 
 public class StructureFilter extends TextFilter<List<String>> {
-
-	private static final Map<String, String> validNames = new HashMap<>();
-
-	static {
-		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Objects.requireNonNull(StructureFilter.class.getClassLoader().getResourceAsStream("mapping/all_structures.txt"))))) {
-			String line;
-			while ((line = bis.readLine()) != null) {
-				validNames.put(line.toLowerCase(), line);
-			}
-		} catch (IOException ex) {
-			Debug.dumpException("error reading mapping/all_structures.txt", ex);
-		}
-	}
 
 	public StructureFilter() {
 		this(Operator.AND, Comparator.CONTAINS, null);
@@ -43,18 +26,14 @@ public class StructureFilter extends TextFilter<List<String>> {
 			return false;
 		}
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		CompoundTag structures = chunkFilter.getStructures(data.getRegion().getData());
-		if (structures == null) {
-			return false;
-		}
-		CompoundTag references = structures.getCompoundTag("References");
+		CompoundTag references = chunkFilter.getStructureReferences(data.getRegion().getData());
 		if (references == null) {
 			return false;
 		}
 		for (String name : value) {
 			Tag<?> structure = references.get(name);
 			if (structure == null || structure.valueToString().equals("[]")) {
-				structure = references.get(validNames.get(name));
+				structure = references.get(StructureRegistry.getAltName(name));
 				if (structure == null || structure.valueToString().equals("[]")) {
 					return false;
 				}
@@ -74,11 +53,7 @@ public class StructureFilter extends TextFilter<List<String>> {
 			return false;
 		}
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		CompoundTag structures = chunkFilter.getStructures(data.getRegion().getData());
-		if (structures == null) {
-			return false;
-		}
-		CompoundTag references = structures.getCompoundTag("References");
+		CompoundTag references = chunkFilter.getStructureReferences(data.getRegion().getData());
 		if (references == null) {
 			return false;
 		}
@@ -87,7 +62,7 @@ public class StructureFilter extends TextFilter<List<String>> {
 			if (refs != null && refs.length > 0) {
 				return true;
 			}
-			refs = ValidationHelper.silent(() -> references.getLongArray(validNames.get(name)), null);
+			refs = ValidationHelper.silent(() -> references.getLongArray(StructureRegistry.getAltName(name)), null);
 			if (refs != null && refs.length > 0) {
 				return true;
 			}
@@ -104,7 +79,7 @@ public class StructureFilter extends TextFilter<List<String>> {
 		} else {
 			for (int i = 0; i < rawStructureNames.length; i++) {
 				String name = rawStructureNames[i].toLowerCase();
-				if (!validNames.containsKey(rawStructureNames[i]) && (!validNames.containsKey(name) || !validNames.get(name).equals(rawStructureNames[i]))) {
+				if (!StructureRegistry.isValidName(rawStructureNames[i])) {
 					if (name.startsWith("'") && name.endsWith("'") && name.length() >= 2 && !name.contains("\"")) {
 						rawStructureNames[i] = name.substring(1, name.length() - 1);
 						continue;

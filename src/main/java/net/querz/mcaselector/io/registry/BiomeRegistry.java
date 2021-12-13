@@ -1,4 +1,4 @@
-package net.querz.mcaselector.io;
+package net.querz.mcaselector.io.registry;
 
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.filter.BiomeFilter;

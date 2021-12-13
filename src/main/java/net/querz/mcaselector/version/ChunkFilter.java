@@ -1,6 +1,6 @@
 package net.querz.mcaselector.version;
 
-import net.querz.mcaselector.io.BiomeRegistry;
+import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.nbt.io.SNBTUtil;
 import net.querz.nbt.tag.*;
 
@@ -37,7 +37,9 @@ public interface ChunkFilter {
 
 	ListTag<CompoundTag> getTileEntities(CompoundTag data);
 
-	CompoundTag getStructures(CompoundTag data);
+	CompoundTag getStructureStarts(CompoundTag data);
+
+	CompoundTag getStructureReferences(CompoundTag data);
 
 	ListTag<CompoundTag> getSections(CompoundTag data);
 

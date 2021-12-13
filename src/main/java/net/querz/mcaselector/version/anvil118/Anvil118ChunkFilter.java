@@ -1,6 +1,6 @@
 package net.querz.mcaselector.version.anvil118;
 
-import net.querz.mcaselector.io.BiomeRegistry;
+import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.tiles.Tile;
@@ -647,12 +647,22 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 	}
 
 	@Override
-	public CompoundTag getStructures(CompoundTag data) {
+	public CompoundTag getStructureReferences(CompoundTag data) {
 		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return null;
 		}
-		return LegacyHelper.getStructures(data, dataVersion);
+		CompoundTag structures = LegacyHelper.getStructures(data, dataVersion);
+		return Helper.tagFromCompound(structures, "References");
+	}
+
+	@Override
+	public CompoundTag getStructureStarts(CompoundTag data) {
+		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		if (dataVersion == null) {
+			return null;
+		}
+		return LegacyHelper.getStructureStarts(data, dataVersion);
 	}
 
 	@Override
