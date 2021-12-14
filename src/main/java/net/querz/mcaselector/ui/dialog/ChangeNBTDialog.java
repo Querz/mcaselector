@@ -52,6 +52,8 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 		initStyle(StageStyle.UTILITY);
 
+		setResizable(true);
+
 		getDialogPane().getStyleClass().add("change-nbt-dialog-pane");
 
 		setResultConverter(p -> {
