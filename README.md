@@ -13,9 +13,9 @@
 
 **MCA Selector modifies and deletes chunks in your Minecraft world. Please make backups of your world before using.**
 
-[**Download Version 1.17.1 (Windows Installer)**](https://github.com/Querz/mcaselector/releases/download/1.17.1/MCA_Selector_Setup.exe)
+[**Download Version 1.17.2 (Windows Installer)**](https://github.com/Querz/mcaselector/releases/download/1.17.2/MCA_Selector_Setup.exe)
 
-[**Download Version 1.17.1 (Universal)**](https://github.com/Querz/mcaselector/releases/download/1.17.1/mcaselector-1.17.1.jar)
+[**Download Version 1.17.2 (Universal)**](https://github.com/Querz/mcaselector/releases/download/1.17.2/mcaselector-1.17.2.jar)
 
 ---
 

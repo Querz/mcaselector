@@ -9,7 +9,7 @@ plugins {
 }
 
 group 'net.querz.mcaselector'
-version '1.17.1'
+version '1.17.2'
 def appName = 'MCA Selector'
 def appUrl = 'https://github.com/Querz/mcaselector'
 def appAuthor = 'Querz'
