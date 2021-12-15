@@ -3,6 +3,7 @@ package net.querz.mcaselector.ui.dialog;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.application.Platform;
+import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
@@ -91,6 +92,11 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setContent(fieldView);
+		fieldView.prefWidthProperty().bind(scrollPane.widthProperty());
+		System.out.println("HELLO THERE");
+		scrollPane.widthProperty().addListener((v, o, n) -> {
+			System.out.println("fieldView width changed to: " + n);
+		});
 
 		VBox actionBox = new VBox();
 		change.setTooltip(UIFactory.tooltip(Translation.DIALOG_CHANGE_NBT_CHANGE_TOOLTIP));
@@ -162,7 +168,9 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		}
 
 		public void addField(Field<?> field) {
-			getChildren().add(new FieldCell(field, getChildren().size()));
+			FieldCell fieldCell = new FieldCell(field, getChildren().size());
+			fieldCell.prefWidthProperty().bind(widthProperty());
+			getChildren().add(fieldCell);
 		}
 
 		public void updateFields(List<Field<?>> fields) {
@@ -188,25 +196,29 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		private final Field<?> value;
 		private final TextField textField;
 
+		private static final PseudoClass valid = PseudoClass.getPseudoClass("valid");
+		private static final PseudoClass even = PseudoClass.getPseudoClass("even");
+		private static final PseudoClass odd = PseudoClass.getPseudoClass("odd");
+
 		public FieldCell(Field<?> value, int index) {
 			getStyleClass().add("field-cell");
-			getStyleClass().add("field-cell-" + (index % 2 == 0 ? "even" : "odd"));
+			if (index % 2 == 0) {
+				pseudoClassStateChanged(even, true);
+			} else {
+				pseudoClassStateChanged(odd, true);
+			}
 			this.value = value;
 			textField = new TextField();
+			textField.getStyleClass().add("field-cell-text");
 			getChildren().addAll(new Label(value.getType().toString()), textField);
 			textField.textProperty().addListener((a, o, n) -> onInput(n));
 			textField.setAlignment(Pos.CENTER);
+			textField.prefWidthProperty().bind(prefWidthProperty());
 		}
 
 		private void onInput(String newValue) {
 			boolean result = value.parseNewValue(newValue);
-			if (result) {
-				if (!textField.getStyleClass().contains("field-cell-valid")) {
-					textField.getStyleClass().add("field-cell-valid");
-				}
-			} else {
-				textField.getStyleClass().remove("field-cell-valid");
-			}
+			textField.pseudoClassStateChanged(valid, result);
 
 			StringBuilder sb = new StringBuilder();
 			boolean first = true;

@@ -751,28 +751,37 @@
 	-fx-padding: 2 5 2 5;
 }
 
-.change-nbt-dialog-pane .field-view .field-cell-even {
+.change-nbt-dialog-pane .field-view .field-cell:even {
 	-fx-background-color: -color-field-cell-even;
 }
 
-.change-nbt-dialog-pane .field-view .field-cell-odd {
+.change-nbt-dialog-pane .field-view .field-cell:odd {
 	-fx-background-color: -color-field-cell-odd;
 }
 
 .change-nbt-dialog-pane .field-view .field-cell .label {
 	-fx-text-fill: -color-text-light;
-	-fx-pref-width: 130px;
-	-fx-min-width: 70px;
+	-fx-pref-width: 150;
+	-fx-min-width: 150;
 }
 
-.change-nbt-dialog-pane .field-view .field-cell-valid {
+.change-nbt-dialog-pane .field-view .field-cell-text:valid {
 	-fx-background-color: -color-field-valid-background;
 	-fx-effect: dropshadow(gaussian, -color-field-valid-shadow, 4, 0, 0, 0);
 }
 
+.change-nbt-dialog-pane .field-view .field-cell-text {
+	-fx-min-width: 130;
+}
+
+
 .change-nbt-dialog-pane .scroll-pane {
-	-fx-pref-height: inherit;
-	-fx-max-height: 300;
+	-fx-pref-height: 1000;
+	-fx-max-height: 1000;
+}
+
+.change-nbt-dialog-pane {
+	-fx-pref-height: 500;
 }
 
 /*---------- IMPORT CHUNKS OPTION GRID ----------*/
