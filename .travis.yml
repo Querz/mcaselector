@@ -1,7 +1,7 @@
 dist: xenial
 language: java
 jdk:
-  - openjdk16
+  - openjdk17
 addons:
   ssh_known_hosts: deploy.querz.net
 
@@ -29,7 +29,7 @@ install:
 
   # install jdk16 with javafx
   - sh travis/jdkinstall.sh
-  - export JAVA_HOME="$HOME/jdkfx16"
+  - export JAVA_HOME="$HOME/jdkfx17"
 
   # download 7zip
   - sh travis/inno/7zipdownload.sh
