@@ -151,8 +151,12 @@ public final class CacheHelper {
 		}
 
 		File cacheVersionFile = new File(Config.getCacheDir(), "version");
-
-		String version = readVersionFromFile(cacheVersionFile);
+		String version = null;
+		if(cacheVersionFile.exists()) {
+			version = readVersionFromFile(cacheVersionFile);
+		} else {
+			Debug.dump("no cache found for this world");
+		}
 		if (!applicationVersion.equals(version)) {
 			clearAllCache(tileMap);
 		}
