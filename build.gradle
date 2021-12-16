@@ -3,6 +3,7 @@ import java.nio.file.Files
 
 plugins {
 	id 'java'
+	id 'org.openjfx.javafxplugin' version '0.0.10'
 	id 'application'
 
 	id 'com.github.johnrengelman.shadow' version '7.1.1'
@@ -19,6 +20,11 @@ def appUrl = 'https://github.com/Querz/mcaselector'
 def appAuthor = 'Querz'
 
 sourceCompatibility = 17
+
+javafx {
+	version = "$sourceCompatibility"
+	modules = ['javafx.controls', 'javafx.swing']
+}
 
 application {
 	mainClass = 'net.querz.mcaselector.Main'
