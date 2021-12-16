@@ -2,8 +2,11 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
 plugins {
-	id "com.github.johnrengelman.shadow" version "7.0.0"
 	id 'java'
+	id 'application'
+
+	id 'com.github.johnrengelman.shadow' version '7.0.0'
+
 	id 'eclipse'
 	id 'idea'
 }
@@ -16,7 +19,12 @@ def appAuthor = 'Querz'
 
 sourceCompatibility = 17
 
+application {
+	mainClass = 'net.querz.mcaselector.Main'
+}
+
 idea {
+	module.downloadJavadoc = true
 	module.downloadSources = true
 }
 
@@ -49,7 +57,7 @@ task copyRuntimeLibs(type: Copy) {
 jar {
 	archiveFileName = "${project.name}-${project.version}-min.jar"
 	manifest.attributes (
-		'Main-Class': 'net.querz.mcaselector.Main',
+		'Main-Class': application.mainClass,
 		'Application-Version': project.version,
 		'Class-Path': configurations.implementation.files.collect{"lib/$it.name"}.join(' ')
 	)
