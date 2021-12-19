@@ -233,8 +233,10 @@ public final class ImagePool {
 	}
 
 	public void discardImage(Point2i region) {
-		for (Int2ObjectMap.Entry<Long2ObjectLinkedOpenHashMap<Image>> scale : pool.int2ObjectEntrySet()) {
-			scale.getValue().remove(region.asLong());
+		synchronized (poolLock) {
+			for (Int2ObjectMap.Entry<Long2ObjectLinkedOpenHashMap<Image>> scale : pool.int2ObjectEntrySet()) {
+				scale.getValue().remove(region.asLong());
+			}
 		}
 		try {
 			cache.deleteData(region);
@@ -256,10 +258,12 @@ public final class ImagePool {
 
 	public void dumpMetrics() {
 		Debug.dumpf("ImagePool: pool1=%d, pool2=%d, pool4=%d, pool8=%d", pool.get(1).size(), pool.get(2).size(), pool.get(4).size(), pool.get(8).size());
-		for (Int2ObjectMap.Entry<Long2ObjectLinkedOpenHashMap<Image>> entry : pool.int2ObjectEntrySet()) {
-			Debug.dumpf("pool%d:", entry.getIntKey());
-			for (Long2ObjectMap.Entry<Image> cache : entry.getValue().long2ObjectEntrySet()) {
-				Debug.dumpf("  %s: %dx%d", new Point2i(cache.getLongKey()), cache.getValue() == null ? 0 : (int) cache.getValue().getWidth(),  cache.getValue() == null ? 0 : (int) cache.getValue().getHeight());
+		synchronized (poolLock) {
+			for (Int2ObjectMap.Entry<Long2ObjectLinkedOpenHashMap<Image>> entry : pool.int2ObjectEntrySet()) {
+				Debug.dumpf("pool%d:", entry.getIntKey());
+				for (Long2ObjectMap.Entry<Image> cache : entry.getValue().long2ObjectEntrySet()) {
+					Debug.dumpf("  %s: %dx%d", new Point2i(cache.getLongKey()), cache.getValue() == null ? 0 : (int) cache.getValue().getWidth(), cache.getValue() == null ? 0 : (int) cache.getValue().getHeight());
+				}
 			}
 		}
 		Debug.dump("Regions:");
@@ -270,13 +274,14 @@ public final class ImagePool {
 
 	// marks tiles whose images are in the memory cache for a given scale. used for debugging.
 	public void mark(int scale) {
-		Long2ObjectLinkedOpenHashMap<Image> scaleEntry = pool.get(scale);
-		Long2ObjectOpenHashMap<LongOpenHashSet> marked = new Long2ObjectOpenHashMap<>();
-		for (Long2ObjectMap.Entry<Image> cache : scaleEntry.long2ObjectEntrySet()) {
-			marked.put(cache.getLongKey(), null);
+		synchronized (poolLock) {
+			Long2ObjectLinkedOpenHashMap<Image> scaleEntry = pool.get(scale);
+			Long2ObjectOpenHashMap<LongOpenHashSet> marked = new Long2ObjectOpenHashMap<>();
+			for (Long2ObjectMap.Entry<Image> cache : scaleEntry.long2ObjectEntrySet()) {
+				marked.put(cache.getLongKey(), null);
+			}
+			tileMap.setMarkedChunks(marked);
+			tileMap.draw();
 		}
-
-		tileMap.setMarkedChunks(marked);
-		tileMap.draw();
 	}
 }
