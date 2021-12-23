@@ -173,7 +173,9 @@ public final class RegionImageGenerator {
 				isCached = true;
 			}
 
+			Timer t = new Timer();
 			Image image = TileImage.generateImage(cachedRegion, scale);
+			Debug.dumpf("took %s to generate image for region %s", t, tile.getLocation());
 
 			callback.accept(image, uniqueID);
 
