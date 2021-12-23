@@ -30,8 +30,8 @@ menu.selection.copy_chunks;청크 복사
 menu.selection.paste_chunks;청크 붙여넣기
 menu.selection.export_chunks;선택한 청크 내보내기
 menu.selection.delete_chunks;선택한 청크 삭제하기
-menu.selection.import_selection;선택 불러오기
-menu.selection.export_selection;선택 내보내기
+menu.selection.import_selection;.csv 에서 선택 항목 가져오기
+menu.selection.export_selection;선택 항목을 .csv 로 내보내기
 menu.selection.export_image;사진으로 내보내기
 menu.selection.clear_cache;캐시 지우기
 menu.tools.import_chunks;캐시 불러오기

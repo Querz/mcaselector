@@ -30,8 +30,8 @@ menu.selection.copy_chunks;Copia i chunk
 menu.selection.paste_chunks;Incolla i chunk
 menu.selection.export_chunks;Esporta i chunk selezionati
 menu.selection.delete_chunks;Elimina i chunk selezionati
-menu.selection.import_selection;Importa selezione
-menu.selection.export_selection;Esporta selezione
+menu.selection.import_selection;Importa selezione da .csv
+menu.selection.export_selection;Esporta selezione come .csv
 menu.selection.export_image;Esporta come immagine
 menu.selection.clear_cache;Svuota la cache
 menu.tools.import_chunks;Importa dei chunk

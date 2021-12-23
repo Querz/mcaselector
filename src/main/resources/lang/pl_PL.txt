@@ -30,8 +30,8 @@ menu.selection.copy_chunks;Kopiuj chunki
 menu.selection.paste_chunks;Wklej chunki
 menu.selection.export_chunks;Eksportuj zaznaczone chunki
 menu.selection.delete_chunks;Usuń zaznaczone chunki
-menu.selection.import_selection;Importuj zaznaczenie
-menu.selection.export_selection;Eksportuj zaznaczenie
+menu.selection.import_selection;Importuj zaznaczenie z .csv
+menu.selection.export_selection;Eksportuj zaznaczenie jako .csv
 menu.selection.export_image;Eksportuj jako obraz
 menu.selection.clear_cache;Wyczyść cache
 menu.tools.import_chunks;Importuj chunki

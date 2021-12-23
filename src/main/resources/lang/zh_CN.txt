@@ -30,8 +30,8 @@ menu.selection.copy_chunks;复制区块
 menu.selection.paste_chunks;粘贴区块
 menu.selection.export_chunks;导出选定的区块
 menu.selection.delete_chunks;删除选定的区块
-menu.selection.import_selection;导入所选内容
-menu.selection.export_selection;导出所选内容
+menu.selection.import_selection;从 .csv 导入选择
+menu.selection.export_selection;将选择导出为 .csv
 menu.selection.export_image;导出为图像
 menu.selection.clear_cache;清除缓存
 menu.tools.import_chunks;导入区块

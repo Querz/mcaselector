@@ -30,8 +30,8 @@ menu.selection.copy_chunks;Kopyala
 menu.selection.paste_chunks;Yapıştır
 menu.selection.export_chunks;Dışa Aktar
 menu.selection.delete_chunks;Seçilen Chunkları Sil
-menu.selection.import_selection;Seçimi İçe Aktar
-menu.selection.export_selection;Seçimi Dışa Aktar
+menu.selection.import_selection;Seçimi .csv'den İçe Aktar
+menu.selection.export_selection;Seçimi .csv olarak Dışa Aktar
 menu.selection.export_image;Resim olarak dışa aktar
 menu.selection.clear_cache;Önbelleği temizle
 menu.tools.import_chunks;Chunk'ı İçe Aktar

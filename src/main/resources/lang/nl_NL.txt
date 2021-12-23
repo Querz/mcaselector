@@ -30,8 +30,8 @@ menu.selection.copy_chunks;Kopiëer chunks
 menu.selection.paste_chunks;Plak chunks
 menu.selection.export_chunks;Geselecteerde chunks exporteren
 menu.selection.delete_chunks;Geselcteerde chunks verwijderen
-menu.selection.import_selection;Selectie importeren
-menu.selection.export_selection;Selectie exporteren
+menu.selection.import_selection;Selectie importeren uit .csv
+menu.selection.export_selection;Selectie exporteren als .csv
 menu.selection.export_image;Exporteer als afbeelding
 menu.selection.clear_cache;Cache wissen
 menu.tools.import_chunks;Chunks importeren

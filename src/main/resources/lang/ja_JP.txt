@@ -30,8 +30,8 @@ menu.selection.copy_chunks;チャンクをコピー
 menu.selection.paste_chunks;チャンクをペースト
 menu.selection.export_chunks;チャンクのエクスポート
 menu.selection.delete_chunks;チャンクの削除
-menu.selection.import_selection;選択範囲にインポート
-menu.selection.export_selection;選択範囲をエクスポート
+menu.selection.import_selection;.csvから選択をインポートします
+menu.selection.export_selection;選択範囲を.csvとしてエクスポート
 menu.selection.export_image;画像としてエクスポート
 menu.selection.clear_cache;キャッシュをクリア
 menu.tools.import_chunks;チャンクのインポート

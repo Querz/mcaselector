@@ -30,8 +30,8 @@ menu.selection.copy_chunks;Копировать чанки
 menu.selection.paste_chunks;Вставить чанки
 menu.selection.export_chunks;Экспортировать выбранные чанки
 menu.selection.delete_chunks;Удалить выбранные чанки
-menu.selection.import_selection;Выбрать импорт
-menu.selection.export_selection;Выбрать экспорт
+menu.selection.import_selection;Импортировать выделение из .csv
+menu.selection.export_selection;Экспортировать выделение как .csv
 menu.selection.export_image;Экспорт как изображение
 menu.selection.clear_cache;Отчистить кэш
 menu.tools.import_chunks;Импортировать чанки

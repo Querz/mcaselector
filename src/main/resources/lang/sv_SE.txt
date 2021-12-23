@@ -30,8 +30,8 @@ menu.selection.copy_chunks;Kopiera chunks
 menu.selection.paste_chunks;Klistra in chunks
 menu.selection.export_chunks;Exportera valda chunks
 menu.selection.delete_chunks;Radera valda chunks
-menu.selection.import_selection;Importera markering
-menu.selection.export_selection;Exportera markering
+menu.selection.import_selection;Importera urval från .csv
+menu.selection.export_selection;Exportera urval som .csv
 menu.selection.export_image;Exportera som bild
 menu.selection.clear_cache;Rensa cache
 menu.tools.import_chunks;Importera chunks

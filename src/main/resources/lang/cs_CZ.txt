@@ -30,8 +30,8 @@ menu.selection.copy_chunks;Kopírovat chunky
 menu.selection.paste_chunks;Vložit chunky
 menu.selection.export_chunks;Exportovat vybrané chunky
 menu.selection.delete_chunks;Smazat vybrané chunky
-menu.selection.import_selection;Importovat výběr
-menu.selection.export_selection;Exportovat výběr
+menu.selection.import_selection;Importovat výběr z .csv
+menu.selection.export_selection;Exportovat výběr jako .csv
 menu.selection.export_image;Exportovat jako obrázek
 menu.selection.clear_cache;Smazat keš
 menu.tools.import_chunks;Importovat chunky
