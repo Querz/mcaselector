@@ -82,7 +82,7 @@ public final class BiomeRegistry {
 			this(toName(id), id);
 		}
 
-		public BiomeIdentifier(String name, int id) {
+		public BiomeIdentifier(String name, Integer id) {
 			this.id = id;
 			this.name = name;
 		}
