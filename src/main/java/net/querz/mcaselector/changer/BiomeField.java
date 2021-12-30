@@ -24,7 +24,7 @@ public class BiomeField extends Field<BiomeRegistry.BiomeIdentifier> {
 		if (low.startsWith("'") && low.endsWith("'") && low.length() > 1) {
 			low = low.substring(1, low.length() - 1);
 			quoted = true;
-		} else if (!low.startsWith("minecraft:")) {
+		} else if (!low.matches("^[0-9]+$") && !low.startsWith("minecraft:")) {
 			low = "minecraft:" + low;
 		}
 
