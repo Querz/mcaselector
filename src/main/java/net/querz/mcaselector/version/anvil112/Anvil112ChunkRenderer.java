@@ -63,7 +63,7 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 
 					int startHeight;
 					if (height >> 4 == i) {
-						startHeight = Tile.CHUNK_SIZE - (16 - height % 16) - 1;
+						startHeight = Tile.CHUNK_SIZE - (16 - height % 16);
 					} else {
 						startHeight = Tile.CHUNK_SIZE - 1;
 					}
@@ -201,7 +201,7 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 
 					int startHeight;
 					if (height >> 4 == i) {
-						startHeight = Tile.CHUNK_SIZE - (16 - height % 16) - 1;
+						startHeight = Tile.CHUNK_SIZE - (16 - height % 16);
 					} else {
 						startHeight = Tile.CHUNK_SIZE - 1;
 					}
