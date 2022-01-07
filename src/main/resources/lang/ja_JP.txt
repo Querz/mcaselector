@@ -18,6 +18,7 @@ menu.file.quit;終了
 menu.view.reload;リロード
 menu.view.chunk_grid;チャンクの境界
 menu.view.region_grid;リージョンの境界
+menu.view.coordinates;コーディネート
 menu.view.goto;移動
 menu.view.reset_zoom;拡大率をリセット
 menu.view.save_screenshot;スクリーンショットを保存

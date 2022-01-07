@@ -18,6 +18,7 @@ menu.file.quit;退出
 menu.view.reload;重新加载
 menu.view.chunk_grid;区块网格
 menu.view.region_grid;区域网格
+menu.view.coordinates;坐标
 menu.view.goto;转到
 menu.view.reset_zoom;重设缩放
 menu.view.save_screenshot;保存截图

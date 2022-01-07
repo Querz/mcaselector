@@ -18,6 +18,7 @@ menu.file.quit;Quit
 menu.view.reload;Reload
 menu.view.chunk_grid;Chunk Grid
 menu.view.region_grid;Region Grid
+menu.view.coordinates;Coordinates
 menu.view.goto;Goto
 menu.view.reset_zoom;Reset zoom
 menu.view.save_screenshot;Save screenshot

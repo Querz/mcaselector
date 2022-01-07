@@ -18,6 +18,7 @@ menu.file.quit;Esci
 menu.view.reload;Ricaricare
 menu.view.chunk_grid;Griglia dei chunk
 menu.view.region_grid;Griglia della regione
+menu.view.coordinates;Coordinate
 menu.view.goto;Vai a
 menu.view.reset_zoom;Ripristina lo zoom
 menu.view.save_screenshot;Salva screenshot

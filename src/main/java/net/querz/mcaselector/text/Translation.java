@@ -38,6 +38,7 @@ public enum Translation {
 	MENU_VIEW_RELOAD("menu.view.reload"),
 	MENU_VIEW_CHUNK_GRID("menu.view.chunk_grid"),
 	MENU_VIEW_REGION_GRID("menu.view.region_grid"),
+	MENU_VIEW_COORDINATES("menu.view.coordinates"),
 	MENU_VIEW_GOTO("menu.view.goto"),
 	MENU_VIEW_RESET_ZOOM("menu.view.reset_zoom"),
 	MENU_VIEW_SAVE_SCREENSHOT("menu.view.save_screenshot"),

@@ -18,6 +18,7 @@ menu.file.quit;Avsluta
 menu.view.reload;Ladda om
 menu.view.chunk_grid;Chunkrutnät
 menu.view.region_grid;Regionrutnät
+menu.view.coordinates;Koordinater
 menu.view.goto;Gå till
 menu.view.reset_zoom;Återställ zoom
 menu.view.save_screenshot;Spara skärmdump

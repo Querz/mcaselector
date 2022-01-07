@@ -18,6 +18,7 @@ menu.file.quit;Salir
 menu.view.reload;Recargar
 menu.view.chunk_grid;Cuadrícula de Chunks
 menu.view.region_grid;Cuadrícula de Regiones
+menu.view.coordinates;Coordenadas
 menu.view.goto;Ir a
 menu.view.reset_zoom;Restablecer zoom
 menu.view.save_screenshot;Guardar captura de pantalla

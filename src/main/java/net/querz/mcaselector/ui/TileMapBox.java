@@ -53,6 +53,19 @@ public class TileMapBox extends HBox {
 		}
 	};
 
+	private final StyleableObjectProperty<Color> coordinatesColorProperty = new SimpleStyleableObjectProperty<>(coordinatesColorMetaData, this, "coordinatesColor");
+	private static final CssMetaData<TileMapBox, Color> coordinatesColorMetaData = new CssMetaData<>("-coordinates-color", StyleConverter.getColorConverter()) {
+		@Override
+		public boolean isSettable(TileMapBox styleable) {
+			return !styleable.coordinatesColorProperty.isBound();
+		}
+
+		@Override
+		public StyleableProperty<Color> getStyleableProperty(TileMapBox styleable) {
+			return styleable.coordinatesColorProperty;
+		}
+	};
+
 	private final StyleableDoubleProperty gridLineWidthProperty = new SimpleStyleableDoubleProperty(gridLineWidthMetaData, this, "gridLineWidth");
 	private static final CssMetaData<TileMapBox, Number> gridLineWidthMetaData = new CssMetaData<>("-grid-line-width", StyleConverter.getSizeConverter()) {
 		@Override
@@ -87,6 +100,7 @@ public class TileMapBox extends HBox {
 		List<CssMetaData<? extends Styleable, ?>> additional = Arrays.asList(
 				regionGridColorMetaData,
 				chunkGridColorMetaData,
+				coordinatesColorMetaData,
 				gridLineWidthMetaData,
 				emptyColorMetaData
 		);
@@ -118,6 +132,7 @@ public class TileMapBox extends HBox {
 	private void bind() {
 		regionGridColorProperty.addListener((o, r, n) -> Tile.REGION_GRID_COLOR = new net.querz.mcaselector.ui.Color(regionGridColorProperty.get()));
 		chunkGridColorProperty.addListener((o, r, n) -> Tile.CHUNK_GRID_COLOR = new net.querz.mcaselector.ui.Color(chunkGridColorProperty.get()));
+		coordinatesColorProperty.addListener((o, r, n) -> Tile.COORDINATES_COLOR = new net.querz.mcaselector.ui.Color(coordinatesColorProperty.get()));
 		gridLineWidthProperty.addListener((o, r, n) -> Tile.GRID_LINE_WIDTH = gridLineWidthProperty.get());
 		emptyColorProperty.addListener((o, r, n) -> {
 			Tile.EMPTY_COLOR = new net.querz.mcaselector.ui.Color(emptyColorProperty.get());

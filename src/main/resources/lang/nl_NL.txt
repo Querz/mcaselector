@@ -18,6 +18,7 @@ menu.file.quit;Stoppen
 menu.view.reload;Herladen
 menu.view.chunk_grid;Chunk Raster
 menu.view.region_grid;Region Raster
+menu.view.coordinates;Coördinaten
 menu.view.goto;Ga naar
 menu.view.reset_zoom;Zoom resetten
 menu.view.save_screenshot;Bewaar screenshot

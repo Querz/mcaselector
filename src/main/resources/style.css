@@ -540,6 +540,7 @@
 	-fx-effect: innershadow(gaussian, -color-tilemap-shadow, 8, 0, 0, 0);
 	-region-grid-color: rgba(0, 0, 0, 0.5);
 	-chunk-grid-color: rgba(169, 169, 169, 0.5);
+	-coordinates-color: rgba(255, 255, 255, 0.9);
 	-grid-line-width: 1px;
 	-empty-color: rgba(51, 51, 51, 1);
 }

@@ -12,6 +12,7 @@ public class Tile {
 
 	public static Color REGION_GRID_COLOR = new Color(0, 0, 0, 0.5);
 	public static Color CHUNK_GRID_COLOR = new Color(0.6627451f, 0.6627451f, 0.6627451f, 0.5);
+	public static Color COORDINATES_COLOR = new Color(1, 1, 1, 0.5);
 	public static Color EMPTY_COLOR = new Color(0.2, 0.2, 0.2, 1);
 	public static double GRID_LINE_WIDTH = 1;
 

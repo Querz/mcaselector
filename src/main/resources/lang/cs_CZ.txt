@@ -18,6 +18,7 @@ menu.file.quit;Opustit
 menu.view.reload;Znovu načíst
 menu.view.chunk_grid;Mřížka chunků
 menu.view.region_grid;Mřížka regionů
+menu.view.coordinates;Souřadnice
 menu.view.goto;Přejít
 menu.view.reset_zoom;Obnovit přiblížení
 menu.view.save_screenshot;Uložit snímek obrazovky

@@ -18,6 +18,7 @@ menu.file.quit;나가기
 menu.view.reload;리로드
 menu.view.chunk_grid;청크 그리드
 menu.view.region_grid;지역 그리드
+menu.view.coordinates;좌표
 menu.view.goto;이동
 menu.view.reset_zoom;줌 초기화
 menu.view.save_screenshot;스크린샷 저장

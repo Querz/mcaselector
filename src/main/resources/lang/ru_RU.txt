@@ -18,6 +18,7 @@ menu.file.quit;Выход
 menu.view.reload;Перезагрузить
 menu.view.chunk_grid;Сетка чанков
 menu.view.region_grid;Сетка областей
+menu.view.coordinates;Координаты
 menu.view.goto;Перейти по координатам
 menu.view.reset_zoom;Сбросить масштаб
 menu.view.save_screenshot;Сохранить снимок экрана

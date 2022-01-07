@@ -18,6 +18,7 @@ menu.file.quit;Wyjdź
 menu.view.reload;Przeładować
 menu.view.chunk_grid;Siatka chunków
 menu.view.region_grid;Siatka regionów
+menu.view.coordinates;Współrzędne
 menu.view.goto;Idź do...
 menu.view.reset_zoom;Resetuj powiększenie
 menu.view.save_screenshot;Zapisz zrzut ekranu

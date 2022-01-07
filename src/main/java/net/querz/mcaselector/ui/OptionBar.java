@@ -60,6 +60,7 @@ public class OptionBar extends BorderPane {
 	private final MenuItem reload = UIFactory.menuItem(Translation.MENU_VIEW_RELOAD);
 	private final CheckMenuItem chunkGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_CHUNK_GRID, true);
 	private final CheckMenuItem regionGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_REGION_GRID, true);
+	private final CheckMenuItem coordinates = UIFactory.checkMenuItem(Translation.MENU_VIEW_COORDINATES, true);
 	private final MenuItem goTo = UIFactory.menuItem(Translation.MENU_VIEW_GOTO);
 	private final MenuItem resetZoom = UIFactory.menuItem(Translation.MENU_VIEW_RESET_ZOOM);
 	private final MenuItem saveScreenshot = UIFactory.menuItem(Translation.MENU_VIEW_SAVE_SCREENSHOT);
@@ -102,7 +103,7 @@ public class OptionBar extends BorderPane {
 				quit);
 		view.getItems().addAll(
 				reload, UIFactory.separator(),
-				chunkGrid, regionGrid, UIFactory.separator(),
+				chunkGrid, regionGrid, coordinates, UIFactory.separator(),
 				goTo, resetZoom, UIFactory.separator(),
 				saveScreenshot, UIFactory.separator(),
 				clearViewCache, clearAllCache);
@@ -211,6 +212,7 @@ public class OptionBar extends BorderPane {
 		reload.setOnAction(e -> tileMap.reload());
 		chunkGrid.setOnAction(e -> tileMap.setShowChunkGrid(chunkGrid.isSelected()));
 		regionGrid.setOnAction(e -> tileMap.setShowRegionGrid(regionGrid.isSelected()));
+		coordinates.setOnAction(e -> tileMap.setShowCoordinates(coordinates.isSelected()));
 		goTo.setOnAction(e -> DialogHelper.gotoCoordinate(tileMap, primaryStage));
 		resetZoom.setOnAction(e -> tileMap.setScale(1));
 		saveScreenshot.setOnAction(e -> DialogHelper.screenshot(tileMap, primaryStage));
@@ -244,6 +246,7 @@ public class OptionBar extends BorderPane {
 		reload.setAccelerator(new KeyCodeCombination(KeyCode.F5));
 		chunkGrid.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCodeCombination.SHORTCUT_DOWN));
 		regionGrid.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCodeCombination.SHORTCUT_DOWN));
+		coordinates.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCodeCombination.SHORTCUT_DOWN));
 		goTo.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCodeCombination.SHORTCUT_DOWN));
 		resetZoom.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT0, KeyCodeCombination.SHORTCUT_DOWN));
 		saveScreenshot.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCodeCombination.SHORTCUT_DOWN));

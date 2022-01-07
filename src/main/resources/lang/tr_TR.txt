@@ -18,6 +18,7 @@ menu.file.quit;Çıkış
 menu.view.reload;Yeniden Yükle
 menu.view.chunk_grid;Chunk Izgarası
 menu.view.region_grid;Region Izgarası
+menu.view.coordinates;Koordinatlar
 menu.view.goto;Git
 menu.view.reset_zoom;Yakınlaştırmayı Sıfırla
 menu.view.save_screenshot;Ekran Görüntüsü Kaydet

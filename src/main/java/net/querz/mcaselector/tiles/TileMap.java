@@ -14,6 +14,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontSmoothingType;
+import javafx.scene.text.FontWeight;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.job.ParseDataJob;
@@ -71,6 +74,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private boolean showChunkGrid = true;
 	private boolean showRegionGrid = true;
+	private boolean showCoordinates = false;
 	private boolean showNonexistentRegions;
 
 	private final List<Consumer<TileMap>> updateListener = new ArrayList<>(1);
@@ -110,6 +114,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		this.window = window;
 		context = getGraphicsContext2D();
 		context.setImageSmoothing(Config.smoothRendering());
+		context.setFont(Font.font("Monospaced", FontWeight.BOLD, null, 16));
 		setFocusTraversable(true);
 		this.setOnMousePressed(this::onMousePressed);
 		this.setOnMouseReleased(e -> onMouseReleased());
@@ -700,6 +705,11 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		draw();
 	}
 
+	public void setShowCoordinates(boolean showCoordinates) {
+		this.showCoordinates = showCoordinates;
+		draw();
+	}
+
 	public void setShowNonexistentRegions(boolean showNonexistentRegions) {
 		this.showNonexistentRegions = showNonexistentRegions;
 		draw();
@@ -1025,6 +1035,90 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 		if (showChunkGrid && scale <= CHUNK_GRID_SCALE) {
 			drawChunkGrid(ctx);
+		}
+
+		if (showCoordinates) {
+			if (scale < 1.2) {
+				drawChunkCoordinates(ctx);
+			} else {
+				drawRegionCoordinates(ctx);
+			}
+		}
+	}
+
+	private void drawRegionCoordinates(GraphicsContext ctx) {
+		ctx.setFill(Tile.COORDINATES_COLOR.makeJavaFXColor());
+
+		Point2f p = getRegionGridMin(offset, scale);
+
+		int multiplier = 1;
+		if (scale > 7) {
+			multiplier = 4;
+		} else if (scale > 4) {
+			multiplier = 2;
+		}
+
+		float step = Tile.SIZE / scale;
+		float halfStep = Tile.SIZE / (scale * 2);
+		int mul = multiplier * Tile.SIZE;
+		boolean oldStep = true;
+		Point2f first = p;
+
+		for (float x = first.getX(); x <= getWidth(); x += step) {
+			for (float y = first.getY(); y <= getHeight(); y += step) {
+				Point2i region = getMouseRegionBlock(x + halfStep, y + halfStep).regionToBlock();
+				if (!oldStep || region.getX() % mul == 0 && region.getZ() % mul == 0) {
+					ctx.fillText(region.getX() + "," + region.getZ(), x + 2, y + 16);
+					if (oldStep) {
+						step *= multiplier;
+						oldStep = false;
+						first = new Point2f(x, y);
+					}
+				}
+			}
+		}
+
+		for (float y = first.getY(); y <= getHeight(); y += step) {
+			Point2i region = getMouseRegionBlock(first.getX() - step + halfStep, y + halfStep).regionToBlock();
+			ctx.fillText(region.getX() + "," + region.getZ(), first.getX() - step + 2, y + 16);
+		}
+	}
+
+	private void drawChunkCoordinates(GraphicsContext ctx) {
+		ctx.setFill(Tile.COORDINATES_COLOR.makeJavaFXColor());
+
+		Point2f p = getRegionGridMin(offset, scale);
+
+		int multiplier = 1;
+		if (scale > 0.8) {
+			multiplier = 16;
+		} else if (scale > 0.4) {
+			multiplier = 8;
+		} else if (scale > 0.2) {
+			multiplier = 4;
+		} else if (scale > 0.1) {
+			multiplier = 2;
+		}
+
+		float step = Tile.CHUNK_SIZE / scale;
+		float halfStep = Tile.CHUNK_SIZE / (scale * 2);
+		int mul = multiplier * Tile.CHUNK_SIZE;
+		boolean oldStep = true;
+		Point2f first = p;
+
+		for (float x = first.getX(); x <= getWidth(); x += step) {
+			for (float y = first.getY(); y <= getHeight(); y += step) {
+				Point2i chunk = getMouseChunkBlock(x + halfStep, y + halfStep).chunkToBlock();
+
+				if (!oldStep || chunk.getX() % mul == 0 && chunk.getZ() % mul == 0) {
+					ctx.fillText(chunk.getX() + "," + chunk.getZ(), x + 2, y + 16);
+					if (oldStep) {
+						step *= multiplier;
+						oldStep = false;
+						first = new Point2f(x, y);
+					}
+				}
+			}
 		}
 	}
 

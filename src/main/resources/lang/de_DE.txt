@@ -18,6 +18,7 @@ menu.file.quit;Beenden
 menu.view.reload;Neu laden
 menu.view.chunk_grid;Chunk Gitter
 menu.view.region_grid;Region Gitter
+menu.view.coordinates;Koordinaten
 menu.view.goto;Gehe zu
 menu.view.reset_zoom;Zoom zurücksetzen
 menu.view.save_screenshot;Bildschirmfoto erstellen
