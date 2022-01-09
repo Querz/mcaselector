@@ -59,6 +59,7 @@ dependencies {
 task copyRuntimeLibs(type: Copy) {
 	from configurations.implementation
 	into file("$buildDir/libs/lib/")
+	exclude {it.file.name.startsWith('javafx')}
 }
 
 jar {
@@ -66,7 +67,7 @@ jar {
 	manifest.attributes (
 		'Main-Class': application.mainClass,
 		'Application-Version': project.version,
-		'Class-Path': configurations.implementation.files.collect{"lib/$it.name"}.join(' ')
+	 	'Class-Path': configurations.implementation.files.stream().filter($it -> !$it.name.startsWith('javafx')).collect{"lib/$it.name"}.join(' ')
 	)
 	exclude 'licenses/'
 	from 'LICENSE'
@@ -74,6 +75,9 @@ jar {
 
 shadowJar {
 	minimize()
+	dependencies {
+		exclude(dependency(':javafx.*:.*'))
+	}
 	archiveFileName = "${project.name}-${project.version}.jar"
 	configurations = [project.configurations.implementation]
 	exclude 'LICENSE.txt', 'NOTICE.txt'
