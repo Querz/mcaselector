@@ -161,13 +161,12 @@ public final class ImagePool {
 
 	public boolean isImageOutdated(Point2i region) {
 		try {
-			BasicFileAttributes bfa = Files.readAttributes(FileHelper.createMCAFilePath(region).toPath(), BasicFileAttributes.class);
 			long time = cache.getFileTime(region);
 			if (time == -1) {
 				return false;
 			}
-			return time != bfa.lastModifiedTime().toMillis();
-		} catch (SQLException | IOException e) {
+			return time != readLastModifiedDate(region);
+		} catch (SQLException e) {
 			return false;
 		}
 	}
