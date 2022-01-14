@@ -60,7 +60,7 @@ public class OptionBar extends BorderPane {
 	private final MenuItem reload = UIFactory.menuItem(Translation.MENU_VIEW_RELOAD);
 	private final CheckMenuItem chunkGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_CHUNK_GRID, true);
 	private final CheckMenuItem regionGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_REGION_GRID, true);
-	private final CheckMenuItem coordinates = UIFactory.checkMenuItem(Translation.MENU_VIEW_COORDINATES, true);
+	private final CheckMenuItem coordinates = UIFactory.checkMenuItem(Translation.MENU_VIEW_COORDINATES, false);
 	private final MenuItem goTo = UIFactory.menuItem(Translation.MENU_VIEW_GOTO);
 	private final MenuItem resetZoom = UIFactory.menuItem(Translation.MENU_VIEW_RESET_ZOOM);
 	private final MenuItem saveScreenshot = UIFactory.menuItem(Translation.MENU_VIEW_SAVE_SCREENSHOT);

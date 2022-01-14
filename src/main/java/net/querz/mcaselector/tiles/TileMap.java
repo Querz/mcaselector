@@ -15,7 +15,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontSmoothingType;
 import javafx.scene.text.FontWeight;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.*;
