@@ -16,6 +16,7 @@ import net.querz.mcaselector.point.Point2i;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.SQLException;
 
@@ -173,7 +174,11 @@ public final class ImagePool {
 
 	private long readLastModifiedDate(Point2i region) {
 		try {
-			BasicFileAttributes bfa = Files.readAttributes(FileHelper.createMCAFilePath(region).toPath(), BasicFileAttributes.class);
+			Path path = FileHelper.createMCAFilePath(region).toPath();
+			if (!path.toFile().exists()) {
+				return 0;
+			}
+			BasicFileAttributes bfa = Files.readAttributes(path, BasicFileAttributes.class);
 			return bfa.lastModifiedTime().toMillis();
 		} catch (IOException e) {
 			e.printStackTrace();
