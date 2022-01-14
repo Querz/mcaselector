@@ -380,6 +380,9 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 	}
 
 	private String getBiomeAtBlock(long[] biomes, ListTag<StringTag> palette, int biomeX, int biomeY, int biomeZ, int bits) {
+		if (palette == null) {
+			return "";
+		}
 		if (biomes == null || biomes.length == 0) {
 			return palette.get(0).getValue();
 		}
