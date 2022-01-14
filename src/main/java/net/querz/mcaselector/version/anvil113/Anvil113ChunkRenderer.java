@@ -69,31 +69,33 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 						int paletteIndex = getPaletteIndex(getIndex(cx, cy, cz), blockStates, bits, clean);
 						CompoundTag blockData = palette.get(paletteIndex);
 
-						if (!isEmpty(blockData)) {
-							int regionIndex = ((z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale));
-							if (water) {
-								if (!waterDepth) {
-									pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome); // water color
-									waterHeights[regionIndex] = (short) (sectionHeight + cy); // height of highest water or terrain block
-								}
-								if (isWater(blockData)) {
-									waterDepth = true;
-									continue;
-								} else if (isWaterlogged(blockData)) {
-									pixelBuffer[regionIndex] = colorMapping.getRGB(waterDummy, biome); // water color
-									waterPixels[regionIndex] = colorMapping.getRGB(blockData, biome); // color of waterlogged block
-									waterHeights[regionIndex] = (short) (sectionHeight + cy);
-									terrainHeights[regionIndex] = (short) (sectionHeight + cy - 1); // "height" of bottom of water, which will just be 1 block lower so shading works
-									continue zLoop;
-								} else {
-									waterPixels[regionIndex] = colorMapping.getRGB(blockData, biome); // color of block at bottom of water
-								}
-							} else {
-								pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome);
-							}
-							terrainHeights[regionIndex] = (short) (sectionHeight + cy); // height of bottom of water
-							continue zLoop;
+						if (isEmpty(blockData)) {
+							continue;
 						}
+
+						int regionIndex = ((z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale));
+						if (water) {
+							if (!waterDepth) {
+								pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome); // water color
+								waterHeights[regionIndex] = (short) (sectionHeight + cy); // height of highest water or terrain block
+							}
+							if (isWater(blockData)) {
+								waterDepth = true;
+								continue;
+							} else if (isWaterlogged(blockData)) {
+								pixelBuffer[regionIndex] = colorMapping.getRGB(waterDummy, biome); // water color
+								waterPixels[regionIndex] = colorMapping.getRGB(blockData, biome); // color of waterlogged block
+								waterHeights[regionIndex] = (short) (sectionHeight + cy);
+								terrainHeights[regionIndex] = (short) (sectionHeight + cy - 1); // "height" of bottom of water, which will just be 1 block lower so shading works
+								continue zLoop;
+							} else {
+								waterPixels[regionIndex] = colorMapping.getRGB(blockData, biome); // color of block at bottom of water
+							}
+						} else {
+							pixelBuffer[regionIndex] = colorMapping.getRGB(blockData, biome);
+						}
+						terrainHeights[regionIndex] = (short) (sectionHeight + cy); // height of bottom of water
+						continue zLoop;
 					}
 				}
 			}

@@ -75,25 +75,27 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 
 						byte blockData = (byte) (index % 2 == 0 ? data[index / 2] & 0x0F : (data[index / 2] >> 4) & 0x0F);
 
-						if (!isEmpty(block)) {
-							int regionIndex = (z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale);
-							if (water) {
-								if (!waterDepth) {
-									pixelBuffer[regionIndex] = colorMapping.getRGB((block << 4) + blockData, biome);
-									waterHeights[regionIndex] = (short) (sectionHeight + cy);
-								}
-								if (isWater(block)) {
-									waterDepth = true;
-									continue;
-								} else {
-									waterPixels[regionIndex] = colorMapping.getRGB((block << 4) + blockData, biome);
-								}
-							} else {
-								pixelBuffer[regionIndex] = colorMapping.getRGB((block << 4) + blockData, biome);
-							}
-							terrainHeights[regionIndex] = (short) (sectionHeight + cy);
-							continue zLoop;
+						if (isEmpty(block)) {
+							continue;
 						}
+
+						int regionIndex = (z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale);
+						if (water) {
+							if (!waterDepth) {
+								pixelBuffer[regionIndex] = colorMapping.getRGB((block << 4) + blockData, biome);
+								waterHeights[regionIndex] = (short) (sectionHeight + cy);
+							}
+							if (isWater(block)) {
+								waterDepth = true;
+								continue;
+							} else {
+								waterPixels[regionIndex] = colorMapping.getRGB((block << 4) + blockData, biome);
+							}
+						} else {
+							pixelBuffer[regionIndex] = colorMapping.getRGB((block << 4) + blockData, biome);
+						}
+						terrainHeights[regionIndex] = (short) (sectionHeight + cy);
+						continue zLoop;
 					}
 				}
 			}
