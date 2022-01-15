@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 
 public final class FileHelper {
 
-	public static final String MCA_FILE_PATTERN = "^r\\.-?\\d+\\.-?\\d+\\.mca$";
+	public static final Pattern MCA_FILE_PATTERN = Pattern.compile("^r\\.-?\\d+\\.-?\\d+\\.mca$");
 	public static final Pattern REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
 	public static final Pattern DAT_REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.dat$");
 	public static final Pattern CACHE_REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.png$");
@@ -228,7 +228,7 @@ public final class FileHelper {
 		if (directory == null) {
 			return LongOpenHashSet.of();
 		}
-		File[] files = directory.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
+		File[] files = directory.listFiles((dir, name) -> MCA_FILE_PATTERN.matcher(name).matches());
 		if (files == null) {
 			return LongOpenHashSet.of();
 		}
@@ -306,7 +306,7 @@ public final class FileHelper {
 	}
 
 	public static boolean hasMCAFiles(File dir) {
-		File[] files = dir.listFiles((d, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
+		File[] files = dir.listFiles((d, name) -> MCA_FILE_PATTERN.matcher(name).matches());
 		return files != null && files.length > 0;
 	}
 
