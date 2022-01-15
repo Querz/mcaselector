@@ -17,7 +17,7 @@ public class Window extends Application {
 
 	private final int width = 800, height = 600;
 
-	private final Set<KeyCode> pressedKeys = new HashSet<>();
+	private final Set<KeyCode> pressedKeys = EnumSet.noneOf(KeyCode.class);
 
 	private Stage primaryStage;
 	private String title = "";

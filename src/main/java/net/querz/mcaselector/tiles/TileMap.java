@@ -954,7 +954,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	private void mark(double mouseX, double mouseY, boolean marked) {
-		boolean paintMode = keyActivator.isActionKeyPressed(KeyCode.SHIFT);
+		boolean paintMode = window.isKeyPressed(KeyCode.SHIFT);
 		if (scale > CHUNK_GRID_SCALE) {
 			Point2i regionBlock = getMouseRegionBlock(mouseX, mouseY);
 			Point2i firstRegionBlock = (paintMode) ? regionBlock : getMouseRegionBlock(firstMouseLocation.getX(), firstMouseLocation.getY());

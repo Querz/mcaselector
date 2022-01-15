@@ -64,14 +64,6 @@ public class KeyActivator extends TimerTask {
 		pressedActionKeys.clear();
 	}
 
-	public boolean isKeyPressed(KeyCode key) {
-		return pressedButtons.contains(key);
-	}
-
-	public boolean isActionKeyPressed(KeyCode key) {
-		return pressedActionKeys.contains(key);
-	}
-
 	public void registerAction(KeyCode key, Consumer<Set<KeyCode>> action) {
 		List<Consumer<Set<KeyCode>>> actionList = actions.getOrDefault(key, new ArrayList<>());
 		actionList.add(action);
