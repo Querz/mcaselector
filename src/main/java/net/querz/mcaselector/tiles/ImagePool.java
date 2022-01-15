@@ -242,6 +242,8 @@ public final class ImagePool {
 				scale.getValue().remove(region.asLong());
 			}
 		}
+		if (!cache.isInitialized())
+			return;
 		try {
 			cache.deleteData(region);
 		} catch (SQLException e) {
