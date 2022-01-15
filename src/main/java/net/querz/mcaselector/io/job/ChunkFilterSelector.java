@@ -87,6 +87,11 @@ public final class ChunkFilterSelector {
 			try {
 				Region region = Region.loadRegion(getRegionDirectories(), regionData, poiData, entitiesData);
 
+				if (region.getRegion() == null) {
+					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
+					return true;
+				}
+
 				LongOpenHashSet chunks = region.getFilteredChunks(filter, this.selection);
 				if (chunks.size() > 0) {
 					if (chunks.size() == Tile.CHUNKS) {
