@@ -255,7 +255,7 @@ public final class ImagePool {
 						.filter(file -> file.length() > 8192) // only files that have more data than just the header
 						.map(file -> {
 							Point2i p = FileHelper.parseMCAFileName(file);
-							if (task != null) {
+							if (task != null && p != null) {
 								task.incrementProgress(String.format("%d, %d", p.getX(), p.getZ()));
 							}
 							return p;
