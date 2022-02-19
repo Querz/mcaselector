@@ -954,9 +954,13 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	private void mark(double mouseX, double mouseY, boolean marked) {
+		boolean paintMode = window.isKeyPressed(KeyCode.SHIFT);
+		if (paintMode) {
+			firstMouseLocation = new Point2f(mouseX, mouseY);
+		}
 		if (scale > CHUNK_GRID_SCALE) {
 			Point2i regionBlock = getMouseRegionBlock(mouseX, mouseY);
-			Point2i firstRegionBlock = getMouseRegionBlock(firstMouseLocation.getX(), firstMouseLocation.getY());
+			Point2i firstRegionBlock = paintMode ? regionBlock : getMouseRegionBlock(firstMouseLocation.getX(), firstMouseLocation.getY());
 			sortPoints(firstRegionBlock, regionBlock);
 			for (int x = firstRegionBlock.getX(); x <= regionBlock.getX(); x++) {
 				for (int z = firstRegionBlock.getZ(); z <= regionBlock.getZ(); z++) {
@@ -979,7 +983,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			}
 		} else {
 			Point2i chunkBlock = getMouseChunkBlock(mouseX, mouseY);
-			Point2i firstChunkBlock = getMouseChunkBlock(firstMouseLocation.getX(), firstMouseLocation.getY());
+			Point2i firstChunkBlock = paintMode ? chunkBlock : getMouseChunkBlock(firstMouseLocation.getX(), firstMouseLocation.getY());
 			sortPoints(firstChunkBlock, chunkBlock);
 			Set<Tile> changedTiles = new HashSet<>();
 			for (int x = firstChunkBlock.getX(); x <= chunkBlock.getX(); x++) {

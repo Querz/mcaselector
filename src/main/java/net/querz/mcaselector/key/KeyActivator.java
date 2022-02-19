@@ -2,9 +2,10 @@ package net.querz.mcaselector.key;
 
 import javafx.scene.input.KeyCode;
 import net.querz.mcaselector.validation.ShutdownHooks;
+
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,9 +15,9 @@ import java.util.function.Consumer;
 
 public class KeyActivator extends TimerTask {
 
-	private final Set<KeyCode> pressedButtons = new HashSet<>();
-	private final Set<KeyCode> pressedActionKeys = new HashSet<>();
-	private final Map<KeyCode, List<Consumer<Set<KeyCode>>>> actions = new HashMap<>();
+	private final Set<KeyCode> pressedButtons = EnumSet.noneOf(KeyCode.class);
+	private final Set<KeyCode> pressedActionKeys = EnumSet.noneOf(KeyCode.class);
+	private final Map<KeyCode, List<Consumer<Set<KeyCode>>>> actions = new EnumMap<>(KeyCode.class);
 	private Runnable globalAction;
 
 	public KeyActivator() {
