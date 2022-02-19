@@ -115,6 +115,10 @@ public final class CacheDBController {
 		}
 	}
 
+	public boolean isInitialized() {
+		return allTables != null;
+	}
+
 	private void closeOnShutdown() {
 		try {
 			close();
@@ -210,6 +214,10 @@ public final class CacheDBController {
 	}
 
 	public void deleteData(Point2i region) throws SQLException {
+		if (!isInitialized()) {
+			Debug.errorf("failed to delete region %s from cache because it hasn't been initialized yet", region);
+			return;
+		}
 		for (String table : allTables) {
 			PreparedStatement ps = connection.prepareStatement(String.format(
 					"DELETE FROM %s WHERE p=?;", table));
