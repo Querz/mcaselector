@@ -54,7 +54,7 @@ public class WorldDirectories implements Serializable, Cloneable {
 
 	public RegionDirectories[] listRegions(SelectionData selection) {
 		Map<Point2i, RegionDirectories> regionDirectories = new HashMap<>();
-		File[] r = this.region.listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
+		File[] r = this.region.listFiles((d, n) -> FileHelper.MCA_FILE_PATTERN.matcher(n).matches());
 		if (r != null) {
 			for (File f : r) {
 				Point2i l = FileHelper.parseMCAFileName(f);
@@ -65,7 +65,7 @@ public class WorldDirectories implements Serializable, Cloneable {
 		}
 
 		if (this.entities != null) {
-			File[] p = this.entities.listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
+			File[] p = this.entities.listFiles((d, n) -> FileHelper.MCA_FILE_PATTERN.matcher(n).matches());
 			if (p != null) {
 				for (File f : p) {
 					Point2i l = FileHelper.parseMCAFileName(f);
@@ -81,7 +81,7 @@ public class WorldDirectories implements Serializable, Cloneable {
 		}
 
 		if (this.poi != null) {
-			File[] e = this.poi.listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
+			File[] e = this.poi.listFiles((d, n) -> FileHelper.MCA_FILE_PATTERN.matcher(n).matches());
 			if (e != null) {
 				for (File f : e) {
 					Point2i l = FileHelper.parseMCAFileName(f);

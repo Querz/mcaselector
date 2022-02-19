@@ -24,6 +24,7 @@ import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.DialogHelper;
+import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.key.KeyActivator;
@@ -617,7 +618,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 			WorldDirectories wd = FileHelper.testWorldDirectoriesValid(db.getFiles(), getWindow().getPrimaryStage());
 			if (wd != null) {
-				DialogHelper.setWorld(wd, this);
+				DialogHelper.setWorld(wd, this, window.getPrimaryStage());
 			}
 			event.setDropCompleted(true);
 		}
@@ -746,8 +747,12 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	public void clear() {
+		clear(null);
+	}
+
+	public void clear(ProgressTask loadWorldTask) {
 		tiles.clear();
-		imgPool.clear();
+		imgPool.clear(loadWorldTask);
 		overlayPool.clear();
 		selectedChunks = 0;
 		selectionInverted = false;
@@ -763,7 +768,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		for (Tile tile : tiles.values()) {
 			tile.setLoaded(false);
 		}
-		imgPool.clear();
+		imgPool.clear(null);
 	}
 
 	public void clearTile(long p) {
