@@ -13,12 +13,21 @@ import net.querz.mcaselector.io.db.CacheDBController;
 import net.querz.mcaselector.io.job.CachedImageLoadJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.ProgressTask;
+import net.querz.mcaselector.ui.dialog.ErrorDialog;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 
 public final class ImagePool {
 
@@ -212,27 +221,59 @@ public final class ImagePool {
 		}
 	}
 
-	public void clear() {
+	public void clear(ProgressTask task) {
 		synchronized (poolLock) {
 			for (Int2ObjectMap.Entry<Long2ObjectLinkedOpenHashMap<Image>> scale : pool.int2ObjectEntrySet()) {
 				scale.getValue().clear();
 			}
 		}
-		loadRegions();
+		loadRegions(task);
 		Debug.dumpf("cleared pool");
 	}
 
-	public void loadRegions() {
+	public void loadRegions(ProgressTask task) {
 		regions.clear();
-		// get all files that match the "r.<x>.<z>.mca" name and that have more data than just the header
-		File[] files = Config.getWorldDirs().getRegion().listFiles(f -> f.getName().matches(FileHelper.MCA_FILE_PATTERN) && f.length() > 8192);
+
+		if (task != null) {
+			task.setMessage(Translation.DIALOG_PROGRESS_SCANNING_FILES.toString());
+		}
+
+		// get all files that match the "r.<x>.<z>.mca" name
+		File[] files = Config.getWorldDirs().getRegion().listFiles();
 		if (files == null) {
 			return;
 		}
 
-		for (File file : files) {
-			Point2i p = FileHelper.parseMCAFileName(file);
-			regions.add(p.asLong());
+		if (task != null) {
+			task.setMax(files.length);
+		}
+
+		ForkJoinPool threadPool = new ForkJoinPool(Config.getProcessThreads());
+		try {
+			List<Point2i> points = threadPool.submit(() -> {
+				return Arrays.stream(files).parallel()
+						.filter(file -> file.length() > 8192) // only files that have more data than just the header
+						.map(file -> {
+							Point2i p = FileHelper.parseMCAFileName(file);
+							if (task != null && p != null) {
+								task.incrementProgress(String.format("%d, %d", p.getX(), p.getZ()));
+							}
+							return p;
+						})
+						.filter(Objects::nonNull)
+						.toList();
+			}).get();
+			points.forEach(p -> {
+				regions.add(p.asLong());
+			});
+			Debug.dumpf("loaded all world files");
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+			Debug.errorf("failed to load world");
+			task.done(null);
+			new ErrorDialog(tileMap.getWindow().getPrimaryStage(), e);
+		} finally {
+			threadPool.shutdown();
 		}
 	}
 

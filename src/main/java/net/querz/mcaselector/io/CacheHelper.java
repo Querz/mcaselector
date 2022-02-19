@@ -26,7 +26,7 @@ public final class CacheHelper {
 	private CacheHelper() {}
 
 	public static void forceGenerateCache(Integer zoomLevel, Progress progressChannel) {
-		File[] files = Config.getWorldDir().listFiles((d, n) -> n.matches(FileHelper.MCA_FILE_PATTERN));
+		File[] files = Config.getWorldDir().listFiles((d, n) -> FileHelper.MCA_FILE_PATTERN.matcher(n).matches());
 		if (files == null || files.length == 0) {
 			return;
 		}

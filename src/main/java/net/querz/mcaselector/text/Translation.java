@@ -3,7 +3,6 @@ package net.querz.mcaselector.text;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.io.FileHelper;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -173,6 +172,8 @@ public enum Translation {
 	DIALOG_PROGRESS_CANCELLING("dialog.progress.cancelling"),
 	DIALOG_PROGRESS_COLLECTING_DATA("dialog.progress.collecting_data"),
 	DIALOG_PROGRESS_DONE("dialog.progress.done"),
+	DIALOG_PROGRESS_SCANNING_FILES("dialog.progress.scanning_files"),
+	DIALOG_PROGRESS_TITLE_LOADING_WORLD("dialog.progress.title.loading_world"),
 	DIALOG_PROGRESS_TITLE_DELETING_SELECTION("dialog.progress.title.deleting_selection"),
 	DIALOG_PROGRESS_TITLE_CREATING_IMAGE("dialog.progress.title.creating_image"),
 	DIALOG_PROGRESS_TITLE_SAVING_IMAGE("dialog.progress.title.saving_image"),

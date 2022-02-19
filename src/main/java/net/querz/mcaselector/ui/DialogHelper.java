@@ -531,7 +531,7 @@ public class DialogHelper {
 		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", Config.getMCSavesDir());
 		File file = createDirectoryChooser(lastOpenDirectory).showDialog(primaryStage);
 		if (file != null && file.isDirectory()) {
-			File[] files = file.listFiles((dir, name) -> name.matches(FileHelper.MCA_FILE_PATTERN));
+			File[] files = file.listFiles((dir, name) -> FileHelper.MCA_FILE_PATTERN.matcher(name).matches());
 			if (files != null && files.length > 0) {
 				Debug.dump("setting world dir to " + file.getAbsolutePath());
 				FileHelper.setLastOpenedDirectory("open_world", file.getAbsolutePath());
@@ -566,30 +566,35 @@ public class DialogHelper {
 
 			// if there is only one dimension, open it instantly
 			if (dimensions.size() == 1) {
-				setWorld(FileHelper.detectWorldDirectories(dimensions.get(0)), tileMap);
+				setWorld(FileHelper.detectWorldDirectories(dimensions.get(0)), tileMap, primaryStage);
 				return;
 			}
 
 			// show world selection dialog
 			Optional<File> result = new SelectWorldDialog(dimensions, primaryStage).showAndWait();
-			result.ifPresent(dim -> setWorld(FileHelper.detectWorldDirectories(dim), tileMap));
+			result.ifPresent(dim -> setWorld(FileHelper.detectWorldDirectories(dim), tileMap, primaryStage));
 		} else if (file != null) {
 			new ErrorDialog(primaryStage, String.format("%s is not a directory", file));
 		}
 	}
 
-	public static void setWorld(WorldDirectories worldDirectories, TileMap tileMap) {
-		Config.setWorldDirs(worldDirectories);
-		CacheHelper.validateCacheVersion(tileMap);
-		CacheHelper.readWorldSettingsFile(tileMap);
-		RegionImageGenerator.invalidateCachedMCAFiles();
-		tileMap.getWindow().getOptionBar().setRenderHeight(Config.getRenderHeight());
-		tileMap.clear();
-		tileMap.draw();
-		tileMap.disable(false);
-		tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
-		tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent());
-		tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString());
+	public static void setWorld(WorldDirectories worldDirectories, TileMap tileMap, Stage primaryStage) {
+		new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_LOADING_WORLD, primaryStage).showProgressBar((task) -> {
+			Config.setWorldDirs(worldDirectories);
+			CacheHelper.validateCacheVersion(tileMap);
+			CacheHelper.readWorldSettingsFile(tileMap);
+			RegionImageGenerator.invalidateCachedMCAFiles();
+			tileMap.getWindow().getOptionBar().setRenderHeight(Config.getRenderHeight());
+			tileMap.clear(task);
+			tileMap.draw();
+			tileMap.disable(false);
+			tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
+			tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString());
+			task.done(Translation.DIALOG_PROGRESS_DONE.toString());
+			Platform.runLater(() -> {
+				tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent());
+			});
+		});
 	}
 
 	public static void importSelection(TileMap tileMap, Stage primaryStage) {
