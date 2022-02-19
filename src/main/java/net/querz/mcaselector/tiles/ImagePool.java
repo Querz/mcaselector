@@ -250,19 +250,17 @@ public final class ImagePool {
 
 		ForkJoinPool threadPool = new ForkJoinPool(Config.getProcessThreads());
 		try {
-			List<Point2i> points = threadPool.submit(() -> {
-				return Arrays.stream(files).parallel()
-						.filter(file -> file.length() > 8192) // only files that have more data than just the header
-						.map(file -> {
-							Point2i p = FileHelper.parseMCAFileName(file);
-							if (task != null && p != null) {
-								task.incrementProgress(String.format("%d, %d", p.getX(), p.getZ()));
-							}
-							return p;
-						})
-						.filter(Objects::nonNull)
-						.toList();
-			}).get();
+			List<Point2i> points = threadPool.submit(() -> Arrays.stream(files).parallel()
+					.filter(file -> file.length() > 8192) // only files that have more data than just the header
+					.map(file -> {
+						Point2i p = FileHelper.parseMCAFileName(file);
+						if (task != null && p != null) {
+							task.incrementProgress(String.format("%d, %d", p.getX(), p.getZ()));
+						}
+						return p;
+					})
+					.filter(Objects::nonNull)
+					.toList()).get();
 			points.forEach(p -> {
 				regions.add(p.asLong());
 			});
@@ -270,7 +268,9 @@ public final class ImagePool {
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 			Debug.errorf("failed to load world");
-			task.done(null);
+			if (task != null) {
+				task.done(null);
+			}
 			new ErrorDialog(tileMap.getWindow().getPrimaryStage(), e);
 		} finally {
 			threadPool.shutdown();
