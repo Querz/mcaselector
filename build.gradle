@@ -3,11 +3,11 @@ import java.nio.file.Files
 
 plugins {
 	id 'java'
-	id 'org.openjfx.javafxplugin' version '0.0.10'
+	id 'org.openjfx.javafxplugin' version '0.0.12'
 	id 'application'
 
-	id 'com.github.johnrengelman.shadow' version '7.1.1'
-	id 'com.github.ben-manes.versions' version '0.39.0'
+	id 'com.github.johnrengelman.shadow' version '7.1.2'
+	id 'com.github.ben-manes.versions' version '0.42.0'
 
 	id 'eclipse'
 	id 'idea'
@@ -51,7 +51,7 @@ dependencies {
 	implementation 'org.json:json:20211205'
 	implementation 'ar.com.hjg:pngj:2.1.0'
 	implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
-	implementation 'it.unimi.dsi:fastutil:8.5.6'
+	implementation 'it.unimi.dsi:fastutil:8.5.8'
 	testImplementation 'junit:junit:4.13.2'
 	testImplementation 'commons-io:commons-io:2.11.0'
 }
@@ -92,7 +92,7 @@ compileJava {
 task installer {
 	doLast {
 		def innoSetupDir = new File("${buildDir}/inno")
-		
+
 		delete innoSetupDir
 		innoSetupDir.mkdir()
 
