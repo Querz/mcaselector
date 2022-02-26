@@ -251,7 +251,7 @@ public final class ImagePool {
 		ForkJoinPool threadPool = new ForkJoinPool(Config.getProcessThreads());
 		try {
 			List<Point2i> points = threadPool.submit(() -> Arrays.stream(files).parallel()
-					.filter(file -> file.length() > 8192) // only files that have more data than just the header
+					.filter(file -> file.length() > FileHelper.HEADER_SIZE) // only files that have more data than just the header
 					.map(file -> {
 						Point2i p = FileHelper.parseMCAFileName(file);
 						if (task != null && p != null) {
