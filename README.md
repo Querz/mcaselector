@@ -32,6 +32,7 @@ YouTube explaining the basics:
 * [Preparing Your World for the Nether Update! - The Minecraft Survival Guide](https://www.youtube.com/watch?v=1fiyVvoD9jQ) starting at [2:52](https://www.youtube.com/watch?v=1fiyVvoD9jQ&t=2m52s) by [Pixlriffs](https://www.youtube.com/channel/UCgGjBqZZtAjxfpGSba7d6ww)
 * [How To Reset The End Dimension! - The Minecraft Survival Guide](https://www.youtube.com/watch?v=p-2gFkJl_Lo) starting at [8:45](https://www.youtube.com/watch?v=p-2gFkJl_Lo&t=8m45s) by [Pixlriffs](https://www.youtube.com/channel/UCgGjBqZZtAjxfpGSba7d6ww)
 * [YEPYENİ SÜRÜM YEPYENİ HEYECAN !!! 1.18 HARİTA YÜKSELTME REHBERİ | Minecraft Survival Okulu 1.18 B#74](https://youtu.be/HEXbNOzm-U0) starting at [4:09](https://youtu.be/HEXbNOzm-U0?t=249) by [Ali Bey](https://www.youtube.com/channel/UCT5SVxjzqY5Us36PJ-mfzkg)
+* [Nether, Dünya ve End Chunkları Nasıl Sıfırlanır !! Minecraft 1.14.1.15 1.16](https://youtu.be/IISUlesuTME) by [Luser](https://www.youtube.com/channel/UCfZ4x5EKbOeiZOHDWwtsPaA)
 
 ---
 ## Supported Versions
