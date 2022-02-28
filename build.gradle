@@ -222,6 +222,7 @@ task minifyCss {
 }
 
 // task dependencies
+minifyCss.dependsOn processResources
 jar.dependsOn minifyCss
 jar.dependsOn copyRuntimeLibs
 jar.finalizedBy shadowJar
