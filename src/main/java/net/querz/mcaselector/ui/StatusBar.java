@@ -11,14 +11,20 @@ import javafx.scene.layout.*;
 import javafx.util.Duration;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.JobHandler;
-import net.querz.mcaselector.property.DataProperty;
-import net.querz.mcaselector.tiles.TileMap;
-import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.validation.ShutdownHooks;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 public class StatusBar extends StackPane {
+
+	private static final int LOADING_ANIM_UPDATE_MILLIS = 500;
 
 	private final GridPane grid = new GridPane();
 	private final Label selectedChunks = new Label(Translation.STATUS_SELECTED + ": 0");
@@ -66,33 +72,28 @@ public class StatusBar extends StackPane {
 
 		DataProperty<Boolean> b = new DataProperty<>(true);
 		DataProperty<Integer> before = new DataProperty<>(0);
-		Thread t = new Thread(() -> {
-			while (b.get()) {
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException ex) {
-					return;
-				}
-				int activeJobs = JobHandler.getActiveJobs();
-				if (before.get() == 0 && activeJobs != 0) {
-					Platform.runLater(() -> {
-						rt.play();
-						bp.setRight(loadIcon);
-					});
-				} else if (before.get() != 0 && activeJobs == 0) {
-					Platform.runLater(() -> {
-						rt.stop();
-						bp.setRight(null);
-					});
-				}
-				before.set(activeJobs);
+		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+		exec.scheduleAtFixedRate(() -> {
+			if (!b.get())
+				return;
+			int activeJobs = JobHandler.getActiveJobs();
+			if (before.get() == 0 && activeJobs != 0) {
+				Platform.runLater(() -> {
+					rt.play();
+					bp.setRight(loadIcon);
+				});
+			} else if (before.get() != 0 && activeJobs == 0) {
+				Platform.runLater(() -> {
+					rt.stop();
+					bp.setRight(null);
+				});
 			}
-		});
+			before.set(activeJobs);
+		}, LOADING_ANIM_UPDATE_MILLIS, LOADING_ANIM_UPDATE_MILLIS, TimeUnit.MILLISECONDS);
 		ShutdownHooks.addShutdownHook(() -> {
 			b.set(false);
-			t.interrupt();
+			exec.shutdownNow();
 		});
-		t.start();
 	}
 
 	private void update(TileMap tileMap) {
