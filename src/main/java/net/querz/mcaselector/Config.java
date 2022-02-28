@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.stream.Stream;
 
 public final class Config {
 
@@ -384,8 +385,8 @@ public final class Config {
 		if (DEFAULT_BASE_CONFIG_FILE.exists()) {
 			String userDir = DEFAULT_BASE_DIR.getAbsolutePath();
 			Map<String, String> config = new HashMap<>();
-			try {
-				Files.lines(DEFAULT_BASE_CONFIG_FILE.toPath()).forEach(l -> {
+			try (Stream<String> lines = Files.lines(DEFAULT_BASE_CONFIG_FILE.toPath())) {
+				lines.forEach(l -> {
 					if (l.charAt(0) == ';') {
 						return;
 					}
