@@ -5,6 +5,7 @@ import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.point.Point2i;
@@ -28,7 +29,7 @@ public class Region {
 
 	public static Region loadRegion(RegionDirectories dirs, byte[] regionData, byte[] poiData, byte[] entitiesData) throws IOException {
 		Region r = new Region();
-		if (dirs.getRegion() != null && regionData != null) {
+		if (dirs.getRegion() != null && dirs.getRegion().length() > FileHelper.HEADER_SIZE && regionData != null) {
 			r.loadRegion(dirs.getRegion(), new ByteArrayPointer(regionData));
 			r.location = dirs.getLocation();
 		}

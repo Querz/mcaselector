@@ -191,7 +191,7 @@ public class BorderFilter extends IntFilter {
 
 			// load region header
 			RegionMCAFile regionMCAFile = new RegionMCAFile(FileHelper.createMCAFilePath(region));
-			if (!regionMCAFile.getFile().exists() || regionMCAFile.getFile().length() <= 8192) {
+			if (!regionMCAFile.getFile().exists() || regionMCAFile.getFile().length() <= FileHelper.HEADER_SIZE) {
 				push(key, null);
 				return null;
 			}

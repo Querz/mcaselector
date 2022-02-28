@@ -1,6 +1,7 @@
 package net.querz.mcaselector.io.job;
 
 import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.Job;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.progress.Timer;
@@ -29,15 +30,15 @@ public abstract class ProcessDataJob extends Job {
 	}
 
 	public byte[] loadPoiHeader() {
-		return load(getRegionDirectories().getPoi(), 8192);
+		return load(getRegionDirectories().getPoi(), FileHelper.HEADER_SIZE);
 	}
 
 	public byte[] loadEntitiesHeader() {
-		return load(getRegionDirectories().getEntities(), 8192);
+		return load(getRegionDirectories().getEntities(), FileHelper.HEADER_SIZE);
 	}
 
 	public byte[] loadRegionHeader() {
-		return load(getRegionDirectories().getRegion(), 8192);
+		return load(getRegionDirectories().getRegion(), FileHelper.HEADER_SIZE);
 	}
 
 	protected byte[] load(File file) {
