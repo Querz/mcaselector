@@ -193,7 +193,7 @@ public final class ChunkImporter {
 		@Override
 		public boolean execute() {
 			// try to copy files directly if there is no offset, no selection and the target file does not exist
-			if (offset.getX() == 0 && offset.getY() == 0 && offset.getZ() == 0 && (selection == null || selection.size() == 0)) {
+			if (offset.getX() == 0 && offset.getY() == 0 && offset.getZ() == 0 && (selection == null || selection.size() == 0) && sourceChunks == null && !sourceChunksInverted) {
 				boolean allCopied = true;
 
 				if (!getRegionDirectories().getRegion().exists()) {
