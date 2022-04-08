@@ -937,8 +937,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	private Point2i getMouseBlock(double x, double z) {
-		int blockX = (int) (offset.getX() + x * scale);
-		int blockZ = (int) (offset.getY() + z * scale);
+		int blockX = (int) Math.floor(offset.getX() + x * scale);
+		int blockZ = (int) Math.floor(offset.getY() + z * scale);
 		return new Point2i(blockX, blockZ);
 	}
 
