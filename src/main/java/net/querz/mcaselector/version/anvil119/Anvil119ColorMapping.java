@@ -72,7 +72,7 @@ public class Anvil119ColorMapping implements ColorMapping {
 		}
 
 		try (BufferedReader bis = new BufferedReader(
-			new InputStreamReader(Objects.requireNonNull(ColorMapping.class.getClassLoader().getResourceAsStream("mapping/118/biome_colors.txt"))))) {
+			new InputStreamReader(Objects.requireNonNull(ColorMapping.class.getClassLoader().getResourceAsStream("mapping/119/biome_colors.txt"))))) {
 
 			String line;
 			while ((line = bis.readLine()) != null) {

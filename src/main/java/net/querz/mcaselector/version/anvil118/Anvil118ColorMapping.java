@@ -72,7 +72,7 @@ public class Anvil118ColorMapping implements ColorMapping {
 				}
 			}
 		} catch (IOException ex) {
-			throw new RuntimeException("failed to read mapping/117/colors.txt");
+			throw new RuntimeException("failed to read mapping/118/colors.txt");
 		}
 
 		try (BufferedReader bis = new BufferedReader(
