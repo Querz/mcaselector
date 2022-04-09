@@ -320,6 +320,7 @@ fletching_table
 flower_pot
 flowering_azalea
 flowering_azalea_leaves
+frogspawn
 frosted_ice
 furnace
 gilded_blackstone
@@ -484,6 +485,22 @@ magenta_terracotta
 magenta_wall_banner
 magenta_wool
 magma_block
+mangrove_button
+mangrove_door
+mangrove_fence
+mangrove_fence_gate
+mangrove_leaves
+mangrove_log
+mangrove_planks
+mangrove_pressure_plate
+mangrove_propagule
+mangrove_roots
+mangrove_sign
+mangrove_slab
+mangrove_stairs
+mangrove_trapdoor
+mangrove_wall_sign
+mangrove_wood
 medium_amethyst_bud
 melon
 melon_stem
@@ -498,6 +515,12 @@ mossy_stone_brick_stairs
 mossy_stone_brick_wall
 mossy_stone_bricks
 moving_piston
+mud
+mud_brick_slab
+mud_brick_stairs
+mud_brick_wall
+mud_bricks
+muddy_mangrove_roots
 mushroom_stem
 mycelium
 nether_brick_fence
@@ -531,6 +554,7 @@ oak_wall_sign
 oak_wood
 observer
 obsidian
+ochre_froglight
 orange_banner
 orange_bed
 orange_candle
@@ -552,6 +576,8 @@ oxidized_cut_copper
 oxidized_cut_copper_slab
 oxidized_cut_copper_stairs
 packed_ice
+packed_mud
+pearlescent_froglight
 peony
 petrified_oak_slab
 pink_banner
@@ -620,6 +646,7 @@ potted_fern
 potted_flowering_azalea_bush
 potted_jungle_sapling
 potted_lily_of_the_valley
+potted_mangrove_propagule
 potted_oak_sapling
 potted_orange_tulip
 potted_oxeye_daisy
@@ -703,6 +730,7 @@ redstone_ore
 redstone_torch
 redstone_wall_torch
 redstone_wire
+reinforced_deepslate
 repeater
 repeating_command_block
 respawn_anchor
@@ -714,7 +742,11 @@ sandstone_slab
 sandstone_stairs
 sandstone_wall
 scaffolding
+sculk
+sculk_catalyst
 sculk_sensor
+sculk_shrieker
+sculk_vein
 sea_lantern
 sea_pickle
 seagrass
@@ -789,6 +821,8 @@ stripped_dark_oak_log
 stripped_dark_oak_wood
 stripped_jungle_log
 stripped_jungle_wood
+stripped_mangrove_log
+stripped_mangrove_wood
 stripped_oak_log
 stripped_oak_wood
 stripped_spruce_log
@@ -818,6 +852,7 @@ tuff
 turtle_egg
 twisting_vines
 twisting_vines_plant
+verdant_froglight
 vine
 wall_sign
 wall_torch

@@ -11,6 +11,7 @@ crimson_forest
 dark_forest
 dark_forest_hills
 deep_cold_ocean
+deep_dark
 deep_frozen_ocean
 deep_lukewarm_ocean
 deep_ocean
@@ -41,6 +42,7 @@ jungle_edge
 jungle_hills
 lukewarm_ocean
 lush_caves
+mangrove_swamp
 meadow
 modified_badlands_plateau
 modified_gravelly_mountains

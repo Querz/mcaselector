@@ -1,3 +1,4 @@
+allay
 area_effect_cloud
 armor_stand
 arrow
@@ -8,6 +9,7 @@ blaze
 boat
 cat
 cave_spider
+chest_boat
 chest_minecart
 chicken
 cod
@@ -35,6 +37,7 @@ fireball
 firework_rocket
 fishing_bobber
 fox
+frog
 furnace_minecart
 ghast
 giant
@@ -91,6 +94,7 @@ spider
 squid
 stray
 strider
+tadpole
 tnt
 tnt_minecart
 trader_llama
@@ -101,6 +105,7 @@ vex
 villager
 vindicator
 wandering_trader
+warden
 witch
 wither
 wither_skeleton
