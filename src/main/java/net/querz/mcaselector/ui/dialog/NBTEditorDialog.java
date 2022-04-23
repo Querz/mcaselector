@@ -253,6 +253,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 					Platform.runLater(() -> {
 						treeView.setRoot(chunkData.getData());
 						treeViewHolder.setCenter(treeView);
+						treeView.getRoot().setExpanded(true);
 						getDialogPane().lookupButton(ButtonType.APPLY).setDisable(false);
 					});
 				} catch (IOException ex) {
