@@ -1,6 +1,8 @@
 package net.querz.mcaselector.changer;
 
 import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.tag.CompoundTag;
 
 public class ForceBlendField extends Field<Boolean> {
@@ -25,16 +27,8 @@ public class ForceBlendField extends Field<Boolean> {
 
 	@Override
 	public void change(ChunkData root) {
-		// blending_data
-		CompoundTag blendingData = new CompoundTag();
-		blendingData.putByte("old_noise", (byte) 1);
-		root.getRegion().getData().put("blending_data", blendingData);
-
-		// delete Heightmaps
-		root.getRegion().getData().remove("Heightmaps");
-
-		// remove isLightOn
-		root.getRegion().getData().remove("isLightOn");
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(root.getRegion().getData().getInt("DataVersion"));
+		chunkFilter.forceBlending(root.getRegion().getData());
 	}
 
 	@Override

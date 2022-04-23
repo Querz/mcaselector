@@ -772,4 +772,13 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		}
 		LegacyHelper.setIsLightOn(data, lightPopulated, dataVersion);
 	}
+
+	@Override
+	public void forceBlending(CompoundTag data) {
+		CompoundTag blendingData = new CompoundTag();
+		blendingData.putByte("old_noise", (byte) 1);
+		data.put("blending_data", blendingData);
+		data.remove("Heightmaps");
+		data.remove("isLightOn");
+	}
 }

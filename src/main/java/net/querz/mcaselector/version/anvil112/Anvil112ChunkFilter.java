@@ -560,4 +560,9 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 			level.putLong("LightPopulated", lightPopulated);
 		}
 	}
+
+	@Override
+	public void forceBlending(CompoundTag data) {
+		// do nothing
+	}
 }

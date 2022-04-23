@@ -65,6 +65,8 @@ public interface ChunkFilter {
 
 	void setLightPopulated(CompoundTag data, byte lightPopulated);
 
+	void forceBlending(CompoundTag data);
+
 	class BlockReplaceData {
 
 		private String name;

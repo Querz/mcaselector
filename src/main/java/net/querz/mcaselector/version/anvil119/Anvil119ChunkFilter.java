@@ -508,4 +508,23 @@ public class Anvil119ChunkFilter extends Anvil117ChunkFilter {
 			data.putByte("isLightOn", lightPopulated);
 		}
 	}
+
+	@Override
+	public void forceBlending(CompoundTag data) {
+		int min = 0, max = 0;
+		ListTag<CompoundTag> sections = Helper.tagFromCompound(data, "sections");
+		for (CompoundTag section : sections) {
+			int y = Helper.numberFromCompound(section, "Y", 0).intValue();
+			min = Math.min(y, min);
+			max = Math.max(y, max);
+		}
+		min = Math.min(min, -4);
+		max = Math.max(max, 20);
+		CompoundTag blendingData = new CompoundTag();
+		blendingData.putInt("min_section", min);
+		blendingData.putInt("max_section", max);
+		data.put("blending_data", blendingData);
+		data.remove("Heightmaps");
+		data.remove("isLightOn");
+	}
 }
