@@ -72,7 +72,7 @@ public class Anvil116ChunkRelocator implements ChunkRelocator {
 		Helper.applyOffsetToListOfShortTagLists(level, "PostProcessing", offset.blockToSection());
 
 		// adjust sections vertically
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(root, "Sections");
+		ListTag<CompoundTag> sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
 		if (sections != null) {
 			ListTag<CompoundTag> newSections = new ListTag<>(CompoundTag.class);
 			for (CompoundTag section : sections) {

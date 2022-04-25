@@ -18,6 +18,7 @@ public final class Helper {
 	public static <T extends Tag<?>> T tagFromLevelFromRoot(Tag<?> root, String key) {
 		return tagFromLevelFromRoot(root, key, null);
 	}
+
 	public static <T extends Tag<?>> T tagFromLevelFromRoot(Tag<?> root, String key, T def) {
 		CompoundTag level = levelFromRoot(root);
 		return tagFromCompound(level, key, def);
@@ -34,11 +35,20 @@ public final class Helper {
 			return def;
 		}
 		Tag<?> tag = c.get(key);
-		try {
-			return (T) tag;
-		} catch (ClassCastException ex) {
-			return def;
+		return (T) tag;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends Tag<?>> T getSectionsFromCompound(Tag<?> compound, String name) {
+		Tag<?> section = tagFromCompound(compound, name, null);
+		if (section == null || section.getID() == LongArrayTag.ID) {
+			return null;
 		}
+		return (T) section;
+	}
+
+	public static <T extends Tag<?>> T getSectionsFromLevelFromRoot(Tag<?> root, String name) {
+		return getSectionsFromCompound(levelFromRoot(root), name);
 	}
 
 	public static Point2i point2iFromCompound(Tag<?> compound, String xKey, String zKey) {

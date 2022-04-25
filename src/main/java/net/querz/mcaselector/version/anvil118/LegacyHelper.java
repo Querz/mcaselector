@@ -13,7 +13,7 @@ public final class LegacyHelper {
 		if (dataVersion > 2843) { // 21w42a
 			return Helper.tagFromCompound(root, "sections");
 		} else {
-			return Helper.tagFromLevelFromRoot(root, "Sections");
+			return Helper.getSectionsFromLevelFromRoot(root, "Sections");
 		}
 	}
 
