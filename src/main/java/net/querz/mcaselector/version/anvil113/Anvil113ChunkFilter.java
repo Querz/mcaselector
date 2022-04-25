@@ -218,8 +218,11 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 			for (int i = 0; i < 4096; i++) {
 				CompoundTag blockState = getBlockAt(i, blockStates, palette);
 
-				BlockReplaceData replacement = replace.get(blockState.getString("Name"));
-				if (replacement != null) {
+				for (Map.Entry<String, BlockReplaceData> entry : replace.entrySet()) {
+					if (!blockState.getString("Name").matches(entry.getKey())) {
+						continue;
+					}
+					BlockReplaceData replacement = entry.getValue();
 
 					try {
 						blockStates = setBlockAt(i, replacement.getState(), blockStates, palette);
