@@ -2,7 +2,7 @@ package net.querz.mcaselector.version;
 
 import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.nbt.io.SNBTUtil;
-import net.querz.nbt.tag.*;
+import net.querz.nbt.*;
 
 import java.io.IOException;
 import java.util.Collection;

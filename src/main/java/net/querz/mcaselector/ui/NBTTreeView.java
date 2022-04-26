@@ -24,7 +24,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.ui.dialog.EditArrayDialog;
-import net.querz.nbt.tag.*;
+import net.querz.nbt.*;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.HashMap;
@@ -80,7 +80,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				comp.remove(item.getValue().name);
 				item.getParent().getChildren().remove(item);
 			} else if (item.getValue().parent.getID() == 9) {
-				ListTag<Tag<?>> list = (ListTag<Tag<?>>) item.getValue().parent;
+				ListTag<Tag> list = (ListTag<Tag>) item.getValue().parent;
 				int index;
 				for (index = 0; index < list.size(); index++) {
 					if (list.get(index) == item.getValue().tag) {
@@ -103,7 +103,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 	 * if the target is a compound, it adds the tag with a generic name.
 	 */
 	@SuppressWarnings("unchecked")
-	public boolean addItem(TreeItem<NamedTag> target, String name, Tag<?> tag) {
+	public boolean addItem(TreeItem<NamedTag> target, String name, Tag tag) {
 		if (getRoot() == null && tag.getID() == CompoundTag.ID) {
 			setRoot((CompoundTag) tag);
 			layout();
@@ -124,7 +124,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			target.getChildren().add(newItem = toTreeItem(name, tag, comp));
 			target.setExpanded(true);
 		} else if (target.getValue().parent.getID() == 9) {
-			ListTag<Tag<?>> list = (ListTag<Tag<?>>) target.getValue().parent;
+			ListTag<Tag> list = (ListTag<Tag>) target.getValue().parent;
 			int index;
 			for (index = 0; index < list.size(); index++) {
 				if (list.get(index) == target.getValue().tag) {
@@ -169,8 +169,8 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void addTagToListTagUnsafe(ListTag<?> list, Tag<?> tag, int index) {
-		ListTag<Tag<?>> tList = (ListTag<Tag<?>>) list;
+	private static void addTagToListTagUnsafe(ListTag<?> list, Tag tag, int index) {
+		ListTag<Tag> tList = (ListTag<Tag>) list;
 		tList.add(index, tag);
 	}
 
@@ -251,7 +251,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		};
 	}
 
-	private void updateValue(Tag<?> tag, String value) {
+	private void updateValue(Tag tag, String value) {
 		switch (tag.getID()) {
 			case 1 -> ((ByteTag) tag).setValue(Byte.parseByte(value));
 			case 2 -> ((ShortTag) tag).setValue(Short.parseShort(value));
@@ -282,7 +282,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		super.setRoot(toTreeItem(null, root, null));
 	}
 
-	private static NBTTreeItem toTreeItem(String name, Tag<?> tag, Tag<?> parent) {
+	private static NBTTreeItem toTreeItem(String name, Tag tag, Tag parent) {
 		switch (tag.getID()) {
 			case 0:
 				return null;
@@ -295,7 +295,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				return item;
 			case 10:
 				item = new NBTTreeItem(new NamedTag(name, tag, parent));
-				for (Map.Entry<String, Tag<?>> child : (CompoundTag) tag) {
+				for (Map.Entry<String, Tag> child : (CompoundTag) tag) {
 					item.getChildren().add(toTreeItem(child.getKey(), child.getValue(), tag));
 				}
 				return item;
@@ -306,10 +306,10 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 	public static class NamedTag implements Serializable {
 		String name;
-		Tag<?> tag;
-		Tag<?> parent;
+		Tag tag;
+		Tag parent;
 
-		public NamedTag(String name, Tag<?> tag, Tag<?> parent) {
+		public NamedTag(String name, Tag tag, Tag parent) {
 			this.name = name;
 			this.tag = tag;
 			this.parent = parent;
@@ -384,7 +384,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			} else if (item.getValue().parent.getID() == 10) {
 				CompoundTag comp = (CompoundTag) item.getValue().parent;
 				String toRemove = null;
-				for (Map.Entry<String, Tag<?>> sourceChild : comp) {
+				for (Map.Entry<String, Tag> sourceChild : comp) {
 					if (sourceChild.getValue() == item.getValue().tag) {
 						toRemove = sourceChild.getKey();
 						break;
@@ -738,7 +738,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			setInsertParentCss(false);
 		}
 
-		private int findDropIndex(Tag<?> target, Tag<?> tag) {
+		private int findDropIndex(Tag target, Tag tag) {
 			if (target.getID() == 9) {
 				ListTag<?> list = (ListTag<?>) target;
 				for (int index = 0; index < list.size(); index++) {

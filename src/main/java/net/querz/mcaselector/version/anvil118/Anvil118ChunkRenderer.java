@@ -6,7 +6,7 @@ import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.ChunkRenderer;
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.version.Helper;
-import net.querz.nbt.tag.*;
+import net.querz.nbt.*;
 import static net.querz.mcaselector.validation.ValidationHelper.silent;
 
 public class Anvil118ChunkRenderer implements ChunkRenderer {

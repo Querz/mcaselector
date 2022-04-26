@@ -2,7 +2,7 @@ package net.querz.mcaselector.version;
 
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
-import net.querz.nbt.tag.*;
+import net.querz.nbt.*;
 import java.util.Random;
 
 public final class Helper {
@@ -11,47 +11,47 @@ public final class Helper {
 
 	private Helper() {}
 
-	public static CompoundTag levelFromRoot(Tag<?> root) {
+	public static CompoundTag levelFromRoot(Tag root) {
 		return tagFromCompound(root, "Level", null);
 	}
 
-	public static <T extends Tag<?>> T tagFromLevelFromRoot(Tag<?> root, String key) {
+	public static <T extends Tag> T tagFromLevelFromRoot(Tag root, String key) {
 		return tagFromLevelFromRoot(root, key, null);
 	}
 
-	public static <T extends Tag<?>> T tagFromLevelFromRoot(Tag<?> root, String key, T def) {
+	public static <T extends Tag> T tagFromLevelFromRoot(Tag root, String key, T def) {
 		CompoundTag level = levelFromRoot(root);
 		return tagFromCompound(level, key, def);
 	}
 
-	public static <T extends Tag<?>> T tagFromCompound(Tag<?> compound, String key) {
+	public static <T extends Tag> T tagFromCompound(Tag compound, String key) {
 		return tagFromCompound(compound, key, null);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends Tag<?>> T tagFromCompound(Tag<?> compound, String key, T def) {
+	public static <T extends Tag> T tagFromCompound(Tag compound, String key, T def) {
 		CompoundTag c;
 		if (!(compound instanceof CompoundTag) || !(c = (CompoundTag) compound).containsKey(key)) {
 			return def;
 		}
-		Tag<?> tag = c.get(key);
+		Tag tag = c.get(key);
 		return (T) tag;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends Tag<?>> T getSectionsFromCompound(Tag<?> compound, String name) {
-		Tag<?> section = tagFromCompound(compound, name, null);
-		if (section == null || section.getID() == LongArrayTag.ID) {
+	public static <T extends Tag> T getSectionsFromCompound(Tag compound, String name) {
+		Tag section = tagFromCompound(compound, name, null);
+		if (section == null || section.getID() == Tag.LONG_ARRAY) {
 			return null;
 		}
 		return (T) section;
 	}
 
-	public static <T extends Tag<?>> T getSectionsFromLevelFromRoot(Tag<?> root, String name) {
+	public static <T extends Tag> T getSectionsFromLevelFromRoot(Tag root, String name) {
 		return getSectionsFromCompound(levelFromRoot(root), name);
 	}
 
-	public static Point2i point2iFromCompound(Tag<?> compound, String xKey, String zKey) {
+	public static Point2i point2iFromCompound(Tag compound, String xKey, String zKey) {
 		IntTag x = tagFromCompound(compound, xKey, null);
 		IntTag z = tagFromCompound(compound, zKey, null);
 		if (x == null || z == null) {
@@ -60,15 +60,15 @@ public final class Helper {
 		return new Point2i(x.asInt(), z.asInt());
 	}
 
-	public static Number numberFromCompound(Tag<?> compound, String key, Number def) {
-		NumberTag<?> t = tagFromCompound(compound, key, null);
+	public static Number numberFromCompound(Tag compound, String key, Number def) {
+		NumberTag t = tagFromCompound(compound, key, null);
 		if (t == null) {
 			return def;
 		}
-		return ((CompoundTag) compound).getNumber(key);
+		return ((CompoundTag) compound).getInt(key);
 	}
 
-	public static Byte byteFromCompound(Tag<?> compound, String key) {
+	public static Byte byteFromCompound(Tag compound, String key) {
 		ByteTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asByte();
@@ -76,7 +76,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static Short shortFromCompound(Tag<?> compound, String key) {
+	public static Short shortFromCompound(Tag compound, String key) {
 		ShortTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asShort();
@@ -84,7 +84,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static Integer intFromCompound(Tag<?> compound, String key) {
+	public static Integer intFromCompound(Tag compound, String key) {
 		IntTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asInt();
@@ -92,7 +92,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static Long longFromCompound(Tag<?> compound, String key) {
+	public static Long longFromCompound(Tag compound, String key) {
 		LongTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asLong();
@@ -100,7 +100,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static Double doubleFromCompound(Tag<?> compound, String key) {
+	public static Double doubleFromCompound(Tag compound, String key) {
 		DoubleTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asDouble();
@@ -108,7 +108,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static Float floatFromCompound(Tag<?> compound, String key) {
+	public static Float floatFromCompound(Tag compound, String key) {
 		FloatTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asFloat();
@@ -116,7 +116,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static byte[] byteArrayFromCompound(Tag<?> compound, String key) {
+	public static byte[] byteArrayFromCompound(Tag compound, String key) {
 		ByteArrayTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.getValue();
@@ -124,7 +124,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static int[] intArrayFromCompound(Tag<?> compound, String key) {
+	public static int[] intArrayFromCompound(Tag compound, String key) {
 		IntArrayTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.getValue();
@@ -132,7 +132,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static long[] longArrayFromCompound(Tag<?> compound, String key) {
+	public static long[] longArrayFromCompound(Tag compound, String key) {
 		LongArrayTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.getValue();
@@ -140,7 +140,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static String stringFromCompound(Tag<?> compound, String key) {
+	public static String stringFromCompound(Tag compound, String key) {
 		StringTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.getValue();
@@ -148,7 +148,7 @@ public final class Helper {
 		return null;
 	}
 
-	public static String stringFromCompound(Tag<?> compound, String key, String def) {
+	public static String stringFromCompound(Tag compound, String key, String def) {
 		StringTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.getValue();
@@ -171,11 +171,11 @@ public final class Helper {
 		}
 	}
 
-	public static void applyOffsetToIntListPos(ListTag<IntTag> pos, Point3i offset) {
+	public static void applyOffsetToIntListPos(ListTag pos, Point3i offset) {
 		if (pos != null && pos.size() == 3) {
-			pos.set(0, new IntTag(pos.get(0).asInt() + offset.getX()));
-			pos.set(1, new IntTag(pos.get(1).asInt() + offset.getY()));
-			pos.set(2, new IntTag(pos.get(2).asInt() + offset.getZ()));
+			pos.set(0, IntTag.valueOf(pos.getInt(0) + offset.getX()));
+			pos.set(1, IntTag.valueOf(pos.getInt(1) + offset.getY()));
+			pos.set(2, IntTag.valueOf(pos.getInt(2) + offset.getZ()));
 		}
 	}
 
@@ -229,10 +229,10 @@ public final class Helper {
 			return;
 		}
 
-		ListTag<ListTag<ShortTag>> list = tagFromCompound(root, key, null);
+		ListTag list = tagFromCompound(root, key, null);
 		if (list != null) {
-			ListTag<ListTag<ShortTag>> copy = list.clone();
-			list.forEach(ListTag::clear);
+			ListTag copy = list.copy();
+			list.forEach(e -> ((ListTag) e).clear());
 
 			for (int i = 0; i < copy.size(); i++) {
 				int y = i + offset.getY();

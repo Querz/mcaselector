@@ -21,7 +21,7 @@ public class Anvil114PoiRelocator implements ChunkRelocator {
 
 		CompoundTag newSections = new CompoundTag();
 
-		for (Map.Entry<String, Tag<?>> s : sections) {
+		for (Map.Entry<String, Tag> s : sections) {
 			CompoundTag section = silent(() -> (CompoundTag) s.getValue(), null);
 			if (section == null) {
 				continue;

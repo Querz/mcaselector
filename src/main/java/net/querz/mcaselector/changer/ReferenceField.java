@@ -40,7 +40,7 @@ public class ReferenceField extends Field<Boolean> {
 		CompoundTag references = chunkFilter.getStructureReferences(data.getRegion().getData());
 		int xPos = chunkFilter.getXPos(data.getRegion().getData()).asInt();
 		int zPos = chunkFilter.getZPos(data.getRegion().getData()).asInt();
-		for (Map.Entry<String, Tag<?>> entry : references) {
+		for (Map.Entry<String, Tag> entry : references) {
 			if (entry.getValue() instanceof LongArrayTag) {
 				long[] structureReferences = ((LongArrayTag) entry.getValue()).getValue();
 

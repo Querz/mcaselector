@@ -181,7 +181,7 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 		// update references
 		CompoundTag references = Helper.tagFromCompound(structures, "References");
 		if (references != null) {
-			for (Map.Entry<String, Tag<?>> entry : references) {
+			for (Map.Entry<String, Tag> entry : references) {
 				long[] reference = silent(() -> ((LongArrayTag) entry.getValue()).getValue(), null);
 				if (reference != null) {
 					for (int i = 0; i < reference.length; i++) {
@@ -196,7 +196,7 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 		// update starts
 		CompoundTag starts = Helper.tagFromCompound(structures, "Starts");
 		if (starts != null) {
-			for (Map.Entry<String, Tag<?>> entry : starts) {
+			for (Map.Entry<String, Tag> entry : starts) {
 				CompoundTag structure = silent(() -> (CompoundTag) entry.getValue(), null);
 				if ("INVALID".equals(Helper.stringFromCompound(structure, "id"))) {
 					continue;

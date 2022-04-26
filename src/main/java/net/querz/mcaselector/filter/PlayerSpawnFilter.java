@@ -3,7 +3,7 @@ package net.querz.mcaselector.filter;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.io.NamedTag;
-import net.querz.nbt.tag.*;
+import net.querz.nbt.*;
 import java.io.File;
 
 public class PlayerSpawnFilter extends PlayerLocationFilter {
@@ -36,7 +36,7 @@ public class PlayerSpawnFilter extends PlayerLocationFilter {
 				if (spawnX == null || spawnZ == null) {
 					continue;
 				}
-				Tag<?> dimTag = root.get("SpawnDimension");
+				Tag dimTag = root.get("SpawnDimension");
 
 				Object dim = null;
 				if (dimTag instanceof IntTag) {

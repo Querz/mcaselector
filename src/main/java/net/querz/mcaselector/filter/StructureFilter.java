@@ -31,7 +31,7 @@ public class StructureFilter extends TextFilter<List<String>> {
 			return false;
 		}
 		for (String name : value) {
-			Tag<?> structure = references.get(name);
+			Tag structure = references.get(name);
 			if (structure == null || structure.valueToString().equals("[]")) {
 				structure = references.get(StructureRegistry.getAltName(name));
 				if (structure == null || structure.valueToString().equals("[]")) {

@@ -34,7 +34,7 @@ import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.ui.NBTTreeView;
 import net.querz.mcaselector.ui.UIFactory;
-import net.querz.nbt.tag.*;
+import net.querz.nbt.*;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -219,7 +219,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		enableAddTagLabels(null, addTagLabels);
 	}
 
-	private Label iconLabel(String img, Supplier<Tag<?>> tagSupplier, NBTTreeView nbtTreeView, BorderPane treeViewHolder, Consumer<CompoundTag> consumer) {
+	private Label iconLabel(String img, Supplier<Tag> tagSupplier, NBTTreeView nbtTreeView, BorderPane treeViewHolder, Consumer<CompoundTag> consumer) {
 		ImageView icon = new ImageView(FileHelper.getIconFromResources(img));
 		Label label = new Label("", icon);
 		icon.setPreserveRatio(true);
@@ -228,7 +228,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		label.getStyleClass().add("nbt-editor-add-tag-label");
 		label.setOnMouseClicked(e -> {
 			treeViewHolder.setCenter(nbtTreeView);
-			Tag<?> newTag = tagSupplier.get();
+			Tag newTag = tagSupplier.get();
 			if (nbtTreeView.addItem(nbtTreeView.getSelectionModel().getSelectedItem(), "Unknown", newTag)) {
 				// if we created a root tag, it is always a compound tag
 				consumer.accept((CompoundTag) newTag);

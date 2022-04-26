@@ -109,7 +109,7 @@ public class Anvil115ChunkMerger implements ChunkMerger {
 
 		if (destinationStarts.size() != 0) {
 			// remove BBs from destination
-			for (Map.Entry<String, Tag<?>> start : destinationStarts) {
+			for (Map.Entry<String, Tag> start : destinationStarts) {
 				ListTag<CompoundTag> children = Helper.tagFromCompound(start.getValue(), "Children", null);
 				if (children != null) {
 					child: for (int i = 0; i < children.size(); i++) {
@@ -146,7 +146,7 @@ public class Anvil115ChunkMerger implements ChunkMerger {
 
 		// add BBs from source to destination
 		// if child BB doesn't exist in destination, we copy start over to destination
-		for (Map.Entry<String, Tag<?>> start : sourceStarts) {
+		for (Map.Entry<String, Tag> start : sourceStarts) {
 			ListTag<CompoundTag> children = Helper.tagFromCompound(start.getValue(), "Children", null);
 			if (children != null) {
 				child:

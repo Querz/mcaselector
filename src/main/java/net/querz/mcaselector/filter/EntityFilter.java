@@ -50,7 +50,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 		if (data.getRegion() == null || data.getRegion().getData() == null) {
 			return false;
 		}
-		Tag<?> rawEntities = VersionController.getEntityFilter(data.getRegion().getData().getInt("DataVersion")).getEntities(data);
+		Tag rawEntities = VersionController.getEntityFilter(data.getRegion().getData().getInt("DataVersion")).getEntities(data);
 		if (rawEntities == null || rawEntities.getID() == LongArrayTag.ID) {
 			return false;
 		}
@@ -73,7 +73,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 		if (data.getRegion() == null || data.getRegion().getData() == null) {
 			return false;
 		}
-		Tag<?> rawEntities = VersionController.getEntityFilter(data.getRegion().getData().getInt("DataVersion")).getEntities(data);
+		Tag rawEntities = VersionController.getEntityFilter(data.getRegion().getData().getInt("DataVersion")).getEntities(data);
 		if (rawEntities == null || rawEntities.getID() == LongArrayTag.ID) {
 			return false;
 		}

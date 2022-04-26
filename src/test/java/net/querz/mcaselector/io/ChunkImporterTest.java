@@ -1252,7 +1252,7 @@ public class ChunkImporterTest {
 //				"SleepingX", "SleepingZ", "APX", "APZ", "BoundX", "BoundZ", "TileX", "TileZ", "pos"));
 //	}
 //
-//	private boolean nbtEqualsIgnoreFields(Tag<?> a, Tag<?> b, String... ignored) {
+//	private boolean nbtEqualsIgnoreFields(Tag a, Tag b, String... ignored) {
 //		if (a.getID() != b.getID()) {
 //			return false;
 //		}
@@ -1273,7 +1273,7 @@ public class ChunkImporterTest {
 //				if (((CompoundTag) a).size() != ((CompoundTag) b).size()) {
 //					return false;
 //				}
-//				l: for (Map.Entry<String, Tag<?>> entry : (CompoundTag) a) {
+//				l: for (Map.Entry<String, Tag> entry : (CompoundTag) a) {
 //					if (((CompoundTag) b).containsKey(entry.getKey())) {
 //						// skip ignored fields
 //						for (String i : ignored) {

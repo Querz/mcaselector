@@ -5,7 +5,7 @@ import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.Helper;
-import net.querz.nbt.tag.*;
+import net.querz.nbt.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -75,7 +75,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchBlockNames(CompoundTag data, Collection<String> names) {
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
@@ -87,7 +87,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 				Debug.dump("no mapping found for " + name);
 				continue;
 			}
-			for (CompoundTag t : sections) {
+			for (Tag t : sections) {
 				byte[] blocks = Helper.byteArrayFromCompound(t, "Blocks");
 				if (blocks == null) {
 					continue;

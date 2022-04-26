@@ -7,7 +7,7 @@ import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.Helper;
-import net.querz.nbt.tag.*;
+import net.querz.nbt.*;
 
 import java.util.*;
 

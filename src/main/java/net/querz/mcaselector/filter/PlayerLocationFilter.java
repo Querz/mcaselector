@@ -182,7 +182,7 @@ public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.Player
 				if (pos.size() != 3) {
 					continue;
 				}
-				Tag<?> dimTag = root.get("Dimension");
+				Tag dimTag = root.get("Dimension");
 
 				Object dim = null;
 				if (dimTag instanceof IntTag) {

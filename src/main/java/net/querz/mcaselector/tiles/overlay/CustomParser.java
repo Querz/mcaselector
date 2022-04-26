@@ -44,7 +44,7 @@ public class CustomParser extends AmountParser {
 		if (chunk == null || chunk.getData() == null) {
 			return 0;
 		}
-		Tag<?> current = chunk.getData();
+		Tag current = chunk.getData();
 		for (Node node : path) {
 			if (node instanceof Name name) {
 				if (current instanceof CompoundTag t) {

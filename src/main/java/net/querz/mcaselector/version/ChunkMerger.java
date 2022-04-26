@@ -15,7 +15,7 @@ public interface ChunkMerger {
 
 	CompoundTag newEmptyChunk(Point2i absoluteLocation, int dataVersion);
 
-	default <T extends Tag<?>> ListTag<T> mergeLists(ListTag<T> source, ListTag<T> destination, List<Range> ranges, Function<T, Integer> ySupplier, int yOffset) {
+	default <T extends Tag> ListTag<T> mergeLists(ListTag<T> source, ListTag<T> destination, List<Range> ranges, Function<T, Integer> ySupplier, int yOffset) {
 
 		Map<Integer, T> resultSet = new HashMap<>();
 		for (T dest : destination) {
@@ -75,7 +75,7 @@ public interface ChunkMerger {
 		CompoundTag sourceElements = Helper.tagFromCompound(source, name, new CompoundTag());
 		CompoundTag destinationElements = Helper.tagFromCompound(destination, name, new CompoundTag());
 
-		for (Map.Entry<String, Tag<?>> sourceElement : sourceElements) {
+		for (Map.Entry<String, Tag> sourceElement : sourceElements) {
 			if (sourceElement.getKey().matches("^-?[0-9]{1,2}$")) {
 				int y = Integer.parseInt(sourceElement.getKey());
 				for (Range range : ranges) {
