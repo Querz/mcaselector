@@ -215,6 +215,9 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 				continue;
 			}
 
+			section.remove("BlockLight");
+			section.remove("SkyLight");
+
 			for (int i = 0; i < 4096; i++) {
 				CompoundTag blockState = getBlockAt(i, blockStates, palette);
 
