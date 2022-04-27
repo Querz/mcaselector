@@ -225,13 +225,13 @@ public class Region {
 			entities = new EntitiesMCAFile(directories.getEntities());
 		}
 		if (region != null) {
-			region.setChunkAt(location, chunkData.getRegion());
+			region.setChunkAt(location, chunkData.region());
 		}
 		if (poi != null) {
-			poi.setChunkAt(location, chunkData.getPoi());
+			poi.setChunkAt(location, chunkData.poi());
 		}
 		if (entities != null) {
-			entities.setChunkAt(location, chunkData.getEntities());
+			entities.setChunkAt(location, chunkData.entities());
 		}
 	}
 

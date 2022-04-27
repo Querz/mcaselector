@@ -4,10 +4,10 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.io.ParseException;
-import net.querz.nbt.io.SNBTParser;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.Tag;
+import net.querz.nbt.CompoundTag;
+import net.querz.nbt.io.snbt.ParseException;
+import net.querz.nbt.io.snbt.SNBTParser;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -78,7 +78,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 				// block state
 				try {
 					SNBTParser parser = new SNBTParser(to);
-					toState = (CompoundTag) parser.parse(Tag.DEFAULT_MAX_DEPTH, true);
+					toState = (CompoundTag) parser.parse(true);
 					read += parser.getReadChars() - 1;
 				} catch (ParseException ex) {
 					return super.parseNewValue(s);
@@ -128,7 +128,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 				}
 				try {
 					SNBTParser parser = new SNBTParser(to);
-					toTile = (CompoundTag) parser.parse(Tag.DEFAULT_MAX_DEPTH, true);
+					toTile = (CompoundTag) parser.parse(true);
 					int readTile = parser.getReadChars();
 					to = to.substring(readTile - 1);
 				} catch (ParseException ex) {
@@ -176,8 +176,8 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 
 	@Override
 	public void change(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		chunkFilter.replaceBlocks(data.getRegion().getData(), getNewValue());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		chunkFilter.replaceBlocks(data.region().getData(), getNewValue());
 	}
 
 	@Override

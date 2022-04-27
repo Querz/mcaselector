@@ -61,14 +61,14 @@ public class DialogHelper {
 				if (confR == ButtonType.OK) {
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_CHANGING_NBT_DATA, primaryStage)
 							.showProgressBar(t -> FieldChanger.changeNBTFields(
-									r.getFields(),
-									r.isForce(),
-									r.isSelectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
+									r.fields(),
+									r.force(),
+									r.selectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
 									t,
 									false
 							));
 					if (r.requiresClearCache()) {
-						if (r.isSelectionOnly()) {
+						if (r.selectionOnly()) {
 							CacheHelper.clearSelectionCache(tileMap);
 						} else {
 							CacheHelper.clearAllCache(tileMap);
@@ -591,9 +591,7 @@ public class DialogHelper {
 			tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
 			tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString());
 			task.done(Translation.DIALOG_PROGRESS_DONE.toString());
-			Platform.runLater(() -> {
-				tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent());
-			});
+			Platform.runLater(() -> tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent()));
 		});
 	}
 

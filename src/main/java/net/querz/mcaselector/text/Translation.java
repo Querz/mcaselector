@@ -333,28 +333,26 @@ public enum Translation {
 
 		if (dirURL != null && dirURL.getProtocol().equals("jar")) {
 			String jarPath = dirURL.getPath().substring(5, dirURL.getPath().lastIndexOf('!'));
-			JarFile jar;
-			try {
-				jar = new JarFile(URLDecoder.decode(jarPath, StandardCharsets.UTF_8));
+			try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, StandardCharsets.UTF_8))) {
+				Enumeration<JarEntry> entries = jar.entries();
+				Set<String> result = new HashSet<>();
+
+				while (entries.hasMoreElements()) {
+					String name = entries.nextElement().getName();
+					if (name.startsWith(path)) {
+						String entry = name.substring(path.length());
+						int checkSubdir = entry.indexOf("/");
+						if (entry.length() > 1) {
+							entry = entry.substring(checkSubdir + 1);
+							result.add(entry);
+						}
+					}
+				}
+				return result.toArray(new String[0]);
 			} catch (IOException ex) {
 				Debug.dumpException("failed to decode jar file", ex);
 				return null;
 			}
-			Enumeration<JarEntry> entries = jar.entries();
-			Set<String> result = new HashSet<>();
-
-			while (entries.hasMoreElements()) {
-				String name = entries.nextElement().getName();
-				if (name.startsWith(path)) {
-					String entry = name.substring(path.length());
-					int checkSubdir = entry.indexOf("/");
-					if (entry.length() > 1) {
-						entry = entry.substring(checkSubdir + 1);
-						result.add(entry);
-					}
-				}
-			}
-			return result.toArray(new String[0]);
 		}
 		throw new UnsupportedOperationException("cannot list files for URL " + dirURL);
 	}

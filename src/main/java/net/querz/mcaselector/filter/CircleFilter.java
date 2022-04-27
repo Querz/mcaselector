@@ -5,7 +5,7 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.tag.IntTag;
+import net.querz.nbt.IntTag;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,13 +81,13 @@ public class CircleFilter extends TextFilter<List<CircleFilter.CircleFilterDefin
 
 	@Override
 	public boolean contains(List<CircleFilterDefinition> value, ChunkData data) {
-		if (data.getRegion() == null || data.getRegion().getData() == null) {
+		if (data.region() == null || data.region().getData() == null) {
 			return false;
 		}
 
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		IntTag xPos = chunkFilter.getXPos(data.getRegion().getData());
-		IntTag zPos = chunkFilter.getZPos(data.getRegion().getData());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		IntTag xPos = chunkFilter.getXPos(data.region().getData());
+		IntTag zPos = chunkFilter.getZPos(data.region().getData());
 		if (xPos == null || zPos == null) {
 			return false;
 		}

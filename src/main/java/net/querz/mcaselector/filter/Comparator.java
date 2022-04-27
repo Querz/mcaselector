@@ -54,17 +54,15 @@ public enum Comparator {
 	}
 
 	public static Comparator negate(Comparator c) {
-		switch (c) {
-			case EQUAL: return NOT_EQUAL;
-			case NOT_EQUAL: return EQUAL;
-			case SMALLER: return LARGER_EQUAL;
-			case LARGER: return SMALLER_EQUAL;
-			case SMALLER_EQUAL: return LARGER;
-			case LARGER_EQUAL: return SMALLER;
-			case CONTAINS:
-			case INTERSECTS: return CONTAINS_NOT;
-			case CONTAINS_NOT: return CONTAINS;
-		}
-		throw new IllegalArgumentException("failed to negate comparator " + c);
+		return switch (c) {
+			case EQUAL -> NOT_EQUAL;
+			case NOT_EQUAL -> EQUAL;
+			case SMALLER -> LARGER_EQUAL;
+			case LARGER -> SMALLER_EQUAL;
+			case SMALLER_EQUAL -> LARGER;
+			case LARGER_EQUAL -> SMALLER;
+			case CONTAINS, INTERSECTS -> CONTAINS_NOT;
+			case CONTAINS_NOT -> CONTAINS;
+		};
 	}
 }

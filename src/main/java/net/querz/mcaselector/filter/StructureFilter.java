@@ -5,8 +5,9 @@ import net.querz.mcaselector.io.registry.StructureRegistry;
 import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.Tag;
+import net.querz.nbt.CompoundTag;
+import net.querz.nbt.NBTUtil;
+import net.querz.nbt.Tag;
 import java.util.*;
 
 public class StructureFilter extends TextFilter<List<String>> {
@@ -22,19 +23,19 @@ public class StructureFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean contains(List<String> value, ChunkData data) {
-		if (data.getRegion() == null || data.getRegion().getData() == null) {
+		if (data.region() == null || data.region().getData() == null) {
 			return false;
 		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		CompoundTag references = chunkFilter.getStructureReferences(data.getRegion().getData());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		CompoundTag references = chunkFilter.getStructureReferences(data.region().getData());
 		if (references == null) {
 			return false;
 		}
 		for (String name : value) {
 			Tag structure = references.get(name);
-			if (structure == null || structure.valueToString().equals("[]")) {
+			if (structure == null || NBTUtil.toSNBT(structure).equals("[]")) {
 				structure = references.get(StructureRegistry.getAltName(name));
-				if (structure == null || structure.valueToString().equals("[]")) {
+				if (structure == null || NBTUtil.toSNBT(structure).equals("[]")) {
 					return false;
 				}
 			}
@@ -49,11 +50,11 @@ public class StructureFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean intersects(List<String> value, ChunkData data) {
-		if (data.getRegion() == null || data.getRegion().getData() == null) {
+		if (data.region() == null || data.region().getData() == null) {
 			return false;
 		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		CompoundTag references = chunkFilter.getStructureReferences(data.getRegion().getData());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		CompoundTag references = chunkFilter.getStructureReferences(data.region().getData());
 		if (references == null) {
 			return false;
 		}

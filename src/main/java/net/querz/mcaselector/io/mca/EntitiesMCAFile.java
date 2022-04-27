@@ -6,7 +6,7 @@ import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.version.ChunkMerger;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.CompoundTag;
 import java.io.File;
 import java.util.List;
 

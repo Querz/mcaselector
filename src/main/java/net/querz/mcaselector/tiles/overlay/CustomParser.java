@@ -4,14 +4,13 @@ import net.querz.mcaselector.exception.ParseException;
 import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.text.TextHelper;
-import net.querz.nbt.tag.ArrayTag;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.NumberTag;
-import net.querz.nbt.tag.Tag;
+import net.querz.nbt.CollectionTag;
+import net.querz.nbt.CompoundTag;
+import net.querz.nbt.ListTag;
+import net.querz.nbt.NumberTag;
+import net.querz.nbt.Tag;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -23,7 +22,7 @@ public class CustomParser extends AmountParser {
 	private String root;
 	private boolean size;
 
-	private Pattern indexPattern = Pattern.compile("^\\[(?<index>\\d+)]$");
+	private final Pattern indexPattern = Pattern.compile("^\\[(?<index>\\d+)]$");
 
 	public CustomParser() {
 		super(OverlayType.CUSTOM);
@@ -33,9 +32,9 @@ public class CustomParser extends AmountParser {
 	@Override
 	public int parseValue(ChunkData chunkData) {
 		return switch (root) {
-			case "region" -> getValue(chunkData.getRegion());
-			case "poi" -> getValue(chunkData.getPoi());
-			case "entities" -> getValue(chunkData.getEntities());
+			case "region" -> getValue(chunkData.region());
+			case "poi" -> getValue(chunkData.poi());
+			case "entities" -> getValue(chunkData.entities());
 			default -> 0;
 		};
 	}
@@ -53,7 +52,7 @@ public class CustomParser extends AmountParser {
 					return 0;
 				}
 			} else if (node instanceof Index index) {
-				if (current instanceof ListTag<?> l) {
+				if (current instanceof ListTag l) {
 					current = l.get(index.index);
 				} else {
 					return 0;
@@ -62,14 +61,12 @@ public class CustomParser extends AmountParser {
 				return 0;
 			}
 		}
-		if (current instanceof NumberTag<?> number && !size) {
+		if (current instanceof NumberTag number && !size) {
 			return number.asInt();
 		} else if (current instanceof CompoundTag compound && size) {
 			return compound.size();
-		} else if (current instanceof ListTag<?> list && size) {
-			return list.size();
-		} else if (current instanceof ArrayTag<?> array && size) {
-			return array.length();
+		} else if (current instanceof CollectionTag collection && size) {
+			return collection.size();
 		}
 		return 0;
 	}

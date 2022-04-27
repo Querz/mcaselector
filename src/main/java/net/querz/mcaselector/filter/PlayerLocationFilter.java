@@ -6,14 +6,12 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.io.NBTUtil;
-import net.querz.nbt.io.NamedTag;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.DoubleTag;
-import net.querz.nbt.tag.IntTag;
-import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.StringTag;
-import net.querz.nbt.tag.Tag;
+import net.querz.nbt.CompoundTag;
+import net.querz.nbt.IntTag;
+import net.querz.nbt.ListTag;
+import net.querz.nbt.NBTUtil;
+import net.querz.nbt.StringTag;
+import net.querz.nbt.Tag;
 import java.io.File;
 import java.io.Serializable;
 
@@ -96,7 +94,7 @@ public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.Player
 
 	@Override
 	public boolean contains(PlayerLocationFilterDefinition value, ChunkData data) {
-		if (data.getRegion() == null || data.getRegion().getData() == null) {
+		if (data.region() == null || data.region().getData() == null) {
 			return false;
 		}
 
@@ -108,9 +106,9 @@ public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.Player
 			}
 		}
 
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		IntTag xPos = chunkFilter.getXPos(data.getRegion().getData());
-		IntTag zPos = chunkFilter.getZPos(data.getRegion().getData());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		IntTag xPos = chunkFilter.getXPos(data.region().getData());
+		IntTag zPos = chunkFilter.getZPos(data.region().getData());
 		if (xPos == null || zPos == null) {
 			return false;
 		}
@@ -176,9 +174,8 @@ public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.Player
 
 		for (File playerFile : playerFiles) {
 			try {
-				NamedTag data = NBTUtil.read(playerFile);
-				CompoundTag root = (CompoundTag) data.getTag();
-				ListTag<DoubleTag> pos = root.getListTag("Pos").asDoubleTagList();
+				CompoundTag root = (CompoundTag) NBTUtil.read(playerFile);
+				ListTag pos = root.getListTag("Pos");
 				if (pos.size() != 3) {
 					continue;
 				}
@@ -195,7 +192,7 @@ public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.Player
 					continue;
 				}
 
-				Point2i playerLocation = new Point2i(pos.get(0).asInt(), pos.get(2).asInt());
+				Point2i playerLocation = new Point2i(pos.getInt(0), pos.getInt(2));
 				playerChunks.add(playerLocation.blockToChunk().asLong());
 				playerRegions.add(playerLocation.blockToRegion().asLong());
 			} catch (Exception ex) {

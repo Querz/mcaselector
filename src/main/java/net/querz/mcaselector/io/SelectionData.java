@@ -5,23 +5,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.tiles.Tile;
 
-public class SelectionData {
-
-	private final Long2ObjectOpenHashMap<LongOpenHashSet> selection;
-	private final boolean inverted;
-
-	public SelectionData(Long2ObjectOpenHashMap<LongOpenHashSet> selection, boolean inverted) {
-		this.selection = selection;
-		this.inverted = inverted;
-	}
-
-	public Long2ObjectOpenHashMap<LongOpenHashSet> selection() {
-		return selection;
-	}
-
-	public boolean inverted() {
-		return inverted;
-	}
+public record SelectionData(Long2ObjectOpenHashMap<LongOpenHashSet> selection, boolean inverted) {
 
 	public boolean isEmpty() {
 		return !inverted && selection.isEmpty();

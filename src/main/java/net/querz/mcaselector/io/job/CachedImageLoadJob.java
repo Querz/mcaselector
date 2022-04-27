@@ -35,10 +35,10 @@ public class CachedImageLoadJob extends ProcessDataJob {
 		}
 	}
 
-	private Tile tile;
-	private File cachedImageFile;
-	private int loadZoomLevel, targetZoomLevel;
-	private Consumer<Image> callback;
+	private final Tile tile;
+	private final File cachedImageFile;
+	private final int loadZoomLevel, targetZoomLevel;
+	private final Consumer<Image> callback;
 
 	public CachedImageLoadJob(Tile tile, File cachedImageFile, int loadZoomLevel, int targetZoomLevel, Consumer<Image> callback) {
 		super(new RegionDirectories(tile.getLocation(), null, null, null), PRIORITY_MEDIUM);

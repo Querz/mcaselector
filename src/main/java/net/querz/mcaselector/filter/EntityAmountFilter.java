@@ -3,7 +3,7 @@ package net.querz.mcaselector.filter;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.EntityFilter;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.ListTag;
 
 public class EntityAmountFilter extends IntFilter {
 
@@ -17,8 +17,8 @@ public class EntityAmountFilter extends IntFilter {
 
 	@Override
 	protected Integer getNumber(ChunkData data) {
-		EntityFilter entityFilter = VersionController.getEntityFilter(data.getRegion().getData().getInt("DataVersion"));
-		ListTag<?> entities = entityFilter.getEntities(data);
+		EntityFilter entityFilter = VersionController.getEntityFilter(data.region().getData().getInt("DataVersion"));
+		ListTag entities = entityFilter.getEntities(data);
 		if (entities == null) {
 			return 0;
 		}

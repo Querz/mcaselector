@@ -15,11 +15,11 @@ public class AverageHeightParser extends OverlayParser {
 
 	@Override
 	public int parseValue(ChunkData chunkData) {
-		if (chunkData.getRegion() == null || chunkData.getRegion().getData() == null) {
+		if (chunkData.region() == null || chunkData.region().getData() == null) {
 			return 0;
 		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.getRegion().getData().getInt("DataVersion"));
-		return chunkFilter.getAverageHeight(chunkData.getRegion().getData());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.region().getData().getInt("DataVersion"));
+		return chunkFilter.getAverageHeight(chunkData.region().getData());
 	}
 
 	@Override

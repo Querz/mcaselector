@@ -7,8 +7,6 @@ import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
-import net.querz.mcaselector.version.ChunkMerger;
-import net.querz.mcaselector.version.VersionController;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;

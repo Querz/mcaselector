@@ -8,7 +8,6 @@ import net.querz.mcaselector.version.anvil116.*;
 import net.querz.mcaselector.version.anvil117.*;
 import net.querz.mcaselector.version.anvil118.*;
 import net.querz.mcaselector.version.anvil119.*;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

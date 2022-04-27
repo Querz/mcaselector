@@ -5,7 +5,7 @@ import net.querz.mcaselector.filter.BiomeFilter;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.tag.StringTag;
+import net.querz.nbt.StringTag;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -35,8 +35,8 @@ public class StatusField extends Field<String> {
 
 	@Override
 	public String getOldValue(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		StringTag status = chunkFilter.getStatus(data.getRegion().getData());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		StringTag status = chunkFilter.getStatus(data.region().getData());
 		return status == null ? null : status.getValue();
 	}
 
@@ -51,16 +51,16 @@ public class StatusField extends Field<String> {
 
 	@Override
 	public void change(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		StringTag tag = chunkFilter.getStatus(data.getRegion().getData());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		StringTag tag = chunkFilter.getStatus(data.region().getData());
 		if (tag != null) {
-			tag.setValue(getNewValue());
+			chunkFilter.setStatus(data.region().getData(), getNewValue());
 		}
 	}
 
 	@Override
 	public void force(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		chunkFilter.setStatus(data.getRegion().getData(), getNewValue());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		chunkFilter.setStatus(data.region().getData(), getNewValue());
 	}
 }

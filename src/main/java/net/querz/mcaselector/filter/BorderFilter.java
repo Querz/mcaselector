@@ -11,7 +11,7 @@ import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.tag.StringTag;
+import net.querz.nbt.StringTag;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -35,19 +35,19 @@ public class BorderFilter extends IntFilter {
 	@Override
 	protected Integer getNumber(ChunkData data) {
 		// if there is no data, we don't have to do anything
-		if (data.getRegion() == null || data.getRegion().getData() == null) {
+		if (data.region() == null || data.region().getData() == null) {
 			return 9;
 		}
 
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		StringTag tag = chunkFilter.getStatus(data.getRegion().getData());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		StringTag tag = chunkFilter.getStatus(data.region().getData());
 		if (tag == null || !tag.getValue().equals("full")) {
 			return 9;
 		}
 
 		int count = 0;
 
-		Point2i location = data.getRegion().getAbsoluteLocation();
+		Point2i location = data.region().getAbsoluteLocation();
 		Point2i relative = getRelativeChunk(location);
 		RegionMCAFile self = getRegionHeader(location.chunkToRegion());
 		if (self == null) {

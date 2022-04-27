@@ -3,7 +3,7 @@ package net.querz.mcaselector.version.anvil112;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.version.ChunkMerger;
-import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.CompoundTag;
 import java.util.List;
 
 public class Anvil112EntityMerger implements ChunkMerger {

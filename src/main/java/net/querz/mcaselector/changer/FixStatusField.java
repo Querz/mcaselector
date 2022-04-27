@@ -3,9 +3,8 @@ package net.querz.mcaselector.changer;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.StringTag;
+import net.querz.nbt.ListTag;
+import net.querz.nbt.StringTag;
 
 public class FixStatusField extends Field<Boolean> {
 
@@ -29,16 +28,16 @@ public class FixStatusField extends Field<Boolean> {
 
 	@Override
 	public void change(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		StringTag status = chunkFilter.getStatus(data.getRegion().getData());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		StringTag status = chunkFilter.getStatus(data.region().getData());
 
 		if ("empty".equals(status.getValue())) {
-			ListTag<CompoundTag> sections = chunkFilter.getSections(data.getRegion().getData());
+			ListTag sections = chunkFilter.getSections(data.region().getData());
 			if (sections == null) {
 				return;
 			}
 			if (sections.size() > 0) {
-				chunkFilter.setStatus(data.getRegion().getData(), "full");
+				chunkFilter.setStatus(data.region().getData(), "full");
 			}
 		}
 	}

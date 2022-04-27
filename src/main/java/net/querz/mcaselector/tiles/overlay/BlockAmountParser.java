@@ -17,11 +17,11 @@ public class BlockAmountParser extends OverlayParser {
 
 	@Override
 	public int parseValue(ChunkData chunkData) {
-		if (chunkData.getRegion() == null || chunkData.getRegion().getData() == null) {
+		if (chunkData.region() == null || chunkData.region().getData() == null) {
 			return 0;
 		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.getRegion().getData().getInt("DataVersion"));
-		return chunkFilter.getBlockAmount(chunkData.getRegion().getData(), multiValues());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.region().getData().getInt("DataVersion"));
+		return chunkFilter.getBlockAmount(chunkData.region().getData(), multiValues());
 	}
 
 	@Override

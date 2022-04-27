@@ -10,10 +10,10 @@ public class DataVersionParser extends OverlayParser {
 
 	@Override
 	public int parseValue(ChunkData chunkData) {
-		if (chunkData.getRegion() == null || chunkData.getRegion().getData() == null) {
+		if (chunkData.region() == null || chunkData.region().getData() == null) {
 			return 0;
 		}
-		return chunkData.getRegion().getData().getInt("DataVersion");
+		return chunkData.region().getData().getInt("DataVersion");
 	}
 
 	@Override

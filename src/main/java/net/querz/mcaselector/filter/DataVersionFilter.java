@@ -14,10 +14,10 @@ public class DataVersionFilter extends IntFilter {
 
 	@Override
 	protected Integer getNumber(ChunkData data) {
-		if (data.getRegion() == null || data.getRegion().getData() == null) {
+		if (data.region() == null || data.region().getData() == null) {
 			return 0;
 		}
-		return data.getRegion().getData().getInt("DataVersion");
+		return data.region().getData().getInt("DataVersion");
 	}
 
 	@Override

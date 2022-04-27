@@ -14,10 +14,10 @@ public class TimestampParser extends OverlayParser {
 
 	@Override
 	public int parseValue(ChunkData chunkData) {
-		if (chunkData.getRegion() == null) {
+		if (chunkData.region() == null) {
 			return 0;
 		}
-		return chunkData.getRegion().getTimestamp();
+		return chunkData.region().getTimestamp();
 	}
 
 	@Override

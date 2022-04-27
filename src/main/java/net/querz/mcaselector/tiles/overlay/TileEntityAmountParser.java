@@ -3,8 +3,7 @@ package net.querz.mcaselector.tiles.overlay;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.ListTag;
 
 public class TileEntityAmountParser extends AmountParser {
 
@@ -14,11 +13,11 @@ public class TileEntityAmountParser extends AmountParser {
 
 	@Override
 	public int parseValue(ChunkData chunkData) {
-		if (chunkData.getRegion() == null) {
+		if (chunkData.region() == null) {
 			return 0;
 		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.getRegion().getData().getInt("DataVersion"));
-		ListTag<CompoundTag> tileEntities = chunkFilter.getTileEntities(chunkData.getRegion().getData());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.region().getData().getInt("DataVersion"));
+		ListTag tileEntities = chunkFilter.getTileEntities(chunkData.region().getData());
 		return tileEntities == null ? 0 : tileEntities.size();
 	}
 

@@ -1,12 +1,13 @@
 package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.point.Point2i;
-import net.querz.nbt.io.NBTUtil;
-import net.querz.nbt.io.NamedTag;
 import net.querz.nbt.*;
 import java.io.File;
+import java.util.regex.Pattern;
 
 public class PlayerSpawnFilter extends PlayerLocationFilter {
+
+	private static final Pattern playerFilePattern = Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.dat$");
 
 	public PlayerSpawnFilter() {
 		this(FilterType.PLAYER_SPAWN, Operator.AND, Comparator.CONTAINS, null, new Object());
@@ -22,15 +23,14 @@ public class PlayerSpawnFilter extends PlayerLocationFilter {
 		playerChunks.clear();
 		playerRegions.clear();
 
-		File[] playerFiles = value.directory.listFiles((d, f) -> f.matches("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.dat$"));
+		File[] playerFiles = value.directory.listFiles((d, f) -> playerFilePattern.matcher(f).matches());
 		if (playerFiles == null || playerFiles.length == 0) {
 			return;
 		}
 
 		for (File playerFile : playerFiles) {
 			try {
-				NamedTag data = NBTUtil.read(playerFile);
-				CompoundTag root = (CompoundTag) data.getTag();
+				CompoundTag root = (CompoundTag) NBTUtil.read(playerFile);
 				IntTag spawnX = root.getIntTag("SpawnX");
 				IntTag spawnZ = root.getIntTag("SpawnZ");
 				if (spawnX == null || spawnZ == null) {

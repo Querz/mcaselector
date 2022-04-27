@@ -5,7 +5,6 @@ import net.querz.mcaselector.range.Range;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.Tag;
-
 import java.util.*;
 import java.util.function.Function;
 

@@ -3,7 +3,6 @@ package net.querz.mcaselector.changer;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.tag.CompoundTag;
 
 public class ForceBlendField extends Field<Boolean> {
 
@@ -27,8 +26,8 @@ public class ForceBlendField extends Field<Boolean> {
 
 	@Override
 	public void change(ChunkData root) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(root.getRegion().getData().getInt("DataVersion"));
-		chunkFilter.forceBlending(root.getRegion().getData());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(root.region().getData().getInt("DataVersion"));
+		chunkFilter.forceBlending(root.region().getData());
 	}
 
 	@Override

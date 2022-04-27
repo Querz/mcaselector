@@ -13,8 +13,8 @@ import java.util.function.Consumer;
 class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 
 	private boolean isPaused;
-	private ReentrantLock pauseLock = new ReentrantLock();
-	private Condition unpaused = pauseLock.newCondition();
+	private final ReentrantLock pauseLock = new ReentrantLock();
+	private final Condition unpaused = pauseLock.newCondition();
 	private Consumer<Job> beforeExecute, afterExecute;
 
 	public PausableThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {

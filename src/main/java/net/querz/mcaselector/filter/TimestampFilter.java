@@ -15,7 +15,7 @@ public class TimestampFilter extends IntFilter {
 
 	@Override
 	protected Integer getNumber(ChunkData data) {
-		return data.getRegion().getTimestamp();
+		return data.region().getTimestamp();
 	}
 
 	@Override

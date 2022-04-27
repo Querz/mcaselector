@@ -5,8 +5,8 @@ import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.CompoundTag;
+import net.querz.nbt.ListTag;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -36,15 +36,15 @@ public class DeleteSectionsField extends Field<List<Range>> {
 
 	@Override
 	public void change(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		ListTag<CompoundTag> sections = chunkFilter.getSections(data.getRegion().getData());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ListTag sections = chunkFilter.getSections(data.region().getData());
 		if (sections == null) {
 			return;
 		}
 		for (int i = 0; i < sections.size(); i++) {
-			CompoundTag section = sections.get(i);
+			CompoundTag section = sections.getCompound(i);
 			for (Range range : getNewValue()) {
-				if (range.contains(section.getNumber("Y").intValue())) {
+				if (range.contains(section.getInt("Y"))) {
 					sections.remove(i);
 					i--;
 				}

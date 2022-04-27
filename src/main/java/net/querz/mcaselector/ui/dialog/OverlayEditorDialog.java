@@ -30,7 +30,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
 	private static final Image addIcon = FileHelper.getIconFromResources("img/add");
 
-	private List<OverlayParser> overlays;
+	private final List<OverlayParser> overlays;
 
 	private final ScrollPane overlaysScrollPane = new ScrollPane();
 	private final VBox overlaysList = new VBox();
@@ -40,7 +40,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
 	private final DataProperty<Boolean> closedWithOK = new DataProperty<>(false);
 
-	private ChangeListener<OverlayParser> tileMapSelectedOverlayChange = (v, o, n) -> {
+	private final ChangeListener<OverlayParser> tileMapSelectedOverlayChange = (v, o, n) -> {
 		if (o != n) {
 			select(n);
 		}
@@ -49,9 +49,10 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 	public OverlayEditorDialog(Stage primaryStage, TileMap tileMap, List<OverlayParser> values) {
 		if (values == null) {
 			this.overlays = new ArrayList<>();
+		} else {
+			this.overlays = values;
 		}
 		this.tileMap = tileMap;
-		this.overlays = values;
 
 		OverlayParser originalOverlay = tileMap.getOverlay() != null ? tileMap.getOverlay().clone() : null;
 		List<OverlayParser> originalOverlays = tileMap.getOverlayParsers();

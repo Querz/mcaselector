@@ -33,11 +33,11 @@ public class BiomeFilter extends TextFilter<List<BiomeRegistry.BiomeIdentifier>>
 
 	@Override
 	public boolean contains(List<BiomeRegistry.BiomeIdentifier> value, ChunkData data) {
-		if (data.getRegion() == null) {
+		if (data.region() == null) {
 			return false;
 		}
-		return VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"))
-				.matchBiomes(data.getRegion().getData(), value);
+		return VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"))
+				.matchBiomes(data.region().getData(), value);
 	}
 
 	@Override
@@ -47,11 +47,11 @@ public class BiomeFilter extends TextFilter<List<BiomeRegistry.BiomeIdentifier>>
 
 	@Override
 	public boolean intersects(List<BiomeRegistry.BiomeIdentifier> value, ChunkData data) {
-		if (data.getRegion() == null) {
+		if (data.region() == null) {
 			return false;
 		}
-		return VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"))
-				.matchAnyBiome(data.getRegion().getData(), value);
+		return VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"))
+				.matchAnyBiome(data.region().getData(), value);
 	}
 
 	@Override

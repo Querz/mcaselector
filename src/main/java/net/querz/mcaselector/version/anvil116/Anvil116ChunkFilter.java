@@ -1,10 +1,8 @@
 package net.querz.mcaselector.version.anvil116;
 
 import net.querz.mcaselector.math.Bits;
-import net.querz.mcaselector.version.anvil113.Anvil113ChunkFilter;
 import net.querz.mcaselector.version.anvil115.Anvil115ChunkFilter;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.ListTag;
 import java.util.Map;
 
 public class Anvil116ChunkFilter extends Anvil115ChunkFilter {
@@ -28,7 +26,7 @@ public class Anvil116ChunkFilter extends Anvil115ChunkFilter {
 	}
 
 	@Override
-	protected long[] adjustBlockStateBits(ListTag<CompoundTag> palette, long[] blockStates, Map<Integer, Integer> oldToNewMapping) {
+	protected long[] adjustBlockStateBits(ListTag palette, long[] blockStates, Map<Integer, Integer> oldToNewMapping) {
 		int newBits = 32 - Integer.numberOfLeadingZeros(palette.size() - 1);
 		newBits = Math.max(newBits, 4);
 

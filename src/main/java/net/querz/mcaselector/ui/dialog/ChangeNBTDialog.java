@@ -37,8 +37,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
@@ -93,10 +91,6 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setContent(fieldView);
 		fieldView.prefWidthProperty().bind(scrollPane.widthProperty());
-		System.out.println("HELLO THERE");
-		scrollPane.widthProperty().addListener((v, o, n) -> {
-			System.out.println("fieldView width changed to: " + n);
-		});
 
 		VBox actionBox = new VBox();
 		change.setTooltip(UIFactory.tooltip(Translation.DIALOG_CHANGE_NBT_CHANGE_TOOLTIP));
@@ -239,37 +233,14 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		}
 	}
 
-	public static class Result {
-
-		private final boolean force;
-		private final List<Field<?>> fields;
-		private final boolean selectionOnly;
-
-		public Result(List<Field<?>> fields, boolean force, boolean selectionOnly) {
-			this.force = force;
-			this.fields = fields;
-			this.selectionOnly = selectionOnly;
-		}
-
-		public boolean isForce() {
-			return force;
-		}
-
-		public List<Field<?>> getFields() {
-			return fields;
-		}
-
-		public boolean isSelectionOnly() {
-			return selectionOnly;
-		}
-
+	public record Result(List<Field<?>> fields, boolean force, boolean selectionOnly) {
 		public boolean requiresClearCache() {
-			for (Field<?> field : fields) {
-				if (field.getType().requiresClearCache()) {
-					return true;
+				for (Field<?> field : fields) {
+					if (field.getType().requiresClearCache()) {
+						return true;
+					}
 				}
+				return false;
 			}
-			return false;
 		}
-	}
 }

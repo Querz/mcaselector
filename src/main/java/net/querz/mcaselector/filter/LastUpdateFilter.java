@@ -4,7 +4,7 @@ import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.tag.LongTag;
+import net.querz.nbt.LongTag;
 
 public class LastUpdateFilter extends LongFilter {
 
@@ -18,11 +18,11 @@ public class LastUpdateFilter extends LongFilter {
 
 	@Override
 	protected Long getNumber(ChunkData data) {
-		if (data.getRegion() == null) {
+		if (data.region() == null) {
 			return 0L;
 		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getRegion().getData().getInt("DataVersion"));
-		LongTag tag = chunkFilter.getLastUpdate(data.getRegion().getData());
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		LongTag tag = chunkFilter.getLastUpdate(data.region().getData());
 		return tag == null ? 0L : tag.asLong();
 	}
 

@@ -490,8 +490,8 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 		ELEVEN(11),
 		TWELVE(12);
 
-		int bits;
-		String string;
+		final int bits;
+		final String string;
 
 		BitCount(int bits) {
 			this(bits, "" + bits);

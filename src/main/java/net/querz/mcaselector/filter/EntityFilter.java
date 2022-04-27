@@ -3,10 +3,9 @@ package net.querz.mcaselector.filter;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.LongArrayTag;
-import net.querz.nbt.tag.Tag;
+import net.querz.nbt.CompoundTag;
+import net.querz.nbt.ListTag;
+import net.querz.nbt.Tag;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -47,17 +46,16 @@ public class EntityFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean contains(List<String> value, ChunkData data) {
-		if (data.getRegion() == null || data.getRegion().getData() == null) {
+		if (data.region() == null || data.region().getData() == null) {
 			return false;
 		}
-		Tag rawEntities = VersionController.getEntityFilter(data.getRegion().getData().getInt("DataVersion")).getEntities(data);
-		if (rawEntities == null || rawEntities.getID() == LongArrayTag.ID) {
+		ListTag entities = VersionController.getEntityFilter(data.region().getData().getInt("DataVersion")).getEntities(data);
+		if (entities == null || entities.getID() == Tag.LONG_ARRAY) {
 			return false;
 		}
-		ListTag<CompoundTag> entities = ((ListTag<?>) rawEntities).asCompoundTagList();
 		nameLoop:
 		for (String name : getFilterValue()) {
-			for (CompoundTag entity : entities) {
+			for (CompoundTag entity : entities.iterateType(CompoundTag.TYPE)) {
 				String id = entity.getString("id");
 				if (name.equals(id)) {
 					continue nameLoop;
@@ -70,16 +68,15 @@ public class EntityFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean intersects(List<String> value, ChunkData data) {
-		if (data.getRegion() == null || data.getRegion().getData() == null) {
+		if (data.region() == null || data.region().getData() == null) {
 			return false;
 		}
-		Tag rawEntities = VersionController.getEntityFilter(data.getRegion().getData().getInt("DataVersion")).getEntities(data);
-		if (rawEntities == null || rawEntities.getID() == LongArrayTag.ID) {
+		ListTag entities = VersionController.getEntityFilter(data.region().getData().getInt("DataVersion")).getEntities(data);
+		if (entities == null || entities.getID() == Tag.LONG_ARRAY) {
 			return false;
 		}
-		ListTag<CompoundTag> entities = ((ListTag<?>) rawEntities).asCompoundTagList();
 		for (String name : getFilterValue()) {
-			for (CompoundTag entity : entities) {
+			for (CompoundTag entity : entities.iterateType(CompoundTag.TYPE)) {
 				String id = entity.getString("id");
 				if (name.equals(id)) {
 					return true;

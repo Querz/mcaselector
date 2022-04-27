@@ -3,10 +3,9 @@ package net.querz.mcaselector.version.anvil114;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.version.ChunkRelocator;
 import net.querz.mcaselector.version.Helper;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.LongArrayTag;
-import net.querz.nbt.tag.Tag;
+import net.querz.nbt.CompoundTag;
+import net.querz.nbt.ListTag;
+import net.querz.nbt.Tag;
 import java.util.Map;
 import static net.querz.mcaselector.validation.ValidationHelper.silent;
 
@@ -27,10 +26,10 @@ public class Anvil114PoiRelocator implements ChunkRelocator {
 				continue;
 			}
 
-			if (section.containsKey("Records") && section.get("Records").getID() != LongArrayTag.ID) {
-				ListTag<CompoundTag> records = Helper.tagFromCompound(section, "Records");
+			if (section.containsKey("Records") && section.get("Records").getID() != Tag.LONG_ARRAY) {
+				ListTag records = Helper.tagFromCompound(section, "Records");
 				if (records != null) {
-					for (CompoundTag record : records) {
+					for (CompoundTag record : records.iterateType(CompoundTag.TYPE)) {
 						int[] pos = Helper.intArrayFromCompound(record, "pos");
 						Helper.applyOffsetToIntArrayPos(pos, offset);
 					}

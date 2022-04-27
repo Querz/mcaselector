@@ -4,9 +4,9 @@ import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.version.Helper;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.StringTag;
-import net.querz.nbt.tag.Tag;
+import net.querz.nbt.CompoundTag;
+import net.querz.nbt.StringTag;
+import net.querz.nbt.Tag;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -146,7 +146,7 @@ public class Anvil114ColorMapping implements ColorMapping {
 
 		public int getColor(CompoundTag properties) {
 			if (properties != null) {
-				for (Map.Entry<String, Tag> property : properties.entrySet()) {
+				for (Map.Entry<String, Tag> property : properties) {
 					Map<Set<String>, Integer> clone = new HashMap<>(blockStateMapping);
 					for (Map.Entry<Set<String>, Integer> blockState : blockStateMapping.entrySet()) {
 						String value = property.getKey() + "=" + ((StringTag) property.getValue()).getValue();

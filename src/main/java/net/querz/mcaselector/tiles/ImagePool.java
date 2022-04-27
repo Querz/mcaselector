@@ -261,9 +261,7 @@ public final class ImagePool {
 					})
 					.filter(Objects::nonNull)
 					.toList()).get();
-			points.forEach(p -> {
-				regions.add(p.asLong());
-			});
+			points.forEach(p -> regions.add(p.asLong()));
 			Debug.dumpf("loaded all world files");
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();

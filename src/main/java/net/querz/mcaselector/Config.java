@@ -1,6 +1,5 @@
 package net.querz.mcaselector;
 
-import net.querz.mcaselector.io.CacheHelper;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.tiles.Tile;

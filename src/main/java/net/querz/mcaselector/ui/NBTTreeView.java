@@ -26,12 +26,12 @@ import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.ui.dialog.EditArrayDialog;
 import net.querz.nbt.*;
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
@@ -71,7 +71,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		getSelectionModel().selectedItemProperty().addListener((i, o, n) -> c.accept(o, n));
 	}
 
-	@SuppressWarnings("unchecked")
 	public void deleteItem(TreeItem<NamedTag> item) {
 		if (item.getValue().parent != null) {
 			// named tag is in compound tag, indexed tag is in list tag
@@ -80,7 +79,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				comp.remove(item.getValue().name);
 				item.getParent().getChildren().remove(item);
 			} else if (item.getValue().parent.getID() == 9) {
-				ListTag<Tag> list = (ListTag<Tag>) item.getValue().parent;
+				ListTag list = (ListTag) item.getValue().parent;
 				int index;
 				for (index = 0; index < list.size(); index++) {
 					if (list.get(index) == item.getValue().tag) {
@@ -102,9 +101,8 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 	 * if the target is a list, it appends the tag as a child at the end of the list.
 	 * if the target is a compound, it adds the tag with a generic name.
 	 */
-	@SuppressWarnings("unchecked")
 	public boolean addItem(TreeItem<NamedTag> target, String name, Tag tag) {
-		if (getRoot() == null && tag.getID() == CompoundTag.ID) {
+		if (getRoot() == null && tag.getID() == Tag.COMPOUND) {
 			setRoot((CompoundTag) tag);
 			layout();
 			getSelectionModel().select(0);
@@ -112,39 +110,39 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		}
 
 		TreeItem<NamedTag> newItem = null;
-		if (target.getValue().tag.getID() == 9) {
-			ListTag<?> list = (ListTag<?>) target.getValue().tag;
-			addTagToListTagUnsafe(list, tag, list.size());
-			target.getChildren().add(newItem = toTreeItem(null, tag, list));
+		if (target.getValue().tag.getID() == Tag.LIST) {
+			ListTag list = (ListTag) target.getValue().tag;
+			list.add(tag);
+			target.getChildren().add(newItem = toTreeItem(list.size() - 1, null, tag, list));
 			target.setExpanded(true);
-		} else if (target.getValue().tag.getID() == 10) {
+		} else if (target.getValue().tag.getID() == Tag.COMPOUND) {
 			CompoundTag comp = (CompoundTag) target.getValue().tag;
 			name = findNextPossibleName(comp, name);
 			comp.put(name, tag);
-			target.getChildren().add(newItem = toTreeItem(name, tag, comp));
+			target.getChildren().add(newItem = toTreeItem(0, name, tag, comp));
 			target.setExpanded(true);
-		} else if (target.getValue().parent.getID() == 9) {
-			ListTag<Tag> list = (ListTag<Tag>) target.getValue().parent;
+		} else if (target.getValue().parent.getID() == Tag.LIST) {
+			ListTag list = (ListTag) target.getValue().parent;
 			int index;
 			for (index = 0; index < list.size(); index++) {
 				if (list.get(index) == target.getValue().tag) {
 					break;
 				}
 			}
-			addTagToListTagUnsafe(list, tag, index + 1);
-			target.getParent().getChildren().add(index + 1, newItem = toTreeItem(null, tag, list));
-		} else if (target.getValue().parent.getID() == 10) {
+			list.add(index + 1, tag);
+			target.getParent().getChildren().add(index + 1, newItem = toTreeItem(index + 1, null, tag, list));
+		} else if (target.getValue().parent.getID() == Tag.COMPOUND) {
 			CompoundTag comp = (CompoundTag) target.getValue().parent;
 			name = findNextPossibleName(comp, name);
 			comp.put(name, tag);
-			target.getParent().getChildren().add(newItem = toTreeItem(name, tag, comp));
+			target.getParent().getChildren().add(newItem = toTreeItem(0, name, tag, comp));
 		}
 
 		layout();
 		getSelectionModel().select(newItem);
 
 		// we don't want to edit this item when the parent is a list tag and it is a list or comp
-		if (target.getValue().tag.getID() != 9 && target.getValue().parent != null && target.getValue().parent.getID() != 9 || tag.getID() != 9 && tag.getID() != 10) {
+		if (target.getValue().tag.getID() != Tag.LIST && target.getValue().parent != null && target.getValue().parent.getID() != Tag.LIST || tag.getID() != Tag.LIST && tag.getID() != Tag.COMPOUND) {
 			edit(newItem);
 		}
 
@@ -168,151 +166,126 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		return name;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static void addTagToListTagUnsafe(ListTag<?> list, Tag tag, int index) {
-		ListTag<Tag> tList = (ListTag<Tag>) list;
-		tList.add(index, tag);
-	}
-
 	public int[] getPossibleChildTagTypes(TreeItem<NamedTag> target) {
 		if (target == null) {
 			if (getRoot() == null) {
 				// when there is no root, we give the option to create a root compound tag
-				return new int[]{10};
+				return new int[]{Tag.COMPOUND};
 			}
 			return null;
 		}
-		if (target.getValue().tag.getID() == 9) {
+		if (target.getValue().tag.getID() == Tag.LIST) {
 			// when this is a list tag, we have limited possibilities
-			if (((ListTag<?>) target.getValue().tag).getTypeClass() != EndTag.class) {
-				return new int[]{getListTagTypeID((ListTag<?>) target.getValue().tag)};
+			if (((ListTag) target.getValue().tag).getElementType() != Tag.END) {
+				return new int[]{((ListTag) target.getValue().tag).getElementType()};
 			}
 		}
 		// if the tag is a value tag, we lookup the parent
-		if (target.getValue().tag.getID() != 9 && target.getValue().tag.getID() != 10) {
-			if (target.getParent().getValue().tag.getID() == 9) {
+		if (target.getValue().tag.getID() != Tag.LIST && target.getValue().tag.getID() != Tag.COMPOUND) {
+			if (target.getParent().getValue().tag.getID() == Tag.LIST) {
 				// when parent is a list tag, we have limited possibilities
-				if (((ListTag<?>) target.getParent().getValue().tag).getTypeClass() != EndTag.class) {
-					return new int[]{getListTagTypeID((ListTag<?>) target.getParent().getValue().tag)};
+				if (((ListTag) target.getParent().getValue().tag).getElementType() != Tag.END) {
+					return new int[]{((ListTag) target.getParent().getValue().tag).getElementType()};
 				}
 			}
 		}
-		return new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-	}
-
-	private static int getListTagTypeID(ListTag<?> listTag) {
-		if (listTag.getTypeClass() == EndTag.class) {
-			return 0;
-		} else if (listTag.getTypeClass() == ByteTag.class) {
-			return 1;
-		} else if (listTag.getTypeClass() == ShortTag.class) {
-			return 2;
-		} else if (listTag.getTypeClass() == IntTag.class) {
-			return 3;
-		} else if (listTag.getTypeClass() == LongTag.class) {
-			return 4;
-		} else if (listTag.getTypeClass() == FloatTag.class) {
-			return 5;
-		} else if (listTag.getTypeClass() == DoubleTag.class) {
-			return 6;
-		} else if (listTag.getTypeClass() == ByteArrayTag.class) {
-			return 7;
-		} else if (listTag.getTypeClass() == StringTag.class) {
-			return 8;
-		} else if (listTag.getTypeClass() == ListTag.class) {
-			return 9;
-		} else if (listTag.getTypeClass() == CompoundTag.class) {
-			return 10;
-		} else if (listTag.getTypeClass() == IntArrayTag.class) {
-			return 11;
-		} else if (listTag.getTypeClass() == LongArrayTag.class) {
-			return 12;
-		} else {
-			throw new IllegalArgumentException("invalid list tag type: " + listTag.getTypeClass().getName());
-		}
+		return new int[]{Tag.BYTE, Tag.SHORT, Tag.INT, Tag.LONG, Tag.FLOAT, Tag.DOUBLE, Tag.BYTE_ARRAY, Tag.STRING, Tag.LIST, Tag.COMPOUND, Tag.INT_ARRAY, Tag.LONG_ARRAY};
 	}
 
 	private static String tagToString(NamedTag tag) {
 		return switch (tag.tag.getID()) {
-			case 1, 2, 3, 4, 5, 6 -> (tag.name == null ? "" : tag.name + ": ") + tag.tag.valueToString(1);
-			case 8 -> (tag.name == null ? "" : tag.name + ": ") + ((StringTag) tag.tag).getValue();
-			case 7, 11, 12 -> (tag.name == null ? "(" : tag.name + " (") + ((ArrayTag<?>) tag.tag).length() + ")";
-			case 9 -> (tag.name == null ? "(" : tag.name + " (") + ((ListTag<?>) tag.tag).size() + ")";
-			case 10 -> (tag.name == null ? "(" : tag.name + " (") + ((CompoundTag) tag.tag).size() + ")";
+			case Tag.BYTE, Tag.SHORT, Tag.INT, Tag.LONG, Tag.FLOAT, Tag.DOUBLE, Tag.STRING -> (tag.name == null ? "" : tag.name + ": ") + tagValueToString(tag.tag);
+			case Tag.LIST, Tag.BYTE_ARRAY, Tag.INT_ARRAY, Tag.LONG_ARRAY -> (tag.name == null ? "(" : tag.name + " (") + ((CollectionTag<?>) tag.tag).size() + ")";
+			case Tag.COMPOUND -> (tag.name == null ? "(" : tag.name + " (") + ((CompoundTag) tag.tag).size() + ")";
 			default -> null;
 		};
 	}
 
-	private String tagValueToString(NamedTag tag) {
-		return switch (tag.tag.getID()) {
-			case 1, 2, 3, 4, 5, 6 -> tag.tag.valueToString(1);
-			case 8 -> ((StringTag) tag.tag).getValue();
+	private static String tagValueToString(Tag tag) {
+		return switch (tag.getID()) {
+			case Tag.BYTE, Tag.SHORT, Tag.INT, Tag.LONG, Tag.FLOAT, Tag.DOUBLE -> ((NumberTag) tag).asNumber().toString();
+			case Tag.STRING -> ((StringTag) tag).getValue();
 			default -> null;
 		};
 	}
 
-	private void updateValue(Tag tag, String value) {
-		switch (tag.getID()) {
-			case 1 -> ((ByteTag) tag).setValue(Byte.parseByte(value));
-			case 2 -> ((ShortTag) tag).setValue(Short.parseShort(value));
-			case 3 -> ((IntTag) tag).setValue(Integer.parseInt(value));
-			case 4 -> ((LongTag) tag).setValue(Long.parseLong(value));
-			case 5 -> ((FloatTag) tag).setValue(Float.parseFloat(value));
-			case 6 -> ((DoubleTag) tag).setValue(Double.parseDouble(value));
-			case 8 -> ((StringTag) tag).setValue(value);
+	private void updateValue(Tag parent, NamedTag tag, String value) {
+		Consumer<Tag> setter = newTag -> {
+			switch (parent.getID()) {
+				case Tag.LIST -> ((ListTag) parent).set(tag.index, newTag);
+				case Tag.COMPOUND -> ((CompoundTag) parent).put(tag.name, newTag);
+			}
+			tag.tag = newTag;
+		};
+
+		switch (tag.tag.getID()) {
+			case Tag.BYTE -> setter.accept(ByteTag.valueOf(Byte.parseByte(value)));
+			case Tag.SHORT -> setter.accept(ShortTag.valueOf(Short.parseShort(value)));
+			case Tag.INT -> setter.accept(IntTag.valueOf(Integer.parseInt(value)));
+			case Tag.LONG -> setter.accept(LongTag.valueOf(Long.parseLong(value)));
+			case Tag.FLOAT -> setter.accept(FloatTag.valueOf(Float.parseFloat(value)));
+			case Tag.DOUBLE -> setter.accept(DoubleTag.valueOf(Double.parseDouble(value)));
+			case Tag.STRING -> setter.accept(StringTag.valueOf(value));
 		}
 	}
 
 	private static void initIcons() {
-		icons.put((byte) 1, FileHelper.getIconFromResources("img/nbt/byte"));
-		icons.put((byte) 2, FileHelper.getIconFromResources("img/nbt/short"));
-		icons.put((byte) 3, FileHelper.getIconFromResources("img/nbt/int"));
-		icons.put((byte) 4, FileHelper.getIconFromResources("img/nbt/long"));
-		icons.put((byte) 5, FileHelper.getIconFromResources("img/nbt/float"));
-		icons.put((byte) 6, FileHelper.getIconFromResources("img/nbt/double"));
-		icons.put((byte) 8, FileHelper.getIconFromResources("img/nbt/string"));
-		icons.put((byte) 9, FileHelper.getIconFromResources("img/nbt/list"));
-		icons.put((byte) 10, FileHelper.getIconFromResources("img/nbt/compound"));
-		icons.put((byte) 7, FileHelper.getIconFromResources("img/nbt/byte_array"));
-		icons.put((byte) 11, FileHelper.getIconFromResources("img/nbt/int_array"));
-		icons.put((byte) 12, FileHelper.getIconFromResources("img/nbt/long_array"));
+		icons.put(Tag.BYTE, FileHelper.getIconFromResources("img/nbt/byte"));
+		icons.put(Tag.SHORT, FileHelper.getIconFromResources("img/nbt/short"));
+		icons.put(Tag.INT, FileHelper.getIconFromResources("img/nbt/int"));
+		icons.put(Tag.LONG, FileHelper.getIconFromResources("img/nbt/long"));
+		icons.put(Tag.FLOAT, FileHelper.getIconFromResources("img/nbt/float"));
+		icons.put(Tag.DOUBLE, FileHelper.getIconFromResources("img/nbt/double"));
+		icons.put(Tag.STRING, FileHelper.getIconFromResources("img/nbt/string"));
+		icons.put(Tag.LIST, FileHelper.getIconFromResources("img/nbt/list"));
+		icons.put(Tag.COMPOUND, FileHelper.getIconFromResources("img/nbt/compound"));
+		icons.put(Tag.BYTE_ARRAY, FileHelper.getIconFromResources("img/nbt/byte_array"));
+		icons.put(Tag.INT_ARRAY, FileHelper.getIconFromResources("img/nbt/int_array"));
+		icons.put(Tag.LONG_ARRAY, FileHelper.getIconFromResources("img/nbt/long_array"));
 	}
 
 	public void setRoot(CompoundTag root) {
-		super.setRoot(toTreeItem(null, root, null));
+		super.setRoot(toTreeItem(0, null, root, null));
 	}
 
-	private static NBTTreeItem toTreeItem(String name, Tag tag, Tag parent) {
+	private static NBTTreeItem toTreeItem(int index, String name, Tag tag, Tag parent) {
 		switch (tag.getID()) {
-			case 0:
+			case Tag.END:
 				return null;
-			case 9:
-				NBTTreeItem item = new NBTTreeItem(new NamedTag(name, tag, parent));
-				ListTag<?> list = (ListTag<?>) tag;
+			case Tag.LIST:
+				NBTTreeItem item = new NBTTreeItem(new NamedTag(index, name, tag, parent));
+				ListTag list = (ListTag) tag;
 				for (int i = 0; i < list.size(); i++) {
-					item.getChildren().add(toTreeItem(null, list.get(i), tag));
+					item.getChildren().add(toTreeItem(i, null, list.get(i), tag));
 				}
 				return item;
-			case 10:
-				item = new NBTTreeItem(new NamedTag(name, tag, parent));
+			case Tag.COMPOUND:
+				item = new NBTTreeItem(new NamedTag(index, name, tag, parent));
 				for (Map.Entry<String, Tag> child : (CompoundTag) tag) {
-					item.getChildren().add(toTreeItem(child.getKey(), child.getValue(), tag));
+					item.getChildren().add(toTreeItem(0, child.getKey(), child.getValue(), tag));
 				}
 				return item;
 			default:
-				return new NBTTreeItem(new NamedTag(name, tag, parent));
+				return new NBTTreeItem(new NamedTag(index, name, tag, parent));
 		}
 	}
 
 	public static class NamedTag implements Serializable {
+		int index;
 		String name;
 		Tag tag;
 		Tag parent;
 
-		public NamedTag(String name, Tag tag, Tag parent) {
+		public NamedTag(int index, String name, Tag tag, Tag parent) {
+			this.index = index;
 			this.name = name;
 			this.tag = tag;
 			this.parent = parent;
+		}
+
+		@Override
+		public String toString() {
+			return "i=" + index + ", n=" + name + ", t=" + tag.getID() + ", p=" + (parent == null ? "-" : parent.getID()) + ", v=" + NBTUtil.toSNBT(tag);
 		}
 	}
 
@@ -325,9 +298,9 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		// removes the item from its previous parent and adds it to this one
 		void moveHere(int index, NBTTreeItem item, TreeView<NamedTag> treeView) {
 			// do not move if this is a list tag and the types do not match
-			if (getValue().tag.getID() == 9) {
-				ListTag<?> list = (ListTag<?>) getValue().tag;
-				if (list.getTypeClass() != item.getValue().tag.getClass()) {
+			if (getValue().tag.getID() == Tag.LIST) {
+				ListTag list = (ListTag) getValue().tag;
+				if (list.getElementType() != item.getValue().tag.getID()) {
 					return;
 				}
 			}
@@ -335,18 +308,18 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			NBTTreeItem oldParent = (NBTTreeItem) item.getParent();
 
 			// do not move if this is item's parent and this are a compound tag identical
-			if (oldParent == this && oldParent.getValue().tag.getID() == 10) {
+			if (oldParent == this && oldParent.getValue().tag.getID() == Tag.COMPOUND) {
 				return;
 			}
 
 			boolean startEdit = false;
 
 			// set name in NamedTag
-			if (getValue().tag.getID() == 9) {
+			if (getValue().tag.getID() == Tag.LIST) {
 				item.getValue().name = null;
-			} else if (getValue().tag.getID() == 10) {
+			} else if (getValue().tag.getID() == Tag.COMPOUND) {
 				CompoundTag comp = (CompoundTag) getValue().tag;
-				if (item.getValue().parent.getID() != 10) {
+				if (item.getValue().parent.getID() != Tag.COMPOUND) {
 					item.getValue().name = findNextPossibleName(comp, "Unknown");
 					startEdit = true;
 				}
@@ -373,15 +346,15 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			// now we adjust the backing nbt data
 
 			// remove Tag from source nbt data
-			if (item.getValue().parent.getID() == 9) {
-				ListTag<?> sourceList = (ListTag<?>) item.getValue().parent;
+			if (item.getValue().parent.getID() == Tag.LIST) {
+				ListTag sourceList = (ListTag) item.getValue().parent;
 				for (int i = 0; i < sourceList.size(); i++) {
 					if (sourceList.get(i) == item.getValue().tag) {
 						sourceList.remove(i);
 						break;
 					}
 				}
-			} else if (item.getValue().parent.getID() == 10) {
+			} else if (item.getValue().parent.getID() == Tag.COMPOUND) {
 				CompoundTag comp = (CompoundTag) item.getValue().parent;
 				String toRemove = null;
 				for (Map.Entry<String, Tag> sourceChild : comp) {
@@ -397,10 +370,10 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			item.getValue().parent = getValue().tag;
 
 			// add tag to target nbt
-			if (getValue().tag.getID() == 9) {
-				ListTag<?> list = (ListTag<?>) getValue().tag;
-				addTagToListTagUnsafe(list, item.getValue().tag, index);
-			} else if (getValue().tag.getID() == 10) {
+			if (getValue().tag.getID() == Tag.LIST) {
+				ListTag list = (ListTag) getValue().tag;
+				list.add(index, item.getValue().tag);
+			} else if (getValue().tag.getID() == Tag.COMPOUND) {
 				CompoundTag comp = (CompoundTag) getValue().tag;
 				comp.put(item.getValue().name, item.getValue().tag);
 			}
@@ -444,8 +417,8 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 	}
 
 	private boolean matchListType(TreeItem<NamedTag> list, TreeItem<NamedTag> item) {
-		ListTag<?> listTag = (ListTag<?>) list.getValue().tag;
-		return listTag.getTypeClass() == EndTag.class || listTag.getTypeClass() == item.getValue().tag.getClass();
+		ListTag listTag = (ListTag) list.getValue().tag;
+		return listTag.getElementType() == Tag.END || listTag.getElementType() == item.getValue().tag.getID();
 	}
 
 	class KeyValueTreeCell extends TreeCell<NamedTag> {
@@ -497,11 +470,11 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				// if target is a list or a comp
 				NBTTreeItem item = (NBTTreeItem) getTreeItem();
 				// move into list
-				if (item.getValue().tag.getID() == 9) {
+				if (item.getValue().tag.getID() == Tag.LIST) {
 					// insert before
 					if (e.getY() < getHeight() / 4) {
 						// if parent is comp, mark comp or top of tree view
-						if (item.getParent().getValue().tag.getID() == 10) {
+						if (item.getParent().getValue().tag.getID() == Tag.COMPOUND) {
 							// if parent is equal to the dragged item's parent
 							if (item.getParent() != dragboardContent.getParent()) {
 								KeyValueTreeCell cell = getTreeCell(item.getParent());
@@ -527,7 +500,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 						if (matchListType(item, dragboardContent)) {
 							dropTarget = item;
 							setInsertCssClass("drop-target", "into");
-							dropIndex = ((ListTag<?>) item.getValue().tag).size();
+							dropIndex = ((ListTag) item.getValue().tag).size();
 						}
 					} else {
 						// insert after or at beginning of list
@@ -542,7 +515,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 						} else {
 							// insert after this list in parent
 							// if parent is comp, mark comp or top of tree view
-							if (item.getParent().getValue().tag.getID() == 10) {
+							if (item.getParent().getValue().tag.getID() == Tag.COMPOUND) {
 								// if parent is equal to the dragged item's parent
 								if (item.getParent() != dragboardContent.getParent()) {
 									KeyValueTreeCell cell = getTreeCell(item.getParent());
@@ -565,7 +538,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 							}
 						}
 					}
-				} else if (item.getValue().tag.getID() == 10) {
+				} else if (item.getValue().tag.getID() == Tag.COMPOUND) {
 					// if this tag is a comp
 					// if target is the root tag
 					if (item.getParent() == null) {
@@ -578,7 +551,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 						// insert before
 						if (e.getY() < getHeight() / 4) {
 							// if parent is comp, mark comp or top of tree view
-							if (item.getParent().getValue().tag.getID() == 10) {
+							if (item.getParent().getValue().tag.getID() == Tag.COMPOUND) {
 								// if parent is equal to the dragged item's parent
 								if (item.getParent() != dragboardContent.getParent()) {
 									KeyValueTreeCell cell = getTreeCell(item.getParent());
@@ -612,7 +585,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 							// if parent is equal to the dragged item's parent
 							if (item != dragboardContent.getParent()) {
 								// if parent is a comp
-								if (item.getParent().getValue().tag.getID() == 10) {
+								if (item.getParent().getValue().tag.getID() == Tag.COMPOUND) {
 									// if parent is equal to the dragged item's parent
 									if (item.getParent() != dragboardContent.getParent()) {
 										KeyValueTreeCell cell = getTreeCell(item.getParent());
@@ -641,7 +614,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 					// insert before
 					if (e.getY() < getHeight() / 2) {
 						// if parent is a list
-						if (item.getParent().getValue().tag.getID() == 10) {
+						if (item.getParent().getValue().tag.getID() == Tag.COMPOUND) {
 							// if parent is equal to the dragged item's parent
 							if (item.getParent() != dragboardContent.getParent()) {
 								KeyValueTreeCell cell = getTreeCell(item.getParent());
@@ -665,7 +638,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 					} else {
 						// insert after
 						// if parent is a list
-						if (item.getParent().getValue().tag.getID() == 10) {
+						if (item.getParent().getValue().tag.getID() == Tag.COMPOUND) {
 							// if parent is equal to the dragged item's parent
 							if (item.getParent() != dragboardContent.getParent()) {
 								KeyValueTreeCell cell = getTreeCell(item.getParent());
@@ -739,8 +712,8 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		}
 
 		private int findDropIndex(Tag target, Tag tag) {
-			if (target.getID() == 9) {
-				ListTag<?> list = (ListTag<?>) target;
+			if (target.getID() == Tag.LIST) {
+				ListTag list = (ListTag) target;
 				for (int index = 0; index < list.size(); index++) {
 					if (list.get(index) == tag) {
 						return index;
@@ -777,7 +750,23 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			setInsertParentCss(false);
 		}
 
-		@SuppressWarnings("unchecked")
+		private static Object tagToArray(Tag tag) {
+			return switch (tag.getID()) {
+				case Tag.BYTE_ARRAY -> ((ByteArrayTag) tag).getValue();
+				case Tag.INT_ARRAY -> ((IntArrayTag) tag).getValue();
+				case Tag.LONG_ARRAY -> ((LongArrayTag) tag).getValue();
+				default -> null;
+			};
+		}
+
+		private static void setArrayValue(Tag tag, Object array) {
+			switch (tag.getID()) {
+				case Tag.BYTE_ARRAY -> ((ByteArrayTag) tag).setValue((byte[]) array);
+				case Tag.INT_ARRAY -> ((IntArrayTag) tag).setValue((int[]) array);
+				case Tag.LONG_ARRAY -> ((LongArrayTag) tag).setValue((long[]) array);
+			}
+		}
+
 		@Override
 		public void startEdit() {
 			if (!isEditable() || !getTreeView().isEditable()) {
@@ -797,7 +786,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 					value.getStyleClass().add("key-value-tree-cell-value");
 					value.setOnKeyReleased(this::onKeyReleased);
 				}
-				value.setText(tagValueToString(getItem()));
+				value.setText(tagValueToString(getItem().tag));
 
 				if (edit == null) {
 					edit = new Button("edit");
@@ -805,8 +794,8 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				}
 				edit.setOnAction(e -> {
 					@SuppressWarnings("rawtypes")
-					Optional<EditArrayDialog.Result> result = new EditArrayDialog<>(((ArrayTag<?>) getItem().tag).getValue(), stage).showAndWait();
-					result.ifPresent(r -> ((ArrayTag<Object>) getItem().tag).setValue(r.getArray()));
+					Optional<EditArrayDialog.Result> result = new EditArrayDialog<>(tagToArray(getItem().tag), stage).showAndWait();
+					result.ifPresent(r -> setArrayValue(getItem().tag, r.getArray()));
 				});
 
 				if (box == null) {
@@ -816,27 +805,29 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 				TextField focus = null;
 
-				if (getItem().parent instanceof CompoundTag) {
-					if (getItem().tag instanceof ArrayTag) {
-						// array inside compound: name + edit
-						box.getChildren().setAll(getGraphic(), focus = key, edit);
-					} else if (getItem().tag instanceof CompoundTag || getItem().tag instanceof ListTag) {
-						// container inside compound: name
-						box.getChildren().setAll(getGraphic(), focus = key);
-					} else {
-						// rest inside compound: name + value
-						box.getChildren().setAll(getGraphic(), focus = key, value);
-					}
-				} else if (getItem().parent instanceof ListTag) {
-					if (getItem().tag instanceof ArrayTag) {
-						// array inside list: edit
-						box.getChildren().setAll(getGraphic(), edit);
-					} else if (getItem().tag instanceof CompoundTag || getItem().tag instanceof ListTag) {
-						// container inside list: not editable
-						return;
-					} else {
-						// rest inside list: value
-						box.getChildren().setAll(getGraphic(), focus = value);
+				if (getItem().parent != null) {
+					if (getItem().parent.getID() == Tag.COMPOUND) {
+						if (getItem().tag.getID() == Tag.BYTE_ARRAY || getItem().tag.getID() == Tag.INT_ARRAY || getItem().tag.getID() == Tag.LONG_ARRAY) {
+							// array inside compound: name + edit
+							box.getChildren().setAll(getGraphic(), focus = key, edit);
+						} else if (getItem().tag.getID() == Tag.COMPOUND || getItem().tag.getID() == Tag.LIST) {
+							// container inside compound: name
+							box.getChildren().setAll(getGraphic(), focus = key);
+						} else {
+							// rest inside compound: name + value
+							box.getChildren().setAll(getGraphic(), focus = key, value);
+						}
+					} else if (getItem().parent.getID() == Tag.LIST) {
+						if (getItem().tag.getID() == Tag.BYTE_ARRAY || getItem().tag.getID() == Tag.INT_ARRAY || getItem().tag.getID() == Tag.LONG_ARRAY) {
+							// array inside list: edit
+							box.getChildren().setAll(getGraphic(), edit);
+						} else if (getItem().tag.getID() == Tag.COMPOUND || getItem().tag.getID() == Tag.LIST) {
+							// container inside list: not editable
+							return;
+						} else {
+							// rest inside list: value
+							box.getChildren().setAll(getGraphic(), focus = value);
+						}
 					}
 				}
 
@@ -852,7 +843,6 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 		@Override
 		public void commitEdit(NamedTag tag) {
-			super.commitEdit(tag);
 			if (key.getText() != null && !key.getText().isEmpty()) {
 				CompoundTag parent = (CompoundTag) tag.parent;
 				if (parent.containsKey(key.getText()) && !key.getText().equals(tag.name)) {
@@ -865,12 +855,13 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			}
 			if (value.getText() != null) {
 				try {
-					updateValue(tag.tag, value.getText());
+					updateValue(tag.parent, tag, value.getText());
 				} catch (Exception ex) {
 					// reset text in text field
-					value.setText(tagValueToString(tag));
+					value.setText(tagValueToString(tag.tag));
 				}
 			}
+			super.commitEdit(tag);
 		}
 
 		@Override

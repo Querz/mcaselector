@@ -2,7 +2,7 @@ package net.querz.mcaselector.changer;
 
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.validation.ValidationHelper;
-import net.querz.nbt.tag.IntTag;
+import net.querz.nbt.IntTag;
 
 public class DataVersionField extends Field<Integer> {
 
@@ -12,7 +12,7 @@ public class DataVersionField extends Field<Integer> {
 
 	@Override
 	public Integer getOldValue(ChunkData data) {
-		return ValidationHelper.withDefault(() -> data.getRegion().getData().getInt("DataVersion"), null);
+		return ValidationHelper.withDefault(() -> data.region().getData().getInt("DataVersion"), null);
 	}
 
 	@Override
@@ -30,36 +30,36 @@ public class DataVersionField extends Field<Integer> {
 
 	@Override
 	public void change(ChunkData data) {
-		IntTag tag = data.getRegion().getData().getIntTag("DataVersion");
+		IntTag tag = data.region().getData().getIntTag("DataVersion");
 		if (tag != null) {
-			tag.setValue(getNewValue());
+			data.region().getData().putInt("DataVersion", getNewValue());
 		}
 
-		if (data.getPoi() != null) {
-			tag = data.getPoi().getData().getIntTag("DataVersion");
+		if (data.poi() != null) {
+			tag = data.poi().getData().getIntTag("DataVersion");
 			if (tag != null) {
-				tag.setValue(getNewValue());
+				data.region().getData().putInt("DataVersion", getNewValue());
 			}
 		}
 
-		if (data.getEntities() != null) {
-			tag = data.getEntities().getData().getIntTag("DataVersion");
+		if (data.entities() != null) {
+			tag = data.entities().getData().getIntTag("DataVersion");
 			if (tag != null) {
-				tag.setValue(getNewValue());
+				data.region().getData().putInt("DataVersion", getNewValue());
 			}
 		}
 	}
 
 	@Override
 	public void force(ChunkData data) {
-		data.getRegion().getData().putInt("DataVersion", getNewValue());
+		data.region().getData().putInt("DataVersion", getNewValue());
 
-		if (data.getPoi() != null) {
-			data.getPoi().getData().putInt("DataVersion", getNewValue());
+		if (data.poi() != null) {
+			data.poi().getData().putInt("DataVersion", getNewValue());
 		}
 
-		if (data.getEntities() != null) {
-			data.getEntities().getData().putInt("DataVersion", getNewValue());
+		if (data.entities() != null) {
+			data.entities().getData().putInt("DataVersion", getNewValue());
 		}
 	}
 }

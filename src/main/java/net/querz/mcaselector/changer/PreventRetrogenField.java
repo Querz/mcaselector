@@ -24,11 +24,11 @@ public class PreventRetrogenField extends Field<Boolean> {
 
 	@Override
 	public void change(ChunkData data) {
-		if (data.getRegion() == null || data.getRegion().getData() == null) {
+		if (data.region() == null || data.region().getData() == null) {
 			return;
 		}
-		data.getRegion().getData().remove("below_zero_retrogen");
-		data.getRegion().getData().putString("Status", "full");
+		data.region().getData().remove("below_zero_retrogen");
+		data.region().getData().putString("Status", "full");
 	}
 
 	@Override
