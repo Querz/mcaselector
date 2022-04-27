@@ -52,7 +52,7 @@ public class Anvil119ChunkRelocator implements ChunkRelocator {
 					newSections.add(section);
 				}
 			}
-			root.put("sections", sections);
+			root.put("sections", newSections);
 		}
 
 		return true;
