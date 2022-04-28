@@ -9,6 +9,8 @@ import net.querz.mca.parsers.impl.anvil118.BlockParser118;
 import net.querz.mca.parsers.impl.anvil118.HeightmapParser118;
 import net.querz.mca.parsers.impl.anvil118.SectionParser118;
 import net.querz.mcaselector.math.Bits;
+import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.ChunkRenderer;
 import net.querz.mcaselector.version.ColorMapping;
@@ -33,12 +35,6 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 		Map<Integer, BlockParser<CompoundTag>> blockParsers = new HashMap<>();
 		Map<Integer, BiomeParser<String>> biomeParsers = new HashMap<>();
 
-//		if (x == 0 && z == 0) {
-//			System.out.println(NBTUtil.toSNBT(root, "\t"));
-//		}
-
-		boolean printed = false;
-
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
 				int mapHeight = heightmapParser.getHeightAt(HeightmapParser.HeightmapType.WORLD_SURFACE, cx, cz) - 1;
@@ -55,21 +51,32 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 				int regionIndex = (z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale);
 				pixelBuffer[regionIndex] = colorMapping.getRGB(blockState, biome);
 
-				waterHeights[regionIndex] = (short) (mapHeight - 64);
 
-				if (water) {
-					int waterHeight = heightmapParser.getHeightAt(HeightmapParser.HeightmapType.OCEAN_FLOOR, cx, cz) - 1;
-					terrainHeights[regionIndex] = (short) (waterHeight - 64);
+				// terrainHeights contains OCEAN_FLOOR
+				terrainHeights[regionIndex] = (short) (mapHeight - 64);
 
-					if (waterHeight < mapHeight) {
-						// set water pixel
-						CompoundTag tSec = sectionParser.getSectionAtBlock(waterHeight - 64);
-						if (tSec != null) {
-							BlockParser<CompoundTag> tBlockParser = blockParsers.computeIfAbsent(waterHeight >> 4, k -> new BlockParser118(tSec));
-							CompoundTag tBlockState = tBlockParser.getBlockAt(cx, waterHeight, cz);
-							waterPixels[regionIndex] = colorMapping.getRGB(tBlockState, biome);
-						}
+				// if this is water, we need to set the waterPixel as well
+				if (isWater(blockState)) {
+					int oceanFloor = heightmapParser.getHeightAt(HeightmapParser.HeightmapType.OCEAN_FLOOR, cx, cz) - 1;
+					CompoundTag tSec = sectionParser.getSectionAtBlock(oceanFloor - 64);
+					if (tSec != null) {
+						BlockParser<CompoundTag> tBlockParser = blockParsers.computeIfAbsent(oceanFloor >> 4, k -> new BlockParser118(tSec));
+						CompoundTag tBlockState = tBlockParser.getBlockAt(cx, oceanFloor, cz);
+						waterPixels[regionIndex] = colorMapping.getRGB(tBlockState, biome);
 					}
+
+					// waterHeights contains the height of the highest water or terrain without transparent blocks such as grass or flowers or seaweed
+					// so in order to keep this quick we won't render seaweed
+					waterHeights[regionIndex] = (short) (oceanFloor - 64);
+
+				} else if (isWaterlogged(blockState)) {
+					// if it's waterlogged, we pretend the water is 1 block deep
+					pixelBuffer[regionIndex] = colorMapping.getRGB(waterDummy, biome);
+					waterPixels[regionIndex] = colorMapping.getRGB(blockState, biome);
+					waterHeights[regionIndex] = (short) (mapHeight - 64);
+					terrainHeights[regionIndex] = (short) (mapHeight - 65);
+				} else {
+					waterHeights[regionIndex] = (short) (mapHeight - 64);
 				}
 			}
 		}
@@ -170,6 +177,22 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 					}
 				}
 			}
+		}
+
+		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
+			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
+				int regionIndex = (z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale);
+				System.out.print(terrainHeights[regionIndex] + "\t");
+			}
+			System.out.println();
+		}
+
+		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
+			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
+				int regionIndex = (z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale);
+				System.out.print(waterHeights[regionIndex] + "\t");
+			}
+			System.out.println();
 		}
 	}
 

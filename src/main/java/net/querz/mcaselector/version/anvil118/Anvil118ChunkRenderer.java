@@ -1,5 +1,13 @@
 package net.querz.mcaselector.version.anvil118;
 
+import net.querz.mca.parsers.BiomeParser;
+import net.querz.mca.parsers.BlockParser;
+import net.querz.mca.parsers.HeightmapParser;
+import net.querz.mca.parsers.SectionParser;
+import net.querz.mca.parsers.impl.anvil118.BiomeParser118;
+import net.querz.mca.parsers.impl.anvil118.BlockParser118;
+import net.querz.mca.parsers.impl.anvil118.HeightmapParser118;
+import net.querz.mca.parsers.impl.anvil118.SectionParser118;
 import net.querz.mcaselector.math.Bits;
 import net.querz.mcaselector.math.MathUtil;
 import net.querz.mcaselector.tiles.Tile;
@@ -7,12 +15,73 @@ import net.querz.mcaselector.version.ChunkRenderer;
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.version.Helper;
 import net.querz.nbt.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static net.querz.mcaselector.validation.ValidationHelper.silent;
 
 public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
+		SectionParser sectionParser = new SectionParser118(root);
+		HeightmapParser heightmapParser = new HeightmapParser118(root);
+
+		Map<Integer, BlockParser<CompoundTag>> blockParsers = new HashMap<>();
+		Map<Integer, BiomeParser<String>> biomeParsers = new HashMap<>();
+
+		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
+			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
+				int mapHeight = heightmapParser.getHeightAt(HeightmapParser.HeightmapType.WORLD_SURFACE, cx, cz) - 1;
+				CompoundTag section = sectionParser.getSectionAtBlock(mapHeight - 64);
+				if (section == null) {
+					continue;
+				}
+				BlockParser<CompoundTag> blockParser = blockParsers.computeIfAbsent(mapHeight >> 4, k -> new BlockParser118(section));
+				BiomeParser<String> biomeParser = biomeParsers.computeIfAbsent(mapHeight >> 4, k -> new BiomeParser118(section));
+
+				CompoundTag blockState = blockParser.getBlockAt(cx, mapHeight, cz);
+				String biome = biomeParser.getBiomeAt(cx, mapHeight, cz);
+
+				int regionIndex = (z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale);
+				pixelBuffer[regionIndex] = colorMapping.getRGB(blockState, biome);
+
+
+				// terrainHeights contains OCEAN_FLOOR
+				terrainHeights[regionIndex] = (short) (mapHeight - 64);
+
+				if (water) {
+					// if this is water, we need to set the waterPixel as well
+					if (isWater(blockState)) {
+						int oceanFloor = heightmapParser.getHeightAt(HeightmapParser.HeightmapType.OCEAN_FLOOR, cx, cz) - 1;
+						CompoundTag tSec = sectionParser.getSectionAtBlock(oceanFloor - 64);
+						if (tSec != null) {
+							BlockParser<CompoundTag> tBlockParser = blockParsers.computeIfAbsent(oceanFloor >> 4, k -> new BlockParser118(tSec));
+							CompoundTag tBlockState = tBlockParser.getBlockAt(cx, oceanFloor, cz);
+							waterPixels[regionIndex] = colorMapping.getRGB(tBlockState, biome);
+						}
+
+						// waterHeights contains the height of the highest water or terrain without transparent blocks such as grass or flowers or seaweed
+						// so in order to keep this quick we won't render seaweed
+						waterHeights[regionIndex] = (short) (oceanFloor - 64);
+
+					} else if (isWaterlogged(blockState)) {
+						// if it's waterlogged, we pretend the water is 1 block deep
+						pixelBuffer[regionIndex] = colorMapping.getRGB(waterDummy, biome);
+						waterPixels[regionIndex] = colorMapping.getRGB(blockState, biome);
+						waterHeights[regionIndex] = (short) (mapHeight - 64);
+						terrainHeights[regionIndex] = (short) (mapHeight - 65);
+					} else {
+						waterHeights[regionIndex] = (short) (mapHeight - 64);
+					}
+				}
+			}
+		}
+	}
+
+//	@Override
+	public void drawChunk2(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
 		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
 		if (dataVersion == null) {
 			return;
