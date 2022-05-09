@@ -488,7 +488,8 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 		NINE(9),
 		TEN(10),
 		ELEVEN(11),
-		TWELVE(12);
+		TWELVE(12),
+		THIRTY_TWO(32);
 
 		final int bits;
 		final String string;
