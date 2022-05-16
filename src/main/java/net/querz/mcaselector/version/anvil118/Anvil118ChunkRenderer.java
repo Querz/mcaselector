@@ -23,8 +23,8 @@ import static net.querz.mcaselector.validation.ValidationHelper.silent;
 
 public class Anvil118ChunkRenderer implements ChunkRenderer {
 
-	@Override
-	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
+//	@Override
+	public void drawChunk2(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
 		SectionParser sectionParser = new SectionParser118(root);
 		HeightmapParser heightmapParser = new HeightmapParser118(root);
 
@@ -80,8 +80,8 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 		}
 	}
 
-//	@Override
-	public void drawChunk2(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
+	@Override
+	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
 		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
 		if (dataVersion == null) {
 			return;
