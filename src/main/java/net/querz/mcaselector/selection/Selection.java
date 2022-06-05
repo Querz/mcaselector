@@ -287,7 +287,11 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 			}
 		}
 		if (selection.containsKey(region.asLong())) {
-			return selection.get(region.asLong()).immutable();
+			ChunkSet result = selection.get(region.asLong());
+			if (result == null) {
+				return null;
+			}
+			return result.immutable();
 		} else {
 			return ChunkSet.EMPTY_SET;
 		}
