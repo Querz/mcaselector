@@ -316,17 +316,4 @@ public final class ImagePool {
 			Debug.dumpf("  %s", new Point2i(region));
 		}
 	}
-
-	// marks tiles whose images are in the memory cache for a given scale. used for debugging.
-	public void mark(int scale) {
-		synchronized (poolLock) {
-			Long2ObjectLinkedOpenHashMap<Image> scaleEntry = pool.get(scale);
-			Long2ObjectOpenHashMap<LongOpenHashSet> marked = new Long2ObjectOpenHashMap<>();
-			for (Long2ObjectMap.Entry<Image> cache : scaleEntry.long2ObjectEntrySet()) {
-				marked.put(cache.getLongKey(), null);
-			}
-			tileMap.setMarkedChunks(marked);
-			tileMap.draw();
-		}
-	}
 }

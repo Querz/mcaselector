@@ -16,10 +16,10 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.selection.ClipboardSelection;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.io.CacheHelper;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.tiles.TileMapSelection;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -271,7 +271,7 @@ public class OptionBar extends BorderPane {
 		nextOverlay.setAccelerator(new KeyCodeCombination(KeyCode.O));
 		nextOverlayType.setAccelerator(new KeyCodeCombination(KeyCode.N));
 
-		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks(), tileMap.isSelectionInverted());
+		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks(), tileMap.getSelection().isInverted());
 		setWorldDependentMenuItemsEnabled(false, tileMap);
 
 		Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> paste.setDisable(!hasValidClipboardContent(tileMap) || tileMap.getDisabled()));
@@ -282,7 +282,7 @@ public class OptionBar extends BorderPane {
 
 	private void onUpdate(TileMap tileMap) {
 		int selectedChunks = tileMap.getSelectedChunks();
-		boolean invertedSelection = tileMap.isSelectionInverted();
+		boolean invertedSelection = tileMap.getSelection().isInverted();
 		if (previousSelectedChunks != selectedChunks || previousInvertedSelection != invertedSelection) {
 			setSelectionDependentMenuItemsEnabled(selectedChunks, invertedSelection);
 		}
@@ -331,7 +331,7 @@ public class OptionBar extends BorderPane {
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 		Transferable content = clipboard.getContents(tileMap);
 		DataFlavor[] flavors = content.getTransferDataFlavors();
-		return flavors.length == 1 && flavors[0].equals(TileMapSelection.SELECTION_DATA_FLAVOR);
+		return flavors.length == 1 && flavors[0].equals(ClipboardSelection.SELECTION_DATA_FLAVOR);
 	}
 
 	public void setRenderHeight(double height) {

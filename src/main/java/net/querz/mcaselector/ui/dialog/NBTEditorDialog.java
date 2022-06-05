@@ -30,6 +30,8 @@ import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.selection.ChunkSet;
+import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.ui.NBTTreeView;
@@ -107,20 +109,20 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 	}
 
 	private Point2i getSelectedChunk(TileMap tileMap) {
-		Long2ObjectOpenHashMap<LongOpenHashSet> selection = tileMap.getMarkedChunks();
+		Selection selection = tileMap.getSelection();
 		if (selection.size() != 1) {
 			throw new RuntimeException("only one chunk can be selected, but found selection of " + selection.size() + " regions");
 		}
 		Point2i location = null;
-		for (Long2ObjectMap.Entry<LongOpenHashSet> entry : selection.long2ObjectEntrySet()) {
+		for (Long2ObjectMap.Entry<ChunkSet> entry : selection) {
 			if (entry.getValue() == null) {
 				throw new RuntimeException("only one chunk can be selected, but found entire region " + new Point2i(entry.getLongKey()) + " selected");
 			}
 			if (entry.getValue().size() != 1) {
 				throw new RuntimeException("only one chunk can be selected, but found selection of " + entry.getValue().size() + " chunks");
 			}
-			for (long p : entry.getValue()) {
-				location = new Point2i(p);
+			for (int p : entry.getValue()) {
+				location = new Point2i(p).add(new Point2i(entry.getLongKey()).regionToChunk());
 			}
 		}
 		if (location == null) {

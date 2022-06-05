@@ -15,7 +15,7 @@ public class ExportConfirmationDialog extends ConfirmationDialog {
 		);
 
 		if (tileMap != null) {
-			if (!tileMap.isSelectionInverted()) {
+			if (!tileMap.getSelection().isInverted()) {
 				headerTextProperty().unbind();
 				setHeaderText(String.format(Translation.DIALOG_EXPORT_CHUNKS_CONFIRMATION_HEADER_VERBOSE.toString(), tileMap.getSelectedChunks()));
 			}

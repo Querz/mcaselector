@@ -1,16 +1,13 @@
 package net.querz.mcaselector.io.job;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
-import net.querz.mcaselector.io.SelectionData;
-import net.querz.mcaselector.io.SelectionHelper;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.Region;
-import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.selection.ChunkSet;
+import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
@@ -22,21 +19,20 @@ public final class SelectionExporter {
 
 	private SelectionExporter() {}
 
-	public static void exportSelection(SelectionData selection, WorldDirectories destination, Progress progressChannel) {
-		if (selection.selection().isEmpty() && !selection.inverted()) {
+	public static void exportSelection(Selection selection, WorldDirectories destination, Progress progressChannel) {
+		if (selection.isEmpty()) {
 			progressChannel.done("no selection");
 			return;
 		}
 
 		JobHandler.clearQueues();
 
-		Long2ObjectOpenHashMap<LongOpenHashSet> sel = SelectionHelper.getTrueSelection(selection);
+		Selection trueSelection = selection.getTrueSelection(destination);
 
-		progressChannel.setMax(sel.size());
-		Point2i first = new Point2i(sel.long2ObjectEntrySet().iterator().next().getLongKey());
-		progressChannel.updateProgress(FileHelper.createMCAFileName(first), 0);
+		progressChannel.setMax(trueSelection.size());
+		progressChannel.updateProgress(FileHelper.createMCAFileName(trueSelection.one()), 0);
 
-		for (Long2ObjectMap.Entry<LongOpenHashSet> entry : sel.long2ObjectEntrySet()) {
+		for (Long2ObjectMap.Entry<ChunkSet> entry : trueSelection) {
 			JobHandler.addJob(new MCADeleteSelectionProcessJob(
 					FileHelper.createRegionDirectories(new Point2i(entry.getLongKey())),
 					entry.getValue(),
@@ -48,10 +44,10 @@ public final class SelectionExporter {
 	private static class MCADeleteSelectionProcessJob extends ProcessDataJob {
 
 		private final Progress progressChannel;
-		private final LongOpenHashSet chunksToBeExported;
+		private final ChunkSet chunksToBeExported;
 		private final WorldDirectories destination;
 
-		private MCADeleteSelectionProcessJob(RegionDirectories dirs, LongOpenHashSet chunksToBeExported, WorldDirectories destination, Progress progressChannel) {
+		private MCADeleteSelectionProcessJob(RegionDirectories dirs, ChunkSet chunksToBeExported, WorldDirectories destination, Progress progressChannel) {
 			super(dirs, PRIORITY_LOW);
 			this.chunksToBeExported = chunksToBeExported;
 			this.destination = destination;
@@ -115,19 +111,7 @@ public final class SelectionExporter {
 			try {
 				// only load headers, because we don't care for chunk data
 				Region region = Region.loadRegionHeaders(getRegionDirectories(), regionData, poiData, entitiesData);
-
-				LongOpenHashSet inverted = new LongOpenHashSet(Tile.CHUNKS - chunksToBeExported.size());
-				Point2i origin = new Point2i(chunksToBeExported.iterator().nextLong()).chunkToRegion().regionToChunk();
-				for (int x = origin.getX(); x < origin.getX() + Tile.SIZE_IN_CHUNKS; x++) {
-					for (int z = origin.getZ(); z < origin.getZ() + Tile.SIZE_IN_CHUNKS; z++) {
-						long cp = new Point2i(x, z).asLong();
-						if (!chunksToBeExported.contains(cp)) {
-							inverted.add(cp);
-						}
-					}
-				}
-
-				region.deleteChunks(inverted);
+				region.deleteChunks(chunksToBeExported.flip());
 				JobHandler.executeSaveData(new MCADeleteSelectionSaveJob(getRegionDirectories(), region, to, progressChannel));
 				return false;
 

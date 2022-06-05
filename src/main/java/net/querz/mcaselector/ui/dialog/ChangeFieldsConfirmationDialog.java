@@ -15,7 +15,7 @@ public class ChangeFieldsConfirmationDialog extends ConfirmationDialog {
 		);
 
 		if (tileMap != null) {
-			if (!tileMap.isSelectionInverted()) {
+			if (!tileMap.getSelection().isInverted()) {
 				headerTextProperty().unbind();
 				setHeaderText(String.format(Translation.DIALOG_DELETE_CHUNKS_CONFIRMATION_HEADER_VERBOSE.toString(), tileMap.getSelectedChunks()));
 			}

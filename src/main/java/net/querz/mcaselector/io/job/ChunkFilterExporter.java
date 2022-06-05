@@ -5,12 +5,12 @@ import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
-import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
 import java.io.File;
 
@@ -18,7 +18,7 @@ public final class ChunkFilterExporter {
 
 	private ChunkFilterExporter() {}
 
-	public static void exportFilter(GroupFilter filter, SelectionData selection, WorldDirectories destination, Progress progressChannel, boolean headless) {
+	public static void exportFilter(GroupFilter filter, Selection selection, WorldDirectories destination, Progress progressChannel, boolean headless) {
 		WorldDirectories wd = Config.getWorldDirs();
 		RegionDirectories[] rd = wd.listRegions(selection);
 		if (rd == null || rd.length == 0) {
@@ -44,10 +44,10 @@ public final class ChunkFilterExporter {
 
 		private final Progress progressChannel;
 		private final GroupFilter filter;
-		private final SelectionData selection;
+		private final Selection selection;
 		private final WorldDirectories destination;
 
-		private MCAExportFilterProcessJob(RegionDirectories dirs, GroupFilter filter, SelectionData selection, WorldDirectories destination, Progress progressChannel) {
+		private MCAExportFilterProcessJob(RegionDirectories dirs, GroupFilter filter, Selection selection, WorldDirectories destination, Progress progressChannel) {
 			super(dirs, PRIORITY_LOW);
 			this.filter = filter;
 			this.selection = selection;
@@ -59,7 +59,7 @@ public final class ChunkFilterExporter {
 		public boolean execute() {
 			Point2i location = getRegionDirectories().getLocation();
 
-			if (!filter.appliesToRegion(location) || selection != null && !selection.isRegionSelected(location)) {
+			if (!filter.appliesToRegion(location) || selection != null && !selection.isAnyChunkInRegionSelected(location)) {
 				Debug.dump("filter does not apply to region " + getRegionDirectories().getLocation());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return true;

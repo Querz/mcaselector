@@ -25,13 +25,15 @@ import net.querz.mcaselector.io.job.SelectionExporter;
 import net.querz.mcaselector.io.job.SelectionImageExporter;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.Region;
-import net.querz.mcaselector.tiles.Selection;
+import net.querz.mcaselector.selection.ChunkSet;
+import net.querz.mcaselector.selection.ClipboardSelection;
+import net.querz.mcaselector.selection.Selection;
+import net.querz.mcaselector.selection.SelectionData;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.tiles.TileMapSelection;
 import net.querz.mcaselector.ui.dialog.*;
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -63,7 +65,7 @@ public class DialogHelper {
 							.showProgressBar(t -> FieldChanger.changeNBTFields(
 									r.fields(),
 									r.force(),
-									r.selectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
+									r.selectionOnly() ? tileMap.getSelection() : null,
 									t,
 									false
 							));
@@ -96,7 +98,7 @@ public class DialogHelper {
 							new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_FILTERED_CHUNKS, primaryStage)
 								.showProgressBar(t -> ChunkFilterDeleter.deleteFilter(
 									r.getFilter(),
-									r.isSelectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
+									r.isSelectionOnly() ? tileMap.getSelection() : null,
 									t,
 									false
 								));
@@ -129,7 +131,7 @@ public class DialogHelper {
 								new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_FILTERED_CHUNKS, primaryStage)
 									.showProgressBar(t -> ChunkFilterExporter.exportFilter(
 										r.getFilter(),
-										r.isSelectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
+										r.isSelectionOnly() ? tileMap.getSelection() : null,
 										worldDirectories,
 										t,
 										false
@@ -142,7 +144,7 @@ public class DialogHelper {
 					}
 				}
 				case SELECT -> {
-					SelectionData selectionData = new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted());
+					net.querz.mcaselector.selection.Selection selectionData = tileMap.getSelection();
 					if (r.isOverwriteSelection()) {
 						tileMap.clearSelection();
 					}
@@ -152,7 +154,7 @@ public class DialogHelper {
 							r.isSelectionOnly() ? (selectionData.isEmpty() ? null : selectionData) : null,
 							r.getRadius(),
 							selection -> Platform.runLater(() -> {
-								tileMap.addMarkedChunks(selection);
+								tileMap.addSelection(selection);
 								tileMap.draw();
 							}), t, false));
 					r.getFilter().resetTempData();
@@ -164,7 +166,7 @@ public class DialogHelper {
 	}
 
 	public static void quit(TileMap tileMap, Stage primaryStage) {
-		if (tileMap.getSelectedChunks() > 0 || tileMap.isSelectionInverted()) {
+		if (tileMap.getSelectedChunks() > 0 || tileMap.getSelection().isInverted()) {
 			Optional<ButtonType> result = new ConfirmationDialog(primaryStage, Translation.DIALOG_UNSAVED_CHANGES_TITLE, Translation.DIALOG_UNSAVED_CHANGES_HEADER, "unsaved-changes").showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
@@ -185,7 +187,7 @@ public class DialogHelper {
 		result.ifPresent(r -> {
 			if (r == ButtonType.OK) {
 				new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_SELECTION, primaryStage)
-						.showProgressBar(t -> SelectionDeleter.deleteSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), t));
+						.showProgressBar(t -> SelectionDeleter.deleteSelection(tileMap.getSelection(), t));
 				CacheHelper.clearSelectionCache(tileMap);
 				tileMap.clear();
 				tileMap.draw();
@@ -209,7 +211,7 @@ public class DialogHelper {
 					}
 
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_SELECTION, primaryStage)
-							.showProgressBar(t -> SelectionExporter.exportSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), worldDirectories, t));
+							.showProgressBar(t -> SelectionExporter.exportSelection(tileMap.getSelection(), worldDirectories, t));
 				}
 			});
 		}
@@ -236,7 +238,7 @@ public class DialogHelper {
 									wd,
 									t, false, dataProperty.get().overwrite(),
 									null,
-									dataProperty.get().selectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
+									dataProperty.get().selectionOnly() ? tileMap.getSelection() : null,
 									dataProperty.get().getRanges(),
 									dataProperty.get().getOffset(),
 									tempFiles));
@@ -338,11 +340,10 @@ public class DialogHelper {
 	}
 
 	public static void generateImageFromSelection(TileMap tileMap, Stage primaryStage) {
-		SelectionData selection = new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted());
-		SelectionImageExporter.SelectionDataInfo info = SelectionImageExporter.calculateSelectionInfo(selection);
+		net.querz.mcaselector.selection.SelectionData data = new net.querz.mcaselector.selection.SelectionData(tileMap.getSelection(), null);
 
-		if (info.getSelectionInfo().getWidth() * 16 * info.getSelectionInfo().getHeight() * 16 > Integer.MAX_VALUE) {
-			String error = String.format("dimensions are too large to generate an image: %dx%d", info.getSelectionInfo().getWidth() * 16, info.getSelectionInfo().getHeight() * 16);
+		if (data.getWidth() * 16 * data.getHeight() * 16 > Integer.MAX_VALUE) {
+			String error = String.format("dimensions are too large to generate an image: %dx%d", data.getWidth() * 16, data.getHeight() * 16);
 			Debug.dumpf(error);
 			new ErrorDialog(primaryStage, error);
 			return;
@@ -354,17 +355,17 @@ public class DialogHelper {
 			return;
 		}
 
-		Optional<ButtonType> result = new ImageExportConfirmationDialog(tileMap, info.getSelectionInfo(), primaryStage).showAndWait();
+		Optional<ButtonType> result = new ImageExportConfirmationDialog(tileMap, data, primaryStage).showAndWait();
 		result.ifPresent(b -> {
 			if (b == ButtonType.OK) {
 				DataProperty<int[]> pixels = new DataProperty<>();
 				CancellableProgressDialog cpd = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_CREATING_IMAGE, primaryStage);
-				cpd.showProgressBar(t -> pixels.set(SelectionImageExporter.exportSelectionImage(info, tileMap.getOverlayPool(), t)));
+				cpd.showProgressBar(t -> pixels.set(SelectionImageExporter.exportSelectionImage(data, tileMap.getOverlayPool(), t)));
 				if (!cpd.cancelled() && pixels.get() != null) {
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SAVING_IMAGE, primaryStage)
 					.showProgressBar(t -> {
 						try {
-							ImageHelper.saveImageData(pixels.get(), (int) info.getSelectionInfo().getWidth() * 16, (int) info.getSelectionInfo().getHeight() * 16, file, t);
+							ImageHelper.saveImageData(pixels.get(), (int) data.getWidth() * 16, (int) data.getHeight() * 16, file, t);
 							FileHelper.setLastOpenedDirectory("snapshot_save", file.getParent());
 						} catch (IOException ex) {
 							Debug.dumpException("failed to save image", ex);
@@ -379,10 +380,12 @@ public class DialogHelper {
 	public static void swapChunks(TileMap tileMap, Stage primaryStage) {
 		new ProgressDialog(Translation.MENU_TOOLS_SWAP_CHUNKS, primaryStage).showProgressBar(t -> {
 			t.setMax(4);
-			Long2ObjectOpenHashMap<LongOpenHashSet> markedChunks = tileMap.getMarkedChunks();
+			Selection markedChunks = tileMap.getSelection();
 			LongArrayList chunks = new LongArrayList(2);
-			for (Long2ObjectMap.Entry<LongOpenHashSet> entry : markedChunks.long2ObjectEntrySet()) {
-				chunks.addAll(entry.getValue());
+			for (Long2ObjectMap.Entry<ChunkSet> entry : markedChunks) {
+				for (int markedChunk : entry.getValue()) {
+					chunks.add(new Point2i(entry.getLongKey()).add(new Point2i(markedChunk)).asLong());
+				}
 			}
 			if (chunks.size() != 2) {
 				throw new IllegalStateException("need 2 chunks to swap");
@@ -465,9 +468,9 @@ public class DialogHelper {
 
 	public static void copySelectedChunks(TileMap tileMap) {
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		Selection selection = new Selection(tileMap.getMarkedChunks(), tileMap.isSelectionInverted(), Config.getWorldDirs());
-		TileMapSelection tileMapSelection = new TileMapSelection(selection);
-		clipboard.setContents(tileMapSelection, tileMap);
+		SelectionData data = new SelectionData(tileMap.getSelection(), Config.getWorldDirs());
+		ClipboardSelection clipboardSelection = new ClipboardSelection(data);
+		clipboard.setContents(clipboardSelection, tileMap);
 	}
 
 	public static void pasteSelectedChunks(TileMap tileMap, Stage primaryStage) {
@@ -481,8 +484,8 @@ public class DialogHelper {
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									tileMap.getPastedWorld(), t, false, dataProperty.get().overwrite(),
-									new SelectionData(tileMap.getPastedChunks(), tileMap.getPastedChunksInverted()),
-									dataProperty.get().selectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
+									tileMap.getPastedChunks(),
+									dataProperty.get().selectionOnly() ? tileMap.getSelection() : null,
 									dataProperty.get().getRanges(),
 									dataProperty.get().getOffset(),
 									tempFiles));
@@ -495,13 +498,13 @@ public class DialogHelper {
 			Transferable content = clipboard.getContents(tileMap);
 			DataFlavor[] flavors = content.getTransferDataFlavors();
 
-			if (flavors.length == 1 && flavors[0].equals(TileMapSelection.SELECTION_DATA_FLAVOR)) {
+			if (flavors.length == 1 && flavors[0].equals(ClipboardSelection.SELECTION_DATA_FLAVOR)) {
 				try {
 					Object data = content.getTransferData(flavors[0]);
 
-					Selection selection = (Selection) data;
+					net.querz.mcaselector.selection.SelectionData selectionData = (net.querz.mcaselector.selection.SelectionData) data;
 
-					tileMap.setPastedChunks(selection.getSelectionData(), selection.isInverted(), selection.getMin(), selection.getMax(), selection.getWorld());
+					tileMap.setPastedChunks(selectionData);
 					tileMap.draw();
 
 				} catch (UnsupportedFlavorException | IOException ex) {
@@ -599,10 +602,16 @@ public class DialogHelper {
 		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export", null),
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showOpenDialog(primaryStage);
 		if (file != null) {
-			SelectionData selection = SelectionHelper.importSelection(file);
+			net.querz.mcaselector.selection.Selection selection;
+			try {
+				selection = net.querz.mcaselector.selection.Selection.readFromFile(file);
+			} catch (IOException e) {
+				Debug.dumpException("failed to read selection from file", e);
+				return;
+				// TODO: show error dialog
+			}
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
-			tileMap.setMarkedChunks(selection.selection());
-			tileMap.setSelectionInverted(selection.inverted());
+			tileMap.setSelection(selection);
 			tileMap.draw();
 		}
 	}
@@ -611,7 +620,13 @@ public class DialogHelper {
 		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export", null),
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showSaveDialog(primaryStage);
 		if (file != null) {
-			SelectionHelper.exportSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), file);
+			try {
+				tileMap.getSelection().saveToFile(file);
+			} catch (IOException ex) {
+				Debug.dumpException("failed to save selection to file", ex);
+				return;
+				// TODO: show error dialog
+			}
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
 			tileMap.draw();
 		}

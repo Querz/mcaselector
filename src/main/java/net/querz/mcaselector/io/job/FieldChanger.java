@@ -5,12 +5,12 @@ import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
-import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
 import java.util.List;
 
@@ -18,7 +18,7 @@ public final class FieldChanger {
 
 	private FieldChanger() {}
 
-	public static void changeNBTFields(List<Field<?>> fields, boolean force, SelectionData selection, Progress progressChannel, boolean headless) {
+	public static void changeNBTFields(List<Field<?>> fields, boolean force, Selection selection, Progress progressChannel, boolean headless) {
 		WorldDirectories wd = Config.getWorldDirs();
 		RegionDirectories[] rd = wd.listRegions(selection);
 		if (rd == null || rd.length == 0) {
@@ -45,9 +45,9 @@ public final class FieldChanger {
 		private final Progress progressChannel;
 		private final List<Field<?>> fields;
 		private final boolean force;
-		private final SelectionData selection;
+		private final Selection selection;
 
-		private MCAFieldChangeProcessJob(RegionDirectories dirs, List<Field<?>> fields, boolean force, SelectionData selection, Progress progressChannel) {
+		private MCAFieldChangeProcessJob(RegionDirectories dirs, List<Field<?>> fields, boolean force, Selection selection, Progress progressChannel) {
 			super(dirs, PRIORITY_LOW);
 			this.fields = fields;
 			this.force = force;
@@ -59,7 +59,7 @@ public final class FieldChanger {
 		public boolean execute() {
 			if (selection != null) {
 				Point2i location = getRegionDirectories().getLocation();
-				if (!selection.isRegionSelected(location)) {
+				if (!selection.isAnyChunkInRegionSelected(location)) {
 					Debug.dumpf("will not apply nbt changes to %s", getRegionDirectories().getLocationAsFileName());
 					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 					return true;

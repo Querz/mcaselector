@@ -1,6 +1,5 @@
 package net.querz.mcaselector.tiles;
 
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.scene.image.Image;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.FileHelper;
@@ -23,21 +22,19 @@ public class Tile {
 	public static final int PIXELS = SIZE * SIZE;
 
 	final Point2i location;
+	final long longLocation;
 
 	Image markedChunksImage;
 
 	Image image;
 	boolean loaded = false;
 
-	boolean marked = false;
-	// a set of all marked chunks in the tile in chunk locations
-	LongOpenHashSet markedChunks = new LongOpenHashSet();
-
 	Image overlay;
 	boolean overlayLoaded = false;
 
 	public Tile(Point2i location) {
 		this.location = location;
+		longLocation = location.asLong();
 	}
 
 	public static int getZoomLevel(float scale) {
@@ -81,12 +78,12 @@ public class Tile {
 		return location;
 	}
 
-	public boolean isEmpty() {
-		return image == null || image == ImageHelper.getEmptyTileImage();
+	public long getLongLocation() {
+		return longLocation;
 	}
 
-	public boolean isObsolete() {
-		return image == null && !marked && (markedChunks == null || markedChunks.isEmpty());
+	public boolean isEmpty() {
+		return image == null || image == ImageHelper.getEmptyTileImage();
 	}
 
 	public boolean isLoaded() {
@@ -127,62 +124,8 @@ public class Tile {
 		loaded = false;
 	}
 
-	public void mark(boolean marked) {
-		this.marked = marked;
-		markedChunks = new LongOpenHashSet();
-		markedChunksImage = null;
-	}
-
-	public void mark(long chunk) {
-		// don't do anything if the entire tile is already marked
-		if (isMarked()) {
-			return;
-		}
-		int sizeBefore = markedChunks.size();
-		markedChunks.add(chunk);
-		if (markedChunks.size() == CHUNKS) {
-			mark(true);
-		} else if (sizeBefore != markedChunks.size()) {
-			markedChunksImage = null; // reset markedChunksImage if there was a change
-		}
-	}
-
-	public boolean isMarked() {
-		return marked;
-	}
-
-	public boolean isMarked(long chunkBlock) {
-		return isMarked() || markedChunks.contains(chunkBlock);
-	}
-
-	public void unMark(Point2i chunkBlock) {
-		if (isMarked()) {
-			mark(false);
-			Point2i regionChunk = location.regionToChunk();
-			for (int x = 0; x < SIZE_IN_CHUNKS; x++) {
-				for (int z = 0; z < SIZE_IN_CHUNKS; z++) {
-					markedChunks.add(regionChunk.add(x, z).asLong());
-				}
-			}
-		}
-		markedChunks.remove(chunkBlock.asLong());
+	public void clearMarkedChunksImage() {
 		markedChunksImage = null; // reset markedChunksImage
-	}
-
-	public void clearMarks() {
-		mark(false);
-		markedChunks = new LongOpenHashSet();
-	}
-
-	public LongOpenHashSet getMarkedChunks() {
-		return markedChunks;
-	}
-
-	public int getSelectionSize() {
-		if (marked) {
-			return 1024;
-		}
-		return markedChunks != null ? markedChunks.size() : 0;
 	}
 
 	public File getMCAFile() {
@@ -191,25 +134,5 @@ public class Tile {
 
 	public void setImage(Image image) {
 		this.image = image;
-	}
-
-	public void invertSelectedChunks() {
-		if (marked) {
-			marked = false;
-			return;
-		}
-		if (markedChunks != null) {
-			Point2i chunkLocation = location.regionToChunk();
-			LongOpenHashSet chunks = new LongOpenHashSet();
-			for (int x = 0; x < 32; x++) {
-				for (int z = 0; z < 32; z++) {
-					long chunk = chunkLocation.add(x, z).asLong();
-					if (!markedChunks.contains(chunk)) {
-						chunks.add(chunk);
-					}
-				}
-			}
-			markedChunks = chunks;
-		}
 	}
 }

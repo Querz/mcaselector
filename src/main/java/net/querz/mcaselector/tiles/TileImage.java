@@ -1,7 +1,5 @@
 package net.querz.mcaselector.tiles;
 
-import javafx.scene.SnapshotParameters;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
@@ -16,6 +14,8 @@ import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.math.MathUtil;
 import net.querz.mcaselector.point.Point2f;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.selection.ChunkSet;
+import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.version.VersionController;
@@ -32,7 +32,7 @@ public final class TileImage {
 
 	private TileImage() {}
 
-	public static void draw(Tile tile, GraphicsContext ctx, float scale, Point2f offset, boolean selectionInverted, boolean overlay, boolean showNonexistentRegions) {
+	public static void draw(GraphicsContext ctx, Tile tile, float scale, Point2f offset, Selection selection, boolean overlay, boolean showNonexistentRegions) {
 		if (tile == null || tile.image == null) {
 			if (showNonexistentRegions) {
 				ctx.drawImage(ImageHelper.getEmptyTileImage(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
@@ -54,58 +54,32 @@ public final class TileImage {
 				ctx.setImageSmoothing(false);
 			}
 
-			if (tile.marked && tile.markedChunks.isEmpty() && !selectionInverted || !tile.marked && tile.markedChunks.isEmpty() && selectionInverted) {
-				// draw marked region
+			if (selection.isRegionSelected(tile.getLongLocation())) {
 				ctx.setFill(Config.getRegionSelectionColor().makeJavaFXColor());
 				ctx.fillRect(offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
-			} else if (tile.markedChunks.size() > 0) {
-
+			} else if (selection.isAnyChunkInRegionSelected(tile.getLongLocation())) {
 				if (tile.markedChunksImage == null) {
-					createMarkedChunksImage(tile, Tile.getZoomLevel(scale), selectionInverted);
+					createMarkedChunksImage(tile, selection.getSelectedChunks(tile.getLocation()));
 				}
-
-				// apply markedChunksImage to ctx
 				ctx.drawImage(tile.markedChunksImage, offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 			}
-		} else if (selectionInverted) {
+
+		} else if (selection.isInverted()) {
 			ctx.setFill(Config.getRegionSelectionColor().makeJavaFXColor());
 			ctx.fillRect(offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		}
 	}
 
-	static void createMarkedChunksImage(Tile tile, int zoomLevel, boolean inverted) {
-		WritableImage wImage = new WritableImage(Tile.SIZE / zoomLevel, Tile.SIZE / zoomLevel);
+	static void createMarkedChunksImage(Tile tile, ChunkSet selection) {
+		WritableImage wImage = new WritableImage(32, 32);
+		PixelWriter writer = wImage.getPixelWriter();
 
-		Canvas canvas = new Canvas(Tile.SIZE / (float) zoomLevel, Tile.SIZE / (float) zoomLevel);
-		GraphicsContext ctx = canvas.getGraphicsContext2D();
-		ctx.setFill(Config.getChunkSelectionColor().makeJavaFXColor());
+		javafx.scene.paint.Color chunkSelectionColor = Config.getChunkSelectionColor().makeJavaFXColor();
 
-		if (inverted) {
-			ctx.fillRect(0, 0, Tile.SIZE, Tile.SIZE);
-		}
-
-		float size = Tile.CHUNK_SIZE / (float) zoomLevel;
-
-		for (long markedChunk : tile.markedChunks) {
-			Point2i regionChunk = new Point2i(markedChunk).mod(Tile.SIZE_IN_CHUNKS);
-			if (regionChunk.getX() < 0) {
-				regionChunk.setX(regionChunk.getX() + Tile.SIZE_IN_CHUNKS);
-			}
-			if (regionChunk.getZ() < 0) {
-				regionChunk.setZ(regionChunk.getZ() + Tile.SIZE_IN_CHUNKS);
-			}
-
-			if (inverted) {
-				ctx.clearRect(regionChunk.getX() * size, regionChunk.getZ() * size, size, size);
-			} else {
-				ctx.fillRect(regionChunk.getX() * size, regionChunk.getZ() * size, size, size);
-			}
-		}
-
-		SnapshotParameters params = new SnapshotParameters();
-		params.setFill(Color.TRANSPARENT.makeJavaFXColor());
-
-		canvas.snapshot(params, wImage);
+		selection.forEach(s -> {
+			Point2i regionChunk = new Point2i(s);
+			writer.setColor(regionChunk.getX(), regionChunk.getZ(), chunkSelectionColor);
+		});
 
 		tile.markedChunksImage = wImage;
 	}

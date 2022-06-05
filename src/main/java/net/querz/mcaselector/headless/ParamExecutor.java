@@ -24,6 +24,8 @@ import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
+import net.querz.mcaselector.selection.Selection;
+import net.querz.mcaselector.selection.SelectionData;
 import net.querz.mcaselector.text.Translation;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,6 +50,8 @@ public final class ParamExecutor {
 	public Future<Boolean> run() {
 
 		FutureTask<Boolean> future = new FutureTask<>(() -> {}, true);
+
+		Debug.dump(Arrays.toString(args));
 
 		try {
 			params = new ParamParser(args).parse();
@@ -74,43 +78,37 @@ public final class ParamExecutor {
 			parseConfig();
 
 			switch (parseMode()) {
-				case "select":
+				case "select" -> {
 					printHeadlessSettings();
 					select(future);
-					break;
-				case "export":
+				}
+				case "export" -> {
 					printHeadlessSettings();
 					export(future);
-					break;
-				case "import":
+				}
+				case "import" -> {
 					printHeadlessSettings();
 					imp(future);
-					break;
-				case "delete":
+				}
+				case "delete" -> {
 					printHeadlessSettings();
 					delete(future);
-					break;
-				case "change":
+				}
+				case "change" -> {
 					printHeadlessSettings();
 					change(future);
-					break;
-				case "cache":
+				}
+				case "cache" -> {
 					printHeadlessSettings();
 					cache(future);
-					break;
-				case "image":
+				}
+				case "image" -> {
 					printHeadlessSettings();
 					image(future);
-					break;
-				case "printMissingTranslations":
-					printMissingTranslations(future);
-					break;
-				case "printTranslation":
-					printTranslation(future);
-					break;
-				case "printTranslationKeys":
-					printTranslationKeys(future);
-					break;
+				}
+				case "printMissingTranslations" -> printMissingTranslations(future);
+				case "printTranslation" -> printTranslation(future);
+				case "printTranslationKeys" -> printTranslationKeys(future);
 			}
 		} catch (Exception ex) {
 			Debug.error("error: " + ex.getMessage());
@@ -128,16 +126,16 @@ public final class ParamExecutor {
 		Config.setWorldDirs(parseWorldDirectories("region", "poi", "entities"));
 		File output = parseFileAndCreateParentDirectories("output", "csv");
 		GroupFilter query = parseQuery();
-		SelectionData selectionData = loadSelection();
+		Selection selectionData = loadSelection();
 		int radius = parseRadius();
 
-		Long2ObjectOpenHashMap<LongOpenHashSet> selection = new Long2ObjectOpenHashMap<>();
+		Selection selection = new Selection();
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(() -> {
-			SelectionHelper.exportSelection(new SelectionData(selection, false), output);
+			saveSelection(selection, output);
 			future.run();
 		});
-		ChunkFilterSelector.selectFilter(query, selectionData, radius, (src) -> mergeSelections(src, selection), progress, true);
+		ChunkFilterSelector.selectFilter(query, selectionData, radius, selection::merge, progress, true);
 	}
 
 	private void export(FutureTask<Boolean> future) throws IOException {
@@ -145,7 +143,7 @@ public final class ParamExecutor {
 		WorldDirectories outputDirectories = parseAndCreateWorldDirectories("output-region", "output-poi", "output-entities");
 		testWorldDirectoriesConnections(Config.getWorldDirs(), outputDirectories);
 		GroupFilter query = parseQuery();
-		SelectionData selection = loadSelection();
+		Selection selection = loadSelection();
 
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(future);
@@ -165,8 +163,8 @@ public final class ParamExecutor {
 		int offsetX = parseInt("x-offset", 0);
 		int offsetZ = parseInt("z-offset", 0);
 		boolean overwrite = params.containsKey("overwrite");
-		SelectionData sourceSelection = loadSelection("input-selection");
-		SelectionData targetSelection = loadSelection();
+		Selection sourceSelection = loadSelection("input-selection");
+		Selection targetSelection = loadSelection();
 		List<Range> sections = parseSections();
 
 		ConsoleProgress progress = new ConsoleProgress();
@@ -192,7 +190,7 @@ public final class ParamExecutor {
 	private void delete(FutureTask<Boolean> future) throws IOException {
 		Config.setWorldDirs(parseWorldDirectories("region", "poi", "entities"));
 		GroupFilter query = parseQuery();
-		SelectionData selection = loadSelection();
+		Selection selection = loadSelection();
 
 		ConsoleProgress progress = new ConsoleProgress();
 		progress.onDone(future);
@@ -208,7 +206,7 @@ public final class ParamExecutor {
 
 	private void change(FutureTask<Boolean> future) throws IOException {
 		Config.setWorldDirs(parseWorldDirectories("region", "poi", "entities"));
-		SelectionData selection = loadSelection();
+		Selection selection = loadSelection();
 		boolean force = params.containsKey("force");
 		List<Field<?>> fields = parseFields();
 		if (fields == null) {
@@ -246,12 +244,12 @@ public final class ParamExecutor {
 		}
 
 		File output = parseFileAndCreateParentDirectories("output", "png");
-		SelectionData selection = loadSelection();
+		Selection selection = loadSelection();
 
-		SelectionImageExporter.SelectionDataInfo info = SelectionImageExporter.calculateSelectionInfo(selection);
-		if (info.getSelectionInfo().getWidth() * 16 * info.getSelectionInfo().getHeight() * 16 > Integer.MAX_VALUE) {
+		SelectionData data = new SelectionData(selection, null);
+		if (data.getWidth() * 16 * data.getHeight() * 16 > Integer.MAX_VALUE) {
 			throw new IOException(String.format("dimensions are too large to generate an image: %dx%d",
-					info.getSelectionInfo().getWidth() * 16, info.getSelectionInfo().getHeight() * 16));
+					data.getWidth() * 16, data.getHeight() * 16));
 		}
 
 		HeadlessJFX.launch();
@@ -271,8 +269,8 @@ public final class ParamExecutor {
 				try {
 					ImageHelper.saveImageData(
 							pixels.get(),
-							(int) info.getSelectionInfo().getWidth() * 16,
-							(int) info.getSelectionInfo().getHeight() * 16,
+							(int) data.getWidth() * 16,
+							(int) data.getHeight() * 16,
 							output, saveProgress);
 				} catch (IOException e) {
 					saveException.set(e);
@@ -281,7 +279,7 @@ public final class ParamExecutor {
 		});
 
 		// TODO: parse overlays
-		pixels.set(SelectionImageExporter.exportSelectionImage(info, null, generateProgress));
+		pixels.set(SelectionImageExporter.exportSelectionImage(data, null, generateProgress));
 	}
 
 	private void printMissingTranslations(FutureTask<Boolean> future) {
@@ -541,14 +539,14 @@ public final class ParamExecutor {
 		return ranges;
 	}
 
-	private SelectionData loadSelection() throws ParseException {
+	private Selection loadSelection() throws IOException {
 		return loadSelection("selection");
 	}
 
-	private SelectionData loadSelection(String key) throws ParseException {
+	private Selection loadSelection(String key) throws IOException {
 		if (params.containsKey(key)) {
 			File input = parseFileAndTestExistence(key, "csv");
-			return SelectionHelper.importSelection(input);
+			return Selection.readFromFile(input);
 		}
 		return null;
 	}
@@ -613,5 +611,16 @@ public final class ParamExecutor {
 	private void printHeadlessSettings() {
 		Debug.print("process threads: " + Config.getProcessThreads());
 		Debug.print("write threads:   " + Config.getWriteThreads());
+	}
+
+	private void saveSelection(Selection selection, File output) {
+		try {
+			selection.saveToFile(output);
+		} catch (IOException ex) {
+			Debug.error("error: " + ex.getMessage());
+			if (Config.debug()) {
+				Debug.dumpException("an error occurred while saving the selection", ex);
+			}
+		}
 	}
 }

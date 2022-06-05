@@ -1,11 +1,11 @@
 package net.querz.mcaselector.io;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.selection.ChunkSet;
+import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.debug.Debug;
@@ -92,45 +92,20 @@ public final class CacheHelper {
 	}
 
 	public static void clearSelectionCache(TileMap tileMap) {
-		if (tileMap.isSelectionInverted()) {
-			SelectionData selection = new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted());
-			File[] cacheDirs = Config.getCacheDirs();
-			for (File cacheDir : cacheDirs) {
-				File[] cacheFiles = cacheDir.listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.png$"));
-				if (cacheFiles == null) {
-					continue;
-				}
-				for (File cacheFile : cacheFiles) {
-					Point2i cacheRegion = FileHelper.parseCacheFileName(cacheFile);
-					if (selection.isRegionSelected(cacheRegion) && cacheFile.exists()) {
-						if (!cacheFile.delete()) {
-							Debug.error("could not delete file " + cacheFile);
-							continue;
-						}
-						tileMap.clearTile(cacheRegion.asLong());
+		Selection selection = tileMap.getSelection().getTrueSelection(Config.getWorldDirs());
+
+		for (Long2ObjectMap.Entry<ChunkSet> entry : selection) {
+			Point2i region = new Point2i(entry.getLongKey());
+			for (File cacheDir : Config.getCacheDirs()) {
+				File file = FileHelper.createPNGFilePath(cacheDir, region);
+				if (file.exists()) {
+					if (!file.delete()) {
+						Debug.error("could not delete file " + file);
 					}
 				}
+				tileMap.clearTile(entry.getLongKey());
 			}
-
-			Long2ObjectOpenHashMap<LongOpenHashSet> trueSelection = SelectionHelper.getTrueSelection(selection);
-			for (long region : trueSelection.keySet()) {
-				tileMap.getOverlayPool().discardData(new Point2i(region));
-			}
-		} else {
-			for (Long2ObjectMap.Entry<LongOpenHashSet> entry : tileMap.getMarkedChunks().long2ObjectEntrySet()) {
-				Point2i region = new Point2i(entry.getLongKey());
-				for (File cacheDir : Config.getCacheDirs()) {
-					File file = FileHelper.createPNGFilePath(cacheDir, region);
-					if (file.exists()) {
-						if (!file.delete()) {
-							Debug.error("could not delete file " + file);
-						}
-					}
-					tileMap.clearTile(entry.getLongKey());
-				}
-				tileMap.getOverlayPool().discardData(region);
-
-			}
+			tileMap.getOverlayPool().discardData(region);
 		}
 		RegionImageGenerator.invalidateCachedMCAFiles();
 		tileMap.draw();

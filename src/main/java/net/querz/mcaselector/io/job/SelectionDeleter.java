@@ -1,25 +1,24 @@
 package net.querz.mcaselector.io.job;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import net.querz.mcaselector.Config;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
-import net.querz.mcaselector.io.SelectionData;
-import net.querz.mcaselector.io.SelectionHelper;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.selection.ChunkSet;
+import net.querz.mcaselector.selection.Selection;
 
 public final class SelectionDeleter {
 
 	private SelectionDeleter() {}
 
-	public static void deleteSelection(SelectionData selection, Progress progressChannel) {
-		if (selection.selection().isEmpty() && !selection.inverted()) {
+	public static void deleteSelection(Selection selection, Progress progressChannel) {
+		if (selection.isEmpty()) {
 			progressChannel.done("no selection");
 			return;
 		}
@@ -28,15 +27,15 @@ public final class SelectionDeleter {
 
 		progressChannel.setMessage("preparing");
 
-		Long2ObjectOpenHashMap<LongOpenHashSet> sel = SelectionHelper.getTrueSelection(selection);
+		Selection trueSelection = selection.getTrueSelection(Config.getWorldDirs());
 
-		progressChannel.setMax(sel.size());
+		progressChannel.setMax(trueSelection.size());
 
-		Point2i first = new Point2i(sel.long2ObjectEntrySet().iterator().next().getLongKey());
+		Point2i first = trueSelection.one();
 
 		progressChannel.updateProgress(FileHelper.createMCAFileName(first), 0);
 
-		for (Long2ObjectMap.Entry<LongOpenHashSet> entry : sel.long2ObjectEntrySet()) {
+		for (Long2ObjectMap.Entry<ChunkSet> entry : trueSelection) {
 			JobHandler.addJob(new MCADeleteSelectionProcessJob(FileHelper.createRegionDirectories(new Point2i(entry.getLongKey())), entry.getValue(), progressChannel));
 		}
 	}
@@ -44,9 +43,9 @@ public final class SelectionDeleter {
 	private static class MCADeleteSelectionProcessJob extends ProcessDataJob {
 
 		private final Progress progressChannel;
-		private final LongOpenHashSet selection;
+		private final ChunkSet selection;
 
-		private MCADeleteSelectionProcessJob(RegionDirectories dirs, LongOpenHashSet selection, Progress progressChannel) {
+		private MCADeleteSelectionProcessJob(RegionDirectories dirs, ChunkSet selection, Progress progressChannel) {
 			super(dirs, PRIORITY_LOW);
 			this.selection = selection;
 			this.progressChannel = progressChannel;

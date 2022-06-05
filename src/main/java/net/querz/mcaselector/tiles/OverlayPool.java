@@ -229,7 +229,7 @@ public class OverlayPool {
 			callback.accept(null);
 		}
 		Point2i region = chunk.chunkToRegion();
-		Point2i normalizedChunk = chunk.normalizeChunkInRegion();
+		Point2i normalizedChunk = chunk.asRelativeChunk();
 		if (region.equals(hoveredRegion)) {
 			if (hoveredRegionData != null) {
 				callback.accept(hoveredRegionData[normalizedChunk.getZ() * 32 + normalizedChunk.getX()]);

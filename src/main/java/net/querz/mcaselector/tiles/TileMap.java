@@ -1,17 +1,15 @@
 package net.querz.mcaselector.tiles;
 
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.text.Font;
@@ -21,8 +19,10 @@ import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.selection.ChunkSet;
+import net.querz.mcaselector.selection.Selection;
+import net.querz.mcaselector.selection.SelectionData;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
-import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.ui.DialogHelper;
 import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.ui.Window;
@@ -38,10 +38,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -94,14 +92,13 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private List<OverlayParser> overlayParsers = Collections.singletonList(null);
 	private final ObjectProperty<OverlayParser> overlayParser = new SimpleObjectProperty<>(null);
 
-	private Long2ObjectOpenHashMap<LongOpenHashSet> pastedChunks;
-	private boolean pastedChunksInverted;
+	private Selection pastedChunks;
 	private WorldDirectories pastedWorld;
 	private Map<Point2i, Image> pastedChunksCache;
 	private Point2i pastedChunksOffset;
 	private Point2i firstPastedChunksOffset;
 
-	private boolean selectionInverted = false;
+	private Selection selection = new Selection();
 
 	// used to scale existing images asynchronously
 	private ScheduledExecutorService updateService;
@@ -181,7 +178,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 						v.unload(true, true);
 					}
 
-					return !visible && v.isObsolete();
+					return !visible && v.getImage() == null;
 				});
 
 				// clean up all queues based on visible tiles
@@ -455,23 +452,12 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			draw();
 		}
 
-		if (event.getCode() == KeyCode.M) {
-			dumpMetrics();
-		}
-
 		if (event.getCode() == KeyCode.J) {
 			JobHandler.dumpMetrics();
 		}
 
 		if (event.getCode() == KeyCode.I) {
 			imgPool.dumpMetrics();
-		}
-
-		switch (event.getCode()) {
-			case DIGIT1 -> imgPool.mark(1);
-			case DIGIT2 -> imgPool.mark(2);
-			case DIGIT4 -> imgPool.mark(4);
-			case DIGIT8 -> imgPool.mark(8);
 		}
 
 		// don't pass event to parent node if it would cause the tile map to lose focus
@@ -563,9 +549,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			firstPastedChunksOffset = pastedChunksOffset;
 
 			if (event.getButton() == MouseButton.PRIMARY && !window.isKeyPressed(KeyCode.COMMAND) && pastedChunks == null) {
-				mark(event.getX(), event.getY(), !selectionInverted);
+				mark(event.getX(), event.getY(), true);
 			} else if (event.getButton() == MouseButton.SECONDARY) {
-				mark(event.getX(), event.getY(), selectionInverted);
+				mark(event.getX(), event.getY(), false);
 			}
 			draw();
 		}
@@ -591,10 +577,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				Point2f diff = mouseLocation.sub(firstMouseLocation).mul(scale);
 				pastedChunksOffset = firstPastedChunksOffset.add(diff.toPoint2i().div(16));
 			} else {
-				mark(event.getX(), event.getY(), !selectionInverted);
+				mark(event.getX(), event.getY(), true);
 			}
 		} else if (!disabled && event.getButton() == MouseButton.SECONDARY) {
-			mark(event.getX(), event.getY(), selectionInverted);
+			mark(event.getX(), event.getY(), false);
 		}
 
 		hoveredBlock = getMouseBlock(event.getX(), event.getY());
@@ -628,7 +614,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	public void redrawOverlays() {
 		for (Tile tile : tiles.values()) {
 			if (tile.markedChunksImage != null) {
-				TileImage.createMarkedChunksImage(tile, getZoomLevel(), selectionInverted);
+				TileImage.createMarkedChunksImage(tile, selection.getSelectedChunks(tile.getLocation()));
 			}
 		}
 		if (pastedChunksCache != null) {
@@ -638,25 +624,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	public void draw() {
 		drawRequested.set(true);
-	}
-
-	public void dumpMetrics() {
-		Debug.dumpf("TileMap: width=%.2f, height=%.2f, tiles=%d, scale=%.5f, zoomLevel=%d, offset=%s", getWidth(), getHeight(), tiles.size(), scale, getZoomLevel(), offset);
-		Debug.dump("Tiles:");
-		for (Long2ObjectMap.Entry<Tile> tile : tiles.long2ObjectEntrySet()) {
-			Debug.dumpf("  %s: loaded=%s, loading=%s, image=%s, marked=%s, overlay=%s, overlayLoaded=%s, overlayImgLoading=%s, visible=%s, cached=%s",
-				new Point2i(tile.getLongKey()),
-				tile.getValue().isLoaded(),
-				RegionImageGenerator.isLoading(tile.getValue()),
-				tile.getValue().getImage() == null ? null : (tile.getValue().getImage().getWidth() + "x" + tile.getValue().getImage().getHeight()),
-				tile.getValue().isMarked() ? true : (tile.getValue().getMarkedChunks() != null && !tile.getValue().getMarkedChunks().isEmpty() ? tile.getValue().getMarkedChunks().size() : false),
-				tile.getValue().overlay == null ? null : (tile.getValue().overlay.getWidth() + "x" + tile.getValue().overlay.getHeight()),
-				tile.getValue().overlayLoaded,
-				ParseDataJob.isLoading(tile.getValue()),
-				tile.getValue().isVisible(this, TILE_VISIBILITY_THRESHOLD),
-				FileHelper.createPNGFilePath(Config.getCacheDir(), getZoomLevel(), new Point2i(tile.getLongKey())).exists()
-			);
-		}
 	}
 
 	public void disable(boolean disabled) {
@@ -755,13 +722,12 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		imgPool.clear(loadWorldTask);
 		overlayPool.clear();
 		selectedChunks = 0;
-		selectionInverted = false;
+		selection.clear();
 
 		pastedChunks = null;
 		pastedWorld = null;
 		pastedChunksCache = null;
 		pastedChunksOffset = null;
-		pastedChunksInverted = false;
 	}
 
 	public void markAllTilesAsObsolete() {
@@ -774,12 +740,16 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	public void clearTile(long p) {
 		Tile tile = tiles.remove(p);
 		if (tile != null) {
-			selectedChunks -= tile.getMarkedChunks().size();
-			selectedChunks -= tile.isMarked() ? Tile.CHUNKS : 0;
-			imgPool.discardImage(tile.getLocation());
-			overlayPool.discardData(tile.getLocation());
 			tile.unload(true, true);
 		}
+		ChunkSet chunks = selection.getSelectedChunksIgnoreInverted(new Point2i(p));
+		if (chunks == null) {
+			selectedChunks -= Tile.CHUNKS;
+		} else {
+			selectedChunks -= chunks.size();
+		}
+		imgPool.discardImage(new Point2i(p));
+		overlayPool.discardData(new Point2i(p));
 	}
 
 	public OverlayPool getOverlayPool() {
@@ -787,40 +757,27 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	public void clearSelection() {
-		for (Tile tile : tiles.values()) {
-			tile.clearMarks();
-		}
+		selection.clear();
 		selectedChunks = 0;
-		selectionInverted = false;
+
+		for (Tile tile : tiles.values()) {
+			tile.clearMarkedChunksImage();
+		}
 		draw();
 	}
 
 	public void invertSelection() {
-		selectionInverted = !selectionInverted;
+		selection.setInverted(!selection.isInverted());
 		redrawOverlays();
 		draw();
 	}
 
 	public void invertRegionsWithSelection() {
-		for (Tile tile : tiles.values()) {
-			int selectedChunksBefore = tile.getSelectionSize();
-			if (selectedChunksBefore > 0) {
-				tile.invertSelectedChunks();
-				selectedChunks -= selectedChunksBefore;
-				selectedChunks += tile.getSelectionSize();
-			}
-		}
+		selection.invertAll();
+		selectedChunks = selection.count();
 		runUpdateListeners();
 		redrawOverlays();
 		draw();
-	}
-
-	public void setSelectionInverted(boolean inverted) {
-		selectionInverted = inverted;
-	}
-
-	public boolean isSelectionInverted() {
-		return selectionInverted;
 	}
 
 	public void unloadTiles(boolean overlay, boolean img) {
@@ -833,95 +790,36 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		context.setImageSmoothing(smoothRendering);
 	}
 
-	// will return a map of all chunks marked for deletion, mapped to regions.
-	// if an entire region is marked for deletion, the value in the map will be null.
-	// keys are region coordinates
-	// values are chunk coordinates
-	public Long2ObjectOpenHashMap<LongOpenHashSet> getMarkedChunks() {
-		Long2ObjectOpenHashMap<LongOpenHashSet> chunks = new Long2ObjectOpenHashMap<>();
-
-		for (Long2ObjectMap.Entry<Tile> entry : tiles.long2ObjectEntrySet()) {
-			if (entry.getValue().isMarked()) {
-				chunks.put(entry.getLongKey(), null);
-				continue;
-			}
-			LongOpenHashSet markedChunks = entry.getValue().getMarkedChunks();
-			if (markedChunks.size() == 0) {
-				continue;
-			}
-			// cloning marked chunks for clipboard copy-pasting in the same instance
-			chunks.put(entry.getLongKey(), new LongOpenHashSet(markedChunks));
-		}
-		return chunks;
+	public Selection getSelection() {
+		return selection;
 	}
 
-	public void setMarkedChunks(Long2ObjectOpenHashMap<LongOpenHashSet> chunks) {
-		clearSelection();
-		for (Long2ObjectMap.Entry<LongOpenHashSet> entry : chunks.long2ObjectEntrySet()) {
-			long region = entry.getLongKey();
-			Tile tile = tiles.get(region);
-			if (tile == null) {
-				tile = new Tile(new Point2i(region));
-				tiles.put(region, tile);
-			}
-			if (entry.getValue() == null) {
-				tile.mark(true);
-				selectedChunks += Tile.CHUNKS;
-			} else {
-				for (long chunk : entry.getValue()) {
-					tile.mark(chunk);
-					selectedChunks++;
-				}
-			}
-		}
+	public void addSelection(Selection selection) {
+		this.selection.merge(selection);
 	}
 
-	public void addMarkedChunks(Long2ObjectOpenHashMap<LongOpenHashSet> chunks) {
-		for (Long2ObjectMap.Entry<LongOpenHashSet> entry : chunks.long2ObjectEntrySet()) {
-			long region = entry.getLongKey();
-			Tile tile = tiles.get(region);
-			if (tile == null) {
-				tile = new Tile(new Point2i(region));
-				tiles.put(region, tile);
-			}
-			if (entry.getValue() == null) {
-				selectedChunks -= tile.getMarkedChunks().size();
-				tile.mark(true);
-				selectedChunks += Tile.CHUNKS;
-			} else if (!tile.isMarked()) {
-				for (long chunk : entry.getValue()) {
-					if (!tile.isMarked(chunk)) {
-						selectedChunks++;
-					}
-					tile.mark(chunk);
-				}
-			}
-		}
+	public void setSelection(Selection selection) {
+		this.selection = selection;
 	}
 
-	public void setPastedChunks(Long2ObjectOpenHashMap<LongOpenHashSet> chunks, boolean inverted, Point2i min, Point2i max, WorldDirectories pastedWorld) {
-		pastedChunks = chunks;
-		pastedChunksInverted = inverted;
-		this.pastedWorld = pastedWorld;
-		if (chunks == null) {
+	public void setPastedChunks(SelectionData data) {
+		pastedChunks = data.getSelection();
+		this.pastedWorld = data.getWorld();
+		if (data.getSelection() == null) {
 			pastedChunksCache = null;
 			pastedChunksOffset = null;
 		} else {
 			pastedChunksCache = new HashMap<>();
 			Point2i offsetInChunks = offset.toPoint2i().blockToChunk(); // 0|0
-			Point2i pastedMid = new Point2i((max.getX() - min.getX()) / 2, (max.getZ() - min.getZ()) / 2);
-			Point2i originOffset = offsetInChunks.sub(min).sub(pastedMid);
+			Point2i pastedMid = new Point2i((data.getMax().getX() - data.getMin().getX()) / 2, (data.getMax().getZ() - data.getMin().getZ()) / 2);
+			Point2i originOffset = offsetInChunks.sub(data.getMin()).sub(pastedMid);
 			Point2f screenSizeInChunks = new Point2f(getWidth(), getHeight()).mul(scale).div(16);
 			pastedChunksOffset = originOffset.add(screenSizeInChunks.div(2).toPoint2i());
 		}
 	}
 
-	public Long2ObjectOpenHashMap<LongOpenHashSet> getPastedChunks() {
+	public Selection getPastedChunks() {
 		return pastedChunks;
-	}
-
-	public boolean getPastedChunksInverted() {
-		return pastedChunksInverted;
 	}
 
 	public boolean isInPastingMode() {
@@ -942,11 +840,11 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		return new Point2i(blockX, blockZ);
 	}
 
-	private Point2i getMouseRegionBlock(double x, double z) {
+	private Point2i getMouseRegion(double x, double z) {
 		return getMouseBlock(x, z).blockToRegion();
 	}
 
-	private Point2i getMouseChunkBlock(double x, double z) {
+	private Point2i getMouseChunk(double x, double z) {
 		return getMouseBlock(x, z).blockToChunk();
 	}
 
@@ -958,63 +856,60 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		b.setZ(Math.max(aa.getZ(), b.getZ()));
 	}
 
-	private void mark(double mouseX, double mouseY, boolean marked) {
+	private void mark(double mouseX, double mouseY, boolean mark) {
 		boolean paintMode = window.isKeyPressed(KeyCode.SHIFT);
 		if (paintMode) {
 			firstMouseLocation = new Point2f(mouseX, mouseY);
 		}
 		if (scale > CHUNK_GRID_SCALE) {
-			Point2i regionBlock = getMouseRegionBlock(mouseX, mouseY);
-			Point2i firstRegionBlock = paintMode ? regionBlock : getMouseRegionBlock(firstMouseLocation.getX(), firstMouseLocation.getY());
-			sortPoints(firstRegionBlock, regionBlock);
-			for (int x = firstRegionBlock.getX(); x <= regionBlock.getX(); x++) {
-				for (int z = firstRegionBlock.getZ(); z <= regionBlock.getZ(); z++) {
+			Point2i mouseRegion = getMouseRegion(mouseX, mouseY);
+			Point2i firstRegion = paintMode ? mouseRegion : getMouseRegion(firstMouseLocation.getX(), firstMouseLocation.getY());
+			sortPoints(firstRegion, mouseRegion);
+			for (int x = firstRegion.getX(); x <= mouseRegion.getX(); x++) {
+				for (int z = firstRegion.getZ(); z <= mouseRegion.getZ(); z++) {
 					Point2i region = new Point2i(x, z);
-					Tile tile = tiles.get(region.asLong());
-					if (tile == null) {
-						tile = tiles.put(region.asLong(), new Tile(region));
-					}
-					if (tile != null) {
-						if (tile.isMarked() && !marked) {
-							selectedChunks -= Tile.CHUNKS;
-						} else if (!tile.isMarked() && marked) {
-							selectedChunks += Tile.CHUNKS - tile.getMarkedChunks().size();
-						} else if (!tile.isMarked() && !marked) {
-							selectedChunks -= tile.getMarkedChunks().size();
-						}
-						tile.mark(marked);
+					if (mark) {
+						int diff = selection.addRegion(region.asLong());
+						selectedChunks += selection.isInverted() ? -diff : diff;
+					} else {
+						int diff = selection.removeRegion(region.asLong());
+						selectedChunks += selection.isInverted() ? diff : -diff;
 					}
 				}
 			}
 		} else {
-			Point2i chunkBlock = getMouseChunkBlock(mouseX, mouseY);
-			Point2i firstChunkBlock = paintMode ? chunkBlock : getMouseChunkBlock(firstMouseLocation.getX(), firstMouseLocation.getY());
-			sortPoints(firstChunkBlock, chunkBlock);
-			Set<Tile> changedTiles = new HashSet<>();
-			for (int x = firstChunkBlock.getX(); x <= chunkBlock.getX(); x++) {
-				for (int z = firstChunkBlock.getZ(); z <= chunkBlock.getZ(); z++) {
+			Point2i mouseChunk = getMouseChunk(mouseX, mouseY);
+			Point2i firstChunk = paintMode ? mouseChunk : getMouseChunk(firstMouseLocation.getX(), firstMouseLocation.getY());
+			sortPoints(firstChunk, mouseChunk);
+			for (int x = firstChunk.getX(); x <= mouseChunk.getX(); x++) {
+				for (int z = firstChunk.getZ(); z <= mouseChunk.getZ(); z++) {
 					Point2i chunk = new Point2i(x, z);
-					long longChunk = chunk.asLong();
 					Point2i region = chunk.chunkToRegion();
-					Tile tile = tiles.get(region.asLong());
-					if (tile == null) {
-						tile = tiles.put(region.asLong(), new Tile(region));
-					}
-					if (tile != null) {
-						if (tile.isMarked(longChunk) && !marked) {
-							selectedChunks--;
-							tile.unMark(chunk);
-							changedTiles.add(tile);
-						} else if (!tile.isMarked(longChunk) && marked) {
+
+					if (mark) {
+						if (!selection.isChunkSelected(x, z)) {
+							selection.addChunk(chunk);
 							selectedChunks++;
-							tile.mark(longChunk);
-							changedTiles.add(tile);
+							resetMarkedChunksImage(region);
+						}
+					} else {
+						if (selection.isChunkSelected(x, z)) {
+							selection.removeChunk(chunk);
+							selectedChunks--;
+							resetMarkedChunksImage(region);
 						}
 					}
 				}
 			}
-			changedTiles.forEach(tile -> TileImage.createMarkedChunksImage(tile, getZoomLevel(), selectionInverted));
 		}
+	}
+
+	private void resetMarkedChunksImage(Point2i region) {
+		Tile tile = tiles.get(region.asLong());
+		if (tile == null) {
+			tile = tiles.put(region.asLong(), new Tile(region));
+		}
+		tile.markedChunksImage = null;
 	}
 
 	// only draws stuff that is in visible tiles
@@ -1026,7 +921,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			// use float calculations here to have smooth movement when scrolling
 			Point2f canvasOffset = region.regionToBlock().toPoint2f().sub(offset).div(scale);
 
-			TileImage.draw(tile, ctx, scale, canvasOffset, selectionInverted, overlayParser.get() != null, showNonexistentRegions);
+			TileImage.draw(ctx, tile, scale, canvasOffset, selection, overlayParser.get() != null, showNonexistentRegions);
 		}, new Point2f(), () -> scale, Integer.MAX_VALUE);
 
 		if (pastedChunks != null) {
@@ -1074,7 +969,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 		for (float x = first.getX(); x <= getWidth(); x += step) {
 			for (float y = first.getY(); y <= getHeight(); y += step) {
-				Point2i region = getMouseRegionBlock(x + halfStep, y + halfStep).regionToBlock();
+				Point2i region = getMouseRegion(x + halfStep, y + halfStep).regionToBlock();
 				if (!oldStep || region.getX() % mul == 0 && region.getZ() % mul == 0) {
 					ctx.fillText(region.getX() + "," + region.getZ(), x + 2, y + 16);
 					if (oldStep) {
@@ -1087,7 +982,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 
 		for (float y = first.getY(); y <= getHeight(); y += step) {
-			Point2i region = getMouseRegionBlock(first.getX() - step + halfStep, y + halfStep).regionToBlock();
+			Point2i region = getMouseRegion(first.getX() - step + halfStep, y + halfStep).regionToBlock();
 			ctx.fillText(region.getX() + "," + region.getZ(), first.getX() - step + 2, y + 16);
 		}
 	}
@@ -1116,7 +1011,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 		for (float x = first.getX(); x <= getWidth(); x += step) {
 			for (float y = first.getY(); y <= getHeight(); y += step) {
-				Point2i chunk = getMouseChunkBlock(x + halfStep, y + halfStep).chunkToBlock();
+				Point2i chunk = getMouseChunk(x + halfStep, y + halfStep).chunkToBlock();
 
 				if (!oldStep || chunk.getX() % mul == 0 && chunk.getZ() % mul == 0) {
 					ctx.fillText(chunk.getX() + "," + chunk.getZ(), x + 2, y + 16);
@@ -1131,53 +1026,28 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	private void drawPastedChunks(GraphicsContext ctx, Point2i region, Point2f pos) {
-		int zoomLevel = getZoomLevel();
+		javafx.scene.paint.Color color = Config.getPasteChunksColor().makeJavaFXColor();
+		ctx.setFill(color);
 
-		ctx.setFill(Config.getPasteChunksColor().makeJavaFXColor());
-
-		if (!pastedChunks.containsKey(region.asLong())) {
-			if (pastedChunksInverted) {
-				ctx.fillRect(pos.getX(), pos.getY(), Math.ceil(Tile.SIZE / scale), Math.ceil(Tile.SIZE / scale));
-			}
+		if (pastedChunks.isRegionSelected(region.asLong())) {
+			ctx.fillRect(pos.getX(), pos.getY(), Math.ceil(Tile.SIZE / scale), Math.ceil(Tile.SIZE / scale));
 			return;
 		}
 
 		if (!pastedChunksCache.containsKey(region)) {
-			WritableImage image = new WritableImage(Tile.SIZE / zoomLevel, Tile.SIZE / zoomLevel);
+			WritableImage wImage = new WritableImage(Tile.SIZE_IN_CHUNKS, Tile.SIZE_IN_CHUNKS);
+			PixelWriter writer = wImage.getPixelWriter();
 
-			Canvas canvas = new Canvas(Tile.SIZE / (float) zoomLevel, Tile.SIZE / (float) zoomLevel);
-			GraphicsContext ctx2 = canvas.getGraphicsContext2D();
-			ctx2.setFill(Config.getPasteChunksColor().makeJavaFXColor());
+			ChunkSet chunks = pastedChunks.getSelectedChunks(region);
 
-			LongOpenHashSet chunks = pastedChunks.get(region.asLong());
-
-			if (chunks == null) {
-				if (!pastedChunksInverted) {
-					ctx2.fillRect(0, 0, (float) Tile.SIZE / zoomLevel, (float) Tile.SIZE / zoomLevel);
-				}
-			} else {
-				if (pastedChunksInverted) {
-					chunks = SelectionData.createInvertedRegionSet(region, chunks);
-				}
-				if (chunks != null) {
-					for (long chunk : chunks) {
-						Point2i regionChunk = new Point2i(chunk).and(0x1F);
-						ctx2.fillRect(
-							regionChunk.getX() * Tile.CHUNK_SIZE / (float) zoomLevel,
-							regionChunk.getZ() * Tile.CHUNK_SIZE / (float) zoomLevel,
-							Tile.CHUNK_SIZE / (float) zoomLevel, Tile.CHUNK_SIZE / (float) zoomLevel);
-					}
-				}
+			for (int chunk : chunks) {
+				Point2i regionChunk = new Point2i(chunk);
+				writer.setColor(regionChunk.getX(), regionChunk.getZ(), color);
 			}
 
-			SnapshotParameters params = new SnapshotParameters();
-			params.setFill(Color.TRANSPARENT.makeJavaFXColor());
+			pastedChunksCache.put(region, wImage);
 
-			canvas.snapshot(params, image);
-
-			pastedChunksCache.put(region, image);
-
-			ctx.drawImage(image, pos.getX(), pos.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
+			ctx.drawImage(wImage, pos.getX(), pos.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		} else {
 			ctx.drawImage(pastedChunksCache.get(region), pos.getX(), pos.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		}

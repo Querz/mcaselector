@@ -5,18 +5,18 @@ import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
-import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
+import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
 
 public final class ChunkFilterDeleter {
 
 	private ChunkFilterDeleter() {}
 
-	public static void deleteFilter(GroupFilter filter, SelectionData selection, Progress progressChannel, boolean headless) {
+	public static void deleteFilter(GroupFilter filter, Selection selection, Progress progressChannel, boolean headless) {
 		WorldDirectories wd = Config.getWorldDirs();
 		RegionDirectories[] rd = wd.listRegions(selection);
 		if (rd == null || rd.length == 0) {
@@ -42,9 +42,9 @@ public final class ChunkFilterDeleter {
 
 		private final Progress progressChannel;
 		private final GroupFilter filter;
-		private final SelectionData selection;
+		private final Selection selection;
 
-		private MCADeleteFilterProcessJob(RegionDirectories dirs, GroupFilter filter, SelectionData selection, Progress progressChannel) {
+		private MCADeleteFilterProcessJob(RegionDirectories dirs, GroupFilter filter, Selection selection, Progress progressChannel) {
 			super(dirs, PRIORITY_LOW);
 			this.filter = filter;
 			this.selection = selection;
@@ -56,7 +56,7 @@ public final class ChunkFilterDeleter {
 			// load all files
 			Point2i location = getRegionDirectories().getLocation();
 
-			if (!filter.appliesToRegion(location) || selection != null && !selection.isRegionSelected(location)) {
+			if (!filter.appliesToRegion(location) || selection != null && !selection.isAnyChunkInRegionSelected(location)) {
 				Debug.dump("filter does not apply to region " + getRegionDirectories().getLocation());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return true;

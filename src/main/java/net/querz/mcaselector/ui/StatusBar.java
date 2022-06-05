@@ -97,7 +97,7 @@ public class StatusBar extends StackPane {
 	}
 
 	private void update(TileMap tileMap) {
-		selectedChunks.setText(Translation.STATUS_SELECTED + ": " + (tileMap.isSelectionInverted() ? "?" : tileMap.getSelectedChunks()));
+		selectedChunks.setText(Translation.STATUS_SELECTED + ": " + (tileMap.getSelection().isInverted() ? "\u221e" : tileMap.getSelectedChunks()));
 		queuedJobs.setText(Translation.STATUS_QUEUE + ": " + JobHandler.getActiveJobs());
 		totalRegions.setText(Translation.STATUS_TOTAL + ": " + tileMap.getLoadedTiles());
 		Point2i b = tileMap.getHoveredBlock();
