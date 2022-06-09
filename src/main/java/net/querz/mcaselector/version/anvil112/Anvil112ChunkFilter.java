@@ -346,6 +346,9 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 				byte[] blocks = section.getByteArray("Blocks");
 				byte[] blockData = section.getByteArray("Data");
 
+				section.remove("BlockLight");
+				section.remove("SkyLight");
+
 				blockLoop:
 				for (int i = 0; i < blocks.length; i++) {
 					byte dataByte = blockData[i / 2];
