@@ -14,7 +14,6 @@ import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.selection.SelectionData;
-import net.querz.mcaselector.text.Translation;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,6 +29,7 @@ public final class ParamExecutor {
 	private static final Logger LOGGER = LogManager.getLogger(ParamExecutor.class);
 
 	private static final Options options = new Options();
+	private static final Options helpOptions = new Options();
 
 	static {
 		options.addOption(Option.builder("h")
@@ -181,10 +181,17 @@ public final class ParamExecutor {
 			.desc("Set the number threads to use for writing files")
 			.hasArg()
 			.build());
+
+		// all the above options should appear in --help
+		for (Option option : options.getOptions()) {
+			helpOptions.addOption(option);
+		}
+
+		// everything below should not appear in --help
 		options.addOption(Option.builder()
-			.longOpt("max-loaded-files")
-			.desc("Set the maximum of simultaneously loaded files")
-			.hasArg()
+			.longOpt("locale")
+			.desc("Set the locale for debugging the language files")
+			.hasArgs()
 			.build());
 	}
 
@@ -242,7 +249,12 @@ public final class ParamExecutor {
 				case "change" -> change(future);
 				case "cache" -> cache(future);
 				case "image" -> image(future);
-				case "printMissingTranslations" -> printMissingTranslations(future);
+
+				// for updating and debugging translations
+				case "printMissingTranslations" -> Translations.printMissingTranslations(future);
+				case "printTranslation" -> Translations.printTranslation(line, future);
+				case "printTranslationKeys" -> Translations.printTranslationKeys(future);
+
 				default -> {
 					printError("invalid mode %s", mode);
 					future.run();
@@ -261,9 +273,20 @@ public final class ParamExecutor {
 	}
 
 	private void printHelp() {
+		String[] helpOrder = new String[]{
+			"help", "version", "mode", "output", "query", "selection", "source-selection", "radius", "x-offset",
+			"y-offset", "z-offset", "overwrite", "force", "world", "region", "poi", "entities", "source-world",
+			"source-region", "source-poi", "source-entities", "output-world", "output-region", "output-poi",
+			"output-entities", "debug", "process-threads", "write-threads"
+		};
+		Map<String, Integer> helpOptionOrderLookup = new HashMap<>();
+		for (int i = 0; i < helpOrder.length; i++) {
+			helpOptionOrderLookup.put(helpOrder[i], i);
+		}
 		HelpFormatter formatter = new HelpFormatter();
 		formatter.setWidth(128);
-		formatter.printHelp("java -jar mcaselector.jar <args>", options);
+		formatter.setOptionComparator(Comparator.comparingInt(o -> helpOptionOrderLookup.get(o.getLongOpt())));
+		formatter.printHelp("java -jar mcaselector.jar <args>", helpOptions);
 	}
 
 	private void printVersion() {
@@ -279,7 +302,6 @@ public final class ParamExecutor {
 		Config.setDebug(line.hasOption("debug"));
 		Config.setProcessThreads(parseInt("process-threads", Config.DEFAULT_PROCESS_THREADS, 1, 128));
 		Config.setProcessThreads(parseInt("write-threads", Config.DEFAULT_WRITE_THREADS, 1, 128));
-		Config.setProcessThreads(parseInt("max-loaded-files", Config.DEFAULT_MAX_LOADED_FILES, 1, Integer.MAX_VALUE));
 	}
 
 	private void printError(String msg, Object... params) {
@@ -687,23 +709,4 @@ public final class ParamExecutor {
 		// TODO: parse Overlays
 		pixels.set(SelectionImageExporter.exportSelectionImage(data, null, generateProgress));
 	}
-
-	private void printMissingTranslations(FutureTask<Boolean> future) {
-		Set<Locale> locales = Translation.getAvailableLanguages();
-		for (Locale locale : locales) {
-			Translation.load(locale);
-			boolean printedLanguage = false;
-			for (Translation translation : Translation.values()) {
-				if (!translation.isTranslated()) {
-					if (!printedLanguage) {
-						System.out.println(locale + ":");
-						printedLanguage = true;
-					}
-					System.out.println("  " + translation.getKey());
-				}
-			}
-		}
-		future.run();
-	}
-
 }
