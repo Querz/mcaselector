@@ -53,7 +53,6 @@ public class OptionBar extends BorderPane {
 	private final TextField heightField = UIFactory.attachTextFieldToSlider(height);
 
 	private final MenuItem openWorld = UIFactory.menuItem(Translation.MENU_FILE_OPEN_WORLD);
-	private final MenuItem openRegion = UIFactory.menuItem(Translation.MENU_FILE_OPEN);
 	private final MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
 	private final MenuItem renderSettings = UIFactory.menuItem(Translation.MENU_FILE_RENDER_SETTINGS);
 	private final MenuItem quit = UIFactory.menuItem(Translation.MENU_FILE_QUIT);
@@ -98,7 +97,7 @@ public class OptionBar extends BorderPane {
 		tileMap.setOnUpdate(this::onUpdate);
 
 		file.getItems().addAll(
-				openWorld, openRegion, UIFactory.separator(),
+				openWorld, UIFactory.separator(),
 				settings, renderSettings, UIFactory.separator(),
 				quit);
 		view.getItems().addAll(
@@ -205,7 +204,6 @@ public class OptionBar extends BorderPane {
 		menuBar.getMenus().addAll(file, view, selection, tools, aboutMenu);
 
 		openWorld.setOnAction(e -> DialogHelper.openWorld(tileMap, primaryStage));
-		openRegion.setOnAction(e -> DialogHelper.openRegion(tileMap, primaryStage));
 		settings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage, false));
 		renderSettings.setOnAction(e -> DialogHelper.editSettings(tileMap, primaryStage, true));
 		quit.setOnAction(e -> DialogHelper.quit(tileMap, primaryStage));

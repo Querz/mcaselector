@@ -531,32 +531,6 @@ public class DialogHelper {
 		}
 	}
 
-	public static void openRegion(TileMap tileMap, Stage primaryStage) {
-		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", Config.getMCSavesDir());
-		File file = createDirectoryChooser(lastOpenDirectory).showDialog(primaryStage);
-		if (file != null && file.isDirectory()) {
-			File[] files = file.listFiles((dir, name) -> FileHelper.MCA_FILE_PATTERN.matcher(name).matches());
-			if (files != null && files.length > 0) {
-				LOGGER.debug("setting world dir to {}", file.getAbsolutePath());
-				FileHelper.setLastOpenedDirectory("open_world", file.getAbsolutePath());
-				Config.setWorldDir(file);
-				CacheHelper.validateCacheVersion(tileMap);
-				CacheHelper.readWorldSettingsFile(tileMap);
-				RegionImageGenerator.invalidateCachedMCAFiles();
-				tileMap.clear();
-				tileMap.disable(false);
-				tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
-				tileMap.getWindow().setTitleSuffix(file.toString());
-				tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString());
-				tileMap.draw();
-			} else {
-				new ErrorDialog(primaryStage, String.format("no mca files found in %s", file));
-			}
-		} else if (file != null) {
-			new ErrorDialog(primaryStage, String.format("%s is not a directory", file));
-		}
-	}
-
 	public static void openWorld(TileMap tileMap, Stage primaryStage) {
 		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", Config.getMCSavesDir());
 		File file = createDirectoryChooser(lastOpenDirectory).showDialog(primaryStage);
