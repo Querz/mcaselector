@@ -6,7 +6,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
@@ -20,6 +19,8 @@ import net.querz.mcaselector.selection.SelectionData;
 import net.querz.mcaselector.tiles.OverlayPool;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileImage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -27,6 +28,8 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 public final class SelectionImageExporter {
+
+	private static final Logger LOGGER = LogManager.getLogger(SelectionImageExporter.class);
 
 	private SelectionImageExporter() {}
 
@@ -37,7 +40,7 @@ public final class SelectionImageExporter {
 		progressChannel.setMax(data.size());
 		progressChannel.updateProgress(FileHelper.createMCAFileName(data.getSelection().one()), 0);
 
-		Debug.dumpf("creating image generation jobs for image: %s", data);
+		LOGGER.debug("creating image generation jobs for image: {}", data);
 
 		int[] pixels = new int[(int) (data.getWidth() * 16 * data.getHeight() * 16)];
 

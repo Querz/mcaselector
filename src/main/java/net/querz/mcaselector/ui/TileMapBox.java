@@ -19,7 +19,6 @@ import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
-import net.querz.mcaselector.debug.Debug;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -114,7 +113,6 @@ public class TileMapBox extends HBox {
 		getStyleClass().add("tile-map-box");
 		ChangeListener<Number> sizeListener = (o, r, n) -> {
 			tileMap.resize(primaryStage.getWidth(), primaryStage.getHeight());
-			Debug.dump("resizing to " + primaryStage.getWidth() + " " + primaryStage.getHeight());
 		};
 		primaryStage.widthProperty().addListener(sizeListener);
 		primaryStage.heightProperty().addListener(sizeListener);

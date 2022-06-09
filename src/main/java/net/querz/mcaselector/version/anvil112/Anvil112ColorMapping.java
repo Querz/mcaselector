@@ -1,12 +1,15 @@
 package net.querz.mcaselector.version.anvil112;
 
 import net.querz.mcaselector.text.TextHelper;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.version.ColorMapping;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.util.*;
 
 public class Anvil112ColorMapping implements ColorMapping {
+
+	private static final Logger LOGGER = LogManager.getLogger(Anvil112ColorMapping.class);
 
 	private final Map<Integer, Integer> mapping = new HashMap<>();
 	private final Set<Integer> grass = new HashSet<>();
@@ -23,22 +26,22 @@ public class Anvil112ColorMapping implements ColorMapping {
 			while ((line = bis.readLine()) != null) {
 				String[] elements = line.split(";");
 				if (elements.length < 3 || elements.length > 4) {
-					Debug.dumpf("invalid line in color file: \"%s\"", line);
+					LOGGER.error("invalid line in color file: \"{}\"", line);
 					continue;
 				}
 				Integer id = TextHelper.parseInt(elements[0], 10);
 				if (id == null || id < 0 || id > 255) {
-					Debug.dumpf("invalid block id in color file: \"%s\"", elements[0]);
+					LOGGER.error("invalid block id in color file: \"{}\"", elements[0]);
 					continue;
 				}
 				Integer data = TextHelper.parseInt(elements[1], 10);
 				if (data == null || data < 0 || data > 15) {
-					Debug.dumpf("invalid block data in color file: \"%s\"", elements[1]);
+					LOGGER.error("invalid block data in color file: \"{}\"", elements[1]);
 					continue;
 				}
 				Integer color = TextHelper.parseInt(elements[2], 16);
 				if (color == null || color < 0x0 || color > 0xFFFFFF) {
-					Debug.dumpf("invalid color code in color file: \"%s\"", elements[2]);
+					LOGGER.error("invalid color code in color file: \"{}\"", elements[2]);
 					continue;
 				}
 				mapping.put((id << 4) + data, color | 0xFF000000);
@@ -66,7 +69,7 @@ public class Anvil112ColorMapping implements ColorMapping {
 			while ((line = bis.readLine()) != null) {
 				String[] elements = line.split(";");
 				if (elements.length != 4) {
-					Debug.dumpf("invalid line in biome color file: \"%s\"", line);
+					LOGGER.error("invalid line in biome color file: \"{}\"", line);
 					continue;
 				}
 

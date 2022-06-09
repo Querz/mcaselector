@@ -5,7 +5,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.NamedThreadFactory;
@@ -14,6 +13,8 @@ import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.awt.*;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -26,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class OverlayPool {
+
+	private static final Logger LOGGER = LogManager.getLogger(OverlayPool.class);
 
 	private final TileMap tileMap;
 	private final Set<Point2i> noData = new HashSet<>();
@@ -66,7 +69,7 @@ public class OverlayPool {
 				hoveredRegion = null;
 				hoveredRegionData = null;
 			} catch (SQLException ex) {
-				Debug.dumpException("failed to create table for overlay " + overlay, ex);
+				LOGGER.warn("failed to create table for overlay {}", overlay, ex);
 			}
 		}
 	}
@@ -95,7 +98,7 @@ public class OverlayPool {
 			try {
 				data = dataCache.getData(parserClone, tile.location);
 			} catch (Exception ex) {
-				Debug.dumpException("failed to load cached overlay data for region " + tile.location, ex);
+				LOGGER.warn("failed to load cached overlay data for region {}", tile.location, ex);
 			}
 
 			if (data != null) {
@@ -135,7 +138,7 @@ public class OverlayPool {
 				return parseColorGrades(data, parser.min(), parser.max(), parser.getMinHue(), parser.getMaxHue());
 			}
 		} catch (Exception ex) {
-			Debug.dumpException("failed to load cached overlay data for region " + location, ex);
+			LOGGER.warn("failed to load cached overlay data for region {}", location, ex);
 			return null;
 		}
 
@@ -185,7 +188,7 @@ public class OverlayPool {
 		try {
 			dataCache.setData(tileMap.getOverlay(), location, data);
 		} catch (Exception ex) {
-			Debug.dumpException("failed to cache data for region " + location, ex);
+			LOGGER.warn("failed to cache data for region {}", location, ex);
 		}
 	}
 
@@ -195,7 +198,7 @@ public class OverlayPool {
 			hoveredRegion = null;
 			hoveredRegionData = null;
 		} catch (SQLException ex) {
-			Debug.dumpException("failed to switch cache db", ex);
+			LOGGER.warn("failed to switch cache db", ex);
 		}
 	}
 
@@ -205,7 +208,7 @@ public class OverlayPool {
 			hoveredRegion = null;
 			hoveredRegionData = null;
 		} catch (Exception ex) {
-			Debug.dumpException("failed to clear data cache", ex);
+			LOGGER.warn("failed to clear data cache", ex);
 		}
 		noData.clear();
 	}
@@ -217,9 +220,9 @@ public class OverlayPool {
 				hoveredRegion = null;
 				hoveredRegionData = null;
 			}
-			Debug.dumpf("removed data for %s from data pool", region);
+			LOGGER.debug("removed data for {} from data pool", region);
 		} catch (SQLException ex) {
-			Debug.dumpException("failed to remove data from cache", ex);
+			LOGGER.warn("failed to remove data from cache", ex);
 		}
 		noData.remove(region);
 	}
@@ -249,7 +252,7 @@ public class OverlayPool {
 					}
 					Platform.runLater(() -> callback.accept(regionData[normalizedChunk.getZ() * 32 + normalizedChunk.getX()]));
 				} catch (IOException | SQLException ex) {
-					Debug.dumpException("failed to load data for overlay value", ex);
+					LOGGER.warn("failed to load data for overlay value", ex);
 					Platform.runLater(() -> callback.accept(null));
 				}
 			});

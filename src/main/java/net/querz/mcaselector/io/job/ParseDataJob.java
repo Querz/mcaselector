@@ -1,6 +1,5 @@
 package net.querz.mcaselector.io.job;
 
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.mca.ChunkData;
@@ -11,6 +10,8 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
@@ -19,6 +20,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class ParseDataJob extends ProcessDataJob {
+
+	private static final Logger LOGGER = LogManager.getLogger(ParseDataJob.class);
 
 	private static final Set<Point2i> loading = ConcurrentHashMap.newKeySet();
 
@@ -73,7 +76,7 @@ public class ParseDataJob extends ProcessDataJob {
 				try {
 					regionMCAFile.load(ptr);
 				} catch (IOException ex) {
-					Debug.errorf("failed to read mca file header from %s", getRegionDirectories().getRegion());
+					LOGGER.warn("failed to read mca file header from {}", getRegionDirectories().getRegion());
 				}
 			}
 		}
@@ -88,7 +91,7 @@ public class ParseDataJob extends ProcessDataJob {
 				try {
 					entitiesMCAFile.load(ptr);
 				} catch (IOException ex) {
-					Debug.errorf("failed to read mca file header from %s", getRegionDirectories().getEntities());
+					LOGGER.warn("failed to read mca file header from {}", getRegionDirectories().getEntities());
 				}
 			}
 		}
@@ -103,14 +106,14 @@ public class ParseDataJob extends ProcessDataJob {
 				try {
 					poiMCAFile.load(ptr);
 				} catch (IOException ex) {
-					Debug.errorf("failed to read mca file header from %s", getRegionDirectories().getPoi());
+					LOGGER.warn("failed to read mca file header from {}", getRegionDirectories().getPoi());
 				}
 			}
 		}
 
 		if (regionMCAFile == null && poiMCAFile == null && entitiesMCAFile == null) {
 			dataCallback.accept(null, world);
-			Debug.dumpf("no data to load and parse for region %s", getRegionDirectories().getLocation());
+			LOGGER.warn("no data to load and parse for region {}", getRegionDirectories().getLocation());
 			setLoading(tile, false);
 			return true;
 		}
@@ -124,14 +127,14 @@ public class ParseDataJob extends ProcessDataJob {
 			try {
 				data[i] = chunkData.parseData(parser);
 			} catch (Exception ex) {
-				Debug.dumpException("failed to parse chunk data at index " + i, ex);
+				LOGGER.warn("failed to parse chunk data at index {}", i, ex);
 			}
 		}
 
 		dataCallback.accept(data, world);
 		setLoading(tile, false);
 
-		Debug.dumpf("took %s to load and parse data for region %s", t, getRegionDirectories().getLocation());
+		LOGGER.debug("took {} to load and parse data for region {}", t, getRegionDirectories().getLocation());
 		return true;
 	}
 

@@ -15,8 +15,9 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.ScrollEvent;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.Translation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +25,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 public final class UIFactory {
+
+	private static final Logger LOGGER = LogManager.getLogger(UIFactory.class);
 
 	private UIFactory() {}
 
@@ -135,7 +138,7 @@ public final class UIFactory {
 				try {
 					Desktop.getDesktop().browse(new URL(url).toURI());
 				} catch (IOException | URISyntaxException ex) {
-					Debug.dumpException("cannot open url using a default browser", ex);
+					LOGGER.warn("cannot open url using a default browser", ex);
 				}
 			}
 		});
@@ -156,7 +159,7 @@ public final class UIFactory {
 				try {
 					Desktop.getDesktop().open(file);
 				} catch (IOException ex) {
-					Debug.dumpException("cannot open file or directory", ex);
+					LOGGER.warn("cannot open file or directory", ex);
 				}
 			}
 		});

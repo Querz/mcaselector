@@ -1,20 +1,22 @@
 package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.ProcessDataJob;
 import net.querz.mcaselector.io.job.SaveDataJob;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.validation.ShutdownHooks;
-import java.util.Queue;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
 public final class JobHandler {
+
+	private static final Logger LOGGER = LogManager.getLogger(JobHandler.class);
 
 	private static PausableThreadPoolExecutor processExecutor;
 
@@ -29,7 +31,7 @@ public final class JobHandler {
 	private static boolean trimSaveData = true;
 
 	public static void setTrimSaveData(boolean trimSaveData) {
-		Debug.dump((trimSaveData ? "enabled" : "disabled") + " trimming save data");
+		LOGGER.debug("{} trimming save data", (trimSaveData ? "enabled" : "disabled"));
 		JobHandler.trimSaveData = trimSaveData;
 	}
 
@@ -65,18 +67,18 @@ public final class JobHandler {
 				if ((i = runningTasks.incrementAndGet()) > Config.getProcessThreads() && !trimSaveData) {
 					processExecutor.pause("pausing process");
 				}
-				Debug.dumpf("+ active jobs: %d (%d queued)", i, processExecutor.getQueue().size());
+				LOGGER.debug("+ active jobs: {} ({} queued)", i, processExecutor.getQueue().size());
 			},
 			job -> {
 				if (job.isDone()) {
 					int i = runningTasks.decrementAndGet();
-					Debug.dumpf("- active jobs: %d (%d queued)", i, processExecutor.getQueue().size());
+					LOGGER.debug("- active jobs: {} ({} queued)", i, processExecutor.getQueue().size());
 
 					processExecutor.resume("freed up a task after processing");
 				}
 			});
 
-		Debug.dumpf("created data processor ThreadPoolExecutor with %d threads", Config.getProcessThreads());
+		LOGGER.debug("created data processor ThreadPoolExecutor with {} threads", Config.getProcessThreads());
 
 		saveExecutor = new PausableThreadPoolExecutor(
 			Config.getWriteThreads(), Config.getWriteThreads(),
@@ -85,23 +87,23 @@ public final class JobHandler {
 			new NamedThreadFactory("savePool"),
 			job -> {
 				int i = runningTasks.decrementAndGet();
-				Debug.dumpf("- active jobs: %d (%d queued)", i, processExecutor.getQueue().size());
+				LOGGER.debug("- active jobs: {} ({} queued)", i, processExecutor.getQueue().size());
 				processExecutor.resume("freed up a task after saving");
 			},
 			job -> {});
 
-		Debug.dumpf("created data save ThreadPoolExecutor with %d threads", Config.getWriteThreads());
+		LOGGER.debug("created data save ThreadPoolExecutor with {} threads", Config.getWriteThreads());
 
 		parseExecutor = new ThreadPoolExecutor(
 			1, 1,
 			0L, TimeUnit.MILLISECONDS,
 			new DynamicPriorityBlockingQueue<>(),
 			new NamedThreadFactory("parsePool"));
-		Debug.dumpf("created data parser ThreadPoolExecutor with %d threads", 1);
+		LOGGER.debug("created data parser ThreadPoolExecutor with {} threads", 1);
 	}
 
 	public static void addJob(ProcessDataJob job) {
-		Debug.dumpf("adding job %s for %s to executor queue", job.getClass().getSimpleName(), job.getRegionDirectories().getLocation());
+		LOGGER.debug("adding job {} for {} to executor queue", job.getClass().getSimpleName(), job.getRegionDirectories().getLocation());
 		processExecutor.execute(new WrapperJob(job));
 	}
 
@@ -117,10 +119,10 @@ public final class JobHandler {
 				if ((i = runningTasks.decrementAndGet()) <= Config.getProcessThreads() + 1) {
 					job.cancel();
 					processExecutor.resume("skipping save data");
-					Debug.dumpf("too many tasks: skipping save data");
+					LOGGER.debug("too many tasks: skipping save data");
 				}
 
-				Debug.dumpf("- active jobs: %d (%d queued)", i, processExecutor.getQueue().size());
+				LOGGER.debug("- active jobs: {} ({} queued)", i, processExecutor.getQueue().size());
 			}
 		}
 	}
@@ -151,9 +153,9 @@ public final class JobHandler {
 		int cancelledSaveJobs = cancelExecutorQueue(saveExecutor);
 		int cancelledParseJobs = cancelExecutorQueue(parseExecutor);
 
-		Debug.dumpf("cancelled %d jobs in process queue", cancelledProcessJobs);
-		Debug.dumpf("cancelled %d jobs in save queue", cancelledSaveJobs);
-		Debug.dumpf("cancelled %d jobs in parser queue", cancelledParseJobs);
+		LOGGER.debug("cancelled {} jobs in process queue", cancelledProcessJobs);
+		LOGGER.debug("cancelled {} jobs in save queue", cancelledSaveJobs);
+		LOGGER.debug("cancelled {} jobs in parser queue", cancelledParseJobs);
 	}
 
 	public static void cancelParserQueue() {
@@ -195,7 +197,7 @@ public final class JobHandler {
 		flushExecutor();
 		clearQueues();
 		flushExecutor();
-		Debug.dumpf("took %s to cancel and flush all executors", t);
+		LOGGER.debug("took {} to cancel and flush all executors", t);
 	}
 
 	private static void flushExecutor() {
@@ -209,14 +211,6 @@ public final class JobHandler {
 	}
 
 	private static final AtomicLong jobIDCounter = new AtomicLong(0);
-
-	public static void dumpMetrics() {
-		Queue<Runnable> queue = processExecutor.getQueue();
-
-		for (Runnable r : queue) {
-			Debug.dump(r);
-		}
-	}
 
 	static class WrapperJob implements Runnable, Comparable<WrapperJob> {
 

@@ -1,12 +1,13 @@
 package net.querz.mcaselector.io.mca;
 
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.selection.ChunkSet;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -23,6 +24,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public abstract class MCAFile<T extends Chunk> {
+
+	private static final Logger LOGGER = LogManager.getLogger(MCAFile.class);
 
 	protected Point2i location;
 
@@ -77,13 +80,13 @@ public abstract class MCAFile<T extends Chunk> {
 		}
 		if (!result) {
 			if (dest.delete()) {
-				Debug.dumpf("deleted empty region file %s", dest);
+				LOGGER.debug("deleted empty region file {}", dest);
 			} else {
-				Debug.dumpf("failed to delete empty region file %s", dest);
+				LOGGER.warn("failed to delete empty region file {}", dest);
 			}
 
 			if (!tempFile.delete()) {
-				Debug.dumpf("failed to delete temp file %s", tempFile);
+				LOGGER.warn("failed to delete temp file {}", tempFile);
 			}
 		} else {
 			Files.move(tempFile.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -185,19 +188,19 @@ public abstract class MCAFile<T extends Chunk> {
 		}
 
 		if (skippedChunks == 1024) {
-			Debug.dumpf("all chunks in %s deleted, removing entire file", file.getAbsolutePath());
+			LOGGER.debug("all chunks in {} deleted, removing entire file", file.getAbsolutePath());
 			if (tmpFile.exists() && !tmpFile.delete()) {
-				Debug.dumpf("could not delete tmpFile %s after all chunks were deleted", tmpFile.getAbsolutePath());
+				LOGGER.warn("failed to delete tmpFile {} after all chunks were deleted", tmpFile.getAbsolutePath());
 			}
 
 			// only delete dest file if we are deFragmenting inside the source directory
 			if (dest.getCanonicalPath().equals(file.getCanonicalPath())) {
 				if (!dest.delete()) {
-					Debug.dumpf("could not delete file %s after all chunks were deleted", dest.getAbsolutePath());
+					LOGGER.warn("failed to delete file {} after all chunks were deleted", dest.getAbsolutePath());
 				}
 			}
 		} else {
-			Debug.dumpf("moving temp file %s to %s", tmpFile.getAbsolutePath(), dest.getAbsolutePath());
+			LOGGER.debug("moving temp file {} to {}", tmpFile.getAbsolutePath(), dest.getAbsolutePath());
 			Files.move(tmpFile.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}
 	}
@@ -223,7 +226,7 @@ public abstract class MCAFile<T extends Chunk> {
 					chunks[i].load(raf);
 				} catch (Exception ex) {
 					chunks[i] = null;
-					Debug.dumpException("failed to load chunk at " + chunkLocation, ex);
+					LOGGER.warn("failed to load chunk at {}", chunkLocation, ex);
 				}
 			}
 			return offsets;
@@ -250,7 +253,7 @@ public abstract class MCAFile<T extends Chunk> {
 				chunks[i].load(ptr);
 			} catch (Exception ex) {
 				chunks[i] = null;
-				Debug.dumpException("failed to load chunk at " + chunkLocation, ex);
+				LOGGER.debug("failed to load chunk at {}", chunkLocation, ex);
 			}
 		}
 		return offsets;
@@ -376,7 +379,7 @@ public abstract class MCAFile<T extends Chunk> {
 				chunks[index].load(ptr);
 			} catch (Exception ex) {
 				chunks[index] = null;
-				Debug.dumpException("failed to load chunk at " + chunkLocation, ex);
+				LOGGER.warn("failed to load chunk at {}", chunkLocation, ex);
 			}
 		} catch (ArrayIndexOutOfBoundsException ex) {
 			throw new IOException(ex);
@@ -387,7 +390,7 @@ public abstract class MCAFile<T extends Chunk> {
 		if (file.exists() && file.length() > 0) {
 			load();
 		} else if (chunk == null || chunk.isEmpty()) {
-			Debug.dumpf("nothing to save and no existing file found for chunk %s", location);
+			LOGGER.debug("nothing to save and no existing file found for chunk {}", location);
 			return;
 		}
 
@@ -458,7 +461,7 @@ public abstract class MCAFile<T extends Chunk> {
 							destination.chunks[destIndex] = destinationChunk;
 						} else if (sourceVersion != (destinationVersion = destinationChunk.getData().getInt("DataVersion"))) {
 							Point2i srcChunk = location.regionToChunk().add(x, z);
-							Debug.errorf("failed to merge chunk at %s into chunk at %s because their DataVersion does not match (%d != %d)",
+							LOGGER.warn("failed to merge chunk at {} into chunk at {} because their DataVersion does not match ({} != {})",
 									srcChunk, destChunk, sourceVersion, destinationVersion);
 						}
 
@@ -466,7 +469,7 @@ public abstract class MCAFile<T extends Chunk> {
 							sourceChunk.merge(destinationChunk.getData(), ranges, offset.getY());
 						} catch (Exception ex) {
 							Point2i srcChunk = location.regionToChunk().add(x, z);
-							Debug.dump(new Exception("failed to merge chunk " + srcChunk + " into " + destChunk, ex));
+							LOGGER.warn("failed to merge chunk {} into {}", srcChunk, destChunk, ex);
 						}
 					} else {
 						destination.chunks[destIndex] = sourceChunk;

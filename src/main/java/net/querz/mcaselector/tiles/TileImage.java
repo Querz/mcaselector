@@ -7,7 +7,6 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
@@ -19,8 +18,12 @@ import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.version.VersionController;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class TileImage {
+
+	private static final Logger LOGGER = LogManager.getLogger(TileImage.class);
 
 	private static final int[] corruptedChunkOverlay = new int[256];
 
@@ -123,7 +126,7 @@ public final class TileImage {
 
 			return finalImage;
 		} catch (Exception ex) {
-			Debug.dumpException("failed to create image for MCAFile " + mcaFile.getFile().getName(), ex);
+			LOGGER.warn("failed to create image for MCAFile {}", mcaFile.getFile().getName(), ex);
 		}
 		return null;
 	}
@@ -166,7 +169,7 @@ public final class TileImage {
 				);
 			}
 		} catch (Exception ex) {
-			Debug.dumpException("failed to draw chunk " + chunkData.getAbsoluteLocation(), ex);
+			LOGGER.warn("failed to draw chunk {}", chunkData.getAbsoluteLocation(), ex);
 
 			// TODO: scale corrupted image
 			for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {

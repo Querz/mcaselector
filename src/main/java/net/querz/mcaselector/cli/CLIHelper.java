@@ -1,8 +1,8 @@
-package net.querz.mcaselector.headless;
+package net.querz.mcaselector.cli;
 
-public final class HeadlessHelper {
+public final class CLIHelper {
 
-	private HeadlessHelper() {}
+	private CLIHelper() {}
 
 	public static boolean hasJavaFX() {
 		try  {

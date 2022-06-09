@@ -1,6 +1,5 @@
 package net.querz.mcaselector.selection;
 
-import net.querz.mcaselector.debug.Debug;
 import java.awt.datatransfer.*;
 
 public record ClipboardSelection(SelectionData data) implements Transferable, ClipboardOwner {
@@ -26,7 +25,5 @@ public record ClipboardSelection(SelectionData data) implements Transferable, Cl
 	}
 
 	@Override
-	public void lostOwnership(Clipboard clipboard, Transferable contents) {
-		Debug.dump("Selection lost ownership");
-	}
+	public void lostOwnership(Clipboard clipboard, Transferable contents) {}
 }

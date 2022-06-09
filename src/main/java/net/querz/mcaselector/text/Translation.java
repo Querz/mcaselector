@@ -2,8 +2,8 @@ package net.querz.mcaselector.text;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import net.querz.mcaselector.debug.Debug;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -193,6 +193,9 @@ public enum Translation {
 	BUTTON_CANCEL("button.cancel"),
 	BUTTON_OK("button.ok");
 
+
+	private static final Logger LOGGER = LogManager.getLogger(Translation.class);
+
 	private static final Set<Locale> availableLanguages = new HashSet<>();
 
 	private static final Pattern languangeFilePattern = Pattern.compile("^(?<locale>-?(?<language>-?[a-z]{2})_(?<country>-?[A-Z]{2}))\\.txt$");
@@ -207,7 +210,7 @@ public enum Translation {
 					String country = matcher.group("country");
 					availableLanguages.add(new Locale(language, country));
 				} else {
-					Debug.error("invalid language file: " + langFile);
+					LOGGER.error("invalid language file: {}", langFile);
 				}
 			}
 		}
@@ -301,13 +304,13 @@ public enum Translation {
 			while ((line = bis.readLine()) != null) {
 				String[] split = line.split(";", 2);
 				if (split.length != 2) {
-					Debug.dumpf("invalid language mapping: %s", line);
+					LOGGER.error("invalid language mapping: {}", line);
 					continue;
 				}
 				setTranslation(split[0], split[1].replace("\\n", "\n"));
 			}
 		} catch (IOException ex) {
-			Debug.dumpException(String.format("error reading %s.txt", locale), ex);
+			LOGGER.error("error reading {}.txt", locale, ex);
 		}
 	}
 
@@ -321,7 +324,7 @@ public enum Translation {
 			try {
 				return new File(dirURL.toURI()).list();
 			} catch (URISyntaxException ex) {
-				Debug.dumpException("failed to list resources", ex);
+				LOGGER.error("failed to list resources", ex);
 				return null;
 			}
 		}
@@ -350,7 +353,7 @@ public enum Translation {
 				}
 				return result.toArray(new String[0]);
 			} catch (IOException ex) {
-				Debug.dumpException("failed to decode jar file", ex);
+				LOGGER.error("failed to decode jar file", ex);
 				return null;
 			}
 		}

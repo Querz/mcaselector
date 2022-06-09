@@ -1,13 +1,9 @@
 package net.querz.mcaselector;
 
-import javafx.scene.image.Image;
 import junit.framework.TestCase;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.progress.Timer;
-import net.querz.mcaselector.tiles.TileImage;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +31,7 @@ public final class MCASelectorTestCase {
 		ByteArrayPointer ptr = new ByteArrayPointer(loadDataFromResource(resource));
 		RegionMCAFile mcaFile = new RegionMCAFile(new File(resource));
 		mcaFile.load(ptr);
-		Debug.dumpf("took %s to read mca file %s", t, mcaFile.getFile().getName());
+		System.out.printf("took %s to read mca file %s\n", t, mcaFile.getFile().getName());
 		return mcaFile;
 	}
 

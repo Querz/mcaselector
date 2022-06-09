@@ -2,7 +2,6 @@ package net.querz.mcaselector.io.job;
 
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.changer.Field;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.WorldDirectories;
@@ -12,9 +11,13 @@ import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.List;
 
 public final class FieldChanger {
+
+	private static final Logger LOGGER = LogManager.getLogger(FieldChanger.class);
 
 	private FieldChanger() {}
 
@@ -60,7 +63,7 @@ public final class FieldChanger {
 			if (selection != null) {
 				Point2i location = getRegionDirectories().getLocation();
 				if (!selection.isAnyChunkInRegionSelected(location)) {
-					Debug.dumpf("will not apply nbt changes to %s", getRegionDirectories().getLocationAsFileName());
+					LOGGER.debug("will not apply nbt changes to {}", getRegionDirectories().getLocationAsFileName());
 					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 					return true;
 				}
@@ -71,7 +74,7 @@ public final class FieldChanger {
 			byte[] entitiesData = loadEntities();
 
 			if (regionData == null && poiData == null && entitiesData == null) {
-				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
+				LOGGER.warn("failed to load any data from {}", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return true;
 			}
@@ -86,7 +89,7 @@ public final class FieldChanger {
 				return false;
 			} catch (Exception ex) {
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				Debug.dumpException("error changing fields in " + getRegionDirectories().getLocationAsFileName(), ex);
+				LOGGER.warn("error changing fields in {}", getRegionDirectories().getLocationAsFileName(), ex);
 			}
 			return true;
 		}
@@ -107,10 +110,10 @@ public final class FieldChanger {
 			try {
 				getData().saveWithTempFiles();
 			} catch (Exception ex) {
-				Debug.dumpException("failed to save changed fields for " + getRegionDirectories().getLocationAsFileName(), ex);
+				LOGGER.warn("failed to save changed fields for {}", getRegionDirectories().getLocationAsFileName(), ex);
 			}
 			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-			Debug.dumpf("took %s to save data for %s", t, getRegionDirectories().getLocationAsFileName());
+			LOGGER.debug("took {} to save data for {}", t, getRegionDirectories().getLocationAsFileName());
 		}
 	}
 }

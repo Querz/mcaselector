@@ -8,14 +8,17 @@ import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
 public final class SelectionExporter {
+
+	private static final Logger LOGGER = LogManager.getLogger(SelectionExporter.class);
 
 	private SelectionExporter() {}
 
@@ -60,7 +63,7 @@ public final class SelectionExporter {
 			File toPoi = new File(destination.getPoi(), getRegionDirectories().getLocationAsFileName());
 			File toEntities = new File(destination.getEntities(), getRegionDirectories().getLocationAsFileName());
 			if (toRegion.exists() || toPoi.exists() || toEntities.exists()) {
-				Debug.dumpf("%s exists, not overwriting", getRegionDirectories().getLocationAsFileName());
+				LOGGER.debug("{} exists, not overwriting", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return true;
 			}
@@ -72,25 +75,25 @@ public final class SelectionExporter {
 				// copy region
 				try {
 					Files.copy(getRegionDirectories().getRegion().toPath(), to.getRegion().toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Debug.dumpf("copied file %s", getRegionDirectories().getRegion());
+					LOGGER.debug("copied file {}", getRegionDirectories().getRegion());
 				} catch (Exception ex) {
-					Debug.dumpException("failed to copy file " + getRegionDirectories().getRegion(), ex);
+					LOGGER.warn("failed to copy file {}", getRegionDirectories().getRegion(), ex);
 				}
 
 				// copy poi
 				try {
 					Files.copy(getRegionDirectories().getPoi().toPath(), to.getPoi().toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Debug.dumpf("copied file %s", getRegionDirectories().getPoi());
+					LOGGER.debug("copied file {}", getRegionDirectories().getPoi());
 				} catch (Exception ex) {
-					Debug.dumpException("failed to copy file " + getRegionDirectories().getPoi(), ex);
+					LOGGER.warn("failed to copy file {}", getRegionDirectories().getPoi(), ex);
 				}
 
 				// copy entities
 				try {
 					Files.copy(getRegionDirectories().getEntities().toPath(), to.getEntities().toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Debug.dumpf("copied file %s", getRegionDirectories().getEntities());
+					LOGGER.debug("copied file {}", getRegionDirectories().getEntities());
 				} catch (Exception ex) {
-					Debug.dumpException("failed to copy file " + getRegionDirectories().getEntities(), ex);
+					LOGGER.warn("failed to copy file {}", getRegionDirectories().getEntities(), ex);
 				}
 
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
@@ -102,7 +105,7 @@ public final class SelectionExporter {
 			byte[] entitiesData = loadEntitiesHeader();
 
 			if (regionData == null && poiData == null && entitiesData == null) {
-				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
+				LOGGER.warn("failed to load any data from {}", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return true;
 			}
@@ -116,7 +119,7 @@ public final class SelectionExporter {
 				return false;
 
 			} catch (Exception ex) {
-				Debug.dumpException("error deleting chunk indices in " + getRegionDirectories().getLocationAsFileName(), ex);
+				LOGGER.warn("error deleting chunk indices in {}", getRegionDirectories().getLocationAsFileName(), ex);
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 			}
 			return true;
@@ -139,7 +142,7 @@ public final class SelectionExporter {
 			try {
 				getData().deFragment(destinations);
 			} catch (Exception ex) {
-				Debug.dumpException("failed to export filtered chunks from " + getRegionDirectories().getLocationAsFileName(), ex);
+				LOGGER.warn("failed to export filtered chunks from {}", getRegionDirectories().getLocationAsFileName(), ex);
 			}
 			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 		}

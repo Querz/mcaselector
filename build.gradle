@@ -13,13 +13,14 @@ plugins {
 	id 'idea'
 }
 
-group 'net.querz.mcaselector'
+group 'net.querz'
 version '1.17.3'
 def appName = 'MCA Selector'
 def appUrl = 'https://github.com/Querz/mcaselector'
 def appAuthor = 'Querz'
 
-sourceCompatibility = 17
+sourceCompatibility = JavaLanguageVersion.of(17)
+targetCompatibility = JavaLanguageVersion.of(17)
 
 javafx {
 	version = "$sourceCompatibility"
@@ -52,6 +53,19 @@ dependencies {
 	implementation 'ar.com.hjg:pngj:2.1.0'
 	implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
 	implementation 'it.unimi.dsi:fastutil:8.5.8'
+	implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
+	implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
+	implementation 'commons-cli:commons-cli:1.5.0'
+
+	shadow 'com.github.Querz:NBT:f279a237fb'
+	shadow 'org.json:json:20211205'
+	shadow 'ar.com.hjg:pngj:2.1.0'
+	shadow 'org.xerial:sqlite-jdbc:3.36.0.3'
+	shadow 'it.unimi.dsi:fastutil:8.5.8'
+	shadow 'org.apache.logging.log4j:log4j-api:2.17.2'
+	shadow 'org.apache.logging.log4j:log4j-core:2.17.2'
+	shadow 'commons-cli:commons-cli:1.5.0'
+
 	testImplementation 'junit:junit:4.13.2'
 	testImplementation 'commons-io:commons-io:2.11.0'
 }
@@ -74,12 +88,14 @@ jar {
 }
 
 shadowJar {
-	minimize()
+	minimize {
+		exclude(dependency('org.apache.logging.log4j:log4j-core:.*'))
+	}
 	dependencies {
 		exclude(dependency(':javafx.*:.*'))
 	}
 	archiveFileName = "${project.name}-${project.version}.jar"
-	configurations = [project.configurations.implementation]
+	configurations = [project.configurations.shadow]
 	exclude 'LICENSE.txt', 'NOTICE.txt'
 	from 'LICENSE'
 }

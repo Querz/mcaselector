@@ -1,7 +1,6 @@
 package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.changer.Field;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
@@ -12,12 +11,16 @@ import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 // holds data for chunks, poi and entities
 public class Region {
+
+	private static final Logger LOGGER = LogManager.getLogger(Region.class);
 
 	private RegionMCAFile region;
 	private PoiMCAFile poi;
@@ -409,7 +412,7 @@ public class Region {
 					chunks.set(location.asChunkIndex());
 				}
 			} catch (Exception ex) {
-				Debug.dumpException(String.format("failed to select chunk %s", location), ex);
+				LOGGER.warn("failed to select chunk {}: {}", location, ex.getMessage());
 			}
 		}
 		return chunks;
@@ -425,12 +428,12 @@ public class Region {
 					try {
 						chunkData.applyFieldChanges(fields, force);
 					} catch (Exception ex) {
-						Debug.dumpException("failed to apply field changes to chunk " + absoluteLocation, ex);
+						LOGGER.warn("failed to apply field changes to chunk {}: {}", absoluteLocation, ex.getMessage());
 					}
 				}
 			}
 		}
-		Debug.printf("took %s to apply field changes to region %s", t, location);
+		LOGGER.debug("took {} to apply field changes to region {}", t, location);
 	}
 
 	public void mergeInto(Region region, Point3i offset, boolean overwrite, ChunkSet sourceChunks, ChunkSet targetChunks, List<Range> ranges) {

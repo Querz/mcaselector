@@ -2,7 +2,6 @@ package net.querz.mcaselector.io.job;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
@@ -12,8 +11,12 @@ import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class SelectionDeleter {
+
+	private static final Logger LOGGER = LogManager.getLogger(SelectionDeleter.class);
 
 	private SelectionDeleter() {}
 
@@ -57,23 +60,23 @@ public final class SelectionDeleter {
 			if (selection == null) {
 				// delete region
 				if (getRegionDirectories().getRegion().delete()) {
-					Debug.dumpf("deleted file %s", getRegionDirectories().getRegion());
+					LOGGER.debug("deleted file {}", getRegionDirectories().getRegion());
 				} else {
-					Debug.errorf("failed to delete file %s", getRegionDirectories().getRegion());
+					LOGGER.warn("failed to delete file {}", getRegionDirectories().getRegion());
 				}
 
 				// delete poi
 				if (getRegionDirectories().getPoi().delete()) {
-					Debug.dumpf("deleted file %s", getRegionDirectories().getPoi());
+					LOGGER.debug("deleted file {}", getRegionDirectories().getPoi());
 				} else {
-					Debug.errorf("failed to delete file %s", getRegionDirectories().getPoi());
+					LOGGER.warn("failed to delete file {}", getRegionDirectories().getPoi());
 				}
 
 				// delete entities
 				if (getRegionDirectories().getEntities().delete()) {
-					Debug.dumpf("deleted file %s", getRegionDirectories().getEntities());
+					LOGGER.debug("deleted file {}", getRegionDirectories().getEntities());
 				} else {
-					Debug.errorf("failed to delete file %s", getRegionDirectories().getEntities());
+					LOGGER.warn("failed to delete file {}", getRegionDirectories().getEntities());
 				}
 
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
@@ -85,7 +88,7 @@ public final class SelectionDeleter {
 			byte[] entitiesData = loadEntitiesHeader();
 
 			if (regionData == null && poiData == null && entitiesData == null) {
-				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
+				LOGGER.warn("failed to load any data from {}", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return true;
 			}
@@ -102,7 +105,7 @@ public final class SelectionDeleter {
 
 			} catch (Exception ex) {
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				Debug.errorf("error deleting chunk indices in %s", getRegionDirectories().getLocationAsFileName());
+				LOGGER.warn("error deleting chunk indices in {}", getRegionDirectories().getLocationAsFileName());
 			}
 			return true;
 		}
@@ -123,10 +126,10 @@ public final class SelectionDeleter {
 			try {
 				getData().deFragment();
 			} catch (Exception ex) {
-				Debug.dumpException("failed to delete selected chunks from " + getRegionDirectories().getLocationAsFileName(), ex);
+				LOGGER.warn("failed to delete selected chunks from {}", getRegionDirectories().getLocationAsFileName(), ex);
 			}
 			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-			Debug.dumpf("took %s to save data for %s", t, getRegionDirectories().getLocationAsFileName());
+			LOGGER.debug("took {} to save data for {}", t, getRegionDirectories().getLocationAsFileName());
 		}
 	}
 }

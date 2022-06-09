@@ -1,11 +1,13 @@
 package net.querz.mcaselector.filter;
 
-import net.querz.mcaselector.debug.Debug;
+import net.querz.mca.parsers.EntityParser;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.Tag;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,6 +22,8 @@ import java.util.regex.Pattern;
 
 public class EntityFilter extends TextFilter<List<String>> {
 
+	private static final Logger LOGGER = LogManager.getLogger(EntityParser.class);
+
 	private static final Set<String> validNames = new HashSet<>();
 	private static final Pattern entityNamePattern = Pattern.compile("^(?<space>[a-z_]*):?(?<id>[a-z_]*)$");
 
@@ -31,7 +35,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 				validNames.add("minecraft:" + line);
 			}
 		} catch (IOException ex) {
-			Debug.dumpException("error reading mapping/all_entity_names.txt", ex);
+			LOGGER.error("error reading mapping/all_entity_names.txt", ex);
 		}
 	}
 

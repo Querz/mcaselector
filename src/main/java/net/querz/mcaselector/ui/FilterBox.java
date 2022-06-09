@@ -18,7 +18,6 @@ import net.querz.mcaselector.filter.GroupFilter;
 import net.querz.mcaselector.filter.NumberFilter;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.filter.TextFilter;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.text.Translation;
 import java.util.Objects;
@@ -357,12 +356,12 @@ public abstract class FilterBox extends BorderPane {
 			}
 
 			// remove this filter from view and add new filterbox
-			FilterBox newBox = null;
+			FilterBox newBox;
 			switch (type.getFormat()) {
 				case GROUP -> newBox = new GroupFilterBox(this.parent, (GroupFilter) f, false);
 				case TEXT -> newBox = new TextFilterBox(this.parent, (TextFilter<?>) f, false);
 				case NUMBER -> newBox = new NumberFilterBox(this.parent, (NumberFilter<?>) f, false);
-				default -> Debug.dump("unknown FilterType format: " + type.getFormat());
+				default -> throw new RuntimeException("unknown FilterType format: " + type.getFormat());
 			}
 
 			if (this.parent != null) {

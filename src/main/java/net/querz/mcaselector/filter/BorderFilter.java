@@ -3,7 +3,6 @@ package net.querz.mcaselector.filter;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectSortedMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectSortedMaps;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.ChunkData;
@@ -12,12 +11,16 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.StringTag;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
 public class BorderFilter extends IntFilter {
+
+	private static final Logger LOGGER = LogManager.getLogger(BorderFilter.class);
 
 	protected final Object regionBufferLock;
 	protected Long2ObjectSortedMap<RegionMCAFile> regionBuffer;
@@ -200,7 +203,7 @@ public class BorderFilter extends IntFilter {
 				is.read(data);
 				regionMCAFile.loadBorderChunks(new ByteArrayPointer(data));
 			} catch (IOException ex) {
-				Debug.dumpException("failed to read data from " + regionMCAFile.getFile(), ex);
+				LOGGER.warn("failed to read data from {}", regionMCAFile.getFile(), ex);
 				push(key, null);
 				return null;
 			}

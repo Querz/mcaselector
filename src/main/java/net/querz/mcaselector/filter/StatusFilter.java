@@ -1,10 +1,11 @@
 package net.querz.mcaselector.filter;
 
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.StringTag;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,6 +14,8 @@ import java.util.Objects;
 import java.util.Set;
 
 public class StatusFilter extends TextFilter<String> {
+
+	private static final Logger LOGGER = LogManager.getLogger(StatusFilter.class);
 
 	private static final Set<String> validStatus = new HashSet<>();
 	private static final Comparator[] comparators = {
@@ -28,7 +31,7 @@ public class StatusFilter extends TextFilter<String> {
 				validStatus.add(line);
 			}
 		} catch (IOException ex) {
-			Debug.dumpException("error reading mapping/all_status.txt for StatusFilter", ex);
+			LOGGER.error("error reading mapping/all_status.txt for StatusFilter", ex);
 		}
 	}
 

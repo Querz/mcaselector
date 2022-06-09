@@ -9,22 +9,25 @@ import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.tiles.Tile;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.text.Translation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.function.Consumer;
 
 public final class ChunkFilterSelector {
 
+	private static final Logger LOGGER = LogManager.getLogger(ChunkFilterSelector.class);
+
 	private ChunkFilterSelector() {}
 
-	public static void selectFilter(GroupFilter filter, Selection selection, int radius, Consumer<Selection> callback, Progress progressChannel, boolean headless) {
+	public static void selectFilter(GroupFilter filter, Selection selection, int radius, Consumer<Selection> callback, Progress progressChannel, boolean cli) {
 		WorldDirectories wd = Config.getWorldDirs();
 		RegionDirectories[] rd = wd.listRegions(selection);
 		if (rd == null || rd.length == 0) {
-			if (headless) {
+			if (cli) {
 				progressChannel.done("no files");
 			} else {
 				progressChannel.done(Translation.DIALOG_PROGRESS_NO_FILES.toString());
@@ -65,7 +68,7 @@ public final class ChunkFilterSelector {
 			Point2i location = getRegionDirectories().getLocation();
 
 			if (!filter.appliesToRegion(location)) {
-				Debug.dumpf("filter does not apply to region %s", getRegionDirectories().getLocation());
+				LOGGER.debug("filter does not apply to region {}", getRegionDirectories().getLocation());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return true;
 			}
@@ -75,7 +78,7 @@ public final class ChunkFilterSelector {
 			byte[] entitiesData = loadEntities();
 
 			if (regionData == null && poiData == null && entitiesData == null) {
-				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
+				LOGGER.warn("failed to load any data from {}", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return true;
 			}
@@ -102,9 +105,9 @@ public final class ChunkFilterSelector {
 
 					callback.accept(selection);
 				}
-				Debug.dumpf("took %s to select chunks in %s", t, getRegionDirectories().getLocationAsFileName());
+				LOGGER.debug("took {} to select chunks in {}", t, getRegionDirectories().getLocationAsFileName());
 			} catch (Exception ex) {
-				Debug.dumpException("error selecting chunks in " + getRegionDirectories().getLocationAsFileName(), ex);
+				LOGGER.warn("error selecting chunks in {}", getRegionDirectories().getLocationAsFileName(), ex);
 			}
 			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 			return true;

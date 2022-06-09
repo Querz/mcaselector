@@ -4,10 +4,11 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -30,6 +31,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class FileHelper {
+
+	private static final Logger LOGGER = LogManager.getLogger(FileHelper.class);
 
 	public static final int HEADER_SIZE = 8192;
 	public static final Pattern MCA_FILE_PATTERN = Pattern.compile("^r\\.-?\\d+\\.-?\\d+\\.mca$");
@@ -246,7 +249,7 @@ public final class FileHelper {
 			createDirectoryOrThrowException(file, "entities");
 			return new WorldDirectories(new File(file, "region"), new File(file, "poi"), new File(file, "entities"));
 		} catch (IOException ex) {
-			Debug.dumpException("failed to create directories", ex);
+			LOGGER.warn("failed to create directories", ex);
 			return null;
 		}
 	}

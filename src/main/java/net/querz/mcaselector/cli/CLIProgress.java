@@ -1,16 +1,16 @@
-package net.querz.mcaselector.headless;
+package net.querz.mcaselector.cli;
 
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.progress.Progress;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ConsoleProgress implements Progress {
+public class CLIProgress implements Progress {
 
 	private int max;
 	private final AtomicInteger progress = new AtomicInteger(0);
 	private Runnable doneAction;
 
-	public ConsoleProgress() {
+	public CLIProgress() {
 		JobHandler.setTrimSaveData(false);
 	}
 

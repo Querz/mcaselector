@@ -1,8 +1,6 @@
 package net.querz.mcaselector.ui.dialog;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ButtonType;
@@ -16,7 +14,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.mca.CompressionType;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.Chunk;
@@ -37,6 +34,8 @@ import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.ui.NBTTreeView;
 import net.querz.mcaselector.ui.UIFactory;
 import net.querz.nbt.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -44,6 +43,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
+
+	private static final Logger LOGGER = LogManager.getLogger(NBTEditorDialog.class);
 
 	private final Label treeViewPlaceHolder = UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_LOADING);
 	private final TabPane editors = new TabPane();
@@ -83,13 +84,13 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 					writeSingleChunk(new EntitiesMCAFile(FileHelper.createEntitiesMCAFilePath(selectedChunk.chunkToRegion())), new EntitiesChunk(selectedChunk), entitiesData);
 				} catch (Exception ex) {
 					exception.set(ex);
-					Debug.dumpException("failed to save chunk", ex);
+					LOGGER.warn("failed to save chunk", ex);
 				} finally {
 					r.done("");
 				}
 			});
 
-			Debug.dumpf("took %s to save chunk %s", t, selectedChunk);
+			LOGGER.warn("took {} to save chunk {}", t, selectedChunk);
 
 			if (exception.get() != null) {
 				e.consume();
@@ -241,12 +242,12 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 
 	private <T extends Chunk> void readSingleChunkAsync(MCAFile<T> mcaFile, NBTTreeView treeView, BorderPane treeViewHolder, Map<Integer, Label> addTagLabels, Consumer<CompoundTag> consumer) {
 		new Thread(() -> {
-			Debug.dumpf("attempting to read single chunk from file: %s", selectedChunk);
+			LOGGER.debug("attempting to read single chunk from file: {}", selectedChunk);
 			if (mcaFile.getFile().exists()) {
 				try {
 					T chunkData = mcaFile.loadSingleChunk(selectedChunk);
 					if (chunkData == null || chunkData.getData() == null) {
-						Debug.dump("no chunk data found for: " + selectedChunk);
+						LOGGER.debug("no chunk data found for: {}", selectedChunk);
 						enableAddTagLabels(new int[]{10}, addTagLabels);
 						Platform.runLater(() -> treeViewHolder.setCenter(UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_NO_CHUNK_DATA)));
 						return;
@@ -259,7 +260,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 						getDialogPane().lookupButton(ButtonType.APPLY).setDisable(false);
 					});
 				} catch (IOException ex) {
-					Debug.dumpException("failed to load chunk from file " + mcaFile.getFile(), ex);
+					LOGGER.warn("failed to load chunk from file {}", mcaFile.getFile(), ex);
 				}
 			} else {
 				enableAddTagLabels(new int[]{10}, addTagLabels);
@@ -278,9 +279,9 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 
 		try {
 			mcaFile.saveSingleChunk(selectedChunk, chunk);
-			Debug.dumpf("saved single chunk to %s", mcaFile.getFile());
+			LOGGER.debug("saved single chunk to {}", mcaFile.getFile());
 		} catch (IOException ex) {
-			Debug.dumpException("failed to save single chunk to " + mcaFile.getFile(), ex);
+			LOGGER.warn("failed to save single chunk to {}", mcaFile.getFile(), ex);
 			throw ex;
 		}
 	}

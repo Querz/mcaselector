@@ -1,9 +1,7 @@
 package net.querz.mcaselector.ui;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
@@ -31,10 +29,11 @@ import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.selection.SelectionData;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.property.DataProperty;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.dialog.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -50,6 +49,8 @@ import java.util.Optional;
 import static net.querz.mcaselector.ui.dialog.ImportConfirmationDialog.ChunkImportConfirmationData;
 
 public class DialogHelper {
+
+	private static final Logger LOGGER = LogManager.getLogger(DialogHelper.class);
 
 	public static void showAboutDialog(Stage primaryStage) {
 		new AboutDialog(primaryStage).showAndWait();
@@ -84,9 +85,9 @@ public class DialogHelper {
 	public static void filterChunks(TileMap tileMap, Stage primaryStage) {
 		Optional<FilterChunksDialog.Result> result = new FilterChunksDialog(primaryStage).showAndWait();
 		result.ifPresent(r -> {
-			Debug.dump("chunk filter query: " + r.getFilter());
+			LOGGER.debug("chunk filter query: {}", r.getFilter());
 			if (r.getFilter().isEmpty()) {
-				Debug.dump("filter is empty, won't delete everything");
+				LOGGER.debug("filter is empty, won't delete everything");
 				return;
 			}
 
@@ -119,11 +120,11 @@ public class DialogHelper {
 						confRes.ifPresent(confR -> {
 							if (confR == ButtonType.OK) {
 								FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
-								Debug.dump("exporting chunks to " + dir);
+								LOGGER.debug("exporting chunks to {}", dir);
 
 								WorldDirectories worldDirectories = FileHelper.createWorldDirectories(dir);
 								if (worldDirectories == null) {
-									Debug.dump("failed to create world directories");
+									LOGGER.warn("failed to create world directories");
 									new ErrorDialog(primaryStage, "failed to create world directories");
 									return;
 								}
@@ -140,7 +141,7 @@ public class DialogHelper {
 							}
 						});
 					} else {
-						Debug.dump("cancelled exporting chunks, no valid destination directory");
+						LOGGER.debug("cancelled exporting chunks, no valid destination directory");
 					}
 				}
 				case SELECT -> {
@@ -159,7 +160,7 @@ public class DialogHelper {
 							}), t, false));
 					r.getFilter().resetTempData();
 				}
-				default -> Debug.dump("i have no idea how you got no selection there...");
+				default -> LOGGER.debug("i have no idea how you got no selection there...");
 			}
 		});
 		tileMap.draw();
@@ -205,7 +206,7 @@ public class DialogHelper {
 
 					WorldDirectories worldDirectories = FileHelper.createWorldDirectories(dir);
 					if (worldDirectories == null) {
-						Debug.dump("failed to create world directories");
+						LOGGER.warn("failed to create world directories");
 						new ErrorDialog(primaryStage, "failed to create world directories");
 						return;
 					}
@@ -333,7 +334,7 @@ public class DialogHelper {
 				ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", file);
 				FileHelper.setLastOpenedDirectory("snapshot_save", file.getParent());
 			} catch (IOException ex) {
-				Debug.dumpException("failed to save screenshot", ex);
+				LOGGER.warn("failed to save screenshot", ex);
 				new ErrorDialog(primaryStage, ex);
 			}
 		}
@@ -344,7 +345,7 @@ public class DialogHelper {
 
 		if (data.getWidth() * 16 * data.getHeight() * 16 > Integer.MAX_VALUE) {
 			String error = String.format("dimensions are too large to generate an image: %dx%d", data.getWidth() * 16, data.getHeight() * 16);
-			Debug.dumpf(error);
+			LOGGER.warn(error);
 			new ErrorDialog(primaryStage, error);
 			return;
 		}
@@ -368,7 +369,7 @@ public class DialogHelper {
 							ImageHelper.saveImageData(pixels.get(), (int) data.getWidth() * 16, (int) data.getHeight() * 16, file, t);
 							FileHelper.setLastOpenedDirectory("snapshot_save", file.getParent());
 						} catch (IOException ex) {
-							Debug.dumpException("failed to save image", ex);
+							LOGGER.warn("failed to save image", ex);
 							new ErrorDialog(primaryStage, ex);
 						}
 					});
@@ -396,7 +397,7 @@ public class DialogHelper {
 			Point2i fromRegion = fromChunk.chunkToRegion();
 			Point2i toRegion = toChunk.chunkToRegion();
 
-			Debug.dumpf("swapping chunk %s:%s with %s:%s", fromChunk, fromRegion, toChunk, toRegion);
+			LOGGER.debug("swapping chunk {}:{} with {}:{}", fromChunk, fromRegion, toChunk, toRegion);
 
 			t.incrementProgress(FileHelper.createMCAFileName(fromRegion));
 
@@ -407,7 +408,7 @@ public class DialogHelper {
 			try {
 				from = Region.loadOrCreateEmptyRegion(FileHelper.createRegionDirectories(fromRegion));
 			} catch (IOException ex) {
-				Debug.dumpException("failed to load region files", ex);
+				LOGGER.warn("failed to load region files", ex);
 				t.done(null);
 				new ErrorDialog(primaryStage, ex);
 				return;
@@ -419,7 +420,7 @@ public class DialogHelper {
 				try {
 					to = Region.loadOrCreateEmptyRegion(FileHelper.createRegionDirectories(toRegion));
 				} catch (IOException ex) {
-					Debug.dumpException("failed to load region files", ex);
+					LOGGER.warn("failed to load region files", ex);
 					t.done(null);
 					new ErrorDialog(primaryStage, ex);
 					return;
@@ -444,7 +445,7 @@ public class DialogHelper {
 			try {
 				to.saveWithTempFiles();
 			} catch (IOException ex) {
-				Debug.dumpException("failed to save region files", ex);
+				LOGGER.warn("failed to save region files", ex);
 				t.done(null);
 				new ErrorDialog(primaryStage, ex);
 				return;
@@ -453,7 +454,7 @@ public class DialogHelper {
 				try {
 					from.saveWithTempFiles();
 				} catch (IOException ex) {
-					Debug.dumpException("failed to save region files", ex);
+					LOGGER.warn("failed to save region files", ex);
 					t.done(null);
 					new ErrorDialog(primaryStage, ex);
 					return;
@@ -508,7 +509,7 @@ public class DialogHelper {
 					tileMap.draw();
 
 				} catch (UnsupportedFlavorException | IOException ex) {
-					Debug.dumpException("failed to paste chunks", ex);
+					LOGGER.warn("failed to paste chunks", ex);
 				}
 			}
 		}
@@ -518,13 +519,13 @@ public class DialogHelper {
 		if (tempFiles != null) {
 			for (RegionDirectories tempFile : tempFiles.values()) {
 				if (!tempFile.getRegion().delete()) {
-					Debug.errorf("failed to delete temp file %s", tempFile.getRegion());
+					LOGGER.warn("failed to delete temp file {}", tempFile.getRegion());
 				}
 				if (!tempFile.getPoi().delete()) {
-					Debug.errorf("failed to delete temp file %s", tempFile.getPoi());
+					LOGGER.warn("failed to delete temp file {}", tempFile.getPoi());
 				}
 				if (!tempFile.getEntities().delete()) {
-					Debug.errorf("failed to delete temp file %s", tempFile.getEntities());
+					LOGGER.warn("failed to delete temp file {}", tempFile.getEntities());
 				}
 			}
 		}
@@ -536,7 +537,7 @@ public class DialogHelper {
 		if (file != null && file.isDirectory()) {
 			File[] files = file.listFiles((dir, name) -> FileHelper.MCA_FILE_PATTERN.matcher(name).matches());
 			if (files != null && files.length > 0) {
-				Debug.dump("setting world dir to " + file.getAbsolutePath());
+				LOGGER.debug("setting world dir to {}", file.getAbsolutePath());
 				FileHelper.setLastOpenedDirectory("open_world", file.getAbsolutePath());
 				Config.setWorldDir(file);
 				CacheHelper.validateCacheVersion(tileMap);
@@ -563,7 +564,7 @@ public class DialogHelper {
 			List<File> dimensions = FileHelper.detectDimensionDirectories(file);
 			if (dimensions.size() == 0) {
 				new ErrorDialog(primaryStage, String.format("no dimensions found in %s", file.getAbsolutePath()));
-				Debug.dumpf("no dimensions found in %s", file.getAbsolutePath());
+				LOGGER.warn("no dimensions found in {}", file.getAbsolutePath());
 				return;
 			}
 
@@ -572,7 +573,6 @@ public class DialogHelper {
 				setWorld(FileHelper.detectWorldDirectories(dimensions.get(0)), tileMap, primaryStage);
 				return;
 			}
-
 			// show world selection dialog
 			Optional<File> result = new SelectWorldDialog(dimensions, primaryStage).showAndWait();
 			result.ifPresent(dim -> setWorld(FileHelper.detectWorldDirectories(dim), tileMap, primaryStage));
@@ -606,7 +606,7 @@ public class DialogHelper {
 			try {
 				selection = net.querz.mcaselector.selection.Selection.readFromFile(file);
 			} catch (IOException e) {
-				Debug.dumpException("failed to read selection from file", e);
+				LOGGER.warn("failed to read selection from file", e);
 				return;
 				// TODO: show error dialog
 			}
@@ -623,7 +623,7 @@ public class DialogHelper {
 			try {
 				tileMap.getSelection().saveToFile(file);
 			} catch (IOException ex) {
-				Debug.dumpException("failed to save selection to file", ex);
+				LOGGER.warn("failed to save selection to file", ex);
 				return;
 				// TODO: show error dialog
 			}

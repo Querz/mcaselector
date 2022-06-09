@@ -2,7 +2,6 @@ package net.querz.mcaselector.ui;
 
 import javafx.scene.layout.VBox;
 import net.querz.mcaselector.filter.*;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.text.Translation;
 
 public class GroupFilterBox extends FilterBox {
@@ -46,7 +45,7 @@ public class GroupFilterBox extends FilterBox {
 			} else if (f instanceof GroupFilter) {
 				filters.getChildren().add(new GroupFilterBox(this, (GroupFilter) f, false));
 			} else {
-				Debug.error("cannot display filter " + f.getClass().getSimpleName());
+				throw new RuntimeException("failed to display filter " + f.getClass().getSimpleName());
 			}
 		}
 		setBottom(filters);

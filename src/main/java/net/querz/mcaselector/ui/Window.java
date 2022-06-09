@@ -6,6 +6,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.ui.dialog.PreviewDisclaimerDialog;
@@ -92,6 +93,7 @@ public class Window extends Application {
 			}
 		});
 
+		Logging.updateThreadContext();
 		primaryStage.show();
 	}
 

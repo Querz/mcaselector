@@ -1,13 +1,13 @@
 package net.querz.mcaselector.changer;
 
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.io.snbt.ParseException;
 import net.querz.nbt.io.snbt.SNBTParser;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,6 +19,8 @@ import java.util.Set;
 
 public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockReplaceData>> {
 
+	private static final Logger LOGGER = LogManager.getLogger(ReplaceBlocksField.class);
+
 	private static final Set<String> validNames = new HashSet<>();
 
 	static {
@@ -29,7 +31,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 				validNames.add("minecraft:" + line);
 			}
 		} catch (IOException ex) {
-			Debug.dumpException("error reading mapping/all_block_names.txt", ex);
+			LOGGER.error("error reading mapping/all_block_names.txt", ex);
 		}
 	}
 

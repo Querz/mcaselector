@@ -6,7 +6,6 @@ import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import javafx.scene.image.Image;
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.io.db.CacheDBController;
@@ -16,7 +15,8 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.ui.dialog.ErrorDialog;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,6 +30,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 
 public final class ImagePool {
+
+	private static final Logger LOGGER = LogManager.getLogger(ImagePool.class);
 
 	private final Object poolLock = new Object();
 	private final Int2ObjectOpenHashMap<Long2ObjectLinkedOpenHashMap<Image>> pool = new Int2ObjectOpenHashMap<>(4);
@@ -216,7 +218,7 @@ public final class ImagePool {
 			Point2i r = new Point2i(p);
 			if (!l.contains(r)) {
 				it.remove();
-				Debug.dumpf("removed %s for scale %d from pool", r, scale);
+				LOGGER.debug("removed {} for scale {} from pool", r, scale);
 			}
 		}
 	}
@@ -228,7 +230,7 @@ public final class ImagePool {
 			}
 		}
 		loadRegions(task);
-		Debug.dumpf("cleared pool");
+		LOGGER.debug("cleared pool");
 	}
 
 	public void loadRegions(ProgressTask task) {
@@ -262,10 +264,9 @@ public final class ImagePool {
 					.filter(Objects::nonNull)
 					.toList()).get();
 			points.forEach(p -> regions.add(p.asLong()));
-			Debug.dumpf("loaded all world files");
+			LOGGER.debug("loaded all world files");
 		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-			Debug.errorf("failed to load world");
+			LOGGER.warn("failed to load world", e);
 			if (task != null) {
 				task.done(null);
 			}
@@ -288,7 +289,7 @@ public final class ImagePool {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		Debug.dumpf("removed images for %s from image pool", region);
+		LOGGER.debug("removed images for {} from image pool", region);
 	}
 
 	public void discardCachedImage(Point2i region) {
@@ -298,22 +299,6 @@ public final class ImagePool {
 		for (int i = 1; i <= maxZoomLevel; i *= 2) {
 			File png = FileHelper.createPNGFilePath(Config.getCacheDir(), i, region);
 			png.delete();
-		}
-	}
-
-	public void dumpMetrics() {
-		Debug.dumpf("ImagePool: pool1=%d, pool2=%d, pool4=%d, pool8=%d", pool.get(1).size(), pool.get(2).size(), pool.get(4).size(), pool.get(8).size());
-		synchronized (poolLock) {
-			for (Int2ObjectMap.Entry<Long2ObjectLinkedOpenHashMap<Image>> entry : pool.int2ObjectEntrySet()) {
-				Debug.dumpf("pool%d:", entry.getIntKey());
-				for (Long2ObjectMap.Entry<Image> cache : entry.getValue().long2ObjectEntrySet()) {
-					Debug.dumpf("  %s: %dx%d", new Point2i(cache.getLongKey()), cache.getValue() == null ? 0 : (int) cache.getValue().getWidth(), cache.getValue() == null ? 0 : (int) cache.getValue().getHeight());
-				}
-			}
-		}
-		Debug.dump("Regions:");
-		for (Long region : regions) {
-			Debug.dumpf("  %s", new Point2i(region));
 		}
 	}
 }

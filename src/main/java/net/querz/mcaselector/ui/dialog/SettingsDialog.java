@@ -22,24 +22,6 @@ import java.util.*;
 
 public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
-	/*
-	* Region selection color and opacity
-	* Chunk selection color and opacity
-	* MCAFilePipe thread options:
-	* - Number of threads for file reading
-	* - Number of threads for processing
-	* - Number of threads for writing
-	* - Maximum amount of loaded files
-	* toggle shading
-	* toggle shading of water
-	* toggle showing non-existent regions
-	* toggle smooth rendering
-	* toggle smooth overlays
-	* background pattern
-	* minecraft saves folder
-	* toggle debug
-	* */
-
 	private static final int processorCount = Runtime.getRuntime().availableProcessors();
 	private static final long maxMemory = Runtime.getRuntime().maxMemory();
 

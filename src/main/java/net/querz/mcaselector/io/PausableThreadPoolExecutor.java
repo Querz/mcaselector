@@ -1,6 +1,7 @@
 package net.querz.mcaselector.io;
 
-import net.querz.mcaselector.debug.Debug;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
@@ -11,6 +12,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 class PausableThreadPoolExecutor extends ThreadPoolExecutor {
+
+	private static final Logger LOGGER = LogManager.getLogger(PausableThreadPoolExecutor.class);
 
 	private boolean isPaused;
 	private final ReentrantLock pauseLock = new ReentrantLock();
@@ -65,7 +68,7 @@ class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 		pauseLock.lock();
 		try {
 			if (!isPaused) {
-				Debug.dumpf("paused process executor: %s", msg);
+				LOGGER.debug("paused process executor: {}", msg);
 			}
 			isPaused = true;
 		} finally {
@@ -77,7 +80,7 @@ class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 		pauseLock.lock();
 		try {
 			if (isPaused) {
-				Debug.dumpf("resumed process executor: %s", msg);
+				LOGGER.debug("resumed process executor: {}", msg);
 			}
 			isPaused = false;
 			unpaused.signalAll();

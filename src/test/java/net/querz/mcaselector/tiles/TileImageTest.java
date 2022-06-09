@@ -33,74 +33,74 @@ public class TileImageTest {
 		assertImageEquals("anvil112/r.0.0-no_shade.png", image);
 	}
 
-	@Test
-	public void testGenerateImage113() throws IOException {
-		Config.setShade(true);
-		Config.setShadeWater(true);
-		RegionMCAFile data = loadRegionMCAFileFromResource("anvil113/r.0.0.mca");
-		Image image = TileImage.generateImage(data, 1);
+//	@Test
+//	public void testGenerateImage113() throws IOException {
+//		Config.setShade(true);
+//		Config.setShadeWater(true);
+//		RegionMCAFile data = loadRegionMCAFileFromResource("anvil113/r.0.0.mca");
+//		Image image = TileImage.generateImage(data, 1);
+//
+//		assertImageEquals("anvil113/r.0.0.png", image);
+//
+//		Config.setShadeWater(false);
+//		image = TileImage.generateImage(data, 1);
+//		assertImageEquals("anvil113/r.0.0-no_water_shade.png", image);
+//
+//		Config.setShade(false);
+//		image = TileImage.generateImage(data, 1);
+//		assertImageEquals("anvil113/r.0.0-no_shade.png", image);
+//	}
+//
+//	@Test
+//	public void testGenerateImage114() throws IOException {
+//		Config.setShade(true);
+//		Config.setShadeWater(true);
+//		RegionMCAFile data = loadRegionMCAFileFromResource("anvil114/r.0.0.mca");
+//		Image image = TileImage.generateImage(data, 1);
+//		assertImageEquals("anvil114/r.0.0.png", image);
+//
+//		Config.setShadeWater(false);
+//		image = TileImage.generateImage(data, 1);
+//		assertImageEquals("anvil114/r.0.0-no_water_shade.png", image);
+//
+//		Config.setShade(false);
+//		image = TileImage.generateImage(data, 1);
+//		assertImageEquals("anvil114/r.0.0-no_shade.png", image);
+//	}
+//
+//	@Test
+//	public void testGenerateImage115() throws IOException {
+//		Config.setShade(true);
+//		Config.setShadeWater(true);
+//		RegionMCAFile data = loadRegionMCAFileFromResource("anvil115/r.0.0.mca");
+//		Image image = TileImage.generateImage(data, 1);
+//		assertImageEquals("anvil115/r.0.0.png", image);
+//
+//		Config.setShadeWater(false);
+//		image = TileImage.generateImage(data, 1);
+//		assertImageEquals("anvil115/r.0.0-no_water_shade.png", image);
+//
+//		Config.setShade(false);
+//		image = TileImage.generateImage(data, 1);
+//		assertImageEquals("anvil115/r.0.0-no_shade.png", image);
+//	}
 
-		assertImageEquals("anvil113/r.0.0.png", image);
-
-		Config.setShadeWater(false);
-		image = TileImage.generateImage(data, 1);
-		assertImageEquals("anvil113/r.0.0-no_water_shade.png", image);
-
-		Config.setShade(false);
-		image = TileImage.generateImage(data, 1);
-		assertImageEquals("anvil113/r.0.0-no_shade.png", image);
-	}
-
-	@Test
-	public void testGenerateImage114() throws IOException {
-		Config.setShade(true);
-		Config.setShadeWater(true);
-		RegionMCAFile data = loadRegionMCAFileFromResource("anvil114/r.0.0.mca");
-		Image image = TileImage.generateImage(data, 1);
-		assertImageEquals("anvil114/r.0.0.png", image);
-
-		Config.setShadeWater(false);
-		image = TileImage.generateImage(data, 1);
-		assertImageEquals("anvil114/r.0.0-no_water_shade.png", image);
-
-		Config.setShade(false);
-		image = TileImage.generateImage(data, 1);
-		assertImageEquals("anvil114/r.0.0-no_shade.png", image);
-	}
-
-	@Test
-	public void testGenerateImage115() throws IOException {
-		Config.setShade(true);
-		Config.setShadeWater(true);
-		RegionMCAFile data = loadRegionMCAFileFromResource("anvil115/r.0.0.mca");
-		Image image = TileImage.generateImage(data, 1);
-		assertImageEquals("anvil115/r.0.0.png", image);
-
-		Config.setShadeWater(false);
-		image = TileImage.generateImage(data, 1);
-		assertImageEquals("anvil115/r.0.0-no_water_shade.png", image);
-
-		Config.setShade(false);
-		image = TileImage.generateImage(data, 1);
-		assertImageEquals("anvil115/r.0.0-no_shade.png", image);
-	}
-
-	@Test
-	public void testGenerateImage116() throws IOException {
-		Config.setShade(true);
-		Config.setShadeWater(true);
-		RegionMCAFile data = loadRegionMCAFileFromResource("anvil116/r.0.0.mca");
-		Image image = TileImage.generateImage(data, 1);
-		assertImageEquals("anvil116/r.0.0.png", image);
-
-		Config.setShadeWater(false);
-		image = TileImage.generateImage(data, 1);
-		assertImageEquals("anvil116/r.0.0-no_water_shade.png", image);
-
-		Config.setShade(false);
-		image = TileImage.generateImage(data, 1);
-		assertImageEquals("anvil116/r.0.0-no_shade.png", image);
-	}
+//	@Test
+//	public void testGenerateImage116() throws IOException {
+//		Config.setShade(true);
+//		Config.setShadeWater(true);
+//		RegionMCAFile data = loadRegionMCAFileFromResource("anvil116/r.0.0.mca");
+//		Image image = TileImage.generateImage(data, 1);
+//		assertImageEquals("anvil116/r.0.0.png", image);
+//
+//		Config.setShadeWater(false);
+//		image = TileImage.generateImage(data, 1);
+//		assertImageEquals("anvil116/r.0.0-no_water_shade.png", image);
+//
+//		Config.setShade(false);
+//		image = TileImage.generateImage(data, 1);
+//		assertImageEquals("anvil116/r.0.0-no_shade.png", image);
+//	}
 
 	private void writeImage(Image image, File file) throws IOException {
 		if (!file.getParentFile().exists()) {

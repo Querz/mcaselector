@@ -20,7 +20,6 @@ import javafx.stage.StageStyle;
 import net.querz.mcaselector.changer.ChangeParser;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.RegionChunk;
@@ -31,6 +30,8 @@ import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.ui.UIFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +39,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
+
+	private static final Logger LOGGER = LogManager.getLogger(ChangeNBTDialog.class);
 
 	private final List<Field<?>> fields = new ArrayList<>();
 	private final TextField changeQuery = new TextField();
@@ -109,7 +112,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 				List<Field<?>> f = cp.parse();
 				fieldView.updateFields(f);
 			} catch (Exception ex) {
-				Debug.dumpf("failed to parse change query from: %s, error: %s", changeQuery.getText(), ex.getMessage());
+				LOGGER.warn("failed to parse change query from: {}, error: {}", changeQuery.getText(), ex.getMessage());
 				fieldView.updateFields(Collections.emptyList());
 			}
 			changeQuery.setText(text);
@@ -134,7 +137,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 				e.getValue().forEach(c -> chunk.set(new Point2i(c)));
 			});
 			File file = FileHelper.createMCAFilePath(region.get());
-			Debug.dumpf("attempting to read single chunk from file: %s", chunk.get());
+			LOGGER.debug("attempting to read single chunk from file: {}", chunk.get());
 			if (file.exists()) {
 				try {
 					// only load region for now, there is no field in entities or poi that we could display
@@ -148,7 +151,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 						Platform.runLater(() -> cell.textField.setPromptText(promptText));
 					});
 				} catch (IOException ex) {
-					Debug.dumpException("failed to load single chunk", ex);
+					LOGGER.warn("failed to load single chunk", ex);
 				}
 			}
 		}).start();
@@ -223,7 +226,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 			}
 			if (sb.length() > 0) {
 				if (result) {
-					Debug.dump(sb);
+					LOGGER.debug(sb);
 				}
 				changeQuery.setText(sb.toString());
 			} else {

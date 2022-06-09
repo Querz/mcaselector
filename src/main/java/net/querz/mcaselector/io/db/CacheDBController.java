@@ -1,9 +1,10 @@
 package net.querz.mcaselector.io.db;
 
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.validation.ShutdownHooks;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -22,6 +23,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 public final class CacheDBController {
+
+	private static final Logger LOGGER = LogManager.getLogger(CacheDBController.class);
 
 	private volatile Connection connection;
 	private String dbPath;
@@ -64,14 +67,14 @@ public final class CacheDBController {
 		try {
 			connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 		} catch (SQLException ex) {
-			Debug.dumpException("failed to open cache db", ex);
-			Debug.dump("attempting to create new cache db");
+			LOGGER.warn("failed to open cache db", ex);
+			LOGGER.debug("attempting to create new cache db");
 
 			if (new File(dbPath).delete()) {
-				Debug.dump("successfully deleted corrupted cache db");
+				LOGGER.debug("successfully deleted corrupted cache db");
 				connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 			} else {
-				Debug.dump("failed to delete corrupted cache db");
+				LOGGER.warn("failed to delete corrupted cache db");
 				throw new SQLException("failed to delete corrupted cache db");
 			}
 		}
@@ -106,9 +109,9 @@ public final class CacheDBController {
 		if (connection != null && !connection.isClosed()) {
 			connection.close();
 			if (connection.isClosed()) {
-				Debug.dump("cache db connection closed");
+				LOGGER.debug("cache db connection closed");
 			} else {
-				Debug.dump("failed to close cache db connection");
+				LOGGER.debug("failed to close cache db connection");
 			}
 			dbPath = null;
 			connection = null;
@@ -123,7 +126,7 @@ public final class CacheDBController {
 		try {
 			close();
 		} catch (SQLException ex) {
-			Debug.dumpException("failed to close cache db connection with exception", ex);
+			LOGGER.warn("failed to close cache db connection with exception", ex);
 		}
 	}
 
@@ -215,7 +218,7 @@ public final class CacheDBController {
 
 	public void deleteData(Point2i region) throws SQLException {
 		if (!isInitialized()) {
-			Debug.errorf("failed to delete region %s from cache because it hasn't been initialized yet", region);
+			LOGGER.warn("failed to delete region {} from cache because it hasn't been initialized yet", region);
 			return;
 		}
 		for (String table : allTables) {
@@ -233,7 +236,7 @@ public final class CacheDBController {
 		File dbFile = new File(this.dbPath);
 		close();
 		if (dbFile.delete()) {
-			Debug.dumpf("deleted cache db %s", dbFile);
+			LOGGER.debug("deleted cache db {}", dbFile);
 		} else {
 			throw new IOException(String.format("failed to delete cache db %s", dbFile.getCanonicalPath()));
 		}

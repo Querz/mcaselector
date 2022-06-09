@@ -1,18 +1,20 @@
 package net.querz.mcaselector.version.anvil112;
 
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.Helper;
 import net.querz.nbt.*;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
 public class Anvil112ChunkFilter implements ChunkFilter {
+
+	private static final Logger LOGGER = LogManager.getLogger(Anvil112ChunkFilter.class);
 
 	private final Map<String, BlockData[]> mapping = new HashMap<>();
 
@@ -27,7 +29,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 				}
 				String[] elements = line.split(";");
 				if (elements.length != 3 && !line.endsWith(";")) {
-					Debug.error("invalid line in block id mapping file: \"" + line + "\"");
+					LOGGER.error("invalid line in block id mapping file: \"{}\"", line);
 					continue;
 				}
 
@@ -46,7 +48,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 						}
 					}
 				} catch (NumberFormatException ex) {
-					Debug.dumpException(String.format("unable to parse block id or data in block id mapping file: \"%s\"", line), ex);
+					LOGGER.error("unable to parse block id or data in block id mapping file: \"{}\"", line, ex);
 					continue;
 				}
 
@@ -84,7 +86,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		for (String name : names) {
 			BlockData[] bd = mapping.get(name);
 			if (bd == null) {
-				Debug.dump("no mapping found for " + name);
+				LOGGER.debug("no mapping found for {}", name);
 				continue;
 			}
 			for (Tag t : sections) {
@@ -123,7 +125,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		for (String name : names) {
 			BlockData[] bd = mapping.get(name);
 			if (bd == null) {
-				Debug.dump("no mapping found for " + name);
+				LOGGER.debug("no mapping found for {}", name);
 				continue;
 			}
 			for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
@@ -164,7 +166,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		for (String name : names) {
 			BlockData[] bd = mapping.get(name);
 			if (bd == null) {
-				Debug.dump("no mapping found for " + name);
+				LOGGER.debug("no mapping found for {}", name);
 				continue;
 			}
 			blockData.addAll(Arrays.asList(bd));

@@ -7,10 +7,11 @@ import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileImage;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -23,6 +24,8 @@ import java.util.function.Supplier;
 
 public final class RegionImageGenerator {
 
+	private static final Logger LOGGER = LogManager.getLogger(RegionImageGenerator.class);
+
 	private static final Set<Point2i> loading = ConcurrentHashMap.newKeySet();
 
 	private static final LinkedHashMap<Point2i, RegionMCAFile> cachedMCAFiles = new LinkedHashMap<>();
@@ -33,7 +36,7 @@ public final class RegionImageGenerator {
 	private RegionImageGenerator() {}
 
 	public static void generate(Tile tile, BiConsumer<Image, UniqueID> callback, int scale, Progress progressChannel, boolean canSkipSaving, Supplier<Integer> prioritySupplier) {
-		Debug.dumpf("adding job %s, tile:%s, scale:%d, loading:%s, image:%s, loaded:%s",
+		LOGGER.debug("adding job {}, tile:{}, scale:{}, loading:{}, image:{}, loaded:{}",
 			MCAImageProcessJob.class.getSimpleName(), tile.getLocation(), scale, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
 		JobHandler.addJob(new MCAImageProcessJob(tile, new UniqueID(), callback, scale, progressChannel, canSkipSaving, prioritySupplier));
 	}
@@ -81,7 +84,7 @@ public final class RegionImageGenerator {
 	}
 
 	public static void setLoading(Tile tile, boolean loading) {
-		Debug.dumpf("set loading from mca for %s to %s, image:%s, loaded:%s",
+		LOGGER.debug("set loading from mca for {} to {}, image:{}, loaded:{}",
 			tile.getLocation(), loading, tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
 
 		if (loading) {
@@ -155,7 +158,7 @@ public final class RegionImageGenerator {
 				return true;
 			}
 
-			Debug.dumpf("generating image for %s", tile.getMCAFile().getAbsolutePath());
+			LOGGER.debug("generating image for {}", tile.getMCAFile().getAbsolutePath());
 
 			File file = tile.getMCAFile();
 			ByteArrayPointer ptr = new ByteArrayPointer(data);
@@ -165,9 +168,9 @@ public final class RegionImageGenerator {
 				try {
 					Timer t = new Timer();
 					cachedRegion.load(ptr);
-					Debug.dumpf("took %s to read mca file %s", t, cachedRegion.getFile().getName());
+					LOGGER.debug("took {} to read mca file {}", t, cachedRegion.getFile().getName());
 				} catch (IOException ex) {
-					Debug.dumpf("failed to load mca file %s", cachedRegion.getFile().getName());
+					LOGGER.warn("failed to load mca file {}", cachedRegion.getFile().getName());
 				}
 			} else {
 				isCached = true;
@@ -175,7 +178,7 @@ public final class RegionImageGenerator {
 
 			Timer t = new Timer();
 			Image image = TileImage.generateImage(cachedRegion, scale);
-			Debug.dumpf("took %s to generate image for region %s", t, tile.getLocation());
+			LOGGER.debug("took {} to generate image for region {}", t, tile.getLocation());
 
 			callback.accept(image, uniqueID);
 
@@ -194,7 +197,7 @@ public final class RegionImageGenerator {
 
 		@Override
 		public void cancel() {
-			Debug.dumpf("cancelling job %s, tile:%s, scale:%d, loading:%s, image:%s, loaded:%s",
+			LOGGER.debug("cancelling job {}, tile:{}, scale:{}, loading:{}, image:{}, loaded:{}",
 				MCAImageProcessJob.class.getSimpleName(), tile.getLocation(), scale, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
 
 			setLoading(tile, false);
@@ -243,19 +246,19 @@ public final class RegionImageGenerator {
 				BufferedImage img = SwingFXUtils.fromFXImage(getData(), null);
 				File cacheFile = FileHelper.createPNGFilePath(Config.getCacheDirForWorldUUID(uniqueID.world, zoomLevel), tile.getLocation());
 				if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
-					Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
+					LOGGER.warn("failed to create cache directory for {}", cacheFile.getAbsolutePath());
 				}
-				Debug.dumpf("writing cache file %s", cacheFile.getAbsolutePath());
+				LOGGER.debug("writing cache file {}", cacheFile.getAbsolutePath());
 				ImageIO.write(img, "png", cacheFile);
 			} catch (IOException ex) {
-				Debug.dumpException("failed to save images to cache for " + tile.getLocation(), ex);
+				LOGGER.warn("failed to save images to cache for {}", tile.getLocation(), ex);
 			}
 
 			if (progressChannel != null) {
 				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 			}
 
-			Debug.dumpf("took %s to cache image of %s to %s", t, tile.getMCAFile().getName(), FileHelper.createPNGFileName(tile.getLocation()));
+			LOGGER.debug("took {} to cache image of {} to {}", t, tile.getMCAFile().getName(), FileHelper.createPNGFileName(tile.getLocation()));
 
 			done();
 		}

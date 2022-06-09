@@ -26,11 +26,12 @@ import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.ui.DialogHelper;
 import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.ui.Window;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.key.KeyActivator;
 import net.querz.mcaselector.point.Point2f;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
@@ -48,6 +49,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class TileMap extends Canvas implements ClipboardOwner {
+
+	private static final Logger LOGGER = LogManager.getLogger(TileMap.class);
 
 	private float scale = 1;	// higher --> -    lower --> +
 
@@ -185,14 +188,14 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				JobHandler.validateJobs(j -> {
 					if (j instanceof RegionImageGenerator.MCAImageProcessJob job) {
 						if (!job.getTile().isVisible(this)) {
-							Debug.dumpf("removing %s for tile %s from queue", job.getClass().getSimpleName(), job.getTile().getLocation());
+							LOGGER.debug("removing {} for tile {} from queue", job.getClass().getSimpleName(), job.getTile().getLocation());
 							RegionImageGenerator.setLoading(job.getTile(), false);
 							return true;
 						}
 					} else if (j instanceof ParseDataJob job) {
 						if (!job.getTile().isVisible(this)) {
 							ParseDataJob.setLoading(job.getTile(), false);
-							Debug.dumpf("removing %s for tile %s from queue", job.getClass().getSimpleName(), job.getTile().getLocation());
+							LOGGER.debug("removing {} for tile {} from queue", job.getClass().getSimpleName(), job.getTile().getLocation());
 							return true;
 						}
 					}
@@ -265,7 +268,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				Platform.runLater(this::runUpdateListeners);
 
 			} catch (Exception ex) {
-				Debug.dumpException("failed to update", ex);
+				LOGGER.warn("failed to update", ex);
 			}
 		}, 500, 500, TimeUnit.MILLISECONDS);
 	}
@@ -280,7 +283,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			Platform.runLater(() -> {
 				Timer t = new Timer();
 				draw(context);
-				Debug.dumpfToConsoleOnly("draw #%d: %s", totalDraws++, t);
+				LOGGER.trace("draw #{}: {}", totalDraws++, t);
 			});
 
 			drawRequested.set(false);
@@ -312,7 +315,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			offset = offset.add(diff);
 
 			if (Tile.getZoomLevel(oldScale) != Tile.getZoomLevel(scale)) {
-				Debug.dumpf("zoom level changed from %d to %d", Tile.getZoomLevel(oldScale), Tile.getZoomLevel(scale));
+				LOGGER.debug("zoom level changed from {} to {}", Tile.getZoomLevel(oldScale), Tile.getZoomLevel(scale));
 				unloadTiles(false, false);
 				// clear generator queue as well
 				JobHandler.clearQueues();
@@ -444,20 +447,12 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 
 		if (event.getCode() == KeyCode.ESCAPE) {
-			Debug.dumpf("cancelling chunk pasting");
+			LOGGER.debug("cancelling chunk pasting");
 			pastedChunks = null;
 			pastedWorld = null;
 			pastedChunksCache = null;
 			pastedChunksOffset = null;
 			draw();
-		}
-
-		if (event.getCode() == KeyCode.J) {
-			JobHandler.dumpMetrics();
-		}
-
-		if (event.getCode() == KeyCode.I) {
-			imgPool.dumpMetrics();
 		}
 
 		// don't pass event to parent node if it would cause the tile map to lose focus
@@ -1175,6 +1170,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	@Override
 	public void lostOwnership(Clipboard clipboard, Transferable transferable) {
-		Debug.dump("TileMap lost ownership");
+		LOGGER.debug("TileMap lost ownership");
 	}
 }
