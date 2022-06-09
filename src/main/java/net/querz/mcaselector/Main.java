@@ -1,6 +1,7 @@
 package net.querz.mcaselector;
 
 import net.querz.mcaselector.cli.CLIHelper;
+import net.querz.mcaselector.cli.ParamExecutor;
 import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.text.Translation;
@@ -22,7 +23,7 @@ public class Main {
 		LOGGER.debug("java version {}", System.getProperty("java.version"));
 		LOGGER.debug("jvm max memory {}", Runtime.getRuntime().maxMemory());
 
-		net.querz.mcaselector.cli.ParamExecutor ex = new net.querz.mcaselector.cli.ParamExecutor(args);
+		ParamExecutor ex = new ParamExecutor(args);
 		Future<Boolean> future = ex.run();
 		if (future != null && future.get()) {
 			System.exit(0);

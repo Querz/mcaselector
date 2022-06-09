@@ -77,8 +77,8 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 			}
 			for (Long2ObjectMap.Entry<ChunkSet> entry : selection.long2ObjectEntrySet()) {
 				Point2i region = new Point2i(entry.getLongKey());
-				writePoint(bw, region);
 				if (entry.getValue() == null) {
+					writePoint(bw, region);
 					bw.write('\n');
 					continue;
 				}

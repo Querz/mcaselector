@@ -567,7 +567,7 @@ public final class ParamExecutor {
 		int radius = parseInt("radius", 0, 0, 128);
 
 		Selection selection = new Selection();
-		CLIProgress progress = new CLIProgress();
+		CLIProgress progress = new CLIProgress("selecting chunks");
 		progress.onDone(() -> {
 			handleException(() -> saveSelection(selection, output));
 			future.run();
@@ -581,7 +581,7 @@ public final class ParamExecutor {
 		GroupFilter query = parseQuery(false);
 		Selection selection = loadSelection(false, false);
 
-		CLIProgress progress = new CLIProgress();
+		CLIProgress progress = new CLIProgress("exporting chunks");
 		progress.onDone(future);
 		if (query != null) {
 			ChunkFilterExporter.exportFilter(query, selection, output, progress, true);
@@ -604,7 +604,7 @@ public final class ParamExecutor {
 		Selection targetSelection = loadSelection(false, false);
 		List<Range> sections = parseSections(false);
 
-		CLIProgress progress = new CLIProgress();
+		CLIProgress progress = new CLIProgress("importing chunks");
 		progress.onDone(future);
 
 		DataProperty<Map<Point2i, RegionDirectories>> tempFiles = new DataProperty<>();
@@ -629,7 +629,7 @@ public final class ParamExecutor {
 		GroupFilter query = parseQuery(false);
 		Selection selection = loadSelection(false, false);
 
-		CLIProgress progress = new CLIProgress();
+		CLIProgress progress = new CLIProgress("deleting chunks");
 		progress.onDone(future);
 
 		if (query != null) {
@@ -647,7 +647,7 @@ public final class ParamExecutor {
 		boolean force = line.hasOption("force");
 		List<Field<?>> fields = parseFields(true);
 
-		CLIProgress progress = new CLIProgress();
+		CLIProgress progress = new CLIProgress("changing fields");
 		progress.onDone(future);
 
 		FieldChanger.changeNBTFields(fields, force, selection, progress, true);
@@ -665,7 +665,7 @@ public final class ParamExecutor {
 
 		CLIJFX.launch();
 
-		CLIProgress progress = new CLIProgress();
+		CLIProgress progress = new CLIProgress("generating cache");
 		progress.onDone(future);
 
 		CacheHelper.forceGenerateCache(zoomLevel, progress);
@@ -688,14 +688,14 @@ public final class ParamExecutor {
 
 		DataProperty<int[]> pixels = new DataProperty<>();
 		DataProperty<IOException> saveException = new DataProperty<>();
-		CLIProgress saveProgress = new CLIProgress();
+		CLIProgress saveProgress = new CLIProgress("generating image");
 		saveProgress.onDone(() -> {
 			if (saveException.get() != null) {
 				throw new RuntimeException(saveException.get());
 			}
 			future.run();
 		});
-		CLIProgress generateProgress = new CLIProgress();
+		CLIProgress generateProgress = new CLIProgress("saving image");
 		generateProgress.onDone(() -> {
 			if (!generateProgress.taskCancelled() && pixels.get() != null) {
 				try {

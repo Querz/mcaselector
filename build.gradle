@@ -49,22 +49,24 @@ configurations {
 
 dependencies {
 	implementation 'com.github.Querz:NBT:f279a237fb'
-	implementation 'org.json:json:20211205'
+	implementation 'org.json:json:20220320'
 	implementation 'ar.com.hjg:pngj:2.1.0'
 	implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
 	implementation 'it.unimi.dsi:fastutil:8.5.8'
 	implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
 	implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
 	implementation 'commons-cli:commons-cli:1.5.0'
+	implementation 'me.tongfei:progressbar:0.9.3'
 
 	shadow 'com.github.Querz:NBT:f279a237fb'
-	shadow 'org.json:json:20211205'
+	shadow 'org.json:json:20220320'
 	shadow 'ar.com.hjg:pngj:2.1.0'
 	shadow 'org.xerial:sqlite-jdbc:3.36.0.3'
 	shadow 'it.unimi.dsi:fastutil:8.5.8'
 	shadow 'org.apache.logging.log4j:log4j-api:2.17.2'
 	shadow 'org.apache.logging.log4j:log4j-core:2.17.2'
 	shadow 'commons-cli:commons-cli:1.5.0'
+	shadow 'me.tongfei:progressbar:0.9.3'
 
 	testImplementation 'junit:junit:4.13.2'
 	testImplementation 'commons-io:commons-io:2.11.0'
