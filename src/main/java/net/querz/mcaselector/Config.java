@@ -42,7 +42,6 @@ public final class Config {
 
 	public static final File DEFAULT_BASE_CACHE_DIR;
 	public static final File DEFAULT_BASE_LOG_DIR;
-	public static final File DEFAULT_BASE_LOG_FILE;
 	public static final File DEFAULT_BASE_CONFIG_FILE;
 	public static final File DEFAULT_BASE_OVERLAYS_FILE;
 
@@ -51,19 +50,16 @@ public final class Config {
 		if (osName.contains("mac")) {
 			DEFAULT_BASE_CACHE_DIR = new File(System.getProperty("user.home"), "Library/Caches/mcaselector");
 			DEFAULT_BASE_LOG_DIR = new File(System.getProperty("user.home"), "Library/Logs/mcaselector");
-			DEFAULT_BASE_LOG_FILE = new File(System.getProperty("user.home"), "Library/Logs/mcaselector/debug.log");
 			DEFAULT_BASE_CONFIG_FILE = new File(System.getProperty("user.home"), "Library/Application Support/mcaselector/settings.ini");
 			DEFAULT_BASE_OVERLAYS_FILE = new File(System.getProperty("user.home"), "Library/Application Support/mcaselector/overlays.json");
 		} else if (osName.contains("windows")) {
 			DEFAULT_BASE_CACHE_DIR = getEnvFilesWithDefault(DEFAULT_BASE_DIR.getAbsolutePath(), "mcaselector/cache", ';', "LOCALAPPDATA");
-			DEFAULT_BASE_LOG_DIR = getEnvFilesWithDefault(DEFAULT_BASE_DIR.getAbsolutePath(), "mcaselector", ';', "LOCALAPPDATA");
-			DEFAULT_BASE_LOG_FILE = getEnvFilesWithDefault(DEFAULT_BASE_DIR.getAbsolutePath(), "mcaselector/debug.log", ';', "LOCALAPPDATA");
+			DEFAULT_BASE_LOG_DIR = getEnvFilesWithDefault(DEFAULT_BASE_DIR.getAbsolutePath(), "mcaselector/log", ';', "LOCALAPPDATA");
 			DEFAULT_BASE_CONFIG_FILE = getEnvFilesWithDefault(DEFAULT_BASE_DIR.getAbsolutePath(), "mcaselector/settings.ini", ';', "LOCALAPPDATA");
 			DEFAULT_BASE_OVERLAYS_FILE = getEnvFilesWithDefault(DEFAULT_BASE_DIR.getAbsolutePath(), "mcaselector/overlays.json", ';', "LOCALAPPDATA");
 		} else {
 			DEFAULT_BASE_CACHE_DIR = getEnvFilesWithDefault("~/.cache", "mcaselector", ':', "XDG_CACHE_HOME", "XDG_CACHE_DIRS");
-			DEFAULT_BASE_LOG_DIR = getEnvFilesWithDefault("~/.local/share", "mcaselector", ':', "XDG_DATA_HOME", "XDG_DATA_DIRS");
-			DEFAULT_BASE_LOG_FILE = getEnvFilesWithDefault("~/.local/share", "mcaselector/debug.log", ':', "XDG_DATA_HOME", "XDG_DATA_DIRS");
+			DEFAULT_BASE_LOG_DIR = getEnvFilesWithDefault("~/.local/share", "mcaselector/log", ':', "XDG_DATA_HOME", "XDG_DATA_DIRS");
 			DEFAULT_BASE_CONFIG_FILE = getEnvFilesWithDefault("~/.mcaselector", "mcaselector/settings.ini", ':', "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
 			DEFAULT_BASE_OVERLAYS_FILE = getEnvFilesWithDefault("~/.mcaselector", "mcaselector/overlays.json", ':', "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
 		}
@@ -73,9 +69,6 @@ public final class Config {
 		}
 		if (!DEFAULT_BASE_LOG_DIR.exists()) {
 			DEFAULT_BASE_LOG_DIR.mkdirs();
-		}
-		if (!DEFAULT_BASE_CONFIG_FILE.getParentFile().exists()) {
-			DEFAULT_BASE_CONFIG_FILE.getParentFile().mkdirs();
 		}
 		if (!DEFAULT_BASE_OVERLAYS_FILE.getParentFile().exists()) {
 			DEFAULT_BASE_OVERLAYS_FILE.getParentFile().mkdirs();
@@ -164,7 +157,6 @@ public final class Config {
 	private static UUID worldUUID = null;
 	private static File baseCacheDir = DEFAULT_BASE_CACHE_DIR;
 	private static File logDir = DEFAULT_BASE_LOG_DIR;
-	private static File logFile = DEFAULT_BASE_LOG_FILE;
 	private static File cacheDir = null;
 
 	private static Locale locale = DEFAULT_LOCALE;
@@ -271,10 +263,6 @@ public final class Config {
 
 	public static File getLogDir() {
 		return logDir;
-	}
-
-	public static File getLogFile() {
-		return logFile;
 	}
 
 	public static File getConfigFile() {
@@ -426,9 +414,9 @@ public final class Config {
 						"BaseCacheDir",
 						DEFAULT_BASE_CACHE_DIR.getAbsolutePath()).replace("{user.dir}", userDir)
 				);
-				logFile = new File(config.getOrDefault(
-						"LogFile",
-						DEFAULT_BASE_LOG_FILE.getAbsolutePath()).replace("{user.dir}", userDir)
+				logDir = new File(config.getOrDefault(
+						"LogDir",
+						DEFAULT_BASE_LOG_DIR.getAbsolutePath()).replace("{user.dir}", userDir)
 				);
 
 				String localeString = config.getOrDefault("Locale", DEFAULT_LOCALE.toString());
@@ -482,9 +470,9 @@ public final class Config {
 				baseCacheDir.getAbsolutePath().startsWith(userDir) ? baseCacheDir.getAbsolutePath().replace(userDir, "{user.dir}") : baseCacheDir.getAbsolutePath(),
 				DEFAULT_BASE_CACHE_DIR.getAbsolutePath().replace(userDir, "{user.dir}"), lines);
 		addSettingsLine(
-				"LogFile",
-				logFile.getAbsolutePath().startsWith(userDir) ? logFile.getAbsolutePath().replace(userDir, "{user.dir}") : logFile.getAbsolutePath(),
-				DEFAULT_BASE_LOG_FILE.getAbsolutePath().replace(userDir, "{user.dir}"), lines);
+				"LogDir",
+				logDir.getAbsolutePath().startsWith(userDir) ? logDir.getAbsolutePath().replace(userDir, "{user.dir}") : logDir.getAbsolutePath(),
+				DEFAULT_BASE_LOG_DIR.getAbsolutePath().replace(userDir, "{user.dir}"), lines);
 		addSettingsLine("Locale", locale.toString(), DEFAULT_LOCALE.toString(), lines);
 		addSettingsLine("RegionSelectionColor", regionSelectionColor.toString(), DEFAULT_REGION_SELECTION_COLOR.toString(), lines);
 		addSettingsLine("ChunkSelectionColor", chunkSelectionColor.toString(), DEFAULT_CHUNK_SELECTION_COLOR.toString(), lines);
@@ -582,7 +570,7 @@ public final class Config {
 		final StringBuilder sb = new StringBuilder("Config{\n");
 		sb.append(" DEFAULT_BASE_DIR=").append(DEFAULT_BASE_DIR);
 		sb.append(",\n DEFAULT_BASE_CACHE_DIR=").append(DEFAULT_BASE_CACHE_DIR);
-		sb.append(",\n DEFAULT_BASE_LOG_FILE=").append(DEFAULT_BASE_LOG_FILE);
+		sb.append(",\n DEFAULT_BASE_LOG_DIR=").append(DEFAULT_BASE_LOG_DIR);
 		sb.append(",\n DEFAULT_BASE_CONFIG_FILE=").append(DEFAULT_BASE_CONFIG_FILE);
 		sb.append(",\n DEFAULT_BASE_OVERLAYS_FILE=").append(DEFAULT_BASE_OVERLAYS_FILE);
 		sb.append(",\n DEFAULT_REGION_SELECTION_COLOR=").append(DEFAULT_REGION_SELECTION_COLOR);
@@ -607,7 +595,7 @@ public final class Config {
 		sb.append(",\n worldDirs=").append(worldDirs);
 		sb.append(",\n worldUUID=").append(worldUUID);
 		sb.append(",\n baseCacheDir=").append(baseCacheDir);
-		sb.append(",\n logFile=").append(logFile);
+		sb.append(",\n logDir=").append(logDir);
 		sb.append(",\n cacheDir=").append(cacheDir);
 		sb.append(",\n locale=").append(locale);
 		sb.append(",\n regionSelectionColor=").append(regionSelectionColor);

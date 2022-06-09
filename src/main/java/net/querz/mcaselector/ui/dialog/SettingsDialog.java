@@ -223,7 +223,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		HBox debugBox = new HBox();
 		debugBox.getStyleClass().add("debug-box");
-		Hyperlink logFileLink = UIFactory.explorerLink(Translation.DIALOG_SETTINGS_GLOBAL_MISC_SHOW_LOG_FILE, Config.getLogFile().getParentFile(), null);
+		Hyperlink logFileLink = UIFactory.explorerLink(Translation.DIALOG_SETTINGS_GLOBAL_MISC_SHOW_LOG_FILE, Config.getLogDir(), null);
 		debugBox.getChildren().addAll(debugCheckBox, logFileLink);
 
 		if (Config.getWorldDirs() != null) {
