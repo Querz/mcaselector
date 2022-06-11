@@ -11,7 +11,6 @@ menu.selection;Selectie
 menu.tools;Gereedschap
 menu.about;Over
 menu.file.open_world;Open een wereld
-menu.file.open;Open een regio
 menu.file.settings;Instellingen
 menu.file.render_settings;Renderinstellingen
 menu.file.quit;Stoppen
@@ -120,7 +119,6 @@ dialog.filter_chunks.delete.tooltip;Verwijdert alle aangepaste chunks uit de hui
 dialog.filter_chunks.selection_only;Alleen van toepassing op selectie
 dialog.filter_chunks.overwrite_selection;Selectie overschrijven
 dialog.filter_chunks.selection_radius;Selectie radius
-dialog.filter_chunks.selection_only.tooltip;Of dit filter alleen van toepassing is op de huidige selectie.
 dialog.edit_overlays.title;Bewerk overlays
 dialog.edit_overlays.overlay_active.tooltip;Actief
 dialog.edit_overlays.delete.tooltip;Verwijderen
@@ -133,7 +131,6 @@ dialog.change_nbt.selection_only;Alleen van toepassing op selectie
 dialog.change_nbt.selection_only.tooltip;Of dit filter alleen van toepassing is op de huidige selectie.
 dialog.change_nbt_confirmation.title;NBT aanpassen
 dialog.change_nbt_confirmation.header_short;Je staat op het punt de gegevens van een onbekend aantal chunks in deze wereld te veranderen.
-dialog.change_nbt_confirmation.header_verbose;Je staat op het punt de gegevens van %d chunks in deze wereld te veranderen.
 dialog.edit_nbt.title;Chunk aanpassen
 dialog.edit_nbt.placeholder.loading;bezig met laden...
 dialog.edit_nbt.placeholder.no_chunk_data;geen chunk gegevens gevonden
@@ -151,7 +148,6 @@ dialog.about.version.error;Fout
 dialog.about.license;Licentie:
 dialog.about.copyright;Auteursrechten:
 dialog.about.source;Bron:
-dialog.progress.title;Vooruitgang
 dialog.progress.no_files;geen bestanden
 dialog.progress.running;lopend...
 dialog.progress.cancelling;wordt geannuleerd...
@@ -173,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Kopieer naar klembord
 dialog.error.title;Fout
 dialog.error.header;Er is een fout opgetreden
 dialog.error.copied_to_clipboard;Gekopieerd naar het klembord!
-dialog.unsaved_changes.title;Niet-opgeslagen wijzigingen
+dialog.unsaved_selection.title;
 dialog.unsaved_changes.header;U heeft niet-opgeslagen wijzigingen.
 button.cancel;Annuleren
 button.ok;OK

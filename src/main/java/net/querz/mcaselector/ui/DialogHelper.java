@@ -168,7 +168,7 @@ public class DialogHelper {
 
 	public static void quit(TileMap tileMap, Stage primaryStage) {
 		if (tileMap.getSelectedChunks() > 0 || tileMap.getSelection().isInverted()) {
-			Optional<ButtonType> result = new ConfirmationDialog(primaryStage, Translation.DIALOG_UNSAVED_CHANGES_TITLE, Translation.DIALOG_UNSAVED_CHANGES_HEADER, "unsaved-changes").showAndWait();
+			Optional<ButtonType> result = new ConfirmationDialog(primaryStage, Translation.DIALOG_UNSAVED_SELECTION_TITLE, Translation.DIALOG_UNSAVED_CHANGES_HEADER, "unsaved-changes").showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
 					System.exit(0);

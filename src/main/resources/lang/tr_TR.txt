@@ -11,7 +11,6 @@ menu.selection;Seçim
 menu.tools;Araçlar
 menu.about;Bilgi
 menu.file.open_world;Dünya Aç
-menu.file.open;Bölge Aç
 menu.file.settings;Ayarlar
 menu.file.render_settings;Render Ayarları
 menu.file.quit;Çıkış
@@ -120,7 +119,6 @@ dialog.filter_chunks.delete.tooltip;Geçerli dünyadan etkilenen tüm chunkları
 dialog.filter_chunks.selection_only;Yalnızca seçime uygula
 dialog.filter_chunks.overwrite_selection;Seçimin üzerine yaz
 dialog.filter_chunks.selection_radius;Seçim yarıçapı
-dialog.filter_chunks.selection_only.tooltip;Bu filtre yalnızca geçerli seçim için geçerliyse.
 dialog.edit_overlays.title;Düzenle
 dialog.edit_overlays.overlay_active.tooltip;Aktif
 dialog.edit_overlays.delete.tooltip;Sil
@@ -133,7 +131,6 @@ dialog.change_nbt.selection_only;Yalnızca seçime uygula
 dialog.change_nbt.selection_only.tooltip;Bu filtre yalnızca geçerli seçim için geçerliyse.
 dialog.change_nbt_confirmation.title;NBT'yi değiştir
 dialog.change_nbt_confirmation.header_short;Bu dünyada bilinmeyen sayıda chunk verileri değiştirmek üzeresiniz.
-dialog.change_nbt_confirmation.header_verbose;Bu dünyadaki verileri %d chunk halinde değiştirmek üzeresiniz.
 dialog.edit_nbt.title;Chunk'ı Düzenle
 dialog.edit_nbt.placeholder.loading;Yükleniyor...
 dialog.edit_nbt.placeholder.no_chunk_data;chunk verisi bulunamadı
@@ -151,7 +148,6 @@ dialog.about.version.error;Hata
 dialog.about.license;Lisans:
 dialog.about.copyright;Telif hakkı:
 dialog.about.source;Kaynak:
-dialog.progress.title;Gelişme
 dialog.progress.no_files;dosya yok
 dialog.progress.running;çalışıyor...
 dialog.progress.cancelling;iptal ediliyor...
@@ -173,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Panoya kopyala
 dialog.error.title;Hata
 dialog.error.header;Bir hata oluştu
 dialog.error.copied_to_clipboard;Panoya kopyalandı!
-dialog.unsaved_changes.title;Kaydedilmemiş değişiklikler
+dialog.unsaved_selection.title;
 dialog.unsaved_changes.header;Kaydedilmemiş değişiklikleriniz mevcut.
 button.cancel;İptal
 button.ok;Tamam

@@ -47,7 +47,7 @@ public class AboutDialog extends Alert {
 			applicationVersion = FileHelper.getManifestAttributes().getValue("Application-Version");
 			versionLabel.getChildren().add(new Label(applicationVersion));
 		} catch (IOException ex) {
-			versionLabel.getChildren().add(new Label("unknown"));
+			versionLabel.getChildren().add(UIFactory.label(Translation.DIALOG_ABOUT_VERSION_UNKNOWN));
 		}
 		Button checkForUpdates = UIFactory.button(Translation.DIALOG_ABOUT_VERSION_CHECK);
 		final String finalApplicationVersion = applicationVersion;
