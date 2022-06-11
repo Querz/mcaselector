@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.component;
 
 import javafx.application.Platform;
 import javafx.css.PseudoClass;
@@ -26,6 +26,8 @@ import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
 import net.querz.mcaselector.tiles.overlay.OverlayType;
+import net.querz.mcaselector.ui.UIFactory;
+
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 

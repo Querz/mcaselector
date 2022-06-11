@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.component.filter;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -20,6 +20,8 @@ import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.UIFactory;
+
 import java.util.Objects;
 import java.util.function.Consumer;
 

@@ -9,7 +9,7 @@ import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.tiles.Tile;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.progress.Progress;
-import net.querz.mcaselector.ui.TileMapBox;
+import net.querz.mcaselector.ui.component.TileMapBox;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;

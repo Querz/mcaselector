@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.component;
 
 import javafx.scene.Node;
 import javafx.scene.Scene;

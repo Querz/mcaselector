@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.component.filter;
 
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
@@ -6,19 +6,20 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import net.querz.mcaselector.filter.Comparator;
 import net.querz.mcaselector.filter.Filter;
-import net.querz.mcaselector.filter.NumberFilter;
+import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.UIFactory;
 
-public class NumberFilterBox extends FilterBox {
+public class TextFilterBox extends FilterBox {
 
 	private final TextField input = new TextField();
 	private final ComboBox<Comparator> comparator = new ComboBox<>();
 
 	private static final PseudoClass invalid = PseudoClass.getPseudoClass("invalid");
 
-	public NumberFilterBox(FilterBox parent, NumberFilter<?> filter, boolean root) {
+	public TextFilterBox(FilterBox parent, TextFilter<?> filter, boolean root) {
 		super(parent, filter, root);
-		getStyleClass().add("number-filter-box");
+		getStyleClass().add("text-filter-box");
 		input.setPromptText(filter.getFormatText());
 		input.textProperty().addListener((a, b, c) -> onTextInput(filter, c));
 		input.setAlignment(Pos.CENTER);
@@ -47,7 +48,7 @@ public class NumberFilterBox extends FilterBox {
 		callUpdateEvent();
 	}
 
-	private void onComparator(NumberFilter<?> filter) {
+	private void onComparator(TextFilter<?> filter) {
 		filter.setComparator(comparator.getSelectionModel().getSelectedItem());
 		callUpdateEvent();
 	}

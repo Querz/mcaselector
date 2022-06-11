@@ -6,7 +6,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.ui.LocationInput;
+import net.querz.mcaselector.ui.component.LocationInput;
 
 public class GotoDialog extends Dialog<Point2i> {
 

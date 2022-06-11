@@ -21,7 +21,7 @@ import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.tiles.overlay.InhabitedTimeParser;
 import net.querz.mcaselector.tiles.overlay.OverlayParser;
-import net.querz.mcaselector.ui.OverlayBox;
+import net.querz.mcaselector.ui.component.OverlayBox;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

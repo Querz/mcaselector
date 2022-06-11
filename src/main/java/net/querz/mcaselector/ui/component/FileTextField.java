@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.component;
 
 import javafx.application.Platform;
 import javafx.scene.control.Button;
@@ -10,6 +10,8 @@ import javafx.scene.layout.Priority;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.ui.DialogHelper;
+
 import java.io.File;
 
 public class FileTextField extends HBox {

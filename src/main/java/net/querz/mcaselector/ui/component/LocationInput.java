@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.component;
 
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;

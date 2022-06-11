@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.component;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -20,6 +20,9 @@ import net.querz.mcaselector.selection.ClipboardSelection;
 import net.querz.mcaselector.tiles.TileMap;
 import net.querz.mcaselector.io.CacheHelper;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.DialogHelper;
+import net.querz.mcaselector.ui.UIFactory;
+
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;

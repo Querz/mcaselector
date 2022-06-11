@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui;
+package net.querz.mcaselector.ui.component;
 
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;

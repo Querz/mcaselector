@@ -31,7 +31,7 @@ import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tiles.TileMap;
-import net.querz.mcaselector.ui.NBTTreeView;
+import net.querz.mcaselector.ui.component.NBTTreeView;
 import net.querz.mcaselector.ui.UIFactory;
 import net.querz.nbt.*;
 import org.apache.logging.log4j.LogManager;
