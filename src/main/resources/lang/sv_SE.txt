@@ -101,6 +101,10 @@ dialog.import_chunks_confirmation.warning;Warning: Att importera chunks med en o
 dialog.export_chunks_confirmation.title;Exportera chunks
 dialog.export_chunks_confirmation.header_short;Du är på väg att exportera ett okänt antal chunks från denna värld.
 dialog.export_chunks_confirmation.header_verbose;Du är på väg att exportera %d chunks från denna värld.
+dialog.import_selection.title;Importera urval från .csv
+dialog.import_selection.header;Den här världen har redan ett urval.\nHur ska det nya urvalet importeras?
+dialog.import_selection.overwrite;Skriva över
+dialog.import_selection.merge;Lägg till
 dialog.filter_chunks.title;Filtrera chunks
 dialog.filter_chunks.filter.add.tooltip;Lägg till ett nytt villkor nedanför detta.
 dialog.filter_chunks.filter.delete.tooltip;Radera detta villkor.

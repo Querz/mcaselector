@@ -101,6 +101,10 @@ dialog.import_chunks_confirmation.warning;警告：オフセットを使用し�
 dialog.export_chunks_confirmation.title;チャンクをエクスポート
 dialog.export_chunks_confirmation.header_short;不明な数のチャンクをエクスポートしようとしています
 dialog.export_chunks_confirmation.header_verbose;%d個のチャンクをエクスポートしようとしています
+dialog.import_selection.title;.csvから選択をインポートします
+dialog.import_selection.header;この世界にはすでに選択範囲があります。\n新しい選択範囲をどのようにインポートする必要がありますか？
+dialog.import_selection.overwrite;上書き
+dialog.import_selection.merge;追加
 dialog.filter_chunks.title;フィルター
 dialog.filter_chunks.filter.add.tooltip;フィルターを追加します
 dialog.filter_chunks.filter.delete.tooltip;フィルターを削除します

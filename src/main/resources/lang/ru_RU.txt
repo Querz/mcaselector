@@ -101,6 +101,10 @@ dialog.import_chunks_confirmation.warning;Внимание: Импорт чан�
 dialog.export_chunks_confirmation.title;Экспорт чанков
 dialog.export_chunks_confirmation.header_short;Вы экспортируете неизвестное число чанков из этого мира.
 dialog.export_chunks_confirmation.header_verbose;Вы экспортируете %d чанков из этого мира.
+dialog.import_selection.title;Импортировать выделение из .csv
+dialog.import_selection.header;В этом мире уже есть выбор.\nКак импортировать новый выбор?
+dialog.import_selection.overwrite;Перезаписывать
+dialog.import_selection.merge;Добавить
 dialog.filter_chunks.title;Фильтровать чанки
 dialog.filter_chunks.filter.add.tooltip;Добавьте новое условие ниже этого
 dialog.filter_chunks.filter.delete.tooltip;Удалить условие

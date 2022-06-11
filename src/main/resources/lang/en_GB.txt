@@ -101,6 +101,10 @@ dialog.import_chunks_confirmation.warning;Warning: Importing chunks with an offs
 dialog.export_chunks_confirmation.title;Export chunks
 dialog.export_chunks_confirmation.header_short;You are about to export an unknown number of chunks from this world.
 dialog.export_chunks_confirmation.header_verbose;You are about to export %d chunks from this world.
+dialog.import_selection.title;Import selection from .csv
+dialog.import_selection.header;This world already has a selection.\nHow would you like to import the new selection?
+dialog.import_selection.overwrite;Overwrite
+dialog.import_selection.merge;Merge
 dialog.filter_chunks.title;Filter chunks
 dialog.filter_chunks.filter.add.tooltip;Add a new condition below this one.
 dialog.filter_chunks.filter.delete.tooltip;Delete this condition.

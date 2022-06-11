@@ -101,6 +101,10 @@ dialog.import_chunks_confirmation.warning;Uwaga: Importowanie chunków z offsete
 dialog.export_chunks_confirmation.title;Eksportuj chunki
 dialog.export_chunks_confirmation.header_short;Zamierzasz wyeksportować nieokreśloną liczbę chunków z tego świata.
 dialog.export_chunks_confirmation.header_verbose;Zamierzasz wyeksportować %d chunków z tego świata.
+dialog.import_selection.title;Importuj zaznaczenie z .csv
+dialog.import_selection.header;Ten świat ma już wybór.\nJak należy zaimportować nowy wybór?
+dialog.import_selection.overwrite;Przepisać
+dialog.import_selection.merge;Dodać
 dialog.filter_chunks.title;Filtruj chunki
 dialog.filter_chunks.filter.add.tooltip;Dodaj nowy warunek poniżej
 dialog.filter_chunks.filter.delete.tooltip;Usuń ten warunek

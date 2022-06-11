@@ -101,6 +101,10 @@ dialog.import_chunks_confirmation.warning;Upozornění: Při importování chunk
 dialog.export_chunks_confirmation.title;Exportovat chunky
 dialog.export_chunks_confirmation.header_short;Chcete exportovat neznámý počet chunků vybraného světa.
 dialog.export_chunks_confirmation.header_verbose;Chcete exportovat %d chunků vybraného světa.
+dialog.import_selection.title;Importovat výběr z .csv
+dialog.import_selection.header;Tento svět již má výběr.\nJak by měl být nový výběr importován?
+dialog.import_selection.overwrite;Přepsat
+dialog.import_selection.merge;Přidat
 dialog.filter_chunks.title;Filtrovat chunky
 dialog.filter_chunks.filter.add.tooltip;Přidá další podmínku pod stávající.
 dialog.filter_chunks.filter.delete.tooltip;Smaže tuto podmínku.

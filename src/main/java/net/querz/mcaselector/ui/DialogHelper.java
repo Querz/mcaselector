@@ -576,16 +576,29 @@ public class DialogHelper {
 		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export", null),
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showOpenDialog(primaryStage);
 		if (file != null) {
-			net.querz.mcaselector.selection.Selection selection;
+			ImportSelectionDialog.Result result = ImportSelectionDialog.Result.OVERWRITE;
+			// skip dialog if we don't have a selection yet
+			if (tileMap.getSelectedChunks() > 0) {
+				Optional<ImportSelectionDialog.Result> optional = new ImportSelectionDialog(primaryStage).showAndWait();
+				if (optional.isEmpty()) {
+					return;
+				}
+				result = optional.get();
+			}
+
+			Selection selection;
 			try {
-				selection = net.querz.mcaselector.selection.Selection.readFromFile(file);
-			} catch (IOException e) {
-				LOGGER.warn("failed to read selection from file", e);
+				selection = Selection.readFromFile(file);
+			} catch (IOException ex) {
+				LOGGER.warn("failed to read selection from file", ex);
+				new ErrorDialog(primaryStage, ex.getMessage());
 				return;
-				// TODO: show error dialog
 			}
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
-			tileMap.setSelection(selection);
+			switch (result) {
+				case OVERWRITE -> tileMap.setSelection(selection);
+				case MERGE -> tileMap.addSelection(selection);
+			}
 			tileMap.draw();
 		}
 	}
@@ -598,8 +611,8 @@ public class DialogHelper {
 				tileMap.getSelection().saveToFile(file);
 			} catch (IOException ex) {
 				LOGGER.warn("failed to save selection to file", ex);
+				new ErrorDialog(primaryStage, ex);
 				return;
-				// TODO: show error dialog
 			}
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
 			tileMap.draw();

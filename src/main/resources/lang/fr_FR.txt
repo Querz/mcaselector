@@ -101,6 +101,10 @@ dialog.import_chunks_confirmation.warning;Attention: Importer des chunks avec un
 dialog.export_chunks_confirmation.title;Exporter les chunks
 dialog.export_chunks_confirmation.header_short;Vous êtes sur le point d'exporter un nomnbre de chunks inconnu depuis ce monde.
 dialog.export_chunks_confirmation.header_verbose;Vous êtes sur le point d'exporter %d chunks depuis ce monde.
+dialog.import_selection.title;Importer la sélection a partir de .csv
+dialog.import_selection.header;Ce monde a déjà une sélection.\nComment importer la nouvelle sélection ?
+dialog.import_selection.overwrite;Écraser
+dialog.import_selection.merge;Ajouter
 dialog.filter_chunks.title;Filtrer les chunks
 dialog.filter_chunks.filter.add.tooltip;Ajouter une nouvelle condition sous celle-ci.
 dialog.filter_chunks.filter.delete.tooltip;Supprimer cette condition.

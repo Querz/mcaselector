@@ -101,6 +101,10 @@ dialog.import_chunks_confirmation.warning;Uyarı: Chunkları bir ofset ile içe 
 dialog.export_chunks_confirmation.title;Chunkları Dışa Aktar
 dialog.export_chunks_confirmation.header_short;Bu dünyadan bilinmeyen sayıda chunk dışa aktarmak üzeresiniz.
 dialog.export_chunks_confirmation.header_verbose;Bu dünyadan %d chunk dışa aktarmak üzeresiniz.
+dialog.import_selection.title;Seçimi .csv'den İçe Aktar
+dialog.import_selection.header;Bu dünyada zaten bir seçim var.\nYeni seçim nasıl içe aktarılmalıdır?
+dialog.import_selection.overwrite;Üzerine yazmak
+dialog.import_selection.merge;Ekle
 dialog.filter_chunks.title;Chunkları Filtrele
 dialog.filter_chunks.filter.add.tooltip;Bunun altına yeni bir koşul ekleyin.
 dialog.filter_chunks.filter.delete.tooltip;Bu koşulu silin.

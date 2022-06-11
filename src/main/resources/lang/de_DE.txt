@@ -101,6 +101,10 @@ dialog.import_chunks_confirmation.warning;Warnung: Der Import von Chunks ändert
 dialog.export_chunks_confirmation.title;Chunks exportieren
 dialog.export_chunks_confirmation.header_short;Diese Aktion exportiern eine unbekannte Anzahl von Chunks aus dieser Welt.
 dialog.export_chunks_confirmation.header_verbose;Diese Aktion exportiert %d Chunks aus dieser Welt.
+dialog.import_selection.title;Selektion von .csv importieren
+dialog.import_selection.header;Diese Welt hat bereits eine Selektion.\nWie soll die neue Selektion importiert werden?
+dialog.import_selection.overwrite;Überschreiben
+dialog.import_selection.merge;Hinzufügen
 dialog.filter_chunks.title;Chunks filtern
 dialog.filter_chunks.filter.add.tooltip;Fügt unter dieser Kondition eine neue hinzu.
 dialog.filter_chunks.filter.delete.tooltip;Löscht diese Kondition.

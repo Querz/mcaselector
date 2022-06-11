@@ -101,6 +101,10 @@ dialog.import_chunks_confirmation.warning;警告：匯入區塊時使用偏移�
 dialog.export_chunks_confirmation.title;匯出區塊
 dialog.export_chunks_confirmation.header_short;你將要從這個世界匯出未知數量的區塊。
 dialog.export_chunks_confirmation.header_verbose;你將要從這個世界匯出 %d 個區塊。
+dialog.import_selection.title;從 .csv 導入選擇
+dialog.import_selection.header;這個世界已經有一個選擇。\n應該如何導入新的選擇？
+dialog.import_selection.overwrite;覆蓋
+dialog.import_selection.merge;添加
 dialog.filter_chunks.title;篩選區塊
 dialog.filter_chunks.filter.add.tooltip;在此條件下增加新條件。
 dialog.filter_chunks.filter.delete.tooltip;刪除此條件。

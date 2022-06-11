@@ -101,6 +101,10 @@ dialog.import_chunks_confirmation.warning;Warning:오프셋이 있는 청크를 
 dialog.export_chunks_confirmation.title;청크 내보내기
 dialog.export_chunks_confirmation.header_short;이 월드에서 알 수 없는 수 만큼의 청크를 내보내려고 합니다.
 dialog.export_chunks_confirmation.header_verbose;이 월드에서 %d개 만큼의 청크를 내보내려고 합니다.
+dialog.import_selection.title;.csv 에서 선택 항목 가져오기
+dialog.import_selection.header;이 세계에는 이미 선택 항목이 있습니다.\n새 선택 항목을 어떻게 가져와야 합니까?
+dialog.import_selection.overwrite;덮어쓰다
+dialog.import_selection.merge;에 추가
 dialog.filter_chunks.title;청크 필터
 dialog.filter_chunks.filter.add.tooltip;이 조건 아래에 새 조건을 추가합니다.
 dialog.filter_chunks.filter.delete.tooltip;이 조건을 제거합니다.

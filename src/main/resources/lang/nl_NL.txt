@@ -101,6 +101,10 @@ dialog.import_chunks_confirmation.warning;Waarschuwing: Importeren van verplaats
 dialog.export_chunks_confirmation.title;Chunks exporteren
 dialog.export_chunks_confirmation.header_short;Je staat op het punt een onbekend aantal chunks uit deze wereld te exporteren.
 dialog.export_chunks_confirmation.header_verbose;Je staat op het punt %d chunks uit deze wereld te exporteren.
+dialog.import_selection.title;Selectie importeren uit .csv
+dialog.import_selection.header;Deze wereld heeft al een selectie.\nHoe moet de nieuwe selectie geïmporteerd worden?
+dialog.import_selection.overwrite;Overschrijven
+dialog.import_selection.merge;Optellen
 dialog.filter_chunks.title;Chunks filteren
 dialog.filter_chunks.filter.add.tooltip;Voeg een nieuwe voorwaarde hieronder toe.
 dialog.filter_chunks.filter.delete.tooltip;Verwijder deze voorwaarde.

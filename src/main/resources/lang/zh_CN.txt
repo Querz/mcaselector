@@ -101,6 +101,10 @@ dialog.import_chunks_confirmation.warning;警告: 使用偏移量导入块不会
 dialog.export_chunks_confirmation.title;导出区块
 dialog.export_chunks_confirmation.header_short;您将要从这个世界导出未知数量的区块.
 dialog.export_chunks_confirmation.header_verbose;您将要从这个世界导出 %d 个区块.
+dialog.import_selection.title;从 .csv 导入选择
+dialog.import_selection.header;这个世界已经有一个选择。\n应该如何导入新的选择？
+dialog.import_selection.overwrite;覆盖
+dialog.import_selection.merge;添加
 dialog.filter_chunks.title;筛选区块
 dialog.filter_chunks.filter.add.tooltip;在此条件下添加新条件.
 dialog.filter_chunks.filter.delete.tooltip;删除此条件.

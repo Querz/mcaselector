@@ -46,7 +46,7 @@ public class Translations {
 				try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("src/main/resources/lang/" + locale + ".txt"), StandardCharsets.UTF_8)) {
 					boolean first = true;
 					for (Translation translation : Translation.values()) {
-						osw.write((first ? "" : "\n") + translation.getKey() + ";" + (translation.isTranslated() ? translation.toString() : ""));
+						osw.write((first ? "" : "\n") + translation.getKey() + ";" + (translation.isTranslated() ? translation.toString().replace("\n", "\\n") : ""));
 						first = false;
 					}
 				} catch (IOException ex) {
@@ -68,7 +68,7 @@ public class Translations {
 			Translation.load(locale);
 			try (OutputStreamWriter osw = new OutputStreamWriter(System.out, StandardCharsets.UTF_8)) {
 				for (Translation translation : Translation.values()) {
-					osw.write(translation.getKey() + ";" + (translation.isTranslated() ? translation.toString() : "") + "\n");
+					osw.write(translation.getKey() + ";" + (translation.isTranslated() ? translation.toString().replace("\n", "\\n") : "") + "\n");
 				}
 			} catch (IOException ex) {
 				ex.printStackTrace();
