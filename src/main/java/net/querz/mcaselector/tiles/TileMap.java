@@ -718,8 +718,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		tiles.clear();
 		imgPool.clear(loadWorldTask);
 		overlayPool.clear();
-		selectedChunks = 0;
-		selection.clear();
 
 		pastedChunks = null;
 		pastedWorld = null;

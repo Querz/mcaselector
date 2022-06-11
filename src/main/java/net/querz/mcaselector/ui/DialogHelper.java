@@ -107,6 +107,7 @@ public class DialogHelper {
 							if (r.isSelectionOnly()) {
 								CacheHelper.clearSelectionCache(tileMap);
 								tileMap.clear();
+								tileMap.clearSelection();
 							} else {
 								CacheHelper.clearAllCache(tileMap);
 							}
@@ -191,6 +192,7 @@ public class DialogHelper {
 						.showProgressBar(t -> SelectionDeleter.deleteSelection(tileMap.getSelection(), t));
 				CacheHelper.clearSelectionCache(tileMap);
 				tileMap.clear();
+				tileMap.clearSelection();
 				tileMap.draw();
 			}
 		});
@@ -570,6 +572,7 @@ public class DialogHelper {
 			RegionImageGenerator.invalidateCachedMCAFiles();
 			tileMap.getWindow().getOptionBar().setRenderHeight(Config.getRenderHeight());
 			tileMap.clear(task);
+			tileMap.clearSelection();
 			tileMap.draw();
 			tileMap.disable(false);
 			tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
