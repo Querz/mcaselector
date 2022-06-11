@@ -754,7 +754,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	public void clearSelection() {
-		selection.clear();
+		selection = new Selection();
 		selectedChunks = 0;
 		unsavedSelection = false;
 

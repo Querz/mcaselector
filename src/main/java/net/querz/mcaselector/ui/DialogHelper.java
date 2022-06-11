@@ -146,17 +146,17 @@ public class DialogHelper {
 					}
 				}
 				case SELECT -> {
-					net.querz.mcaselector.selection.Selection selectionData = tileMap.getSelection();
+					Selection selection = tileMap.getSelection();
 					if (r.isOverwriteSelection()) {
 						tileMap.clearSelection();
 					}
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS, primaryStage)
 						.showProgressBar(t -> ChunkFilterSelector.selectFilter(
 							r.getFilter(),
-							r.isSelectionOnly() ? (selectionData.isEmpty() ? null : selectionData) : null,
+							r.isSelectionOnly() ? (selection.isEmpty() ? null : selection) : null,
 							r.getRadius(),
-							selection -> Platform.runLater(() -> {
-								tileMap.addSelection(selection);
+							s -> Platform.runLater(() -> {
+								tileMap.addSelection(s);
 								tileMap.draw();
 							}), t, false));
 					r.getFilter().resetTempData();
