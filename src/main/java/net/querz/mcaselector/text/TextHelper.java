@@ -1,7 +1,7 @@
 package net.querz.mcaselector.text;
 
 import net.querz.mcaselector.exception.ParseException;
-import net.querz.mcaselector.filter.PaletteFilter;
+import net.querz.mcaselector.filter.filters.PaletteFilter;
 import net.querz.mcaselector.io.StringPointer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

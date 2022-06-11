@@ -2,7 +2,7 @@ package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.tiles.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.OverlayParser;
 import java.util.List;
 
 public record ChunkData(RegionChunk region, PoiChunk poi, EntitiesChunk entities) {

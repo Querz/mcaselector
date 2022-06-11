@@ -4,7 +4,7 @@ import net.querz.mcaselector.Config;
 import net.querz.mcaselector.changer.ChangeParser;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.filter.FilterParser;
-import net.querz.mcaselector.filter.GroupFilter;
+import net.querz.mcaselector.filter.filters.GroupFilter;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.job.*;
 import net.querz.mcaselector.point.Point2i;
@@ -655,7 +655,7 @@ public final class ParamExecutor {
 
 	private void cache(FutureTask<Boolean> future) throws ParseException, ExecutionException, InterruptedException {
 		Config.setWorldDirs(parseWorldDirectories(""));
-		if (CLIHelper.hasJavaFX()) {
+		if (CLIJFX.hasJavaFX()) {
 			throw new ParseException("no JavaFX installation found");
 		}
 
@@ -673,7 +673,7 @@ public final class ParamExecutor {
 
 	private void image(FutureTask<Boolean> future) throws ParseException, ExecutionException, InterruptedException {
 		Config.setWorldDirs(parseWorldDirectories(""));
-		if (CLIHelper.hasJavaFX()) {
+		if (CLIJFX.hasJavaFX()) {
 			throw new ParseException("no JavaFX installation found");
 		}
 

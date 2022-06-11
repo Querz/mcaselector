@@ -3,7 +3,7 @@ package net.querz.mcaselector.version.anvil118;
 import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.anvil117.Anvil117ChunkFilter;
 import net.querz.nbt.*;

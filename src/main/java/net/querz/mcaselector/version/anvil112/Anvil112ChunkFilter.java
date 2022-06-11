@@ -1,7 +1,7 @@
 package net.querz.mcaselector.version.anvil112;
 
 import net.querz.mcaselector.io.registry.BiomeRegistry;
-import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.Helper;
 import net.querz.nbt.*;

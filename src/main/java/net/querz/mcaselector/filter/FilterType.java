@@ -1,5 +1,7 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.filter.filters.*;
+
 import java.util.function.Supplier;
 
 public enum FilterType {

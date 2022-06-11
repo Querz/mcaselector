@@ -1,6 +1,6 @@
 package net.querz.mcaselector.io.registry;
 
-import net.querz.mcaselector.filter.BiomeFilter;
+import net.querz.mcaselector.filter.filters.BiomeFilter;
 import net.querz.mcaselector.text.TextHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

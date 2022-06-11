@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.selection.ClipboardSelection;
-import net.querz.mcaselector.tiles.TileMap;
+import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.io.CacheHelper;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.DialogHelper;

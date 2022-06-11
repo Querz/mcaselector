@@ -9,7 +9,7 @@ import javafx.scene.image.*;
 import javafx.scene.image.Image;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
-import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.tile.Tile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.awt.*;

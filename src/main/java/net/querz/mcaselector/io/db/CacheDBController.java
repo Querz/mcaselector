@@ -1,7 +1,7 @@
 package net.querz.mcaselector.io.db;
 
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.tiles.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.OverlayParser;
 import net.querz.mcaselector.validation.ShutdownHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

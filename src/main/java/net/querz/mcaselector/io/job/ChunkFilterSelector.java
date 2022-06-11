@@ -1,14 +1,14 @@
 package net.querz.mcaselector.io.job;
 
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.filter.GroupFilter;
+import net.querz.mcaselector.filter.filters.GroupFilter;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
-import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;

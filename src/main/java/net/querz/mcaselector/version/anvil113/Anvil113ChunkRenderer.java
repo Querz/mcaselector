@@ -1,7 +1,7 @@
 package net.querz.mcaselector.version.anvil113;
 
 import net.querz.mcaselector.math.MathUtil;
-import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkRenderer;
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.version.Helper;

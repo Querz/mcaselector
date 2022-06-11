@@ -27,7 +27,7 @@ import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.ClipboardSelection;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.selection.SelectionData;
-import net.querz.mcaselector.tiles.TileMap;
+import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;

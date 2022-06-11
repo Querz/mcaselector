@@ -14,8 +14,8 @@ import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.tiles.TileMap;
-import net.querz.mcaselector.tiles.overlay.OverlayParser;
+import net.querz.mcaselector.tile.TileMap;
+import net.querz.mcaselector.overlay.OverlayParser;
 import net.querz.mcaselector.validation.ShutdownHooks;
 
 import java.util.concurrent.Executors;

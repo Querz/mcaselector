@@ -2,6 +2,7 @@ package net.querz.mcaselector.ui.component.filter;
 
 import javafx.scene.layout.VBox;
 import net.querz.mcaselector.filter.*;
+import net.querz.mcaselector.filter.filters.GroupFilter;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.UIFactory;
 

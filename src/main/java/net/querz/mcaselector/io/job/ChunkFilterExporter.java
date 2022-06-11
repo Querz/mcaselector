@@ -1,7 +1,7 @@
 package net.querz.mcaselector.io.job;
 
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.filter.GroupFilter;
+import net.querz.mcaselector.filter.filters.GroupFilter;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.WorldDirectories;

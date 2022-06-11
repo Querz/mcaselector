@@ -21,6 +21,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.filter.*;
 import net.querz.mcaselector.exception.ParseException;
+import net.querz.mcaselector.filter.filters.GroupFilter;
+import net.querz.mcaselector.filter.filters.InhabitedTimeFilter;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.component.filter.GroupFilterBox;
 import net.querz.mcaselector.ui.UIFactory;

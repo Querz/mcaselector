@@ -1,9 +1,11 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.filter.filters.CircleFilter;
+import net.querz.mcaselector.filter.filters.GroupFilter;
+import net.querz.mcaselector.filter.filters.XPosFilter;
 import net.querz.mcaselector.point.Point2i;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.Assert.*;

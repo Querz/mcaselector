@@ -24,8 +24,8 @@ import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.tiles.overlay.OverlayParser;
-import net.querz.mcaselector.tiles.overlay.OverlayType;
+import net.querz.mcaselector.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.OverlayType;
 import net.querz.mcaselector.ui.UIFactory;
 
 import java.util.function.BiConsumer;

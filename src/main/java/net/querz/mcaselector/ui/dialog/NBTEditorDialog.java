@@ -30,7 +30,7 @@ import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.tiles.TileMap;
+import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.ui.component.NBTTreeView;
 import net.querz.mcaselector.ui.UIFactory;
 import net.querz.nbt.*;

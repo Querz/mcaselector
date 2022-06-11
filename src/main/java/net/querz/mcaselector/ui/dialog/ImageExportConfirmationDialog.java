@@ -3,7 +3,7 @@ package net.querz.mcaselector.ui.dialog;
 import javafx.stage.Stage;
 import net.querz.mcaselector.selection.SelectionData;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.tiles.TileMap;
+import net.querz.mcaselector.tile.TileMap;
 
 public class ImageExportConfirmationDialog extends ConfirmationDialog {
 

@@ -1,6 +1,6 @@
 package net.querz.mcaselector;
 
-import net.querz.mcaselector.cli.CLIHelper;
+import net.querz.mcaselector.cli.CLIJFX;
 import net.querz.mcaselector.cli.ParamExecutor;
 import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.ui.Window;
@@ -29,7 +29,7 @@ public class Main {
 			System.exit(0);
 		}
 
-		if (!CLIHelper.hasJavaFX()) {
+		if (!CLIJFX.hasJavaFX()) {
 			JOptionPane.showMessageDialog(null, "Please install JavaFX for your Java version (" + System.getProperty("java.version") + ") to use MCA Selector.", "Missing JavaFX", JOptionPane.ERROR_MESSAGE);
 			System.exit(0);
 		}
