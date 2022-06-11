@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Copiar al portapapeles
 dialog.error.title;Error
 dialog.error.header;Ocurrió un error
 dialog.error.copied_to_clipboard;¡Copiado al portapapeles!
-dialog.unsaved_selection.title;
-dialog.unsaved_changes.header;Usted tiene cambios no guardados.
+dialog.unsaved_selection.title;Selección no guardada
+dialog.unsaved_selection.header;Hay una selección sin guardar.
 button.cancel;Cancelar
 button.ok;OK

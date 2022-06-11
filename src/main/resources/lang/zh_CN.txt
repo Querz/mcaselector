@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;复制到剪贴板
 dialog.error.title;错误
 dialog.error.header;发生错误
 dialog.error.copied_to_clipboard;复制到剪贴板!
-dialog.unsaved_selection.title;
-dialog.unsaved_changes.header;您有未保存的更改。
+dialog.unsaved_selection.title;未保存的选择
+dialog.unsaved_selection.header;有一个未保存的选择。
 button.cancel;取消
 button.ok;OK

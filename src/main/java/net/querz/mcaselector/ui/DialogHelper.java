@@ -167,8 +167,8 @@ public class DialogHelper {
 	}
 
 	public static void quit(TileMap tileMap, Stage primaryStage) {
-		if (tileMap.getSelectedChunks() > 0 || tileMap.getSelection().isInverted()) {
-			Optional<ButtonType> result = new ConfirmationDialog(primaryStage, Translation.DIALOG_UNSAVED_SELECTION_TITLE, Translation.DIALOG_UNSAVED_CHANGES_HEADER, "unsaved-changes").showAndWait();
+		if (tileMap.hasUnsavedSelection()) {
+			Optional<ButtonType> result = new ConfirmationDialog(primaryStage, Translation.DIALOG_UNSAVED_SELECTION_TITLE, Translation.DIALOG_UNSAVED_SELECTION_HEADER, "unsaved-changes").showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
 					System.exit(0);
@@ -532,6 +532,13 @@ public class DialogHelper {
 	}
 
 	public static void openWorld(TileMap tileMap, Stage primaryStage) {
+		if (tileMap.hasUnsavedSelection()) {
+			Optional<ButtonType> result = new ConfirmationDialog(primaryStage, Translation.DIALOG_UNSAVED_SELECTION_TITLE, Translation.DIALOG_UNSAVED_SELECTION_HEADER, "unsaved-changes").showAndWait();
+			if (result.isPresent() && result.get() == ButtonType.CANCEL) {
+				return;
+			}
+		}
+
 		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", Config.getMCSavesDir());
 		File file = createDirectoryChooser(lastOpenDirectory).showDialog(primaryStage);
 		if (file != null && file.isDirectory()) {
@@ -615,6 +622,7 @@ public class DialogHelper {
 				return;
 			}
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
+			tileMap.setSelectionSaved();
 			tileMap.draw();
 		}
 	}

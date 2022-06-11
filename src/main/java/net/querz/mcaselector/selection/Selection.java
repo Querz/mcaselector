@@ -85,7 +85,7 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 				for (int i : entry.getValue()) {
 					writePoint(bw, region);
 					bw.write(';');
-					Point2i c = new Point2i(i);
+					Point2i c = new Point2i(i).add(region.regionToChunk());
 					writePoint(bw, c);
 					bw.write('\n');
 				}

@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;클립보드에 복사하기
 dialog.error.title;오류
 dialog.error.header;오류가 발생하였습니다.
 dialog.error.copied_to_clipboard;클립보드에 복사되었습니다!
-dialog.unsaved_selection.title;
-dialog.unsaved_changes.header;저장되지 않은 변경사항이 있습니다.
+dialog.unsaved_selection.title;저장되지 않은 선택
+dialog.unsaved_selection.header;저장되지 않은 선택 항목이 있습니다.
 button.cancel;취소
 button.ok;확인

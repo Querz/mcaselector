@@ -74,6 +74,10 @@ public final class TileImage {
 	}
 
 	static void createMarkedChunksImage(Tile tile, ChunkSet selection) {
+		if (selection == null) {
+			tile.markedChunksImage = null;
+			return;
+		}
 		WritableImage wImage = new WritableImage(32, 32);
 		PixelWriter writer = wImage.getPixelWriter();
 

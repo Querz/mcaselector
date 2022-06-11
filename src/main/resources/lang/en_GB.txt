@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Copy to Clipboard
 dialog.error.title;Error
 dialog.error.header;An Error occurred
 dialog.error.copied_to_clipboard;Copied to clipboard!
-dialog.unsaved_selection.title;
-dialog.unsaved_changes.header;You have unsaved changes.
+dialog.unsaved_selection.title;Unsaved selection
+dialog.unsaved_selection.header;There is an unsaved selection.
 button.cancel;Cancel
 button.ok;OK

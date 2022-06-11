@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Skopiuj do schowka
 dialog.error.title;Błąd
 dialog.error.header;Wystąpił błąd
 dialog.error.copied_to_clipboard;Skopiowane do schowka!
-dialog.unsaved_selection.title;
-dialog.unsaved_changes.header;Masz niezapisane zmiany.
+dialog.unsaved_selection.title;Niezapisany wybór
+dialog.unsaved_selection.header;Istnieje niezapisany wybór.
 button.cancel;Anuluj
 button.ok;OK

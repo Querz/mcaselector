@@ -189,7 +189,7 @@ public enum Translation {
 	DIALOG_ERROR_HEADER("dialog.error.header"),
 	DIALOG_ERROR_COPIED_TO_CLIPBOARD("dialog.error.copied_to_clipboard"),
 	DIALOG_UNSAVED_SELECTION_TITLE("dialog.unsaved_selection.title"),
-	DIALOG_UNSAVED_CHANGES_HEADER("dialog.unsaved_changes.header"),
+	DIALOG_UNSAVED_SELECTION_HEADER("dialog.unsaved_selection.header"),
 	BUTTON_CANCEL("button.cancel"),
 	BUTTON_OK("button.ok");
 

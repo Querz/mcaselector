@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Скопировать в буфер об�
 dialog.error.title;Ошибка
 dialog.error.header;Произошла ошибка
 dialog.error.copied_to_clipboard;Скопировано в буфер обмена!
-dialog.unsaved_selection.title;
-dialog.unsaved_changes.header;У вас есть несохраненные изменения.
+dialog.unsaved_selection.title;Несохраненный выбор
+dialog.unsaved_selection.header;Есть несохраненный выбор.
 button.cancel;Отменить
 button.ok;OK

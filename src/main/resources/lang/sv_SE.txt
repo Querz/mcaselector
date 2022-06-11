@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Kopiera till urklipp
 dialog.error.title;Fel
 dialog.error.header;Ett fel uppstod
 dialog.error.copied_to_clipboard;Kopieras till urklipp!
-dialog.unsaved_selection.title;
-dialog.unsaved_changes.header;Du har ändringar som inte har sparats.
+dialog.unsaved_selection.title;Osparat val
+dialog.unsaved_selection.header;Det finns ett osparat val.
 button.cancel;Avbryt
 button.ok;OK

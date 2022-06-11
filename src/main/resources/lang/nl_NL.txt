@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Kopieer naar klembord
 dialog.error.title;Fout
 dialog.error.header;Er is een fout opgetreden
 dialog.error.copied_to_clipboard;Gekopieerd naar het klembord!
-dialog.unsaved_selection.title;
-dialog.unsaved_changes.header;U heeft niet-opgeslagen wijzigingen.
+dialog.unsaved_selection.title;Niet-opgeslagen selectie
+dialog.unsaved_selection.header;Er is een niet-opgeslagen selectie.
 button.cancel;Annuleren
 button.ok;OK

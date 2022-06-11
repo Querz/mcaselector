@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Copia negli appunti
 dialog.error.title;Errore
 dialog.error.header;Si è verificato un errore
 dialog.error.copied_to_clipboard;Copiato negli appunti!
-dialog.unsaved_selection.title;
-dialog.unsaved_changes.header;Hai modifiche non salvate.
+dialog.unsaved_selection.title;Selezione non salvata
+dialog.unsaved_selection.header;È presente una selezione non salvata.
 button.cancel;Annulla
 button.ok;Va bene

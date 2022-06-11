@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;クリップボードにコピー
 dialog.error.title;エラー
 dialog.error.header;エラーが発生しました
 dialog.error.copied_to_clipboard;コピーしました
-dialog.unsaved_selection.title;
-dialog.unsaved_changes.header;保存されていない変更があります
+dialog.unsaved_selection.title;保存されていない選択
+dialog.unsaved_selection.header;保存されていない選択があります。
 button.cancel;キャンセル
 button.ok;OK

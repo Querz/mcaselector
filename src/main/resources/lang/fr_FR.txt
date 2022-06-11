@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Copier dans le presse-papier
 dialog.error.title;Erreur
 dialog.error.header;Une erreur s'est produite
 dialog.error.copied_to_clipboard;Copié dans le presse-papier!
-dialog.unsaved_selection.title;
-dialog.unsaved_changes.header;Vous avez des changements non enregistrés.
+dialog.unsaved_selection.title;Sélection non enregistrée
+dialog.unsaved_selection.header;Il y a une sélection non enregistrée.
 button.cancel;Annuler
 button.ok;OK

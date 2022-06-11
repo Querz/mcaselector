@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Zkopírovat do schránky
 dialog.error.title;Chyba
 dialog.error.header;Vyskytla se chyba
 dialog.error.copied_to_clipboard;Zkopírováno do schránky!
-dialog.unsaved_selection.title;
-dialog.unsaved_changes.header;Máte neuložené změny.
+dialog.unsaved_selection.title;Neuložený výběr
+dialog.unsaved_selection.header;Existuje neuložený výběr.
 button.cancel;Zrušit
 button.ok;OK

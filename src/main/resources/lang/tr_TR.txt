@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Panoya kopyala
 dialog.error.title;Hata
 dialog.error.header;Bir hata oluştu
 dialog.error.copied_to_clipboard;Panoya kopyalandı!
-dialog.unsaved_selection.title;
-dialog.unsaved_changes.header;Kaydedilmemiş değişiklikleriniz mevcut.
+dialog.unsaved_selection.title;Kaydedilmemiş seçim
+dialog.unsaved_selection.header;Kaydedilmemiş bir seçim var.
 button.cancel;İptal
 button.ok;Tamam

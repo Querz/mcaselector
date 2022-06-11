@@ -32,6 +32,7 @@ public class ChunkSet implements IntIterable, Serializable, Cloneable {
 		for (int i = 0; i < 16; i++) {
 			words[i] = 0L;
 		}
+		setBits = 0;
 	}
 
 	public boolean get(int index) {
@@ -90,6 +91,7 @@ public class ChunkSet implements IntIterable, Serializable, Cloneable {
 		for (int i = 0; i < 16; i++) {
 			words[i] = 0xFFFFFFFFFFFFFFFFL;
 		}
+		setBits = 1024;
 	}
 
 	@Override

@@ -109,6 +109,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private ScheduledExecutorService drawService;
 	private final AtomicBoolean drawRequested = new AtomicBoolean(false);
 
+	private boolean unsavedSelection = false;
+
 	public TileMap(Window window, int width, int height) {
 		super(width, height);
 		this.window = window;
@@ -740,8 +742,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		ChunkSet chunks = selection.getSelectedChunksIgnoreInverted(new Point2i(p));
 		if (chunks == null) {
 			selectedChunks -= Tile.CHUNKS;
+			unsavedSelection = true;
 		} else {
 			selectedChunks -= chunks.size();
+			unsavedSelection = true;
 		}
 		imgPool.discardImage(new Point2i(p));
 		overlayPool.discardData(new Point2i(p));
@@ -754,6 +758,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	public void clearSelection() {
 		selection.clear();
 		selectedChunks = 0;
+		unsavedSelection = false;
 
 		for (Tile tile : tiles.values()) {
 			tile.clearMarkedChunksImage();
@@ -770,6 +775,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	public void invertRegionsWithSelection() {
 		selection.invertAll();
 		selectedChunks = selection.count();
+		unsavedSelection = true;
 		runUpdateListeners();
 		redrawOverlays();
 		draw();
@@ -790,11 +796,16 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	public void addSelection(Selection selection) {
+		int selectedBefore = selectedChunks;
 		this.selection.merge(selection);
+		selectedChunks = this.selection.count();
+		unsavedSelection = !selection.isEmpty() || selectedBefore == selectedChunks && unsavedSelection;
 	}
 
 	public void setSelection(Selection selection) {
 		this.selection = selection;
+		selectedChunks = selection.count();
+		unsavedSelection = !selection.isEmpty();
 	}
 
 	public void setPastedChunks(SelectionData data) {
@@ -811,6 +822,14 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			Point2f screenSizeInChunks = new Point2f(getWidth(), getHeight()).mul(scale).div(16);
 			pastedChunksOffset = originOffset.add(screenSizeInChunks.div(2).toPoint2i());
 		}
+	}
+
+	public boolean hasUnsavedSelection() {
+		return unsavedSelection;
+	}
+
+	public void setSelectionSaved() {
+		unsavedSelection = false;
 	}
 
 	public Selection getPastedChunks() {
@@ -856,6 +875,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		if (paintMode) {
 			firstMouseLocation = new Point2f(mouseX, mouseY);
 		}
+		int selectedBefore = selectedChunks;
 		if (scale > CHUNK_GRID_SCALE) {
 			Point2i mouseRegion = getMouseRegion(mouseX, mouseY);
 			Point2i firstRegion = paintMode ? mouseRegion : getMouseRegion(firstMouseLocation.getX(), firstMouseLocation.getY());
@@ -884,19 +904,28 @@ public class TileMap extends Canvas implements ClipboardOwner {
 					if (mark) {
 						if (!selection.isChunkSelected(x, z)) {
 							selection.addChunk(chunk);
-							selectedChunks++;
+							if (selection.isInverted()) {
+								selectedChunks--;
+							} else {
+								selectedChunks++;
+							}
 							resetMarkedChunksImage(region);
 						}
 					} else {
 						if (selection.isChunkSelected(x, z)) {
 							selection.removeChunk(chunk);
-							selectedChunks--;
+							if (selection.isInverted()) {
+								selectedChunks++;
+							} else {
+								selectedChunks--;
+							}
 							resetMarkedChunksImage(region);
 						}
 					}
 				}
 			}
 		}
+		unsavedSelection = !selection.isEmpty() || selectedBefore == selectedChunks && unsavedSelection;
 	}
 
 	private void resetMarkedChunksImage(Point2i region) {
