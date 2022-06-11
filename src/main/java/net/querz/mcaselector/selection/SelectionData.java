@@ -86,7 +86,7 @@ public class SelectionData implements Serializable {
 					maxRegionX = region.getX();
 					maxChunkX = 0;
 				}
-				maxChunkX = entry.getValue() == null ? 0 : entry.getValue().getMaxX(maxChunkX);
+				maxChunkX = entry.getValue() == null ? 31 : entry.getValue().getMaxX(maxChunkX);
 			}
 			if (region.getZ() <= minRegionZ) {
 				if (region.getZ() < minRegionZ) {
@@ -100,7 +100,7 @@ public class SelectionData implements Serializable {
 					maxRegionZ = region.getZ();
 					maxChunkZ = 0;
 				}
-				maxChunkZ = entry.getValue() == null ? 0 : entry.getValue().getMaxZ(maxChunkZ);
+				maxChunkZ = entry.getValue() == null ? 31 : entry.getValue().getMaxZ(maxChunkZ);
 			}
 		}
 		min = new Point2i(minRegionX, minRegionZ).regionToChunk().add(minChunkX, minChunkZ);
