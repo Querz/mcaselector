@@ -1,8 +1,6 @@
 package net.querz.mcaselector.overlay;
 
 import net.querz.mcaselector.overlay.parsers.*;
-import net.querz.mcaselector.tile.overlay.parsers.*;
-
 import java.util.function.Supplier;
 
 public enum OverlayType {

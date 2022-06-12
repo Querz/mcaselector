@@ -30,7 +30,7 @@ public class LightPopulatedFilter extends ByteFilter {
 	}
 
 	@Override
-	Byte getNumber(ChunkData data) {
+	protected Byte getNumber(ChunkData data) {
 		if (data.region() == null) {
 			return 0;
 		}

@@ -38,32 +38,32 @@ public abstract class LongFilter extends NumberFilter<Long> {
 	}
 
 	@Override
-	boolean isEqual(Long a, Long b) {
+	protected boolean isEqual(Long a, Long b) {
 		return a.longValue() == b.longValue();
 	}
 
 	@Override
-	boolean isNotEqual(Long a, Long b) {
+	protected boolean isNotEqual(Long a, Long b) {
 		return a.longValue() != b.longValue();
 	}
 
 	@Override
-	boolean isLargerThan(Long a, Long b) {
+	protected boolean isLargerThan(Long a, Long b) {
 		return a > b;
 	}
 
 	@Override
-	boolean isSmallerThan(Long a, Long b) {
+	protected boolean isSmallerThan(Long a, Long b) {
 		return a < b;
 	}
 
 	@Override
-	boolean isLargerEqual(Long a, Long b) {
+	protected boolean isLargerEqual(Long a, Long b) {
 		return a >= b;
 	}
 
 	@Override
-	boolean isSmallerEqual(Long a, Long b) {
+	protected boolean isSmallerEqual(Long a, Long b) {
 		return a <= b;
 	}
 
