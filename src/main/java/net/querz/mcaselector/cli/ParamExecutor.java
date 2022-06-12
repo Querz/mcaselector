@@ -114,7 +114,7 @@ public final class ParamExecutor {
 			.build());
 		options.addOption(Option.builder()
 			.longOpt("render-layer-only")
-			.desc("Only render the layer spcified by --render-height in image mode")
+			.desc("Only render the layer specified by --render-height in image mode")
 			.build());
 		options.addOption(Option.builder()
 			.longOpt("render-shade")
