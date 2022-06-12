@@ -103,6 +103,29 @@ public final class ParamExecutor {
 			.longOpt("force")
 			.desc("Whether to force NBT tags during NBT change")
 			.build());
+		options.addOption(Option.builder()
+			.longOpt("render-height")
+			.desc("The highest Y level to render in image mode")
+			.hasArg()
+			.build());
+		options.addOption(Option.builder()
+			.longOpt("render-caves")
+			.desc("Enabled cave rendering in image mode")
+			.build());
+		options.addOption(Option.builder()
+			.longOpt("render-layer-only")
+			.desc("Only render the layer spcified by --render-height in image mode")
+			.build());
+		options.addOption(Option.builder()
+			.longOpt("render-shade")
+			.desc("Enable or disable shading of terrain and water in image mode")
+			.hasArg()
+			.build());
+		options.addOption(Option.builder()
+			.longOpt("render-water-shade")
+			.desc("Enable or disable shading of water in image mode")
+			.hasArg()
+			.build());
 
 		// world
 		options.addOption(Option.builder("w")
@@ -275,9 +298,10 @@ public final class ParamExecutor {
 	private void printHelp() {
 		String[] helpOrder = new String[]{
 			"help", "version", "mode", "output", "query", "selection", "source-selection", "radius", "x-offset",
-			"y-offset", "z-offset", "overwrite", "force", "world", "region", "poi", "entities", "source-world",
-			"source-region", "source-poi", "source-entities", "output-world", "output-region", "output-poi",
-			"output-entities", "debug", "process-threads", "write-threads"
+			"y-offset", "z-offset", "overwrite", "force", "render-height", "render-caves", "render-layer-only",
+			"render-shade", "render-water-shade", "world", "region", "poi", "entities", "source-world", "source-region",
+			"source-poi", "source-entities", "output-world", "output-region", "output-poi", "output-entities", "debug",
+			"process-threads", "write-threads"
 		};
 		Map<String, Integer> helpOptionOrderLookup = new HashMap<>();
 		for (int i = 0; i < helpOrder.length; i++) {
@@ -329,6 +353,23 @@ public final class ParamExecutor {
 			throw new ParseException(String.format("%s cannot be larger than %d", key, max));
 		}
 		return i;
+	}
+
+	private boolean parseBoolean(String key, boolean mandatory, boolean def) throws ParseException {
+		if (!line.hasOption(key)) {
+			if (mandatory) {
+				throw new ParseException(String.format("missing mandatory %s parameter", key));
+			}
+			return def;
+		}
+		String value = line.getOptionValue(key);
+		if ("true".equalsIgnoreCase(value) || "1".equals(value)) {
+			return true;
+		} else if ("false".equalsIgnoreCase(value) || "0".equals(value)) {
+			return false;
+		} else {
+			throw new ParseException(String.format("invalid boolean value %s for %s", value, key));
+		}
 	}
 
 	private WorldDirectories parseWorldDirectories(String prefix) throws ParseException {
@@ -683,6 +724,25 @@ public final class ParamExecutor {
 		if (data.getWidth() *  16 * data.getHeight() * 16 > Integer.MAX_VALUE) {
 			throw new ParseException(String.format("dimensions of %dx%d too large to generate an image", data.getWidth() * 16, data.getHeight() * 16));
 		}
+		// render height, cave render, layer only, shade, shade water
+		int renderHeight = parseInt("render-height", 319, -64, 319);
+		if (line.hasOption("render-caves") && line.hasOption("render-layer-only")) {
+			throw new ParseException("render-caves and render-layer-only cannot be used together");
+		}
+		boolean renderCaves = line.hasOption("render-caves");
+		boolean renderLayerOnly = line.hasOption("render-layer-only");
+
+		if ((renderCaves || renderLayerOnly) && (line.hasOption("render-shade") || line.hasOption("render-water-shade"))) {
+			throw new ParseException("render-shade or render-water-shade cannot be used with render-caves or render-layer-only");
+		}
+		boolean renderShade = parseBoolean("render-shade", false, !renderCaves && !renderLayerOnly);
+		boolean renderWaterShade = parseBoolean("render-water-shade", false, !renderCaves && !renderLayerOnly);
+
+		Config.setRenderHeight(renderHeight);
+		Config.setRenderCaves(renderCaves);
+		Config.setRenderLayerOnly(renderLayerOnly);
+		Config.setShade(renderShade);
+		Config.setShadeWater(renderWaterShade);
 
 		CLIJFX.launch();
 
