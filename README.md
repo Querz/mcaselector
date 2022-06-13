@@ -37,21 +37,16 @@ YouTube explaining the basics:
 MCA Selector currently supports the following Minecraft versions:
 
 | Minecraft Version | DataVersion |
-| ----------------- | ----------- |
+|-------------------|-------------|
 | 1.2.1 - 1.12.2    | None - 1343 |
 | 1.13 - 1.13.2     | 1444 - 1631 |
 | 1.14 - 1.14.4     | 1901 - 1976 |
 | 1.15 - 1.15.2     | 2200 - 2230 |
 | 1.16 - 1.16.5     | 2566 - 2586 |
 | 1.17 - 1.17.1     | 2724 - 2730 |
-| 1.18 - ?          | 2825 - ?    |
+| 1.18 - 1.18.2     | 2825 - 2975 |
+| 1.19 - ?          | 3105 - ?    |
 
 There is no guarantee for worlds generated in a Snapshot version to work, even if it is specified in the table above.
 This only represents the current development status towards the next Minecraft release. Old Snapshots of past 
 Minecraft releases are not officially supported.
-
----
-## Sponsoring
-
-| <a href="https://jb.gg/OpenSource"><img width="64" alt="IntelliJ IDEA Logo" src="https://raw.githubusercontent.com/wiki/Querz/mcaselector/images/Sponsor/icon-intellij-idea.png"></a> | IntelliJ IDEA Ultimate was sponsored by [JetBrains](https://jb.gg/OpenSource) through their Open Source program. |
-| --- | --- |
