@@ -1,34 +1,34 @@
-package net.querz.mcaselector.overlay.parsers;
+package net.querz.mcaselector.overlay.overlays;
 
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.overlay.OverlayType;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.LongTag;
 
-public class InhabitedTimeParser extends OverlayParser {
+public class LastUpdateOverlay extends Overlay {
 
 	private static final int MIN_VALUE = 0;
 	private static final int MAX_VALUE = Integer.MAX_VALUE / 20;
 	private String minDuration;
 	private String maxDuration;
 
-	public InhabitedTimeParser() {
-		super(OverlayType.INHABITED_TIME);
+	public LastUpdateOverlay() {
+		super(OverlayType.LAST_UPDATE);
 	}
 
 	@Override
 	public int parseValue(ChunkData chunkData) {
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.region().getData().getInt("DataVersion"));
-		LongTag tag = chunkFilter.getInhabitedTime(chunkData.region().getData());
+		LongTag tag = chunkFilter.getLastUpdate(chunkData.region().getData());
 		return tag == null ? 0 : tag.asInt();
 	}
 
 	@Override
 	public String name() {
-		return "InhabitedTime";
+		return "LastUpdate";
 	}
 
 	public String minString() {

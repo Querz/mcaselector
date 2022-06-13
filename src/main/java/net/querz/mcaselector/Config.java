@@ -4,7 +4,7 @@ import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.tile.Tile;
-import net.querz.mcaselector.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.text.Translation;
 import org.apache.logging.log4j.LogManager;
@@ -183,7 +183,7 @@ public final class Config {
 	public static final float MIN_SCALE = 0.05f;
 	public static final double IMAGE_POOL_SIZE = 2.5;
 
-	private static List<OverlayParser> overlays = null;
+	private static List<Overlay> overlays = null;
 
 	private Config() {}
 
@@ -371,11 +371,11 @@ public final class Config {
 		Translation.load(locale);
 	}
 
-	public static void setOverlays(List<OverlayParser> overlays) {
+	public static void setOverlays(List<Overlay> overlays) {
 		Config.overlays = overlays;
 	}
 
-	public static List<OverlayParser> getOverlays() {
+	public static List<Overlay> getOverlays() {
 		return Config.overlays;
 	}
 
@@ -448,10 +448,10 @@ public final class Config {
 				LOGGER.warn("failed to read overlays", ex);
 			}
 			if (overlayArray != null) {
-				List<OverlayParser> overlays = new ArrayList<>();
+				List<Overlay> overlays = new ArrayList<>();
 				for (Object o : overlayArray) {
 					try {
-						overlays.add(OverlayParser.fromJSON((JSONObject) o));
+						overlays.add(Overlay.fromJSON((JSONObject) o));
 					} catch (Exception ex) {
 						LOGGER.warn("failed to parse overlay", ex);
 					}
@@ -500,7 +500,7 @@ public final class Config {
 			}
 		} else {
 			JSONArray overlayArray = new JSONArray();
-			for (OverlayParser parser : overlays) {
+			for (Overlay parser : overlays) {
 				overlayArray.put(parser.toJSON());
 			}
 			try {

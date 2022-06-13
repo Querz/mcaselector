@@ -1,12 +1,12 @@
-package net.querz.mcaselector.overlay.parsers;
+package net.querz.mcaselector.overlay.overlays;
 
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.overlay.OverlayType;
 
-public class DataVersionParser extends OverlayParser {
+public class DataVersionOverlay extends Overlay {
 
-	public DataVersionParser() {
+	public DataVersionOverlay() {
 		super(OverlayType.DATA_VERSION);
 	}
 

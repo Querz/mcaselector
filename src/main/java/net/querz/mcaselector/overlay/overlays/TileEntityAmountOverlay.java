@@ -1,4 +1,4 @@
-package net.querz.mcaselector.overlay.parsers;
+package net.querz.mcaselector.overlay.overlays;
 
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.overlay.AmountParser;
@@ -7,9 +7,9 @@ import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.ListTag;
 
-public class TileEntityAmountParser extends AmountParser {
+public class TileEntityAmountOverlay extends AmountParser {
 
-	public TileEntityAmountParser() {
+	public TileEntityAmountOverlay() {
 		super(OverlayType.TILE_ENTITY_AMOUNT);
 	}
 

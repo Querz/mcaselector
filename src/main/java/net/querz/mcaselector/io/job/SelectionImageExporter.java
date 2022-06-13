@@ -75,6 +75,7 @@ public final class SelectionImageExporter {
 			// test if the image is already in cache
 			File cacheImage = FileHelper.createPNGFilePath(Config.getCacheDir(), 1, getRegionDirectories().getLocation());
 			File regionFile = FileHelper.createRegionMCAFilePath(getRegionDirectories().getLocation());
+			RegionMCAFile mcaFile = null;
 			if (cacheImage.exists()) {
 				// load cached image
 				image = new Image(cacheImage.toURI().toString(), false);
@@ -87,7 +88,7 @@ public final class SelectionImageExporter {
 					return true;
 				}
 
-				RegionMCAFile mcaFile = new RegionMCAFile(regionFile);
+				mcaFile = new RegionMCAFile(regionFile);
 				try {
 					mcaFile.load(new ByteArrayPointer(data));
 				} catch (IOException ex) {
@@ -106,7 +107,7 @@ public final class SelectionImageExporter {
 			Image overlay = null;
 			if (overlayPool != null && overlayPool.getParser() != null) {
 				// load overlay image
-				overlay = overlayPool.getImage(getRegionDirectories().getLocation());
+				overlay = overlayPool.getImage(getRegionDirectories().getLocation(), mcaFile, null, null);
 				// scale up
 				BufferedImage scaled = ImageHelper.scaleImage(SwingFXUtils.fromFXImage(overlay, null), 512, Config.smoothOverlays());
 				overlay = SwingFXUtils.toFXImage(scaled, null);

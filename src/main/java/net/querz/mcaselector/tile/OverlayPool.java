@@ -10,9 +10,12 @@ import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.NamedThreadFactory;
 import net.querz.mcaselector.io.db.CacheDBController;
 import net.querz.mcaselector.io.job.ParseDataJob;
+import net.querz.mcaselector.io.mca.EntitiesMCAFile;
+import net.querz.mcaselector.io.mca.PoiMCAFile;
+import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
-import net.querz.mcaselector.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.Overlay;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.awt.*;
@@ -20,6 +23,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -48,7 +52,7 @@ public class OverlayPool {
 			new NamedThreadFactory("overlayValuePool"));
 
 	private final CacheDBController dataCache = CacheDBController.getInstance();
-	private OverlayParser parser;
+	private Overlay parser;
 
 	private Point2i hoveredRegion;
 	private int[] hoveredRegionData;
@@ -57,11 +61,11 @@ public class OverlayPool {
 		this.tileMap = tileMap;
 	}
 
-	public OverlayParser getParser() {
+	public Overlay getParser() {
 		return parser;
 	}
 
-	public void setParser(OverlayParser overlay) {
+	public void setParser(Overlay overlay) {
 		this.parser = overlay;
 		if (overlay != null && overlay.isValid() && overlay.isActive()) {
 			try {
@@ -74,7 +78,7 @@ public class OverlayPool {
 		}
 	}
 
-	public void requestImage(Tile tile, OverlayParser parser) {
+	public void requestImage(Tile tile, Overlay parser) {
 		if (parser == null || !parser.isActive() || !parser.isValid()) {
 			return;
 		}
@@ -91,7 +95,7 @@ public class OverlayPool {
 
 		ParseDataJob.setLoading(tile, true);
 
-		OverlayParser parserClone = parser.clone();
+		Overlay parserClone = parser.clone();
 
 		overlayCacheLoaders.execute(() -> {
 			int[] data = null;
@@ -131,7 +135,7 @@ public class OverlayPool {
 		});
 	}
 
-	public Image getImage(Point2i location) {
+	public Image getImage(Point2i location, RegionMCAFile region, PoiMCAFile poi, EntitiesMCAFile entities) {
 		try {
 			int[] data = dataCache.getData(parser, location);
 			if (data != null) {
@@ -147,6 +151,7 @@ public class OverlayPool {
 				new Tile(location),
 				Config.getWorldDirs().makeRegionDirectories(location),
 				Config.getWorldUUID(),
+				region, poi, entities,
 				(i, u) -> {
 					if (i != null) {
 						image.set(parseColorGrades(i, parser.min(), parser.max(), parser.getMinHue(), parser.getMaxHue()));
@@ -192,9 +197,9 @@ public class OverlayPool {
 		}
 	}
 
-	public void switchTo(String dbPath) {
+	public void switchTo(String dbPath, List<Overlay> overlays) {
 		try {
-			dataCache.switchTo(dbPath, tileMap.getOverlayParsers());
+			dataCache.switchTo(dbPath, overlays);
 			hoveredRegion = null;
 			hoveredRegionData = null;
 		} catch (SQLException ex) {
@@ -204,7 +209,7 @@ public class OverlayPool {
 
 	public void clear() {
 		try {
-			dataCache.clear(tileMap.getOverlayParsers());
+			dataCache.clear(tileMap.getOverlays());
 			hoveredRegion = null;
 			hoveredRegionData = null;
 		} catch (Exception ex) {

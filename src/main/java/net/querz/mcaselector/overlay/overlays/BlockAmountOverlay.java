@@ -1,18 +1,18 @@
-package net.querz.mcaselector.overlay.parsers;
+package net.querz.mcaselector.overlay.overlays;
 
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.overlay.OverlayType;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
 
-public class BlockAmountParser extends OverlayParser {
+public class BlockAmountOverlay extends Overlay {
 
 	private static final int MIN_VALUE = 0;
 	private static final int MAX_VALUE = 98304; // 384 * 16 * 16
 
-	public BlockAmountParser() {
+	public BlockAmountOverlay() {
 		super(OverlayType.BLOCK_AMOUNT);
 		setMultiValues(new String[0]);
 	}

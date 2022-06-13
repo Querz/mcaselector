@@ -1,4 +1,4 @@
-package net.querz.mcaselector.overlay.parsers;
+package net.querz.mcaselector.overlay.overlays;
 
 import net.querz.mcaselector.exception.ParseException;
 import net.querz.mcaselector.io.mca.Chunk;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CustomParser extends AmountParser {
+public class CustomOverlay extends AmountParser {
 
 	private List<Node> path = new ArrayList<>();
 	private String root;
@@ -26,7 +26,7 @@ public class CustomParser extends AmountParser {
 
 	private final Pattern indexPattern = Pattern.compile("^\\[(?<index>\\d+)]$");
 
-	public CustomParser() {
+	public CustomOverlay() {
 		super(OverlayType.CUSTOM);
 		setMultiValues(new String[0]);
 	}

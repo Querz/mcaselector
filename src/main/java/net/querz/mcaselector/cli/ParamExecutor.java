@@ -7,6 +7,8 @@ import net.querz.mcaselector.filter.FilterParser;
 import net.querz.mcaselector.filter.filters.GroupFilter;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.job.*;
+import net.querz.mcaselector.overlay.Overlay;
+import net.querz.mcaselector.overlay.OverlayParser;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.property.DataProperty;
@@ -14,6 +16,7 @@ import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.selection.SelectionData;
+import net.querz.mcaselector.tile.OverlayPool;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -124,6 +127,36 @@ public final class ParamExecutor {
 		options.addOption(Option.builder()
 			.longOpt("render-water-shade")
 			.desc("Enable or disable shading of water in image mode")
+			.hasArg()
+			.build());
+		options.addOption(Option.builder()
+			.longOpt("overlay-type")
+			.desc("The type of overlay to be rendered in image mode")
+			.hasArg()
+			.build());
+		options.addOption(Option.builder()
+			.longOpt("overlay-min-value")
+			.desc("The minimum value to be used for the overlay in image mode")
+			.hasArg()
+			.build());
+		options.addOption(Option.builder()
+			.longOpt("overlay-max-value")
+			.desc("The maximum value to be used for the overlay in image mode")
+			.hasArg()
+			.build());
+		options.addOption(Option.builder()
+			.longOpt("overlay-data")
+			.desc("Additional data to be used for the overlay in image mode")
+			.hasArg()
+			.build());
+		options.addOption(Option.builder()
+			.longOpt("overlay-min-hue")
+			.desc("The minimum hue for the overlay gradient, ranging from 0.0 to 1.0")
+			.hasArg()
+			.build());
+		options.addOption(Option.builder()
+			.longOpt("overlay-max-hue")
+			.desc("The maximum hue for the overlay gradient, ranging from 0.0 to 1.0; When smaller than overlay-min-hue the gradient is flipped")
 			.hasArg()
 			.build());
 
@@ -299,9 +332,10 @@ public final class ParamExecutor {
 		String[] helpOrder = new String[]{
 			"help", "version", "mode", "output", "query", "selection", "source-selection", "radius", "x-offset",
 			"y-offset", "z-offset", "overwrite", "force", "render-height", "render-caves", "render-layer-only",
-			"render-shade", "render-water-shade", "world", "region", "poi", "entities", "source-world", "source-region",
-			"source-poi", "source-entities", "output-world", "output-region", "output-poi", "output-entities", "debug",
-			"process-threads", "write-threads"
+			"render-shade", "render-water-shade", "overlay-type", "overlay-min-value", "overlay-max-value",
+			"overlay-data", "overlay-min-hue", "overlay-max-hue", "world", "region", "poi", "entities", "source-world",
+			"source-region", "source-poi", "source-entities", "output-world", "output-region", "output-poi",
+			"output-entities", "debug", "process-threads", "write-threads"
 		};
 		Map<String, Integer> helpOptionOrderLookup = new HashMap<>();
 		for (int i = 0; i < helpOrder.length; i++) {
@@ -353,6 +387,29 @@ public final class ParamExecutor {
 			throw new ParseException(String.format("%s cannot be larger than %d", key, max));
 		}
 		return i;
+	}
+
+	private float parseFloat(String key, boolean mandatory, float def, float min, float max) throws ParseException {
+		if (!line.hasOption(key)) {
+			if (mandatory) {
+				throw new ParseException(String.format("missing mandatory %s parameter", key));
+			}
+			return def;
+		}
+		String value = line.getOptionValue(key);
+		float f;
+		try {
+			f = Float.parseFloat(value);
+		} catch (NumberFormatException ex) {
+			throw new ParseException(String.format("parameter for argument %s is not a valid decimal number", key));
+		}
+		if (f < min) {
+			throw new ParseException(String.format("%s cannot be smaller than %f", key, min));
+		}
+		if (f > max) {
+			throw new ParseException(String.format("%s cannot be larger than %f", key, max));
+		}
+		return f;
 	}
 
 	private boolean parseBoolean(String key, boolean mandatory, boolean def) throws ParseException {
@@ -696,7 +753,7 @@ public final class ParamExecutor {
 
 	private void cache(FutureTask<Boolean> future) throws ParseException, ExecutionException, InterruptedException {
 		Config.setWorldDirs(parseWorldDirectories(""));
-		if (CLIJFX.hasJavaFX()) {
+		if (!CLIJFX.hasJavaFX()) {
 			throw new ParseException("no JavaFX installation found");
 		}
 
@@ -714,7 +771,7 @@ public final class ParamExecutor {
 
 	private void image(FutureTask<Boolean> future) throws ParseException, ExecutionException, InterruptedException {
 		Config.setWorldDirs(parseWorldDirectories(""));
-		if (CLIJFX.hasJavaFX()) {
+		if (!CLIJFX.hasJavaFX()) {
 			throw new ParseException("no JavaFX installation found");
 		}
 
@@ -748,14 +805,14 @@ public final class ParamExecutor {
 
 		DataProperty<int[]> pixels = new DataProperty<>();
 		DataProperty<IOException> saveException = new DataProperty<>();
-		CLIProgress saveProgress = new CLIProgress("generating image");
+		CLIProgress saveProgress = new CLIProgress("saving image");
 		saveProgress.onDone(() -> {
 			if (saveException.get() != null) {
 				throw new RuntimeException(saveException.get());
 			}
 			future.run();
 		});
-		CLIProgress generateProgress = new CLIProgress("saving image");
+		CLIProgress generateProgress = new CLIProgress("generating image");
 		generateProgress.onDone(() -> {
 			if (!generateProgress.taskCancelled() && pixels.get() != null) {
 				try {
@@ -766,7 +823,24 @@ public final class ParamExecutor {
 			}
 		});
 
-		// TODO: parse Overlays
-		pixels.set(SelectionImageExporter.exportSelectionImage(data, null, generateProgress));
+		OverlayPool overlayPool = null;
+		if (line.hasOption("overlay-type")) {
+			String type = line.getOptionValue("overlay-type");
+			String min = line.getOptionValue("overlay-min-value");
+			String max = line.getOptionValue("overlay-max-value");
+			String additionalData = line.getOptionValue("overlay-data");
+			float minHue = parseFloat("overlay-min-hue", false, 0.66666667f, 0.0f, 1.0f);
+			float maxHue = parseFloat("overlay-max-hue", false, 0.0f, 0.0f, 1.0f);
+			try {
+				Overlay overlay = new OverlayParser(type, min, max, additionalData, minHue, maxHue).parse();
+				overlayPool = new OverlayPool(null);
+				overlayPool.switchTo(new File(Config.getCacheDir(), "cache.db").toString(), List.of(overlay));
+				overlayPool.setParser(overlay);
+			} catch (Exception ex) {
+				throw new ParseException(ex.getMessage());
+			}
+		}
+
+		pixels.set(SelectionImageExporter.exportSelectionImage(data, overlayPool, generateProgress));
 	}
 }

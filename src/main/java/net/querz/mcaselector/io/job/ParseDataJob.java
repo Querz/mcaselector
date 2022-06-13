@@ -9,7 +9,7 @@ import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.tile.Tile;
-import net.querz.mcaselector.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.Overlay;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.IOException;
@@ -27,15 +27,34 @@ public class ParseDataJob extends ProcessDataJob {
 
 	private final BiConsumer<int[], UUID> dataCallback;
 	private final UUID world;
-	private final OverlayParser parser;
+	private final RegionMCAFile region;
+	private final PoiMCAFile poi;
+	private final EntitiesMCAFile entities;
+	private final Overlay parser;
 	private final Tile tile;
 	private final Supplier<Integer> prioritySupplier;
 
-	public ParseDataJob(Tile tile, RegionDirectories dirs, UUID world, BiConsumer<int[], UUID> dataCallback, OverlayParser parser, Supplier<Integer> prioritySupplier) {
+	public ParseDataJob(Tile tile, RegionDirectories dirs, UUID world, RegionMCAFile region, PoiMCAFile poi, EntitiesMCAFile entities, BiConsumer<int[], UUID> dataCallback, Overlay parser, Supplier<Integer> prioritySupplier) {
 		super(dirs, PRIORITY_LOW);
 		this.tile = tile;
 		this.dataCallback = dataCallback;
 		this.world = world;
+		this.region = region;
+		this.poi = poi;
+		this.entities = entities;
+		this.parser = parser;
+		this.prioritySupplier = prioritySupplier;
+		setLoading(tile, true);
+	}
+
+	public ParseDataJob(Tile tile, RegionDirectories dirs, UUID world, BiConsumer<int[], UUID> dataCallback, Overlay parser, Supplier<Integer> prioritySupplier) {
+		super(dirs, PRIORITY_LOW);
+		this.tile = tile;
+		this.dataCallback = dataCallback;
+		this.world = world;
+		this.region = null;
+		this.poi = null;
+		this.entities = null;
 		this.parser = parser;
 		this.prioritySupplier = prioritySupplier;
 		setLoading(tile, true);
@@ -67,7 +86,9 @@ public class ParseDataJob extends ProcessDataJob {
 		Timer t = new Timer();
 
 		RegionMCAFile regionMCAFile = null;
-		if (getRegionDirectories().getRegion() != null && getRegionDirectories().getRegion().exists() && getRegionDirectories().getRegion().length() > 0) {
+		if (region != null) {
+			regionMCAFile = region;
+		} else if (getRegionDirectories().getRegion() != null && getRegionDirectories().getRegion().exists() && getRegionDirectories().getRegion().length() > 0) {
 			byte[] regionData = loadRegion();
 			regionMCAFile = new RegionMCAFile(getRegionDirectories().getRegion());
 			if (regionData != null) {
@@ -82,7 +103,9 @@ public class ParseDataJob extends ProcessDataJob {
 		}
 
 		EntitiesMCAFile entitiesMCAFile = null;
-		if (getRegionDirectories().getEntities() != null && getRegionDirectories().getEntities().exists() && getRegionDirectories().getEntities().length() > 0) {
+		if (entities != null) {
+			entitiesMCAFile = entities;
+		} else if (getRegionDirectories().getEntities() != null && getRegionDirectories().getEntities().exists() && getRegionDirectories().getEntities().length() > 0) {
 			byte[] entitiesData = loadEntities();
 			entitiesMCAFile = new EntitiesMCAFile(getRegionDirectories().getEntities());
 			if (entitiesData != null) {
@@ -97,7 +120,9 @@ public class ParseDataJob extends ProcessDataJob {
 		}
 
 		PoiMCAFile poiMCAFile = null;
-		if (getRegionDirectories().getPoi() != null && getRegionDirectories().getPoi().exists() && getRegionDirectories().getPoi().length() > 0) {
+		if (poi != null) {
+			poiMCAFile = poi;
+		} else if (getRegionDirectories().getPoi() != null && getRegionDirectories().getPoi().exists() && getRegionDirectories().getPoi().length() > 0) {
 			byte[] poiData = loadPoi();
 			poiMCAFile = new PoiMCAFile(getRegionDirectories().getPoi());
 			if (poiData != null) {

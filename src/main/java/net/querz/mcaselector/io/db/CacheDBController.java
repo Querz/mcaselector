@@ -1,7 +1,7 @@
 package net.querz.mcaselector.io.db;
 
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.validation.ShutdownHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,7 +52,7 @@ public final class CacheDBController {
 		return instance;
 	}
 
-	public void switchTo(String dbPath, List<OverlayParser> parsers) throws SQLException {
+	public void switchTo(String dbPath, List<Overlay> overlays) throws SQLException {
 		removeCloseShutdownHook();
 		close();
 
@@ -82,12 +82,12 @@ public final class CacheDBController {
 		this.dbPath = dbPath;
 		addCloseShutdownHook();
 
-		initTables(parsers);
+		initTables(overlays);
 	}
 
-	public void initTables(List<OverlayParser> parsers) throws SQLException {
+	public void initTables(List<Overlay> overlays) throws SQLException {
 		Statement statement = connection.createStatement();
-		for (OverlayParser parser : parsers) {
+		for (Overlay parser : overlays) {
 			statement.executeUpdate(String.format(
 					"CREATE TABLE IF NOT EXISTS %s%s (" +
 							"p BIGINT PRIMARY KEY, " +
@@ -173,7 +173,7 @@ public final class CacheDBController {
 		ps.executeBatch();
 	}
 
-	public int[] getData(OverlayParser parser, Point2i region) throws IOException, SQLException {
+	public int[] getData(Overlay parser, Point2i region) throws IOException, SQLException {
 		Statement statement = connection.createStatement();
 		ResultSet result = statement.executeQuery(String.format(
 				"SELECT d FROM %s%s WHERE p=%s;", parser.name(), parser.getMultiValuesID(), region.asLong()));
@@ -189,7 +189,7 @@ public final class CacheDBController {
 		return data;
 	}
 
-	public void setData(OverlayParser parser, Point2i region, int[] data) throws IOException, SQLException {
+	public void setData(Overlay parser, Point2i region, int[] data) throws IOException, SQLException {
 		PreparedStatement ps = connection.prepareStatement(String.format(
 				"INSERT INTO %s%s (p, d) " +
 						"VALUES (?, ?) " +
@@ -209,7 +209,7 @@ public final class CacheDBController {
 		ps.executeBatch();
 	}
 
-	public void deleteData(OverlayParser parser, Point2i region) throws SQLException {
+	public void deleteData(Overlay parser, Point2i region) throws SQLException {
 		PreparedStatement ps = connection.prepareStatement(String.format(
 				"DELETE FROM %s%s WHERE p=?;", parser.name(), parser.getMultiValuesID()));
 		ps.setLong(1, region.asLong());
@@ -229,7 +229,7 @@ public final class CacheDBController {
 		}
 	}
 
-	public void clear(List<OverlayParser> parsers) throws IOException, SQLException {
+	public void clear(List<Overlay> overlays) throws IOException, SQLException {
 		if (dbPath == null) {
 			return;
 		}
@@ -240,6 +240,6 @@ public final class CacheDBController {
 		} else {
 			throw new IOException(String.format("failed to delete cache db %s", dbFile.getCanonicalPath()));
 		}
-		switchTo(dbFile.getPath(), parsers);
+		switchTo(dbFile.getPath(), overlays);
 	}
 }

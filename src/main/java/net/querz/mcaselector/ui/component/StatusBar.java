@@ -15,7 +15,7 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tile.TileMap;
-import net.querz.mcaselector.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.validation.ShutdownHooks;
 
 import java.util.concurrent.Executors;
@@ -118,7 +118,7 @@ public class StatusBar extends StackPane {
 
 	private void updateOverlay(TileMap tileMap, Point2i chunk) {
 		if (tileMap.getOverlay() != null) {
-			OverlayParser p = tileMap.getOverlay();
+			Overlay p = tileMap.getOverlay();
 			String s = p.getShortMultiValues();
 			if (!p.isActive()) {
 				overlay.setText(Translation.STATUS_OVERLAY + ": " + p.getType() + "(" + p.min() + ", " + p.max() + (s == null ? "" : ", " + s) + "), -");

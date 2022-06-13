@@ -22,7 +22,7 @@ import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.selection.SelectionData;
-import net.querz.mcaselector.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.ui.DialogHelper;
 import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.ui.Window;
@@ -91,8 +91,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private final ImagePool imgPool;
 	private final OverlayPool overlayPool;
 
-	private List<OverlayParser> overlayParsers = Collections.singletonList(null);
-	private final ObjectProperty<OverlayParser> overlayParser = new SimpleObjectProperty<>(null);
+	private List<Overlay> overlays = Collections.singletonList(null);
+	private final ObjectProperty<Overlay> overlayParser = new SimpleObjectProperty<>(null);
 
 	private Selection pastedChunks;
 	private WorldDirectories pastedWorld;
@@ -334,17 +334,17 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			return;
 		}
 
-		int index = overlayParsers.indexOf(overlayParser.get());
+		int index = overlays.indexOf(overlayParser.get());
 
-		OverlayParser parser;
+		Overlay parser;
 		do {
 			index++;
-			if (index == overlayParsers.size()) {
+			if (index == overlays.size()) {
 				index = 0;
 			}
 
 		// repeat if the current parser is null, it is invalid or inactive or if the types are not the same
-		} while ((parser = overlayParsers.get(index)) == null || !parser.isActive() || !parser.isValid() || parser.getType() != overlayParser.get().getType());
+		} while ((parser = overlays.get(index)) == null || !parser.isActive() || !parser.isValid() || parser.getType() != overlayParser.get().getType());
 
 		setOverlay(parser);
 		JobHandler.cancelParserQueue();
@@ -356,39 +356,39 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			return;
 		}
 
-		int index = overlayParsers.indexOf(overlayParser.get());
+		int index = overlays.indexOf(overlayParser.get());
 
-		OverlayParser parser;
+		Overlay parser;
 		do {
 			index++;
-			if (index == overlayParsers.size()) {
+			if (index == overlays.size()) {
 				index = 0;
 			}
 
 			// repeat if the current parser is not null, it is inactive or invalid or the types are equal
-		} while ((parser = overlayParsers.get(index)) != null && (!parser.isActive() || !parser.isValid() || overlayParser.get() != null && parser.getType() == overlayParser.get().getType()));
+		} while ((parser = overlays.get(index)) != null && (!parser.isActive() || !parser.isValid() || overlayParser.get() != null && parser.getType() == overlayParser.get().getType()));
 
 		setOverlay(parser);
 		JobHandler.cancelParserQueue();
 		draw();
 	}
 
-	public void setOverlays(List<OverlayParser> overlays) {
+	public void setOverlays(List<Overlay> overlays) {
 		if (overlays == null) {
-			overlayParsers = Collections.singletonList(null);
+			this.overlays = Collections.singletonList(null);
 			setOverlay(null);
 			JobHandler.cancelParserQueue();
 			return;
 		}
-		overlayParsers = new ArrayList<>(overlays.size() + 1);
-		overlayParsers.addAll(overlays);
-		overlayParsers.sort(Comparator.comparing(OverlayParser::getType));
-		overlayParsers.add(null);
+		this.overlays = new ArrayList<>(overlays.size() + 1);
+		this.overlays.addAll(overlays);
+		this.overlays.sort(Comparator.comparing(Overlay::getType));
+		this.overlays.add(null);
 		setOverlay(null);
 		JobHandler.cancelParserQueue();
 	}
 
-	public void setOverlay(OverlayParser overlay) {
+	public void setOverlay(Overlay overlay) {
 		if (disabled) {
 			return;
 		}
@@ -404,23 +404,23 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		}
 	}
 
-	public OverlayParser getOverlay() {
+	public Overlay getOverlay() {
 		return overlayParser.get();
 	}
 
-	public ObjectProperty<OverlayParser> overlayParserProperty() {
+	public ObjectProperty<Overlay> overlayParserProperty() {
 		return overlayParser;
 	}
 
-	// returns a NEW copy of all current parsers
-	public List<OverlayParser> getOverlayParsers() {
-		List<OverlayParser> parsers = new ArrayList<>(overlayParsers.size() - 1);
-		for (OverlayParser parser : overlayParsers) {
+	// returns a NEW copy of all current overlays
+	public List<Overlay> getOverlays() {
+		List<Overlay> overlays = new ArrayList<>(this.overlays.size() - 1);
+		for (Overlay parser : this.overlays) {
 			if (parser != null) {
-				parsers.add(parser.clone());
+				overlays.add(parser.clone());
 			}
 		}
-		return parsers;
+		return overlays;
 	}
 
 	public void setScale(float newScale) {

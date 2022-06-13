@@ -181,7 +181,7 @@ public class DialogHelper {
 	}
 
 	public static void editOverlays(TileMap tileMap, Stage primaryStage) {
-		new OverlayEditorDialog(primaryStage, tileMap, tileMap.getOverlayParsers()).show();
+		new OverlayEditorDialog(primaryStage, tileMap, tileMap.getOverlays()).show();
 	}
 
 	public static void deleteSelection(TileMap tileMap, Stage primaryStage) {
@@ -576,7 +576,7 @@ public class DialogHelper {
 			tileMap.draw();
 			tileMap.disable(false);
 			tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
-			tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString());
+			tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString(), tileMap.getOverlays());
 			task.done(Translation.DIALOG_PROGRESS_DONE.toString());
 			Platform.runLater(() -> tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent()));
 		});

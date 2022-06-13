@@ -1,16 +1,16 @@
-package net.querz.mcaselector.overlay.parsers;
+package net.querz.mcaselector.overlay.overlays;
 
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.overlay.OverlayType;
 
-public class TimestampParser extends OverlayParser {
+public class TimestampOverlay extends Overlay {
 
 	private String minTimestamp;
 	private String maxTimestamp;
 
-	public TimestampParser() {
+	public TimestampOverlay() {
 		super(OverlayType.TIMESTAMP);
 	}
 

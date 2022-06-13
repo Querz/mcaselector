@@ -1,17 +1,17 @@
-package net.querz.mcaselector.overlay.parsers;
+package net.querz.mcaselector.overlay.overlays;
 
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.overlay.OverlayType;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
 
-public class AverageHeightParser extends OverlayParser {
+public class AverageHeightOverlay extends Overlay {
 
 	private static final int MIN_VALUE = -64;
 	private static final int MAX_VALUE = 320;
 
-	public AverageHeightParser() {
+	public AverageHeightOverlay() {
 		super(OverlayType.AVERAGE_HEIGHT);
 	}
 

@@ -19,8 +19,8 @@ import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tile.TileMap;
-import net.querz.mcaselector.overlay.parsers.InhabitedTimeParser;
-import net.querz.mcaselector.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.overlays.InhabitedTimeOverlay;
+import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.ui.component.OverlayBox;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +30,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
 	private static final Image addIcon = FileHelper.getIconFromResources("img/add");
 
-	private final List<OverlayParser> overlays;
+	private final List<Overlay> overlays;
 
 	private final ScrollPane overlaysScrollPane = new ScrollPane();
 	private final VBox overlaysList = new VBox();
@@ -40,13 +40,13 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
 	private final DataProperty<Boolean> closedWithOK = new DataProperty<>(false);
 
-	private final ChangeListener<OverlayParser> tileMapSelectedOverlayChange = (v, o, n) -> {
+	private final ChangeListener<Overlay> tileMapSelectedOverlayChange = (v, o, n) -> {
 		if (o != n) {
 			select(n);
 		}
 	};
 
-	public OverlayEditorDialog(Stage primaryStage, TileMap tileMap, List<OverlayParser> values) {
+	public OverlayEditorDialog(Stage primaryStage, TileMap tileMap, List<Overlay> values) {
 		if (values == null) {
 			this.overlays = new ArrayList<>();
 		} else {
@@ -54,8 +54,8 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		}
 		this.tileMap = tileMap;
 
-		OverlayParser originalOverlay = tileMap.getOverlay() != null ? tileMap.getOverlay().clone() : null;
-		List<OverlayParser> originalOverlays = tileMap.getOverlayParsers();
+		Overlay originalOverlay = tileMap.getOverlay() != null ? tileMap.getOverlay().clone() : null;
+		List<Overlay> originalOverlays = tileMap.getOverlays();
 
 		titleProperty().bind(Translation.DIALOG_EDIT_OVERLAYS_TITLE.getProperty());
 		initModality(Modality.NONE);
@@ -90,7 +90,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		// center: additional data
 		// right: active, delete
 
-		for (OverlayParser parser : overlays) {
+		for (Overlay parser : overlays) {
 			add(parser);
 		}
 
@@ -98,7 +98,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
 		add.getStyleClass().add("overlay-add-label");
 		add.setOnMouseReleased(e -> {
-			InhabitedTimeParser newParser = new InhabitedTimeParser();
+			InhabitedTimeOverlay newParser = new InhabitedTimeOverlay();
 			overlays.add(newParser);
 			add(newParser);
 			tileMap.setOverlays(overlays);
@@ -128,7 +128,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		tileMap.getWindow().trackDialog(this);
 	}
 
-	private void onTypeChange(OverlayParser oldValue, OverlayParser newValue) {
+	private void onTypeChange(Overlay oldValue, Overlay newValue) {
 		int index = overlays.indexOf(oldValue);
 		overlays.set(index, newValue);
 		tileMap.clearOverlay();
@@ -137,7 +137,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		tileMap.draw();
 	}
 
-	private void onDelete(OverlayParser deleted) {
+	private void onDelete(Overlay deleted) {
 		int index = overlays.indexOf(deleted);
 		overlays.remove(index);
 		overlaysList.getChildren().remove(index);
@@ -145,7 +145,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		tileMap.draw();
 	}
 
-	private void add(OverlayParser parser) {
+	private void add(Overlay parser) {
 		OverlayBox box = new OverlayBox(parser);
 		box.setOnTypeChange(this::onTypeChange);
 		box.setOnValuesChange(p -> {
@@ -164,7 +164,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		overlaysList.getChildren().add(box);
 	}
 
-	private void select(OverlayParser parser) {
+	private void select(Overlay parser) {
 		for (Node child : overlaysList.getChildren()) {
 			OverlayBox box = (OverlayBox) child;
 			box.setSelected(box.valueProperty.get().same(parser));
@@ -173,19 +173,19 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
 	public static class Result {
 
-		private final List<OverlayParser> overlays;
+		private final List<Overlay> overlays;
 
-		public Result(List<OverlayParser> overlays) {
+		public Result(List<Overlay> overlays) {
 			this.overlays = overlays;
 		}
 
-		public List<OverlayParser> getOverlays() {
+		public List<Overlay> getOverlays() {
 			return overlays;
 		}
 
 		@Override
 		public String toString() {
-			return Arrays.toString(overlays.toArray(new OverlayParser[0]));
+			return Arrays.toString(overlays.toArray(new Overlay[0]));
 		}
 	}
 }

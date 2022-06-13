@@ -1,6 +1,6 @@
 package net.querz.mcaselector.overlay;
 
-public abstract class AmountParser extends OverlayParser {
+public abstract class AmountParser extends Overlay {
 
 	public AmountParser(OverlayType type) {
 		super(type);

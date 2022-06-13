@@ -24,7 +24,7 @@ import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.overlay.OverlayType;
 import net.querz.mcaselector.ui.UIFactory;
 
@@ -39,11 +39,11 @@ public class OverlayBox extends BorderPane {
 	private static final PseudoClass invalid = PseudoClass.getPseudoClass("invalid");
 	private static final PseudoClass selected = PseudoClass.getPseudoClass("selected");
 
-	public DataProperty<OverlayParser> valueProperty;
+	public DataProperty<Overlay> valueProperty;
 
-	private BiConsumer<OverlayParser, OverlayParser> onTypeChange;
-	private Consumer<OverlayParser> onValuesChange;
-	private Consumer<OverlayParser> onDelete;
+	private BiConsumer<Overlay, Overlay> onTypeChange;
+	private Consumer<Overlay> onValuesChange;
+	private Consumer<Overlay> onDelete;
 
 	private final GridPane inputs = new GridPane();
 	private final GridPane options = new GridPane();
@@ -56,7 +56,7 @@ public class OverlayBox extends BorderPane {
 	private final CheckBox active = new CheckBox();
 	private final Label delete = new Label("", new ImageView(deleteIcon));
 
-	public OverlayBox(OverlayParser value) {
+	public OverlayBox(Overlay value) {
 		valueProperty = new DataProperty<>(value);
 
 		getStyleClass().add("overlay-box");
@@ -165,7 +165,7 @@ public class OverlayBox extends BorderPane {
 		pseudoClassStateChanged(OverlayBox.selected, selected);
 	}
 
-	private OverlayParser getValue() {
+	private Overlay getValue() {
 		return valueProperty.get();
 	}
 
@@ -185,15 +185,15 @@ public class OverlayBox extends BorderPane {
 			BackgroundRepeat.NO_REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT))));
 	}
 
-	public void setOnTypeChange(BiConsumer<OverlayParser, OverlayParser> consumer) {
+	public void setOnTypeChange(BiConsumer<Overlay, Overlay> consumer) {
 		onTypeChange = consumer;
 	}
 
-	public void setOnValuesChange(Consumer<OverlayParser> consumer) {
+	public void setOnValuesChange(Consumer<Overlay> consumer) {
 		onValuesChange = consumer;
 	}
 
-	public void setOnDelete(Consumer<OverlayParser> consumer) {
+	public void setOnDelete(Consumer<Overlay> consumer) {
 		onDelete = consumer;
 	}
 
@@ -203,8 +203,8 @@ public class OverlayBox extends BorderPane {
 		}
 
 		// create new data parser and fill with min / max values
-		OverlayParser oldValue = getValue();
-		OverlayParser newValue = type.instance();
+		Overlay oldValue = getValue();
+		Overlay newValue = type.instance();
 
 		newValue.setActive(getValue().isActive());
 
