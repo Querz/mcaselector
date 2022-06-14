@@ -1,34 +1,23 @@
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
-
 plugins {
 	id 'java'
-	id 'org.openjfx.javafxplugin' version '0.0.12'
 	id 'application'
-
-	id 'com.github.johnrengelman.shadow' version '7.1.2'
-	id 'com.github.ben-manes.versions' version '0.42.0'
-
 	id 'eclipse'
 	id 'idea'
+	id 'org.openjfx.javafxplugin' version '0.0.12'
+	id 'com.github.johnrengelman.shadow' version '7.1.2'
+	id 'com.github.ben-manes.versions' version '0.42.0'
 }
 
 group 'net.querz'
-version '2.0'
-def appName = 'MCA Selector'
-def appUrl = 'https://github.com/Querz/mcaselector'
-def appAuthor = 'Querz'
-
 sourceCompatibility = JavaLanguageVersion.of(17)
 targetCompatibility = JavaLanguageVersion.of(17)
+compileJava.options.encoding = 'UTF-8'
+application.mainClass = 'net.querz.mcaselector.Main'
+configurations.implementation.canBeResolved = true
 
 javafx {
 	version = "$sourceCompatibility"
 	modules = ['javafx.controls', 'javafx.swing']
-}
-
-application {
-	mainClass = 'net.querz.mcaselector.Main'
 }
 
 idea {
@@ -41,10 +30,6 @@ repositories {
 	maven {
 		url 'https://jitpack.io/'
 	}
-}
-
-configurations {
-	project.configurations.implementation.canBeResolved = true
 }
 
 dependencies {
@@ -78,15 +63,28 @@ task copyRuntimeLibs(type: Copy) {
 	exclude {it.file.name.startsWith('javafx')}
 }
 
+task minifyCss {
+	doLast {
+		minCss(
+			new File("${sourceSets.main.resources.srcDirs[0]}/style.css"),
+			new File("${sourceSets.main.output.resourcesDir}/style.css"))
+	}
+	dependsOn processResources
+}
+
 jar {
 	archiveFileName = "${project.name}-${project.version}-min.jar"
 	manifest.attributes (
 		'Main-Class': application.mainClass,
 		'Application-Version': project.version,
-		'Class-Path': configurations.implementation.files.stream().filter($it -> !$it.name.startsWith('javafx')).collect{"lib/$it.name"}.join(' ')
+		'Class-Path': configurations.implementation.files.stream()
+				.filter($it -> !$it.name.startsWith('javafx')).collect{"lib/$it.name"}.join(' ')
 	)
 	exclude 'licenses/'
 	from 'LICENSE'
+	dependsOn minifyCss
+	dependsOn copyRuntimeLibs
+	finalizedBy shadowJar
 }
 
 shadowJar {
@@ -98,153 +96,10 @@ shadowJar {
 	}
 	archiveFileName = "${project.name}-${project.version}.jar"
 	configurations = [project.configurations.shadow]
-	exclude 'LICENSE.txt', 'NOTICE.txt'
 	from 'LICENSE'
 }
 
-compileJava {
-	options.encoding = 'UTF-8'
-	options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-}
-
-task installer {
-	doLast {
-		def innoSetupDir = new File("${buildDir}/inno")
-
-		delete innoSetupDir
-		innoSetupDir.mkdir()
-
-		def innoSetupLibDir = new File("${innoSetupDir}/lib")
-		innoSetupLibDir.mkdir()
-
-		// assemble license file
-		String finalLicense = new String(Files.readAllBytes(new File("${rootProject.projectDir}/LICENSE").toPath()))
-		finalLicense += "\n\n\n" +
-				"############################################################\n" +
-				"############################################################\n" +
-				"##\n" +
-				"##                   3RD PARTY LICENSES\n" +
-				"##\n" +
-				"############################################################\n" +
-				"############################################################"
-		for (File file : new File("${rootProject.projectDir}/src/main/resources/licenses").listFiles()) {
-			finalLicense = appendLicense(file, finalLicense)
-		}
-		finalLicense = appendLicense(new File("${rootProject.projectDir}/installer/res/winrun4j.license.txt"), finalLicense)
-		finalLicense = appendLicense(new File("${rootProject.projectDir}/src/main/resources/font/notosans-regular.license.txt"), finalLicense)
-		Files.write(new File(innoSetupDir, "LICENSE").toPath(), finalLicense.getBytes(StandardCharsets.UTF_8))
-
-		copy {
-			from("${rootProject.projectDir}/installer/img/icon.ico")
-			from("${rootProject.projectDir}/installer/img/small.bmp")
-			from("${rootProject.projectDir}/installer/img/large.bmp")
-			from("${buildDir}/libs/${project.name}-${project.version}-min.jar")
-			into(innoSetupDir)
-			rename("${project.name}-${project.version}-min.jar", "${project.name}.jar")
-		}
-
-		copy {
-			from("${buildDir}/libs/lib/")
-			include('*.jar')
-			into(innoSetupLibDir)
-		}
-
-		copy {
-			from("${rootProject.projectDir}/installer/res/inno.iss")
-			expand([
-					applicationVersion: project.version,
-					applicationName: appName,
-					applicationUrl: appUrl,
-					applicationAuthor: appAuthor,
-					applicationJar: "${project.name}.jar"
-			])
-			into(innoSetupDir)
-		}
-	}
-}
-
-task updateReadme {
-	doLast {
-		// update version in README
-		ant.replaceregexp(
-				match: '(?:Download Version )\\d+\\.\\d+(?:\\.\\d+)?',
-				replace: "Download Version ${version}",
-				flags: 'g',
-				byline: true) {
-			fileset dir: '.', includes: 'README.md'
-		}
-		ant.replaceregexp(
-				match: '(?:download/)\\d+\\.\\d+(?:\\.\\d+)?',
-				replace: "download/${version}",
-				flags: 'g',
-				byline: true) {
-			fileset dir: '.', includes: 'README.md'
-		}
-		ant.replaceregexp(
-				match: '(?:mcaselector-)\\d+\\.\\d+(?:\\.\\d+)?',
-				replace: "mcaselector-${version}",
-				flags: 'g',
-				byline: true) {
-			fileset dir: '.', includes: 'README.md'
-		}
-
-		// replace version for exe
-		if ("${version}".split("\\.").length == 2) {
-			ant.replaceregexp(
-					match: '\\d+\\.\\d+(?:\\.\\d+)?\\.0',
-					replace: "${version}.0.0",
-					flags: 'g',
-					byline: true) {
-				fileset dir: './travis/winrun4j/', includes: 'resource.rc'
-			}
-			ant.replaceregexp(
-					match: '\\d+\\,\\d+(?:\\,\\d+)?\\,0',
-					replace: "${version}".replace('.', ',') + ",0,0",
-					flags: 'g',
-					byline: true) {
-				fileset dir: './travis/winrun4j/', includes: 'resource.rc'
-			}
-		} else if ("${version}".split("\\.").length == 3) {
-			ant.replaceregexp(
-					match: '\\d+\\.\\d+(?:\\.\\d+)?\\.0',
-					replace: "${version}.0",
-					flags: 'g',
-					byline: true) {
-				fileset dir: './travis/winrun4j/', includes: 'resource.rc'
-			}
-			ant.replaceregexp(
-					match: '\\d+\\,\\d+(?:\\,\\d+)?\\,0',
-					replace: "${version}".replace('.', ',') + ",0",
-					flags: 'g',
-					byline: true) {
-				fileset dir: './travis/winrun4j/', includes: 'resource.rc'
-			}
-		}
-		ant.replaceregexp(
-				match: '"ProductVersion",     "\\d+\\.\\d+(?:\\.\\d+)?',
-				replace: "\"ProductVersion\",     \"${version}",
-				flags: 'g',
-				byline: true) {
-			fileset dir: './travis/winrun4j/', includes: 'resource.rc'
-		}
-	}
-}
-
-task minifyCss {
-	doLast {
-		minCss(
-				new File("${sourceSets.main.resources.srcDirs[0]}/style.css"),
-				new File("${sourceSets.main.output.resourcesDir}/style.css"))
-	}
-}
-
-// task dependencies
-minifyCss.dependsOn processResources
-jar.dependsOn minifyCss
-jar.dependsOn copyRuntimeLibs
-jar.finalizedBy shadowJar
 assemble.dependsOn shadowJar
-installer.dependsOn jar
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -255,28 +110,10 @@ installer.dependsOn jar
  * @param o The output css file
  * @throws IOException If something goes wrong during reading or writing
  */
+import java.nio.file.Files
+
 static minCss(File i, File o) throws IOException {
 	String s = Files.readString(i.toPath())
 	s = s.replace("\t", "").replace("\r\n", " ").replace("\n", " ").replaceAll("/\\*.*?\\*/", "").replaceAll(" {2,}", " ").trim()
 	Files.writeString(o.toPath(), s)
-}
-
-static String pad(String s, char p, int l) {
-	StringBuilder sb = new StringBuilder(l)
-	for (int i = 0; i < l - s.length(); i += 2)
-		sb.append(p)
-	return sb.append(s).toString()
-}
-
-static String appendLicense(File f, String l) {
-	String content = new String(Files.readAllBytes(f.toPath()))
-	if (f.getName().endsWith(".license.txt")) {
-		String licenseName = f.getName().replace(".license.txt", "").toUpperCase()
-		l += "\n\n\n" +
-				"############################################################\n" +
-				"#" + pad("License for " + licenseName, ' ' as char, 58) + "\n" +
-				"############################################################\n\n" +
-				content
-	}
-	return l
 }

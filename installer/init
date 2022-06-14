@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# installer <project root directory>
+
+gradlePropertiesFile="$1/gradle.properties"
+
+ReadGradleProperty() {
+  local value=`cat $gradlePropertiesFile | grep "$1" | cut -d'=' -f2`
+  echo "$value"
+}
+
+projectName='mcaselector'
+applicationName=$(ReadGradleProperty 'application.name')
+applicationURL=$(ReadGradleProperty 'application.url')
+applicationAuthor=$(ReadGradleProperty 'application.author')
+applicationVersion=$(ReadGradleProperty 'version')
+
+# pads a string up to the given length
+# Pad <string> <char> <length>
+Pad() {
+  local result=''
+  for (( i = $(expr length "$1"); i < $3; i+=2 )); do
+    result="$result$2"
+  done
+  echo "$result$1"
+}
+
+# appends the text of the given license file to the given string
+# AppendLicense <file> <string>
+AppendLicense() {
+  local content=$(<$1)
+  # remove .license.txt from file name
+  local baseName=$(basename $1 .txt)
+  local licenseName=${baseName^^}
+  echo "$2
+
+
+############################################################
+#$(Pad 'License for '$licenseName ' ' 58)
+############################################################
+
+$content"
+}
+
+# Installer <project root> <version>
+Installer() {
+  mkdir "$1/build/inno"
+
+  local finalLicense=$(<"$1/LICENSE")
+  finalLicense="$finalLicense
+
+
+############################################################
+############################################################
+##
+##                   3RD PARTY LICENSES
+##
+############################################################
+############################################################"
+
+  # add dependency licenses
+  local files="$1/build/resources/main/licenses/*"
+  for f in $files
+  do
+    finalLicense=$(AppendLicense "$f" "$finalLicense")
+  done
+
+  # add winrun4j license
+  finalLicense=$(AppendLicense "$1/installer/license/winrun4j.txt" "$finalLicense")
+  # add notosans license
+  finalLicense=$(AppendLicense "$1/build/resources/main/font/license/notosans-regular.txt" "$finalLicense")
+
+  echo "$finalLicense" > "$1/build/inno/LICENSE"
+
+  # copy files
+  local innoSetupDir="$1/build/inno"
+  cp "$1/installer/img/icon.ico" "$innoSetupDir"
+  cp "$1/installer/img/small.bmp" "$innoSetupDir"
+  cp "$1/installer/img/large.bmp" "$innoSetupDir"
+  cp "$1/build/libs/$projectName-$applicationVersion-min.jar" "$innoSetupDir/$projectName.jar"
+  cp -r "$1/build/libs/lib" "$innoSetupDir"
+  cp "$1/installer/res/inno.iss" "$innoSetupDir"
+  sed -i "s/\${applicationName}/$applicationName/g" "$innoSetupDir/inno.iss"
+  sed -i "s/\${applicationUrl}/${applicationURL////\\/}/g" "$innoSetupDir/inno.iss"
+  sed -i "s/\${applicationAuthor}/$applicationAuthor/g" "$innoSetupDir/inno.iss"
+  sed -i "s/\${applicationVersion}/$applicationVersion/g" "$innoSetupDir/inno.iss"
+  sed -i "s/\${applicationJar}/$projectName.jar/g" "$innoSetupDir/inno.iss"
+}
+
+Installer $1

@@ -19,7 +19,7 @@ jobs:
           java-version: 17
 
       - name: Build jar
-        run: gradlew build shadowJar installer --stacktrace --warning-mode all
+        run: gradlew build shadowJar --stacktrace --warning-mode all
         shell: cmd
 
       - name: Download WinRun4J
@@ -33,6 +33,10 @@ jobs:
         with:
           url: http://www.angusj.com/resourcehacker/resource_hacker.zip
           target: .
+
+      - name: Initialize resources for installer
+        run: ./installer/init .
+        shell: bash
 
       - name: Build exe
         run: |
