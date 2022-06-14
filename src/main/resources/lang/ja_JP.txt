@@ -11,7 +11,6 @@ menu.selection;選択
 menu.tools;ツール
 menu.about;詳細
 menu.file.open_world;ワールドを開く
-menu.file.open;リージョンを開く
 menu.file.settings;設定
 menu.file.render_settings;描画設定
 menu.file.quit;終了
@@ -101,6 +100,10 @@ dialog.import_chunks_confirmation.warning;警告：オフセットを使用し�
 dialog.export_chunks_confirmation.title;チャンクをエクスポート
 dialog.export_chunks_confirmation.header_short;不明な数のチャンクをエクスポートしようとしています
 dialog.export_chunks_confirmation.header_verbose;%d個のチャンクをエクスポートしようとしています
+dialog.import_selection.title;.csvから選択をインポートします
+dialog.import_selection.header;この世界にはすでに選択範囲があります。\n新しい選択範囲をどのようにインポートする必要がありますか？
+dialog.import_selection.overwrite;上書き
+dialog.import_selection.merge;追加
 dialog.filter_chunks.title;フィルター
 dialog.filter_chunks.filter.add.tooltip;フィルターを追加します
 dialog.filter_chunks.filter.delete.tooltip;フィルターを削除します
@@ -116,7 +119,6 @@ dialog.filter_chunks.delete.tooltip;当てはまるチャンクをワールド�
 dialog.filter_chunks.selection_only;選択範囲のみに適用
 dialog.filter_chunks.overwrite_selection;選択範囲を上書きする
 dialog.filter_chunks.selection_radius;選択範囲の半径
-dialog.filter_chunks.selection_only.tooltip;このフィルターを現在の選択範囲のみに適用する必要がある場合
 dialog.edit_overlays.title;オーバレイ
 dialog.edit_overlays.overlay_active.tooltip;有効化
 dialog.edit_overlays.delete.tooltip;削除
@@ -129,7 +131,6 @@ dialog.change_nbt.selection_only;選択範囲のみに適用
 dialog.change_nbt.selection_only.tooltip;このフィルターを現在の選択範囲にのみ適用する必要がある場合
 dialog.change_nbt_confirmation.title;NBTを変更
 dialog.change_nbt_confirmation.header_short;不明な数のチャンクのデータを変更しようとしています
-dialog.change_nbt_confirmation.header_verbose;％d個のチャンクのデータを変更しようとしています
 dialog.edit_nbt.title;NBTを編集
 dialog.edit_nbt.placeholder.loading;ロード中...
 dialog.edit_nbt.placeholder.no_chunk_data;チャンクデータが存在しません
@@ -147,7 +148,6 @@ dialog.about.version.error;エラー
 dialog.about.license;ライセンス：
 dialog.about.copyright;著作権：
 dialog.about.source;ソース：
-dialog.progress.title;進捗
 dialog.progress.no_files;ファイルがありません
 dialog.progress.running;実行中...
 dialog.progress.cancelling;キャンセルしています...
@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;クリップボードにコピー
 dialog.error.title;エラー
 dialog.error.header;エラーが発生しました
 dialog.error.copied_to_clipboard;コピーしました
-dialog.unsaved_changes.title;保存されていない変更
-dialog.unsaved_changes.header;保存されていない変更があります
+dialog.unsaved_selection.title;保存されていない選択
+dialog.unsaved_selection.header;保存されていない選択があります。
 button.cancel;キャンセル
 button.ok;OK

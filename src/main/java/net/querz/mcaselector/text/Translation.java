@@ -2,8 +2,8 @@ package net.querz.mcaselector.text;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import net.querz.mcaselector.debug.Debug;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -30,7 +30,6 @@ public enum Translation {
 	MENU_TOOLS("menu.tools"),
 	MENU_ABOUT("menu.about"),
 	MENU_FILE_OPEN_WORLD("menu.file.open_world"),
-	MENU_FILE_OPEN("menu.file.open"),
 	MENU_FILE_SETTINGS("menu.file.settings"),
 	MENU_FILE_RENDER_SETTINGS("menu.file.render_settings"),
 	MENU_FILE_QUIT("menu.file.quit"),
@@ -120,6 +119,10 @@ public enum Translation {
 	DIALOG_EXPORT_CHUNKS_CONFIRMATION_TITLE("dialog.export_chunks_confirmation.title"),
 	DIALOG_EXPORT_CHUNKS_CONFIRMATION_HEADER_SHORT("dialog.export_chunks_confirmation.header_short"),
 	DIALOG_EXPORT_CHUNKS_CONFIRMATION_HEADER_VERBOSE("dialog.export_chunks_confirmation.header_verbose"),
+	DIALOG_IMPORT_SELECTION_TITLE("dialog.import_selection.title"),
+	DIALOG_IMPORT_SELECTION_HEADER("dialog.import_selection.header"),
+	DIALOG_IMPORT_SELECTION_OVERWRITE("dialog.import_selection.overwrite"),
+	DIALOG_IMPORT_SELECTION_MERGE("dialog.import_selection.merge"),
 	DIALOG_FILTER_CHUNKS_TITLE("dialog.filter_chunks.title"),
 	DIALOG_FILTER_CHUNKS_FILTER_ADD_TOOLTIP("dialog.filter_chunks.filter.add.tooltip"),
 	DIALOG_FILTER_CHUNKS_FILTER_DELETE_TOOLTIP("dialog.filter_chunks.filter.delete.tooltip"),
@@ -135,7 +138,6 @@ public enum Translation {
 	DIALOG_FILTER_CHUNKS_SELECTION_ONLY("dialog.filter_chunks.selection_only"),
 	DIALOG_FILTER_CHUNKS_OVERWRITE_SELECTION("dialog.filter_chunks.overwrite_selection"),
 	DIALOG_FILTER_CHUNKS_SELECTION_RADIUS("dialog.filter_chunks.selection_radius"),
-	DIALOG_FILTER_CHUNKS_SELECTION_ONLY_TOOLTIP("dialog.filter_chunks.selection_only.tooltip"),
 	DIALOG_EDIT_OVERLAYS_TITLE("dialog.edit_overlays.title"),
 	DIALOG_EDIT_OVERLAYS_OVERLAY_ACTIVE_TOOLTIP("dialog.edit_overlays.overlay_active.tooltip"),
 	DIALOG_EDIT_OVERLAYS_DELETE_TOOLTIP("dialog.edit_overlays.delete.tooltip"),
@@ -148,7 +150,6 @@ public enum Translation {
 	DIALOG_CHANGE_NBT_SELECTION_ONLY_TOOLTIP("dialog.change_nbt.selection_only.tooltip"),
 	DIALOG_CHANGE_NBT_CONFIRMATION_TITLE("dialog.change_nbt_confirmation.title"),
 	DIALOG_CHANGE_NBT_CONFIRMATION_HEADER_SHORT("dialog.change_nbt_confirmation.header_short"),
-	DIALOG_CHANGE_NBT_CONFIRMATION_HEADER_VERBOSE("dialog.change_nbt_confirmation.header_verbose"),
 	DIALOG_EDIT_NBT_TITLE("dialog.edit_nbt.title"),
 	DIALOG_EDIT_NBT_PLACEHOLDER_LOADING("dialog.edit_nbt.placeholder.loading"),
 	DIALOG_EDIT_NBT_PLACEHOLDER_NO_CHUNK_DATA("dialog.edit_nbt.placeholder.no_chunk_data"),
@@ -166,7 +167,6 @@ public enum Translation {
 	DIALOG_ABOUT_LICENSE("dialog.about.license"),
 	DIALOG_ABOUT_COPYRIGHT("dialog.about.copyright"),
 	DIALOG_ABOUT_SOURCE("dialog.about.source"),
-	DIALOG_PROGRESS_TITLE("dialog.progress.title"),
 	DIALOG_PROGRESS_NO_FILES("dialog.progress.no_files"),
 	DIALOG_PROGRESS_RUNNING("dialog.progress.running"),
 	DIALOG_PROGRESS_CANCELLING("dialog.progress.cancelling"),
@@ -188,10 +188,13 @@ public enum Translation {
 	DIALOG_ERROR_TITLE("dialog.error.title"),
 	DIALOG_ERROR_HEADER("dialog.error.header"),
 	DIALOG_ERROR_COPIED_TO_CLIPBOARD("dialog.error.copied_to_clipboard"),
-	DIALOG_UNSAVED_CHANGES_TITLE("dialog.unsaved_changes.title"),
-	DIALOG_UNSAVED_CHANGES_HEADER("dialog.unsaved_changes.header"),
+	DIALOG_UNSAVED_SELECTION_TITLE("dialog.unsaved_selection.title"),
+	DIALOG_UNSAVED_SELECTION_HEADER("dialog.unsaved_selection.header"),
 	BUTTON_CANCEL("button.cancel"),
 	BUTTON_OK("button.ok");
+
+
+	private static final Logger LOGGER = LogManager.getLogger(Translation.class);
 
 	private static final Set<Locale> availableLanguages = new HashSet<>();
 
@@ -207,7 +210,7 @@ public enum Translation {
 					String country = matcher.group("country");
 					availableLanguages.add(new Locale(language, country));
 				} else {
-					Debug.error("invalid language file: " + langFile);
+					LOGGER.error("invalid language file: {}", langFile);
 				}
 			}
 		}
@@ -301,13 +304,13 @@ public enum Translation {
 			while ((line = bis.readLine()) != null) {
 				String[] split = line.split(";", 2);
 				if (split.length != 2) {
-					Debug.dumpf("invalid language mapping: %s", line);
+					LOGGER.error("invalid language mapping: {}", line);
 					continue;
 				}
 				setTranslation(split[0], split[1].replace("\\n", "\n"));
 			}
 		} catch (IOException ex) {
-			Debug.dumpException(String.format("error reading %s.txt", locale), ex);
+			LOGGER.error("error reading {}.txt", locale, ex);
 		}
 	}
 
@@ -321,7 +324,7 @@ public enum Translation {
 			try {
 				return new File(dirURL.toURI()).list();
 			} catch (URISyntaxException ex) {
-				Debug.dumpException("failed to list resources", ex);
+				LOGGER.error("failed to list resources", ex);
 				return null;
 			}
 		}
@@ -333,28 +336,26 @@ public enum Translation {
 
 		if (dirURL != null && dirURL.getProtocol().equals("jar")) {
 			String jarPath = dirURL.getPath().substring(5, dirURL.getPath().lastIndexOf('!'));
-			JarFile jar;
-			try {
-				jar = new JarFile(URLDecoder.decode(jarPath, StandardCharsets.UTF_8));
-			} catch (IOException ex) {
-				Debug.dumpException("failed to decode jar file", ex);
-				return null;
-			}
-			Enumeration<JarEntry> entries = jar.entries();
-			Set<String> result = new HashSet<>();
+			try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, StandardCharsets.UTF_8))) {
+				Enumeration<JarEntry> entries = jar.entries();
+				Set<String> result = new HashSet<>();
 
-			while (entries.hasMoreElements()) {
-				String name = entries.nextElement().getName();
-				if (name.startsWith(path)) {
-					String entry = name.substring(path.length());
-					int checkSubdir = entry.indexOf("/");
-					if (entry.length() > 1) {
-						entry = entry.substring(checkSubdir + 1);
-						result.add(entry);
+				while (entries.hasMoreElements()) {
+					String name = entries.nextElement().getName();
+					if (name.startsWith(path)) {
+						String entry = name.substring(path.length());
+						int checkSubdir = entry.indexOf("/");
+						if (entry.length() > 1) {
+							entry = entry.substring(checkSubdir + 1);
+							result.add(entry);
+						}
 					}
 				}
+				return result.toArray(new String[0]);
+			} catch (IOException ex) {
+				LOGGER.error("failed to decode jar file", ex);
+				return null;
 			}
-			return result.toArray(new String[0]);
 		}
 		throw new UnsupportedOperationException("cannot list files for URL " + dirURL);
 	}

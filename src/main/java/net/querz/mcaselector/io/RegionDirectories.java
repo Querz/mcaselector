@@ -75,6 +75,10 @@ public class RegionDirectories implements Cloneable {
 		);
 	}
 
+	public boolean exists() {
+		return region.exists() || poi.exists() || entities.exists();
+	}
+
 	@Override
 	public String toString() {
 		return "<region=" + region + ", poi=" + poi + ", entities=" + entities + ">";

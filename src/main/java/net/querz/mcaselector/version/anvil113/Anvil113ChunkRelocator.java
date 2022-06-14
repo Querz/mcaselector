@@ -3,13 +3,7 @@ package net.querz.mcaselector.version.anvil113;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.version.ChunkRelocator;
 import net.querz.mcaselector.version.Helper;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.DoubleTag;
-import net.querz.nbt.tag.IntArrayTag;
-import net.querz.nbt.tag.IntTag;
-import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.LongArrayTag;
-import net.querz.nbt.tag.Tag;
+import net.querz.nbt.*;
 import java.util.Map;
 import static net.querz.mcaselector.validation.ValidationHelper.silent;
 
@@ -27,27 +21,27 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 		level.putInt("zPos", level.getInt("zPos") + offset.blockToChunk().getZ());
 
 		// adjust entity positions
-		ListTag<CompoundTag> entities = Helper.tagFromCompound(level, "Entities");
+		ListTag entities = Helper.tagFromCompound(level, "Entities");
 		if (entities != null) {
-			entities.forEach(v -> applyOffsetToEntity(v, offset));
+			entities.forEach(v -> applyOffsetToEntity((CompoundTag) v, offset));
 		}
 
 		// adjust tile entity positions
-		ListTag<CompoundTag> tileEntities = Helper.tagFromCompound(level, "TileEntities");
+		ListTag tileEntities = Helper.tagFromCompound(level, "TileEntities");
 		if (tileEntities != null) {
-			tileEntities.forEach(v -> applyOffsetToTileEntity(v, offset));
+			tileEntities.forEach(v -> applyOffsetToTileEntity((CompoundTag) v, offset));
 		}
 
 		// adjust tile ticks
-		ListTag<CompoundTag> tileTicks = Helper.tagFromCompound(level, "TileTicks");
+		ListTag tileTicks = Helper.tagFromCompound(level, "TileTicks");
 		if (tileTicks != null) {
-			tileTicks.forEach(v -> applyOffsetToTick(v, offset));
+			tileTicks.forEach(v -> applyOffsetToTick((CompoundTag) v, offset));
 		}
 
 		// adjust liquid ticks
-		ListTag<CompoundTag> liquidTicks = Helper.tagFromCompound(level, "LiquidTicks");
+		ListTag liquidTicks = Helper.tagFromCompound(level, "LiquidTicks");
 		if (liquidTicks != null) {
-			liquidTicks.forEach(v -> applyOffsetToTick(v, offset));
+			liquidTicks.forEach(v -> applyOffsetToTick((CompoundTag) v, offset));
 		}
 
 		// adjust structures
@@ -69,14 +63,15 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 		Helper.applyOffsetToListOfShortTagLists(level, "PostProcessing", offset.blockToSection());
 
 		// adjust sections vertically
-		ListTag<CompoundTag> sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
+		ListTag sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
 		if (sections != null) {
-			ListTag<CompoundTag> newSections = new ListTag<>(CompoundTag.class);
-			for (CompoundTag section : sections) {
+			ListTag newSections = new ListTag();
+			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
 				if (applyOffsetToSection(section, offset.blockToSection(), 0, 15)) {
 					newSections.add(section);
 				}
 			}
+			level.put("Sections", newSections);
 		}
 
 		return true;
@@ -87,11 +82,11 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 			return;
 		}
 
-		ListTag<DoubleTag> entityPos = Helper.tagFromCompound(entity, "Pos");
+		ListTag entityPos = Helper.tagFromCompound(entity, "Pos");
 		if (entityPos != null && entityPos.size() == 3) {
-			entityPos.set(0, new DoubleTag(entityPos.get(0).asDouble() + offset.getX()));
-			entityPos.set(1, new DoubleTag(entityPos.get(1).asDouble() + offset.getY()));
-			entityPos.set(2, new DoubleTag(entityPos.get(2).asDouble() + offset.getZ()));
+			entityPos.set(0, DoubleTag.valueOf(entityPos.getDouble(0) + offset.getX()));
+			entityPos.set(1, DoubleTag.valueOf(entityPos.getDouble(1) + offset.getY()));
+			entityPos.set(2, DoubleTag.valueOf(entityPos.getDouble(2) + offset.getZ()));
 		}
 
 		// leashed entities
@@ -158,9 +153,9 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 		}
 
 		// recursively update passengers
-		ListTag<CompoundTag> passengers = Helper.tagFromCompound(entity, "Passengers");
+		ListTag passengers = Helper.tagFromCompound(entity, "Passengers");
 		if (passengers != null) {
-			passengers.forEach(p -> applyOffsetToEntity(p, offset));
+			passengers.forEach(p -> applyOffsetToEntity((CompoundTag) p, offset));
 		}
 
 		Helper.fixEntityUUID(entity);
@@ -170,7 +165,7 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 		IntArrayTag mPos = Helper.tagFromCompound(memory, "pos");
 		Helper.applyOffsetToIntArrayPos(mPos, offset);
 		if (mPos == null) {
-			ListTag<IntTag> lPos = Helper.tagFromCompound(memory, "pos");
+			ListTag lPos = Helper.tagFromCompound(memory, "pos");
 			Helper.applyOffsetToIntListPos(lPos, offset);
 		}
 	}
@@ -181,7 +176,7 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 		// update references
 		CompoundTag references = Helper.tagFromCompound(structures, "References");
 		if (references != null) {
-			for (Map.Entry<String, Tag<?>> entry : references) {
+			for (Map.Entry<String, Tag> entry : references) {
 				long[] reference = silent(() -> ((LongArrayTag) entry.getValue()).getValue(), null);
 				if (reference != null) {
 					for (int i = 0; i < reference.length; i++) {
@@ -196,7 +191,7 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 		// update starts
 		CompoundTag starts = Helper.tagFromCompound(structures, "Starts");
 		if (starts != null) {
-			for (Map.Entry<String, Tag<?>> entry : starts) {
+			for (Map.Entry<String, Tag> entry : starts) {
 				CompoundTag structure = silent(() -> (CompoundTag) entry.getValue(), null);
 				if ("INVALID".equals(Helper.stringFromCompound(structure, "id"))) {
 					continue;
@@ -205,29 +200,29 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 				Helper.applyIntIfPresent(structure, "ChunkZ", chunkOffset.getZ());
 				Helper.applyOffsetToBB(Helper.intArrayFromCompound(structure, "BB"), offset);
 
-				ListTag<CompoundTag> processed = Helper.tagFromCompound(structure, "Processed");
+				ListTag processed = Helper.tagFromCompound(structure, "Processed");
 				if (processed != null) {
-					for (CompoundTag chunk : processed) {
+					for (CompoundTag chunk : processed.iterateType(CompoundTag.TYPE)) {
 						Helper.applyIntIfPresent(chunk, "X", chunkOffset.getX());
 						Helper.applyIntIfPresent(chunk, "Z", chunkOffset.getZ());
 					}
 				}
 
-				ListTag<CompoundTag> children = Helper.tagFromCompound(structure, "Children");
+				ListTag children = Helper.tagFromCompound(structure, "Children");
 				if (children != null) {
-					for (CompoundTag child : children) {
+					for (CompoundTag child : children.iterateType(CompoundTag.TYPE)) {
 						Helper.applyIntOffsetIfRootPresent(child, "TPX", "TPY", "TPZ", offset);
 						Helper.applyIntOffsetIfRootPresent(child, "PosX", "PosY", "PosZ", offset);
 						Helper.applyOffsetToBB(Helper.intArrayFromCompound(child, "BB"), offset);
 
-						ListTag<IntArrayTag> entrances = Helper.tagFromCompound(child, "Entrances");
+						ListTag entrances = Helper.tagFromCompound(child, "Entrances");
 						if (entrances != null) {
-							entrances.forEach(e -> Helper.applyOffsetToBB(e.getValue(), offset));
+							entrances.forEach(e -> Helper.applyOffsetToBB(((IntArrayTag) e).getValue(), offset));
 						}
 
-						ListTag<CompoundTag> junctions = Helper.tagFromCompound(child, "junctions");
+						ListTag junctions = Helper.tagFromCompound(child, "junctions");
 						if (junctions != null) {
-							for (CompoundTag junction : junctions) {
+							for (CompoundTag junction : junctions.iterateType(CompoundTag.TYPE)) {
 								Helper.applyIntOffsetIfRootPresent(junction, "source_x", "source_y", "source_z", offset);
 							}
 						}
@@ -259,9 +254,9 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 			Helper.applyIntOffsetIfRootPresent(tileEntity, "posX", "posY", "posZ", offset);
 			break;
 		case "minecraft:mob_spawner":
-			ListTag<CompoundTag> spawnPotentials = Helper.tagFromCompound(tileEntity, "SpawnPotentials");
+			ListTag spawnPotentials = Helper.tagFromCompound(tileEntity, "SpawnPotentials");
 			if (spawnPotentials != null) {
-				for (CompoundTag spawnPotential : spawnPotentials) {
+				for (CompoundTag spawnPotential : spawnPotentials.iterateType(CompoundTag.TYPE)) {
 					CompoundTag entity = Helper.tagFromCompound(spawnPotential, "Entity");
 					applyOffsetToEntity(entity, offset);
 				}

@@ -1,0 +1,3 @@
+Copyright (C) 2003-2022 Paolo Boldi and Sebastiano Vigna
+
+License: http://www.apache.org/licenses/LICENSE-2.0

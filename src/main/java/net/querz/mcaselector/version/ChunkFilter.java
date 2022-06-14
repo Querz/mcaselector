@@ -1,10 +1,8 @@
 package net.querz.mcaselector.version;
 
 import net.querz.mcaselector.io.registry.BiomeRegistry;
-import net.querz.nbt.io.SNBTUtil;
-import net.querz.nbt.tag.*;
-
-import java.io.IOException;
+import net.querz.nbt.NBTUtil;
+import net.querz.nbt.*;
 import java.util.Collection;
 import java.util.Map;
 
@@ -35,13 +33,13 @@ public interface ChunkFilter {
 
 	int getBlockAmount(CompoundTag data, String[] blocks);
 
-	ListTag<CompoundTag> getTileEntities(CompoundTag data);
+	ListTag getTileEntities(CompoundTag data);
 
 	CompoundTag getStructureStarts(CompoundTag data);
 
 	CompoundTag getStructureReferences(CompoundTag data);
 
-	ListTag<CompoundTag> getSections(CompoundTag data);
+	ListTag getSections(CompoundTag data);
 
 	LongTag getInhabitedTime(CompoundTag data);
 
@@ -132,29 +130,25 @@ public interface ChunkFilter {
 
 		@Override
 		public String toString() {
-			try {
-				switch (type) {
-					case NAME:
-						if (name.startsWith("minecraft:")) {
-							return name;
-						} else {
-							return "'" + name + "'";
-						}
-					case STATE:
-						return SNBTUtil.toSNBT(state);
-					case STATE_TILE:
-						return SNBTUtil.toSNBT(state) + ";" + SNBTUtil.toSNBT(tile);
-					case NAME_TILE:
-						if (name.startsWith("minecraft:")) {
-							return name + ";" + SNBTUtil.toSNBT(tile);
-						} else {
-							return "'" + name + "';" + SNBTUtil.toSNBT(tile);
-						}
-					default:
-						return null;
-				}
-			} catch (IOException ex) {
-				return null;
+			switch (type) {
+				case NAME:
+					if (name.startsWith("minecraft:")) {
+						return name;
+					} else {
+						return "'" + name + "'";
+					}
+				case STATE:
+					return NBTUtil.toSNBT(state);
+				case STATE_TILE:
+					return NBTUtil.toSNBT(state) + ";" + NBTUtil.toSNBT(tile);
+				case NAME_TILE:
+					if (name.startsWith("minecraft:")) {
+						return name + ";" + NBTUtil.toSNBT(tile);
+					} else {
+						return "'" + name + "';" + NBTUtil.toSNBT(tile);
+					}
+				default:
+					return null;
 			}
 		}
 	}

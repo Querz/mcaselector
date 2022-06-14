@@ -1,5 +1,6 @@
 package net.querz.mcaselector.changer;
 
+import net.querz.mcaselector.changer.fields.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;

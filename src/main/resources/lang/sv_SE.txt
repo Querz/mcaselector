@@ -11,7 +11,6 @@ menu.selection;Markering
 menu.tools;Verktyg
 menu.about;Om
 menu.file.open_world;Öppna en värld
-menu.file.open;Öppna en region
 menu.file.settings;Inställningar
 menu.file.render_settings;Renderingsinställningar
 menu.file.quit;Avsluta
@@ -101,6 +100,10 @@ dialog.import_chunks_confirmation.warning;Warning: Att importera chunks med en o
 dialog.export_chunks_confirmation.title;Exportera chunks
 dialog.export_chunks_confirmation.header_short;Du är på väg att exportera ett okänt antal chunks från denna värld.
 dialog.export_chunks_confirmation.header_verbose;Du är på väg att exportera %d chunks från denna värld.
+dialog.import_selection.title;Importera urval från .csv
+dialog.import_selection.header;Den här världen har redan ett urval.\nHur ska det nya urvalet importeras?
+dialog.import_selection.overwrite;Skriva över
+dialog.import_selection.merge;Lägg till
 dialog.filter_chunks.title;Filtrera chunks
 dialog.filter_chunks.filter.add.tooltip;Lägg till ett nytt villkor nedanför detta.
 dialog.filter_chunks.filter.delete.tooltip;Radera detta villkor.
@@ -116,7 +119,6 @@ dialog.filter_chunks.delete.tooltip;Raderar alla påverkade chunks från världe
 dialog.filter_chunks.selection_only;Tillämpa endast till markering
 dialog.filter_chunks.overwrite_selection;Skriv över urval
 dialog.filter_chunks.selection_radius;Urvalsradie
-dialog.filter_chunks.selection_only.tooltip;Om detta filter enbart ska appliceras till den nuvarande markeringen.
 dialog.edit_overlays.title;Redigera överlägg
 dialog.edit_overlays.overlay_active.tooltip;Aktiva
 dialog.edit_overlays.delete.tooltip;Radera
@@ -129,7 +131,6 @@ dialog.change_nbt.selection_only;Tillämpa endast till markering
 dialog.change_nbt.selection_only.tooltip;Om detta filter enbart ska appliceras till den nuvarande markeringen.
 dialog.change_nbt_confirmation.title;Ändra NBT
 dialog.change_nbt_confirmation.header_short;Du är på väg att förändra data i ett okänt antal chunks i denna värld.
-dialog.change_nbt_confirmation.header_verbose;Du är på väg att förändra data i %d chunks i denna värld.
 dialog.edit_nbt.title;Ändra chunk
 dialog.edit_nbt.placeholder.loading;laddar...
 dialog.edit_nbt.placeholder.no_chunk_data;ingen chunkdata hittades
@@ -147,7 +148,6 @@ dialog.about.version.error;Fel
 dialog.about.license;Licens:
 dialog.about.copyright;Upphovsrätt:
 dialog.about.source;Källa:
-dialog.progress.title;Utveckling
 dialog.progress.no_files;inga filer
 dialog.progress.running;kör...
 dialog.progress.cancelling;avbryter...
@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Kopiera till urklipp
 dialog.error.title;Fel
 dialog.error.header;Ett fel uppstod
 dialog.error.copied_to_clipboard;Kopieras till urklipp!
-dialog.unsaved_changes.title;Ändringar som inte har sparats
-dialog.unsaved_changes.header;Du har ändringar som inte har sparats.
+dialog.unsaved_selection.title;Osparat val
+dialog.unsaved_selection.header;Det finns ett osparat val.
 button.cancel;Avbryt
 button.ok;OK

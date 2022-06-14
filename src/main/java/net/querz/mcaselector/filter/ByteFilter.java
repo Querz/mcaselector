@@ -38,32 +38,32 @@ public abstract class ByteFilter extends NumberFilter<Byte> {
 	}
 
 	@Override
-	boolean isEqual(Byte a, Byte b) {
+	protected boolean isEqual(Byte a, Byte b) {
 		return a.byteValue() == b.byteValue();
 	}
 
 	@Override
-	boolean isNotEqual(Byte a, Byte b) {
+	protected boolean isNotEqual(Byte a, Byte b) {
 		return a.byteValue() != b.byteValue();
 	}
 
 	@Override
-	boolean isLargerThan(Byte a, Byte b) {
+	protected boolean isLargerThan(Byte a, Byte b) {
 		return a > b;
 	}
 
 	@Override
-	boolean isSmallerThan(Byte a, Byte b) {
+	protected boolean isSmallerThan(Byte a, Byte b) {
 		return a < b;
 	}
 
 	@Override
-	boolean isLargerEqual(Byte a, Byte b) {
+	protected boolean isLargerEqual(Byte a, Byte b) {
 		return a >= b;
 	}
 
 	@Override
-	boolean isSmallerEqual(Byte a, Byte b) {
+	protected boolean isSmallerEqual(Byte a, Byte b) {
 		return a <= b;
 	}
 

@@ -1,0 +1,8 @@
+Common Public License - v 1.0
+
+Updated 16 Apr 2009
+
+As of 25 Feb 2009, IBM has assigned the Agreement Steward role for the CPL to the Eclipse Foundation.
+Eclipse has designated the Eclipse Public License (EPL) as the follow-on version of the CPL.
+
+See https://opensource.org/licenses/cpl1.0.txt

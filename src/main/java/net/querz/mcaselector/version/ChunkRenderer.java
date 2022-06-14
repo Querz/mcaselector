@@ -1,6 +1,6 @@
 package net.querz.mcaselector.version;
 
-import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.CompoundTag;
 
 public interface ChunkRenderer {
 

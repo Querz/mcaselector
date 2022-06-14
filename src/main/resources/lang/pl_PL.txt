@@ -11,7 +11,6 @@ menu.selection;Zaznaczenie
 menu.tools;Narzędzia
 menu.about;O programie...
 menu.file.open_world;Otwórz świat...
-menu.file.open;Otwórz region...
 menu.file.settings;Ustawienia
 menu.file.render_settings;Ustawienia renderowania
 menu.file.quit;Wyjdź
@@ -101,6 +100,10 @@ dialog.import_chunks_confirmation.warning;Uwaga: Importowanie chunków z offsete
 dialog.export_chunks_confirmation.title;Eksportuj chunki
 dialog.export_chunks_confirmation.header_short;Zamierzasz wyeksportować nieokreśloną liczbę chunków z tego świata.
 dialog.export_chunks_confirmation.header_verbose;Zamierzasz wyeksportować %d chunków z tego świata.
+dialog.import_selection.title;Importuj zaznaczenie z .csv
+dialog.import_selection.header;Ten świat ma już wybór.\nJak należy zaimportować nowy wybór?
+dialog.import_selection.overwrite;Przepisać
+dialog.import_selection.merge;Dodać
 dialog.filter_chunks.title;Filtruj chunki
 dialog.filter_chunks.filter.add.tooltip;Dodaj nowy warunek poniżej
 dialog.filter_chunks.filter.delete.tooltip;Usuń ten warunek
@@ -116,7 +119,6 @@ dialog.filter_chunks.delete.tooltip;Usuwa ze świata chunki wybrane przez filtr.
 dialog.filter_chunks.selection_only;Zastosuj tylko do zaznaczenia
 dialog.filter_chunks.overwrite_selection;Zastąp zaznaczenie
 dialog.filter_chunks.selection_radius;Promień zaznaczenia
-dialog.filter_chunks.selection_only.tooltip;Zaznacz jeśli chcesz filtrować tylko obecne zaznaczenie.
 dialog.edit_overlays.title;Edytuj nakładki
 dialog.edit_overlays.overlay_active.tooltip;Aktywny
 dialog.edit_overlays.delete.tooltip;Usunąć
@@ -129,7 +131,6 @@ dialog.change_nbt.selection_only;Zastosuj tylko do zaznaczenia
 dialog.change_nbt.selection_only.tooltip;Zaznacz jeśli chcesz wprowadzać zmiany tylko w obecnym zaznaczeniu.
 dialog.change_nbt_confirmation.title;Zmień NBT
 dialog.change_nbt_confirmation.header_short;Zamierzasz zmienić dane w nieznanej ilości chunków w tym świecie.
-dialog.change_nbt_confirmation.header_verbose;Zamierzasz zmienić dane %d chunków w tym świecie.
 dialog.edit_nbt.title;Edytuj chunk
 dialog.edit_nbt.placeholder.loading;ładowanie...
 dialog.edit_nbt.placeholder.no_chunk_data;nie znaleziono danych chunków
@@ -147,7 +148,6 @@ dialog.about.version.error;Błąd
 dialog.about.license;Licencja:
 dialog.about.copyright;Prawa autorskie:
 dialog.about.source;Źródło:
-dialog.progress.title;Proszę czekać...
 dialog.progress.no_files;brak plików
 dialog.progress.running;praca w toku...
 dialog.progress.cancelling;anulowanie...
@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Skopiuj do schowka
 dialog.error.title;Błąd
 dialog.error.header;Wystąpił błąd
 dialog.error.copied_to_clipboard;Skopiowane do schowka!
-dialog.unsaved_changes.title;Niezapisane zmiany
-dialog.unsaved_changes.header;Masz niezapisane zmiany.
+dialog.unsaved_selection.title;Niezapisany wybór
+dialog.unsaved_selection.header;Istnieje niezapisany wybór.
 button.cancel;Anuluj
 button.ok;OK

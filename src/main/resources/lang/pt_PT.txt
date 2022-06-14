@@ -11,7 +11,6 @@ menu.selection;Seleção
 menu.tools;Ferramentas
 menu.about;Sobre
 menu.file.open_world;Abra um mundo
-menu.file.open;Abra uma região
 menu.file.settings;Configuração
 menu.file.render_settings;Configurações de renderização
 menu.file.quit;Sair
@@ -101,6 +100,10 @@ dialog.import_chunks_confirmation.warning;Aviso: A importação de chunks desloc
 dialog.export_chunks_confirmation.title;Exportar chunks
 dialog.export_chunks_confirmation.header_short;Você está prestes a exportar um número desconhecido de Chunks deste mundo.
 dialog.export_chunks_confirmation.header_verbose;Serão exportados %d chunks deste mundo.
+dialog.import_selection.title;Importar seleção de .csv
+dialog.import_selection.header;Este mundo já tem uma seleção.\nComo a nova seleção deve ser importada?
+dialog.import_selection.overwrite;Substituir
+dialog.import_selection.merge;Adicionar
 dialog.filter_chunks.title;Filtrar chunks
 dialog.filter_chunks.filter.add.tooltip;Adicionar nova condição sobre esta.
 dialog.filter_chunks.filter.delete.tooltip;Apagar esta condição.
@@ -116,7 +119,6 @@ dialog.filter_chunks.delete.tooltip;Apaga todos os chunks afetados do mundo atua
 dialog.filter_chunks.selection_only;Aplicar somente na seleção.
 dialog.filter_chunks.overwrite_selection;Sobrescrever a seleção
 dialog.filter_chunks.selection_radius;Raio de seleção
-dialog.filter_chunks.selection_only.tooltip;Este filtro aplica-se apenas na seleção atual.
 dialog.edit_overlays.title;Editar sobreposições
 dialog.edit_overlays.overlay_active.tooltip;Ativo
 dialog.edit_overlays.delete.tooltip;Excluir
@@ -129,7 +131,6 @@ dialog.change_nbt.selection_only;Aplicar somente na seleção.
 dialog.change_nbt.selection_only.tooltip;Este filtro aplica-se apenas à seleção atual.
 dialog.change_nbt_confirmation.title;Alterar NBT
 dialog.change_nbt_confirmation.header_short;Serão alterados os dados em um número desconhecido de chunks deste mundo.
-dialog.change_nbt_confirmation.header_verbose;Serão alterados os dados em %d chunks deste mundo.
 dialog.edit_nbt.title;Editar chunk
 dialog.edit_nbt.placeholder.loading;A Carregar...
 dialog.edit_nbt.placeholder.no_chunk_data;nenhum dado de bloco chunk
@@ -147,7 +148,6 @@ dialog.about.version.error;Erro
 dialog.about.license;Licença:
 dialog.about.copyright;Copyright:
 dialog.about.source;Fonte:
-dialog.progress.title;Progresso
 dialog.progress.no_files;Não há ficheiros
 dialog.progress.running;A Executar...
 dialog.progress.cancelling;A Cancelar...
@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Copiar para área de transferência
 dialog.error.title;Erro
 dialog.error.header;Um erro ocorreu
 dialog.error.copied_to_clipboard;Copiado para a área de transferência!
-dialog.unsaved_changes.title;Alterações não salvas
-dialog.unsaved_changes.header;Você tem alterações não salvas.
+dialog.unsaved_selection.title;Seleção não salva
+dialog.unsaved_selection.header;Há uma seleção não salva.
 button.cancel;Cancelar
 button.ok;OK

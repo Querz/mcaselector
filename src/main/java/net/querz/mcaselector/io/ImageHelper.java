@@ -7,10 +7,11 @@ import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.PngWriter;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
-import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.tile.Tile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -22,6 +23,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public final class ImageHelper {
+
+	private static final Logger LOGGER = LogManager.getLogger(ImageHelper.class);
 
 	private ImageHelper() {}
 
@@ -145,7 +148,7 @@ public final class ImageHelper {
 
 		} finally {
 			progressChannel.done("done");
-			Debug.dumpf("took %s to save image %s", t, file);
+			LOGGER.debug("took {} to save image {}", t, file);
 		}
 	}
 }

@@ -1,9 +1,7 @@
 package net.querz.mcaselector.ui;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
@@ -25,14 +23,17 @@ import net.querz.mcaselector.io.job.SelectionExporter;
 import net.querz.mcaselector.io.job.SelectionImageExporter;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.Region;
-import net.querz.mcaselector.tiles.Selection;
-import net.querz.mcaselector.tiles.TileMap;
+import net.querz.mcaselector.selection.ChunkSet;
+import net.querz.mcaselector.selection.ClipboardSelection;
+import net.querz.mcaselector.selection.Selection;
+import net.querz.mcaselector.selection.SelectionData;
+import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.property.DataProperty;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.tiles.TileMapSelection;
 import net.querz.mcaselector.ui.dialog.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -49,6 +50,8 @@ import static net.querz.mcaselector.ui.dialog.ImportConfirmationDialog.ChunkImpo
 
 public class DialogHelper {
 
+	private static final Logger LOGGER = LogManager.getLogger(DialogHelper.class);
+
 	public static void showAboutDialog(Stage primaryStage) {
 		new AboutDialog(primaryStage).showAndWait();
 	}
@@ -61,14 +64,14 @@ public class DialogHelper {
 				if (confR == ButtonType.OK) {
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_CHANGING_NBT_DATA, primaryStage)
 							.showProgressBar(t -> FieldChanger.changeNBTFields(
-									r.getFields(),
-									r.isForce(),
-									r.isSelectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
+									r.fields(),
+									r.force(),
+									r.selectionOnly() ? tileMap.getSelection() : null,
 									t,
 									false
 							));
 					if (r.requiresClearCache()) {
-						if (r.isSelectionOnly()) {
+						if (r.selectionOnly()) {
 							CacheHelper.clearSelectionCache(tileMap);
 						} else {
 							CacheHelper.clearAllCache(tileMap);
@@ -82,9 +85,9 @@ public class DialogHelper {
 	public static void filterChunks(TileMap tileMap, Stage primaryStage) {
 		Optional<FilterChunksDialog.Result> result = new FilterChunksDialog(primaryStage).showAndWait();
 		result.ifPresent(r -> {
-			Debug.dump("chunk filter query: " + r.getFilter());
+			LOGGER.debug("chunk filter query: {}", r.getFilter());
 			if (r.getFilter().isEmpty()) {
-				Debug.dump("filter is empty, won't delete everything");
+				LOGGER.debug("filter is empty, won't delete everything");
 				return;
 			}
 
@@ -96,7 +99,7 @@ public class DialogHelper {
 							new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_FILTERED_CHUNKS, primaryStage)
 								.showProgressBar(t -> ChunkFilterDeleter.deleteFilter(
 									r.getFilter(),
-									r.isSelectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
+									r.isSelectionOnly() ? tileMap.getSelection() : null,
 									t,
 									false
 								));
@@ -104,6 +107,7 @@ public class DialogHelper {
 							if (r.isSelectionOnly()) {
 								CacheHelper.clearSelectionCache(tileMap);
 								tileMap.clear();
+								tileMap.clearSelection();
 							} else {
 								CacheHelper.clearAllCache(tileMap);
 							}
@@ -117,11 +121,11 @@ public class DialogHelper {
 						confRes.ifPresent(confR -> {
 							if (confR == ButtonType.OK) {
 								FileHelper.setLastOpenedDirectory("chunk_import_export", dir.getAbsolutePath());
-								Debug.dump("exporting chunks to " + dir);
+								LOGGER.debug("exporting chunks to {}", dir);
 
 								WorldDirectories worldDirectories = FileHelper.createWorldDirectories(dir);
 								if (worldDirectories == null) {
-									Debug.dump("failed to create world directories");
+									LOGGER.warn("failed to create world directories");
 									new ErrorDialog(primaryStage, "failed to create world directories");
 									return;
 								}
@@ -129,7 +133,7 @@ public class DialogHelper {
 								new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_FILTERED_CHUNKS, primaryStage)
 									.showProgressBar(t -> ChunkFilterExporter.exportFilter(
 										r.getFilter(),
-										r.isSelectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
+										r.isSelectionOnly() ? tileMap.getSelection() : null,
 										worldDirectories,
 										t,
 										false
@@ -138,34 +142,34 @@ public class DialogHelper {
 							}
 						});
 					} else {
-						Debug.dump("cancelled exporting chunks, no valid destination directory");
+						LOGGER.debug("cancelled exporting chunks, no valid destination directory");
 					}
 				}
 				case SELECT -> {
-					SelectionData selectionData = new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted());
+					Selection selection = tileMap.getSelection();
 					if (r.isOverwriteSelection()) {
 						tileMap.clearSelection();
 					}
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS, primaryStage)
 						.showProgressBar(t -> ChunkFilterSelector.selectFilter(
 							r.getFilter(),
-							r.isSelectionOnly() ? (selectionData.isEmpty() ? null : selectionData) : null,
+							r.isSelectionOnly() ? (selection.isEmpty() ? null : selection) : null,
 							r.getRadius(),
-							selection -> Platform.runLater(() -> {
-								tileMap.addMarkedChunks(selection);
+							s -> Platform.runLater(() -> {
+								tileMap.addSelection(s);
 								tileMap.draw();
 							}), t, false));
 					r.getFilter().resetTempData();
 				}
-				default -> Debug.dump("i have no idea how you got no selection there...");
+				default -> LOGGER.debug("i have no idea how you got no selection there...");
 			}
 		});
 		tileMap.draw();
 	}
 
 	public static void quit(TileMap tileMap, Stage primaryStage) {
-		if (tileMap.getSelectedChunks() > 0 || tileMap.isSelectionInverted()) {
-			Optional<ButtonType> result = new ConfirmationDialog(primaryStage, Translation.DIALOG_UNSAVED_CHANGES_TITLE, Translation.DIALOG_UNSAVED_CHANGES_HEADER, "unsaved-changes").showAndWait();
+		if (tileMap.hasUnsavedSelection()) {
+			Optional<ButtonType> result = new ConfirmationDialog(primaryStage, Translation.DIALOG_UNSAVED_SELECTION_TITLE, Translation.DIALOG_UNSAVED_SELECTION_HEADER, "unsaved-changes").showAndWait();
 			result.ifPresent(r -> {
 				if (r == ButtonType.OK) {
 					System.exit(0);
@@ -177,7 +181,7 @@ public class DialogHelper {
 	}
 
 	public static void editOverlays(TileMap tileMap, Stage primaryStage) {
-		new OverlayEditorDialog(primaryStage, tileMap, tileMap.getOverlayParsers()).show();
+		new OverlayEditorDialog(primaryStage, tileMap, tileMap.getOverlays()).show();
 	}
 
 	public static void deleteSelection(TileMap tileMap, Stage primaryStage) {
@@ -185,9 +189,10 @@ public class DialogHelper {
 		result.ifPresent(r -> {
 			if (r == ButtonType.OK) {
 				new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_SELECTION, primaryStage)
-						.showProgressBar(t -> SelectionDeleter.deleteSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), t));
+						.showProgressBar(t -> SelectionDeleter.deleteSelection(tileMap.getSelection(), t));
 				CacheHelper.clearSelectionCache(tileMap);
 				tileMap.clear();
+				tileMap.clearSelection();
 				tileMap.draw();
 			}
 		});
@@ -203,13 +208,13 @@ public class DialogHelper {
 
 					WorldDirectories worldDirectories = FileHelper.createWorldDirectories(dir);
 					if (worldDirectories == null) {
-						Debug.dump("failed to create world directories");
+						LOGGER.warn("failed to create world directories");
 						new ErrorDialog(primaryStage, "failed to create world directories");
 						return;
 					}
 
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_SELECTION, primaryStage)
-							.showProgressBar(t -> SelectionExporter.exportSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), worldDirectories, t));
+							.showProgressBar(t -> SelectionExporter.exportSelection(tileMap.getSelection(), worldDirectories, t));
 				}
 			});
 		}
@@ -236,7 +241,7 @@ public class DialogHelper {
 									wd,
 									t, false, dataProperty.get().overwrite(),
 									null,
-									dataProperty.get().selectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
+									dataProperty.get().selectionOnly() ? tileMap.getSelection() : null,
 									dataProperty.get().getRanges(),
 									dataProperty.get().getOffset(),
 									tempFiles));
@@ -331,19 +336,18 @@ public class DialogHelper {
 				ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", file);
 				FileHelper.setLastOpenedDirectory("snapshot_save", file.getParent());
 			} catch (IOException ex) {
-				Debug.dumpException("failed to save screenshot", ex);
+				LOGGER.warn("failed to save screenshot", ex);
 				new ErrorDialog(primaryStage, ex);
 			}
 		}
 	}
 
 	public static void generateImageFromSelection(TileMap tileMap, Stage primaryStage) {
-		SelectionData selection = new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted());
-		SelectionImageExporter.SelectionDataInfo info = SelectionImageExporter.calculateSelectionInfo(selection);
+		net.querz.mcaselector.selection.SelectionData data = new net.querz.mcaselector.selection.SelectionData(tileMap.getSelection(), null);
 
-		if (info.getSelectionInfo().getWidth() * 16 * info.getSelectionInfo().getHeight() * 16 > Integer.MAX_VALUE) {
-			String error = String.format("dimensions are too large to generate an image: %dx%d", info.getSelectionInfo().getWidth() * 16, info.getSelectionInfo().getHeight() * 16);
-			Debug.dumpf(error);
+		if (data.getWidth() * 16 * data.getHeight() * 16 > Integer.MAX_VALUE) {
+			String error = String.format("dimensions are too large to generate an image: %dx%d", data.getWidth() * 16, data.getHeight() * 16);
+			LOGGER.warn(error);
 			new ErrorDialog(primaryStage, error);
 			return;
 		}
@@ -354,20 +358,20 @@ public class DialogHelper {
 			return;
 		}
 
-		Optional<ButtonType> result = new ImageExportConfirmationDialog(tileMap, info.getSelectionInfo(), primaryStage).showAndWait();
+		Optional<ButtonType> result = new ImageExportConfirmationDialog(tileMap, data, primaryStage).showAndWait();
 		result.ifPresent(b -> {
 			if (b == ButtonType.OK) {
 				DataProperty<int[]> pixels = new DataProperty<>();
 				CancellableProgressDialog cpd = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_CREATING_IMAGE, primaryStage);
-				cpd.showProgressBar(t -> pixels.set(SelectionImageExporter.exportSelectionImage(info, tileMap.getOverlayPool(), t)));
+				cpd.showProgressBar(t -> pixels.set(SelectionImageExporter.exportSelectionImage(data, tileMap.getOverlayPool(), t)));
 				if (!cpd.cancelled() && pixels.get() != null) {
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SAVING_IMAGE, primaryStage)
 					.showProgressBar(t -> {
 						try {
-							ImageHelper.saveImageData(pixels.get(), (int) info.getSelectionInfo().getWidth() * 16, (int) info.getSelectionInfo().getHeight() * 16, file, t);
+							ImageHelper.saveImageData(pixels.get(), (int) data.getWidth() * 16, (int) data.getHeight() * 16, file, t);
 							FileHelper.setLastOpenedDirectory("snapshot_save", file.getParent());
 						} catch (IOException ex) {
-							Debug.dumpException("failed to save image", ex);
+							LOGGER.warn("failed to save image", ex);
 							new ErrorDialog(primaryStage, ex);
 						}
 					});
@@ -379,10 +383,12 @@ public class DialogHelper {
 	public static void swapChunks(TileMap tileMap, Stage primaryStage) {
 		new ProgressDialog(Translation.MENU_TOOLS_SWAP_CHUNKS, primaryStage).showProgressBar(t -> {
 			t.setMax(4);
-			Long2ObjectOpenHashMap<LongOpenHashSet> markedChunks = tileMap.getMarkedChunks();
+			Selection markedChunks = tileMap.getSelection();
 			LongArrayList chunks = new LongArrayList(2);
-			for (Long2ObjectMap.Entry<LongOpenHashSet> entry : markedChunks.long2ObjectEntrySet()) {
-				chunks.addAll(entry.getValue());
+			for (Long2ObjectMap.Entry<ChunkSet> entry : markedChunks) {
+				for (int markedChunk : entry.getValue()) {
+					chunks.add(new Point2i(entry.getLongKey()).add(new Point2i(markedChunk)).asLong());
+				}
 			}
 			if (chunks.size() != 2) {
 				throw new IllegalStateException("need 2 chunks to swap");
@@ -393,7 +399,7 @@ public class DialogHelper {
 			Point2i fromRegion = fromChunk.chunkToRegion();
 			Point2i toRegion = toChunk.chunkToRegion();
 
-			Debug.dumpf("swapping chunk %s:%s with %s:%s", fromChunk, fromRegion, toChunk, toRegion);
+			LOGGER.debug("swapping chunk {}:{} with {}:{}", fromChunk, fromRegion, toChunk, toRegion);
 
 			t.incrementProgress(FileHelper.createMCAFileName(fromRegion));
 
@@ -404,7 +410,7 @@ public class DialogHelper {
 			try {
 				from = Region.loadOrCreateEmptyRegion(FileHelper.createRegionDirectories(fromRegion));
 			} catch (IOException ex) {
-				Debug.dumpException("failed to load region files", ex);
+				LOGGER.warn("failed to load region files", ex);
 				t.done(null);
 				new ErrorDialog(primaryStage, ex);
 				return;
@@ -416,7 +422,7 @@ public class DialogHelper {
 				try {
 					to = Region.loadOrCreateEmptyRegion(FileHelper.createRegionDirectories(toRegion));
 				} catch (IOException ex) {
-					Debug.dumpException("failed to load region files", ex);
+					LOGGER.warn("failed to load region files", ex);
 					t.done(null);
 					new ErrorDialog(primaryStage, ex);
 					return;
@@ -441,7 +447,7 @@ public class DialogHelper {
 			try {
 				to.saveWithTempFiles();
 			} catch (IOException ex) {
-				Debug.dumpException("failed to save region files", ex);
+				LOGGER.warn("failed to save region files", ex);
 				t.done(null);
 				new ErrorDialog(primaryStage, ex);
 				return;
@@ -450,7 +456,7 @@ public class DialogHelper {
 				try {
 					from.saveWithTempFiles();
 				} catch (IOException ex) {
-					Debug.dumpException("failed to save region files", ex);
+					LOGGER.warn("failed to save region files", ex);
 					t.done(null);
 					new ErrorDialog(primaryStage, ex);
 					return;
@@ -465,9 +471,9 @@ public class DialogHelper {
 
 	public static void copySelectedChunks(TileMap tileMap) {
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		Selection selection = new Selection(tileMap.getMarkedChunks(), tileMap.isSelectionInverted(), Config.getWorldDirs());
-		TileMapSelection tileMapSelection = new TileMapSelection(selection);
-		clipboard.setContents(tileMapSelection, tileMap);
+		SelectionData data = new SelectionData(tileMap.getSelection(), Config.getWorldDirs());
+		ClipboardSelection clipboardSelection = new ClipboardSelection(data);
+		clipboard.setContents(clipboardSelection, tileMap);
 	}
 
 	public static void pasteSelectedChunks(TileMap tileMap, Stage primaryStage) {
@@ -481,8 +487,8 @@ public class DialogHelper {
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
 							.showProgressBar(t -> ChunkImporter.importChunks(
 									tileMap.getPastedWorld(), t, false, dataProperty.get().overwrite(),
-									new SelectionData(tileMap.getPastedChunks(), tileMap.getPastedChunksInverted()),
-									dataProperty.get().selectionOnly() ? new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()) : null,
+									tileMap.getPastedChunks(),
+									dataProperty.get().selectionOnly() ? tileMap.getSelection() : null,
 									dataProperty.get().getRanges(),
 									dataProperty.get().getOffset(),
 									tempFiles));
@@ -495,17 +501,17 @@ public class DialogHelper {
 			Transferable content = clipboard.getContents(tileMap);
 			DataFlavor[] flavors = content.getTransferDataFlavors();
 
-			if (flavors.length == 1 && flavors[0].equals(TileMapSelection.SELECTION_DATA_FLAVOR)) {
+			if (flavors.length == 1 && flavors[0].equals(ClipboardSelection.SELECTION_DATA_FLAVOR)) {
 				try {
 					Object data = content.getTransferData(flavors[0]);
 
-					Selection selection = (Selection) data;
+					net.querz.mcaselector.selection.SelectionData selectionData = (net.querz.mcaselector.selection.SelectionData) data;
 
-					tileMap.setPastedChunks(selection.getSelectionData(), selection.isInverted(), selection.getMin(), selection.getMax(), selection.getWorld());
+					tileMap.setPastedChunks(selectionData);
 					tileMap.draw();
 
 				} catch (UnsupportedFlavorException | IOException ex) {
-					Debug.dumpException("failed to paste chunks", ex);
+					LOGGER.warn("failed to paste chunks", ex);
 				}
 			}
 		}
@@ -515,52 +521,33 @@ public class DialogHelper {
 		if (tempFiles != null) {
 			for (RegionDirectories tempFile : tempFiles.values()) {
 				if (!tempFile.getRegion().delete()) {
-					Debug.errorf("failed to delete temp file %s", tempFile.getRegion());
+					LOGGER.warn("failed to delete temp file {}", tempFile.getRegion());
 				}
 				if (!tempFile.getPoi().delete()) {
-					Debug.errorf("failed to delete temp file %s", tempFile.getPoi());
+					LOGGER.warn("failed to delete temp file {}", tempFile.getPoi());
 				}
 				if (!tempFile.getEntities().delete()) {
-					Debug.errorf("failed to delete temp file %s", tempFile.getEntities());
+					LOGGER.warn("failed to delete temp file {}", tempFile.getEntities());
 				}
 			}
-		}
-	}
-
-	public static void openRegion(TileMap tileMap, Stage primaryStage) {
-		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", Config.getMCSavesDir());
-		File file = createDirectoryChooser(lastOpenDirectory).showDialog(primaryStage);
-		if (file != null && file.isDirectory()) {
-			File[] files = file.listFiles((dir, name) -> FileHelper.MCA_FILE_PATTERN.matcher(name).matches());
-			if (files != null && files.length > 0) {
-				Debug.dump("setting world dir to " + file.getAbsolutePath());
-				FileHelper.setLastOpenedDirectory("open_world", file.getAbsolutePath());
-				Config.setWorldDir(file);
-				CacheHelper.validateCacheVersion(tileMap);
-				CacheHelper.readWorldSettingsFile(tileMap);
-				RegionImageGenerator.invalidateCachedMCAFiles();
-				tileMap.clear();
-				tileMap.disable(false);
-				tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
-				tileMap.getWindow().setTitleSuffix(file.toString());
-				tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString());
-				tileMap.draw();
-			} else {
-				new ErrorDialog(primaryStage, String.format("no mca files found in %s", file));
-			}
-		} else if (file != null) {
-			new ErrorDialog(primaryStage, String.format("%s is not a directory", file));
 		}
 	}
 
 	public static void openWorld(TileMap tileMap, Stage primaryStage) {
+		if (tileMap.hasUnsavedSelection()) {
+			Optional<ButtonType> result = new ConfirmationDialog(primaryStage, Translation.DIALOG_UNSAVED_SELECTION_TITLE, Translation.DIALOG_UNSAVED_SELECTION_HEADER, "unsaved-changes").showAndWait();
+			if (result.isPresent() && result.get() == ButtonType.CANCEL) {
+				return;
+			}
+		}
+
 		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", Config.getMCSavesDir());
 		File file = createDirectoryChooser(lastOpenDirectory).showDialog(primaryStage);
 		if (file != null && file.isDirectory()) {
 			List<File> dimensions = FileHelper.detectDimensionDirectories(file);
 			if (dimensions.size() == 0) {
 				new ErrorDialog(primaryStage, String.format("no dimensions found in %s", file.getAbsolutePath()));
-				Debug.dumpf("no dimensions found in %s", file.getAbsolutePath());
+				LOGGER.warn("no dimensions found in {}", file.getAbsolutePath());
 				return;
 			}
 
@@ -569,7 +556,6 @@ public class DialogHelper {
 				setWorld(FileHelper.detectWorldDirectories(dimensions.get(0)), tileMap, primaryStage);
 				return;
 			}
-
 			// show world selection dialog
 			Optional<File> result = new SelectWorldDialog(dimensions, primaryStage).showAndWait();
 			result.ifPresent(dim -> setWorld(FileHelper.detectWorldDirectories(dim), tileMap, primaryStage));
@@ -586,14 +572,13 @@ public class DialogHelper {
 			RegionImageGenerator.invalidateCachedMCAFiles();
 			tileMap.getWindow().getOptionBar().setRenderHeight(Config.getRenderHeight());
 			tileMap.clear(task);
+			tileMap.clearSelection();
 			tileMap.draw();
 			tileMap.disable(false);
 			tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
-			tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString());
+			tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString(), tileMap.getOverlays());
 			task.done(Translation.DIALOG_PROGRESS_DONE.toString());
-			Platform.runLater(() -> {
-				tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent());
-			});
+			Platform.runLater(() -> tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent()));
 		});
 	}
 
@@ -601,10 +586,29 @@ public class DialogHelper {
 		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export", null),
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showOpenDialog(primaryStage);
 		if (file != null) {
-			SelectionData selection = SelectionHelper.importSelection(file);
+			ImportSelectionDialog.Result result = ImportSelectionDialog.Result.OVERWRITE;
+			// skip dialog if we don't have a selection yet
+			if (tileMap.getSelectedChunks() > 0) {
+				Optional<ImportSelectionDialog.Result> optional = new ImportSelectionDialog(primaryStage).showAndWait();
+				if (optional.isEmpty()) {
+					return;
+				}
+				result = optional.get();
+			}
+
+			Selection selection;
+			try {
+				selection = Selection.readFromFile(file);
+			} catch (IOException ex) {
+				LOGGER.warn("failed to read selection from file", ex);
+				new ErrorDialog(primaryStage, ex.getMessage());
+				return;
+			}
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
-			tileMap.setMarkedChunks(selection.selection());
-			tileMap.setSelectionInverted(selection.inverted());
+			switch (result) {
+				case OVERWRITE -> tileMap.setSelection(selection);
+				case MERGE -> tileMap.addSelection(selection);
+			}
 			tileMap.draw();
 		}
 	}
@@ -613,8 +617,15 @@ public class DialogHelper {
 		File file = createFileChooser(FileHelper.getLastOpenedDirectory("selection_import_export", null),
 				new FileChooser.ExtensionFilter("*.csv Files", "*.csv")).showSaveDialog(primaryStage);
 		if (file != null) {
-			SelectionHelper.exportSelection(new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted()), file);
+			try {
+				tileMap.getSelection().saveToFile(file);
+			} catch (IOException ex) {
+				LOGGER.warn("failed to save selection to file", ex);
+				new ErrorDialog(primaryStage, ex);
+				return;
+			}
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
+			tileMap.setSelectionSaved();
 			tileMap.draw();
 		}
 	}

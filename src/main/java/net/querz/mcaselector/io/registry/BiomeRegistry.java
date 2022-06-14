@@ -1,8 +1,9 @@
 package net.querz.mcaselector.io.registry;
 
-import net.querz.mcaselector.debug.Debug;
-import net.querz.mcaselector.filter.BiomeFilter;
+import net.querz.mcaselector.filter.filters.BiomeFilter;
 import net.querz.mcaselector.text.TextHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,6 +14,8 @@ import java.util.Objects;
 import java.util.Set;
 
 public final class BiomeRegistry {
+
+	private static final Logger LOGGER = LogManager.getLogger(BiomeRegistry.class);
 
 	private BiomeRegistry() {}
 
@@ -27,19 +30,19 @@ public final class BiomeRegistry {
 			while ((line = bis.readLine()) != null) {
 				String[] split = line.split(";");
 				if (split.length != 2) {
-					Debug.dumpf("invalid biome mapping: %s", line);
+					LOGGER.error("invalid biome mapping: {}", line);
 					continue;
 				}
 				Integer id = TextHelper.parseInt(split[1], 10);
 				if (id == null) {
-					Debug.dumpf("invalid biome id: %s", line);
+					LOGGER.error("invalid biome id: {}", line);
 					continue;
 				}
 				idMapping.put(id, "minecraft:" + split[0]);
 				nameMapping.put("minecraft:" + split[0], id);
 			}
 		} catch (IOException ex) {
-			Debug.dumpException("error reading mapping/biome_name_to_id.txt", ex);
+			LOGGER.error("error reading mapping/biome_name_to_id.txt", ex);
 		}
 
 		try (BufferedReader bis = new BufferedReader(
@@ -49,7 +52,7 @@ public final class BiomeRegistry {
 				mapping.add("minecraft:" + line);
 			}
 		} catch (IOException ex) {
-			Debug.dumpException("error reading mapping/all_biome_names.txt", ex);
+			LOGGER.error("error reading mapping/all_biome_names.txt", ex);
 		}
 	}
 

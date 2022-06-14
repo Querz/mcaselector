@@ -11,7 +11,6 @@ menu.selection;선택
 menu.tools;도구
 menu.about;이 프로그램에 대해
 menu.file.open_world;월드 열기
-menu.file.open;지역 열기
 menu.file.settings;설정
 menu.file.render_settings;렌더링 설정
 menu.file.quit;나가기
@@ -101,6 +100,10 @@ dialog.import_chunks_confirmation.warning;Warning:오프셋이 있는 청크를 
 dialog.export_chunks_confirmation.title;청크 내보내기
 dialog.export_chunks_confirmation.header_short;이 월드에서 알 수 없는 수 만큼의 청크를 내보내려고 합니다.
 dialog.export_chunks_confirmation.header_verbose;이 월드에서 %d개 만큼의 청크를 내보내려고 합니다.
+dialog.import_selection.title;.csv 에서 선택 항목 가져오기
+dialog.import_selection.header;이 세계에는 이미 선택 항목이 있습니다.\n새 선택 항목을 어떻게 가져와야 합니까?
+dialog.import_selection.overwrite;덮어쓰다
+dialog.import_selection.merge;에 추가
 dialog.filter_chunks.title;청크 필터
 dialog.filter_chunks.filter.add.tooltip;이 조건 아래에 새 조건을 추가합니다.
 dialog.filter_chunks.filter.delete.tooltip;이 조건을 제거합니다.
@@ -116,7 +119,6 @@ dialog.filter_chunks.delete.tooltip;현재 월드에서 영향받는 모든 청�
 dialog.filter_chunks.selection_only;선택 항목에만 적용
 dialog.filter_chunks.overwrite_selection;선택 덮어쓰기
 dialog.filter_chunks.selection_radius;선택 반경
-dialog.filter_chunks.selection_only.tooltip;이 필터가 현재 선택 항목에만 적용되어야 하는지에 대한 여부
 dialog.edit_overlays.title;오버레이 수정
 dialog.edit_overlays.overlay_active.tooltip;활성화
 dialog.edit_overlays.delete.tooltip;삭제하기
@@ -129,7 +131,6 @@ dialog.change_nbt.selection_only;선택 항목에만 적용
 dialog.change_nbt.selection_only.tooltip;이 필터가 현재 선택 항목에만 적용되어야 하는지 여부
 dialog.change_nbt_confirmation.title;NBT 변경하기
 dialog.change_nbt_confirmation.header_short;이 월드에서 알 수 없는 수 만큼의 청크를 변경하려고 합니다.
-dialog.change_nbt_confirmation.header_verbose;이 월드에서 %d개 만큼의 청크를 변경하려고 합니다.
 dialog.edit_nbt.title;청크 수정하기
 dialog.edit_nbt.placeholder.loading;로딩 중...
 dialog.edit_nbt.placeholder.no_chunk_data;청크 데이터를 찾을 수 없습니다.
@@ -147,7 +148,6 @@ dialog.about.version.error;오류
 dialog.about.license;License:
 dialog.about.copyright;저작권:
 dialog.about.source;소스:
-dialog.progress.title;진행도
 dialog.progress.no_files;파일이 없습니다.
 dialog.progress.running;진행 중...
 dialog.progress.cancelling;취소 중...
@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;클립보드에 복사하기
 dialog.error.title;오류
 dialog.error.header;오류가 발생하였습니다.
 dialog.error.copied_to_clipboard;클립보드에 복사되었습니다!
-dialog.unsaved_changes.title;저장되지 않은 변경사항
-dialog.unsaved_changes.header;저장되지 않은 변경사항이 있습니다.
+dialog.unsaved_selection.title;저장되지 않은 선택
+dialog.unsaved_selection.header;저장되지 않은 선택 항목이 있습니다.
 button.cancel;취소
 button.ok;확인

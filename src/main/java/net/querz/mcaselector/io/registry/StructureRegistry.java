@@ -1,6 +1,7 @@
 package net.querz.mcaselector.io.registry;
 
-import net.querz.mcaselector.debug.Debug;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,6 +10,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public final class StructureRegistry {
+
+	private static final Logger LOGGER = LogManager.getLogger(StructureRegistry.class);
 
 	private StructureRegistry() {}
 
@@ -24,7 +27,7 @@ public final class StructureRegistry {
 				higherToLower.put(line, line.toLowerCase());
 			}
 		} catch (IOException ex) {
-			Debug.dumpException("error reading mapping/all_structures.txt", ex);
+			LOGGER.error("error reading mapping/all_structures.txt", ex);
 		}
 	}
 

@@ -718,7 +718,7 @@ mangrove_button;753630
 mangrove_door;70302e
 mangrove_fence;753630
 mangrove_fence_gate;753630
-mangrove_leaves;807f7f
+mangrove_leaves;818080;f
 mangrove_log;66302a
 mangrove_planks;753630
 mangrove_pressure_plate;753630
@@ -752,7 +752,7 @@ mossy_stone_brick_slab;737969
 mossy_stone_brick_stairs;737969
 mossy_stone_brick_wall;737969
 mossy_stone_bricks;737969
-moving_piston;6e6860
+moving_piston;6d6860
 mud;3c393c
 mud_brick_slab;89674f
 mud_brick_stairs;89674f
@@ -852,8 +852,8 @@ pink_terracotta;a14e4e
 pink_tulip;639d4e
 pink_wall_banner;a2824e
 pink_wool;ed8dac
-piston;6e6860
-piston_head;6e6860
+piston;6d6860
+piston_head;6d6860
 player_head;513e32
 player_wall_head;513e32
 podzol:snowy=false;5b3f18
@@ -1209,7 +1209,7 @@ spruce_stairs;725430
 spruce_trapdoor;674f2f
 spruce_wall_sign;725430
 spruce_wood;3a2510
-sticky_piston;6e6860
+sticky_piston;6d6860
 stone;7d7d7d
 stone_brick_slab;7a797a
 stone_brick_stairs;7a797a

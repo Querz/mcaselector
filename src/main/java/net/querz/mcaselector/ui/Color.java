@@ -8,10 +8,22 @@ public class Color {
 
 	private javafx.scene.paint.Color handle;
 	private double r, g, b, a;
+
+	private int i;
 	private String web;
 
 	public Color(String web) {
 		this.web = web;
+		handle = javafx.scene.paint.Color.web(web);
+		this.r = handle.getRed();
+		this.g = handle.getGreen();
+		this.b = handle.getBlue();
+		this.a = handle.getOpacity();
+		int ri = (int) Math.round(this.r * 255.0);
+		int gi = (int) Math.round(this.g * 255.0);
+		int bi = (int) Math.round(this.b * 255.0);
+		int ai = (int) Math.round(this.a * 255.0);
+		this.i = ai << 24 | ri << 16 | gi << 8 | bi;
 	}
 
 	public Color(double r, double g, double b, double a) {
@@ -19,10 +31,24 @@ public class Color {
 		this.g = g;
 		this.b = b;
 		this.a = a;
+		int ri = (int) Math.round(this.r * 255.0);
+		int gi = (int) Math.round(this.g * 255.0);
+		int bi = (int) Math.round(this.b * 255.0);
+		int ai = (int) Math.round(this.a * 255.0);
+		this.i = ai << 24 | ri << 16 | gi << 8 | bi;
 	}
 
 	public Color(javafx.scene.paint.Color handle) {
 		this.handle = handle;
+		this.r = handle.getRed();
+		this.g = handle.getGreen();
+		this.b = handle.getBlue();
+		this.a = handle.getOpacity();
+		int ri = (int) Math.round(this.r * 255.0);
+		int gi = (int) Math.round(this.g * 255.0);
+		int bi = (int) Math.round(this.b * 255.0);
+		int ai = (int) Math.round(this.a * 255.0);
+		this.i = ai << 24 | ri << 16 | gi << 8 | bi;
 	}
 
 	public javafx.scene.paint.Color makeJavaFXColor() {
@@ -35,6 +61,10 @@ public class Color {
 			}
 		}
 		return handle;
+	}
+
+	public int toInt() {
+		return i;
 	}
 
 	public static int shade(int color, int amount) {

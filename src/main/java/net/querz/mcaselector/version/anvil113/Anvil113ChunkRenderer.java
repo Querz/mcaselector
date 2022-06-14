@@ -1,18 +1,18 @@
 package net.querz.mcaselector.version.anvil113;
 
 import net.querz.mcaselector.math.MathUtil;
-import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkRenderer;
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.version.Helper;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.CompoundTag;
+import net.querz.nbt.ListTag;
 
 public class Anvil113ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
-		ListTag<CompoundTag> sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
+		ListTag sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
 		if (sections == null) {
 			return;
 		}
@@ -21,11 +21,10 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 
 		height = MathUtil.clamp(height, 0, 255);
 
-		@SuppressWarnings("unchecked")
-		ListTag<CompoundTag>[] palettes = (ListTag<CompoundTag>[]) new ListTag[16];
+		ListTag[] palettes = new ListTag[16];
 		long[][] blockStatesArray = new long[16][];
 		sections.forEach(s -> {
-			ListTag<CompoundTag> p = Helper.tagFromCompound(s, "Palette");
+			ListTag p = Helper.tagFromCompound(s, "Palette");
 			long[] b = Helper.longArrayFromCompound(s, "BlockStates");
 			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
 			if (y >= 0 && y <= 15 && p != null && b != null) {
@@ -51,7 +50,7 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 					}
 
 					long[] blockStates = blockStatesArray[i];
-					ListTag<CompoundTag> palette = palettes[i];
+					ListTag palette = palettes[i];
 
 					int sectionHeight = i * Tile.CHUNK_SIZE;
 
@@ -67,7 +66,7 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 
 					for (int cy = startHeight; cy >= 0; cy--) {
 						int paletteIndex = getPaletteIndex(getIndex(cx, cy, cz), blockStates, bits, clean);
-						CompoundTag blockData = palette.get(paletteIndex);
+						CompoundTag blockData = palette.getCompound(paletteIndex);
 
 						if (isEmpty(blockData)) {
 							continue;
@@ -104,7 +103,7 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawLayer(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int height) {
-		ListTag<CompoundTag> sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
+		ListTag sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
 		if (sections == null) {
 			return;
 		}
@@ -114,7 +113,7 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 		height = MathUtil.clamp(height, 0, 255);
 
 		CompoundTag section = null;
-		for (CompoundTag s : sections) {
+		for (CompoundTag s : sections.iterateType(CompoundTag.TYPE)) {
 			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
 			if (y == height >> 4) {
 				section = s;
@@ -125,7 +124,7 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 			return;
 		}
 
-		ListTag<CompoundTag> palette = Helper.tagFromCompound(section, "Palette");
+		ListTag palette = Helper.tagFromCompound(section, "Palette");
 		long[] blockStates = Helper.longArrayFromCompound(section, "BlockStates");
 		if (blockStates == null || palette == null) {
 			return;
@@ -140,7 +139,7 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
 				int paletteIndex = getPaletteIndex(getIndex(cx, cy, cz), blockStates, bits, clean);
-				CompoundTag blockData = palette.get(paletteIndex);
+				CompoundTag blockData = palette.getCompound(paletteIndex);
 
 				if (isEmpty(blockData)) {
 					continue;
@@ -157,7 +156,7 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawCaves(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, short[] terrainHeights, int height) {
-		ListTag<CompoundTag> sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
+		ListTag sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
 		if (sections == null) {
 			return;
 		}
@@ -166,11 +165,10 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 
 		height = MathUtil.clamp(height, 0, 255);
 
-		@SuppressWarnings("unchecked")
-		ListTag<CompoundTag>[] palettes = (ListTag<CompoundTag>[]) new ListTag[16];
+		ListTag[] palettes = new ListTag[16];
 		long[][] blockStatesArray = new long[16][];
 		sections.forEach(s -> {
-			ListTag<CompoundTag> p = Helper.tagFromCompound(s, "Palette");
+			ListTag p = Helper.tagFromCompound(s, "Palette");
 			long[] b = Helper.longArrayFromCompound(s, "BlockStates");
 			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
 			if (y >= 0 && y <= 15 && p != null && b != null) {
@@ -195,7 +193,7 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 					}
 
 					long[] blockStates = blockStatesArray[i];
-					ListTag<CompoundTag> palette = palettes[i];
+					ListTag palette = palettes[i];
 
 					int sectionHeight = i * Tile.CHUNK_SIZE;
 
@@ -211,7 +209,7 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 
 					for (int cy = startHeight; cy >= 0; cy--) {
 						int paletteIndex = getPaletteIndex(getIndex(cx, cy, cz), blockStates, bits, clean);
-						CompoundTag blockData = palette.get(paletteIndex);
+						CompoundTag blockData = palette.getCompound(paletteIndex);
 
 						if (!isEmptyOrFoliage(blockData, colorMapping)) {
 							if (doneSkipping) {
@@ -235,12 +233,12 @@ public class Anvil113ChunkRenderer implements ChunkRenderer {
 	@Override
 	public CompoundTag minimizeChunk(CompoundTag root) {
 		CompoundTag minData = new CompoundTag();
-		minData.put("DataVersion", root.get("DataVersion").clone());
+		minData.put("DataVersion", root.get("DataVersion").copy());
 		CompoundTag level = new CompoundTag();
 		minData.put("Level", level);
-		level.put("Biomes", root.getCompoundTag("Level").get("Biomes").clone());
-		level.put("Sections", root.getCompoundTag("Level").get("Sections").clone());
-		level.put("Status", root.getCompoundTag("Level").get("Status").clone());
+		level.put("Biomes", root.getCompound("Level").get("Biomes").copy());
+		level.put("Sections", root.getCompound("Level").get("Sections").copy());
+		level.put("Status", root.getCompound("Level").get("Status").copy());
 		return minData;
 	}
 

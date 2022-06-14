@@ -11,7 +11,6 @@ menu.selection;Выбор
 menu.tools;Инструменты
 menu.about;О программе
 menu.file.open_world;Открой мир
-menu.file.open;Открыть регион
 menu.file.settings;Настройки
 menu.file.render_settings;Настройки рендеринга
 menu.file.quit;Выход
@@ -101,6 +100,10 @@ dialog.import_chunks_confirmation.warning;Внимание: Импорт чан�
 dialog.export_chunks_confirmation.title;Экспорт чанков
 dialog.export_chunks_confirmation.header_short;Вы экспортируете неизвестное число чанков из этого мира.
 dialog.export_chunks_confirmation.header_verbose;Вы экспортируете %d чанков из этого мира.
+dialog.import_selection.title;Импортировать выделение из .csv
+dialog.import_selection.header;В этом мире уже есть выбор.\nКак импортировать новый выбор?
+dialog.import_selection.overwrite;Перезаписывать
+dialog.import_selection.merge;Добавить
 dialog.filter_chunks.title;Фильтровать чанки
 dialog.filter_chunks.filter.add.tooltip;Добавьте новое условие ниже этого
 dialog.filter_chunks.filter.delete.tooltip;Удалить условие
@@ -116,7 +119,6 @@ dialog.filter_chunks.delete.tooltip;Удаляет все подверженны
 dialog.filter_chunks.selection_only;Применить только к выбранным
 dialog.filter_chunks.overwrite_selection;Перезаписать выбор
 dialog.filter_chunks.selection_radius;Радиус выбора
-dialog.filter_chunks.selection_only.tooltip;Если этот фильтр должен применяться только к выбранным
 dialog.edit_overlays.title;Редактировать наложения
 dialog.edit_overlays.overlay_active.tooltip;Активный
 dialog.edit_overlays.delete.tooltip;Удалить
@@ -129,7 +131,6 @@ dialog.change_nbt.selection_only;Применить только к выбран
 dialog.change_nbt.selection_only.tooltip;Если этот фильтр должен применяться только к выбранным
 dialog.change_nbt_confirmation.title;Изменить NBT
 dialog.change_nbt_confirmation.header_short;Вы изменяете параметры у неизвестного числа чанков в этом мире.
-dialog.change_nbt_confirmation.header_verbose;Вы изменяете параметры у %d чанков в этом мире.
 dialog.edit_nbt.title;Редактировать чанк
 dialog.edit_nbt.placeholder.loading;загрузка...
 dialog.edit_nbt.placeholder.no_chunk_data;не найдено информации чанка
@@ -147,7 +148,6 @@ dialog.about.version.error;Ошибка
 dialog.about.license;Лицензия:
 dialog.about.copyright;Авторские права:
 dialog.about.source;Источник:
-dialog.progress.title;Прогресс
 dialog.progress.no_files;нет файлов
 dialog.progress.running;выполнение...
 dialog.progress.cancelling;отмена...
@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Скопировать в буфер об�
 dialog.error.title;Ошибка
 dialog.error.header;Произошла ошибка
 dialog.error.copied_to_clipboard;Скопировано в буфер обмена!
-dialog.unsaved_changes.title;Несохраненные изменения
-dialog.unsaved_changes.header;У вас есть несохраненные изменения.
+dialog.unsaved_selection.title;Несохраненный выбор
+dialog.unsaved_selection.header;Есть несохраненный выбор.
 button.cancel;Отменить
 button.ok;OK

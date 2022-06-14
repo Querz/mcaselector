@@ -11,7 +11,6 @@ menu.selection;Sélection
 menu.tools;Outils
 menu.about;À propos
 menu.file.open_world;Ouvrir un monde
-menu.file.open;Ouvrir une région
 menu.file.settings;Options
 menu.file.render_settings;Paramètres de rendu
 menu.file.quit;Quitter
@@ -101,6 +100,10 @@ dialog.import_chunks_confirmation.warning;Attention: Importer des chunks avec un
 dialog.export_chunks_confirmation.title;Exporter les chunks
 dialog.export_chunks_confirmation.header_short;Vous êtes sur le point d'exporter un nomnbre de chunks inconnu depuis ce monde.
 dialog.export_chunks_confirmation.header_verbose;Vous êtes sur le point d'exporter %d chunks depuis ce monde.
+dialog.import_selection.title;Importer la sélection a partir de .csv
+dialog.import_selection.header;Ce monde a déjà une sélection.\nComment importer la nouvelle sélection ?
+dialog.import_selection.overwrite;Écraser
+dialog.import_selection.merge;Ajouter
 dialog.filter_chunks.title;Filtrer les chunks
 dialog.filter_chunks.filter.add.tooltip;Ajouter une nouvelle condition sous celle-ci.
 dialog.filter_chunks.filter.delete.tooltip;Supprimer cette condition.
@@ -116,7 +119,6 @@ dialog.filter_chunks.delete.tooltip;Supprime tous les chunks concernés de ce mo
 dialog.filter_chunks.selection_only;Appliquer seulement à la sélection
 dialog.filter_chunks.overwrite_selection;Ecraser la sélection
 dialog.filter_chunks.selection_radius;Rayon de sélection
-dialog.filter_chunks.selection_only.tooltip;Si ce filtre devrait seulement s'appliquer à la sélection actuelle.
 dialog.edit_overlays.title;Modifier les superpositions
 dialog.edit_overlays.overlay_active.tooltip;Actif
 dialog.edit_overlays.delete.tooltip;Effacer
@@ -129,7 +131,6 @@ dialog.change_nbt.selection_only;Appliquer à la sélection seulement
 dialog.change_nbt.selection_only.tooltip;Si ce filtre ne devrait s'appliquer qu'à la sélection en cours.
 dialog.change_nbt_confirmation.title;Changer les NBT
 dialog.change_nbt_confirmation.header_short;Vous êtes sur le point de modifier les données d'un nombre inconnu de chunks dans ce monde.
-dialog.change_nbt_confirmation.header_verbose;Vous êtes sur le point de modifier les données en %d chunks dans ce monde.
 dialog.edit_nbt.title;Modifier le chunk
 dialog.edit_nbt.placeholder.loading;chargement...
 dialog.edit_nbt.placeholder.no_chunk_data;aucune donnée de chunk trouvée
@@ -147,7 +148,6 @@ dialog.about.version.error;Erreur
 dialog.about.license;License:
 dialog.about.copyright;Copyright:
 dialog.about.source;Source:
-dialog.progress.title;Progrès
 dialog.progress.no_files;aucun fichier
 dialog.progress.running;en cours...
 dialog.progress.cancelling;annulation...
@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Copier dans le presse-papier
 dialog.error.title;Erreur
 dialog.error.header;Une erreur s'est produite
 dialog.error.copied_to_clipboard;Copié dans le presse-papier!
-dialog.unsaved_changes.title;Modifications non enregistrées
-dialog.unsaved_changes.header;Vous avez des changements non enregistrés.
+dialog.unsaved_selection.title;Sélection non enregistrée
+dialog.unsaved_selection.header;Il y a une sélection non enregistrée.
 button.cancel;Annuler
 button.ok;OK

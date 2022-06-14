@@ -3,13 +3,13 @@ package net.querz.mcaselector.version.anvil118;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.version.Helper;
-import net.querz.nbt.tag.*;
+import net.querz.nbt.*;
 
 public final class LegacyHelper {
 
 	private LegacyHelper() {}
 
-	static ListTag<CompoundTag> getSections(CompoundTag root, int dataVersion) {
+	static ListTag getSections(CompoundTag root, int dataVersion) {
 		if (dataVersion > 2843) { // 21w42a
 			return Helper.tagFromCompound(root, "sections");
 		} else {
@@ -17,15 +17,15 @@ public final class LegacyHelper {
 		}
 	}
 
-	static void putSections(CompoundTag root, ListTag<CompoundTag> sections, int dataVersion) {
+	static void putSections(CompoundTag root, ListTag sections, int dataVersion) {
 		if (dataVersion > 2843) { // 21w42a
 			root.put("sections", sections);
 		} else {
-			root.getCompoundTag("Level").put("Sections", sections);
+			root.getCompound("Level").put("Sections", sections);
 		}
 	}
 
-	static ListTag<CompoundTag> getPalette(CompoundTag section, int dataVersion) {
+	static ListTag getPalette(CompoundTag section, int dataVersion) {
 		if (dataVersion >= 2834) {
 			return Helper.tagFromCompound(Helper.tagFromCompound(section, "block_states"), "palette");
 		} else {
@@ -104,7 +104,7 @@ public final class LegacyHelper {
 		}
 	}
 
-	static ListTag<CompoundTag> getTileEntities(CompoundTag root, int dataVersion) {
+	static ListTag getTileEntities(CompoundTag root, int dataVersion) {
 		if (dataVersion < 2844) {
 			return Helper.tagFromLevelFromRoot(root, "TileEntities");
 		} else {
@@ -112,7 +112,7 @@ public final class LegacyHelper {
 		}
 	}
 
-	static ListTag<CompoundTag> getTileTicks(CompoundTag root, int dataVersion) {
+	static ListTag getTileTicks(CompoundTag root, int dataVersion) {
 		if (dataVersion < 2844) {
 			return Helper.tagFromLevelFromRoot(root, "TileTicks");
 		} else {
@@ -120,7 +120,7 @@ public final class LegacyHelper {
 		}
 	}
 
-	static ListTag<CompoundTag> getLiquidTicks(CompoundTag root, int dataVersion) {
+	static ListTag getLiquidTicks(CompoundTag root, int dataVersion) {
 		if (dataVersion < 2844) {
 			return Helper.tagFromLevelFromRoot(root, "LiquidTicks");
 		} else {
@@ -128,9 +128,9 @@ public final class LegacyHelper {
 		}
 	}
 
-	static void putTileEntities(CompoundTag root, ListTag<CompoundTag> tileEntities, int dataVersion) {
+	static void putTileEntities(CompoundTag root, ListTag tileEntities, int dataVersion) {
 		if (dataVersion < 2844) {
-			root.getCompoundTag("Level").put("TileEntities", tileEntities);
+			root.getCompound("Level").put("TileEntities", tileEntities);
 		} else {
 			root.put("block_entities", tileEntities);
 		}

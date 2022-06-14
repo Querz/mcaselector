@@ -11,7 +11,6 @@ menu.selection;Výběr
 menu.tools;Nástroje
 menu.about;O aplikaci
 menu.file.open_world;Otevřete svět
-menu.file.open;Otevřete region
 menu.file.settings;Nastavení
 menu.file.render_settings;Nastavení vykreslování
 menu.file.quit;Opustit
@@ -101,6 +100,10 @@ dialog.import_chunks_confirmation.warning;Upozornění: Při importování chunk
 dialog.export_chunks_confirmation.title;Exportovat chunky
 dialog.export_chunks_confirmation.header_short;Chcete exportovat neznámý počet chunků vybraného světa.
 dialog.export_chunks_confirmation.header_verbose;Chcete exportovat %d chunků vybraného světa.
+dialog.import_selection.title;Importovat výběr z .csv
+dialog.import_selection.header;Tento svět již má výběr.\nJak by měl být nový výběr importován?
+dialog.import_selection.overwrite;Přepsat
+dialog.import_selection.merge;Přidat
 dialog.filter_chunks.title;Filtrovat chunky
 dialog.filter_chunks.filter.add.tooltip;Přidá další podmínku pod stávající.
 dialog.filter_chunks.filter.delete.tooltip;Smaže tuto podmínku.
@@ -116,7 +119,6 @@ dialog.filter_chunks.delete.tooltip;Smaže všechny ovlivněné chunky z aktuál
 dialog.filter_chunks.selection_only;Aplikovat pouze na výběr
 dialog.filter_chunks.overwrite_selection;Přepsat výběr
 dialog.filter_chunks.selection_radius;Poloměr výběru
-dialog.filter_chunks.selection_only.tooltip;Zda má být filtr aplikován pouze na aktuální výběr.
 dialog.edit_overlays.title;Upravit překryvy
 dialog.edit_overlays.overlay_active.tooltip;Aktivní
 dialog.edit_overlays.delete.tooltip;Vymazat
@@ -129,7 +131,6 @@ dialog.change_nbt.selection_only;Aplikovat pouze na výběr
 dialog.change_nbt.selection_only.tooltip;Zda má být filtr aplikován pouze na aktuální výběr.
 dialog.change_nbt_confirmation.title;Změnit NBT
 dialog.change_nbt_confirmation.header_short;Chcete změnit data v neznámém počtu chunků vybraného světa.
-dialog.change_nbt_confirmation.header_verbose;Chcete změnit data v %d chunků vybraného světa.
 dialog.edit_nbt.title;Upravit chunků
 dialog.edit_nbt.placeholder.loading;načítání...
 dialog.edit_nbt.placeholder.no_chunk_data;nebyly nalezeny žádné údaje o chunku
@@ -147,7 +148,6 @@ dialog.about.version.error;Chyba
 dialog.about.license;Licence:
 dialog.about.copyright;Copyright:
 dialog.about.source;Zdroj:
-dialog.progress.title;Průběh
 dialog.progress.no_files;žádné soubory
 dialog.progress.running;probíhá...
 dialog.progress.cancelling;rušení...
@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Zkopírovat do schránky
 dialog.error.title;Chyba
 dialog.error.header;Vyskytla se chyba
 dialog.error.copied_to_clipboard;Zkopírováno do schránky!
-dialog.unsaved_changes.title;Neuložené změny
-dialog.unsaved_changes.header;Máte neuložené změny.
+dialog.unsaved_selection.title;Neuložený výběr
+dialog.unsaved_selection.header;Existuje neuložený výběr.
 button.cancel;Zrušit
 button.ok;OK

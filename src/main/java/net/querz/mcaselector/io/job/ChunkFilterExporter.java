@@ -1,24 +1,27 @@
 package net.querz.mcaselector.io.job;
 
 import net.querz.mcaselector.Config;
-import net.querz.mcaselector.filter.GroupFilter;
-import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.filter.filters.GroupFilter;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
-import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.File;
 
 public final class ChunkFilterExporter {
 
+	private static final Logger LOGGER = LogManager.getLogger(ChunkFilterExporter.class);
+
 	private ChunkFilterExporter() {}
 
-	public static void exportFilter(GroupFilter filter, SelectionData selection, WorldDirectories destination, Progress progressChannel, boolean headless) {
+	public static void exportFilter(GroupFilter filter, Selection selection, WorldDirectories destination, Progress progressChannel, boolean headless) {
 		WorldDirectories wd = Config.getWorldDirs();
 		RegionDirectories[] rd = wd.listRegions(selection);
 		if (rd == null || rd.length == 0) {
@@ -44,10 +47,10 @@ public final class ChunkFilterExporter {
 
 		private final Progress progressChannel;
 		private final GroupFilter filter;
-		private final SelectionData selection;
+		private final Selection selection;
 		private final WorldDirectories destination;
 
-		private MCAExportFilterProcessJob(RegionDirectories dirs, GroupFilter filter, SelectionData selection, WorldDirectories destination, Progress progressChannel) {
+		private MCAExportFilterProcessJob(RegionDirectories dirs, GroupFilter filter, Selection selection, WorldDirectories destination, Progress progressChannel) {
 			super(dirs, PRIORITY_LOW);
 			this.filter = filter;
 			this.selection = selection;
@@ -59,8 +62,8 @@ public final class ChunkFilterExporter {
 		public boolean execute() {
 			Point2i location = getRegionDirectories().getLocation();
 
-			if (!filter.appliesToRegion(location) || selection != null && !selection.isRegionSelected(location)) {
-				Debug.dump("filter does not apply to region " + getRegionDirectories().getLocation());
+			if (!filter.appliesToRegion(location) || selection != null && !selection.isAnyChunkInRegionSelected(location)) {
+				LOGGER.debug("filter does not apply to region {}", getRegionDirectories().getLocation());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return true;
 			}
@@ -69,7 +72,7 @@ public final class ChunkFilterExporter {
 			File toPoi = new File(destination.getPoi(), getRegionDirectories().getLocationAsFileName());
 			File toEntities = new File(destination.getEntities(), getRegionDirectories().getLocationAsFileName());
 			if (toRegion.exists() || toPoi.exists() || toEntities.exists()) {
-				Debug.dumpf("%s exists, not overwriting", getRegionDirectories().getLocationAsFileName());
+				LOGGER.debug("{} exists, not overwriting", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return true;
 			}
@@ -81,7 +84,7 @@ public final class ChunkFilterExporter {
 			byte[] entitiesData = loadEntities();
 
 			if (regionData == null && poiData == null && entitiesData == null) {
-				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
+				LOGGER.warn("failed to load any data from {}", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return true;
 			}
@@ -97,7 +100,7 @@ public final class ChunkFilterExporter {
 				return false;
 			} catch (Exception ex) {
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				Debug.errorf("error deleting chunk indices in %s", getRegionDirectories().getLocationAsFileName());
+				LOGGER.warn("error deleting chunk indices in {}", getRegionDirectories().getLocationAsFileName());
 			}
 			return true;
 		}
@@ -120,10 +123,10 @@ public final class ChunkFilterExporter {
 			try {
 				getData().deFragment(to);
 			} catch (Exception ex) {
-				Debug.dumpException("failed to save exported filtered chunks in " + getRegionDirectories().getLocationAsFileName(), ex);
+				LOGGER.warn("failed to save exported filtered chunks in {}", getRegionDirectories().getLocationAsFileName(), ex);
 			}
 			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-			Debug.dumpf("took %s to save data for %s", t, getRegionDirectories().getLocationAsFileName());
+			LOGGER.debug("took {} to save data for {}", t, getRegionDirectories().getLocationAsFileName());
 		}
 	}
 }

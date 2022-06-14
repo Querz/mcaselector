@@ -1,16 +1,17 @@
 package net.querz.mcaselector.io;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.Config;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.tiles.Tile;
-import net.querz.mcaselector.tiles.TileMap;
-import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.selection.ChunkSet;
+import net.querz.mcaselector.selection.Selection;
+import net.querz.mcaselector.tile.Tile;
+import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.progress.Progress;
-import net.querz.mcaselector.ui.TileMapBox;
+import net.querz.mcaselector.ui.component.TileMapBox;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -22,6 +23,8 @@ import java.nio.file.Files;
 import java.util.regex.Matcher;
 
 public final class CacheHelper {
+
+	private static final Logger LOGGER = LogManager.getLogger(CacheHelper.class);
 
 	private CacheHelper() {}
 
@@ -80,7 +83,7 @@ public final class CacheHelper {
 				File file = FileHelper.createPNGFilePath(cacheDir, region);
 				if (file.exists()) {
 					if (!file.delete()) {
-						Debug.error("could not delete file " + file);
+						LOGGER.warn("could not delete file {}", file);
 					}
 				}
 				tileMap.clearTile(region.asLong());
@@ -92,45 +95,20 @@ public final class CacheHelper {
 	}
 
 	public static void clearSelectionCache(TileMap tileMap) {
-		if (tileMap.isSelectionInverted()) {
-			SelectionData selection = new SelectionData(tileMap.getMarkedChunks(), tileMap.isSelectionInverted());
-			File[] cacheDirs = Config.getCacheDirs();
-			for (File cacheDir : cacheDirs) {
-				File[] cacheFiles = cacheDir.listFiles((dir, name) -> name.matches("^r\\.-?\\d+\\.-?\\d+\\.png$"));
-				if (cacheFiles == null) {
-					continue;
-				}
-				for (File cacheFile : cacheFiles) {
-					Point2i cacheRegion = FileHelper.parseCacheFileName(cacheFile);
-					if (selection.isRegionSelected(cacheRegion) && cacheFile.exists()) {
-						if (!cacheFile.delete()) {
-							Debug.error("could not delete file " + cacheFile);
-							continue;
-						}
-						tileMap.clearTile(cacheRegion.asLong());
+		Selection selection = tileMap.getSelection().getTrueSelection(Config.getWorldDirs());
+
+		for (Long2ObjectMap.Entry<ChunkSet> entry : selection) {
+			Point2i region = new Point2i(entry.getLongKey());
+			for (File cacheDir : Config.getCacheDirs()) {
+				File file = FileHelper.createPNGFilePath(cacheDir, region);
+				if (file.exists()) {
+					if (!file.delete()) {
+						LOGGER.warn("could not delete file {}", file);
 					}
 				}
+				tileMap.clearTile(entry.getLongKey());
 			}
-
-			Long2ObjectOpenHashMap<LongOpenHashSet> trueSelection = SelectionHelper.getTrueSelection(selection);
-			for (long region : trueSelection.keySet()) {
-				tileMap.getOverlayPool().discardData(new Point2i(region));
-			}
-		} else {
-			for (Long2ObjectMap.Entry<LongOpenHashSet> entry : tileMap.getMarkedChunks().long2ObjectEntrySet()) {
-				Point2i region = new Point2i(entry.getLongKey());
-				for (File cacheDir : Config.getCacheDirs()) {
-					File file = FileHelper.createPNGFilePath(cacheDir, region);
-					if (file.exists()) {
-						if (!file.delete()) {
-							Debug.error("could not delete file " + file);
-						}
-					}
-					tileMap.clearTile(entry.getLongKey());
-				}
-				tileMap.getOverlayPool().discardData(region);
-
-			}
+			tileMap.getOverlayPool().discardData(region);
 		}
 		RegionImageGenerator.invalidateCachedMCAFiles();
 		tileMap.draw();
@@ -146,7 +124,7 @@ public final class CacheHelper {
 
 		// if we are not running from a .jar, we won't touch the cache files
 		if (applicationVersion == null) {
-			Debug.dump("failed to fetch application version");
+			LOGGER.warn("failed to fetch application version");
 			return;
 		}
 
@@ -155,7 +133,7 @@ public final class CacheHelper {
 		if(cacheVersionFile.exists()) {
 			version = readVersionFromFile(cacheVersionFile);
 		} else {
-			Debug.dump("no cache found for this world");
+			LOGGER.warn("no cache found for this world");
 		}
 		if (!applicationVersion.equals(version)) {
 			clearAllCache(tileMap);
@@ -167,7 +145,7 @@ public final class CacheHelper {
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			version = br.readLine();
 		} catch (IOException ex) {
-			Debug.dumpException("failed to read version from file " + file, ex);
+			LOGGER.warn("failed to read version from file {}", file, ex);
 		}
 		return version;
 	}
@@ -181,21 +159,21 @@ public final class CacheHelper {
 		}
 
 		if (applicationVersion == null) {
-			Debug.dump("no application version found, not updating cache version");
+			LOGGER.warn("no application version found, not updating cache version");
 			return;
 		}
 
 		File versionFile = new File(Config.getCacheDir(), "version");
 		if (!versionFile.getParentFile().exists()) {
 			if (!versionFile.getParentFile().mkdirs()) {
-				Debug.dumpf("failed to create directory for %s", versionFile);
+				LOGGER.warn("failed to create directory for {}", versionFile);
 			}
 		}
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(versionFile))) {
 			bw.write(applicationVersion);
 		} catch (IOException ex) {
-			Debug.dumpException("failed to write cache version file", ex);
+			LOGGER.warn("failed to write cache version file", ex);
 		}
 	}
 
@@ -256,14 +234,14 @@ public final class CacheHelper {
 		}
 		Config.setShowNonExistentRegions(showNonexistentRegions);
 
-		Debug.dump(Config.asString());
+		LOGGER.debug(Config.asString());
 	}
 
 	public static void updateWorldSettingsFile() {
 		File worldSettingsFile = new File(Config.getCacheDir(), "world_settings.json");
 		if (!worldSettingsFile.getParentFile().exists()) {
 			if (!worldSettingsFile.getParentFile().mkdirs()) {
-				Debug.dumpf("failed to create directory for %s", worldSettingsFile);
+				LOGGER.warn("failed to create directory for {}", worldSettingsFile);
 			}
 		}
 
@@ -283,7 +261,7 @@ public final class CacheHelper {
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(worldSettingsFile))) {
 			bw.write(root.toString());
 		} catch (IOException ex) {
-			Debug.dumpException("failed to write world settings file", ex);
+			LOGGER.warn("failed to write world settings file", ex);
 		}
 	}
 }

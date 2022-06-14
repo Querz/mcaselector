@@ -1,0 +1,3 @@
+Copyright 2012 Google Inc. All Rights Reserved.
+
+See http://www.apache.org/licenses/LICENSE-2.0

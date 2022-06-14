@@ -6,7 +6,7 @@ import java.io.ByteArrayOutputStream;
  * ExposedByteArrayOutputStream exposes the buffer array in #getBuffer()
  * to avoid calling Arrays.copyOf() when using ByteArrayOutputStream#toByteArray()
  */
-public class ExposedByteArrayOutputStream extends ByteArrayOutputStream {
+class ExposedByteArrayOutputStream extends ByteArrayOutputStream {
 
 	public ExposedByteArrayOutputStream() {
 		super();

@@ -11,7 +11,6 @@ menu.selection;Selection
 menu.tools;Tools
 menu.about;About
 menu.file.open_world;Open World
-menu.file.open;Open Region
 menu.file.settings;Settings
 menu.file.render_settings;Render Settings
 menu.file.quit;Quit
@@ -101,6 +100,10 @@ dialog.import_chunks_confirmation.warning;Warning: Importing chunks with an offs
 dialog.export_chunks_confirmation.title;Export chunks
 dialog.export_chunks_confirmation.header_short;You are about to export an unknown number of chunks from this world.
 dialog.export_chunks_confirmation.header_verbose;You are about to export %d chunks from this world.
+dialog.import_selection.title;Import selection from .csv
+dialog.import_selection.header;This world already has a selection.\nHow would you like to import the new selection?
+dialog.import_selection.overwrite;Overwrite
+dialog.import_selection.merge;Merge
 dialog.filter_chunks.title;Filter chunks
 dialog.filter_chunks.filter.add.tooltip;Add a new condition below this one.
 dialog.filter_chunks.filter.delete.tooltip;Delete this condition.
@@ -116,7 +119,6 @@ dialog.filter_chunks.delete.tooltip;Deletes all affected chunks from the current
 dialog.filter_chunks.selection_only;Apply to selection only
 dialog.filter_chunks.overwrite_selection;Overwrite selection
 dialog.filter_chunks.selection_radius;Selection radius
-dialog.filter_chunks.selection_only.tooltip;If this filter should only apply to the current selection.
 dialog.edit_overlays.title;Edit overlays
 dialog.edit_overlays.overlay_active.tooltip;Active
 dialog.edit_overlays.delete.tooltip;Delete
@@ -129,7 +131,6 @@ dialog.change_nbt.selection_only;Apply to selection only
 dialog.change_nbt.selection_only.tooltip;If this filter should only apply to the current selection.
 dialog.change_nbt_confirmation.title;Change NBT
 dialog.change_nbt_confirmation.header_short;You are about to change data in an unknown number of chunks in this world.
-dialog.change_nbt_confirmation.header_verbose;You are about to change data in %d chunks in this world.
 dialog.edit_nbt.title;Edit chunk
 dialog.edit_nbt.placeholder.loading;loading...
 dialog.edit_nbt.placeholder.no_chunk_data;no chunk data found
@@ -147,7 +148,6 @@ dialog.about.version.error;Error
 dialog.about.license;License:
 dialog.about.copyright;Copyright:
 dialog.about.source;Source:
-dialog.progress.title;Progress
 dialog.progress.no_files;no files
 dialog.progress.running;running...
 dialog.progress.cancelling;cancelling...
@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;Copy to Clipboard
 dialog.error.title;Error
 dialog.error.header;An Error occurred
 dialog.error.copied_to_clipboard;Copied to clipboard!
-dialog.unsaved_changes.title;Unsaved changes
-dialog.unsaved_changes.header;You have unsaved changes.
+dialog.unsaved_selection.title;Unsaved selection
+dialog.unsaved_selection.header;There is an unsaved selection.
 button.cancel;Cancel
 button.ok;OK

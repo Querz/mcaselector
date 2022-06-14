@@ -11,7 +11,6 @@ menu.selection;Selektion
 menu.tools;Werkzeuge
 menu.about;Info
 menu.file.open_world;Welt öffnen
-menu.file.open;Region öffnen
 menu.file.settings;Einstellungen
 menu.file.render_settings;Rendereinstellungen
 menu.file.quit;Beenden
@@ -101,6 +100,10 @@ dialog.import_chunks_confirmation.warning;Warnung: Der Import von Chunks ändert
 dialog.export_chunks_confirmation.title;Chunks exportieren
 dialog.export_chunks_confirmation.header_short;Diese Aktion exportiern eine unbekannte Anzahl von Chunks aus dieser Welt.
 dialog.export_chunks_confirmation.header_verbose;Diese Aktion exportiert %d Chunks aus dieser Welt.
+dialog.import_selection.title;Selektion von .csv importieren
+dialog.import_selection.header;Diese Welt hat bereits eine Selektion.\nWie soll die neue Selektion importiert werden?
+dialog.import_selection.overwrite;Überschreiben
+dialog.import_selection.merge;Hinzufügen
 dialog.filter_chunks.title;Chunks filtern
 dialog.filter_chunks.filter.add.tooltip;Fügt unter dieser Kondition eine neue hinzu.
 dialog.filter_chunks.filter.delete.tooltip;Löscht diese Kondition.
@@ -116,7 +119,6 @@ dialog.filter_chunks.delete.tooltip;Löscht alle betroffenen Chunks aus dieser W
 dialog.filter_chunks.selection_only;Nur auf Selektion anwenden
 dialog.filter_chunks.overwrite_selection;Selektion überschreiben
 dialog.filter_chunks.selection_radius;Selektionsradius
-dialog.filter_chunks.selection_only.tooltip;Ob der Filter nur auf die Chunks einer bereits existierenden Selektion angewendet werden soll.
 dialog.edit_overlays.title;Overlays editieren
 dialog.edit_overlays.overlay_active.tooltip;Aktiv
 dialog.edit_overlays.delete.tooltip;Löschen
@@ -129,7 +131,6 @@ dialog.change_nbt.selection_only;Nur auf Selektion anwenden
 dialog.change_nbt.selection_only.tooltip;Ob der Filter nur auf die Chunks einer bereits existierenden Selektion angewendet werden soll.
 dialog.change_nbt_confirmation.title;NBT ändern
 dialog.change_nbt_confirmation.header_short;Diese Aktion ändert Werte einer unbekannten Anzahl von Chunks in dieser Welt.
-dialog.change_nbt_confirmation.header_verbose;Diese Aktion ändert Werte von %d Chunks in dieser Welt.
 dialog.edit_nbt.title;Chunk editieren
 dialog.edit_nbt.placeholder.loading;Lädt...
 dialog.edit_nbt.placeholder.no_chunk_data;Keine Chunk-Daten gefunden
@@ -147,7 +148,6 @@ dialog.about.version.error;Fehler
 dialog.about.license;Lizenz:
 dialog.about.copyright;Copyright:
 dialog.about.source;Quellcode:
-dialog.progress.title;Fortschritt
 dialog.progress.no_files;Keine Dateien
 dialog.progress.running;Läuft...
 dialog.progress.cancelling;Abbrechen...
@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;In die Zwischenablage
 dialog.error.title;Fehler
 dialog.error.header;Fehler
 dialog.error.copied_to_clipboard;In die Zwischenablage kopiert!
-dialog.unsaved_changes.title;Ungespeicherte Änderungen
-dialog.unsaved_changes.header;Es gibt ungespeicherte Änderungen.
+dialog.unsaved_selection.title;Ungespeicherte Selektion
+dialog.unsaved_selection.header;Es gibt eine ungespeicherte Selektion.
 button.cancel;Abbrechen
 button.ok;OK

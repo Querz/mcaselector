@@ -11,7 +11,6 @@ menu.selection;选择
 menu.tools;工具
 menu.about;关于
 menu.file.open_world;打开世界
-menu.file.open;打开区域
 menu.file.settings;设置
 menu.file.render_settings;渲染设置
 menu.file.quit;退出
@@ -101,6 +100,10 @@ dialog.import_chunks_confirmation.warning;警告: 使用偏移量导入块不会
 dialog.export_chunks_confirmation.title;导出区块
 dialog.export_chunks_confirmation.header_short;您将要从这个世界导出未知数量的区块.
 dialog.export_chunks_confirmation.header_verbose;您将要从这个世界导出 %d 个区块.
+dialog.import_selection.title;从 .csv 导入选择
+dialog.import_selection.header;这个世界已经有一个选择。\n应该如何导入新的选择？
+dialog.import_selection.overwrite;覆盖
+dialog.import_selection.merge;添加
 dialog.filter_chunks.title;筛选区块
 dialog.filter_chunks.filter.add.tooltip;在此条件下添加新条件.
 dialog.filter_chunks.filter.delete.tooltip;删除此条件.
@@ -116,7 +119,6 @@ dialog.filter_chunks.delete.tooltip;从当前世界中删除所有受影响的�
 dialog.filter_chunks.selection_only;仅应用于所选内容
 dialog.filter_chunks.overwrite_selection;覆盖选择
 dialog.filter_chunks.selection_radius;选择半径
-dialog.filter_chunks.selection_only.tooltip;此筛选器是否只应用于当前所选内容.
 dialog.edit_overlays.title;编辑叠加
 dialog.edit_overlays.overlay_active.tooltip;积极的
 dialog.edit_overlays.delete.tooltip;删除
@@ -129,7 +131,6 @@ dialog.change_nbt.selection_only;仅适用于选择
 dialog.change_nbt.selection_only.tooltip;此筛选器是否只应用于当前所选内容.
 dialog.change_nbt_confirmation.title;更改NBT
 dialog.change_nbt_confirmation.header_short;您将要在此世界中更改未知数量的区块的数据.
-dialog.change_nbt_confirmation.header_verbose;您将要在此世界中更改 %d 个区块的数据.
 dialog.edit_nbt.title;编辑区块
 dialog.edit_nbt.placeholder.loading;载入中...
 dialog.edit_nbt.placeholder.no_chunk_data;找不到区块数据
@@ -147,7 +148,6 @@ dialog.about.version.error;错误
 dialog.about.license;许可:
 dialog.about.copyright;版权:
 dialog.about.source;来源:
-dialog.progress.title;进度
 dialog.progress.no_files;没有文件
 dialog.progress.running;正在运行...
 dialog.progress.cancelling;正在取消...
@@ -169,7 +169,7 @@ dialog.error.button.copy_to_clipboard;复制到剪贴板
 dialog.error.title;错误
 dialog.error.header;发生错误
 dialog.error.copied_to_clipboard;复制到剪贴板!
-dialog.unsaved_changes.title;未保存的更改
-dialog.unsaved_changes.header;您有未保存的更改。
+dialog.unsaved_selection.title;未保存的选择
+dialog.unsaved_selection.header;有一个未保存的选择。
 button.cancel;取消
 button.ok;OK

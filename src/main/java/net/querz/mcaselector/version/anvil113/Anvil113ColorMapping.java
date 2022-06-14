@@ -1,18 +1,21 @@
 package net.querz.mcaselector.version.anvil113;
 
 import net.querz.mcaselector.text.TextHelper;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.version.Helper;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.StringTag;
-import net.querz.nbt.tag.Tag;
+import net.querz.nbt.CompoundTag;
+import net.querz.nbt.StringTag;
+import net.querz.nbt.Tag;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
 public class Anvil113ColorMapping implements ColorMapping {
+
+	private static final Logger LOGGER = LogManager.getLogger(Anvil113ColorMapping.class);
 
 	// value can either be an Integer (color) or a BlockStateMapping
 	private final Map<String, Object> mapping = new TreeMap<>();
@@ -31,17 +34,17 @@ public class Anvil113ColorMapping implements ColorMapping {
 			while ((line = bis.readLine()) != null) {
 				String[] elements = line.split(";");
 				if (elements.length < 2 || elements.length > 3) {
-					Debug.dumpf("invalid line in color file: \"%s\"", line);
+					LOGGER.error("invalid line in color file: \"{}\"", line);
 					continue;
 				}
 				String[] blockData = elements[0].split(":");
 				if (blockData.length > 2) {
-					Debug.dumpf("invalid line in color file: \"%s\"", line);
+					LOGGER.error("invalid line in color file: \"{}\"", line);
 					continue;
 				}
 				Integer color = TextHelper.parseInt(elements[1], 16);
 				if (color == null || color < 0x0 || color > 0xFFFFFF) {
-					Debug.dumpf("invalid color code in color file: \"%s\"", elements[1]);
+					LOGGER.error("invalid color code in color file: \"{}\"", elements[1]);
 					continue;
 				}
 
@@ -82,7 +85,7 @@ public class Anvil113ColorMapping implements ColorMapping {
 			while ((line = bis.readLine()) != null) {
 				String[] elements = line.split(";");
 				if (elements.length != 4) {
-					Debug.dumpf("invalid line in biome color file: \"%s\"", line);
+					LOGGER.error("invalid line in biome color file: \"{}\"", line);
 					continue;
 				}
 
@@ -146,7 +149,7 @@ public class Anvil113ColorMapping implements ColorMapping {
 
 		public int getColor(CompoundTag properties) {
 			if (properties != null) {
-				for (Map.Entry<String, Tag<?>> property : properties.entrySet()) {
+				for (Map.Entry<String, Tag> property : properties) {
 					Map<Set<String>, Integer> clone = new HashMap<>(blockStateMapping);
 					for (Map.Entry<Set<String>, Integer> blockState : blockStateMapping.entrySet()) {
 						String value = property.getKey() + "=" + ((StringTag) property.getValue()).getValue();
