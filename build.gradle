@@ -83,7 +83,7 @@ jar {
 	manifest.attributes (
 		'Main-Class': application.mainClass,
 		'Application-Version': project.version,
-	 	'Class-Path': configurations.implementation.files.stream().filter($it -> !$it.name.startsWith('javafx')).collect{"lib/$it.name"}.join(' ')
+		'Class-Path': configurations.implementation.files.stream().filter($it -> !$it.name.startsWith('javafx')).collect{"lib/$it.name"}.join(' ')
 	)
 	exclude 'licenses/'
 	from 'LICENSE'
@@ -130,16 +130,15 @@ task installer {
 		for (File file : new File("${rootProject.projectDir}/src/main/resources/licenses").listFiles()) {
 			finalLicense = appendLicense(file, finalLicense)
 		}
-		finalLicense = appendLicense(new File("${rootProject.projectDir}/travis/winrun4j/winrun4j.license.txt"), finalLicense)
+		finalLicense = appendLicense(new File("${rootProject.projectDir}/installer/res/winrun4j.license.txt"), finalLicense)
 		finalLicense = appendLicense(new File("${rootProject.projectDir}/src/main/resources/font/notosans-regular.license.txt"), finalLicense)
 		Files.write(new File(innoSetupDir, "LICENSE").toPath(), finalLicense.getBytes(StandardCharsets.UTF_8))
 
 		copy {
-			from("${rootProject.projectDir}/inno/icon.ico")
-			from("${rootProject.projectDir}/inno/small.bmp")
-			from("${rootProject.projectDir}/inno/large.bmp")
+			from("${rootProject.projectDir}/installer/img/icon.ico")
+			from("${rootProject.projectDir}/installer/img/small.bmp")
+			from("${rootProject.projectDir}/installer/img/large.bmp")
 			from("${buildDir}/libs/${project.name}-${project.version}-min.jar")
-			from("${rootProject.projectDir}/7za.exe")
 			into(innoSetupDir)
 			rename("${project.name}-${project.version}-min.jar", "${project.name}.jar")
 		}
@@ -151,7 +150,7 @@ task installer {
 		}
 
 		copy {
-			from("${rootProject.projectDir}/inno/inno.iss")
+			from("${rootProject.projectDir}/installer/res/inno.iss")
 			expand([
 					applicationVersion: project.version,
 					applicationName: appName,
