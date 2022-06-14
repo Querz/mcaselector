@@ -1,4 +1,5 @@
 #!/bin/bash
+# a script to update all files containing the version.
 
 gradlePropertiesFile='gradle.properties'
 
