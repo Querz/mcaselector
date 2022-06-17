@@ -26,7 +26,7 @@ public final class Logging {
 
 	public static void setLogLevel(String logLevel) {
 		Logging.logLevel = logLevel;
-		LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+		LoggerContext ctx = (LoggerContext) LogManager.getContext(LogManager.class.getClassLoader(), false);
 		Configuration config = ctx.getConfiguration();
 		LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
 		loggerConfig.setLevel(fromString(logLevel));
