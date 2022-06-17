@@ -159,6 +159,11 @@ public final class ParamExecutor {
 			.desc("The maximum hue for the overlay gradient, ranging from 0.0 to 1.0; When smaller than overlay-min-hue the gradient is flipped")
 			.hasArg()
 			.build());
+		options.addOption(Option.builder()
+			.longOpt("zoom-level")
+			.desc("The zoom level for the cache to be generated. When not specified, all zoom levels will be generated")
+			.hasArg()
+			.build());
 
 		// world
 		options.addOption(Option.builder("w")
@@ -333,9 +338,9 @@ public final class ParamExecutor {
 			"help", "version", "mode", "output", "query", "selection", "source-selection", "radius", "x-offset",
 			"y-offset", "z-offset", "overwrite", "force", "render-height", "render-caves", "render-layer-only",
 			"render-shade", "render-water-shade", "overlay-type", "overlay-min-value", "overlay-max-value",
-			"overlay-data", "overlay-min-hue", "overlay-max-hue", "world", "region", "poi", "entities", "source-world",
-			"source-region", "source-poi", "source-entities", "output-world", "output-region", "output-poi",
-			"output-entities", "debug", "process-threads", "write-threads"
+			"overlay-data", "overlay-min-hue", "overlay-max-hue", "zoom-level", "world", "region", "poi", "entities",
+			"source-world", "source-region", "source-poi", "source-entities", "output-world", "output-region",
+			"output-poi", "output-entities", "debug", "process-threads", "write-threads"
 		};
 		Map<String, Integer> helpOptionOrderLookup = new HashMap<>();
 		for (int i = 0; i < helpOrder.length; i++) {

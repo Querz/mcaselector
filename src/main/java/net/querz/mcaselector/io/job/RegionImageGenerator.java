@@ -35,10 +35,10 @@ public final class RegionImageGenerator {
 
 	private RegionImageGenerator() {}
 
-	public static void generate(Tile tile, BiConsumer<Image, UniqueID> callback, int scale, Progress progressChannel, boolean canSkipSaving, Supplier<Integer> prioritySupplier) {
+	public static void generate(Tile tile, BiConsumer<Image, UniqueID> callback, Integer zoomLevel, Progress progressChannel, boolean canSkipSaving, Supplier<Integer> prioritySupplier) {
 		LOGGER.debug("adding job {}, tile:{}, scale:{}, loading:{}, image:{}, loaded:{}",
-			MCAImageProcessJob.class.getSimpleName(), tile.getLocation(), scale, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
-		JobHandler.addJob(new MCAImageProcessJob(tile, new UniqueID(), callback, scale, progressChannel, canSkipSaving, prioritySupplier));
+			MCAImageProcessJob.class.getSimpleName(), tile.getLocation(), zoomLevel, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
+		JobHandler.addJob(new MCAImageProcessJob(tile, new UniqueID(), callback, zoomLevel, progressChannel, canSkipSaving, prioritySupplier));
 	}
 
 	public static RegionMCAFile getCachedRegionMCAFile(Point2i region) {
@@ -127,17 +127,17 @@ public final class RegionImageGenerator {
 		private final Tile tile;
 		private final UniqueID uniqueID;
 		private final BiConsumer<Image, UniqueID> callback;
-		private final int scale;
+		private final Integer zoomLevel;
 		private final Progress progressChannel;
 		private final boolean canSkipSaving;
 		private final Supplier<Integer> prioritySupplier;
 
-		private MCAImageProcessJob(Tile tile, UniqueID uniqueID, BiConsumer<Image, UniqueID> callback, int scale, Progress progressChannel, boolean canSkipSaving, Supplier<Integer> prioritySupplier) {
+		private MCAImageProcessJob(Tile tile, UniqueID uniqueID, BiConsumer<Image, UniqueID> callback, Integer zoomLevel, Progress progressChannel, boolean canSkipSaving, Supplier<Integer> prioritySupplier) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null), PRIORITY_LOW);
 			this.tile = tile;
 			this.uniqueID = uniqueID;
 			this.callback = callback;
-			this.scale = scale;
+			this.zoomLevel = zoomLevel;
 			this.progressChannel = progressChannel;
 			this.canSkipSaving = canSkipSaving;
 			this.prioritySupplier = prioritySupplier;
@@ -176,29 +176,47 @@ public final class RegionImageGenerator {
 				isCached = true;
 			}
 
-			Timer t = new Timer();
-			Image image = TileImage.generateImage(cachedRegion, scale);
-			LOGGER.debug("took {} to generate image for region {}", t, tile.getLocation());
+			if (zoomLevel == null) {
+				for (int z = Config.getMinZoomLevel(); z <= Config.getMaxZoomLevel(); z *= 2) {
+					Timer t = new Timer();
+					Image image = TileImage.generateImage(cachedRegion, z);
+					LOGGER.debug("took {} to generate image for region {}", t, tile.getLocation());
 
-			callback.accept(image, uniqueID);
+					callback.accept(image, uniqueID);
 
-			cacheRegionMCAFile(cachedRegion, uniqueID);
+					// don't cache in memory, we only want the file cache
 
-			if (image != null && !isCached) {
-				JobHandler.executeSaveData(new MCAImageSaveCacheJob(image, tile, uniqueID, scale, progressChannel, canSkipSaving));
-				return false;
-			} else {
+					new MCAImageSaveCacheJob(image, tile, z, null, canSkipSaving).execute();
+				}
 				if (progressChannel != null) {
 					progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 				}
+				return true;
+			} else {
+				Timer t = new Timer();
+				Image image = TileImage.generateImage(cachedRegion, zoomLevel);
+				LOGGER.debug("took {} to generate image for region {}", t, tile.getLocation());
+
+				callback.accept(image, uniqueID);
+
+				cacheRegionMCAFile(cachedRegion, uniqueID);
+
+				if (image != null && !isCached) {
+					JobHandler.executeSaveData(new MCAImageSaveCacheJob(image, tile, zoomLevel, progressChannel, canSkipSaving));
+					return false;
+				} else {
+					if (progressChannel != null) {
+						progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
+					}
+				}
+				return true;
 			}
-			return true;
 		}
 
 		@Override
 		public void cancel() {
 			LOGGER.debug("cancelling job {}, tile:{}, scale:{}, loading:{}, image:{}, loaded:{}",
-				MCAImageProcessJob.class.getSimpleName(), tile.getLocation(), scale, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
+				MCAImageProcessJob.class.getSimpleName(), tile.getLocation(), zoomLevel, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
 
 			setLoading(tile, false);
 
@@ -223,15 +241,13 @@ public final class RegionImageGenerator {
 	private static class MCAImageSaveCacheJob extends SaveDataJob<Image> {
 
 		private final Tile tile;
-		private final UniqueID uniqueID;
 		private final int zoomLevel;
 		private final Progress progressChannel;
 		private final boolean canSkip;
 
-		private MCAImageSaveCacheJob(Image data, Tile tile, UniqueID uniqueID, int zoomLevel, Progress progressChannel, boolean canSkip) {
+		private MCAImageSaveCacheJob(Image data, Tile tile, int zoomLevel, Progress progressChannel, boolean canSkip) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null), data);
 			this.tile = tile;
-			this.uniqueID = uniqueID;
 			this.zoomLevel = zoomLevel;
 			this.progressChannel = progressChannel;
 			this.canSkip = canSkip;
@@ -244,7 +260,7 @@ public final class RegionImageGenerator {
 			// save image to cache
 			try {
 				BufferedImage img = SwingFXUtils.fromFXImage(getData(), null);
-				File cacheFile = FileHelper.createPNGFilePath(Config.getCacheDirForWorldUUID(uniqueID.world, zoomLevel), tile.getLocation());
+				File cacheFile = FileHelper.createPNGFilePath(Config.getCacheDir(zoomLevel), tile.getLocation());
 				if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
 					LOGGER.warn("failed to create cache directory for {}", cacheFile.getAbsolutePath());
 				}

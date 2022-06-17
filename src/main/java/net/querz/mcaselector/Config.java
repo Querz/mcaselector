@@ -221,14 +221,14 @@ public final class Config {
 		if (world == null) {
 			return new File(cacheDir, "" + zoomLevel);
 		}
-		return new File(baseCacheDir, world.toString().replace("-", "") + "/" + zoomLevel);
+		return new File(cacheDir, world.toString().replace("-", "") + "/" + zoomLevel);
 	}
 
 	public static File getCacheDirForWorldUUID(UUID world) {
 		if (world == null) {
 			return cacheDir;
 		}
-		return new File(baseCacheDir, world.toString().replace("-", ""));
+		return new File(cacheDir, world.toString().replace("-", ""));
 	}
 
 	public static UUID getWorldUUID() {
@@ -240,7 +240,11 @@ public final class Config {
 	}
 
 	public static void setCacheDir(File cacheDir) {
-		Config.cacheDir = cacheDir;
+		Config.cacheDir = new File(cacheDir, worldUUID.toString().replace("-", ""));;
+	}
+
+	public static File getCacheDir(int zoomLevel) {
+		return new File(cacheDir, "" + zoomLevel);
 	}
 
 	public static File[] getCacheDirs() {
