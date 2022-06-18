@@ -194,7 +194,7 @@ public class CircleFilter extends TextFilter<List<CircleFilter.CircleFilterDefin
 				return true;
 			}
 			double distSquared = Math.pow(p.getX() - center.getX(), 2) + Math.pow(p.getZ() - center.getZ(), 2);
-			return distSquared <= radius * radius;
+			return distSquared <= ((double) radius + 0.3) * ((double) radius + 0.3);
 		}
 	}
 

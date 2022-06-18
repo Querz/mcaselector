@@ -555,21 +555,28 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 
 	public void addRadius(int radius, Selection bounds) {
 		for (Long2ObjectMap.Entry<ChunkSet> entry : selection.long2ObjectEntrySet()) {
-			// make sure to loop over a clone of the ChunkSet, so we don't apply a radius on chunks that were not originally selected
+			// if the entry is already fully selected we only need to loop over the edges
+			if (entry.getValue() == null) {
+				for (int x = 0; x < 32; x++) {
+					Point2i center = new Point2i(x, 0).add(new Point2i(entry.getLongKey()).regionToChunk());
+					addRadius(center, radius, bounds);
+					center = new Point2i(x, 31).add(new Point2i(entry.getLongKey()).regionToChunk());
+					addRadius(center, radius, bounds);
+				}
+				for (int z = 1; z < 31; z++) {
+					Point2i center = new Point2i(0, z).add(new Point2i(entry.getLongKey()).regionToChunk());
+					addRadius(center, radius, bounds);
+					center = new Point2i(31, z).add(new Point2i(entry.getLongKey()).regionToChunk());
+					addRadius(center, radius, bounds);
+				}
+			} else {
+				// make sure to loop over a clone of the ChunkSet, so we don't apply a radius on chunks that were not originally selected
+				for (int i : entry.getValue().clone()) {
+					// only apply radius if this chunk is adjacent to selected chunks
 
-			for (int i : entry.getValue().clone()) {
-				// only apply radius if this chunk is adjacent to selected chunks
-
-				// calculate the chunk location
-				Point2i a = new Point2i(i).add(new Point2i(entry.getLongKey()).regionToChunk());
-				if (inverted) {
-					if (isChunkSelected(a.add(0, -1)) || isChunkSelected(a.add(1, 0)) || isChunkSelected(a.add(0, 1)) || isChunkSelected(a.add(-1, 0))) {
-						addRadius(a, radius, bounds);
-					}
-				} else {
-					if (!isChunkSelected(a.add(0, -1)) || !isChunkSelected(a.add(1, 0)) || !isChunkSelected(a.add(0, 1)) || !isChunkSelected(a.add(-1, 0))) {
-						addRadius(a, radius, bounds);
-					}
+					// calculate the chunk location
+					Point2i center = new Point2i(i).add(new Point2i(entry.getLongKey()).regionToChunk());
+					addRadius(center, radius, bounds);
 				}
 			}
 		}
@@ -578,7 +585,7 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 	private void addRadius(Point2i center, int radius, Selection bounds) {
 		Point2i min = center.sub(radius);
 		Point2i max = center.add(radius);
-		int radiusSquared = radius * radius;
+		double radiusSquared = ((double) radius + 0.3) * ((double) radius + 0.3);
 		int distX, distZ;
 		for (int x = min.getX(); x <= max.getX(); x++) {
 			for (int z = min.getZ(); z <= max.getZ(); z++) {

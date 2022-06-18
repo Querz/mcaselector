@@ -1,6 +1,7 @@
 package net.querz.mcaselector.tile;
 
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import javafx.application.Platform;
@@ -796,6 +797,13 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		int selectedBefore = selectedChunks;
 		this.selection.merge(selection);
 		selectedChunks = this.selection.count();
+		// reset selection image of tile
+		for (Long2ObjectMap.Entry<ChunkSet> e : selection) {
+			Tile tile = tiles.get(e.getLongKey());
+			if (tile != null) {
+				tile.clearMarkedChunksImage();
+			}
+		}
 		unsavedSelection = !selection.isEmpty() || selectedBefore == selectedChunks && unsavedSelection;
 	}
 
