@@ -76,7 +76,7 @@ public class CLIProgress implements Progress {
 	}
 
 	private void checkDone() {
-		if (progressBar.getCurrent() == progressBar.getMax()) {
+		if (progressBar.getCurrent() >= progressBar.getMax()) {
 			if (doneAction != null) {
 				doneAction.run();
 			}
