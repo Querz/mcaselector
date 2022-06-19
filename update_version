@@ -21,12 +21,12 @@ Len() {
 }
 
 # update installer/res/resource.rc
-if [ $(Len applicationVersion) = 2 ]; then
+if [ $(Len $applicationVersion) = 2 ]; then
   sed -i -E "s/[0-9]+\.[0-9]+\.[0-9]+\.0/$applicationVersion.0/g" 'installer/res/resource.rc'
-  sed -i -E "s/[0-9]+,[0-9]+,[0-9]+,0/$(echo "$applicationVersion" | sed -r 's/\./,/g').0/g" 'installer/res/resource.rc'
+  sed -i -E "s/[0-9]+,[0-9]+,[0-9]+,0/$(echo "$applicationVersion" | sed -r 's/\./,/g'),0/g" 'installer/res/resource.rc'
 else
   sed -i -E "s/[0-9]+\.[0-9]+\.[0-9]+\.0/$applicationVersion.0.0/g" 'installer/res/resource.rc'
   sed -i -E "s/[0-9]+,[0-9]+,[0-9]+,0/$(echo "$applicationVersion" | sed -r 's/\./,/g'),0,0/g" 'installer/res/resource.rc'
 fi
 
-sed -i -E 's/"[0-9]+\.[0-9]+\.[0-9]+\\0"/"'$applicationVersion'\\0"/g' 'installer/res/resource.rc'
+sed -i -E 's/"[0-9]+\.[0-9]+(\.[0-9]+)?\\0"/"'$applicationVersion'\\0"/g' 'installer/res/resource.rc'
