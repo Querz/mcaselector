@@ -3,6 +3,7 @@ package net.querz.mcaselector.version.anvil119;
 import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
+import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.anvil117.Anvil117ChunkFilter;
@@ -451,6 +452,38 @@ public class Anvil119ChunkFilter extends Anvil117ChunkFilter {
 	@Override
 	public ListTag getSections(CompoundTag data) {
 		return Helper.tagFromCompound(data, "sections");
+	}
+
+	@Override
+	public void deleteSections(CompoundTag data, List<Range> ranges) {
+		switch (data.getString("Status")) {
+			case "light", "spawn", "heightmaps", "full" -> data.putString("Status", "features");
+			default -> {return;}
+		}
+		ListTag sections = Helper.tagFromCompound(data, "sections");
+		if (sections == null) {
+			return;
+		}
+		for (int i = 0; i < sections.size(); i++) {
+			CompoundTag section = sections.getCompound(i);
+			for (Range range : ranges) {
+				if (range.contains(section.getInt("Y"))) {
+					deleteSection(section);
+				}
+			}
+		}
+	}
+
+	// only delete blocks, not biomes
+	private void deleteSection(CompoundTag section) {
+		CompoundTag blockStates = section.getCompound("block_states");
+		blockStates.remove("data");
+		ListTag blockPalette = new ListTag();
+		CompoundTag air = new CompoundTag();
+		air.putString("Name", "minecraft:air");
+		blockPalette.add(air);
+		blockStates.put("palette", blockPalette);
+		section.remove("BlockLight");
 	}
 
 	@Override

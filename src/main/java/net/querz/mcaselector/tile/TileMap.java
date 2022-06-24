@@ -737,14 +737,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		if (tile != null) {
 			tile.unload(true, true);
 		}
-		ChunkSet chunks = selection.getSelectedChunksIgnoreInverted(new Point2i(p));
-		if (chunks == null) {
-			selectedChunks -= Tile.CHUNKS;
-			unsavedSelection = true;
-		} else {
-			selectedChunks -= chunks.size();
-			unsavedSelection = true;
-		}
 		imgPool.discardImage(new Point2i(p));
 		overlayPool.discardData(new Point2i(p));
 	}

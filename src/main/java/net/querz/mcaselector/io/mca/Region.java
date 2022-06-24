@@ -214,6 +214,7 @@ public class Region {
 		if (entities != null) {
 			entitiesChunk = entities.getChunk(index);
 		}
+		Point2i location = this.location == null ? new Point2i() : new Point2i(index).add(this.location.regionToChunk());
 		return new ChunkData(regionChunk, poiChunk, entitiesChunk);
 	}
 

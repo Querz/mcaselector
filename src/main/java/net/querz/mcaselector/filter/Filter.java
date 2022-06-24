@@ -75,4 +75,11 @@ public abstract class Filter<T> implements Serializable {
 	public abstract boolean matches(ChunkData data);
 
 	public abstract Filter<T> clone();
+
+	protected static String escape(String value) {
+		if (value == null) {
+			return "\"\"";
+		}
+		return "\"" + value.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\"") + "\"";
+	}
 }

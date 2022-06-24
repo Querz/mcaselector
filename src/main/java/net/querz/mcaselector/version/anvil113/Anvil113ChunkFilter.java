@@ -4,6 +4,7 @@ import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.math.Bits;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
+import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.Helper;
@@ -526,6 +527,23 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 	@Override
 	public ListTag getSections(CompoundTag data) {
 		return Helper.tagFromLevelFromRoot(data, "Sections");
+	}
+
+	@Override
+	public void deleteSections(CompoundTag data, List<Range> ranges) {
+		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections");
+		if (sections == null) {
+			return;
+		}
+		for (int i = 0; i < sections.size(); i++) {
+			CompoundTag section = sections.getCompound(i);
+			for (Range range : ranges) {
+				if (range.contains(section.getInt("Y"))) {
+					sections.remove(i);
+					i--;
+				}
+			}
+		}
 	}
 
 	@Override

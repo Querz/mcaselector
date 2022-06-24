@@ -6,6 +6,7 @@ import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
 import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.EntityFilter;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
@@ -38,19 +39,14 @@ public class DeleteSectionsField extends Field<List<Range>> {
 
 	@Override
 	public void change(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
-		ListTag sections = chunkFilter.getSections(data.region().getData());
-		if (sections == null) {
-			return;
+		if (data.region() != null && data.region().getData() != null) {
+			ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+			chunkFilter.deleteSections(data.region().getData(), getNewValue());
 		}
-		for (int i = 0; i < sections.size(); i++) {
-			CompoundTag section = sections.getCompound(i);
-			for (Range range : getNewValue()) {
-				if (range.contains(section.getInt("Y"))) {
-					sections.remove(i);
-					i--;
-				}
-			}
+		// delete entities and poi as well
+		if (data.entities() != null && data.entities().getData() != null) {
+			EntityFilter entityFilter = VersionController.getEntityFilter(data.entities().getData().getInt("DataVersion"));
+			entityFilter.deleteEntities(data, getNewValue());
 		}
 	}
 

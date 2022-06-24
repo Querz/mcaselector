@@ -42,6 +42,7 @@ dependencies {
 	implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
 	implementation 'commons-cli:commons-cli:1.5.0'
 	implementation 'me.tongfei:progressbar:0.9.3'
+	implementation 'org.openjdk.nashorn:nashorn-core:15.4'
 
 	shadow 'com.github.Querz:NBT:f279a237fb'
 	shadow 'org.json:json:20220320'
@@ -52,13 +53,14 @@ dependencies {
 	shadow 'org.apache.logging.log4j:log4j-core:2.17.2'
 	shadow 'commons-cli:commons-cli:1.5.0'
 	shadow 'me.tongfei:progressbar:0.9.3'
+	shadow 'org.openjdk.nashorn:nashorn-core:15.4'
 
 	testImplementation 'junit:junit:4.13.2'
 	testImplementation 'commons-io:commons-io:2.11.0'
 }
 
 task copyRuntimeLibs(type: Copy) {
-	from configurations.implementation
+	from configurations.shadow
 	into file("$buildDir/libs/lib/")
 	exclude {it.file.name.startsWith('javafx')}
 }
@@ -77,7 +79,7 @@ jar {
 	manifest.attributes (
 		'Main-Class': application.mainClass,
 		'Application-Version': project.version,
-		'Class-Path': configurations.implementation.files.stream()
+		'Class-Path': configurations.shadow.files.stream()
 				.filter($it -> !$it.name.startsWith('javafx')).collect{"lib/$it.name"}.join(' ')
 	)
 	exclude 'licenses/'

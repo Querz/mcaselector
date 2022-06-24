@@ -1,6 +1,7 @@
 package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.changer.Field;
+import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.overlay.Overlay;
 import java.util.List;

@@ -106,8 +106,8 @@ public final class CacheHelper {
 						LOGGER.warn("could not delete file {}", file);
 					}
 				}
-				tileMap.clearTile(entry.getLongKey());
 			}
+			tileMap.clearTile(entry.getLongKey());
 			tileMap.getOverlayPool().discardData(region);
 		}
 		RegionImageGenerator.invalidateCachedMCAFiles();

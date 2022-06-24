@@ -1,9 +1,11 @@
 package net.querz.mcaselector.version;
 
 import net.querz.mcaselector.io.registry.BiomeRegistry;
+import net.querz.mcaselector.range.Range;
 import net.querz.nbt.NBTUtil;
 import net.querz.nbt.*;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public interface ChunkFilter {
@@ -40,6 +42,8 @@ public interface ChunkFilter {
 	CompoundTag getStructureReferences(CompoundTag data);
 
 	ListTag getSections(CompoundTag data);
+
+	void deleteSections(CompoundTag data, List<Range> ranges);
 
 	LongTag getInhabitedTime(CompoundTag data);
 

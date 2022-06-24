@@ -93,10 +93,37 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 		}
 	}
 
+	public String saveToString() {
+		StringBuilder sb = new StringBuilder();
+		if (inverted) {
+			sb.append("inverted\n");
+		}
+		for (Long2ObjectMap.Entry<ChunkSet> entry : selection.long2ObjectEntrySet()) {
+			Point2i region = new Point2i(entry.getLongKey());
+			if (entry.getValue() == null) {
+				sb.append(writePoint(region));
+				sb.append('\n');
+				continue;
+			}
+			for (int i : entry.getValue()) {
+				sb.append(writePoint(region));
+				sb.append(';');
+				Point2i c = new Point2i(i).add(region.regionToChunk());
+				sb.append(writePoint(c));
+				sb.append('\n');
+			}
+		}
+		return sb.toString();
+	}
+
 	private static void writePoint(BufferedWriter bw, Point2i p) throws IOException {
 		bw.write(Integer.toString(p.getX()));
 		bw.write(';');
 		bw.write(Integer.toString(p.getZ()));
+	}
+
+	private static String writePoint(Point2i p) {
+		return p.getX() + ";" + p.getZ();
 	}
 
 	private static IOException ioException(String msg, Object... format) {
@@ -185,7 +212,7 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 
 			// if a region is partially selected, we use the invert function
 			ChunkSet chunks;
-			if ((chunks = selection.get(region)) != null) {
+			if ((chunks = this.selection.get(region)) != null) {
 				selection.put(region, invertChunks(chunks));
 			}
 		}

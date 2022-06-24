@@ -9,6 +9,14 @@ public final class LegacyHelper {
 
 	private LegacyHelper() {}
 
+	static ListTag getProtoEntities(CompoundTag root, int dataVersion) {
+		if (dataVersion > 2843) {
+			return Helper.tagFromCompound(root, "entities");
+		} else {
+			return Helper.tagFromLevelFromRoot(root, "Entities");
+		}
+	}
+
 	static ListTag getSections(CompoundTag root, int dataVersion) {
 		if (dataVersion > 2843) { // 21w42a
 			return Helper.tagFromCompound(root, "sections");
