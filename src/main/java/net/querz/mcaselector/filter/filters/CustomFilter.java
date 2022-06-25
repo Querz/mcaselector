@@ -75,7 +75,6 @@ public class CustomFilter extends TextFilter<String> {
 
 	@Override
 	public String toString() {
-		System.out.println(escape(getFilterValue()));
 		return "Custom " + getComparator().getQueryString() + " " + escape(getFilterValue());
 	}
 
