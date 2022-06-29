@@ -1,0 +1,1 @@
+[![Home](https://img.shields.io/badge/-Home-blue)](Home) [![chat](https://img.shields.io/discord/722924391805223113?logo=discord)](https://discord.gg/h942U8U)
