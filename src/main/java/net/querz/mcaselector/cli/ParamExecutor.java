@@ -301,6 +301,8 @@ public final class ParamExecutor {
 		try {
 			parseConfig();
 
+			JobHandler.setTrimSaveData(false);
+
 			String mode = line.getOptionValue("mode");
 			switch (mode) {
 				case "select" -> select(future);

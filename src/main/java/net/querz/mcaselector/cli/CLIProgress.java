@@ -28,7 +28,7 @@ public class CLIProgress implements Progress {
 	@Override
 	public void updateProgress(String msg, int progress) {
 		progressBar.stepTo(progress);
-//		progressBar.setExtraMessage(msg);
+		progressBar.setExtraMessage(msg);
 		checkDone();
 	}
 
@@ -55,14 +55,14 @@ public class CLIProgress implements Progress {
 	@Override
 	public void incrementProgress(String msg) {
 		progressBar.stepBy(1);
-//		progressBar.setExtraMessage(msg);
+		progressBar.setExtraMessage(msg);
 		checkDone();
 	}
 
 	@Override
 	public void incrementProgress(String msg, int progress) {
 		progressBar.stepBy(progress);
-//		progressBar.setExtraMessage(msg);
+		progressBar.setExtraMessage(msg);
 		checkDone();
 	}
 
@@ -77,6 +77,7 @@ public class CLIProgress implements Progress {
 
 	private void checkDone() {
 		if (progressBar.getCurrent() >= progressBar.getMax()) {
+			progressBar.refresh();
 			if (doneAction != null) {
 				doneAction.run();
 			}
