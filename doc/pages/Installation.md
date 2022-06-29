@@ -4,7 +4,7 @@
 
 ---
 
-[**Download Version 2.0.1 (Windows Installer)**](https://github.com/Querz/mcaselector/releases/download/2.0.1/MCA_Selector_Setup.exe)
+[**Download Version <!--vs-->2.0.1<!--ve--> (Windows Installer)**](https://github.com/Querz/mcaselector/releases/download/2.0.1/MCA_Selector_Setup.exe)
 
 "Requirements":
 * Windows 7-10 64bit
@@ -12,7 +12,7 @@
 
 ---
 
-[**Download Version 2.0.1 (Universal)**](https://github.com/Querz/mcaselector/releases/download/2.0.1/mcaselector-2.0.1.jar)
+[**Download Version <!--vs-->2.0.1<!--ve--> (Universal)**](https://github.com/Querz/mcaselector/releases/download/2.0.1/mcaselector-2.0.1.jar)
 
 "Requirements":
 * Either:
