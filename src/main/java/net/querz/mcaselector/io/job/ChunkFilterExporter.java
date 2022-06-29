@@ -14,6 +14,7 @@ import net.querz.mcaselector.text.Translation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.File;
+import java.util.function.Consumer;
 
 public final class ChunkFilterExporter {
 
@@ -38,8 +39,12 @@ public final class ChunkFilterExporter {
 		progressChannel.setMax(rd.length);
 		progressChannel.updateProgress(rd[0].getLocationAsFileName(), 0);
 
+		Consumer<Throwable> errorHandler = t -> progressChannel.incrementProgress("error");
+
 		for (RegionDirectories r : rd) {
-			JobHandler.addJob(new MCAExportFilterProcessJob(r, filter, selection, destination, progressChannel));
+			MCAExportFilterProcessJob job = new MCAExportFilterProcessJob(r, filter, selection, destination, progressChannel);
+			job.errorHandler = errorHandler;
+			JobHandler.addJob(job);
 		}
 	}
 
@@ -96,7 +101,9 @@ public final class ChunkFilterExporter {
 
 				region.keepChunks(filter, selection);
 
-				JobHandler.executeSaveData(new MCAExportFilterSaveJob(getRegionDirectories(), region, to, progressChannel));
+				MCAExportFilterSaveJob job = new MCAExportFilterSaveJob(getRegionDirectories(), region, to, progressChannel);
+				job.errorHandler = errorHandler;
+				JobHandler.executeSaveData(job);
 				return false;
 			} catch (Exception ex) {
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());

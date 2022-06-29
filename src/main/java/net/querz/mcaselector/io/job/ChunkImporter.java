@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public final class ChunkImporter {
 
@@ -74,10 +75,14 @@ public final class ChunkImporter {
 			progressChannel.setMax(targetMapping.size());
 			progressChannel.updateProgress(rd[0].getLocationAsFileName(), 0);
 
+			Consumer<Throwable> errorHandler = t -> progressChannel.incrementProgress("error");
+
 			for (Long2ObjectMap.Entry<LongSet> entry : targetMapping.long2ObjectEntrySet()) {
 				Point2i target = new Point2i(entry.getLongKey());
 				RegionDirectories targetDirs = FileHelper.createRegionDirectories(target);
-				JobHandler.addJob(new MCAChunkImporterProcessJob(targetDirs, source, target, entry.getValue(), offset, progressChannel, overwrite, sourceSelection, targetSelection, ranges, tempFilesMap));
+				MCAChunkImporterProcessJob job = new MCAChunkImporterProcessJob(targetDirs, source, target, entry.getValue(), offset, progressChannel, overwrite, sourceSelection, targetSelection, ranges, tempFilesMap);
+				job.errorHandler = errorHandler;
+				JobHandler.addJob(job);
 			}
 		} catch (Exception ex) {
 			LOGGER.warn("failed creating jobs to import chunks", ex);
@@ -391,7 +396,9 @@ public final class ChunkImporter {
 
 				// -----------------------------------------------------------------------------------------------------
 
-				JobHandler.executeSaveData(new MCAChunkImporterSaveJob(getRegionDirectories(), targetRegion, progressChannel));
+				MCAChunkImporterSaveJob job = new MCAChunkImporterSaveJob(getRegionDirectories(), targetRegion, progressChannel);
+				job.errorHandler = errorHandler;
+				JobHandler.executeSaveData(job);
 				LOGGER.debug("took {} to merge chunks into {} with offset {}", t, getRegionDirectories().getLocation(), offset);
 				return false;
 

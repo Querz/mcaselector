@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.function.Consumer;
 
 public final class SelectionExporter {
 
@@ -35,12 +36,16 @@ public final class SelectionExporter {
 		progressChannel.setMax(trueSelection.size());
 		progressChannel.updateProgress(FileHelper.createMCAFileName(trueSelection.one()), 0);
 
+		Consumer<Throwable> errorHandler = t -> progressChannel.incrementProgress("error");
+
 		for (Long2ObjectMap.Entry<ChunkSet> entry : trueSelection) {
-			JobHandler.addJob(new MCADeleteSelectionProcessJob(
+			MCADeleteSelectionProcessJob job = new MCADeleteSelectionProcessJob(
 					FileHelper.createRegionDirectories(new Point2i(entry.getLongKey())),
 					entry.getValue(),
 					destination,
-					progressChannel));
+					progressChannel);
+			job.errorHandler = errorHandler;
+			JobHandler.addJob(job);
 		}
 	}
 
@@ -115,7 +120,9 @@ public final class SelectionExporter {
 				// only load headers, because we don't care for chunk data
 				Region region = Region.loadRegionHeaders(getRegionDirectories(), regionData, poiData, entitiesData);
 				region.deleteChunks(chunksToBeExported.flip());
-				JobHandler.executeSaveData(new MCADeleteSelectionSaveJob(getRegionDirectories(), region, to, progressChannel));
+				MCADeleteSelectionSaveJob job = new MCADeleteSelectionSaveJob(getRegionDirectories(), region, to, progressChannel);
+				job.errorHandler = errorHandler;
+				JobHandler.executeSaveData(job);
 				return false;
 
 			} catch (Exception ex) {

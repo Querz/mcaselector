@@ -14,6 +14,7 @@ import net.querz.mcaselector.text.Translation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.List;
+import java.util.function.Consumer;
 
 public final class FieldChanger {
 
@@ -38,8 +39,12 @@ public final class FieldChanger {
 		progressChannel.setMax(rd.length);
 		progressChannel.updateProgress(rd[0].getLocationAsFileName(), 0);
 
+		Consumer<Throwable> errorHandler = t -> progressChannel.incrementProgress("error");
+
 		for (RegionDirectories r : rd) {
-			JobHandler.addJob(new MCAFieldChangeProcessJob(r, fields, force, selection, progressChannel));
+			MCAFieldChangeProcessJob job = new MCAFieldChangeProcessJob(r, fields, force, selection, progressChannel);
+			job.errorHandler = errorHandler;
+			JobHandler.addJob(job);
 		}
 	}
 
@@ -85,7 +90,9 @@ public final class FieldChanger {
 
 				region.applyFieldChanges(fields, force, selection);
 
-				JobHandler.executeSaveData(new MCAFieldChangeSaveJob(getRegionDirectories(), region, progressChannel));
+				MCAFieldChangeSaveJob job = new MCAFieldChangeSaveJob(getRegionDirectories(), region, progressChannel);
+				job.errorHandler = errorHandler;
+				JobHandler.executeSaveData(job);
 				return false;
 			} catch (Exception ex) {
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());

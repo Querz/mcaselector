@@ -141,6 +141,9 @@ public final class RegionImageGenerator {
 			this.progressChannel = progressChannel;
 			this.canSkipSaving = canSkipSaving;
 			this.prioritySupplier = prioritySupplier;
+			if (progressChannel != null) {
+				errorHandler = t -> progressChannel.incrementProgress("error");
+			}
 		}
 
 		@Override
@@ -202,7 +205,9 @@ public final class RegionImageGenerator {
 				cacheRegionMCAFile(cachedRegion, uniqueID);
 
 				if (image != null && !isCached) {
-					JobHandler.executeSaveData(new MCAImageSaveCacheJob(image, tile, zoomLevel, progressChannel, canSkipSaving));
+					MCAImageSaveCacheJob job = new MCAImageSaveCacheJob(image, tile, zoomLevel, progressChannel, canSkipSaving);
+					job.errorHandler = errorHandler;
+					JobHandler.executeSaveData(job);
 					return false;
 				} else {
 					if (progressChannel != null) {

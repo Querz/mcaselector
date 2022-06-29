@@ -13,6 +13,8 @@ import net.querz.mcaselector.text.Translation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.function.Consumer;
+
 public final class ChunkFilterDeleter {
 
 	private static final Logger LOGGER = LogManager.getLogger(ChunkFilterDeleter.class);
@@ -36,8 +38,12 @@ public final class ChunkFilterDeleter {
 		progressChannel.setMax(rd.length);
 		progressChannel.updateProgress(rd[0].getLocationAsFileName(), 0);
 
+		Consumer<Throwable> errorHandler = t -> progressChannel.incrementProgress("error");
+
 		for (RegionDirectories r : rd) {
-			JobHandler.addJob(new MCADeleteFilterProcessJob(r, filter, selection, progressChannel));
+			MCADeleteFilterProcessJob job = new MCADeleteFilterProcessJob(r, filter, selection, progressChannel);
+			job.errorHandler = errorHandler;
+			JobHandler.addJob(job);
 		}
 	}
 
@@ -82,7 +88,9 @@ public final class ChunkFilterDeleter {
 
 				if (region.deleteChunks(filter, selection)) {
 					// only save file if we actually deleted something
-					JobHandler.executeSaveData(new MCADeleteFilterSaveJob(getRegionDirectories(), region, progressChannel));
+					MCADeleteFilterSaveJob job = new MCADeleteFilterSaveJob(getRegionDirectories(), region, progressChannel);
+					job.errorHandler = errorHandler;
+					JobHandler.executeSaveData(job);
 					return false;
 				} else {
 					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());

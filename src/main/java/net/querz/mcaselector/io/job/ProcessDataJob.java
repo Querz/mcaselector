@@ -11,10 +11,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.function.Consumer;
 
 public abstract class ProcessDataJob extends Job {
 
 	private static final Logger LOGGER = LogManager.getLogger(ProcessDataJob.class);
+
+	protected Consumer<Throwable> errorHandler;
 
 	public ProcessDataJob(RegionDirectories dirs, int priority) {
 		super(dirs, priority);
@@ -74,8 +77,15 @@ public abstract class ProcessDataJob extends Job {
 
 	@Override
 	public void run() {
-		if (execute()) {
-			done();
+		try {
+			if (execute()) {
+				done();
+			}
+		} catch (Throwable t) {
+			LOGGER.error("unhandled exception in ProcessDataJob", t);
+			if (errorHandler != null) {
+				errorHandler.accept(t);
+			}
 		}
 	}
 

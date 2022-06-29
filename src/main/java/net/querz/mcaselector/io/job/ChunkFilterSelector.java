@@ -40,8 +40,12 @@ public final class ChunkFilterSelector {
 		progressChannel.setMax(rd.length);
 		progressChannel.updateProgress(rd[0].getLocationAsFileName(), 0);
 
+		Consumer<Throwable> errorHandler = t -> progressChannel.incrementProgress("error");
+
 		for (RegionDirectories r : rd) {
-			JobHandler.addJob(new MCASelectFilterProcessJob(r, filter, selection, callback, radius, progressChannel));
+			MCASelectFilterProcessJob job = new MCASelectFilterProcessJob(r, filter, selection, callback, radius, progressChannel);
+			job.errorHandler = errorHandler;
+			JobHandler.addJob(job);
 		}
 	}
 

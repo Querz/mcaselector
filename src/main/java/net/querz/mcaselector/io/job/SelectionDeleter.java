@@ -14,6 +14,8 @@ import net.querz.mcaselector.selection.Selection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.function.Consumer;
+
 public final class SelectionDeleter {
 
 	private static final Logger LOGGER = LogManager.getLogger(SelectionDeleter.class);
@@ -38,8 +40,12 @@ public final class SelectionDeleter {
 
 		progressChannel.updateProgress(FileHelper.createMCAFileName(first), 0);
 
+		Consumer<Throwable> errorHandler = t -> progressChannel.incrementProgress("error");
+
 		for (Long2ObjectMap.Entry<ChunkSet> entry : trueSelection) {
-			JobHandler.addJob(new MCADeleteSelectionProcessJob(FileHelper.createRegionDirectories(new Point2i(entry.getLongKey())), entry.getValue(), progressChannel));
+			MCADeleteSelectionProcessJob job = new MCADeleteSelectionProcessJob(FileHelper.createRegionDirectories(new Point2i(entry.getLongKey())), entry.getValue(), progressChannel);
+			job.errorHandler = errorHandler;
+			JobHandler.addJob(job);
 		}
 	}
 
@@ -100,7 +106,9 @@ public final class SelectionDeleter {
 
 				region.deleteChunks(selection);
 
-				JobHandler.executeSaveData(new MCADeleteSelectionSaveJob(getRegionDirectories(), region, progressChannel));
+				MCADeleteSelectionSaveJob job = new MCADeleteSelectionSaveJob(getRegionDirectories(), region, progressChannel);
+				job.errorHandler = errorHandler;
+				JobHandler.executeSaveData(job);
 				return false;
 
 			} catch (Exception ex) {

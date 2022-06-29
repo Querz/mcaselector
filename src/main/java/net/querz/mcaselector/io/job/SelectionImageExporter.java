@@ -44,8 +44,12 @@ public final class SelectionImageExporter {
 
 		int[] pixels = new int[(int) (data.getWidth() * 16 * data.getHeight() * 16)];
 
+		Consumer<Throwable> errorHandler = t -> progressChannel.incrementProgress("error");
+
 		for (Long2ObjectMap.Entry<ChunkSet> entry : data.getSelection()) {
-			JobHandler.addJob(new ExportSelectionImageProcessJob(new Point2i(entry.getLongKey()), entry.getValue(), data, pixels, overlayPool, progressChannel));
+			ExportSelectionImageProcessJob job = new ExportSelectionImageProcessJob(new Point2i(entry.getLongKey()), entry.getValue(), data, pixels, overlayPool, progressChannel);
+			job.errorHandler = errorHandler;
+			JobHandler.addJob(job);
 		}
 
 		return pixels;
