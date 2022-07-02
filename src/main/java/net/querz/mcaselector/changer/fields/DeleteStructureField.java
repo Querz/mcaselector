@@ -56,11 +56,9 @@ public class DeleteStructureField extends Field<List<String>> {
 		CompoundTag references = chunkFilter.getStructureReferences(data.region().getData());
 		CompoundTag starts = chunkFilter.getStructureStarts(data.region().getData());
 		for (String structure : getNewValue()) {
-			references.remove(structure);
-			starts.remove(structure);
-			if (StructureRegistry.isValidName(structure)) {
-				references.remove(StructureRegistry.getAltName(structure));
-				starts.remove(StructureRegistry.getAltName(structure));
+			for (String alt : StructureRegistry.getAlts(structure)) {
+				references.remove(alt);
+				starts.remove(alt);
 			}
 		}
 	}

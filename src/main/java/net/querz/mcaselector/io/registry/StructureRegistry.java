@@ -5,9 +5,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public final class StructureRegistry {
 
@@ -15,32 +13,61 @@ public final class StructureRegistry {
 
 	private StructureRegistry() {}
 
-	private static final Map<String, String> lowerToHigher = new HashMap<>();
-	private static final Map<String, String> higherToLower = new HashMap<>();
+	private static final Set<String> valid = new HashSet<>();
+
+	private static final Map<String, Set<String>> alts = new HashMap<>();
 
 	static {
 		try (BufferedReader bis = new BufferedReader(
 				new InputStreamReader(Objects.requireNonNull(StructureRegistry.class.getClassLoader().getResourceAsStream("mapping/all_structures.txt"))))) {
 			String line;
 			while ((line = bis.readLine()) != null) {
-				lowerToHigher.put(line.toLowerCase(), line);
-				higherToLower.put(line, line.toLowerCase());
+				valid.add(line);
+				if (!containsUpperCase(line)) {
+					valid.add("minecraft:" + line);
+				}
+			}
+
+			for (String name : valid) {
+				alts.computeIfAbsent(name, k -> new HashSet<>()).add(name);
+				if (containsUpperCase(name)) {
+					Set<String> alt = alts.get(name);
+					String lower = name.toLowerCase();
+					if (valid.contains(lower)) {
+						alt.add(lower);
+						alts.computeIfAbsent(lower, k -> new HashSet<>()).add(name);
+					}
+					String lowerNamespace = "minecraft:" + lower;
+					if (valid.contains(lowerNamespace)) {
+						alt.add(lowerNamespace);
+						alts.computeIfAbsent(lowerNamespace, k -> new HashSet<>()).add(name);
+					}
+				} else if (name.startsWith("minecraft:")) {
+					alts.get(name).add(name.substring(10));
+				} else {
+					alts.get(name).add("minecraft:" + name);
+				}
 			}
 		} catch (IOException ex) {
 			LOGGER.error("error reading mapping/all_structures.txt", ex);
 		}
 	}
 
-	public static boolean isValidName(String name) {
-		return lowerToHigher.containsKey(name) || higherToLower.containsKey(name);
+	private static boolean containsUpperCase(String s) {
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (Character.isUpperCase(c)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
-	public static String getAltName(String name) {
-		if (lowerToHigher.containsKey(name)) {
-			return lowerToHigher.get(name);
-		} else if (higherToLower.containsKey(name)) {
-			return higherToLower.get(name);
-		}
-		return null;
+	public static boolean isValidName(String name) {
+		return valid.contains(name);
+	}
+
+	public static Set<String> getAlts(String name) {
+		return alts.getOrDefault(name, Collections.singleton(name));
 	}
 }

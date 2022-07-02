@@ -6,12 +6,9 @@ import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.registry.StructureRegistry;
-import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.NBTUtil;
-import net.querz.nbt.Tag;
+import net.querz.nbt.*;
 import java.util.*;
 
 public class StructureFilter extends TextFilter<List<String>> {
@@ -35,14 +32,16 @@ public class StructureFilter extends TextFilter<List<String>> {
 		if (references == null) {
 			return false;
 		}
+
+		main:
 		for (String name : value) {
-			Tag structure = references.get(name);
-			if (structure == null || NBTUtil.toSNBT(structure).equals("[]")) {
-				structure = references.get(StructureRegistry.getAltName(name));
-				if (structure == null || NBTUtil.toSNBT(structure).equals("[]")) {
-					return false;
+			for (String alt : StructureRegistry.getAlts(name)) {
+				LongArrayTag longArrayStructure = references.getLongArrayTag(alt);
+				if (longArrayStructure != null && !longArrayStructure.isEmpty()) {
+					continue main;
 				}
 			}
+			return false;
 		}
 		return true;
 	}
@@ -63,13 +62,11 @@ public class StructureFilter extends TextFilter<List<String>> {
 			return false;
 		}
 		for (String name : getFilterValue()) {
-			long[] refs = ValidationHelper.silent(() -> references.getLongArray(name), null);
-			if (refs != null && refs.length > 0) {
-				return true;
-			}
-			refs = ValidationHelper.silent(() -> references.getLongArray(StructureRegistry.getAltName(name)), null);
-			if (refs != null && refs.length > 0) {
-				return true;
+			for (String alt : StructureRegistry.getAlts(name)) {
+				LongArrayTag longArrayStructure = references.getLongArrayTag(alt);
+				if (longArrayStructure != null && !longArrayStructure.isEmpty()) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -77,28 +74,36 @@ public class StructureFilter extends TextFilter<List<String>> {
 
 	@Override
 	public void setFilterValue(String raw) {
-		String[] rawStructureNames = raw.replace(" ", "").split(",");
-		if (raw.isEmpty() || rawStructureNames.length == 0) {
+		// allow minecraft:name
+		// allow name (if it's a valid name)
+		// allow Name
+
+		String[] values = raw.split(",");
+		if (values.length == 0) {
 			setValid(false);
 			setValue(null);
-		} else {
-			for (int i = 0; i < rawStructureNames.length; i++) {
-				String name = rawStructureNames[i].toLowerCase();
-				if (!StructureRegistry.isValidName(rawStructureNames[i])) {
-					if (name.startsWith("'") && name.endsWith("'") && name.length() >= 2 && !name.contains("\"")) {
-						rawStructureNames[i] = name.substring(1, name.length() - 1);
-						continue;
-					}
-					setValue(null);
-					setValid(false);
-					return;
-				}
-				rawStructureNames[i] = name;
-			}
-			setValid(true);
-			setValue(Arrays.asList(rawStructureNames));
-			setRawValue(raw);
+			return;
 		}
+
+		for (int i = 0; i < values.length; i++) {
+			String name = values[i] = values[i].trim();
+
+			// allow custom structure names
+			if (name.startsWith("'") && name.endsWith("'") && name.length() >= 2) {
+				values[i] = name.substring(1, name.length() - 1);
+				continue;
+			}
+
+			if (!StructureRegistry.isValidName(name)) {
+				setValue(null);
+				setValid(false);
+				return;
+			}
+		}
+
+		setValid(true);
+		setValue(Arrays.asList(values));
+		setRawValue(raw);
 	}
 
 	@Override
