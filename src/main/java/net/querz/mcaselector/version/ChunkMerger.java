@@ -4,6 +4,7 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
+import net.querz.nbt.NBTUtil;
 import net.querz.nbt.Tag;
 import java.util.*;
 import java.util.function.Function;
@@ -15,24 +16,27 @@ public interface ChunkMerger {
 	CompoundTag newEmptyChunk(Point2i absoluteLocation, int dataVersion);
 
 	default ListTag mergeLists(ListTag source, ListTag destination, List<Range> ranges, Function<Tag, Integer> ySupplier, int yOffset) {
-		Map<Integer, Tag> resultSet = new HashMap<>();
+		ListTag result = new ListTag();
 		for (Tag dest : destination) {
-			resultSet.put(ySupplier.apply(dest), dest);
+			int y = ySupplier.apply(dest);
+			for (Range range : ranges) {
+				if (!range.contains(y)) {
+					result.add(dest);
+				}
+			}
 		}
 
 		for (Tag sourceElement : source) {
+			int y = ySupplier.apply(sourceElement);
 			for (Range range : ranges) {
-				int y = ySupplier.apply(sourceElement);
 				if (range.contains(y - yOffset)) {
-					resultSet.put(y, sourceElement);
+					result.add(sourceElement);
 					break;
 				}
 			}
 		}
 
-		ListTag resultList = new ListTag();
-		resultList.addAll(resultSet.values());
-		return resultList;
+		return result;
 	}
 
 	default void mergeListTagLists(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset, String name) {
