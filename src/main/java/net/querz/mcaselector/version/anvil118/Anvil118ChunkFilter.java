@@ -5,7 +5,7 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.tile.Tile;
-import net.querz.mcaselector.version.Helper;
+import net.querz.mcaselector.version.NbtHelper;
 import net.querz.mcaselector.version.anvil117.Anvil117ChunkFilter;
 import net.querz.nbt.*;
 import java.util.*;
@@ -14,7 +14,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public boolean matchBlockNames(CompoundTag data, Collection<String> names) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return false;
 		}
@@ -33,7 +33,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 					continue;
 				}
 				for (CompoundTag p : palette.iterateType(CompoundTag.TYPE)) {
-					if (name.equals(Helper.stringFromCompound(p, "Name"))) {
+					if (name.equals(NbtHelper.stringFromCompound(p, "Name"))) {
 						c++;
 						continue nameLoop;
 					}
@@ -45,7 +45,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public boolean matchAnyBlockName(CompoundTag data, Collection<String> names) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return false;
 		}
@@ -62,7 +62,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 					continue;
 				}
 				for (CompoundTag p : palette.iterateType(CompoundTag.TYPE)) {
-					if (name.equals(Helper.stringFromCompound(p, "Name"))) {
+					if (name.equals(NbtHelper.stringFromCompound(p, "Name"))) {
 						return true;
 					}
 				}
@@ -73,7 +73,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public boolean paletteEquals(CompoundTag data, Collection<String> names) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return false;
 		}
@@ -91,7 +91,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			}
 			for (CompoundTag p : palette.iterateType(CompoundTag.TYPE)) {
 				String n;
-				if ((n = Helper.stringFromCompound(p, "Name")) != null) {
+				if ((n = NbtHelper.stringFromCompound(p, "Name")) != null) {
 					if (!names.contains(n)) {
 						return false;
 					}
@@ -112,7 +112,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public boolean matchBiomes(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return false;
 		}
@@ -128,7 +128,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			filterLoop:
 			for (BiomeRegistry.BiomeIdentifier identifier : biomes) {
 				for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
-					ListTag biomePalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
+					ListTag biomePalette = NbtHelper.tagFromCompound(NbtHelper.tagFromCompound(section, "biomes"), "palette");
 					if (biomePalette == null) {
 						continue filterLoop;
 					}
@@ -142,7 +142,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			}
 			return biomes.size() == names.size();
 		} else {
-			IntArrayTag biomesTag = Helper.tagFromLevelFromRoot(data, "Biomes");
+			IntArrayTag biomesTag = NbtHelper.tagFromLevelFromRoot(data, "Biomes");
 			if (biomesTag == null) {
 				return false;
 			}
@@ -162,7 +162,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public boolean matchAnyBiome(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return false;
 		}
@@ -175,7 +175,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 			for (BiomeRegistry.BiomeIdentifier identifier : biomes) {
 				for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
-					ListTag biomePalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
+					ListTag biomePalette = NbtHelper.tagFromCompound(NbtHelper.tagFromCompound(section, "biomes"), "palette");
 					if (biomePalette == null) {
 						continue;
 					}
@@ -188,7 +188,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			}
 			return false;
 		} else {
-			IntArrayTag biomesTag = Helper.tagFromLevelFromRoot(data, "Biomes");
+			IntArrayTag biomesTag = NbtHelper.tagFromLevelFromRoot(data, "Biomes");
 			if (biomesTag == null) {
 				return false;
 			}
@@ -206,7 +206,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public void changeBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return;
 		}
@@ -218,7 +218,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			}
 
 			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
-				CompoundTag biomes = Helper.tagFromCompound(section, "biomes");
+				CompoundTag biomes = NbtHelper.tagFromCompound(section, "biomes");
 				if (biomes == null) {
 					continue;
 				}
@@ -229,7 +229,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				biomes.putLongArray("data", new long[1]);
 			}
 		} else {
-			IntArrayTag biomesTag = Helper.tagFromLevelFromRoot(data, "Biomes", null);
+			IntArrayTag biomesTag = NbtHelper.tagFromLevelFromRoot(data, "Biomes", null);
 			if (biomesTag != null) {
 				Arrays.fill(biomesTag.getValue(), biome.getID());
 			}
@@ -238,7 +238,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public void forceBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return;
 		}
@@ -259,9 +259,9 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			}
 
 		} else {
-			CompoundTag level = Helper.levelFromRoot(data);
+			CompoundTag level = NbtHelper.levelFromRoot(data);
 			if (level != null) {
-				int[] biomes = Helper.intArrayFromCompound(level, "Biomes");
+				int[] biomes = NbtHelper.intArrayFromCompound(level, "Biomes");
 				if (biomes != null && (biomes.length == 1024 || biomes.length == 1536)) {
 					biomes = new int[biomes.length];
 				} else {
@@ -275,7 +275,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return;
 		}
@@ -292,7 +292,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			}
 			pos = pos.chunkToBlock();
 
-			int yMax = Helper.findHighestSection(sections, -4);
+			int yMax = NbtHelper.findHighestSection(sections, -4);
 
 			// handle the special case when someone wants to replace air with something else
 			if (replace.containsKey("minecraft:air")) {
@@ -330,8 +330,8 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
 				CompoundTag blockStatesTag = section.getCompound("block_states");
-				ListTag palette = Helper.tagFromCompound(blockStatesTag, "palette");
-				long[] blockStates = Helper.longArrayFromCompound(blockStatesTag, "data");
+				ListTag palette = NbtHelper.tagFromCompound(blockStatesTag, "palette");
+				long[] blockStates = NbtHelper.longArrayFromCompound(blockStatesTag, "data");
 				if (palette == null) {
 					continue;
 				}
@@ -340,7 +340,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 					blockStates = new long[256];
 				}
 
-				int y = Helper.numberFromCompound(section, "Y", -5).intValue();
+				int y = NbtHelper.numberFromCompound(section, "Y", -5).intValue();
 				if (y < -4 || y > yMax) {
 					continue;
 				}
@@ -402,7 +402,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		} else {
 			CompoundTag level = data.getCompound("Level");
 
-			Point2i pos = Helper.point2iFromCompound(level, "xPos", "zPos");
+			Point2i pos = NbtHelper.point2iFromCompound(level, "xPos", "zPos");
 			if (pos == null) {
 				return;
 			}
@@ -437,23 +437,23 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				}
 			}
 
-			ListTag tileEntities = Helper.tagFromCompound(level, "TileEntities", null);
+			ListTag tileEntities = NbtHelper.tagFromCompound(level, "TileEntities", null);
 			if (tileEntities == null) {
 				tileEntities = new ListTag();
 			}
 
 			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
-				ListTag palette = Helper.tagFromCompound(section, "Palette", null);
+				ListTag palette = NbtHelper.tagFromCompound(section, "Palette", null);
 				if (palette == null) {
 					continue;
 				}
 
-				long[] blockStates = Helper.longArrayFromCompound(section, "BlockStates");
+				long[] blockStates = NbtHelper.longArrayFromCompound(section, "BlockStates");
 				if (blockStates == null) {
 					continue;
 				}
 
-				int y = Helper.numberFromCompound(section, "Y", -1).intValue();
+				int y = NbtHelper.numberFromCompound(section, "Y", -1).intValue();
 				if (y < 0 || y > 15) {
 					continue;
 				}
@@ -565,7 +565,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public int getAverageHeight(CompoundTag data) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return 0;
 		}
@@ -589,7 +589,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 						continue;
 					}
 
-					Number height = Helper.numberFromCompound(section, "Y", null);
+					Number height = NbtHelper.numberFromCompound(section, "Y", null);
 					if (height == null) {
 						continue;
 					}
@@ -610,7 +610,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public int getBlockAmount(CompoundTag data, String[] blocks) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return 0;
 		}
@@ -631,7 +631,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 			for (int i = 0; i < palette.size(); i++) {
 				CompoundTag blockState = palette.getCompound(i);
-				String name = Helper.stringFromCompound(blockState, "Name");
+				String name = NbtHelper.stringFromCompound(blockState, "Name");
 				if (name == null) {
 					continue;
 				}
@@ -654,7 +654,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public ListTag getTileEntities(CompoundTag data) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return null;
 		}
@@ -663,17 +663,17 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public CompoundTag getStructureReferences(CompoundTag data) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return null;
 		}
 		CompoundTag structures = LegacyHelper.getStructures(data, dataVersion);
-		return Helper.tagFromCompound(structures, "References");
+		return NbtHelper.tagFromCompound(structures, "References");
 	}
 
 	@Override
 	public CompoundTag getStructureStarts(CompoundTag data) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return null;
 		}
@@ -682,7 +682,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public ListTag getSections(CompoundTag data) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return null;
 		}
@@ -703,7 +703,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			default:
 				return;
 		}
-		ListTag sections = Helper.tagFromCompound(data, "sections");
+		ListTag sections = NbtHelper.tagFromCompound(data, "sections");
 		if (sections == null) {
 			return;
 		}
@@ -731,7 +731,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public LongTag getInhabitedTime(CompoundTag data) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return null;
 		}
@@ -740,7 +740,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public void setInhabitedTime(CompoundTag data, long inhabitedTime) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return;
 		}
@@ -749,7 +749,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public StringTag getStatus(CompoundTag data) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return null;
 		}
@@ -758,7 +758,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public void setStatus(CompoundTag data, String status) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return;
 		}
@@ -767,7 +767,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public LongTag getLastUpdate(CompoundTag data) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return null;
 		}
@@ -776,7 +776,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public void setLastUpdate(CompoundTag data, long lastUpdate) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return;
 		}
@@ -785,7 +785,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public IntTag getXPos(CompoundTag data) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return null;
 		}
@@ -794,7 +794,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public IntTag getYPos(CompoundTag data) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return null;
 		}
@@ -803,7 +803,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public IntTag getZPos(CompoundTag data) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return null;
 		}
@@ -812,7 +812,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public ByteTag getLightPopulated(CompoundTag data) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return null;
 		}
@@ -821,7 +821,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 	@Override
 	public void setLightPopulated(CompoundTag data, byte lightPopulated) {
-		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return;
 		}

@@ -4,7 +4,6 @@ import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
-import net.querz.nbt.NBTUtil;
 import net.querz.nbt.Tag;
 import java.util.*;
 import java.util.function.Function;
@@ -40,8 +39,8 @@ public interface ChunkMerger {
 	}
 
 	default void mergeListTagLists(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset, String name) {
-		ListTag sourceList = Helper.tagFromLevelFromRoot(source, name);
-		ListTag destinationList = Helper.tagFromLevelFromRoot(destination, name, sourceList);
+		ListTag sourceList = NbtHelper.tagFromLevelFromRoot(source, name);
+		ListTag destinationList = NbtHelper.tagFromLevelFromRoot(destination, name, sourceList);
 
 		if (sourceList == null || destinationList == null || sourceList.size() != destinationList.size()) {
 			return;
@@ -58,23 +57,23 @@ public interface ChunkMerger {
 	}
 
 	default void mergeCompoundTagListsFromLevel(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset, String name, Function<Tag, Integer> ySupplier) {
-		ListTag sourceElements = Helper.tagFromLevelFromRoot(source, name, new ListTag());
-		ListTag destinationElements = Helper.tagFromLevelFromRoot(destination, name, new ListTag());
+		ListTag sourceElements = NbtHelper.tagFromLevelFromRoot(source, name, new ListTag());
+		ListTag destinationElements = NbtHelper.tagFromLevelFromRoot(destination, name, new ListTag());
 
 		initLevel(destination).put(name, mergeLists(sourceElements, destinationElements, ranges, ySupplier, yOffset));
 	}
 
 	default void mergeCompoundTagLists(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset, String name, Function<Tag, Integer> ySupplier) {
-		ListTag sourceElements = Helper.tagFromCompound(source, name, new ListTag());
-		ListTag destinationElements = Helper.tagFromCompound(destination, name, new ListTag());
+		ListTag sourceElements = NbtHelper.tagFromCompound(source, name, new ListTag());
+		ListTag destinationElements = NbtHelper.tagFromCompound(destination, name, new ListTag());
 
 		destination.put(name, mergeLists(sourceElements, destinationElements, ranges, ySupplier, yOffset));
 	}
 
 	// merge based on compound tag keys, assuming compound tag keys are ints
 	default void mergeCompoundTags(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset, String name) {
-		CompoundTag sourceElements = Helper.tagFromCompound(source, name, new CompoundTag());
-		CompoundTag destinationElements = Helper.tagFromCompound(destination, name, new CompoundTag());
+		CompoundTag sourceElements = NbtHelper.tagFromCompound(source, name, new CompoundTag());
+		CompoundTag destinationElements = NbtHelper.tagFromCompound(destination, name, new CompoundTag());
 
 		for (Map.Entry<String, Tag> sourceElement : sourceElements) {
 			if (sourceElement.getKey().matches("^-?[0-9]{1,2}$")) {
@@ -90,7 +89,7 @@ public interface ChunkMerger {
 	}
 
 	default CompoundTag initLevel(CompoundTag c) {
-		CompoundTag level = Helper.levelFromRoot(c);
+		CompoundTag level = NbtHelper.levelFromRoot(c);
 		if (level == null) {
 			c.put("Level", level = new CompoundTag());
 		}
@@ -98,16 +97,16 @@ public interface ChunkMerger {
 	}
 
 	default void fixEntityUUIDs(CompoundTag root) {
-		ListTag entities = Helper.tagFromCompound(root, "Entities", null);
+		ListTag entities = NbtHelper.tagFromCompound(root, "Entities", null);
 		if (entities != null) {
 			entities.forEach(e -> fixEntityUUID((CompoundTag) e));
 		}
 	}
 
 	private static void fixEntityUUID(CompoundTag entity) {
-		Helper.fixEntityUUID(entity);
+		NbtHelper.fixEntityUUID(entity);
 		if (entity.containsKey("Passengers")) {
-			ListTag passengers = Helper.tagFromCompound(entity, "Passengers", null);
+			ListTag passengers = NbtHelper.tagFromCompound(entity, "Passengers", null);
 			if (passengers != null) {
 				passengers.forEach(e -> fixEntityUUID((CompoundTag) e));
 			}

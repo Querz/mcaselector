@@ -4,8 +4,7 @@ import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.Helper;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.NbtHelper;
 import net.querz.nbt.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -79,7 +78,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchBlockNames(CompoundTag data, Collection<String> names) {
-		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = NbtHelper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
@@ -92,11 +91,11 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 				continue;
 			}
 			for (Tag t : sections) {
-				byte[] blocks = Helper.byteArrayFromCompound(t, "Blocks");
+				byte[] blocks = NbtHelper.byteArrayFromCompound(t, "Blocks");
 				if (blocks == null) {
 					continue;
 				}
-				byte[] blockData = Helper.byteArrayFromCompound(t, "Data");
+				byte[] blockData = NbtHelper.byteArrayFromCompound(t, "Data");
 				if (blockData == null) {
 					continue;
 				}
@@ -120,7 +119,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchAnyBlockName(CompoundTag data, Collection<String> names) {
-		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = NbtHelper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
@@ -131,11 +130,11 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 				continue;
 			}
 			for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
-				byte[] blocks = Helper.byteArrayFromCompound(t, "Blocks");
+				byte[] blocks = NbtHelper.byteArrayFromCompound(t, "Blocks");
 				if (blocks == null) {
 					continue;
 				}
-				byte[] blockData = Helper.byteArrayFromCompound(t, "Data");
+				byte[] blockData = NbtHelper.byteArrayFromCompound(t, "Data");
 				if (blockData == null) {
 					continue;
 				}
@@ -158,7 +157,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean paletteEquals(CompoundTag data, Collection<String> names) {
-		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = NbtHelper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
@@ -175,11 +174,11 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		}
 
 		for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
-			byte[] blockBytes = Helper.byteArrayFromCompound(t, "Blocks");
+			byte[] blockBytes = NbtHelper.byteArrayFromCompound(t, "Blocks");
 			if (blockBytes == null) {
 				continue;
 			}
-			byte[] dataBits = Helper.byteArrayFromCompound(t, "Data");
+			byte[] dataBits = NbtHelper.byteArrayFromCompound(t, "Data");
 			if (dataBits == null) {
 				continue;
 			}
@@ -252,7 +251,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchBiomes(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes) {
-		ByteArrayTag biomesTag = Helper.tagFromLevelFromRoot(data, "Biomes", null);
+		ByteArrayTag biomesTag = NbtHelper.tagFromLevelFromRoot(data, "Biomes", null);
 		if (biomesTag == null) {
 			return false;
 		}
@@ -271,7 +270,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchAnyBiome(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes) {
-		ByteArrayTag biomesTag = Helper.tagFromLevelFromRoot(data, "Biomes", null);
+		ByteArrayTag biomesTag = NbtHelper.tagFromLevelFromRoot(data, "Biomes", null);
 		if (biomesTag == null) {
 			return false;
 		}
@@ -288,7 +287,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public void changeBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome) {
-		ByteArrayTag biomesTag = Helper.tagFromLevelFromRoot(data, "Biomes", null);
+		ByteArrayTag biomesTag = NbtHelper.tagFromLevelFromRoot(data, "Biomes", null);
 		if (biomesTag != null) {
 			Arrays.fill(biomesTag.getValue(), (byte) biome.getID());
 		}
@@ -296,7 +295,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public void forceBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome) {
-		CompoundTag level = Helper.levelFromRoot(data);
+		CompoundTag level = NbtHelper.levelFromRoot(data);
 		if (level != null) {
 			byte[] biomes = new byte[256];
 			Arrays.fill(biomes, (byte) biome.getID());
@@ -306,7 +305,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace) {
-		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = NbtHelper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return;
 		}
@@ -369,11 +368,11 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 		// delete tile entities with that name
 
-		ListTag tileEntities = Helper.tagFromLevelFromRoot(data, "TileEntities", null);
+		ListTag tileEntities = NbtHelper.tagFromLevelFromRoot(data, "TileEntities", null);
 		if (tileEntities != null) {
 			for (int i = 0; i < tileEntities.size(); i++) {
 				CompoundTag tileEntity = tileEntities.getCompound(i);
-				String id = Helper.stringFromCompound(tileEntity, "id");
+				String id = NbtHelper.stringFromCompound(tileEntity, "id");
 				if (id != null && replace.containsKey(id)) {
 					tileEntities.remove(i);
 					i--;
@@ -392,7 +391,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public int getAverageHeight(CompoundTag data) {
-		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = NbtHelper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return 0;
 		}
@@ -405,12 +404,12 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
 				for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
-					byte[] blocks = Helper.byteArrayFromCompound(section, "Blocks");
+					byte[] blocks = NbtHelper.byteArrayFromCompound(section, "Blocks");
 					if (blocks == null) {
 						continue;
 					}
 
-					Number height = Helper.numberFromCompound(section, "Y", null);
+					Number height = NbtHelper.numberFromCompound(section, "Y", null);
 					if (height == null) {
 						continue;
 					}
@@ -433,12 +432,12 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 	}
 
 	private int filterSections(Tag sectionA, Tag sectionB) {
-		return Helper.numberFromCompound(sectionB, "Y", -1).intValue() - Helper.numberFromCompound(sectionA, "Y", -1).intValue();
+		return NbtHelper.numberFromCompound(sectionB, "Y", -1).intValue() - NbtHelper.numberFromCompound(sectionA, "Y", -1).intValue();
 	}
 
 	@Override
 	public int getBlockAmount(CompoundTag data, String[] blocks) {
-		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = NbtHelper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return 0;
 		}
@@ -454,12 +453,12 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 			BlockData[] blockData = mapping.get(blockName);
 
 			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
-				byte[] blockIDs = Helper.byteArrayFromCompound(section, "Blocks");
+				byte[] blockIDs = NbtHelper.byteArrayFromCompound(section, "Blocks");
 				if (blockIDs == null) {
 					continue;
 				}
 
-				byte[] blockIDsData = Helper.byteArrayFromCompound(section, "Data");
+				byte[] blockIDsData = NbtHelper.byteArrayFromCompound(section, "Data");
 				if (blockIDsData == null) {
 					continue;
 				}
@@ -481,29 +480,29 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public ListTag getTileEntities(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "TileEntities");
+		return NbtHelper.tagFromLevelFromRoot(data, "TileEntities");
 	}
 
 	@Override
 	public CompoundTag getStructureReferences(CompoundTag data) {
-		CompoundTag structures = Helper.tagFromLevelFromRoot(data, "Structures");
-		return Helper.tagFromCompound(structures, "References");
+		CompoundTag structures = NbtHelper.tagFromLevelFromRoot(data, "Structures");
+		return NbtHelper.tagFromCompound(structures, "References");
 	}
 
 	@Override
 	public CompoundTag getStructureStarts(CompoundTag data) {
-		CompoundTag structures = Helper.tagFromLevelFromRoot(data, "Structures");
-		return Helper.tagFromCompound(structures, "Starts");
+		CompoundTag structures = NbtHelper.tagFromLevelFromRoot(data, "Structures");
+		return NbtHelper.tagFromCompound(structures, "Starts");
 	}
 
 	@Override
 	public ListTag getSections(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "Sections");
+		return NbtHelper.tagFromLevelFromRoot(data, "Sections");
 	}
 
 	@Override
 	public void deleteSections(CompoundTag data, List<Range> ranges) {
-		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections");
+		ListTag sections = NbtHelper.tagFromLevelFromRoot(data, "Sections");
 		if (sections == null) {
 			return;
 		}
@@ -520,12 +519,12 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public LongTag getInhabitedTime(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "InhabitedTime");
+		return NbtHelper.tagFromLevelFromRoot(data, "InhabitedTime");
 	}
 
 	@Override
 	public void setInhabitedTime(CompoundTag data, long inhabitedTime) {
-		CompoundTag level = Helper.levelFromRoot(data);
+		CompoundTag level = NbtHelper.levelFromRoot(data);
 		if (level != null) {
 			level.putLong("InhabitedTime", inhabitedTime);
 		}
@@ -533,12 +532,12 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public StringTag getStatus(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "Status");
+		return NbtHelper.tagFromLevelFromRoot(data, "Status");
 	}
 
 	@Override
 	public void setStatus(CompoundTag data, String status) {
-		CompoundTag level = Helper.levelFromRoot(data);
+		CompoundTag level = NbtHelper.levelFromRoot(data);
 		if (level != null) {
 			level.putString("Status", status);
 		}
@@ -546,12 +545,12 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public LongTag getLastUpdate(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "LastUpdate");
+		return NbtHelper.tagFromLevelFromRoot(data, "LastUpdate");
 	}
 
 	@Override
 	public void setLastUpdate(CompoundTag data, long lastUpdate) {
-		CompoundTag level = Helper.levelFromRoot(data);
+		CompoundTag level = NbtHelper.levelFromRoot(data);
 		if (level != null) {
 			level.putLong("Status", lastUpdate);
 		}
@@ -559,7 +558,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public IntTag getXPos(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "xPos");
+		return NbtHelper.tagFromLevelFromRoot(data, "xPos");
 	}
 
 	@Override
@@ -569,17 +568,17 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public IntTag getZPos(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "zPos");
+		return NbtHelper.tagFromLevelFromRoot(data, "zPos");
 	}
 
 	@Override
 	public ByteTag getLightPopulated(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "LightPopulated");
+		return NbtHelper.tagFromLevelFromRoot(data, "LightPopulated");
 	}
 
 	@Override
 	public void setLightPopulated(CompoundTag data, byte lightPopulated) {
-		CompoundTag level = Helper.levelFromRoot(data);
+		CompoundTag level = NbtHelper.levelFromRoot(data);
 		if (level != null) {
 			level.putLong("LightPopulated", lightPopulated);
 		}

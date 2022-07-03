@@ -2,7 +2,7 @@ package net.querz.mcaselector.version.anvil119;
 
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.version.ChunkRelocator;
-import net.querz.mcaselector.version.Helper;
+import net.querz.mcaselector.version.NbtHelper;
 import net.querz.mcaselector.version.anvil117.Anvil117EntityRelocator;
 import net.querz.nbt.*;
 import java.util.Map;
@@ -18,36 +18,36 @@ public class Anvil119ChunkRelocator implements ChunkRelocator {
 		root.putInt("zPos", root.getInt("zPos") + offset.blockToChunk().getZ());
 
 		// adjust tile entity positions
-		ListTag tileEntities = Helper.tagFromCompound(root, "block_entities");
+		ListTag tileEntities = NbtHelper.tagFromCompound(root, "block_entities");
 		if (tileEntities != null) {
 			tileEntities.forEach(v -> applyOffsetToTileEntity((CompoundTag) v, offset));
 		}
 
 		// adjust tile ticks
-		ListTag tileTicks = Helper.tagFromCompound(root, "block_ticks");
+		ListTag tileTicks = NbtHelper.tagFromCompound(root, "block_ticks");
 		if (tileTicks != null) {
 			tileTicks.forEach(v -> applyOffsetToTick((CompoundTag) v, offset));
 		}
 
 		// adjust liquid ticks
-		ListTag liquidTicks = Helper.tagFromCompound(root, "fluid_ticks");
+		ListTag liquidTicks = NbtHelper.tagFromCompound(root, "fluid_ticks");
 		if (liquidTicks != null) {
 			liquidTicks.forEach(v -> applyOffsetToTick((CompoundTag) v, offset));
 		}
 
 		// adjust structures
-		CompoundTag structures = Helper.tagFromCompound(root, "structures");
+		CompoundTag structures = NbtHelper.tagFromCompound(root, "structures");
 		if (structures != null) {
 			applyOffsetToStructures(structures, offset);
 		}
 
-		Helper.applyOffsetToListOfShortTagLists(root, "PostProcessing", offset.blockToSection());
+		NbtHelper.applyOffsetToListOfShortTagLists(root, "PostProcessing", offset.blockToSection());
 
 		// adjust sections vertically
-		ListTag sections = Helper.tagFromCompound(root, "sections");
+		ListTag sections = NbtHelper.tagFromCompound(root, "sections");
 		if (sections != null) {
 			ListTag newSections = new ListTag();
-			int yMax = Helper.findHighestSection(sections, -4);
+			int yMax = NbtHelper.findHighestSection(sections, -4);
 			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
 				if (applyOffsetToSection(section, offset.blockToSection(), -4, yMax)) {
 					newSections.add(section);
@@ -63,7 +63,7 @@ public class Anvil119ChunkRelocator implements ChunkRelocator {
 		Point3i chunkOffset = offset.blockToChunk();
 
 		// update references
-		CompoundTag references = Helper.tagFromCompound(structures, "References");
+		CompoundTag references = NbtHelper.tagFromCompound(structures, "References");
 		if (references != null) {
 			for (Map.Entry<String, Tag> entry : references) {
 				long[] reference = silent(() -> ((LongArrayTag) entry.getValue()).getValue(), null);
@@ -78,41 +78,41 @@ public class Anvil119ChunkRelocator implements ChunkRelocator {
 		}
 
 		// update starts
-		CompoundTag starts = Helper.tagFromCompound(structures, "starts");
+		CompoundTag starts = NbtHelper.tagFromCompound(structures, "starts");
 		if (starts != null) {
 			for (Map.Entry<String, Tag> entry : starts) {
 				CompoundTag structure = silent(() -> (CompoundTag) entry.getValue(), null);
-				if ("INVALID".equals(Helper.stringFromCompound(structure, "id"))) {
+				if ("INVALID".equals(NbtHelper.stringFromCompound(structure, "id"))) {
 					continue;
 				}
-				Helper.applyIntIfPresent(structure, "ChunkX", chunkOffset.getX());
-				Helper.applyIntIfPresent(structure, "ChunkZ", chunkOffset.getZ());
-				Helper.applyOffsetToBB(Helper.intArrayFromCompound(structure, "BB"), offset);
+				NbtHelper.applyIntIfPresent(structure, "ChunkX", chunkOffset.getX());
+				NbtHelper.applyIntIfPresent(structure, "ChunkZ", chunkOffset.getZ());
+				NbtHelper.applyOffsetToBB(NbtHelper.intArrayFromCompound(structure, "BB"), offset);
 
-				ListTag processed = Helper.tagFromCompound(structure, "Processed");
+				ListTag processed = NbtHelper.tagFromCompound(structure, "Processed");
 				if (processed != null) {
 					for (CompoundTag chunk : processed.iterateType(CompoundTag.TYPE)) {
-						Helper.applyIntIfPresent(chunk, "X", chunkOffset.getX());
-						Helper.applyIntIfPresent(chunk, "Z", chunkOffset.getZ());
+						NbtHelper.applyIntIfPresent(chunk, "X", chunkOffset.getX());
+						NbtHelper.applyIntIfPresent(chunk, "Z", chunkOffset.getZ());
 					}
 				}
 
-				ListTag children = Helper.tagFromCompound(structure, "Children");
+				ListTag children = NbtHelper.tagFromCompound(structure, "Children");
 				if (children != null) {
 					for (CompoundTag child : children.iterateType(CompoundTag.TYPE)) {
-						Helper.applyIntOffsetIfRootPresent(child, "TPX", "TPY", "TPZ", offset);
-						Helper.applyIntOffsetIfRootPresent(child, "PosX", "PosY", "PosZ", offset);
-						Helper.applyOffsetToBB(Helper.intArrayFromCompound(child, "BB"), offset);
+						NbtHelper.applyIntOffsetIfRootPresent(child, "TPX", "TPY", "TPZ", offset);
+						NbtHelper.applyIntOffsetIfRootPresent(child, "PosX", "PosY", "PosZ", offset);
+						NbtHelper.applyOffsetToBB(NbtHelper.intArrayFromCompound(child, "BB"), offset);
 
-						ListTag entrances = Helper.tagFromCompound(child, "Entrances");
+						ListTag entrances = NbtHelper.tagFromCompound(child, "Entrances");
 						if (entrances != null) {
-							entrances.forEach(e -> Helper.applyOffsetToBB(((IntArrayTag) e).getValue(), offset));
+							entrances.forEach(e -> NbtHelper.applyOffsetToBB(((IntArrayTag) e).getValue(), offset));
 						}
 
-						ListTag junctions = Helper.tagFromCompound(child, "junctions");
+						ListTag junctions = NbtHelper.tagFromCompound(child, "junctions");
 						if (junctions != null) {
 							for (CompoundTag junction : junctions.iterateType(CompoundTag.TYPE)) {
-								Helper.applyIntOffsetIfRootPresent(junction, "source_x", "source_y", "source_z", offset);
+								NbtHelper.applyIntOffsetIfRootPresent(junction, "source_x", "source_y", "source_z", offset);
 							}
 						}
 					}
@@ -122,7 +122,7 @@ public class Anvil119ChunkRelocator implements ChunkRelocator {
 	}
 
 	private void applyOffsetToTick(CompoundTag tick, Point3i offset) {
-		Helper.applyIntOffsetIfRootPresent(tick, "x", "y", "z", offset);
+		NbtHelper.applyIntOffsetIfRootPresent(tick, "x", "y", "z", offset);
 	}
 
 	static void applyOffsetToTileEntity(CompoundTag tileEntity, Point3i offset) {
@@ -130,47 +130,47 @@ public class Anvil119ChunkRelocator implements ChunkRelocator {
 			return;
 		}
 
-		Helper.applyIntOffsetIfRootPresent(tileEntity, "x", "y", "z", offset);
+		NbtHelper.applyIntOffsetIfRootPresent(tileEntity, "x", "y", "z", offset);
 
-		String id = Helper.stringFromCompound(tileEntity, "id", "");
+		String id = NbtHelper.stringFromCompound(tileEntity, "id", "");
 		switch (id) {
 		case "minecraft:bee_nest":
 		case "minecraft:beehive":
-			CompoundTag flowerPos = Helper.tagFromCompound(tileEntity, "FlowerPos");
-			Helper.applyIntOffsetIfRootPresent(flowerPos, "X", "Y", "Z", offset);
-			ListTag bees = Helper.tagFromCompound(tileEntity, "Bees");
+			CompoundTag flowerPos = NbtHelper.tagFromCompound(tileEntity, "FlowerPos");
+			NbtHelper.applyIntOffsetIfRootPresent(flowerPos, "X", "Y", "Z", offset);
+			ListTag bees = NbtHelper.tagFromCompound(tileEntity, "Bees");
 			if (bees != null) {
 				for (Tag bee : bees) {
-					applyOffsetToEntity(Helper.tagFromCompound(bee, "EntityData"), offset);
+					applyOffsetToEntity(NbtHelper.tagFromCompound(bee, "EntityData"), offset);
 				}
 			}
 			break;
 		case "minecraft:end_gateway":
-			CompoundTag exitPortal = Helper.tagFromCompound(tileEntity, "ExitPortal");
-			Helper.applyIntOffsetIfRootPresent(exitPortal, "X", "Y", "Z", offset);
+			CompoundTag exitPortal = NbtHelper.tagFromCompound(tileEntity, "ExitPortal");
+			NbtHelper.applyIntOffsetIfRootPresent(exitPortal, "X", "Y", "Z", offset);
 			break;
 		case "minecraft:structure_block":
-			Helper.applyIntOffsetIfRootPresent(tileEntity, "posX", "posY", "posZ", offset);
+			NbtHelper.applyIntOffsetIfRootPresent(tileEntity, "posX", "posY", "posZ", offset);
 			break;
 		case "minecraft:jukebox":
-			CompoundTag recordItem = Helper.tagFromCompound(tileEntity, "RecordItem");
+			CompoundTag recordItem = NbtHelper.tagFromCompound(tileEntity, "RecordItem");
 			applyOffsetToItem(recordItem, offset);
 			break;
 		case "minecraft:lectern": // 1.14
-			CompoundTag book = Helper.tagFromCompound(tileEntity, "Book");
+			CompoundTag book = NbtHelper.tagFromCompound(tileEntity, "Book");
 			applyOffsetToItem(book, offset);
 			break;
 		case "minecraft:mob_spawner":
-			ListTag spawnPotentials = Helper.tagFromCompound(tileEntity, "SpawnPotentials");
+			ListTag spawnPotentials = NbtHelper.tagFromCompound(tileEntity, "SpawnPotentials");
 			if (spawnPotentials != null) {
 				for (CompoundTag spawnPotential : spawnPotentials.iterateType(CompoundTag.TYPE)) {
-					CompoundTag entity = Helper.tagFromCompound(spawnPotential, "Entity");
+					CompoundTag entity = NbtHelper.tagFromCompound(spawnPotential, "Entity");
 					Anvil117EntityRelocator.applyOffsetToEntity(entity, offset);
 				}
 			}
 		}
 
-		ListTag items = Helper.tagFromCompound(tileEntity, "Items");
+		ListTag items = NbtHelper.tagFromCompound(tileEntity, "Items");
 		if (items != null) {
 			items.forEach(i -> applyOffsetToItem((CompoundTag) i, offset));
 		}
@@ -181,22 +181,22 @@ public class Anvil119ChunkRelocator implements ChunkRelocator {
 			return;
 		}
 
-		CompoundTag tag = Helper.tagFromCompound(item, "tag");
+		CompoundTag tag = NbtHelper.tagFromCompound(item, "tag");
 		if (tag == null) {
 			return;
 		}
 
-		String id = Helper.stringFromCompound(item, "id", "");
+		String id = NbtHelper.stringFromCompound(item, "id", "");
 		switch (id) {
 		case "minecraft:compass":
-			CompoundTag lodestonePos = Helper.tagFromCompound(tag, "LodestonePos");
-			Helper.applyIntOffsetIfRootPresent(lodestonePos, "X", "Y", "Z", offset);
+			CompoundTag lodestonePos = NbtHelper.tagFromCompound(tag, "LodestonePos");
+			NbtHelper.applyIntOffsetIfRootPresent(lodestonePos, "X", "Y", "Z", offset);
 			break;
 		}
 
 		// recursively update all items in child containers
-		CompoundTag blockEntityTag = Helper.tagFromCompound(tag, "BlockEntityTag");
-		ListTag items = Helper.tagFromCompound(blockEntityTag, "Items");
+		CompoundTag blockEntityTag = NbtHelper.tagFromCompound(tag, "BlockEntityTag");
+		ListTag items = NbtHelper.tagFromCompound(blockEntityTag, "Items");
 		if (items != null) {
 			items.forEach(i -> applyOffsetToItem((CompoundTag) i, offset));
 		}

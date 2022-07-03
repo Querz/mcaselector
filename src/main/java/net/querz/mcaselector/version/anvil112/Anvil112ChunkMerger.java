@@ -3,7 +3,7 @@ package net.querz.mcaselector.version.anvil112;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.version.ChunkMerger;
-import net.querz.mcaselector.version.Helper;
+import net.querz.mcaselector.version.NbtHelper;
 import net.querz.nbt.CompoundTag;
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class Anvil112ChunkMerger implements ChunkMerger {
 		mergeListTagLists(source, destination, ranges, yOffset, "PostProcessing");
 
 		// we need to fix entity UUIDs, because Minecraft doesn't like duplicates
-		fixEntityUUIDs(Helper.levelFromRoot(destination));
+		fixEntityUUIDs(NbtHelper.levelFromRoot(destination));
 	}
 
 	@Override

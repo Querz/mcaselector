@@ -5,7 +5,7 @@ import net.querz.mcaselector.math.MathUtil;
 import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkRenderer;
 import net.querz.mcaselector.version.ColorMapping;
-import net.querz.mcaselector.version.Helper;
+import net.querz.mcaselector.version.NbtHelper;
 import net.querz.nbt.*;
 import static net.querz.mcaselector.validation.ValidationHelper.silent;
 
@@ -13,7 +13,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
-		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(root, "DataVersion");
 		if (dataVersion == null) {
 			return;
 		}
@@ -35,14 +35,14 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			ListTag p = LegacyHelper.getPalette(s, dataVersion);
 			long[] b = LegacyHelper.getBlockStates(s, dataVersion);
 
-			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
+			int y = NbtHelper.numberFromCompound(s, "Y", -5).intValue();
 			if (y >= -4 && y < yMax && p != null) {
 				palettes[y + 4] = p;
 				blockStatesArray[y + 4] = b;
 
 				if (dataVersion >= 2834) {
-					biomePalettes[y + 4] = Helper.tagFromCompound(Helper.tagFromCompound(s, "biomes"), "palette");
-					biomesArray[y + 4] = Helper.longArrayFromCompound(Helper.tagFromCompound(s, "biomes"), "data");
+					biomePalettes[y + 4] = NbtHelper.tagFromCompound(NbtHelper.tagFromCompound(s, "biomes"), "palette");
+					biomesArray[y + 4] = NbtHelper.longArrayFromCompound(NbtHelper.tagFromCompound(s, "biomes"), "data");
 				}
 			}
 		}
@@ -130,7 +130,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawLayer(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int height) {
-		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(root, "DataVersion");
 		if (dataVersion == null) {
 			return;
 		}
@@ -142,7 +142,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 		CompoundTag section = null;
 		for (Tag s : sections) {
-			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
+			int y = NbtHelper.numberFromCompound(s, "Y", -5).intValue();
 			if (y == height >> 4) {
 				section = (CompoundTag) s;
 				break;
@@ -162,8 +162,8 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 		}
 
 		if (dataVersion >= 2834) {
-			biomesPalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
-			biomeIndices = Helper.longArrayFromCompound(Helper.tagFromCompound(section, "biomes"), "data");
+			biomesPalette = NbtHelper.tagFromCompound(NbtHelper.tagFromCompound(section, "biomes"), "palette");
+			biomeIndices = NbtHelper.longArrayFromCompound(NbtHelper.tagFromCompound(section, "biomes"), "data");
 		}
 
 		int[] biomes = LegacyHelper.getLegacyBiomes(root, dataVersion);
@@ -206,7 +206,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawCaves(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, short[] terrainHeights, int height) {
-		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(root, "DataVersion");
 		if (dataVersion == null) {
 			return;
 		}
@@ -228,14 +228,14 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			ListTag p = LegacyHelper.getPalette(s, dataVersion);
 			long[] b = LegacyHelper.getBlockStates(s, dataVersion);
 
-			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
+			int y = NbtHelper.numberFromCompound(s, "Y", -5).intValue();
 			if (y >= -4 && y < yMax && p != null) {
 				palettes[y + 4] = p;
 				blockStatesArray[y + 4] = b;
 
 				if (dataVersion >= 2834) {
-					biomePalettes[y + 4] = Helper.tagFromCompound(Helper.tagFromCompound(s, "biomes"), "palette");
-					biomesArray[y + 4] = Helper.longArrayFromCompound(Helper.tagFromCompound(s, "biomes"), "data");
+					biomePalettes[y + 4] = NbtHelper.tagFromCompound(NbtHelper.tagFromCompound(s, "biomes"), "palette");
+					biomesArray[y + 4] = NbtHelper.longArrayFromCompound(NbtHelper.tagFromCompound(s, "biomes"), "data");
 				}
 			}
 		}
@@ -310,7 +310,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public CompoundTag minimizeChunk(CompoundTag root) {
-		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(root, "DataVersion");
 		if (dataVersion == null) {
 			return root;
 		}
@@ -341,18 +341,18 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 	}
 
 	private boolean isWater(CompoundTag blockData) {
-		return switch (Helper.stringFromCompound(blockData, "Name", "")) {
+		return switch (NbtHelper.stringFromCompound(blockData, "Name", "")) {
 			case "minecraft:water", "minecraft:bubble_column" -> true;
 			default -> false;
 		};
 	}
 
 	private boolean isWaterlogged(CompoundTag data) {
-		return data.get("Properties") != null && "true".equals(Helper.stringFromCompound(Helper.tagFromCompound(data, "Properties"), "waterlogged", null));
+		return data.get("Properties") != null && "true".equals(NbtHelper.stringFromCompound(NbtHelper.tagFromCompound(data, "Properties"), "waterlogged", null));
 	}
 
 	private boolean isEmpty(CompoundTag blockData) {
-		return switch (Helper.stringFromCompound(blockData, "Name", "")) {
+		return switch (NbtHelper.stringFromCompound(blockData, "Name", "")) {
 			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void", "minecraft:light" -> blockData.size() == 1;
 			default -> false;
 		};
@@ -360,7 +360,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 
 	private boolean isEmptyOrFoliage(CompoundTag blockData, ColorMapping colorMapping) {
 		String name;
-		return switch (name = Helper.stringFromCompound(blockData, "Name", "")) {
+		return switch (name = NbtHelper.stringFromCompound(blockData, "Name", "")) {
 			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void", "minecraft:light", "minecraft:snow" -> blockData.size() == 1;
 			default -> colorMapping.isFoliage(name);
 		};

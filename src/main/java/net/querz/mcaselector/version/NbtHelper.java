@@ -5,11 +5,11 @@ import net.querz.mcaselector.point.Point3i;
 import net.querz.nbt.*;
 import java.util.Random;
 
-public final class Helper {
+public final class NbtHelper {
 
 	private static final Random random = new Random();
 
-	private Helper() {}
+	private NbtHelper() {}
 
 	public static CompoundTag levelFromRoot(Tag root) {
 		return tagFromCompound(root, "Level", null);

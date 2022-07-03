@@ -10,7 +10,7 @@ public interface ChunkRelocator {
 
 	default boolean applyOffsetToSection(CompoundTag section, Point3i offset, int minY, int maxY) {
 		NumberTag value;
-		if ((value = Helper.tagFromCompound(section, "Y")) != null) {
+		if ((value = NbtHelper.tagFromCompound(section, "Y")) != null) {
 			if (value.asByte() > maxY || value.asByte() < minY) {
 				return false;
 			}

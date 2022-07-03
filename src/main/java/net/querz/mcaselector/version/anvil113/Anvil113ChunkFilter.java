@@ -7,7 +7,7 @@ import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.Helper;
+import net.querz.mcaselector.version.NbtHelper;
 import net.querz.nbt.*;
 import java.util.*;
 
@@ -15,7 +15,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchBlockNames(CompoundTag data, Collection<String> names) {
-		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = NbtHelper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
@@ -24,12 +24,12 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		nameLoop:
 		for (String name : names) {
 			for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
-				ListTag palette = Helper.tagFromCompound(t, "Palette", null);
+				ListTag palette = NbtHelper.tagFromCompound(t, "Palette", null);
 				if (palette == null) {
 					continue;
 				}
 				for (CompoundTag p : palette.iterateType(CompoundTag.TYPE)) {
-					if (name.equals(Helper.stringFromCompound(p, "Name"))) {
+					if (name.equals(NbtHelper.stringFromCompound(p, "Name"))) {
 						c++;
 						continue nameLoop;
 					}
@@ -41,19 +41,19 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchAnyBlockName(CompoundTag data, Collection<String> names) {
-		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = NbtHelper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
 
 		for (String name : names) {
 			for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
-				ListTag palette = Helper.tagFromCompound(t, "Palette", null);
+				ListTag palette = NbtHelper.tagFromCompound(t, "Palette", null);
 				if (palette == null) {
 					continue;
 				}
 				for (CompoundTag p : palette.iterateType(CompoundTag.TYPE)) {
-					if (name.equals(Helper.stringFromCompound(p, "Name"))) {
+					if (name.equals(NbtHelper.stringFromCompound(p, "Name"))) {
 						return true;
 					}
 				}
@@ -64,20 +64,20 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean paletteEquals(CompoundTag data, Collection<String> names) {
-		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = NbtHelper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
 
 		Set<String> blocks = new HashSet<>();
 		for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
-			ListTag palette = Helper.tagFromCompound(t, "Palette", null);
+			ListTag palette = NbtHelper.tagFromCompound(t, "Palette", null);
 			if (palette == null) {
 				continue;
 			}
 			for (CompoundTag p : palette.iterateType(CompoundTag.TYPE)) {
 				String n;
-				if ((n = Helper.stringFromCompound(p, "Name")) != null) {
+				if ((n = NbtHelper.stringFromCompound(p, "Name")) != null) {
 					if (!names.contains(n)) {
 						return false;
 					}
@@ -98,7 +98,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchBiomes(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes) {
-		IntArrayTag biomesTag = Helper.tagFromLevelFromRoot(data, "Biomes", null);
+		IntArrayTag biomesTag = NbtHelper.tagFromLevelFromRoot(data, "Biomes", null);
 		if (biomesTag == null) {
 			return false;
 		}
@@ -117,7 +117,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchAnyBiome(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes) {
-		IntArrayTag biomesTag = Helper.tagFromLevelFromRoot(data, "Biomes", null);
+		IntArrayTag biomesTag = NbtHelper.tagFromLevelFromRoot(data, "Biomes", null);
 		if (biomesTag == null) {
 			return false;
 		}
@@ -134,7 +134,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public void changeBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome) {
-		IntArrayTag biomesTag = Helper.tagFromLevelFromRoot(data, "Biomes", null);
+		IntArrayTag biomesTag = NbtHelper.tagFromLevelFromRoot(data, "Biomes", null);
 		if (biomesTag != null) {
 			Arrays.fill(biomesTag.getValue(), biome.getID());
 		}
@@ -142,7 +142,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public void forceBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome) {
-		CompoundTag level = Helper.levelFromRoot(data);
+		CompoundTag level = NbtHelper.levelFromRoot(data);
 		if (level != null) {
 			int[] biomes = new int[256];
 			Arrays.fill(biomes, (byte) biome.getID());
@@ -152,14 +152,14 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace) {
-		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = NbtHelper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return;
 		}
 
 		CompoundTag level = data.getCompound("Level");
 
-		Point2i pos = Helper.point2iFromCompound(level, "xPos", "zPos");
+		Point2i pos = NbtHelper.point2iFromCompound(level, "xPos", "zPos");
 		if (pos == null) {
 			return;
 		}
@@ -194,23 +194,23 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 			}
 		}
 
-		ListTag tileEntities = Helper.tagFromCompound(level, "TileEntities", null);
+		ListTag tileEntities = NbtHelper.tagFromCompound(level, "TileEntities", null);
 		if (tileEntities == null) {
 			tileEntities = new ListTag();
 		}
 
 		for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
-			ListTag palette = Helper.tagFromCompound(section, "Palette", null);
+			ListTag palette = NbtHelper.tagFromCompound(section, "Palette", null);
 			if (palette == null) {
 				continue;
 			}
 
-			long[] blockStates = Helper.longArrayFromCompound(section, "BlockStates");
+			long[] blockStates = NbtHelper.longArrayFromCompound(section, "BlockStates");
 			if (blockStates == null) {
 				continue;
 			}
 
-			int y = Helper.numberFromCompound(section, "Y", -1).intValue();
+			int y = NbtHelper.numberFromCompound(section, "Y", -1).intValue();
 			if (y < 0 || y > 15) {
 				continue;
 			}
@@ -409,7 +409,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public int getAverageHeight(CompoundTag data) {
-		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = NbtHelper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return 0;
 		}
@@ -422,17 +422,17 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
 				for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
-					ListTag palette = Helper.tagFromCompound(section, "Palette", null);
+					ListTag palette = NbtHelper.tagFromCompound(section, "Palette", null);
 					if (palette == null) {
 						continue;
 					}
 
-					long[] blockStates = Helper.longArrayFromCompound(section, "BlockStates");
+					long[] blockStates = NbtHelper.longArrayFromCompound(section, "BlockStates");
 					if (blockStates == null) {
 						continue;
 					}
 
-					Number height = Helper.numberFromCompound(section, "Y", null);
+					Number height = NbtHelper.numberFromCompound(section, "Y", null);
 					if (height == null) {
 						continue;
 					}
@@ -452,7 +452,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 	}
 
 	protected boolean isEmpty(CompoundTag blockData) {
-		return switch (Helper.stringFromCompound(blockData, "Name", "")) {
+		return switch (NbtHelper.stringFromCompound(blockData, "Name", "")) {
 			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void" ->
 					blockData.size() == 1;
 			default -> false;
@@ -460,12 +460,12 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 	}
 
 	protected int filterSections(Tag sectionA, Tag sectionB) {
-		return Helper.numberFromCompound(sectionB, "Y", -1).intValue() - Helper.numberFromCompound(sectionA, "Y", -1).intValue();
+		return NbtHelper.numberFromCompound(sectionB, "Y", -1).intValue() - NbtHelper.numberFromCompound(sectionA, "Y", -1).intValue();
 	}
 
 	@Override
 	public int getBlockAmount(CompoundTag data, String[] blocks) {
-		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = NbtHelper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return 0;
 		}
@@ -473,14 +473,14 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		int result = 0;
 
 		for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
-			ListTag palette = Helper.tagFromCompound(section, "Palette", null);
+			ListTag palette = NbtHelper.tagFromCompound(section, "Palette", null);
 			if (palette == null) {
 				continue;
 			}
 
 			for (int i = 0; i < palette.size(); i++) {
 				CompoundTag blockState = palette.getCompound(i);
-				String name = Helper.stringFromCompound(blockState, "Name");
+				String name = NbtHelper.stringFromCompound(blockState, "Name");
 				if (name == null) {
 					continue;
 				}
@@ -489,7 +489,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 					if (name.equals(block)) {
 						// count blocks of this type
 
-						long[] blockStates = Helper.longArrayFromCompound(section, "BlockStates");
+						long[] blockStates = NbtHelper.longArrayFromCompound(section, "BlockStates");
 						if (blockStates == null) {
 							break;
 						}
@@ -509,29 +509,29 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public ListTag getTileEntities(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "TileEntities");
+		return NbtHelper.tagFromLevelFromRoot(data, "TileEntities");
 	}
 
 	@Override
 	public CompoundTag getStructureReferences(CompoundTag data) {
-		CompoundTag structures = Helper.tagFromLevelFromRoot(data, "Structures");
-		return Helper.tagFromCompound(structures, "References");
+		CompoundTag structures = NbtHelper.tagFromLevelFromRoot(data, "Structures");
+		return NbtHelper.tagFromCompound(structures, "References");
 	}
 
 	@Override
 	public CompoundTag getStructureStarts(CompoundTag data) {
-		CompoundTag structures = Helper.tagFromLevelFromRoot(data, "Structures");
-		return Helper.tagFromCompound(structures, "Starts");
+		CompoundTag structures = NbtHelper.tagFromLevelFromRoot(data, "Structures");
+		return NbtHelper.tagFromCompound(structures, "Starts");
 	}
 
 	@Override
 	public ListTag getSections(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "Sections");
+		return NbtHelper.tagFromLevelFromRoot(data, "Sections");
 	}
 
 	@Override
 	public void deleteSections(CompoundTag data, List<Range> ranges) {
-		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections");
+		ListTag sections = NbtHelper.tagFromLevelFromRoot(data, "Sections");
 		if (sections == null) {
 			return;
 		}
@@ -548,12 +548,12 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public LongTag getInhabitedTime(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "InhabitedTime");
+		return NbtHelper.tagFromLevelFromRoot(data, "InhabitedTime");
 	}
 
 	@Override
 	public void setInhabitedTime(CompoundTag data, long inhabitedTime) {
-		CompoundTag level = Helper.levelFromRoot(data);
+		CompoundTag level = NbtHelper.levelFromRoot(data);
 		if (level != null) {
 			level.putLong("InhabitedTime", inhabitedTime);
 		}
@@ -561,12 +561,12 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public StringTag getStatus(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "Status");
+		return NbtHelper.tagFromLevelFromRoot(data, "Status");
 	}
 
 	@Override
 	public void setStatus(CompoundTag data, String status) {
-		CompoundTag level = Helper.levelFromRoot(data);
+		CompoundTag level = NbtHelper.levelFromRoot(data);
 		if (level != null) {
 			level.putString("Status", status);
 		}
@@ -574,12 +574,12 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public LongTag getLastUpdate(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "LastUpdate");
+		return NbtHelper.tagFromLevelFromRoot(data, "LastUpdate");
 	}
 
 	@Override
 	public void setLastUpdate(CompoundTag data, long lastUpdate) {
-		CompoundTag level = Helper.levelFromRoot(data);
+		CompoundTag level = NbtHelper.levelFromRoot(data);
 		if (level != null) {
 			level.putLong("Status", lastUpdate);
 		}
@@ -587,7 +587,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public IntTag getXPos(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "xPos");
+		return NbtHelper.tagFromLevelFromRoot(data, "xPos");
 	}
 
 	@Override
@@ -597,17 +597,17 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public IntTag getZPos(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "zPos");
+		return NbtHelper.tagFromLevelFromRoot(data, "zPos");
 	}
 
 	@Override
 	public ByteTag getLightPopulated(CompoundTag data) {
-		return Helper.tagFromLevelFromRoot(data, "LightPopulated");
+		return NbtHelper.tagFromLevelFromRoot(data, "LightPopulated");
 	}
 
 	@Override
 	public void setLightPopulated(CompoundTag data, byte lightPopulated) {
-		CompoundTag level = Helper.levelFromRoot(data);
+		CompoundTag level = NbtHelper.levelFromRoot(data);
 		if (level != null) {
 			level.putLong("LightPopulated", lightPopulated);
 		}

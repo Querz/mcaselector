@@ -2,7 +2,7 @@ package net.querz.mcaselector.version.anvil118;
 
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.version.Helper;
+import net.querz.mcaselector.version.NbtHelper;
 import net.querz.nbt.*;
 
 public final class LegacyHelper {
@@ -11,17 +11,17 @@ public final class LegacyHelper {
 
 	static ListTag getProtoEntities(CompoundTag root, int dataVersion) {
 		if (dataVersion > 2843) {
-			return Helper.tagFromCompound(root, "entities");
+			return NbtHelper.tagFromCompound(root, "entities");
 		} else {
-			return Helper.tagFromLevelFromRoot(root, "Entities");
+			return NbtHelper.tagFromLevelFromRoot(root, "Entities");
 		}
 	}
 
 	static ListTag getSections(CompoundTag root, int dataVersion) {
 		if (dataVersion > 2843) { // 21w42a
-			return Helper.tagFromCompound(root, "sections");
+			return NbtHelper.tagFromCompound(root, "sections");
 		} else {
-			return Helper.getSectionsFromLevelFromRoot(root, "Sections");
+			return NbtHelper.getSectionsFromLevelFromRoot(root, "Sections");
 		}
 	}
 
@@ -35,25 +35,25 @@ public final class LegacyHelper {
 
 	static ListTag getPalette(CompoundTag section, int dataVersion) {
 		if (dataVersion >= 2834) {
-			return Helper.tagFromCompound(Helper.tagFromCompound(section, "block_states"), "palette");
+			return NbtHelper.tagFromCompound(NbtHelper.tagFromCompound(section, "block_states"), "palette");
 		} else {
-			return Helper.tagFromCompound(section, "Palette");
+			return NbtHelper.tagFromCompound(section, "Palette");
 		}
 	}
 
 	static long[] getBlockStates(CompoundTag section, int dataVersion) {
 		if (dataVersion >= 2834) {
-			return Helper.longArrayFromCompound(Helper.tagFromCompound(section, "block_states"), "data");
+			return NbtHelper.longArrayFromCompound(NbtHelper.tagFromCompound(section, "block_states"), "data");
 		} else {
-			return Helper.longArrayFromCompound(section, "BlockStates");
+			return NbtHelper.longArrayFromCompound(section, "BlockStates");
 		}
 	}
 
 	static LongTag getInhabitedTime(CompoundTag root, int dataVersion) {
 		if (dataVersion > 2843) { // 21w42a
-			return Helper.tagFromCompound(root, "InhabitedTime");
+			return NbtHelper.tagFromCompound(root, "InhabitedTime");
 		} else {
-			return Helper.tagFromLevelFromRoot(root, "InhabitedTime");
+			return NbtHelper.tagFromLevelFromRoot(root, "InhabitedTime");
 		}
 	}
 
@@ -63,7 +63,7 @@ public final class LegacyHelper {
 				root.putLong("InhabitedTime", inhabitedTime);
 			}
 		} else {
-			CompoundTag level = Helper.levelFromRoot(root);
+			CompoundTag level = NbtHelper.levelFromRoot(root);
 			if (level != null) {
 				level.putLong("InhabitedTime", inhabitedTime);
 			}
@@ -72,9 +72,9 @@ public final class LegacyHelper {
 
 	static LongTag getLastUpdate(CompoundTag root, int dataVersion) {
 		if (dataVersion > 2843) { // 21w42a
-			return Helper.tagFromCompound(root, "LastUpdate");
+			return NbtHelper.tagFromCompound(root, "LastUpdate");
 		} else {
-			return Helper.tagFromLevelFromRoot(root, "LastUpdate");
+			return NbtHelper.tagFromLevelFromRoot(root, "LastUpdate");
 		}
 	}
 
@@ -84,7 +84,7 @@ public final class LegacyHelper {
 				root.putLong("LastUpdate", lastUpdate);
 			}
 		} else {
-			CompoundTag level = Helper.levelFromRoot(root);
+			CompoundTag level = NbtHelper.levelFromRoot(root);
 			if (level != null) {
 				level.putLong("LastUpdate", lastUpdate);
 			}
@@ -93,9 +93,9 @@ public final class LegacyHelper {
 
 	static StringTag getStatus(CompoundTag root, int dataVersion) {
 		if (dataVersion > 2843) {
-			return Helper.tagFromCompound(root, "Status");
+			return NbtHelper.tagFromCompound(root, "Status");
 		} else {
-			return Helper.tagFromLevelFromRoot(root, "Status");
+			return NbtHelper.tagFromLevelFromRoot(root, "Status");
 		}
 	}
 
@@ -105,7 +105,7 @@ public final class LegacyHelper {
 				root.putString("Status", status);
 			}
 		} else {
-			CompoundTag level = Helper.levelFromRoot(root);
+			CompoundTag level = NbtHelper.levelFromRoot(root);
 			if (level != null) {
 				level.putString("Status", status);
 			}
@@ -114,25 +114,25 @@ public final class LegacyHelper {
 
 	static ListTag getTileEntities(CompoundTag root, int dataVersion) {
 		if (dataVersion < 2844) {
-			return Helper.tagFromLevelFromRoot(root, "TileEntities");
+			return NbtHelper.tagFromLevelFromRoot(root, "TileEntities");
 		} else {
-			return Helper.tagFromCompound(root, "block_entities");
+			return NbtHelper.tagFromCompound(root, "block_entities");
 		}
 	}
 
 	static ListTag getTileTicks(CompoundTag root, int dataVersion) {
 		if (dataVersion < 2844) {
-			return Helper.tagFromLevelFromRoot(root, "TileTicks");
+			return NbtHelper.tagFromLevelFromRoot(root, "TileTicks");
 		} else {
-			return Helper.tagFromCompound(root, "block_ticks");
+			return NbtHelper.tagFromCompound(root, "block_ticks");
 		}
 	}
 
 	static ListTag getLiquidTicks(CompoundTag root, int dataVersion) {
 		if (dataVersion < 2844) {
-			return Helper.tagFromLevelFromRoot(root, "LiquidTicks");
+			return NbtHelper.tagFromLevelFromRoot(root, "LiquidTicks");
 		} else {
-			return Helper.tagFromCompound(root, "fluid_ticks");
+			return NbtHelper.tagFromCompound(root, "fluid_ticks");
 		}
 	}
 
@@ -146,15 +146,15 @@ public final class LegacyHelper {
 
 	static Point2i getChunkCoordinates(CompoundTag root, int dataVersion) {
 		if (dataVersion < 2844) {
-			return Helper.point2iFromCompound(Helper.tagFromCompound(root, "Level"), "xPos", "zPos");
+			return NbtHelper.point2iFromCompound(NbtHelper.tagFromCompound(root, "Level"), "xPos", "zPos");
 		} else {
-			return Helper.point2iFromCompound(root, "xPos", "zPos");
+			return NbtHelper.point2iFromCompound(root, "xPos", "zPos");
 		}
 	}
 
 	static void applyOffsetToChunkCoordinates(CompoundTag root, Point3i offset, int dataVersion) {
 		if (dataVersion < 2844) {
-			CompoundTag level = Helper.levelFromRoot(root);
+			CompoundTag level = NbtHelper.levelFromRoot(root);
 			level.putInt("xPos", level.getInt("xPos") + offset.blockToChunk().getX());
 			level.putInt("zPos", level.getInt("zPos") + offset.blockToChunk().getZ());
 		} else {
@@ -165,7 +165,7 @@ public final class LegacyHelper {
 
 	static int[] getLegacyBiomes(CompoundTag root, int dataVersion) {
 		if (dataVersion < 2844) { // 21w43a
-			IntArrayTag t = Helper.tagFromLevelFromRoot(root, "Biomes");
+			IntArrayTag t = NbtHelper.tagFromLevelFromRoot(root, "Biomes");
 			if (t != null) {
 				return t.getValue();
 			}
@@ -175,39 +175,39 @@ public final class LegacyHelper {
 
 	static CompoundTag getStructureStarts(CompoundTag root, int dataVersion) {
 		if (dataVersion < 2844) {
-			return Helper.tagFromCompound(Helper.tagFromLevelFromRoot(root, "Structures", new CompoundTag()), "Starts", new CompoundTag());
+			return NbtHelper.tagFromCompound(NbtHelper.tagFromLevelFromRoot(root, "Structures", new CompoundTag()), "Starts", new CompoundTag());
 		} else {
-			return Helper.tagFromCompound(Helper.tagFromCompound(root, "structures"), "starts", new CompoundTag());
+			return NbtHelper.tagFromCompound(NbtHelper.tagFromCompound(root, "structures"), "starts", new CompoundTag());
 		}
 	}
 
 	static CompoundTag getStructures(CompoundTag root, int dataVersion) {
 		if (dataVersion < 2844) {
-			return Helper.tagFromLevelFromRoot(root, "Structures");
+			return NbtHelper.tagFromLevelFromRoot(root, "Structures");
 		} else {
-			return Helper.tagFromCompound(root, "structures");
+			return NbtHelper.tagFromCompound(root, "structures");
 		}
 	}
 
 	static CompoundTag getStructureStartsFromStructures(CompoundTag structures, int dataVersion) {
 		if (dataVersion < 2844) {
-			return Helper.tagFromLevelFromRoot(structures, "Starts");
+			return NbtHelper.tagFromLevelFromRoot(structures, "Starts");
 		} else {
-			return Helper.tagFromCompound(structures, "starts");
+			return NbtHelper.tagFromCompound(structures, "starts");
 		}
 	}
 
 	static IntTag getXPos(CompoundTag data, int dataVersion) {
 		if (dataVersion > 2843) {
-			return Helper.tagFromCompound(data, "xPos");
+			return NbtHelper.tagFromCompound(data, "xPos");
 		} else {
-			return Helper.tagFromLevelFromRoot(data, "xPos");
+			return NbtHelper.tagFromLevelFromRoot(data, "xPos");
 		}
 	}
 
 	static IntTag getYPos(CompoundTag data, int dataVersion) {
 		if (dataVersion > 2843) {
-			return Helper.tagFromCompound(data, "yPos");
+			return NbtHelper.tagFromCompound(data, "yPos");
 		} else {
 			return null;
 		}
@@ -215,17 +215,17 @@ public final class LegacyHelper {
 
 	static IntTag getZPos(CompoundTag data, int dataVersion) {
 		if (dataVersion > 2843) {
-			return Helper.tagFromCompound(data, "zPos");
+			return NbtHelper.tagFromCompound(data, "zPos");
 		} else {
-			return Helper.tagFromLevelFromRoot(data, "zPos");
+			return NbtHelper.tagFromLevelFromRoot(data, "zPos");
 		}
 	}
 
 	static ByteTag getIsLightOn(CompoundTag data, int dataVersion) {
 		if (dataVersion > 2843) {
-			return Helper.tagFromCompound(data, "isLightOn");
+			return NbtHelper.tagFromCompound(data, "isLightOn");
 		} else {
-			return Helper.tagFromLevelFromRoot(data, "isLightOn");
+			return NbtHelper.tagFromLevelFromRoot(data, "isLightOn");
 		}
 	}
 
@@ -235,7 +235,7 @@ public final class LegacyHelper {
 				root.putByte("isLightOn", isLightOn);
 			}
 		} else {
-			CompoundTag level = Helper.levelFromRoot(root);
+			CompoundTag level = NbtHelper.levelFromRoot(root);
 			if (level != null) {
 				level.putByte("isLightOn", isLightOn);
 			}
