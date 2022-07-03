@@ -7,10 +7,13 @@ import net.querz.nbt.*;
 
 final class Snapshot118Helper {
 
+	private static final int SNAPSHOT_21w43a = 2844;
+	private static final int SNAPSHOT_21w37a = 2834;
+
 	private Snapshot118Helper() {}
 
 	static ListTag getProtoEntities(CompoundTag root, int dataVersion) {
-		if (dataVersion > 2843) {
+		if (dataVersion >= SNAPSHOT_21w43a) {
 			return NbtHelper.tagFromCompound(root, "entities");
 		} else {
 			return NbtHelper.tagFromLevelFromRoot(root, "Entities");
@@ -18,7 +21,7 @@ final class Snapshot118Helper {
 	}
 
 	static ListTag getSections(CompoundTag root, int dataVersion) {
-		if (dataVersion > 2843) { // 21w42a
+		if (dataVersion >= SNAPSHOT_21w43a) {
 			return NbtHelper.tagFromCompound(root, "sections");
 		} else {
 			return NbtHelper.getSectionsFromLevelFromRoot(root, "Sections");
@@ -26,7 +29,7 @@ final class Snapshot118Helper {
 	}
 
 	static void putSections(CompoundTag root, ListTag sections, int dataVersion) {
-		if (dataVersion > 2843) { // 21w42a
+		if (dataVersion >= SNAPSHOT_21w43a) {
 			root.put("sections", sections);
 		} else {
 			root.getCompound("Level").put("Sections", sections);
@@ -34,7 +37,7 @@ final class Snapshot118Helper {
 	}
 
 	static ListTag getPalette(CompoundTag section, int dataVersion) {
-		if (dataVersion >= 2834) {
+		if (dataVersion >= SNAPSHOT_21w37a) {
 			return NbtHelper.tagFromCompound(NbtHelper.tagFromCompound(section, "block_states"), "palette");
 		} else {
 			return NbtHelper.tagFromCompound(section, "Palette");
@@ -42,7 +45,7 @@ final class Snapshot118Helper {
 	}
 
 	static long[] getBlockStates(CompoundTag section, int dataVersion) {
-		if (dataVersion >= 2834) {
+		if (dataVersion >= SNAPSHOT_21w37a) {
 			return NbtHelper.longArrayFromCompound(NbtHelper.tagFromCompound(section, "block_states"), "data");
 		} else {
 			return NbtHelper.longArrayFromCompound(section, "BlockStates");
@@ -50,7 +53,7 @@ final class Snapshot118Helper {
 	}
 
 	static LongTag getInhabitedTime(CompoundTag root, int dataVersion) {
-		if (dataVersion > 2843) { // 21w42a
+		if (dataVersion >= SNAPSHOT_21w43a) {
 			return NbtHelper.tagFromCompound(root, "InhabitedTime");
 		} else {
 			return NbtHelper.tagFromLevelFromRoot(root, "InhabitedTime");
@@ -58,7 +61,7 @@ final class Snapshot118Helper {
 	}
 
 	static void setInhabitedTime(CompoundTag root, long inhabitedTime, int dataVersion) {
-		if (dataVersion > 2843) {
+		if (dataVersion >= SNAPSHOT_21w43a) {
 			if (root != null) {
 				root.putLong("InhabitedTime", inhabitedTime);
 			}
@@ -71,7 +74,7 @@ final class Snapshot118Helper {
 	}
 
 	static LongTag getLastUpdate(CompoundTag root, int dataVersion) {
-		if (dataVersion > 2843) { // 21w42a
+		if (dataVersion >= SNAPSHOT_21w43a) {
 			return NbtHelper.tagFromCompound(root, "LastUpdate");
 		} else {
 			return NbtHelper.tagFromLevelFromRoot(root, "LastUpdate");
@@ -79,7 +82,7 @@ final class Snapshot118Helper {
 	}
 
 	static void setLastUpdate(CompoundTag root, long lastUpdate, int dataVersion) {
-		if (dataVersion > 2843) {
+		if (dataVersion >= SNAPSHOT_21w43a) {
 			if (root != null) {
 				root.putLong("LastUpdate", lastUpdate);
 			}
@@ -92,7 +95,7 @@ final class Snapshot118Helper {
 	}
 
 	static StringTag getStatus(CompoundTag root, int dataVersion) {
-		if (dataVersion > 2843) {
+		if (dataVersion >= SNAPSHOT_21w43a) {
 			return NbtHelper.tagFromCompound(root, "Status");
 		} else {
 			return NbtHelper.tagFromLevelFromRoot(root, "Status");
@@ -100,7 +103,7 @@ final class Snapshot118Helper {
 	}
 
 	static void setStatus(CompoundTag root, String status, int dataVersion) {
-		if (dataVersion > 2843) {
+		if (dataVersion >= SNAPSHOT_21w43a) {
 			if (root != null) {
 				root.putString("Status", status);
 			}
@@ -113,7 +116,7 @@ final class Snapshot118Helper {
 	}
 
 	static ListTag getTileEntities(CompoundTag root, int dataVersion) {
-		if (dataVersion < 2844) {
+		if (dataVersion < SNAPSHOT_21w43a) {
 			return NbtHelper.tagFromLevelFromRoot(root, "TileEntities");
 		} else {
 			return NbtHelper.tagFromCompound(root, "block_entities");
@@ -121,7 +124,7 @@ final class Snapshot118Helper {
 	}
 
 	static ListTag getTileTicks(CompoundTag root, int dataVersion) {
-		if (dataVersion < 2844) {
+		if (dataVersion < SNAPSHOT_21w43a) {
 			return NbtHelper.tagFromLevelFromRoot(root, "TileTicks");
 		} else {
 			return NbtHelper.tagFromCompound(root, "block_ticks");
@@ -129,7 +132,7 @@ final class Snapshot118Helper {
 	}
 
 	static ListTag getLiquidTicks(CompoundTag root, int dataVersion) {
-		if (dataVersion < 2844) {
+		if (dataVersion < SNAPSHOT_21w43a) {
 			return NbtHelper.tagFromLevelFromRoot(root, "LiquidTicks");
 		} else {
 			return NbtHelper.tagFromCompound(root, "fluid_ticks");
@@ -137,7 +140,7 @@ final class Snapshot118Helper {
 	}
 
 	static void putTileEntities(CompoundTag root, ListTag tileEntities, int dataVersion) {
-		if (dataVersion < 2844) {
+		if (dataVersion < SNAPSHOT_21w43a) {
 			root.getCompound("Level").put("TileEntities", tileEntities);
 		} else {
 			root.put("block_entities", tileEntities);
@@ -145,7 +148,7 @@ final class Snapshot118Helper {
 	}
 
 	static Point2i getChunkCoordinates(CompoundTag root, int dataVersion) {
-		if (dataVersion < 2844) {
+		if (dataVersion < SNAPSHOT_21w43a) {
 			return NbtHelper.point2iFromCompound(NbtHelper.tagFromCompound(root, "Level"), "xPos", "zPos");
 		} else {
 			return NbtHelper.point2iFromCompound(root, "xPos", "zPos");
@@ -153,7 +156,7 @@ final class Snapshot118Helper {
 	}
 
 	static void applyOffsetToChunkCoordinates(CompoundTag root, Point3i offset, int dataVersion) {
-		if (dataVersion < 2844) {
+		if (dataVersion < SNAPSHOT_21w43a) {
 			CompoundTag level = NbtHelper.levelFromRoot(root);
 			level.putInt("xPos", level.getInt("xPos") + offset.blockToChunk().getX());
 			level.putInt("zPos", level.getInt("zPos") + offset.blockToChunk().getZ());
@@ -164,7 +167,7 @@ final class Snapshot118Helper {
 	}
 
 	static int[] getLegacyBiomes(CompoundTag root, int dataVersion) {
-		if (dataVersion < 2844) { // 21w43a
+		if (dataVersion < SNAPSHOT_21w43a) {
 			IntArrayTag t = NbtHelper.tagFromLevelFromRoot(root, "Biomes");
 			if (t != null) {
 				return t.getValue();
@@ -174,7 +177,7 @@ final class Snapshot118Helper {
 	}
 
 	static CompoundTag getStructureStarts(CompoundTag root, int dataVersion) {
-		if (dataVersion < 2844) {
+		if (dataVersion < SNAPSHOT_21w43a) {
 			return NbtHelper.tagFromCompound(NbtHelper.tagFromLevelFromRoot(root, "Structures", new CompoundTag()), "Starts", new CompoundTag());
 		} else {
 			return NbtHelper.tagFromCompound(NbtHelper.tagFromCompound(root, "structures"), "starts", new CompoundTag());
@@ -182,7 +185,7 @@ final class Snapshot118Helper {
 	}
 
 	static CompoundTag getStructures(CompoundTag root, int dataVersion) {
-		if (dataVersion < 2844) {
+		if (dataVersion < SNAPSHOT_21w43a) {
 			return NbtHelper.tagFromLevelFromRoot(root, "Structures");
 		} else {
 			return NbtHelper.tagFromCompound(root, "structures");
@@ -190,7 +193,7 @@ final class Snapshot118Helper {
 	}
 
 	static CompoundTag getStructureStartsFromStructures(CompoundTag structures, int dataVersion) {
-		if (dataVersion < 2844) {
+		if (dataVersion < SNAPSHOT_21w43a) {
 			return NbtHelper.tagFromLevelFromRoot(structures, "Starts");
 		} else {
 			return NbtHelper.tagFromCompound(structures, "starts");
@@ -198,7 +201,7 @@ final class Snapshot118Helper {
 	}
 
 	static IntTag getXPos(CompoundTag data, int dataVersion) {
-		if (dataVersion > 2843) {
+		if (dataVersion >= SNAPSHOT_21w43a) {
 			return NbtHelper.tagFromCompound(data, "xPos");
 		} else {
 			return NbtHelper.tagFromLevelFromRoot(data, "xPos");
@@ -206,7 +209,7 @@ final class Snapshot118Helper {
 	}
 
 	static IntTag getYPos(CompoundTag data, int dataVersion) {
-		if (dataVersion > 2843) {
+		if (dataVersion >= SNAPSHOT_21w43a) {
 			return NbtHelper.tagFromCompound(data, "yPos");
 		} else {
 			return null;
@@ -214,7 +217,7 @@ final class Snapshot118Helper {
 	}
 
 	static IntTag getZPos(CompoundTag data, int dataVersion) {
-		if (dataVersion > 2843) {
+		if (dataVersion >= SNAPSHOT_21w43a) {
 			return NbtHelper.tagFromCompound(data, "zPos");
 		} else {
 			return NbtHelper.tagFromLevelFromRoot(data, "zPos");
@@ -222,7 +225,7 @@ final class Snapshot118Helper {
 	}
 
 	static ByteTag getIsLightOn(CompoundTag data, int dataVersion) {
-		if (dataVersion > 2843) {
+		if (dataVersion >= SNAPSHOT_21w43a) {
 			return NbtHelper.tagFromCompound(data, "isLightOn");
 		} else {
 			return NbtHelper.tagFromLevelFromRoot(data, "isLightOn");
@@ -230,7 +233,7 @@ final class Snapshot118Helper {
 	}
 
 	static void setIsLightOn(CompoundTag root, byte isLightOn, int dataVersion) {
-		if (dataVersion > 2843) {
+		if (dataVersion >= SNAPSHOT_21w43a) {
 			if (root != null) {
 				root.putByte("isLightOn", isLightOn);
 			}
