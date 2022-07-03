@@ -40,8 +40,8 @@ public class Anvil118ChunkMerger implements ChunkMerger {
 	}
 
 	private void mergeStructures(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset, int dataVersion) {
-		CompoundTag sourceStarts = LegacyHelper.getStructureStarts(source, dataVersion);
-		CompoundTag destinationStarts = LegacyHelper.getStructureStarts(destination, dataVersion);
+		CompoundTag sourceStarts = Snapshot118Helper.getStructureStarts(source, dataVersion);
+		CompoundTag destinationStarts = Snapshot118Helper.getStructureStarts(destination, dataVersion);
 
 		if (destinationStarts.size() != 0) {
 			// remove BBs from destination

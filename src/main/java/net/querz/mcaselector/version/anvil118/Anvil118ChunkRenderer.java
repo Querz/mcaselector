@@ -18,7 +18,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			return;
 		}
 
-		ListTag sections = LegacyHelper.getSections(root, dataVersion);
+		ListTag sections = Snapshot118Helper.getSections(root, dataVersion);
 		if (sections == null) {
 			return;
 		}
@@ -32,8 +32,8 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 		ListTag[] biomePalettes = new ListTag[sMax];
 		long[][] biomesArray = new long[sMax][];
 		for (CompoundTag s : sections.iterateType(CompoundTag.TYPE)) {
-			ListTag p = LegacyHelper.getPalette(s, dataVersion);
-			long[] b = LegacyHelper.getBlockStates(s, dataVersion);
+			ListTag p = Snapshot118Helper.getPalette(s, dataVersion);
+			long[] b = Snapshot118Helper.getBlockStates(s, dataVersion);
 
 			int y = NbtHelper.numberFromCompound(s, "Y", -5).intValue();
 			if (y >= -4 && y < yMax && p != null) {
@@ -47,7 +47,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			}
 		}
 
-		int[] biomes = LegacyHelper.getLegacyBiomes(root, dataVersion);
+		int[] biomes = Snapshot118Helper.getLegacyBiomes(root, dataVersion);
 
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
 			zLoop:
@@ -135,7 +135,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			return;
 		}
 
-		ListTag sections = LegacyHelper.getSections(root, dataVersion);
+		ListTag sections = Snapshot118Helper.getSections(root, dataVersion);
 		if (sections == null) {
 			return;
 		}
@@ -155,8 +155,8 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 		ListTag biomesPalette = null;
 		long[] biomeIndices = null;
 
-		ListTag palette = LegacyHelper.getPalette(section, dataVersion);
-		long[] blockStates = LegacyHelper.getBlockStates(section, dataVersion);
+		ListTag palette = Snapshot118Helper.getPalette(section, dataVersion);
+		long[] blockStates = Snapshot118Helper.getBlockStates(section, dataVersion);
 		if (palette == null) {
 			return;
 		}
@@ -166,7 +166,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			biomeIndices = NbtHelper.longArrayFromCompound(NbtHelper.tagFromCompound(section, "biomes"), "data");
 		}
 
-		int[] biomes = LegacyHelper.getLegacyBiomes(root, dataVersion);
+		int[] biomes = Snapshot118Helper.getLegacyBiomes(root, dataVersion);
 
 		height = height + 64;
 
@@ -211,7 +211,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			return;
 		}
 
-		ListTag sections = LegacyHelper.getSections(root, dataVersion);
+		ListTag sections = Snapshot118Helper.getSections(root, dataVersion);
 		if (sections == null) {
 			return;
 		}
@@ -225,8 +225,8 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 		ListTag[] biomePalettes = new ListTag[sMax];
 		long[][] biomesArray = new long[sMax][];
 		for (CompoundTag s : sections.iterateType(CompoundTag.TYPE)) {
-			ListTag p = LegacyHelper.getPalette(s, dataVersion);
-			long[] b = LegacyHelper.getBlockStates(s, dataVersion);
+			ListTag p = Snapshot118Helper.getPalette(s, dataVersion);
+			long[] b = Snapshot118Helper.getBlockStates(s, dataVersion);
 
 			int y = NbtHelper.numberFromCompound(s, "Y", -5).intValue();
 			if (y >= -4 && y < yMax && p != null) {
@@ -240,7 +240,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 			}
 		}
 
-		int[] biomes = LegacyHelper.getLegacyBiomes(root, dataVersion);
+		int[] biomes = Snapshot118Helper.getLegacyBiomes(root, dataVersion);
 
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
 			zLoop:

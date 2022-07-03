@@ -5,9 +5,9 @@ import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.version.NbtHelper;
 import net.querz.nbt.*;
 
-public final class LegacyHelper {
+final class Snapshot118Helper {
 
-	private LegacyHelper() {}
+	private Snapshot118Helper() {}
 
 	static ListTag getProtoEntities(CompoundTag root, int dataVersion) {
 		if (dataVersion > 2843) {
@@ -241,4 +241,5 @@ public final class LegacyHelper {
 			}
 		}
 	}
+
 }

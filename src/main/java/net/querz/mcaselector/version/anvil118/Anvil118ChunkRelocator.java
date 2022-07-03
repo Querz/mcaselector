@@ -19,28 +19,28 @@ public class Anvil118ChunkRelocator implements ChunkRelocator {
 		}
 
 		// adjust or set chunk position
-		LegacyHelper.applyOffsetToChunkCoordinates(root, offset, dataVersion);
+		Snapshot118Helper.applyOffsetToChunkCoordinates(root, offset, dataVersion);
 
 		// adjust tile entity positions
-		ListTag tileEntities = LegacyHelper.getTileEntities(root, dataVersion);
+		ListTag tileEntities = Snapshot118Helper.getTileEntities(root, dataVersion);
 		if (tileEntities != null) {
 			tileEntities.forEach(v -> applyOffsetToTileEntity((CompoundTag) v, offset));
 		}
 
 		// adjust tile ticks
-		ListTag tileTicks = LegacyHelper.getTileTicks(root, dataVersion);
+		ListTag tileTicks = Snapshot118Helper.getTileTicks(root, dataVersion);
 		if (tileTicks != null) {
 			tileTicks.forEach(v -> applyOffsetToTick((CompoundTag) v, offset));
 		}
 
 		// adjust liquid ticks
-		ListTag liquidTicks = LegacyHelper.getLiquidTicks(root, dataVersion);
+		ListTag liquidTicks = Snapshot118Helper.getLiquidTicks(root, dataVersion);
 		if (liquidTicks != null) {
 			liquidTicks.forEach(v -> applyOffsetToTick((CompoundTag) v, offset));
 		}
 
 		// adjust structures
-		CompoundTag structures = LegacyHelper.getStructures(root, dataVersion);
+		CompoundTag structures = Snapshot118Helper.getStructures(root, dataVersion);
 		if (structures != null) {
 			applyOffsetToStructures(structures, offset, dataVersion);
 		}
@@ -66,7 +66,7 @@ public class Anvil118ChunkRelocator implements ChunkRelocator {
 		}
 
 		// adjust sections vertically
-		ListTag sections = LegacyHelper.getSections(root, dataVersion);
+		ListTag sections = Snapshot118Helper.getSections(root, dataVersion);
 		if (sections != null) {
 			ListTag newSections = new ListTag();
 			int yMax = NbtHelper.findHighestSection(sections, -4);
@@ -75,7 +75,7 @@ public class Anvil118ChunkRelocator implements ChunkRelocator {
 					newSections.add(section);
 				}
 			}
-			LegacyHelper.putSections(root, newSections, dataVersion);
+			Snapshot118Helper.putSections(root, newSections, dataVersion);
 		}
 
 		return true;
@@ -123,7 +123,7 @@ public class Anvil118ChunkRelocator implements ChunkRelocator {
 		}
 
 		// update starts
-		CompoundTag starts = LegacyHelper.getStructureStartsFromStructures(structures, dataVersion);
+		CompoundTag starts = Snapshot118Helper.getStructureStartsFromStructures(structures, dataVersion);
 		if (starts != null) {
 			for (Map.Entry<String, Tag> entry : starts) {
 				CompoundTag structure = silent(() -> (CompoundTag) entry.getValue(), null);

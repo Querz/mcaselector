@@ -19,7 +19,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			return false;
 		}
 
-		ListTag sections = LegacyHelper.getSections(data, dataVersion);
+		ListTag sections = Snapshot118Helper.getSections(data, dataVersion);
 		if (sections == null) {
 			return false;
 		}
@@ -28,7 +28,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		nameLoop:
 		for (String name : names) {
 			for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
-				ListTag palette = LegacyHelper.getPalette(t, dataVersion);
+				ListTag palette = Snapshot118Helper.getPalette(t, dataVersion);
 				if (palette == null) {
 					continue;
 				}
@@ -50,14 +50,14 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			return false;
 		}
 
-		ListTag sections = LegacyHelper.getSections(data, dataVersion);
+		ListTag sections = Snapshot118Helper.getSections(data, dataVersion);
 		if (sections == null) {
 			return false;
 		}
 
 		for (String name : names) {
 			for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
-				ListTag palette = LegacyHelper.getPalette(t, dataVersion);
+				ListTag palette = Snapshot118Helper.getPalette(t, dataVersion);
 				if (palette == null) {
 					continue;
 				}
@@ -78,14 +78,14 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			return false;
 		}
 
-		ListTag sections = LegacyHelper.getSections(data, dataVersion);
+		ListTag sections = Snapshot118Helper.getSections(data, dataVersion);
 		if (sections == null) {
 			return false;
 		}
 
 		Set<String> blocks = new HashSet<>();
 		for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
-			ListTag palette = LegacyHelper.getPalette(t, dataVersion);
+			ListTag palette = Snapshot118Helper.getPalette(t, dataVersion);
 			if (palette == null) {
 				continue;
 			}
@@ -118,7 +118,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		}
 
 		if (dataVersion >= 2834) {
-			ListTag sections = LegacyHelper.getSections(data, dataVersion);
+			ListTag sections = Snapshot118Helper.getSections(data, dataVersion);
 			if (sections == null) {
 				return false;
 			}
@@ -168,7 +168,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		}
 
 		if (dataVersion >= 2834) {
-			ListTag sections = LegacyHelper.getSections(data, dataVersion);
+			ListTag sections = Snapshot118Helper.getSections(data, dataVersion);
 			if (sections == null) {
 				return false;
 			}
@@ -212,7 +212,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		}
 
 		if (dataVersion >= 2834) {
-			ListTag sections = LegacyHelper.getSections(data, dataVersion);
+			ListTag sections = Snapshot118Helper.getSections(data, dataVersion);
 			if (sections == null) {
 				return;
 			}
@@ -244,7 +244,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		}
 
 		if (dataVersion >= 2834) {
-			ListTag sections = LegacyHelper.getSections(data, dataVersion);
+			ListTag sections = Snapshot118Helper.getSections(data, dataVersion);
 			if (sections == null) {
 				return;
 			}
@@ -280,13 +280,13 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			return;
 		}
 
-		ListTag sections = LegacyHelper.getSections(data, dataVersion);
+		ListTag sections = Snapshot118Helper.getSections(data, dataVersion);
 		if (sections == null) {
 			return;
 		}
 
 		if (dataVersion >= 2834) {
-			Point2i pos = LegacyHelper.getChunkCoordinates(data, dataVersion);
+			Point2i pos = Snapshot118Helper.getChunkCoordinates(data, dataVersion);
 			if (pos == null) {
 				return;
 			}
@@ -323,7 +323,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				}
 			}
 
-			ListTag tileEntities = LegacyHelper.getTileEntities(data, dataVersion);
+			ListTag tileEntities = Snapshot118Helper.getTileEntities(data, dataVersion);
 			if (tileEntities == null) {
 				tileEntities = new ListTag();
 			}
@@ -398,7 +398,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				}
 			}
 
-			LegacyHelper.putTileEntities(data, tileEntities, dataVersion);
+			Snapshot118Helper.putTileEntities(data, tileEntities, dataVersion);
 		} else {
 			CompoundTag level = data.getCompound("Level");
 
@@ -570,7 +570,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			return 0;
 		}
 
-		ListTag sections = LegacyHelper.getSections(data, dataVersion);
+		ListTag sections = Snapshot118Helper.getSections(data, dataVersion);
 		if (sections == null) {
 			return 0;
 		}
@@ -583,8 +583,8 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
 				for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
-					ListTag palette = LegacyHelper.getPalette(section, dataVersion);
-					long[] blockStates = LegacyHelper.getBlockStates(section, dataVersion);
+					ListTag palette = Snapshot118Helper.getPalette(section, dataVersion);
+					long[] blockStates = Snapshot118Helper.getBlockStates(section, dataVersion);
 					if (palette == null) {
 						continue;
 					}
@@ -615,7 +615,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			return 0;
 		}
 
-		ListTag sections = LegacyHelper.getSections(data, dataVersion);
+		ListTag sections = Snapshot118Helper.getSections(data, dataVersion);
 		if (sections == null) {
 			return 0;
 		}
@@ -623,8 +623,8 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		int result = 0;
 
 		for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
-			ListTag palette = LegacyHelper.getPalette(section, dataVersion);
-			long[] blockStates = LegacyHelper.getBlockStates(section, dataVersion);
+			ListTag palette = Snapshot118Helper.getPalette(section, dataVersion);
+			long[] blockStates = Snapshot118Helper.getBlockStates(section, dataVersion);
 			if (palette == null) {
 				continue;
 			}
@@ -658,7 +658,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		if (dataVersion == null) {
 			return null;
 		}
-		return LegacyHelper.getTileEntities(data, dataVersion);
+		return Snapshot118Helper.getTileEntities(data, dataVersion);
 	}
 
 	@Override
@@ -667,7 +667,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		if (dataVersion == null) {
 			return null;
 		}
-		CompoundTag structures = LegacyHelper.getStructures(data, dataVersion);
+		CompoundTag structures = Snapshot118Helper.getStructures(data, dataVersion);
 		return NbtHelper.tagFromCompound(structures, "References");
 	}
 
@@ -677,7 +677,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		if (dataVersion == null) {
 			return null;
 		}
-		return LegacyHelper.getStructureStarts(data, dataVersion);
+		return Snapshot118Helper.getStructureStarts(data, dataVersion);
 	}
 
 	@Override
@@ -686,7 +686,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		if (dataVersion == null) {
 			return null;
 		}
-		return LegacyHelper.getSections(data, dataVersion);
+		return Snapshot118Helper.getSections(data, dataVersion);
 	}
 
 	@Override
@@ -735,7 +735,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		if (dataVersion == null) {
 			return null;
 		}
-		return LegacyHelper.getInhabitedTime(data, dataVersion);
+		return Snapshot118Helper.getInhabitedTime(data, dataVersion);
 	}
 
 	@Override
@@ -744,7 +744,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		if (dataVersion == null) {
 			return;
 		}
-		LegacyHelper.setInhabitedTime(data, inhabitedTime, dataVersion);
+		Snapshot118Helper.setInhabitedTime(data, inhabitedTime, dataVersion);
 	}
 
 	@Override
@@ -753,7 +753,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		if (dataVersion == null) {
 			return null;
 		}
-		return LegacyHelper.getStatus(data, dataVersion);
+		return Snapshot118Helper.getStatus(data, dataVersion);
 	}
 
 	@Override
@@ -762,7 +762,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		if (dataVersion == null) {
 			return;
 		}
-		LegacyHelper.setStatus(data, status, dataVersion);
+		Snapshot118Helper.setStatus(data, status, dataVersion);
 	}
 
 	@Override
@@ -771,7 +771,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		if (dataVersion == null) {
 			return null;
 		}
-		return LegacyHelper.getLastUpdate(data, dataVersion);
+		return Snapshot118Helper.getLastUpdate(data, dataVersion);
 	}
 
 	@Override
@@ -780,7 +780,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		if (dataVersion == null) {
 			return;
 		}
-		LegacyHelper.setLastUpdate(data, lastUpdate, dataVersion);
+		Snapshot118Helper.setLastUpdate(data, lastUpdate, dataVersion);
 	}
 
 	@Override
@@ -789,7 +789,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		if (dataVersion == null) {
 			return null;
 		}
-		return LegacyHelper.getXPos(data, dataVersion);
+		return Snapshot118Helper.getXPos(data, dataVersion);
 	}
 
 	@Override
@@ -798,7 +798,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		if (dataVersion == null) {
 			return null;
 		}
-		return LegacyHelper.getYPos(data, dataVersion);
+		return Snapshot118Helper.getYPos(data, dataVersion);
 	}
 
 	@Override
@@ -807,7 +807,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		if (dataVersion == null) {
 			return null;
 		}
-		return LegacyHelper.getZPos(data, dataVersion);
+		return Snapshot118Helper.getZPos(data, dataVersion);
 	}
 
 	@Override
@@ -816,7 +816,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		if (dataVersion == null) {
 			return null;
 		}
-		return LegacyHelper.getIsLightOn(data, dataVersion);
+		return Snapshot118Helper.getIsLightOn(data, dataVersion);
 	}
 
 	@Override
@@ -825,7 +825,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		if (dataVersion == null) {
 			return;
 		}
-		LegacyHelper.setIsLightOn(data, lightPopulated, dataVersion);
+		Snapshot118Helper.setIsLightOn(data, lightPopulated, dataVersion);
 	}
 
 	@Override
