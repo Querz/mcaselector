@@ -58,10 +58,8 @@ public class ChunkSet implements IntIterable, Serializable, Cloneable {
 
 	public ChunkSet flip() {
 		ChunkSet result = new ChunkSet();
-		for (short i = 0; i < 1024; i++) {
-			if (!get(i)) {
-				result.set(i);
-			}
+		for (int i = 0; i < 16; i++) {
+			result.words[i] = ~words[i];
 		}
 		return result;
 	}
