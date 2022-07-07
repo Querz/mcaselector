@@ -54,12 +54,7 @@ public class OptionBar extends BorderPane {
 	private final Menu tools = UIFactory.menu(Translation.MENU_TOOLS);
 	private final Label about = UIFactory.label(Translation.MENU_ABOUT);
 
-	private final HeightSlider hSlider = new HeightSlider(319);
-//	private final Slider height = new Slider(-64, 319, 319);
-//	private final Label heightMinLabel = new Label("-64");
-//	private final Label heightMaxLabel = new Label("319");
-//	private final NumberTextField heightField = UIFactory.attachFreeNumberTextFieldToSlider(height, Config.getRenderHeight());
-
+	private final HeightSlider hSlider = new HeightSlider(319, true);
 	private final MenuItem openWorld = UIFactory.menuItem(Translation.MENU_FILE_OPEN_WORLD);
 	private final MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
 	private final MenuItem renderSettings = UIFactory.menuItem(Translation.MENU_FILE_RENDER_SETTINGS);
@@ -129,45 +124,8 @@ public class OptionBar extends BorderPane {
 		Menu aboutMenu = new Menu();
 		aboutMenu.setGraphic(about);
 
-//		height.setSnapToTicks(true);
-//		height.setShowTickLabels(false);
-//		height.setShowTickMarks(false);
-//		height.setMajorTickUnit(32);
-//		height.setMinorTickCount(384);
-//		height.setPrefWidth(300);
-//		height.setLabelFormatter(new StringConverter<>() {
-//			@Override
-//			public String toString(Double object) {
-//				return null;
-//			}
-//
-//			@Override
-//			public Double fromString(String string) {
-//				return null;
-//			}
-//		});
-//		height.setBlockIncrement(1);
-//
-//		height.setOnMouseReleased(e -> {
-//			if (heightDisabled.get()) {
-//				e.consume();
-//				return;
-//			}
-//			if (heightValue.get() != height.getValue()) {
-//				heightValue.set(height.getValue());
-//			}
-//		});
-//
-//		height.setOnKeyReleased(e -> {
-//			if (heightDisabled.get()) {
-//				e.consume();
-//				return;
-//			}
-//			if (heightValue.get() != heightField.getValue()) {
-//				heightValue.set(height.getValue());
-//			}
-//		});
-//
+		hSlider.getStyleClass().add("option-bar-slider-box");
+
 		heightValue.bind(hSlider.valueProperty());
 
 		heightValue.addListener((v, o, n) -> {
@@ -182,21 +140,6 @@ public class OptionBar extends BorderPane {
 				});
 			}
 		});
-//
-//		HBox heightSlider = new HBox();
-//		heightSlider.getStyleClass().add("option-bar-slider-box");
-//
-//		heightField.textProperty().addListener((v, o, n) -> {
-//			if (heightDisabled.get()) {
-//				return;
-//			}
-//			if (heightValue.get() != heightField.getValue()) {
-//				heightValue.set(heightField.getValue());
-//			}
-//		});
-//
-//		heightSlider.getChildren().addAll(heightMinLabel, height, heightMaxLabel, heightField);
-
 
 		// when we press escape we want to give the focus back to the tile map
 		setOnKeyPressed(e -> {
@@ -307,10 +250,6 @@ public class OptionBar extends BorderPane {
 		nextOverlay.setDisable(!enabled);
 		nextOverlayType.setDisable(!enabled);
 		hSlider.setDisable(!enabled);
-//		height.setDisable(!enabled);
-//		heightMinLabel.setDisable(!enabled);
-//		heightMaxLabel.setDisable(!enabled);
-//		heightField.setDisable(!enabled);
 	}
 
 	public void setEditOverlaysEnabled(boolean enabled) {

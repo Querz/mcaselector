@@ -1,8 +1,6 @@
 package net.querz.mcaselector.ui.component;
 
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -17,7 +15,6 @@ public class HeightSlider extends HBox {
 	private final Label heightMinLabel = new Label("-64");
 	private final Label heightMaxLabel = new Label("319");
 	private final NumberTextField heightField = new NumberTextField(-64, 2047);
-	private final BooleanProperty sliderValuePropertyDisabled = new SimpleBooleanProperty(false);
 
 	/*
 	* when scrolling on slider: always set value in text field if slider value changed
@@ -27,30 +24,33 @@ public class HeightSlider extends HBox {
 	*   if text field value is smaller than slider min, set slider to min
 	* */
 
-	public HeightSlider(int init) {
+	public HeightSlider(int init, boolean showCustomlabels) {
 		valueProperty.set(init);
-		getStyleClass().add("option-bar-slider-box");
 		heightField.getStyleClass().add("slider-value-field");
 		slider.setSnapToTicks(true);
-		slider.setShowTickLabels(false);
-		slider.setShowTickMarks(false);
+		slider.setShowTickLabels(!showCustomlabels);
+		slider.setShowTickMarks(!showCustomlabels);
 		slider.setMajorTickUnit(32);
 		slider.setMinorTickCount(384);
 		slider.setPrefWidth(300);
 		slider.setBlockIncrement(1);
 		slider.setValue(init);
-		heightField.valueProperty().set(init);
-		slider.setLabelFormatter(new StringConverter<>() {
-			@Override
-			public String toString(Double object) {
-				return null;
-			}
 
-			@Override
-			public Double fromString(String string) {
-				return null;
-			}
-		});
+		heightField.valueProperty().set(init);
+
+		if (showCustomlabels) {
+			slider.setLabelFormatter(new StringConverter<>() {
+				@Override
+				public String toString(Double object) {
+					return null;
+				}
+
+				@Override
+				public Double fromString(String string) {
+					return null;
+				}
+			});
+		}
 
 		slider.setOnScroll(e -> {
 			int delta = e.getDeltaY() > 0 ? 1 : -1;
@@ -77,11 +77,13 @@ public class HeightSlider extends HBox {
 		});
 
 		// value property sets text field value
-		valueProperty.addListener((v, o, n) -> {
-			heightField.setText(n.intValue() + "");
-		});
+		valueProperty.addListener((v, o, n) -> heightField.setText(n.intValue() + ""));
 
-		getChildren().addAll(heightMinLabel, slider, heightMaxLabel, heightField);
+		if (showCustomlabels) {
+			getChildren().addAll(heightMinLabel, slider, heightMaxLabel, heightField);
+		} else {
+			getChildren().addAll(slider, heightField);
+		}
 	}
 
 	public IntegerProperty valueProperty() {
@@ -97,5 +99,9 @@ public class HeightSlider extends HBox {
 		heightMinLabel.setDisable(disable);
 		heightMaxLabel.setDisable(disable);
 		heightField.setDisable(disable);
+	}
+
+	public void setMajorTickUnit(int unit) {
+		slider.setMajorTickUnit(unit);
 	}
 }

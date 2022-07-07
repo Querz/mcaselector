@@ -321,7 +321,6 @@ public final class Config {
 	}
 
 	public static void setRenderHeight(int renderHeight) {
-		System.out.println("set render height to " + renderHeight);
 		Config.renderHeight = renderHeight;
 	}
 
