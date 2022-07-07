@@ -20,20 +20,21 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 
 		int absHeight = height + 64;
 
-		ListTag[] palettes = new ListTag[24];
-		long[][] blockStatesArray = new long[24][];
-		ListTag[] biomePalettes = new ListTag[24];
-		long[][] biomesArray = new long[24][];
+		int yMax = 1 + (height >> 4);
+		int sMax = yMax + 4;
+		ListTag[] palettes = new ListTag[sMax];
+		long[][] blockStatesArray = new long[sMax][];
+		ListTag[] biomePalettes = new ListTag[sMax];
+		long[][] biomesArray = new long[sMax][];
 		sections.forEach(s -> {
 			ListTag p = Helper.tagFromCompound(Helper.tagFromCompound(s, "block_states"), "palette");
 
 			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
-			if (y >= -4 && y < 20 && p != null) {
+			if (y >= -4 && y < yMax && p != null) {
 				palettes[y + 4] = p;
 				blockStatesArray[y + 4] = Helper.longArrayFromCompound(Helper.tagFromCompound(s, "block_states"), "data");;
 				biomePalettes[y + 4] = Helper.tagFromCompound(Helper.tagFromCompound(s, "biomes"), "palette");
 				biomesArray[y + 4] = Helper.longArrayFromCompound(Helper.tagFromCompound(s, "biomes"), "data");
-
 			}
 		});
 
@@ -43,7 +44,7 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 
 				//loop over sections
 				boolean waterDepth = false;
-				for (int i = palettes.length - (24 - (absHeight >> 4)); i >= 0; i--) {
+				for (int i = palettes.length - (sMax - (absHeight >> 4)); i >= 0; i--) {
 					ListTag palette = palettes[i];
 					if (palette == null) {
 						continue;

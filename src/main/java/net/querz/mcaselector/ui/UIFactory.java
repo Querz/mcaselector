@@ -15,7 +15,10 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.ScrollEvent;
+import net.querz.mcaselector.Config;
+import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.component.NumberTextField;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.awt.*;
@@ -122,6 +125,39 @@ public final class UIFactory {
 		sliderValue.setOnScroll(scrollEvent);
 		slider.setOnScroll(scrollEvent);
 
+		sliderValue.setText((int) Math.round(slider.getValue()) + "");
+		return sliderValue;
+	}
+
+	public static NumberTextField attachFreeNumberTextFieldToSlider(Slider slider, int init) {
+		NumberTextField sliderValue = new NumberTextField(-64, 319);
+		sliderValue.setText(init + "");
+		sliderValue.getStyleClass().add("slider-value-field");
+		DataProperty<Boolean> sliderValuePropertyListenerDisabled = new DataProperty<>(false);
+		sliderValue.valueProperty().addListener((v, o, n) -> {
+			sliderValuePropertyListenerDisabled.set(true);
+			slider.setValue(n.intValue());
+			sliderValuePropertyListenerDisabled.set(false);
+		});
+		slider.setOnScroll(e -> {
+			if (e.getDeltaY() > 0) {
+				slider.setValue(slider.getValue() + 1);
+				sliderValue.setText((int) Math.round(slider.getValue()) + "");
+			} else if (e.getDeltaY() < 0) {
+				slider.setValue(slider.getValue() - 1);
+				sliderValue.setText((int) Math.round(slider.getValue()) + "");
+			}
+		});
+		slider.valueProperty().addListener((v, o, n) -> {
+			if (!sliderValuePropertyListenerDisabled.get()) {
+				sliderValue.setText((int) Math.round(slider.getValue()) + "");
+			}
+		});
+		sliderValue.setOnScrollEvent(e -> {
+			if (sliderValue.getValue() <= slider.getMax() && sliderValue.getValue() >= slider.getMin()) {
+				slider.setValue(sliderValue.getValue());
+			}
+		});
 		sliderValue.setText((int) Math.round(slider.getValue()) + "");
 		return sliderValue;
 	}
