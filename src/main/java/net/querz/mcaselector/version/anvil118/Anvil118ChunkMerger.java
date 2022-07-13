@@ -20,21 +20,21 @@ public class Anvil118ChunkMerger implements ChunkMerger {
 		}
 
 		if (dataVersion < 2844) {
-			mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "Sections", c -> ((CompoundTag) c).getInt("Y"));
-			mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "TileEntities", c -> ((CompoundTag) c).getInt("y") >> 4);
-			mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "TileTicks", c -> ((CompoundTag) c).getInt("y") >> 4);
-			mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "LiquidTicks", c -> ((CompoundTag) c).getInt("y") >> 4);
-			mergeListTagLists(source, destination, ranges, yOffset, "Lights");
-			mergeListTagLists(source, destination, ranges, yOffset, "LiquidsToBeTicked");
-			mergeListTagLists(source, destination, ranges, yOffset, "ToBeTicked");
-			mergeListTagLists(source, destination, ranges, yOffset, "PostProcessing");
+			NbtHelper.mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "Sections", c -> ((CompoundTag) c).getInt("Y"));
+			NbtHelper.mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "TileEntities", c -> ((CompoundTag) c).getInt("y") >> 4);
+			NbtHelper.mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "TileTicks", c -> ((CompoundTag) c).getInt("y") >> 4);
+			NbtHelper.mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "LiquidTicks", c -> ((CompoundTag) c).getInt("y") >> 4);
+			NbtHelper.mergeListTagLists(source, destination, ranges, yOffset, "Lights");
+			NbtHelper.mergeListTagLists(source, destination, ranges, yOffset, "LiquidsToBeTicked");
+			NbtHelper.mergeListTagLists(source, destination, ranges, yOffset, "ToBeTicked");
+			NbtHelper.mergeListTagLists(source, destination, ranges, yOffset, "PostProcessing");
 			mergeStructures(source, destination, ranges, yOffset, dataVersion);
 		} else {
-			mergeCompoundTagLists(source, destination, ranges, yOffset, "sections", c -> ((CompoundTag) c).getInt("Y"));
-			mergeCompoundTagLists(source, destination, ranges, yOffset, "block_entities", c -> ((CompoundTag) c).getInt("y") >> 4);
-			mergeCompoundTagLists(source, destination, ranges, yOffset, "block_ticks", c -> ((CompoundTag) c).getInt("y") >> 4);
-			mergeCompoundTagLists(source, destination, ranges, yOffset, "fluid_ticks", c -> ((CompoundTag) c).getInt("y") >> 4);
-			mergeListTagLists(source, destination, ranges, yOffset, "PostProcessing");
+			NbtHelper.mergeCompoundTagLists(source, destination, ranges, yOffset, "sections", c -> ((CompoundTag) c).getInt("Y"));
+			NbtHelper.mergeCompoundTagLists(source, destination, ranges, yOffset, "block_entities", c -> ((CompoundTag) c).getInt("y") >> 4);
+			NbtHelper.mergeCompoundTagLists(source, destination, ranges, yOffset, "block_ticks", c -> ((CompoundTag) c).getInt("y") >> 4);
+			NbtHelper.mergeCompoundTagLists(source, destination, ranges, yOffset, "fluid_ticks", c -> ((CompoundTag) c).getInt("y") >> 4);
+			NbtHelper.mergeListTagLists(source, destination, ranges, yOffset, "PostProcessing");
 			mergeStructures(source, destination, ranges, yOffset, dataVersion);
 		}
 	}

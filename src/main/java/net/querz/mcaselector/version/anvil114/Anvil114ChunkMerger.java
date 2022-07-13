@@ -14,19 +14,19 @@ public class Anvil114ChunkMerger implements ChunkMerger {
 
 	@Override
 	public void mergeChunks(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset) {
-		mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "Sections", c -> ((CompoundTag) c).getInt("Y"));
-		mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "Entities", c -> ((CompoundTag) c).getList("Pos").getInt(1) >> 4);
-		mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "TileEntities", c -> ((CompoundTag) c).getInt("y") >> 4);
-		mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "TileTicks", c -> ((CompoundTag) c).getInt("y") >> 4);
-		mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "LiquidTicks", c -> ((CompoundTag) c).getInt("y") >> 4);
-		mergeListTagLists(source, destination, ranges, yOffset, "Lights");
-		mergeListTagLists(source, destination, ranges, yOffset, "LiquidsToBeTicked");
-		mergeListTagLists(source, destination, ranges, yOffset, "ToBeTicked");
-		mergeListTagLists(source, destination, ranges, yOffset, "PostProcessing");
+		NbtHelper.mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "Sections", c -> ((CompoundTag) c).getInt("Y"));
+		NbtHelper.mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "Entities", c -> ((CompoundTag) c).getList("Pos").getInt(1) >> 4);
+		NbtHelper.mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "TileEntities", c -> ((CompoundTag) c).getInt("y") >> 4);
+		NbtHelper.mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "TileTicks", c -> ((CompoundTag) c).getInt("y") >> 4);
+		NbtHelper.mergeCompoundTagListsFromLevel(source, destination, ranges, yOffset, "LiquidTicks", c -> ((CompoundTag) c).getInt("y") >> 4);
+		NbtHelper.mergeListTagLists(source, destination, ranges, yOffset, "Lights");
+		NbtHelper.mergeListTagLists(source, destination, ranges, yOffset, "LiquidsToBeTicked");
+		NbtHelper.mergeListTagLists(source, destination, ranges, yOffset, "ToBeTicked");
+		NbtHelper.mergeListTagLists(source, destination, ranges, yOffset, "PostProcessing");
 		mergeStructures(source, destination, ranges, yOffset);
 
 		// we need to fix entity UUIDs, because Minecraft doesn't like duplicates
-		fixEntityUUIDs(NbtHelper.levelFromRoot(destination));
+		NbtHelper.fixEntityUUIDsMerger(NbtHelper.levelFromRoot(destination));
 	}
 
 	private void mergeStructures(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset) {

@@ -14,11 +14,11 @@ public class Anvil119ChunkMerger implements ChunkMerger {
 
 	@Override
 	public void mergeChunks(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset) {
-		mergeCompoundTagLists(source, destination, ranges, yOffset, "sections", c -> ((CompoundTag) c).getInt("Y"));
-		mergeCompoundTagLists(source, destination, ranges, yOffset, "block_entities", c -> ((CompoundTag) c).getInt("y") >> 4);
-		mergeCompoundTagLists(source, destination, ranges, yOffset, "block_ticks", c -> ((CompoundTag) c).getInt("y") >> 4);
-		mergeCompoundTagLists(source, destination, ranges, yOffset, "fluid_ticks", c -> ((CompoundTag) c).getInt("y") >> 4);
-		mergeListTagLists(source, destination, ranges, yOffset, "PostProcessing");
+		NbtHelper.mergeCompoundTagLists(source, destination, ranges, yOffset, "sections", c -> ((CompoundTag) c).getInt("Y"));
+		NbtHelper.mergeCompoundTagLists(source, destination, ranges, yOffset, "block_entities", c -> ((CompoundTag) c).getInt("y") >> 4);
+		NbtHelper.mergeCompoundTagLists(source, destination, ranges, yOffset, "block_ticks", c -> ((CompoundTag) c).getInt("y") >> 4);
+		NbtHelper.mergeCompoundTagLists(source, destination, ranges, yOffset, "fluid_ticks", c -> ((CompoundTag) c).getInt("y") >> 4);
+		NbtHelper.mergeListTagLists(source, destination, ranges, yOffset, "PostProcessing");
 		mergeStructures(source, destination, ranges, yOffset);
 	}
 
