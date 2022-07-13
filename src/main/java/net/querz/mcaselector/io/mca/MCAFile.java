@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public abstract class MCAFile<T extends Chunk> {
+public abstract class MCAFile<T extends Chunk> implements Cloneable {
 
 	private static final Logger LOGGER = LogManager.getLogger(MCAFile.class);
 
@@ -557,4 +557,6 @@ public abstract class MCAFile<T extends Chunk> {
 		clone.timestamps = timestamps.clone();
 		return clone;
 	}
+
+	public abstract MCAFile<T> clone();
 }

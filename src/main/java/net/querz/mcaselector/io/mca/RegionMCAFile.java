@@ -12,7 +12,7 @@ import net.querz.nbt.CompoundTag;
 import java.io.File;
 import java.util.List;
 
-public class RegionMCAFile extends MCAFile<RegionChunk> implements Cloneable {
+public class RegionMCAFile extends MCAFile<RegionChunk> {
 
 	public RegionMCAFile(File file) {
 		super(file, RegionChunk::new);

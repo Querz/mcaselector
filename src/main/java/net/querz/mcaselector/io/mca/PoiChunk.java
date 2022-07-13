@@ -11,7 +11,7 @@ import net.querz.nbt.CompoundTag;
 import java.io.File;
 import java.util.List;
 
-public class PoiChunk extends Chunk implements Cloneable {
+public class PoiChunk extends Chunk {
 
 	public PoiChunk(Point2i absoluteLocation) {
 		super(absoluteLocation);

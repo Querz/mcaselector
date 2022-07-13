@@ -27,7 +27,7 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-public abstract class Chunk {
+public abstract class Chunk implements Cloneable {
 
 	protected int timestamp;
 	protected CompoundTag data;
@@ -176,4 +176,7 @@ public abstract class Chunk {
 		}
 		return clone;
 	}
+
+	public abstract Chunk clone();
+
 }
