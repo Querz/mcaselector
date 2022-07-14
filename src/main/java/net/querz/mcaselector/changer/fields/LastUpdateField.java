@@ -15,7 +15,7 @@ public class LastUpdateField extends Field<Long> {
 
 	@Override
 	public Long getOldValue(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		LongTag lastUpdate = chunkFilter.getLastUpdate(data.region().getData());
 		return lastUpdate == null ? null : lastUpdate.asLong();
 	}
@@ -32,7 +32,7 @@ public class LastUpdateField extends Field<Long> {
 
 	@Override
 	public void change(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		LongTag tag = chunkFilter.getLastUpdate(data.region().getData());
 		if (tag != null) {
 			chunkFilter.setLastUpdate(data.region().getData(), getNewValue());
@@ -41,7 +41,7 @@ public class LastUpdateField extends Field<Long> {
 
 	@Override
 	public void force(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		chunkFilter.setLastUpdate(data.region().getData(), getNewValue());
 	}
 }

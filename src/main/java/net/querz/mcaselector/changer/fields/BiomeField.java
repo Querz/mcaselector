@@ -57,11 +57,11 @@ public class BiomeField extends Field<BiomeRegistry.BiomeIdentifier> {
 
 	@Override
 	public void change(ChunkData data) {
-		VersionController.getChunkFilter(data.region().getData().getInt("DataVersion")).changeBiome(data.region().getData(), getNewValue());
+		VersionController.getChunkFilter(data.getDataVersion()).changeBiome(data.region().getData(), getNewValue());
 	}
 
 	@Override
 	public void force(ChunkData data) {
-		VersionController.getChunkFilter(data.region().getData().getInt("DataVersion")).forceBiome(data.region().getData(), getNewValue());
+		VersionController.getChunkFilter(data.getDataVersion()).forceBiome(data.region().getData(), getNewValue());
 	}
 }

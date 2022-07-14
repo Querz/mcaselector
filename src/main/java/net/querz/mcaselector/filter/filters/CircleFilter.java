@@ -86,7 +86,7 @@ public class CircleFilter extends TextFilter<List<CircleFilter.CircleFilterDefin
 			return false;
 		}
 
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		IntTag xPos = chunkFilter.getXPos(data.region().getData());
 		IntTag zPos = chunkFilter.getZPos(data.region().getData());
 		if (xPos == null || zPos == null) {

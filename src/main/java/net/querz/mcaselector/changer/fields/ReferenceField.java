@@ -38,7 +38,7 @@ public class ReferenceField extends Field<Boolean> {
 
 		// attempt to fix chunk coordinates of structure references
 
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		CompoundTag references = chunkFilter.getStructureReferences(data.region().getData());
 		int xPos = chunkFilter.getXPos(data.region().getData()).asInt();
 		int zPos = chunkFilter.getZPos(data.region().getData()).asInt();

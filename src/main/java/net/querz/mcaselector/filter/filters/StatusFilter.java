@@ -71,7 +71,7 @@ public class StatusFilter extends TextFilter<String> {
 		if (data.region() == null || data.region().getData() == null) {
 			return false;
 		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		StringTag tag = chunkFilter.getStatus(data.region().getData());
 		return tag != null && value.equals(tag.getValue());
 	}

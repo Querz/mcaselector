@@ -28,7 +28,7 @@ public class ForceBlendField extends Field<Boolean> {
 
 	@Override
 	public void change(ChunkData root) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(root.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(root.getDataVersion());
 		chunkFilter.forceBlending(root.region().getData());
 	}
 

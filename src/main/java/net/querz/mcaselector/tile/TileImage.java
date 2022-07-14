@@ -140,7 +140,7 @@ public final class TileImage {
 		if (chunkData.getData() == null) {
 			return;
 		}
-		int dataVersion = chunkData.getData().getInt("DataVersion");
+		int dataVersion = chunkData.getDataVersion();
 		try {
 			if (Config.renderCaves()) {
 				VersionController.getChunkRenderer(dataVersion).drawCaves(

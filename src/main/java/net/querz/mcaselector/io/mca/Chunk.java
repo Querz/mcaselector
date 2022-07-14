@@ -97,7 +97,7 @@ public abstract class Chunk {
 		// save mcc file if chunk doesn't fit in mca file
 		if (baos.size() > 1048576) {
 			// if the chunk's version is below 2203, we throw an exception instead
-			Integer dataVersion = ValidationHelper.withDefault(() -> data.getInt("DataVersion"), null);
+			Integer dataVersion = ValidationHelper.withDefault(this::getDataVersion, null);
 			if (dataVersion == null) {
 				throw new RuntimeException("no DataVersion for oversized chunk");
 			}
@@ -135,6 +135,10 @@ public abstract class Chunk {
 
 	public void setData(CompoundTag data) {
 		this.data = data;
+	}
+
+	public int getDataVersion() {
+		return data.getInt("DataVersion");
 	}
 
 	public CompressionType getCompressionType() {

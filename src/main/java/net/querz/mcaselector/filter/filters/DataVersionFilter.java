@@ -21,7 +21,7 @@ public class DataVersionFilter extends IntFilter {
 		if (data.region() == null || data.region().getData() == null) {
 			return 0;
 		}
-		return data.region().getData().getInt("DataVersion");
+		return data.getDataVersion();
 	}
 
 	@Override

@@ -24,7 +24,7 @@ public class TileEntityAmountFilter extends IntFilter {
 		if (data.region() == null || data.region().getData() == null) {
 			return 0;
 		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		ListTag tileEntities = chunkFilter.getTileEntities(data.region().getData());
 		return tileEntities == null ? 0 : tileEntities.size();
 	}

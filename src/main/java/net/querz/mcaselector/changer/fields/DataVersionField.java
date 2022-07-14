@@ -14,7 +14,7 @@ public class DataVersionField extends Field<Integer> {
 
 	@Override
 	public Integer getOldValue(ChunkData data) {
-		return ValidationHelper.withDefault(() -> data.region().getData().getInt("DataVersion"), null);
+		return ValidationHelper.withDefault(data::getDataVersion, null);
 	}
 
 	@Override

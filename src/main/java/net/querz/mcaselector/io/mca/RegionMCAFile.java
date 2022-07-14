@@ -49,7 +49,7 @@ public class RegionMCAFile extends MCAFile<RegionChunk> implements Cloneable {
 			}
 
 			try {
-				ChunkRenderer chunkRenderer = VersionController.getChunkRenderer(chunk.data.getInt("DataVersion"));
+				ChunkRenderer chunkRenderer = VersionController.getChunkRenderer(chunk.getDataVersion());
 				CompoundTag minData = chunkRenderer.minimizeChunk(chunk.data);
 
 				RegionChunk minChunk = new RegionChunk(chunk.absoluteLocation.clone());

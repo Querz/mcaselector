@@ -54,15 +54,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean contains(List<String> value, ChunkData data) {
-		int dataVersion;
-		if (data.region() != null && data.region().getData() != null) {
-			dataVersion = data.region().getData().getInt("DataVersion");
-		} else if (data.entities() != null && data.entities().getData() != null) {
-			dataVersion = data.entities().getData().getInt("DataVersion");
-		} else {
-			return false;
-		}
-		ListTag entities = VersionController.getEntityFilter(dataVersion).getEntities(data);
+		ListTag entities = VersionController.getEntityFilter(data.getDataVersion()).getEntities(data);
 		if (entities == null || entities.getID() == Tag.LONG_ARRAY) {
 			return false;
 		}
@@ -84,7 +76,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 		if (data.region() == null || data.region().getData() == null) {
 			return false;
 		}
-		ListTag entities = VersionController.getEntityFilter(data.region().getData().getInt("DataVersion")).getEntities(data);
+		ListTag entities = VersionController.getEntityFilter(data.getDataVersion()).getEntities(data);
 		if (entities == null || entities.getID() == Tag.LONG_ARRAY) {
 			return false;
 		}

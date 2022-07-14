@@ -30,7 +30,7 @@ public class FixStatusField extends Field<Boolean> {
 
 	@Override
 	public void change(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		StringTag status = chunkFilter.getStatus(data.region().getData());
 
 		if ("empty".equals(status.getValue())) {

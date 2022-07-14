@@ -46,7 +46,7 @@ public class BorderFilter extends IntFilter {
 			return 9;
 		}
 
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		StringTag tag = chunkFilter.getStatus(data.region().getData());
 		if (tag == null || !tag.getValue().equals("full")) {
 			return 9;

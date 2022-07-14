@@ -4,6 +4,8 @@ import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.overlay.Overlay;
+import net.querz.nbt.CompoundTag;
+
 import java.util.List;
 
 public record ChunkData(RegionChunk region, PoiChunk poi, EntitiesChunk entities) {
@@ -35,4 +37,21 @@ public record ChunkData(RegionChunk region, PoiChunk poi, EntitiesChunk entities
 	public int parseData(Overlay parser) {
 		return parser.parseValue(this);
 	}
+
+	public int getDataVersion() {
+		Chunk source;
+
+		if (region != null && region.getData() != null) {
+			source = region;
+		} else if (entities != null && entities.getData() != null) {
+			source = entities;
+		} else {
+			// MAINTAINER why not check poi data?
+			// MAINTAINER fail fast?
+			return 0;
+		}
+
+		return source.getData().getInt("DataVersion");
+	}
+
 }
