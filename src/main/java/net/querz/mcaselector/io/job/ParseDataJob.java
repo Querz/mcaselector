@@ -150,7 +150,7 @@ public class ParseDataJob extends ProcessDataJob {
 					poiMCAFile == null ? null : poiMCAFile.getChunk(i),
 					entitiesMCAFile == null ? null : entitiesMCAFile.getChunk(i));
 			try {
-				data[i] = chunkData.parseData(parser);
+				data[i] = parser.parseValue(chunkData);
 			} catch (Exception ex) {
 				LOGGER.warn("failed to parse chunk data at index {}", i, ex);
 			}

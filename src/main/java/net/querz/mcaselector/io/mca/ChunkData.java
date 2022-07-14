@@ -2,8 +2,6 @@ package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.overlay.Overlay;
-import net.querz.nbt.CompoundTag;
 
 import java.util.List;
 
@@ -29,10 +27,6 @@ public record ChunkData(RegionChunk region, PoiChunk poi, EntitiesChunk entities
 				field.change(this);
 			}
 		}
-	}
-
-	public int parseData(Overlay parser) {
-		return parser.parseValue(this);
 	}
 
 	public int getDataVersion() {
