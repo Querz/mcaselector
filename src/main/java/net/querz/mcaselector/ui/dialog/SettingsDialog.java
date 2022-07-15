@@ -3,6 +3,7 @@ package net.querz.mcaselector.ui.dialog;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -15,6 +16,8 @@ import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.component.FileTextField;
+import net.querz.mcaselector.ui.component.HeightSlider;
+import net.querz.mcaselector.ui.component.NumberTextField;
 import net.querz.mcaselector.ui.component.TileMapBox;
 import net.querz.mcaselector.ui.UIFactory;
 import java.io.File;
@@ -36,7 +39,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private final Slider processThreadsSlider = createSlider(1, processorCount * 2, 1, Config.getProcessThreads());
 	private final Slider writeThreadsSlider = createSlider(1, processorCount, 1, Config.getWriteThreads());
 	private final Slider maxLoadedFilesSlider = createSlider(1, (int) Math.max(Math.ceil(maxMemory / 1_000_000_000D) * 6, 4), 1, Config.getMaxLoadedFiles());
-	private final Slider heightSlider = new Slider(-64, 319, 319);
+	private final HeightSlider hSlider = new HeightSlider(Config.getRenderHeight(), false);
 	private final CheckBox layerOnly = new CheckBox();
 	private final CheckBox caves = new CheckBox();
 	private final Button regionSelectionColorPreview = new Button();
@@ -83,39 +86,11 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			showNonexistentRegionsCheckBox.setSelected(Config.DEFAULT_SHOW_NONEXISTENT_REGIONS);
 			smoothRendering.setSelected(Config.DEFAULT_SMOOTH_RENDERING);
 			smoothOverlays.setSelected(Config.DEFAULT_SMOOTH_OVERLAYS);
-			heightSlider.setValue(heightSlider.getMax());
+			hSlider.valueProperty().set(hSlider.getValue());
 			caves.setSelected(Config.DEFAULT_RENDER_CAVES);
 			tileMapBackgrounds.setValue(TileMapBox.TileMapBoxBackground.valueOf(Config.DEFAULT_TILEMAP_BACKGROUND));
 			mcSavesDir.setFile(Config.DEFAULT_MC_SAVES_DIR == null ? null : new File(Config.DEFAULT_MC_SAVES_DIR));
 			debugCheckBox.setSelected(Config.DEFAULT_DEBUG);
-		});
-
-		setResultConverter(c -> {
-			if (c.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				return new Result(
-					languages.getSelectionModel().getSelectedItem(),
-					(int) processThreadsSlider.getValue(),
-					(int) writeThreadsSlider.getValue(),
-					(int) maxLoadedFilesSlider.getValue(),
-					regionSelectionColor,
-					chunkSelectionColor,
-					pasteChunksColor,
-					shadeCheckBox.isSelected(),
-					shadeWaterCheckBox.isSelected(),
-					showNonexistentRegionsCheckBox.isSelected(),
-					smoothRendering.isSelected(),
-					smoothOverlays.isSelected(),
-					tileMapBackgrounds.getSelectionModel().getSelectedItem(),
-					mcSavesDir.getFile(),
-					debugCheckBox.isSelected(),
-					(int) heightSlider.getValue(),
-					layerOnly.isSelected(),
-					caves.isSelected(),
-					poiField.getFile(),
-					entitiesField.getFile()
-				);
-			}
-			return null;
 		});
 
 		languages.getItems().addAll(Translation.getAvailableLanguages());
@@ -152,7 +127,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		showNonexistentRegionsCheckBox.setSelected(Config.showNonExistentRegions());
 		smoothRendering.setSelected(Config.smoothRendering());
 		smoothOverlays.setSelected(Config.smoothOverlays());
-		heightSlider.setValue(Config.getRenderHeight());
+		hSlider.valueProperty().set(Config.getRenderHeight());
 		layerOnly.setSelected(Config.renderLayerOnly());
 		caves.setSelected(Config.renderCaves());
 		tileMapBackgrounds.getItems().addAll(TileMapBox.TileMapBoxBackground.values());
@@ -232,11 +207,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			entitiesField.setFile(worldDirectories.getEntities());
 		}
 
-		heightSlider.setValue(Config.getRenderHeight());
-		heightSlider.setSnapToTicks(true);
-		heightSlider.setMajorTickUnit(64);
-		heightSlider.setMinorTickCount(384);
-		heightSlider.setBlockIncrement(1);
+		hSlider.setMajorTickUnit(64);
+		hSlider.setAlignment(Pos.CENTER_LEFT);
 
 		toggleGroup.selectedToggleProperty().addListener((v, o, n) -> {
 			if (n == null) {
@@ -315,7 +287,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		shadingAndSmooth.getChildren().addAll(shade, smooth);
 
 		GridPane layerGrid = createGrid();
-		addPairToGrid(layerGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_LAYERS_RENDER_HEIGHT), heightSlider, UIFactory.attachTextFieldToSlider(heightSlider));
+		addPairToGrid(layerGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_LAYERS_RENDER_HEIGHT), hSlider);
 		addPairToGrid(layerGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_LAYERS_RENDER_LAYER_ONLY), layerOnly);
 		addPairToGrid(layerGrid, 2, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_LAYERS_RENDER_CAVES), caves);
 		BorderedTitledPane layers = new BorderedTitledPane(Translation.DIALOG_SETTINGS_RENDERING_LAYERS, layerGrid);
@@ -370,6 +342,33 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		content.getChildren().addAll(tabBox, tabPane);
 
 		getDialogPane().setContent(content);
+
+		setResultConverter(c -> {
+			if (c.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+				return new Result(
+					languages.getSelectionModel().getSelectedItem(),
+					(int) processThreadsSlider.getValue(),
+					(int) writeThreadsSlider.getValue(),
+					(int) maxLoadedFilesSlider.getValue(),
+					regionSelectionColor,
+					chunkSelectionColor,
+					pasteChunksColor,
+					shadeCheckBox.isSelected(),
+					shadeWaterCheckBox.isSelected(),
+					showNonexistentRegionsCheckBox.isSelected(),
+					smoothRendering.isSelected(),
+					smoothOverlays.isSelected(),
+					tileMapBackgrounds.getSelectionModel().getSelectedItem(),
+					mcSavesDir.getFile(),
+					debugCheckBox.isSelected(),
+					hSlider.getValue(),
+					layerOnly.isSelected(),
+					caves.isSelected(),
+					poiField.getFile(),
+					entitiesField.getFile());
+			}
+			return null;
+		});
 	}
 
 	private <T extends Node> T withAlignment(T node) {
