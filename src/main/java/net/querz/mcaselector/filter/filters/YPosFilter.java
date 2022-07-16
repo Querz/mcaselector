@@ -26,7 +26,7 @@ public class YPosFilter extends IntFilter {
 		}
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
 		IntTag tag = chunkFilter.getYPos(data.region().getData());
-		return tag == null ? 0 : tag.asInt();
+		return tag.asInt();
 	}
 
 	@Override

@@ -15,6 +15,8 @@ import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.text.Translation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 public final class ChunkFilterSelector {
@@ -25,6 +27,7 @@ public final class ChunkFilterSelector {
 
 	public static void selectFilter(GroupFilter filter, Selection selection, int radius, Consumer<Selection> callback, Progress progressChannel, boolean cli) {
 		WorldDirectories wd = Config.getWorldDirs();
+		System.out.println(wd);
 		RegionDirectories[] rd = wd.listRegions(selection);
 		if (rd == null || rd.length == 0) {
 			if (cli) {
@@ -34,6 +37,8 @@ public final class ChunkFilterSelector {
 			}
 			return;
 		}
+
+		System.out.println(Arrays.toString(rd));
 
 		JobHandler.clearQueues();
 
@@ -91,11 +96,6 @@ public final class ChunkFilterSelector {
 			Timer t = new Timer();
 			try {
 				Region region = Region.loadRegion(getRegionDirectories(), regionData, poiData, entitiesData);
-
-				if (region.getRegion() == null) {
-					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-					return true;
-				}
 
 				ChunkSet chunks = region.getFilteredChunks(filter, this.selection);
 				if (chunks.size() > 0) {

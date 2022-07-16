@@ -34,7 +34,6 @@ public class Region {
 		Region r = new Region();
 		if (dirs.getRegion() != null && dirs.getRegion().length() > FileHelper.HEADER_SIZE && regionData != null) {
 			r.loadRegion(dirs.getRegion(), new ByteArrayPointer(regionData));
-			r.location = dirs.getLocation();
 		}
 		if (dirs.getPoi() != null && poiData != null) {
 			r.loadPoi(dirs.getPoi(), new ByteArrayPointer(poiData));
@@ -42,6 +41,7 @@ public class Region {
 		if (dirs.getEntities() != null && entitiesData != null) {
 			r.loadEntities(dirs.getEntities(), new ByteArrayPointer(entitiesData));
 		}
+		r.location = dirs.getLocation();
 		r.directories = dirs;
 		return r;
 	}
@@ -57,6 +57,7 @@ public class Region {
 		if (dirs.getEntities() != null) {
 			r.loadEntities(dirs.getEntities());
 		}
+		r.location = dirs.getLocation();
 		r.directories = dirs;
 		return r;
 	}
@@ -393,27 +394,20 @@ public class Region {
 		ChunkSet chunks = new ChunkSet();
 
 		for (int i = 0; i < 1024; i++) {
-			RegionChunk region = this.region.getChunk(i);
-			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
-			PoiChunk poi = this.poi == null ? null : this.poi.getChunk(i);
+			RegionChunk regionChunk = this.region == null ? null : this.region.getChunk(i);
+			EntitiesChunk entitiesChunk = this.entities == null ? null : this.entities.getChunk(i);
+			PoiChunk poiChunk = this.poi == null ? null : this.poi.getChunk(i);
 
-			if (region == null || region.isEmpty()) {
-				continue;
-			}
+			ChunkData filterData = new ChunkData(regionChunk, poiChunk, entitiesChunk);
 
-			ChunkData filterData = new ChunkData(region, poi, entities);
-
-			Point2i location = region.getAbsoluteLocation();
-			if (location == null) {
-				continue;
-			}
+			Point2i chunkLocation = location.regionToChunk().add(new Point2i(i));
 
 			try {
-				if ((selection == null || selection.isChunkSelected(location)) && filter.matches(filterData)) {
-					chunks.set(location.asChunkIndex());
+				if ((selection == null || selection.isChunkSelected(chunkLocation)) && filter.matches(filterData)) {
+					chunks.set(i);
 				}
 			} catch (Exception ex) {
-				LOGGER.warn("failed to select chunk {}: {}", location, ex.getMessage());
+				LOGGER.warn("failed to select chunk {}: {}", chunkLocation, ex.getMessage());
 			}
 		}
 		return chunks;

@@ -24,7 +24,7 @@ public class XPosFilter extends IntFilter implements RegionMatcher {
 		}
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
 		IntTag tag = chunkFilter.getXPos(data.region().getData());
-		return tag == null ? 0 : tag.asInt();
+		return tag.asInt();
 	}
 
 	@Override

@@ -21,7 +21,15 @@ public class EntityAmountFilter extends IntFilter {
 
 	@Override
 	protected Integer getNumber(ChunkData data) {
-		EntityFilter entityFilter = VersionController.getEntityFilter(data.region().getData().getInt("DataVersion"));
+		int dataVersion;
+		if (data.region() != null && data.region().getData() != null) {
+			dataVersion = data.region().getData().getInt("DataVersion");
+		} else if (data.entities() != null && data.entities().getData() != null) {
+			dataVersion = data.entities().getData().getInt("DataVersion");
+		} else {
+			return 0;
+		}
+		EntityFilter entityFilter = VersionController.getEntityFilter(dataVersion);
 		ListTag entities = entityFilter.getEntities(data);
 		if (entities == null) {
 			return 0;

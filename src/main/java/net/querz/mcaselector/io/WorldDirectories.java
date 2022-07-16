@@ -74,7 +74,7 @@ public class WorldDirectories implements Serializable, Cloneable {
 						if (regionDirectories.containsKey(l)) {
 							regionDirectories.get(l).setEntities(f);
 						} else {
-							regionDirectories.put(l, new RegionDirectories(l, null, f, null));
+							regionDirectories.put(l, new RegionDirectories(l, null, null, f));
 						}
 					}
 				}
@@ -90,7 +90,7 @@ public class WorldDirectories implements Serializable, Cloneable {
 						if (regionDirectories.containsKey(l)) {
 							regionDirectories.get(l).setPoi(f);
 						} else {
-							regionDirectories.put(l, new RegionDirectories(l, null, null, f));
+							regionDirectories.put(l, new RegionDirectories(l, null, f, null));
 						}
 					}
 				}
