@@ -13,6 +13,7 @@ import net.querz.nbt.CompoundTag;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -82,7 +83,7 @@ public abstract class Chunk implements Cloneable {
 		}
 	}
 
-	public int save(RandomAccessFile raf) throws IOException {
+	public int save(DataOutput out) throws IOException {
 		ExposedByteArrayOutputStream baos = new ExposedByteArrayOutputStream();
 
 		// CHECK DataOutputStream wrapper unnecessary?
@@ -105,16 +106,16 @@ public abstract class Chunk implements Cloneable {
 				throw new RuntimeException("chunk at " + absoluteLocation + " is oversized and can't be saved when DataVersion is below 2203");
 			}
 
-			raf.writeInt(1);
-			raf.writeByte(compressionType.getExternal().getByte());
+			out.writeInt(1);
+			out.writeByte(compressionType.getExternal().getByte());
 			try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(getMCCFile()), baos.size())) {
 				bos.write(baos.getBuffer(), 0, baos.size());
 			}
 			return 5; // XXX magic number
 		} else {
-			raf.writeInt(baos.size() + 1); // length includes the compression type byte
-			raf.writeByte(compressionType.getByte());
-			raf.write(baos.getBuffer(), 0, baos.size());
+			out.writeInt(baos.size() + 1); // length includes the compression type byte
+			out.writeByte(compressionType.getByte());
+			out.write(baos.getBuffer(), 0, baos.size());
 			return baos.size() + 5; // data length + 1 compression type byte + 4 length bytes
 		}
 	}
