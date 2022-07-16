@@ -69,8 +69,9 @@ public class Anvil118ChunkRelocator implements ChunkRelocator {
 		ListTag sections = LegacyHelper.getSections(root, dataVersion);
 		if (sections != null) {
 			ListTag newSections = new ListTag();
+			int yMax = Helper.findHighestSection(sections, -4);
 			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
-				if (applyOffsetToSection(section, offset.blockToSection(), -4, 19)) {
+				if (applyOffsetToSection(section, offset.blockToSection(), -4, yMax)) {
 					newSections.add(section);
 				}
 			}

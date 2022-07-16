@@ -2,8 +2,10 @@ package net.querz.mcaselector.ui.component;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -27,6 +29,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.util.Arrays;
 
 public class OptionBar extends BorderPane {
 	/*
@@ -50,11 +53,8 @@ public class OptionBar extends BorderPane {
 	private final Menu selection = UIFactory.menu(Translation.MENU_SELECTION);
 	private final Menu tools = UIFactory.menu(Translation.MENU_TOOLS);
 	private final Label about = UIFactory.label(Translation.MENU_ABOUT);
-	private final Slider height = new Slider(-64, 319, 319);
-	private final Label heightMinLabel = new Label("-64");
-	private final Label heightMaxLabel = new Label("319");
-	private final TextField heightField = UIFactory.attachTextFieldToSlider(height);
 
+	private final HeightSlider hSlider = new HeightSlider(319, true);
 	private final MenuItem openWorld = UIFactory.menuItem(Translation.MENU_FILE_OPEN_WORLD);
 	private final MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
 	private final MenuItem renderSettings = UIFactory.menuItem(Translation.MENU_FILE_RENDER_SETTINGS);
@@ -90,7 +90,7 @@ public class OptionBar extends BorderPane {
 
 	private int previousSelectedChunks = 0;
 	private boolean previousInvertedSelection = false;
-	private final DoubleProperty heightValue = new SimpleDoubleProperty(height.getValue());
+	private final IntegerProperty heightValue = new SimpleIntegerProperty(319);
 	private final BooleanProperty heightDisabled = new SimpleBooleanProperty(false);
 
 	public OptionBar(TileMap tileMap, Stage primaryStage) {
@@ -124,78 +124,22 @@ public class OptionBar extends BorderPane {
 		Menu aboutMenu = new Menu();
 		aboutMenu.setGraphic(about);
 
-		height.setSnapToTicks(true);
-		height.setShowTickLabels(false);
-		height.setShowTickMarks(false);
-		height.setMajorTickUnit(32);
-		height.setMinorTickCount(384);
-		height.setPrefWidth(300);
-		height.setLabelFormatter(new StringConverter<>() {
-			@Override
-			public String toString(Double object) {
-				return null;
-			}
+		hSlider.getStyleClass().add("option-bar-slider-box");
 
-			@Override
-			public Double fromString(String string) {
-				return null;
-			}
-		});
-		height.setBlockIncrement(1);
-
-		height.setOnMouseReleased(e -> {
-			if (heightDisabled.get()) {
-				e.consume();
-				return;
-			}
-			if (heightValue.get() != height.getValue()) {
-				heightValue.set(height.getValue());
-			}
-		});
-
-		height.setOnKeyReleased(e -> {
-			if (heightDisabled.get()) {
-				e.consume();
-				return;
-			}
-			if (heightValue.get() != height.getValue()) {
-				heightValue.set(height.getValue());
-			}
-		});
+		heightValue.bind(hSlider.valueProperty());
 
 		heightValue.addListener((v, o, n) -> {
 			if (!tileMap.getDisabled()) {
-				int value = (int) Math.round(n.doubleValue());
 				heightDisabled.set(true);
-				Config.setRenderHeight(value);
-
+				Config.setRenderHeight(n.intValue());
 				CacheHelper.clearAllCacheAsync(tileMap, () -> {
 					heightDisabled.set(false);
-					if (height.getValue() != heightValue.get()) {
-						heightValue.set(height.getValue());
+					if (hSlider.getValue() != heightValue.get()) {
+						heightValue.set(hSlider.getValue());
 					}
 				});
 			}
 		});
-
-		HBox heightSlider = new HBox();
-		heightSlider.getStyleClass().add("option-bar-slider-box");
-
-		heightField.textProperty().addListener((v, o, n) -> {
-			try {
-				int parsed = Integer.parseInt(n);
-				if (heightDisabled.get()) {
-					return;
-				}
-				if (heightValue.get() != height.getValue()) {
-					heightValue.set(parsed);
-				}
-			} catch (NumberFormatException ex) {
-				// do nothing
-			}
-		});
-
-		heightSlider.getChildren().addAll(heightMinLabel, height, heightMaxLabel, heightField);
 
 		// when we press escape we want to give the focus back to the tile map
 		setOnKeyPressed(e -> {
@@ -278,7 +222,7 @@ public class OptionBar extends BorderPane {
 		Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> paste.setDisable(!hasValidClipboardContent(tileMap) || tileMap.getDisabled()));
 
 		setLeft(menuBar);
-		setRight(heightSlider);
+		setRight(hSlider);
 	}
 
 	private void onUpdate(TileMap tileMap) {
@@ -305,10 +249,7 @@ public class OptionBar extends BorderPane {
 		paste.setDisable(!enabled || !hasValidClipboardContent(tileMap));
 		nextOverlay.setDisable(!enabled);
 		nextOverlayType.setDisable(!enabled);
-		height.setDisable(!enabled);
-		heightMinLabel.setDisable(!enabled);
-		heightMaxLabel.setDisable(!enabled);
-		heightField.setDisable(!enabled);
+		hSlider.setDisable(!enabled);
 	}
 
 	public void setEditOverlaysEnabled(boolean enabled) {
@@ -335,10 +276,7 @@ public class OptionBar extends BorderPane {
 		return flavors.length == 1 && flavors[0].equals(ClipboardSelection.SELECTION_DATA_FLAVOR);
 	}
 
-	public void setRenderHeight(double height) {
-		this.height.setValue(height);
-		if (Config.getRenderHeight() != height) {
-			heightValue.set(height);
-		}
+	public void setRenderHeight(int height) {
+		hSlider.valueProperty().set(height);
 	}
 }

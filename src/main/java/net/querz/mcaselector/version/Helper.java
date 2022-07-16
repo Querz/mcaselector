@@ -242,4 +242,15 @@ public final class Helper {
 			}
 		}
 	}
+
+	public static int findHighestSection(ListTag sections, int lowest) {
+		int max = lowest;
+		int current;
+		for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+			if ((current = section.getInt("Y")) > max) {
+				max = current;
+			}
+		}
+		return max;
+	}
 }

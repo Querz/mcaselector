@@ -195,16 +195,18 @@ public class Anvil119ChunkFilter extends Anvil117ChunkFilter {
 		}
 		pos = pos.chunkToBlock();
 
+		int yMax = Helper.findHighestSection(sections, -4);
+
 		// handle the special case when someone wants to replace air with something else
 		if (replace.containsKey("minecraft:air")) {
 			Map<Integer, CompoundTag> sectionMap = new HashMap<>();
-			List<Integer> heights = new ArrayList<>(26);
+			List<Integer> heights = new ArrayList<>(yMax + 5);
 			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
 				sectionMap.put(section.getInt("Y"), section);
 				heights.add(section.getInt("Y"));
 			}
 
-			for (int y = -4; y < 20; y++) {
+			for (int y = -4; y <= yMax; y++) {
 				if (!sectionMap.containsKey(y)) {
 					sectionMap.put(y, completeSection(new CompoundTag(), y));
 					heights.add(y);
@@ -242,7 +244,7 @@ public class Anvil119ChunkFilter extends Anvil117ChunkFilter {
 			}
 
 			int y = Helper.numberFromCompound(section, "Y", -5).intValue();
-			if (y < -4 || y > 19) {
+			if (y < -4 || y > yMax) {
 				continue;
 			}
 
