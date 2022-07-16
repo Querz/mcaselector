@@ -22,7 +22,7 @@ public class LastUpdateFilter extends LongFilter {
 
 	@Override
 	protected Long getNumber(ChunkData data) {
-		if (data.region() == null) {
+		if (data.region() == null || data.region().getData() == null) {
 			return 0L;
 		}
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));

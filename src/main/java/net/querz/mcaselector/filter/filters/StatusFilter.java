@@ -68,7 +68,7 @@ public class StatusFilter extends TextFilter<String> {
 	}
 
 	public boolean isEqual(String value, ChunkData data) {
-		if (data.region() == null) {
+		if (data.region() == null || data.region().getData() == null) {
 			return false;
 		}
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
