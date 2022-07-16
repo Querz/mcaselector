@@ -83,25 +83,25 @@ public abstract class Chunk implements Cloneable {
 	}
 
 	public int save(RandomAccessFile raf) throws IOException {
-		ExposedByteArrayOutputStream baos = null;
+		ExposedByteArrayOutputStream baos = new ExposedByteArrayOutputStream();
 
-		DataOutputStream nbtOut = switch (compressionType) {
-			case GZIP, GZIP_EXT -> new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(baos = new ExposedByteArrayOutputStream())));
-			case ZLIB, ZLIB_EXT -> new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(baos = new ExposedByteArrayOutputStream())));
-			case NONE, NONE_EXT -> new DataOutputStream(new BufferedOutputStream(baos = new ExposedByteArrayOutputStream()));
-		};
+		// CHECK DataOutputStream wrapper unnecessary?
+		DataOutputStream nbtOut = new DataOutputStream(new BufferedOutputStream(switch (compressionType) {
+			case GZIP, GZIP_EXT -> new GZIPOutputStream(baos);
+			case ZLIB, ZLIB_EXT -> new DeflaterOutputStream(baos);
+			case NONE, NONE_EXT -> baos;
+		}));
 
 		new NBTWriter().write(nbtOut, data);
 		nbtOut.close();
 
 		// save mcc file if chunk doesn't fit in mca file
-		if (baos.size() > 1048576) {
+		if (baos.size() > 1048576) { // XXX magic number
 			// if the chunk's version is below 2203, we throw an exception instead
 			Integer dataVersion = ValidationHelper.withDefault(this::getDataVersion, null);
 			if (dataVersion == null) {
 				throw new RuntimeException("no DataVersion for oversized chunk");
-			}
-			if (dataVersion < 2203) {
+			} else if (dataVersion < 2203) {
 				throw new RuntimeException("chunk at " + absoluteLocation + " is oversized and can't be saved when DataVersion is below 2203");
 			}
 
@@ -110,7 +110,7 @@ public abstract class Chunk implements Cloneable {
 			try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(getMCCFile()), baos.size())) {
 				bos.write(baos.getBuffer(), 0, baos.size());
 			}
-			return 5;
+			return 5; // XXX magic number
 		} else {
 			raf.writeInt(baos.size() + 1); // length includes the compression type byte
 			raf.writeByte(compressionType.getByte());
@@ -164,7 +164,7 @@ public abstract class Chunk implements Cloneable {
 	@Override
 	public String toString() {
 		String s = NBTUtil.toSNBT(data);
-		return "<absoluteLoaction=" + absoluteLocation + ", compressionType=" + compressionType + ", data=" + s + ">";
+		return "<absoluteLocation=" + absoluteLocation + ", compressionType=" + compressionType + ", data=" + s + ">";
 	}
 
 	protected <T extends Chunk> T clone(Function<Point2i, T> chunkConstructor) {
