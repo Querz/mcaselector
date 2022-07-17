@@ -69,4 +69,26 @@ jobs:
           files: build/inno/Output/MCA_Selector_Setup.exe;build/libs/mcaselector-2.0.2.jar
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-          
+      - name: Checkout Wiki
+        uses: actions/checkout@v1
+        with:
+          repository: Querz/mcaselector-wiki
+          path: mcaselector-wiki
+
+      - name: Update Wiki
+        run: |
+          cd mcaselector-wiki
+          echo -n 2.0.2 > version.txt
+          ./update_version
+        shell: bash
+
+      - name: Push Wiki
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+        with:
+          source-directory: mcaselector-wiki
+          destination-github-username: Querz
+          destination-repository-name: mcaselector-wiki
+          user-email: wiki@querz.net
+          target-branch: main

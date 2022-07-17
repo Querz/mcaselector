@@ -17,6 +17,7 @@ sed -i -E "s/mcaselector-[0-9]+\.[0-9]+(\.[0-9]+)?\.jar/mcaselector-$application
 
 # update GitHub workflows
 sed -i -E "s/mcaselector-[0-9]+\.[0-9]+(\.[0-9]+)?\.jar/mcaselector-$applicationVersion.jar/g" '.github/workflows/release.yml'
+sed -i -E "s/echo -n [0-9]+\.[0-9]+(\.[0-9]+)?/echo -n $applicationVersion/g" '.github/workflows/release.yml'
 
 # update issue template
 sed -i -E "s/Version of MCA Selector \[e\.g\. [0-9]+\.[0-9]+(\.[0-9]+)?\]/Version of MCA Selector [e.g. $applicationVersion]/g" '.github/ISSUE_TEMPLATE/bug_report.md'
