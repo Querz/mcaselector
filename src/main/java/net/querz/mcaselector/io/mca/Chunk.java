@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io.mca;
 
+import net.querz.io.ExposedByteArrayOutputStream;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
