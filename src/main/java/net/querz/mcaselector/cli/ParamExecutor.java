@@ -261,10 +261,10 @@ public final class ParamExecutor {
 
 	public ParamExecutor(String[] args) {
 		this.args = args;
-		LOGGER.debug("args: {}", Arrays.toString(args));
 	}
 
 	public Future<Boolean> run() {
+		LOGGER.debug("raw args: {}", Arrays.toString(args));
 		if (args.length == 0) {
 			return null;
 		}
@@ -279,6 +279,8 @@ public final class ParamExecutor {
 			future.run();
 			return future;
 		}
+
+		LOGGER.debug("parsed args: {}", parsedArgsToString());
 
 		if (line.hasOption("help")) {
 			printHelp();
@@ -849,5 +851,21 @@ public final class ParamExecutor {
 		}
 
 		pixels.set(SelectionImageExporter.exportSelectionImage(data, overlayPool, generateProgress));
+	}
+
+	private String parsedArgsToString() {
+		StringBuilder sb = new StringBuilder("{");
+		for (int o = 0; o < line.getOptions().length; o++) {
+			Option option = line.getOptions()[o];
+			sb.append(option.getLongOpt()).append(": [");
+			if (option.getValues() != null) {
+				for (int v = 0; v < option.getValues().length; v++) {
+					sb.append(option.getValues()[v]).append(v < option.getValues().length - 1 ? ", " : "");
+				}
+			}
+			sb.append("]").append(o < line.getOptions().length - 1 ? ", " : "");
+		}
+		sb.append("}");
+		return sb.toString();
 	}
 }
