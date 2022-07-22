@@ -13,7 +13,6 @@ sourceCompatibility = JavaLanguageVersion.of(17)
 targetCompatibility = JavaLanguageVersion.of(17)
 compileJava.options.encoding = 'UTF-8'
 application.mainClass = 'net.querz.mcaselector.Main'
-configurations.implementation.canBeResolved = true
 
 javafx {
 	version = "$sourceCompatibility"
@@ -44,17 +43,6 @@ dependencies {
 	implementation 'me.tongfei:progressbar:0.9.3'
 	implementation 'org.codehaus.groovy:groovy-jsr223:3.0.11'
 
-	shadow 'com.github.Querz:NBT:f279a237fb'
-	shadow 'org.json:json:20220320'
-	shadow 'ar.com.hjg:pngj:2.1.0'
-	shadow 'org.xerial:sqlite-jdbc:3.36.0.3'
-	shadow 'it.unimi.dsi:fastutil:8.5.8'
-	shadow 'org.apache.logging.log4j:log4j-api:2.17.2'
-	shadow 'org.apache.logging.log4j:log4j-core:2.17.2'
-	shadow 'commons-cli:commons-cli:1.5.0'
-	shadow 'me.tongfei:progressbar:0.9.3'
-	shadow 'org.codehaus.groovy:groovy-jsr223:3.0.11'
-
 	testImplementation 'junit:junit:4.13.2'
 	testImplementation 'commons-io:commons-io:2.11.0'
 }
@@ -82,11 +70,9 @@ jar {
 		'Class-Path': configurations.shadow.files.stream()
 				.filter($it -> !$it.name.startsWith('javafx')).collect{"lib/$it.name"}.join(' ')
 	)
-	exclude 'licenses/'
 	from 'LICENSE'
 	dependsOn minifyCss
 	dependsOn copyRuntimeLibs
-	finalizedBy shadowJar
 }
 
 shadowJar {
@@ -98,7 +84,6 @@ shadowJar {
 		exclude(dependency(':javafx.*:.*'))
 	}
 	archiveFileName = "${project.name}-${project.version}.jar"
-	configurations = [project.configurations.shadow]
 	from 'LICENSE'
 }
 
