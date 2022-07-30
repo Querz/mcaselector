@@ -27,13 +27,14 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 	public static Selection readFromFile(File csvFile) throws IOException {
 		Long2ObjectOpenHashMap<ChunkSet> sel = new Long2ObjectOpenHashMap<>();
 		Selection selection = new Selection(sel, false);
+		boolean inverted = false;
 		try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
 			String line;
 			int num = 0;
 			while ((line = br.readLine()) != null) {
 				num++;
 				if (num == 1 && "inverted".equals(line)) {
-					selection.inverted = true;
+					inverted = true;
 					continue;
 				}
 
@@ -63,10 +64,11 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 					}
 					selection.addChunk(chunk);
 				} else {
-					sel.put(region.asLong(), null);
+					selection.addRegion(region.asLong());
 				}
 			}
 		}
+		selection.setInverted(inverted);
 		return selection;
 	}
 
