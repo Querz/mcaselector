@@ -49,7 +49,7 @@ public class CustomField extends Field<String> {
 	}
 
 	@Override
-	public void change(ChunkData root) {
+	public void change(ChunkData root, boolean force) {
 		// this needs to be thread safe because all threads use the same ScriptEngine
 		synchronized (lock) {
 			engine.put("region", root.region() != null && root.region().getData() != null ? root.region().getData() : null);
@@ -64,8 +64,4 @@ public class CustomField extends Field<String> {
 		}
 	}
 
-	@Override
-	public void force(ChunkData root) {
-		change(root);
-	}
 }

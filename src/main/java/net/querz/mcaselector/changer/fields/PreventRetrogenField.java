@@ -25,7 +25,7 @@ public class PreventRetrogenField extends Field<Boolean> {
 	}
 
 	@Override
-	public void change(ChunkData data) {
+	public void change(ChunkData data, boolean force) {
 		if (data.region() == null || data.region().getData() == null) {
 			return;
 		}
@@ -33,8 +33,4 @@ public class PreventRetrogenField extends Field<Boolean> {
 		data.region().getData().putString("Status", "full");
 	}
 
-	@Override
-	public void force(ChunkData data) {
-		change(data);
-	}
 }

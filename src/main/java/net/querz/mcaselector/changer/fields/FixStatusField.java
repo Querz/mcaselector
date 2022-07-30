@@ -29,7 +29,7 @@ public class FixStatusField extends Field<Boolean> {
 	}
 
 	@Override
-	public void change(ChunkData data) {
+	public void change(ChunkData data, boolean force) {
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		StringTag status = chunkFilter.getStatus(data.region().getData());
 
@@ -44,8 +44,4 @@ public class FixStatusField extends Field<Boolean> {
 		}
 	}
 
-	@Override
-	public void force(ChunkData data) {
-		change(data);
-	}
 }

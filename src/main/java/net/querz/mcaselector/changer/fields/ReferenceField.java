@@ -31,7 +31,7 @@ public class ReferenceField extends Field<Boolean> {
 	}
 
 	@Override
-	public void change(ChunkData data) {
+	public void change(ChunkData data, boolean force) {
 		if (!getNewValue()) {
 			return;
 		}
@@ -57,8 +57,4 @@ public class ReferenceField extends Field<Boolean> {
 		}
 	}
 
-	@Override
-	public void force(ChunkData data) {
-		change(data);
-	}
 }

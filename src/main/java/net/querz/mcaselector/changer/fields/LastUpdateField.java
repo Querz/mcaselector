@@ -31,17 +31,12 @@ public class LastUpdateField extends Field<Long> {
 	}
 
 	@Override
-	public void change(ChunkData data) {
+	public void change(ChunkData data, boolean force) {
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		LongTag tag = chunkFilter.getLastUpdate(data.region().getData());
-		if (tag != null) {
+		if (tag != null || force) {
 			chunkFilter.setLastUpdate(data.region().getData(), getNewValue());
 		}
 	}
 
-	@Override
-	public void force(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
-		chunkFilter.setLastUpdate(data.region().getData(), getNewValue());
-	}
 }

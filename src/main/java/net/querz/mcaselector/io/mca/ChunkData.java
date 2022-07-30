@@ -21,11 +21,7 @@ public record ChunkData(RegionChunk region, PoiChunk poi, EntitiesChunk entities
 
 	public void applyFieldChanges(List<Field<?>> fields, boolean force) {
 		for (Field<?> field : fields) {
-			if (force) {
-				field.force(this);
-			} else {
-				field.change(this);
-			}
+			field.change(this, force);
 		}
 	}
 

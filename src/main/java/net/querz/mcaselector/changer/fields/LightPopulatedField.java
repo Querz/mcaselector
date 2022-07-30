@@ -34,17 +34,12 @@ public class LightPopulatedField extends Field<Byte> {
 	}
 
 	@Override
-	public void change(ChunkData data) {
+	public void change(ChunkData data, boolean force) {
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		ByteTag tag = chunkFilter.getLightPopulated(data.region().getData());
-		if (tag != null) {
+		if (tag != null || force) {
 			chunkFilter.setLightPopulated(data.region().getData(), getNewValue());
 		}
 	}
 
-	@Override
-	public void force(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
-		chunkFilter.setLightPopulated(data.region().getData(), getNewValue());
-	}
 }

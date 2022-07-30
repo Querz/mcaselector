@@ -26,7 +26,7 @@ public class TimestampField extends Field<Integer> {
 	}
 
 	@Override
-	public void change(ChunkData root) {
+	public void change(ChunkData root, boolean force) {
 		if (root.region() != null) {
 			root.region().setTimestamp(getNewValue());
 		}
@@ -38,8 +38,4 @@ public class TimestampField extends Field<Integer> {
 		}
 	}
 
-	@Override
-	public void force(ChunkData root) {
-		change(root);
-	}
 }

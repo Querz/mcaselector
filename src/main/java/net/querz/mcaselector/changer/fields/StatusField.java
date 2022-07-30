@@ -55,17 +55,12 @@ public class StatusField extends Field<String> {
 	}
 
 	@Override
-	public void change(ChunkData data) {
+	public void change(ChunkData data, boolean force) {
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		StringTag tag = chunkFilter.getStatus(data.region().getData());
-		if (tag != null) {
+		if (tag != null || force) {
 			chunkFilter.setStatus(data.region().getData(), getNewValue());
 		}
 	}
 
-	@Override
-	public void force(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
-		chunkFilter.setStatus(data.region().getData(), getNewValue());
-	}
 }

@@ -59,7 +59,6 @@ public abstract class Field<T> {
 		return false;
 	}
 
-	public abstract void change(ChunkData root);
+	public abstract void change(ChunkData root, boolean force);
 
-	public abstract void force(ChunkData root);
 }
