@@ -451,9 +451,6 @@ public abstract class MCAFile<T extends Chunk> implements Cloneable {
 
 					if (ranges != null) {
 						int sourceVersion = sourceChunk.getDataVersion();
-						if (sourceVersion == 0) {
-							continue;
-						}
 
 						int destinationVersion;
 						if (destinationChunk == null || destinationChunk.isEmpty()) {

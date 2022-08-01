@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
@@ -84,6 +85,10 @@ public abstract class Chunk implements Cloneable {
 	}
 
 	public int save(DataOutput out) throws IOException {
+		if (data == null) {
+			throw new IllegalStateException("Can't save unloaded chunk");
+		}
+
 		ExposedByteArrayOutputStream baos = new ExposedByteArrayOutputStream();
 
 		// CHECK DataOutputStream wrapper unnecessary?
@@ -99,10 +104,7 @@ public abstract class Chunk implements Cloneable {
 		// save mcc file if chunk doesn't fit in mca file
 		if (baos.size() > 1048576) { // XXX magic number
 			// if the chunk's version is below 2203, we throw an exception instead
-			Integer dataVersion = ValidationHelper.withDefault(this::getDataVersion, null);
-			if (dataVersion == null) {
-				throw new RuntimeException("no DataVersion for oversized chunk");
-			} else if (dataVersion < 2203) {
+			if (getDataVersion() < 2203) { // XXX magic number
 				throw new RuntimeException("chunk at " + absoluteLocation + " is oversized and can't be saved when DataVersion is below 2203");
 			}
 
@@ -139,7 +141,12 @@ public abstract class Chunk implements Cloneable {
 	}
 
 	public int getDataVersion() {
-		return data.getInt("DataVersion");
+		int dataVersion = data.getInt("DataVersion");
+		if (dataVersion == 0) {
+			// FIXME upstream NBT's primitive getters should fail fast instead
+			throw new NoSuchElementException("Chunk NBT does not have DataVersion property");
+		}
+		return dataVersion;
 	}
 
 	public CompressionType getCompressionType() {
