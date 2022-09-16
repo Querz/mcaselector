@@ -107,6 +107,10 @@ public final class ParamExecutor {
 			.desc("Whether to force NBT tags during NBT change")
 			.build());
 		options.addOption(Option.builder()
+			.longOpt("sections")
+			.desc("One or a range of section indices to import into the target world during chunk import")
+			.build());
+		options.addOption(Option.builder()
 			.longOpt("render-height")
 			.desc("The highest Y level to render in image mode")
 			.hasArg()
