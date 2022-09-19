@@ -337,7 +337,7 @@ public final class ChunkImporter {
 
 				ChunkSet targetChunks = null;
 				if (targetSelection != null) {
-					targetChunks = sourceSelection.getSelectedChunks(target);
+					targetChunks = targetSelection.getSelectedChunks(target);
 				}
 
 				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMappingRegion.entrySet()) {
