@@ -129,9 +129,7 @@ public final class ImageHelper {
 
 		for (int y = 0; y < height && !progressChannel.taskCancelled(); y++) {
 			int start = y * width;
-			int end = start + width;
-			int diff = end - start;
-			for (int x = 0; x < diff; x++) {
+			for (int x = 0; x < width; x++) {
 				img.setRGB(x, y, data[start + x]);
 			}
 			progressChannel.incrementProgress("");
