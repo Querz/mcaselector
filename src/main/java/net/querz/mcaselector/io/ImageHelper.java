@@ -15,7 +15,6 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 public final class ImageHelper {
 
@@ -126,10 +125,12 @@ public final class ImageHelper {
 
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
-		for (int row = 0; row < height && !progressChannel.taskCancelled(); row++) {
-			int[] copy = Arrays.copyOfRange(data, row * width, row * width + width);
-			for (int x = 0; x < copy.length; x++) {
-				img.setRGB(x, row, copy[x]);
+		for (int y = 0; y < height && !progressChannel.taskCancelled(); y++) {
+			int start = y * width;
+			int end = start + width;
+			int diff = end - start;
+			for (int x = 0; x < diff; x++) {
+				img.setRGB(x, y, data[start + x]);
 			}
 			progressChannel.incrementProgress("");
 		}
