@@ -160,6 +160,11 @@ public final class ParamExecutor {
 			.hasArg()
 			.build());
 		options.addOption(Option.builder()
+			.longOpt("fields")
+			.desc("The fields to change")
+			.hasArg()
+			.build());
+		options.addOption(Option.builder()
 			.longOpt("zoom-level")
 			.desc("The zoom level for the cache to be generated. When not specified, all zoom levels will be generated")
 			.hasArg()
@@ -342,7 +347,7 @@ public final class ParamExecutor {
 			"help", "version", "mode", "output", "query", "selection", "source-selection", "radius", "x-offset",
 			"y-offset", "z-offset", "overwrite", "force", "render-height", "render-caves", "render-layer-only",
 			"render-shade", "render-water-shade", "overlay-type", "overlay-min-value", "overlay-max-value",
-			"overlay-data", "overlay-min-hue", "overlay-max-hue", "zoom-level", "world", "region", "poi", "entities",
+			"overlay-data", "overlay-min-hue", "overlay-max-hue", "fields", "zoom-level", "world", "region", "poi", "entities",
 			"source-world", "source-region", "source-poi", "source-entities", "output-world", "output-region",
 			"output-poi", "output-entities", "debug", "process-threads", "write-threads"
 		};
