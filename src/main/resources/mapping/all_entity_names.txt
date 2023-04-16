@@ -6,7 +6,9 @@ axolotl
 bat
 bee
 blaze
+block_display
 boat
+camel
 cat
 cave_spider
 chest_boat
@@ -50,8 +52,10 @@ hopper_minecart
 horse
 husk
 illusioner
+interaction
 iron_golem
 item
+item_display
 item_frame
 leash_knot
 lightning_bolt
@@ -86,6 +90,7 @@ skeleton
 skeleton_horse
 slime
 small_fireball
+sniffer
 snow_golem
 snowball
 spawner_minecart
@@ -95,6 +100,7 @@ squid
 stray
 strider
 tadpole
+text_display
 tnt
 tnt_minecart
 trader_llama

@@ -2,6 +2,7 @@ acacia_button
 acacia_door
 acacia_fence
 acacia_fence_gate
+acacia_hanging_sign
 acacia_leaves
 acacia_log
 acacia_planks
@@ -11,6 +12,7 @@ acacia_sign
 acacia_slab
 acacia_stairs
 acacia_trapdoor
+acacia_wall_hanging_sign
 acacia_wall_sign
 acacia_wood
 activator_rail
@@ -30,7 +32,24 @@ azalea
 azalea_leaves
 azure_bluet
 bamboo
+bamboo_block
+bamboo_button
+bamboo_door
+bamboo_fence
+bamboo_fence_gate
+bamboo_hanging_sign
+bamboo_mosaic
+bamboo_mosaic_slab
+bamboo_mosaic_stairs
+bamboo_planks
+bamboo_pressure_plate
 bamboo_sapling
+bamboo_sign
+bamboo_slab
+bamboo_stairs
+bamboo_trapdoor
+bamboo_wall_hanging_sign
+bamboo_wall_sign
 barrel
 barrier
 basalt
@@ -46,6 +65,7 @@ birch_button
 birch_door
 birch_fence
 birch_fence_gate
+birch_hanging_sign
 birch_leaves
 birch_log
 birch_planks
@@ -55,6 +75,7 @@ birch_sign
 birch_slab
 birch_stairs
 birch_trapdoor
+birch_wall_hanging_sign
 birch_wall_sign
 birch_wood
 black_banner
@@ -128,6 +149,7 @@ budding_amethyst
 cactus
 cake
 calcite
+calibrated_sculk_sensor
 campfire
 candle
 candle_cake
@@ -139,8 +161,26 @@ cave_vines
 cave_vines_plant
 chain
 chain_command_block
+cherry_button
+cherry_door
+cherry_fence
+cherry_fence_gate
+cherry_hanging_sign
+cherry_leaves
+cherry_log
+cherry_planks
+cherry_pressure_plate
+cherry_sapling
+cherry_sign
+cherry_slab
+cherry_stairs
+cherry_trapdoor
+cherry_wall_hanging_sign
+cherry_wall_sign
+cherry_wood
 chest
 chipped_anvil
+chiseled_bookshelf
 chiseled_deepslate
 chiseled_nether_bricks
 chiseled_polished_blackstone
@@ -184,6 +224,7 @@ crimson_door
 crimson_fence
 crimson_fence_gate
 crimson_fungus
+crimson_hanging_sign
 crimson_hyphae
 crimson_nylium
 crimson_planks
@@ -194,6 +235,7 @@ crimson_slab
 crimson_stairs
 crimson_stem
 crimson_trapdoor
+crimson_wall_hanging_sign
 crimson_wall_sign
 crying_obsidian
 cut_copper
@@ -223,6 +265,7 @@ dark_oak_button
 dark_oak_door
 dark_oak_fence
 dark_oak_fence_gate
+dark_oak_hanging_sign
 dark_oak_leaves
 dark_oak_log
 dark_oak_planks
@@ -232,6 +275,7 @@ dark_oak_sign
 dark_oak_slab
 dark_oak_stairs
 dark_oak_trapdoor
+dark_oak_wall_hanging_sign
 dark_oak_wall_sign
 dark_oak_wood
 dark_prismarine
@@ -259,6 +303,7 @@ dead_tube_coral
 dead_tube_coral_block
 dead_tube_coral_fan
 dead_tube_coral_wall_fan
+decorated_pot
 deepslate
 deepslate_brick_slab
 deepslate_brick_stairs
@@ -397,6 +442,7 @@ jungle_button
 jungle_door
 jungle_fence
 jungle_fence_gate
+jungle_hanging_sign
 jungle_leaves
 jungle_log
 jungle_planks
@@ -406,6 +452,7 @@ jungle_sign
 jungle_slab
 jungle_stairs
 jungle_trapdoor
+jungle_wall_hanging_sign
 jungle_wall_sign
 jungle_wood
 kelp
@@ -489,6 +536,7 @@ mangrove_button
 mangrove_door
 mangrove_fence
 mangrove_fence_gate
+mangrove_hanging_sign
 mangrove_leaves
 mangrove_log
 mangrove_planks
@@ -499,6 +547,7 @@ mangrove_sign
 mangrove_slab
 mangrove_stairs
 mangrove_trapdoor
+mangrove_wall_hanging_sign
 mangrove_wall_sign
 mangrove_wood
 medium_amethyst_bud
@@ -541,6 +590,7 @@ oak_button
 oak_door
 oak_fence
 oak_fence_gate
+oak_hanging_sign
 oak_leaves
 oak_log
 oak_planks
@@ -550,6 +600,7 @@ oak_sign
 oak_slab
 oak_stairs
 oak_trapdoor
+oak_wall_hanging_sign
 oak_wall_sign
 oak_wood
 observer
@@ -580,6 +631,8 @@ packed_mud
 pearlescent_froglight
 peony
 petrified_oak_slab
+piglin_head
+piglin_wall_head
 pink_banner
 pink_bed
 pink_candle
@@ -588,6 +641,7 @@ pink_carpet
 pink_concrete
 pink_concrete_powder
 pink_glazed_terracotta
+pink_petals
 pink_shulker_box
 pink_stained_glass
 pink_stained_glass_pane
@@ -597,6 +651,8 @@ pink_wall_banner
 pink_wool
 piston
 piston_head
+pitcher_crop
+pitcher_plant
 player_head
 player_wall_head
 podzol
@@ -636,6 +692,7 @@ potted_birch_sapling
 potted_blue_orchid
 potted_brown_mushroom
 potted_cactus
+potted_cherry_sapling
 potted_cornflower
 potted_crimson_fungus
 potted_crimson_roots
@@ -655,6 +712,7 @@ potted_poppy
 potted_red_mushroom
 potted_red_tulip
 potted_spruce_sapling
+potted_torchflower
 potted_warped_fungus
 potted_warped_roots
 potted_white_tulip
@@ -773,6 +831,7 @@ smooth_sandstone_slab
 smooth_sandstone_stairs
 smooth_stone
 smooth_stone_slab
+sniffer_egg
 snow
 snow_block
 soul_campfire
@@ -789,6 +848,7 @@ spruce_button
 spruce_door
 spruce_fence
 spruce_fence_gate
+spruce_hanging_sign
 spruce_leaves
 spruce_log
 spruce_planks
@@ -798,6 +858,7 @@ spruce_sign
 spruce_slab
 spruce_stairs
 spruce_trapdoor
+spruce_wall_hanging_sign
 spruce_wall_sign
 spruce_wood
 sticky_piston
@@ -813,8 +874,11 @@ stone_stairs
 stonecutter
 stripped_acacia_log
 stripped_acacia_wood
+stripped_bamboo_block
 stripped_birch_log
 stripped_birch_wood
+stripped_cherry_log
+stripped_cherry_wood
 stripped_crimson_hyphae
 stripped_crimson_stem
 stripped_dark_oak_log
@@ -833,6 +897,8 @@ structure_block
 structure_void
 sugar_cane
 sunflower
+suspicious_gravel
+suspicious_sand
 sweet_berry_bush
 tall_grass
 tall_seagrass
@@ -841,6 +907,8 @@ terracotta
 tinted_glass
 tnt
 torch
+torchflower
+torchflower_crop
 trapped_chest
 tripwire
 tripwire_hook
@@ -861,6 +929,7 @@ warped_door
 warped_fence
 warped_fence_gate
 warped_fungus
+warped_hanging_sign
 warped_hyphae
 warped_nylium
 warped_planks
@@ -871,6 +940,7 @@ warped_slab
 warped_stairs
 warped_stem
 warped_trapdoor
+warped_wall_hanging_sign
 warped_wall_sign
 warped_wart_block
 water

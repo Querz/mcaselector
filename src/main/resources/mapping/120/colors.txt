@@ -196,6 +196,7 @@ budding_amethyst;8460ba
 cactus;557f2b
 cake;f8ded6
 calcite;dfe0dc
+calibrated_sculk_sensor;1b4f64
 campfire:facing=east,lit=false;4f4a43
 campfire:facing=east,lit=true;6e5836
 campfire:facing=north,lit=false;4f4a43
@@ -911,6 +912,18 @@ pink_wall_banner;a2824e
 pink_wool;ed8dac
 piston;6d6860
 piston_head;6d6860
+pitcher_crop:age=0,half=lower;643a24
+pitcher_crop:age=0,half=upper;c1a567
+pitcher_crop:age=1,half=lower;643a24
+pitcher_crop:age=1,half=upper;c1a567
+pitcher_crop:age=2,half=lower;643a24
+pitcher_crop:age=2,half=upper;c1a567
+pitcher_crop:age=3,half=lower;643a24
+pitcher_crop:age=3,half=upper;8fb889
+pitcher_crop:age=4,half=lower;643a24
+pitcher_crop:age=4,half=upper;b27e50
+pitcher_plant:half=lower;687e5d
+pitcher_plant:half=upper;7a90bd
 player_head;513e32
 player_wall_head;513e32
 podzol:snowy=false;5b3f18
@@ -1029,7 +1042,7 @@ purple_candle_cake;f8ded6
 purple_carpet;792aac
 purple_concrete;641f9c
 purple_concrete_powder;8337b1
-purple_glazed_terracotta;6d3098
+purple_glazed_terracotta;6d2f98
 purple_shulker_box;67209c
 purple_stained_glass;7f3fb2
 purple_stained_glass_pane;7b3dab
@@ -1234,6 +1247,9 @@ smooth_sandstone_slab;dfd6aa
 smooth_sandstone_stairs;dfd6aa
 smooth_stone;9e9e9e
 smooth_stone_slab;9e9e9e
+sniffer_egg:hatch=0;876943
+sniffer_egg:hatch=1;81613e
+sniffer_egg:hatch=2;78593a
 snow;f9fefe
 snow_block;f9fefe
 soul_campfire:facing=east,lit=false;4f4a43
@@ -1314,6 +1330,10 @@ structure_void;18565d
 sugar_cane;94c065
 sunflower:half=lower;38871e
 sunflower:half=upper;31811b
+suspicious_gravel:dusted=0;817d7c
+suspicious_gravel:dusted=1;807b7a
+suspicious_gravel:dusted=2;7e7878
+suspicious_gravel:dusted=3;7c7776
 suspicious_sand:dusted=0;d9cc9f
 suspicious_sand:dusted=1;d8ca9c
 suspicious_sand:dusted=2;d6c697
@@ -1334,7 +1354,6 @@ torch;8a713f
 torchflower;64654d
 torchflower_crop:age=0;1c6143
 torchflower_crop:age=1;406d4c
-torchflower_crop:age=2;64654d
 trapped_chest;a2824e
 tripwire;818181
 tripwire_hook;8e8576

@@ -45,6 +45,7 @@ shipwreck
 shipwreck_beached
 stronghold
 swamp_hut
+trail_ruins
 village
 village_desert
 village_plains
