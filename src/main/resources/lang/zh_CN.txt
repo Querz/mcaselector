@@ -11,6 +11,7 @@ menu.selection;选择
 menu.tools;工具
 menu.about;关于
 menu.file.open_world;打开世界
+menu.file.open_dimension;打开另一个维度
 menu.file.settings;设置
 menu.file.render_settings;渲染设置
 menu.file.quit;退出

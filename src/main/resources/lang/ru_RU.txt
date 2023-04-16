@@ -11,6 +11,7 @@ menu.selection;Выбор
 menu.tools;Инструменты
 menu.about;О программе
 menu.file.open_world;Открой мир
+menu.file.open_dimension;Откройте другое измерение
 menu.file.settings;Настройки
 menu.file.render_settings;Настройки рендеринга
 menu.file.quit;Выход

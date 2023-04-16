@@ -18,6 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import net.querz.mcaselector.Config;
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.selection.ClipboardSelection;
 import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.io.CacheHelper;
@@ -29,7 +30,9 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 public class OptionBar extends BorderPane {
 	/*
@@ -56,6 +59,7 @@ public class OptionBar extends BorderPane {
 
 	private final HeightSlider hSlider = new HeightSlider(319, true);
 	private final MenuItem openWorld = UIFactory.menuItem(Translation.MENU_FILE_OPEN_WORLD);
+	private final Menu openDimension = UIFactory.menu(Translation.MENU_FILE_OPEN_DIMENSION);
 	private final MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
 	private final MenuItem renderSettings = UIFactory.menuItem(Translation.MENU_FILE_RENDER_SETTINGS);
 	private final MenuItem quit = UIFactory.menuItem(Translation.MENU_FILE_QUIT);
@@ -100,7 +104,8 @@ public class OptionBar extends BorderPane {
 		tileMap.setOnUpdate(this::onUpdate);
 
 		file.getItems().addAll(
-				openWorld, UIFactory.separator(),
+				openWorld,
+				openDimension, UIFactory.separator(),
 				settings, renderSettings, UIFactory.separator(),
 				quit);
 		view.getItems().addAll(
@@ -217,7 +222,7 @@ public class OptionBar extends BorderPane {
 		nextOverlayType.setAccelerator(new KeyCodeCombination(KeyCode.N));
 
 		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks(), tileMap.getSelection().isInverted());
-		setWorldDependentMenuItemsEnabled(false, tileMap);
+		setWorldDependentMenuItemsEnabled(false, tileMap, primaryStage);
 
 		Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> paste.setDisable(!hasValidClipboardContent(tileMap) || tileMap.getDisabled()));
 
@@ -236,7 +241,7 @@ public class OptionBar extends BorderPane {
 		nextOverlay.setDisable(tileMap.getOverlay() == null);
 	}
 
-	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap) {
+	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap, Stage primaryStage) {
 		renderSettings.setDisable(!enabled);
 		clearViewCache.setDisable(!enabled);
 		clearAllCache.setDisable(!enabled);
@@ -250,6 +255,19 @@ public class OptionBar extends BorderPane {
 		nextOverlay.setDisable(!enabled);
 		nextOverlayType.setDisable(!enabled);
 		hSlider.setDisable(!enabled);
+		openDimension.setDisable(!enabled && (Config.getDimensionDirectories() == null || Config.getDimensionDirectories().size() <= 1));
+
+		if (enabled && Config.getDimensionDirectories() != null && Config.getDimensionDirectories().size() > 1) {
+			openDimension.getItems().clear();
+			File currentWorldDir = Config.getWorldDir().getParentFile();
+			Config.getDimensionDirectories().forEach(f -> {
+				if (!f.equals(currentWorldDir)) {
+					MenuItem dimItem = new MenuItem(f.getName());
+					dimItem.setOnAction(e -> DialogHelper.setWorld(FileHelper.detectWorldDirectories(f), null, tileMap, primaryStage));
+					openDimension.getItems().add(dimItem);
+				}
+			});
+		}
 	}
 
 	public void setEditOverlaysEnabled(boolean enabled) {

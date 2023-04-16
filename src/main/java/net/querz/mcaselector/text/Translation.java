@@ -30,6 +30,7 @@ public enum Translation {
 	MENU_TOOLS("menu.tools"),
 	MENU_ABOUT("menu.about"),
 	MENU_FILE_OPEN_WORLD("menu.file.open_world"),
+	MENU_FILE_OPEN_DIMENSION("menu.file.open_dimension"),
 	MENU_FILE_SETTINGS("menu.file.settings"),
 	MENU_FILE_RENDER_SETTINGS("menu.file.render_settings"),
 	MENU_FILE_QUIT("menu.file.quit"),

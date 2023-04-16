@@ -11,6 +11,7 @@ menu.selection;선택
 menu.tools;도구
 menu.about;이 프로그램에 대해
 menu.file.open_world;월드 열기
+menu.file.open_dimension;다른 차원 열기
 menu.file.settings;설정
 menu.file.render_settings;렌더링 설정
 menu.file.quit;나가기

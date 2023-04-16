@@ -185,6 +185,8 @@ public final class Config {
 
 	private static List<Overlay> overlays = null;
 
+	private static List<File> dimensionDirectories = null;
+
 	private Config() {}
 
 	public static File getWorldDir() {
@@ -381,6 +383,14 @@ public final class Config {
 
 	public static List<Overlay> getOverlays() {
 		return Config.overlays;
+	}
+
+	public static List<File> getDimensionDirectories() {
+		return Config.dimensionDirectories;
+	}
+
+	public static void setDimensionDirectories(List<File> dimensionDirectories) {
+		Config.dimensionDirectories = dimensionDirectories;
 	}
 
 	public static Color getRegionSelectionColor() {

@@ -553,21 +553,25 @@ public class DialogHelper {
 
 			// if there is only one dimension, open it instantly
 			if (dimensions.size() == 1) {
-				setWorld(FileHelper.detectWorldDirectories(dimensions.get(0)), tileMap, primaryStage);
+				setWorld(FileHelper.detectWorldDirectories(dimensions.get(0)), dimensions, tileMap, primaryStage);
 				return;
 			}
 			// show world selection dialog
 			Optional<File> result = new SelectWorldDialog(dimensions, primaryStage).showAndWait();
-			result.ifPresent(dim -> setWorld(FileHelper.detectWorldDirectories(dim), tileMap, primaryStage));
+			result.ifPresent(dim -> setWorld(FileHelper.detectWorldDirectories(dim), dimensions, tileMap, primaryStage));
 		} else if (file != null) {
 			new ErrorDialog(primaryStage, String.format("%s is not a directory", file));
 		}
 	}
 
-	public static void setWorld(WorldDirectories worldDirectories, TileMap tileMap, Stage primaryStage) {
+	public static void setWorld(WorldDirectories worldDirectories, List<File> dimensionDirectories, TileMap tileMap, Stage primaryStage) {
 		new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_LOADING_WORLD, primaryStage).showProgressBar((task) -> {
 			Config.setWorldDirs(worldDirectories);
+			if (dimensionDirectories != null) {
+				Config.setDimensionDirectories(dimensionDirectories);
+			}
 			CacheHelper.validateCacheVersion(tileMap);
+			Config.setRenderHeight(Config.DEFAULT_RENDER_HEIGHT);
 			CacheHelper.readWorldSettingsFile(tileMap);
 			RegionImageGenerator.invalidateCachedMCAFiles();
 			tileMap.getWindow().getOptionBar().setRenderHeight(Config.getRenderHeight());
@@ -575,7 +579,7 @@ public class DialogHelper {
 			tileMap.clearSelection();
 			tileMap.draw();
 			tileMap.disable(false);
-			tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
+			tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap, primaryStage);
 			tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString(), tileMap.getOverlays());
 			task.done(Translation.DIALOG_PROGRESS_DONE.toString());
 			Platform.runLater(() -> tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent()));

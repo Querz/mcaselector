@@ -601,7 +601,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 			WorldDirectories wd = FileHelper.testWorldDirectoriesValid(db.getFiles(), getWindow().getPrimaryStage());
 			if (wd != null) {
-				DialogHelper.setWorld(wd, this, window.getPrimaryStage());
+				DialogHelper.setWorld(wd, List.of(wd.getRegion().getParentFile()), this, window.getPrimaryStage());
 			}
 			event.setDropCompleted(true);
 		}

@@ -11,6 +11,7 @@ menu.selection;Zaznaczenie
 menu.tools;Narzędzia
 menu.about;O programie...
 menu.file.open_world;Otwórz świat...
+menu.file.open_dimension;Otwórz inny wymiar
 menu.file.settings;Ustawienia
 menu.file.render_settings;Ustawienia renderowania
 menu.file.quit;Wyjdź
