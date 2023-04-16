@@ -260,6 +260,18 @@ public final class ParamExecutor {
 	private CommandLine line = null;
 
 	public ParamExecutor(String[] args) {
+		if (Arrays.asList(args).contains("--use-alternative-command-parsing")) {
+			try {
+				String[] altArgs = new CustomCommandParser(args).parse();
+				List<String> altList = new ArrayList<>(Arrays.asList(altArgs));
+				altList.remove("--use-alternative-command-parsing");
+				this.args = altList.toArray(new String[0]);
+				LOGGER.warn("preprocessed args with custom command parser, original args: {}", Arrays.toString(args));
+				return;
+			} catch (net.querz.mcaselector.exception.ParseException e) {
+				throw new RuntimeException(e);
+			}
+		}
 		this.args = args;
 	}
 
