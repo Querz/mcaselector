@@ -35,11 +35,11 @@ public class AverageHeightOverlay extends Overlay {
 		try {
 			int value = Integer.parseInt(raw);
 			if (value < MIN_VALUE || value > MAX_VALUE) {
-				return setMin((Integer) null);
+				return setMinInt((Integer) null);
 			}
-			return setMin(value);
+			return setMinInt(value);
 		} catch (NumberFormatException ex) {
-			return setMin((Integer) null);
+			return setMinInt((Integer) null);
 		}
 	}
 
@@ -49,11 +49,11 @@ public class AverageHeightOverlay extends Overlay {
 		try {
 			int value = Integer.parseInt(raw);
 			if (value < MIN_VALUE || value > MAX_VALUE) {
-				return setMax((Integer) null);
+				return setMaxInt((Integer) null);
 			}
-			return setMax(value);
+			return setMaxInt(value);
 		} catch (NumberFormatException ex) {
-			return setMax((Integer) null);
+			return setMaxInt((Integer) null);
 		}
 	}
 }

@@ -1,10 +1,8 @@
 package net.querz.mcaselector.ui.component;
 
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
@@ -14,10 +12,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.selection.ClipboardSelection;
 import net.querz.mcaselector.tile.TileMap;
@@ -25,14 +21,11 @@ import net.querz.mcaselector.io.CacheHelper;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.DialogHelper;
 import net.querz.mcaselector.ui.UIFactory;
-
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 
 public class OptionBar extends BorderPane {
 	/*
@@ -136,7 +129,7 @@ public class OptionBar extends BorderPane {
 		heightValue.addListener((v, o, n) -> {
 			if (!tileMap.getDisabled()) {
 				heightDisabled.set(true);
-				Config.setRenderHeight(n.intValue());
+				ConfigProvider.WORLD.setRenderHeight(n.intValue());
 				CacheHelper.clearAllCacheAsync(tileMap, () -> {
 					heightDisabled.set(false);
 					if (hSlider.getValue() != heightValue.get()) {
@@ -255,12 +248,12 @@ public class OptionBar extends BorderPane {
 		nextOverlay.setDisable(!enabled);
 		nextOverlayType.setDisable(!enabled);
 		hSlider.setDisable(!enabled);
-		openDimension.setDisable(!enabled && (Config.getDimensionDirectories() == null || Config.getDimensionDirectories().size() <= 1));
+		openDimension.setDisable(!enabled && (ConfigProvider.WORLD == null || ConfigProvider.WORLD.getDimensionDirectories() == null || ConfigProvider.WORLD.getDimensionDirectories().size() <= 1));
 
-		if (enabled && Config.getDimensionDirectories() != null && Config.getDimensionDirectories().size() > 1) {
+		if (enabled && ConfigProvider.WORLD.getDimensionDirectories() != null && ConfigProvider.WORLD.getDimensionDirectories().size() > 1) {
 			openDimension.getItems().clear();
-			File currentWorldDir = Config.getWorldDir().getParentFile();
-			Config.getDimensionDirectories().forEach(f -> {
+			File currentWorldDir = ConfigProvider.WORLD.getRegionDir().getParentFile();
+			ConfigProvider.WORLD.getDimensionDirectories().forEach(f -> {
 				if (!f.equals(currentWorldDir)) {
 					MenuItem dimItem = new MenuItem(f.getName());
 					dimItem.setOnAction(e -> DialogHelper.setWorld(FileHelper.detectWorldDirectories(f), null, tileMap, primaryStage));

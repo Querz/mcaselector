@@ -34,7 +34,7 @@ repositories {
 
 dependencies {
 	implementation 'com.github.Querz:NBT:f279a237fb'
-	implementation 'org.json:json:20220320'
+	implementation 'com.google.code.gson:gson:2.10.1'
 	implementation 'ar.com.hjg:pngj:2.1.0'
 	implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
 	implementation 'it.unimi.dsi:fastutil:8.5.8'
@@ -45,7 +45,7 @@ dependencies {
 	implementation 'org.codehaus.groovy:groovy-jsr223:3.0.11'
 
 	shadow 'com.github.Querz:NBT:f279a237fb'
-	shadow 'org.json:json:20220320'
+	shadow 'com.google.code.gson:gson:2.10.1'
 	shadow 'ar.com.hjg:pngj:2.1.0'
 	shadow 'org.xerial:sqlite-jdbc:3.36.0.3'
 	shadow 'it.unimi.dsi:fastutil:8.5.8'

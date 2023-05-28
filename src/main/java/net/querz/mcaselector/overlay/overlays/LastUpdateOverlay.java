@@ -44,23 +44,23 @@ public class LastUpdateOverlay extends Overlay {
 		setRawMin(raw);
 		minDuration = null;
 		if (raw == null || raw.isEmpty()) {
-			return setMin((Integer) null);
+			return setMinInt((Integer) null);
 		}
 		try {
-			return setMin(Integer.parseInt(raw));
+			return setMinInt(Integer.parseInt(raw));
 		} catch (NumberFormatException ex) {
 			try {
 				long duration = TextHelper.parseDuration(raw);
 				if (duration > MAX_VALUE || duration < MIN_VALUE) {
-					return setMin((Integer) null);
+					return setMinInt((Integer) null);
 				}
-				boolean res = setMin((int) (duration * 20));
+				boolean res = setMinInt((int) (duration * 20));
 				if (res) {
 					minDuration = raw;
 				}
 				return res;
 			} catch (IllegalArgumentException ex2) {
-				return setMin((Integer) null);
+				return setMinInt((Integer) null);
 			}
 		}
 	}
@@ -70,23 +70,23 @@ public class LastUpdateOverlay extends Overlay {
 		setRawMax(raw);
 		maxDuration = null;
 		if (raw == null || raw.isEmpty()) {
-			return setMax((Integer) null);
+			return setMaxInt((Integer) null);
 		}
 		try {
-			return setMax(Integer.parseInt(raw));
+			return setMaxInt(Integer.parseInt(raw));
 		} catch (NumberFormatException ex) {
 			try {
 				long duration = TextHelper.parseDuration(raw);
 				if (duration > MAX_VALUE || duration < MIN_VALUE) {
-					return setMax((Integer) null);
+					return setMaxInt((Integer) null);
 				}
-				boolean res = setMax((int) (duration * 20));
+				boolean res = setMaxInt((int) (duration * 20));
 				if (res) {
 					maxDuration = raw;
 				}
 				return res;
 			} catch (IllegalArgumentException ex2) {
-				return setMax((Integer) null);
+				return setMaxInt((Integer) null);
 			}
 		}
 	}

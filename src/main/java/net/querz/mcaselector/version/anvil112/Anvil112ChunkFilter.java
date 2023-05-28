@@ -5,7 +5,6 @@ import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.Helper;
-import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

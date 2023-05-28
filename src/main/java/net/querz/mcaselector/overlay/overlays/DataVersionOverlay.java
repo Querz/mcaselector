@@ -27,9 +27,9 @@ public class DataVersionOverlay extends Overlay {
 	public boolean setMin(String raw) {
 		setRawMin(raw);
 		try {
-			return setMin(Integer.parseInt(raw));
+			return setMinInt(Integer.parseInt(raw));
 		} catch (NumberFormatException ex) {
-			return setMin((Integer) null);
+			return setMinInt((Integer) null);
 		}
 	}
 
@@ -37,9 +37,9 @@ public class DataVersionOverlay extends Overlay {
 	public boolean setMax(String raw) {
 		setRawMax(raw);
 		try {
-			return setMax(Integer.parseInt(raw));
+			return setMaxInt(Integer.parseInt(raw));
 		} catch (NumberFormatException ex) {
-			return setMax((Integer) null);
+			return setMaxInt((Integer) null);
 		}
 	}
 }

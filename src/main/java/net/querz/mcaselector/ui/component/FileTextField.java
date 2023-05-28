@@ -7,7 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.ui.DialogHelper;
@@ -36,7 +36,7 @@ public class FileTextField extends HBox {
 				}
 			}
 			if (lastOpenDirectory == null || lastOpenDirectory.isEmpty()) {
-				lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", Config.getMCSavesDir());
+				lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", ConfigProvider.GLOBAL.getMcSavesDir());
 			}
 
 			File file = DialogHelper.createDirectoryChooser(lastOpenDirectory).showDialog(getScene().getWindow());
