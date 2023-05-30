@@ -12,6 +12,8 @@ menu.tools;Araçlar
 menu.about;Bilgi
 menu.file.open_world;Dünya Aç
 menu.file.open_dimension;Başka bir boyut aç
+menu.file.open_recent_world;Önceki bir dünyayı Aç
+menu.file.open_recent_world.clear;Sıfırla
 menu.file.settings;Ayarlar
 menu.file.render_settings;Render Ayarları
 menu.file.quit;Çıkış

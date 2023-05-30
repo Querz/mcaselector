@@ -12,6 +12,8 @@ menu.tools;Ferramentas
 menu.about;Sobre
 menu.file.open_world;Abrir mundo
 menu.file.open_dimension;Abra outra dimensão
+menu.file.open_recent_world;Abra mundo anterior
+menu.file.open_recent_world.clear;Reiniciar
 menu.file.settings;Configuração
 menu.file.render_settings;Configurações de renderização
 menu.file.quit;Sair

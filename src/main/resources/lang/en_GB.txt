@@ -12,6 +12,8 @@ menu.tools;Tools
 menu.about;About
 menu.file.open_world;Open World
 menu.file.open_dimension;Open Dimension
+menu.file.open_recent_world;Open recent World
+menu.file.open_recent_world.clear;Clear
 menu.file.settings;Settings
 menu.file.render_settings;Render Settings
 menu.file.quit;Quit

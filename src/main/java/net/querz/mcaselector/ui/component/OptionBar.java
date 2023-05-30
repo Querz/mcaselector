@@ -54,7 +54,7 @@ public class OptionBar extends BorderPane {
 	private final HeightSlider hSlider = new HeightSlider(319, true);
 	private final MenuItem openWorld = UIFactory.menuItem(Translation.MENU_FILE_OPEN_WORLD);
 	private final Menu openDimension = UIFactory.menu(Translation.MENU_FILE_OPEN_DIMENSION);
-	private final Menu openRecent = UIFactory.menu(Translation.MENU_FILE_OPEN_WORLD);
+	private final Menu openRecent = UIFactory.menu(Translation.MENU_FILE_OPEN_RECENT_WORLD);
 	private final MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
 	private final MenuItem renderSettings = UIFactory.menuItem(Translation.MENU_FILE_RENDER_SETTINGS);
 	private final MenuItem quit = UIFactory.menuItem(Translation.MENU_FILE_QUIT);
@@ -280,7 +280,7 @@ public class OptionBar extends BorderPane {
 				}
 			});
 			openRecent.getItems().add(UIFactory.separator());
-			MenuItem clear = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR);
+			MenuItem clear = UIFactory.menuItem(Translation.MENU_FILE_OPEN_RECENT_WORLD_CLEAR);
 			clear.setOnAction(e -> {
 				openRecent.getItems().clear();
 				ConfigProvider.GLOBAL.getRecentWorlds().clear();

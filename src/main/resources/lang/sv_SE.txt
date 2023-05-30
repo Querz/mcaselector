@@ -12,6 +12,8 @@ menu.tools;Verktyg
 menu.about;Om
 menu.file.open_world;Öppna en värld
 menu.file.open_dimension;Öppna en annan dimension
+menu.file.open_recent_world;Öppna en tidigare värld
+menu.file.open_recent_world.clear;Återställa
 menu.file.settings;Inställningar
 menu.file.render_settings;Renderingsinställningar
 menu.file.quit;Avsluta

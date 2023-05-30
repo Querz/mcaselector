@@ -12,6 +12,8 @@ menu.tools;Narzędzia
 menu.about;O programie...
 menu.file.open_world;Otwórz świat...
 menu.file.open_dimension;Otwórz inny wymiar
+menu.file.open_recent_world;Otworzyć poprzedni świat
+menu.file.open_recent_world.clear;Resetowanie
 menu.file.settings;Ustawienia
 menu.file.render_settings;Ustawienia renderowania
 menu.file.quit;Wyjdź
