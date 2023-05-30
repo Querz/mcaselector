@@ -16,6 +16,10 @@ public class FileAdapter extends TypeAdapter<File> {
 
 	@Override
 	public void write(JsonWriter out, File value) throws IOException {
+		if (value == null) {
+			out.value((String) null);
+			return;
+		}
 		String absolutePath = value.getAbsolutePath();
 		if (absolutePath.startsWith(userDir)) {
 			absolutePath = absolutePath.replace(userDir, "{user.dir}");

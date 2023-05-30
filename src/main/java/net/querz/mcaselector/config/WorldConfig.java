@@ -1,12 +1,15 @@
 package net.querz.mcaselector.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
+import net.querz.mcaselector.config.adapter.FileAdapter;
+import net.querz.mcaselector.config.adapter.WorldDirectoriesAdapter;
 import net.querz.mcaselector.io.WorldDirectories;
+import net.querz.mcaselector.logging.GsonNamingStrategy;
 import net.querz.mcaselector.math.Bits;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.File;
+import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.UUID;
 
@@ -196,5 +199,22 @@ public class WorldConfig extends Config {
 		}
 
 		return cfg;
+	}
+
+	private static final Gson toStringGsonInstance;
+
+	static {
+		GsonBuilder builder = new GsonBuilder();
+		builder.excludeFieldsWithModifiers(Modifier.STATIC);
+		builder.serializeNulls();
+		builder.setFieldNamingStrategy(new GsonNamingStrategy());
+		builder.registerTypeAdapter(File.class, new FileAdapter(BASE_DIR.getAbsolutePath()));
+		builder.registerTypeAdapter(WorldDirectories.class, new WorldDirectoriesAdapter());
+		toStringGsonInstance = builder.create();
+	}
+
+	@Override
+	public String toString() {
+		return toStringGsonInstance.toJson(this);
 	}
 }

@@ -6,11 +6,14 @@ import net.querz.mcaselector.config.adapter.ColorAdapter;
 import net.querz.mcaselector.config.adapter.FileAdapter;
 import net.querz.mcaselector.config.adapter.LocaleAdapter;
 import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.logging.GsonNamingStrategy;
 import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.Color;
 import java.io.File;
-import java.util.Locale;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.regex.Pattern;
 
 public class GlobalConfig extends Config {
 
@@ -45,6 +48,7 @@ public class GlobalConfig extends Config {
 	private int maxLoadedFiles = DEFAULT_MAX_LOADED_FILES;
 	private String mcSavesDir = DEFAULT_MC_SAVES_DIR;
 	private boolean debug = DEFAULT_DEBUG;
+	private TreeMap<Long, RecentWorld> recentWorlds = new TreeMap<>();
 
 	public Locale getLocale() {
 		return locale;
@@ -121,6 +125,31 @@ public class GlobalConfig extends Config {
 		Logging.updateThreadContext();
 	}
 
+	public TreeMap<Long, RecentWorld> getRecentWorlds() {
+		return recentWorlds;
+	}
+
+	public void addRecentWorld(File world, List<File> dimensionDirectories) {
+		if (world == null) {
+			return;
+		}
+		// check if this file already exists in the list and only update the timestamp if it does
+		for (Map.Entry<Long, RecentWorld> entry : recentWorlds.entrySet()) {
+			if (entry.getValue().recentWorld.equals(world)) {
+				recentWorlds.remove(entry.getKey());
+				recentWorlds.put(System.currentTimeMillis(), new RecentWorld(world, dimensionDirectories));
+				return;
+			}
+		}
+
+		// if it doesn't exist, we need to make sure that we delete the oldest entry if there are already 10 entries
+		if (recentWorlds.size() >= 16) {
+			recentWorlds.remove(recentWorlds.firstKey());
+		}
+
+		recentWorlds.put(System.currentTimeMillis(), new RecentWorld(world, dimensionDirectories));
+	}
+
 	@Override
 	public void save() {
 		save(gsonInstance, BASE_CONFIG_FILE);
@@ -132,5 +161,41 @@ public class GlobalConfig extends Config {
 			return new GlobalConfig();
 		}
 		return gsonInstance.fromJson(json, GlobalConfig.class);
+	}
+
+	private static final Gson toStringGsonInstance;
+
+	static {
+		GsonBuilder builder = new GsonBuilder();
+		builder.registerTypeAdapter(Color.class, new ColorAdapter());
+		builder.registerTypeAdapter(File.class, new FileAdapter(BASE_DIR.getAbsolutePath()));
+		builder.registerTypeAdapter(Locale.class, new LocaleAdapter());
+		builder.serializeNulls();
+		builder.excludeFieldsWithModifiers(Modifier.STATIC);
+		builder.setFieldNamingStrategy(new GsonNamingStrategy());
+		toStringGsonInstance = builder.create();
+	}
+
+	@Override
+	public String toString() {
+		return toStringGsonInstance.toJson(this);
+	}
+
+	public record RecentWorld(File recentWorld, List<File> dimensionDirectories) {
+
+		private static final Pattern dimensionFolderPattern = Pattern.compile("^DIM-?\\d+$");
+
+		@Override
+		public String toString() {
+			String name = recentWorld.getName();
+			if (dimensionFolderPattern.matcher(name).matches()) {
+				File parent = recentWorld.getParentFile();
+				if (parent == null) {
+					return name;
+				}
+				return parent.getName() + "/" + name;
+			}
+			return name;
+		}
 	}
 }

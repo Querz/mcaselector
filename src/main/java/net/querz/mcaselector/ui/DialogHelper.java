@@ -565,9 +565,13 @@ public class DialogHelper {
 	}
 
 	public static void setWorld(WorldDirectories worldDirectories, List<File> dimensionDirectories, TileMap tileMap, Stage primaryStage) {
+		File currentRegionDir = ConfigProvider.WORLD.getRegionDir();
+		if (currentRegionDir != null) {
+			ConfigProvider.GLOBAL.addRecentWorld(currentRegionDir.getParentFile(), ConfigProvider.WORLD.getDimensionDirectories());
+		}
+
 		new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_LOADING_WORLD, primaryStage).showProgressBar((task) -> {
 			ConfigProvider.loadWorldConfig(worldDirectories, dimensionDirectories);
-			ConfigProvider.WORLD.setWorldDirs(worldDirectories);
 			CacheHelper.validateCacheVersion(tileMap);
 			RegionImageGenerator.invalidateCachedMCAFiles();
 			tileMap.getWindow().getOptionBar().setRenderHeight(ConfigProvider.WORLD.getRenderHeight());

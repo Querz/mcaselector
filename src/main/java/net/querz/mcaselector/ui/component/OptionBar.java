@@ -26,6 +26,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.io.File;
+import java.util.List;
 
 public class OptionBar extends BorderPane {
 	/*
@@ -53,6 +54,7 @@ public class OptionBar extends BorderPane {
 	private final HeightSlider hSlider = new HeightSlider(319, true);
 	private final MenuItem openWorld = UIFactory.menuItem(Translation.MENU_FILE_OPEN_WORLD);
 	private final Menu openDimension = UIFactory.menu(Translation.MENU_FILE_OPEN_DIMENSION);
+	private final Menu openRecent = UIFactory.menu(Translation.MENU_FILE_OPEN_WORLD);
 	private final MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
 	private final MenuItem renderSettings = UIFactory.menuItem(Translation.MENU_FILE_RENDER_SETTINGS);
 	private final MenuItem quit = UIFactory.menuItem(Translation.MENU_FILE_QUIT);
@@ -98,7 +100,8 @@ public class OptionBar extends BorderPane {
 
 		file.getItems().addAll(
 				openWorld,
-				openDimension, UIFactory.separator(),
+				openDimension,
+				openRecent, UIFactory.separator(),
 				settings, renderSettings, UIFactory.separator(),
 				quit);
 		view.getItems().addAll(
@@ -248,18 +251,42 @@ public class OptionBar extends BorderPane {
 		nextOverlay.setDisable(!enabled);
 		nextOverlayType.setDisable(!enabled);
 		hSlider.setDisable(!enabled);
-		openDimension.setDisable(!enabled && (ConfigProvider.WORLD == null || ConfigProvider.WORLD.getDimensionDirectories() == null || ConfigProvider.WORLD.getDimensionDirectories().size() <= 1));
+		openDimension.getItems().clear();
 
 		if (enabled && ConfigProvider.WORLD.getDimensionDirectories() != null && ConfigProvider.WORLD.getDimensionDirectories().size() > 1) {
-			openDimension.getItems().clear();
 			File currentWorldDir = ConfigProvider.WORLD.getRegionDir().getParentFile();
 			ConfigProvider.WORLD.getDimensionDirectories().forEach(f -> {
 				if (!f.equals(currentWorldDir)) {
 					MenuItem dimItem = new MenuItem(f.getName());
-					dimItem.setOnAction(e -> DialogHelper.setWorld(FileHelper.detectWorldDirectories(f), null, tileMap, primaryStage));
+					dimItem.setMnemonicParsing(false);
+					dimItem.setOnAction(e -> DialogHelper.setWorld(FileHelper.detectWorldDirectories(f), ConfigProvider.WORLD.getDimensionDirectories(), tileMap, primaryStage));
 					openDimension.getItems().add(dimItem);
 				}
 			});
+		}
+
+		openDimension.setDisable(!enabled || openDimension.getItems().size() == 0);
+
+		openRecent.setDisable(ConfigProvider.GLOBAL.getRecentWorlds().size() == 0);
+		if (ConfigProvider.GLOBAL.getRecentWorlds().size() > 0) {
+			openRecent.getItems().clear();
+			File currentWorld = ConfigProvider.WORLD.getRegionDir();
+			ConfigProvider.GLOBAL.getRecentWorlds().descendingMap().forEach((k, v) -> {
+				if (currentWorld == null || !v.recentWorld().equals(currentWorld.getParentFile())) {
+					MenuItem openRecentItem = new MenuItem(v.toString());
+					openRecentItem.setMnemonicParsing(false);
+					openRecentItem.setOnAction(e -> DialogHelper.setWorld(FileHelper.detectWorldDirectories(v.recentWorld()), v.dimensionDirectories(), tileMap, primaryStage));
+					openRecent.getItems().add(openRecentItem);
+				}
+			});
+			openRecent.getItems().add(UIFactory.separator());
+			MenuItem clear = UIFactory.menuItem(Translation.MENU_SELECTION_CLEAR);
+			clear.setOnAction(e -> {
+				openRecent.getItems().clear();
+				ConfigProvider.GLOBAL.getRecentWorlds().clear();
+				openRecent.setDisable(true);
+			});
+			openRecent.getItems().add(clear);
 		}
 	}
 
