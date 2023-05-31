@@ -27,12 +27,12 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		int c = 0;
 		nameLoop:
 		for (String name : names) {
-			for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
 				ListTag palette = LegacyHelper.getPalette(t, dataVersion);
 				if (palette == null) {
 					continue;
 				}
-				for (CompoundTag p : palette.iterateType(CompoundTag.TYPE)) {
+				for (CompoundTag p : palette.iterateType(CompoundTag.class)) {
 					if (name.equals(Helper.stringFromCompound(p, "Name"))) {
 						c++;
 						continue nameLoop;
@@ -56,12 +56,12 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		}
 
 		for (String name : names) {
-			for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
 				ListTag palette = LegacyHelper.getPalette(t, dataVersion);
 				if (palette == null) {
 					continue;
 				}
-				for (CompoundTag p : palette.iterateType(CompoundTag.TYPE)) {
+				for (CompoundTag p : palette.iterateType(CompoundTag.class)) {
 					if (name.equals(Helper.stringFromCompound(p, "Name"))) {
 						return true;
 					}
@@ -84,12 +84,12 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		}
 
 		Set<String> blocks = new HashSet<>();
-		for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
+		for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
 			ListTag palette = LegacyHelper.getPalette(t, dataVersion);
 			if (palette == null) {
 				continue;
 			}
-			for (CompoundTag p : palette.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag p : palette.iterateType(CompoundTag.class)) {
 				String n;
 				if ((n = Helper.stringFromCompound(p, "Name")) != null) {
 					if (!names.contains(n)) {
@@ -127,12 +127,12 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 			filterLoop:
 			for (BiomeRegistry.BiomeIdentifier identifier : biomes) {
-				for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 					ListTag biomePalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
 					if (biomePalette == null) {
 						continue filterLoop;
 					}
-					for (StringTag biomeName : biomePalette.iterateType(StringTag.TYPE)) {
+					for (StringTag biomeName : biomePalette.iterateType(StringTag.class)) {
 						if (identifier.matches(biomeName.getValue())) {
 							names.add(biomeName.getValue());
 							continue filterLoop;
@@ -174,12 +174,12 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			}
 
 			for (BiomeRegistry.BiomeIdentifier identifier : biomes) {
-				for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 					ListTag biomePalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
 					if (biomePalette == null) {
 						continue;
 					}
-					for (StringTag biomeName : biomePalette.iterateType(StringTag.TYPE)) {
+					for (StringTag biomeName : biomePalette.iterateType(StringTag.class)) {
 						if (identifier.matches(biomeName.getValue())) {
 							return true;
 						}
@@ -217,7 +217,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				return;
 			}
 
-			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				CompoundTag biomes = Helper.tagFromCompound(section, "biomes");
 				if (biomes == null) {
 					continue;
@@ -249,7 +249,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				return;
 			}
 
-			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				CompoundTag biomes = new CompoundTag();
 				ListTag newBiomePalette = new ListTag();
 				newBiomePalette.addString(biome.getName());
@@ -298,7 +298,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			if (replace.containsKey("minecraft:air")) {
 				Map<Integer, CompoundTag> sectionMap = new HashMap<>();
 				List<Integer> heights = new ArrayList<>(yMax + 5);
-				for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 					sectionMap.put(section.getInt("Y"), section);
 					heights.add(section.getInt("Y"));
 				}
@@ -328,7 +328,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				tileEntities = new ListTag();
 			}
 
-			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				CompoundTag blockStatesTag = section.getCompound("block_states");
 				ListTag palette = Helper.tagFromCompound(blockStatesTag, "palette");
 				long[] blockStates = Helper.longArrayFromCompound(blockStatesTag, "data");
@@ -412,7 +412,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			if (replace.containsKey("minecraft:air")) {
 				Map<Integer, CompoundTag> sectionMap = new HashMap<>();
 				List<Integer> heights = new ArrayList<>(18);
-				for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 					sectionMap.put(section.getInt("Y"), section);
 					heights.add(section.getInt("Y"));
 				}
@@ -442,7 +442,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				tileEntities = new ListTag();
 			}
 
-			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				ListTag palette = Helper.tagFromCompound(section, "Palette", null);
 				if (palette == null) {
 					continue;
@@ -582,7 +582,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
-				for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 					ListTag palette = LegacyHelper.getPalette(section, dataVersion);
 					long[] blockStates = LegacyHelper.getBlockStates(section, dataVersion);
 					if (palette == null) {
@@ -622,7 +622,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 		int result = 0;
 
-		for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+		for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 			ListTag palette = LegacyHelper.getPalette(section, dataVersion);
 			long[] blockStates = LegacyHelper.getBlockStates(section, dataVersion);
 			if (palette == null) {

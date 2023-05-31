@@ -56,7 +56,7 @@ public abstract class Chunk {
 		if (tag instanceof CompoundTag) {
 			data = (CompoundTag) tag;
 		} else {
-			throw new IOException("unexpected chunk data tag type " + tag.getID() + ", expected " + Tag.COMPOUND);
+			throw new IOException("unexpected chunk data tag type " + tag.getType() + ", expected " + Tag.Type.COMPOUND);
 		}
 	}
 
@@ -78,7 +78,7 @@ public abstract class Chunk {
 		if (tag instanceof CompoundTag) {
 			data = (CompoundTag) tag;
 		} else {
-			throw new IOException("unexpected chunk data tag type " + tag.getID() + ", expected " + Tag.COMPOUND);
+			throw new IOException("unexpected chunk data tag type " + tag.getType() + ", expected " + Tag.Type.COMPOUND);
 		}
 	}
 

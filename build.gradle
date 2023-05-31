@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.github.Querz:NBT:f279a237fb'
+	implementation 'com.github.Querz:NBT:3196993049'
 	implementation 'com.google.code.gson:gson:2.10.1'
 	implementation 'ar.com.hjg:pngj:2.1.0'
 	implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
@@ -44,7 +44,7 @@ dependencies {
 	implementation 'me.tongfei:progressbar:0.9.3'
 	implementation 'org.codehaus.groovy:groovy-jsr223:3.0.11'
 
-	shadow 'com.github.Querz:NBT:f279a237fb'
+	shadow 'com.github.Querz:NBT:3196993049'
 	shadow 'com.google.code.gson:gson:2.10.1'
 	shadow 'ar.com.hjg:pngj:2.1.0'
 	shadow 'org.xerial:sqlite-jdbc:3.36.0.3'
