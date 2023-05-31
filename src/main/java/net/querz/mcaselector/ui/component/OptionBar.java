@@ -267,7 +267,6 @@ public class OptionBar extends BorderPane {
 
 		openDimension.setDisable(!enabled || openDimension.getItems().size() == 0);
 
-		openRecent.setDisable(ConfigProvider.GLOBAL.getRecentWorlds().size() == 0);
 		if (ConfigProvider.GLOBAL.getRecentWorlds().size() > 0) {
 			openRecent.getItems().clear();
 			File currentWorld = ConfigProvider.WORLD.getRegionDir();
@@ -288,6 +287,8 @@ public class OptionBar extends BorderPane {
 			});
 			openRecent.getItems().add(clear);
 		}
+
+		openRecent.setDisable(openRecent.getItems().size() <= 2); // "empty" means it either has no items or it only has the separator and the clear button
 	}
 
 	public void setEditOverlaysEnabled(boolean enabled) {
