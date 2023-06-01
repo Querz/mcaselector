@@ -134,7 +134,6 @@ dialog.change_nbt.selection_only;僅適用於已選擇的內容
 dialog.change_nbt.selection_only.tooltip;此篩選器是否只套用於已選擇的內容。
 dialog.change_nbt_confirmation.title;變更 NBT
 dialog.change_nbt_confirmation.header_short;您將要在此世界中變更未知數量的區塊的資料。
-dialog.change_nbt_confirmation.header_verbose;您將要在此世界中變更 %d 個區塊的資料。
 dialog.edit_nbt.title;編輯區塊
 dialog.edit_nbt.placeholder.loading;載入中…
 dialog.edit_nbt.placeholder.no_chunk_data;找不到塊數據
