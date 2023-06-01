@@ -22,7 +22,7 @@ public class ZPosFilter extends IntFilter implements RegionMatcher {
 		if (data.region() == null || data.region().getData() == null) {
 			return null;
 		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		IntTag tag = chunkFilter.getZPos(data.region().getData());
 		return tag.asInt();
 	}

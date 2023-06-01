@@ -2,7 +2,7 @@ package net.querz.mcaselector.version.anvil113;
 
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.version.ChunkRelocator;
-import net.querz.mcaselector.version.Helper;
+import net.querz.mcaselector.version.NbtHelper;
 import net.querz.nbt.*;
 import java.util.Map;
 import static net.querz.mcaselector.validation.ValidationHelper.silent;
@@ -11,7 +11,7 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 
 	@Override
 	public boolean relocate(CompoundTag root, Point3i offset) {
-		CompoundTag level = Helper.tagFromCompound(root, "Level");
+		CompoundTag level = NbtHelper.tagFromCompound(root, "Level");
 		if (level == null) {
 			return false;
 		}
@@ -21,49 +21,49 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 		level.putInt("zPos", level.getInt("zPos") + offset.blockToChunk().getZ());
 
 		// adjust entity positions
-		ListTag entities = Helper.tagFromCompound(level, "Entities");
+		ListTag entities = NbtHelper.tagFromCompound(level, "Entities");
 		if (entities != null) {
 			entities.forEach(v -> applyOffsetToEntity((CompoundTag) v, offset));
 		}
 
 		// adjust tile entity positions
-		ListTag tileEntities = Helper.tagFromCompound(level, "TileEntities");
+		ListTag tileEntities = NbtHelper.tagFromCompound(level, "TileEntities");
 		if (tileEntities != null) {
 			tileEntities.forEach(v -> applyOffsetToTileEntity((CompoundTag) v, offset));
 		}
 
 		// adjust tile ticks
-		ListTag tileTicks = Helper.tagFromCompound(level, "TileTicks");
+		ListTag tileTicks = NbtHelper.tagFromCompound(level, "TileTicks");
 		if (tileTicks != null) {
 			tileTicks.forEach(v -> applyOffsetToTick((CompoundTag) v, offset));
 		}
 
 		// adjust liquid ticks
-		ListTag liquidTicks = Helper.tagFromCompound(level, "LiquidTicks");
+		ListTag liquidTicks = NbtHelper.tagFromCompound(level, "LiquidTicks");
 		if (liquidTicks != null) {
 			liquidTicks.forEach(v -> applyOffsetToTick((CompoundTag) v, offset));
 		}
 
 		// adjust structures
-		CompoundTag structures = Helper.tagFromCompound(level, "Structures");
+		CompoundTag structures = NbtHelper.tagFromCompound(level, "Structures");
 		if (structures != null) {
 			applyOffsetToStructures(structures, offset);
 		}
 
 		// Lights
-		Helper.applyOffsetToListOfShortTagLists(level, "Lights", offset.blockToSection());
+		NbtHelper.applyOffsetToListOfShortTagLists(level, "Lights", offset.blockToSection());
 
 		// LiquidsToBeTicked
-		Helper.applyOffsetToListOfShortTagLists(level, "LiquidsToBeTicked", offset.blockToSection());
+		NbtHelper.applyOffsetToListOfShortTagLists(level, "LiquidsToBeTicked", offset.blockToSection());
 
 		// ToBeTicked
-		Helper.applyOffsetToListOfShortTagLists(level, "ToBeTicked", offset.blockToSection());
+		NbtHelper.applyOffsetToListOfShortTagLists(level, "ToBeTicked", offset.blockToSection());
 
 		// PostProcessing
-		Helper.applyOffsetToListOfShortTagLists(level, "PostProcessing", offset.blockToSection());
+		NbtHelper.applyOffsetToListOfShortTagLists(level, "PostProcessing", offset.blockToSection());
 
 		// adjust sections vertically
-		ListTag sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
+		ListTag sections = NbtHelper.getSectionsFromLevelFromRoot(root, "Sections");
 		if (sections != null) {
 			ListTag newSections = new ListTag();
 			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
@@ -82,7 +82,7 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 			return;
 		}
 
-		ListTag entityPos = Helper.tagFromCompound(entity, "Pos");
+		ListTag entityPos = NbtHelper.tagFromCompound(entity, "Pos");
 		if (entityPos != null && entityPos.size() == 3) {
 			entityPos.set(0, DoubleTag.valueOf(entityPos.getDouble(0) + offset.getX()));
 			entityPos.set(1, DoubleTag.valueOf(entityPos.getDouble(1) + offset.getY()));
@@ -90,83 +90,83 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 		}
 
 		// leashed entities
-		CompoundTag leash = Helper.tagFromCompound(entity, "Leash");
-		Helper.applyIntOffsetIfRootPresent(leash, "X", "Y", "Z", offset);
+		CompoundTag leash = NbtHelper.tagFromCompound(entity, "Leash");
+		NbtHelper.applyIntOffsetIfRootPresent(leash, "X", "Y", "Z", offset);
 
 		// projectiles
-		Helper.applyIntOffsetIfRootPresent(entity, "xTile", "yTile", "zTile", offset);
+		NbtHelper.applyIntOffsetIfRootPresent(entity, "xTile", "yTile", "zTile", offset);
 
 		// entities that have a sleeping place
-		Helper.applyIntOffsetIfRootPresent(entity, "SleepingX", "SleepingY", "SleepingZ", offset);
+		NbtHelper.applyIntOffsetIfRootPresent(entity, "SleepingX", "SleepingY", "SleepingZ", offset);
 
 		// positions for specific entity types
-		String id = Helper.stringFromCompound(entity, "id", "");
+		String id = NbtHelper.stringFromCompound(entity, "id", "");
 		switch (id) {
 		case "minecraft:dolphin":
-			Helper.applyIntOffsetIfRootPresent(entity, "TreasurePosX", "TreasurePosY", "TreasurePosZ", offset);
+			NbtHelper.applyIntOffsetIfRootPresent(entity, "TreasurePosX", "TreasurePosY", "TreasurePosZ", offset);
 			break;
 		case "minecraft:phantom":
-			Helper.applyIntOffsetIfRootPresent(entity, "AX", "AY", "AZ", offset);
+			NbtHelper.applyIntOffsetIfRootPresent(entity, "AX", "AY", "AZ", offset);
 			break;
 		case "minecraft:shulker":
-			Helper.applyIntOffsetIfRootPresent(entity, "APX", "APY", "APZ", offset);
+			NbtHelper.applyIntOffsetIfRootPresent(entity, "APX", "APY", "APZ", offset);
 			break;
 		case "minecraft:turtle":
-			Helper.applyIntOffsetIfRootPresent(entity, "HomePosX", "HomePosY", "HomePosZ", offset);
-			Helper.applyIntOffsetIfRootPresent(entity, "TravelPosX", "TravelPosY", "TravelPosZ", offset);
+			NbtHelper.applyIntOffsetIfRootPresent(entity, "HomePosX", "HomePosY", "HomePosZ", offset);
+			NbtHelper.applyIntOffsetIfRootPresent(entity, "TravelPosX", "TravelPosY", "TravelPosZ", offset);
 			break;
 		case "minecraft:vex":
-			Helper.applyIntOffsetIfRootPresent(entity, "BoundX", "BoundY", "BoundZ", offset);
+			NbtHelper.applyIntOffsetIfRootPresent(entity, "BoundX", "BoundY", "BoundZ", offset);
 			break;
 		case "minecraft:shulker_bullet":
-			CompoundTag owner = Helper.tagFromCompound(entity, "Owner");
-			Helper.applyIntOffsetIfRootPresent(owner, "X", "Y", "Z", offset);
-			CompoundTag target = Helper.tagFromCompound(entity, "Target");
-			Helper.applyIntOffsetIfRootPresent(target, "X", "Y", "Z", offset);
+			CompoundTag owner = NbtHelper.tagFromCompound(entity, "Owner");
+			NbtHelper.applyIntOffsetIfRootPresent(owner, "X", "Y", "Z", offset);
+			CompoundTag target = NbtHelper.tagFromCompound(entity, "Target");
+			NbtHelper.applyIntOffsetIfRootPresent(target, "X", "Y", "Z", offset);
 			break;
 		case "minecraft:end_crystal":
-			CompoundTag beamTarget = Helper.tagFromCompound(entity, "BeamTarget");
-			Helper.applyIntOffsetIfRootPresent(beamTarget, "X", "Y", "Z", offset);
+			CompoundTag beamTarget = NbtHelper.tagFromCompound(entity, "BeamTarget");
+			NbtHelper.applyIntOffsetIfRootPresent(beamTarget, "X", "Y", "Z", offset);
 			break;
 		case "minecraft:item_frame":
 		case "minecraft:painting":
-			Helper.applyIntOffsetIfRootPresent(entity, "TileX", "TileY", "TileZ", offset);
+			NbtHelper.applyIntOffsetIfRootPresent(entity, "TileX", "TileY", "TileZ", offset);
 			break;
 		case "minecraft:villager":
-			CompoundTag memories = Helper.tagFromCompound(Helper.tagFromCompound(entity, "Brain"), "memories");
+			CompoundTag memories = NbtHelper.tagFromCompound(NbtHelper.tagFromCompound(entity, "Brain"), "memories");
 			if (memories != null && memories.size() > 0) {
-				applyOffsetToVillagerMemory(Helper.tagFromCompound(memories, "minecraft:meeting_point"), offset);
-				applyOffsetToVillagerMemory(Helper.tagFromCompound(memories, "minecraft:home"), offset);
-				applyOffsetToVillagerMemory(Helper.tagFromCompound(memories, "minecraft:job_site"), offset);
+				applyOffsetToVillagerMemory(NbtHelper.tagFromCompound(memories, "minecraft:meeting_point"), offset);
+				applyOffsetToVillagerMemory(NbtHelper.tagFromCompound(memories, "minecraft:home"), offset);
+				applyOffsetToVillagerMemory(NbtHelper.tagFromCompound(memories, "minecraft:job_site"), offset);
 			}
 			break;
 		case "minecraft:witch":
 		case "minecraft:vindicator":
 		case "minecraft:illusioner":
 		case "minecraft:evoker":
-			CompoundTag patrolTarget = Helper.tagFromCompound(entity, "PatrolTarget");
-			Helper.applyIntOffsetIfRootPresent(patrolTarget, "X", "Y", "Z", offset);
+			CompoundTag patrolTarget = NbtHelper.tagFromCompound(entity, "PatrolTarget");
+			NbtHelper.applyIntOffsetIfRootPresent(patrolTarget, "X", "Y", "Z", offset);
 			break;
 		case "minecraft:falling_block":
-			CompoundTag tileEntityData = Helper.tagFromCompound(entity, "TileEntityData");
+			CompoundTag tileEntityData = NbtHelper.tagFromCompound(entity, "TileEntityData");
 			applyOffsetToTileEntity(tileEntityData, offset);
 		}
 
 		// recursively update passengers
-		ListTag passengers = Helper.tagFromCompound(entity, "Passengers");
+		ListTag passengers = NbtHelper.tagFromCompound(entity, "Passengers");
 		if (passengers != null) {
 			passengers.forEach(p -> applyOffsetToEntity((CompoundTag) p, offset));
 		}
 
-		Helper.fixEntityUUID(entity);
+		NbtHelper.fixEntityUUID(entity);
 	}
 
 	private void applyOffsetToVillagerMemory(CompoundTag memory, Point3i offset) {
-		IntArrayTag mPos = Helper.tagFromCompound(memory, "pos");
-		Helper.applyOffsetToIntArrayPos(mPos, offset);
+		IntArrayTag mPos = NbtHelper.tagFromCompound(memory, "pos");
+		NbtHelper.applyOffsetToIntArrayPos(mPos, offset);
 		if (mPos == null) {
-			ListTag lPos = Helper.tagFromCompound(memory, "pos");
-			Helper.applyOffsetToIntListPos(lPos, offset);
+			ListTag lPos = NbtHelper.tagFromCompound(memory, "pos");
+			NbtHelper.applyOffsetToIntListPos(lPos, offset);
 		}
 	}
 
@@ -174,7 +174,7 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 		Point3i chunkOffset = offset.blockToChunk();
 
 		// update references
-		CompoundTag references = Helper.tagFromCompound(structures, "References");
+		CompoundTag references = NbtHelper.tagFromCompound(structures, "References");
 		if (references != null) {
 			for (Map.Entry<String, Tag> entry : references) {
 				long[] reference = silent(() -> ((LongArrayTag) entry.getValue()).getValue(), null);
@@ -189,41 +189,41 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 		}
 
 		// update starts
-		CompoundTag starts = Helper.tagFromCompound(structures, "Starts");
+		CompoundTag starts = NbtHelper.tagFromCompound(structures, "Starts");
 		if (starts != null) {
 			for (Map.Entry<String, Tag> entry : starts) {
 				CompoundTag structure = silent(() -> (CompoundTag) entry.getValue(), null);
-				if ("INVALID".equals(Helper.stringFromCompound(structure, "id"))) {
+				if ("INVALID".equals(NbtHelper.stringFromCompound(structure, "id"))) {
 					continue;
 				}
-				Helper.applyIntIfPresent(structure, "ChunkX", chunkOffset.getX());
-				Helper.applyIntIfPresent(structure, "ChunkZ", chunkOffset.getZ());
-				Helper.applyOffsetToBB(Helper.intArrayFromCompound(structure, "BB"), offset);
+				NbtHelper.applyIntIfPresent(structure, "ChunkX", chunkOffset.getX());
+				NbtHelper.applyIntIfPresent(structure, "ChunkZ", chunkOffset.getZ());
+				NbtHelper.applyOffsetToBB(NbtHelper.intArrayFromCompound(structure, "BB"), offset);
 
-				ListTag processed = Helper.tagFromCompound(structure, "Processed");
+				ListTag processed = NbtHelper.tagFromCompound(structure, "Processed");
 				if (processed != null) {
 					for (CompoundTag chunk : processed.iterateType(CompoundTag.TYPE)) {
-						Helper.applyIntIfPresent(chunk, "X", chunkOffset.getX());
-						Helper.applyIntIfPresent(chunk, "Z", chunkOffset.getZ());
+						NbtHelper.applyIntIfPresent(chunk, "X", chunkOffset.getX());
+						NbtHelper.applyIntIfPresent(chunk, "Z", chunkOffset.getZ());
 					}
 				}
 
-				ListTag children = Helper.tagFromCompound(structure, "Children");
+				ListTag children = NbtHelper.tagFromCompound(structure, "Children");
 				if (children != null) {
 					for (CompoundTag child : children.iterateType(CompoundTag.TYPE)) {
-						Helper.applyIntOffsetIfRootPresent(child, "TPX", "TPY", "TPZ", offset);
-						Helper.applyIntOffsetIfRootPresent(child, "PosX", "PosY", "PosZ", offset);
-						Helper.applyOffsetToBB(Helper.intArrayFromCompound(child, "BB"), offset);
+						NbtHelper.applyIntOffsetIfRootPresent(child, "TPX", "TPY", "TPZ", offset);
+						NbtHelper.applyIntOffsetIfRootPresent(child, "PosX", "PosY", "PosZ", offset);
+						NbtHelper.applyOffsetToBB(NbtHelper.intArrayFromCompound(child, "BB"), offset);
 
-						ListTag entrances = Helper.tagFromCompound(child, "Entrances");
+						ListTag entrances = NbtHelper.tagFromCompound(child, "Entrances");
 						if (entrances != null) {
-							entrances.forEach(e -> Helper.applyOffsetToBB(((IntArrayTag) e).getValue(), offset));
+							entrances.forEach(e -> NbtHelper.applyOffsetToBB(((IntArrayTag) e).getValue(), offset));
 						}
 
-						ListTag junctions = Helper.tagFromCompound(child, "junctions");
+						ListTag junctions = NbtHelper.tagFromCompound(child, "junctions");
 						if (junctions != null) {
 							for (CompoundTag junction : junctions.iterateType(CompoundTag.TYPE)) {
-								Helper.applyIntOffsetIfRootPresent(junction, "source_x", "source_y", "source_z", offset);
+								NbtHelper.applyIntOffsetIfRootPresent(junction, "source_x", "source_y", "source_z", offset);
 							}
 						}
 					}
@@ -234,7 +234,7 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 	}
 
 	private void applyOffsetToTick(CompoundTag tick, Point3i offset) {
-		Helper.applyIntOffsetIfRootPresent(tick, "x", "y", "z", offset);
+		NbtHelper.applyIntOffsetIfRootPresent(tick, "x", "y", "z", offset);
 	}
 
 	private void applyOffsetToTileEntity(CompoundTag tileEntity, Point3i offset) {
@@ -242,22 +242,22 @@ public class Anvil113ChunkRelocator implements ChunkRelocator {
 			return;
 		}
 
-		Helper.applyIntOffsetIfRootPresent(tileEntity, "x", "y", "z", offset);
+		NbtHelper.applyIntOffsetIfRootPresent(tileEntity, "x", "y", "z", offset);
 
-		String id = Helper.stringFromCompound(tileEntity, "id", "");
+		String id = NbtHelper.stringFromCompound(tileEntity, "id", "");
 		switch (id) {
 		case "minecraft:end_gateway":
-			CompoundTag exitPortal = Helper.tagFromCompound(tileEntity, "ExitPortal");
-			Helper.applyIntOffsetIfRootPresent(exitPortal, "X", "Y", "Z", offset);
+			CompoundTag exitPortal = NbtHelper.tagFromCompound(tileEntity, "ExitPortal");
+			NbtHelper.applyIntOffsetIfRootPresent(exitPortal, "X", "Y", "Z", offset);
 			break;
 		case "minecraft:structure_block":
-			Helper.applyIntOffsetIfRootPresent(tileEntity, "posX", "posY", "posZ", offset);
+			NbtHelper.applyIntOffsetIfRootPresent(tileEntity, "posX", "posY", "posZ", offset);
 			break;
 		case "minecraft:mob_spawner":
-			ListTag spawnPotentials = Helper.tagFromCompound(tileEntity, "SpawnPotentials");
+			ListTag spawnPotentials = NbtHelper.tagFromCompound(tileEntity, "SpawnPotentials");
 			if (spawnPotentials != null) {
 				for (CompoundTag spawnPotential : spawnPotentials.iterateType(CompoundTag.TYPE)) {
-					CompoundTag entity = Helper.tagFromCompound(spawnPotential, "Entity");
+					CompoundTag entity = NbtHelper.tagFromCompound(spawnPotential, "Entity");
 					applyOffsetToEntity(entity, offset);
 				}
 			}

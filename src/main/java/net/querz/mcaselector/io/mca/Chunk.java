@@ -13,6 +13,7 @@ import net.querz.nbt.CompoundTag;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
@@ -27,7 +29,7 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-public abstract class Chunk {
+public abstract class Chunk implements Cloneable {
 
 	protected int timestamp;
 	protected CompoundTag data;
@@ -82,39 +84,40 @@ public abstract class Chunk {
 		}
 	}
 
-	public int save(RandomAccessFile raf) throws IOException {
-		ExposedByteArrayOutputStream baos = null;
+	public int save(DataOutput out) throws IOException {
+		if (data == null) {
+			throw new IllegalStateException("Can't save unloaded chunk");
+		}
 
-		DataOutputStream nbtOut = switch (compressionType) {
-			case GZIP, GZIP_EXT -> new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(baos = new ExposedByteArrayOutputStream())));
-			case ZLIB, ZLIB_EXT -> new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(baos = new ExposedByteArrayOutputStream())));
-			case NONE, NONE_EXT -> new DataOutputStream(new BufferedOutputStream(baos = new ExposedByteArrayOutputStream()));
-		};
+		ExposedByteArrayOutputStream baos = new ExposedByteArrayOutputStream();
+
+		// CHECK DataOutputStream wrapper unnecessary?
+		DataOutputStream nbtOut = new DataOutputStream(new BufferedOutputStream(switch (compressionType) {
+			case GZIP, GZIP_EXT -> new GZIPOutputStream(baos);
+			case ZLIB, ZLIB_EXT -> new DeflaterOutputStream(baos);
+			case NONE, NONE_EXT -> baos;
+		}));
 
 		new NBTWriter().write(nbtOut, data);
 		nbtOut.close();
 
 		// save mcc file if chunk doesn't fit in mca file
-		if (baos.size() > 1048576) {
+		if (baos.size() > 1048576) { // XXX magic number
 			// if the chunk's version is below 2203, we throw an exception instead
-			Integer dataVersion = ValidationHelper.withDefault(() -> data.getInt("DataVersion"), null);
-			if (dataVersion == null) {
-				throw new RuntimeException("no DataVersion for oversized chunk");
-			}
-			if (dataVersion < 2203) {
+			if (getDataVersion() < 2203) { // XXX magic number
 				throw new RuntimeException("chunk at " + absoluteLocation + " is oversized and can't be saved when DataVersion is below 2203");
 			}
 
-			raf.writeInt(1);
-			raf.writeByte(compressionType.getExternal().getByte());
+			out.writeInt(1);
+			out.writeByte(compressionType.getExternal().getByte());
 			try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(getMCCFile()), baos.size())) {
 				bos.write(baos.getBuffer(), 0, baos.size());
 			}
-			return 5;
+			return 5; // XXX magic number
 		} else {
-			raf.writeInt(baos.size() + 1); // length includes the compression type byte
-			raf.writeByte(compressionType.getByte());
-			raf.write(baos.getBuffer(), 0, baos.size());
+			out.writeInt(baos.size() + 1); // length includes the compression type byte
+			out.writeByte(compressionType.getByte());
+			out.write(baos.getBuffer(), 0, baos.size());
 			return baos.size() + 5; // data length + 1 compression type byte + 4 length bytes
 		}
 	}
@@ -135,6 +138,15 @@ public abstract class Chunk {
 
 	public void setData(CompoundTag data) {
 		this.data = data;
+	}
+
+	public int getDataVersion() {
+		int dataVersion = data.getInt("DataVersion");
+		if (dataVersion == 0) {
+			// FIXME upstream NBT's primitive getters should fail fast instead
+			throw new NoSuchElementException("Chunk NBT does not have DataVersion property");
+		}
+		return dataVersion;
 	}
 
 	public CompressionType getCompressionType() {
@@ -160,7 +172,7 @@ public abstract class Chunk {
 	@Override
 	public String toString() {
 		String s = NBTUtil.toSNBT(data);
-		return "<absoluteLoaction=" + absoluteLocation + ", compressionType=" + compressionType + ", data=" + s + ">";
+		return "<absoluteLocation=" + absoluteLocation + ", compressionType=" + compressionType + ", data=" + s + ">";
 	}
 
 	protected <T extends Chunk> T clone(Function<Point2i, T> chunkConstructor) {
@@ -172,4 +184,7 @@ public abstract class Chunk {
 		}
 		return clone;
 	}
+
+	public abstract Chunk clone();
+
 }

@@ -15,7 +15,7 @@ public class InhabitedTimeField extends Field<Long> {
 
 	@Override
 	public Long getOldValue(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		LongTag inhabitedTime = chunkFilter.getInhabitedTime(data.region().getData());
 		return inhabitedTime == null ? null : inhabitedTime.asLong();
 	}
@@ -31,17 +31,12 @@ public class InhabitedTimeField extends Field<Long> {
 	}
 
 	@Override
-	public void change(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+	public void change(ChunkData data, boolean force) {
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		LongTag tag = chunkFilter.getInhabitedTime(data.region().getData());
-		if (tag != null) {
+		if (tag != null || force) {
 			chunkFilter.setInhabitedTime(data.region().getData(), getNewValue());
 		}
 	}
 
-	@Override
-	public void force(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
-		chunkFilter.setInhabitedTime(data.region().getData(), getNewValue());
-	}
 }

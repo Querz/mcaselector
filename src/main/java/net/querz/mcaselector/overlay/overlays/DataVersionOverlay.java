@@ -15,7 +15,7 @@ public class DataVersionOverlay extends Overlay {
 		if (chunkData.region() == null || chunkData.region().getData() == null) {
 			return 0;
 		}
-		return chunkData.region().getData().getInt("DataVersion");
+		return chunkData.getDataVersion();
 	}
 
 	@Override

@@ -12,7 +12,7 @@ import net.querz.nbt.CompoundTag;
 import java.io.File;
 import java.util.List;
 
-public class RegionMCAFile extends MCAFile<RegionChunk> implements Cloneable {
+public class RegionMCAFile extends MCAFile<RegionChunk> {
 
 	public RegionMCAFile(File file) {
 		super(file, RegionChunk::new);
@@ -49,7 +49,7 @@ public class RegionMCAFile extends MCAFile<RegionChunk> implements Cloneable {
 			}
 
 			try {
-				ChunkRenderer chunkRenderer = VersionController.getChunkRenderer(chunk.data.getInt("DataVersion"));
+				ChunkRenderer chunkRenderer = VersionController.getChunkRenderer(chunk.getDataVersion());
 				CompoundTag minData = chunkRenderer.minimizeChunk(chunk.data);
 
 				RegionChunk minChunk = new RegionChunk(chunk.absoluteLocation.clone());

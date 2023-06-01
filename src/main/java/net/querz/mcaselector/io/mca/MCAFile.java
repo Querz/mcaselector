@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public abstract class MCAFile<T extends Chunk> {
+public abstract class MCAFile<T extends Chunk> implements Cloneable {
 
 	private static final Logger LOGGER = LogManager.getLogger(MCAFile.class);
 
@@ -450,16 +450,13 @@ public abstract class MCAFile<T extends Chunk> {
 					}
 
 					if (ranges != null) {
-						int sourceVersion = sourceChunk.getData().getInt("DataVersion");
-						if (sourceVersion == 0) {
-							continue;
-						}
+						int sourceVersion = sourceChunk.getDataVersion();
 
 						int destinationVersion;
 						if (destinationChunk == null || destinationChunk.isEmpty()) {
 							destinationChunk = chunkCreator.apply(destChunk, sourceVersion);
 							destination.chunks[destIndex] = destinationChunk;
-						} else if (sourceVersion != (destinationVersion = destinationChunk.getData().getInt("DataVersion"))) {
+						} else if (sourceVersion != (destinationVersion = destinationChunk.getDataVersion())) {
 							Point2i srcChunk = location.regionToChunk().add(x, z);
 							LOGGER.warn("failed to merge chunk at {} into chunk at {} because their DataVersion does not match ({} != {})",
 									srcChunk, destChunk, sourceVersion, destinationVersion);
@@ -557,4 +554,6 @@ public abstract class MCAFile<T extends Chunk> {
 		clone.timestamps = timestamps.clone();
 		return clone;
 	}
+
+	public abstract MCAFile<T> clone();
 }

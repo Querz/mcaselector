@@ -51,8 +51,8 @@ public class DeleteStructureField extends Field<List<String>> {
 	}
 
 	@Override
-	public void change(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+	public void change(ChunkData data, boolean force) {
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		CompoundTag references = chunkFilter.getStructureReferences(data.region().getData());
 		CompoundTag starts = chunkFilter.getStructureStarts(data.region().getData());
 		for (String structure : getNewValue()) {
@@ -61,11 +61,6 @@ public class DeleteStructureField extends Field<List<String>> {
 				starts.remove(alt);
 			}
 		}
-	}
-
-	@Override
-	public void force(ChunkData data) {
-		change(data);
 	}
 
 	@Override

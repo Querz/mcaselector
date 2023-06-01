@@ -4,7 +4,7 @@ import net.querz.mcaselector.math.Bits;
 import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkRenderer;
 import net.querz.mcaselector.version.ColorMapping;
-import net.querz.mcaselector.version.Helper;
+import net.querz.mcaselector.version.NbtHelper;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import static net.querz.mcaselector.validation.ValidationHelper.silent;
@@ -13,7 +13,7 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
-		ListTag sections = Helper.tagFromCompound(root, "sections");
+		ListTag sections = NbtHelper.tagFromCompound(root, "sections");
 		if (sections == null) {
 			return;
 		}
@@ -27,14 +27,14 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 		ListTag[] biomePalettes = new ListTag[sMax];
 		long[][] biomesArray = new long[sMax][];
 		sections.forEach(s -> {
-			ListTag p = Helper.tagFromCompound(Helper.tagFromCompound(s, "block_states"), "palette");
+			ListTag p = NbtHelper.tagFromCompound(NbtHelper.tagFromCompound(s, "block_states"), "palette");
 
-			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
+			int y = NbtHelper.numberFromCompound(s, "Y", -5).intValue();
 			if (y >= -4 && y < yMax && p != null) {
 				palettes[y + 4] = p;
-				blockStatesArray[y + 4] = Helper.longArrayFromCompound(Helper.tagFromCompound(s, "block_states"), "data");;
-				biomePalettes[y + 4] = Helper.tagFromCompound(Helper.tagFromCompound(s, "biomes"), "palette");
-				biomesArray[y + 4] = Helper.longArrayFromCompound(Helper.tagFromCompound(s, "biomes"), "data");
+				blockStatesArray[y + 4] = NbtHelper.longArrayFromCompound(NbtHelper.tagFromCompound(s, "block_states"), "data");;
+				biomePalettes[y + 4] = NbtHelper.tagFromCompound(NbtHelper.tagFromCompound(s, "biomes"), "palette");
+				biomesArray[y + 4] = NbtHelper.longArrayFromCompound(NbtHelper.tagFromCompound(s, "biomes"), "data");
 			}
 		});
 
@@ -112,14 +112,14 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawLayer(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int height) {
-		ListTag sections = Helper.tagFromCompound(root, "sections");
+		ListTag sections = NbtHelper.tagFromCompound(root, "sections");
 		if (sections == null) {
 			return;
 		}
 
 		CompoundTag section = null;
 		for (CompoundTag s : sections.iterateType(CompoundTag.TYPE)) {
-			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
+			int y = NbtHelper.numberFromCompound(s, "Y", -5).intValue();
 			if (y == height >> 4) {
 				section = s;
 				break;
@@ -130,14 +130,14 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 		}
 
 
-		ListTag palette = Helper.tagFromCompound(Helper.tagFromCompound(section, "block_states"), "palette");
-		long[] blockStates = Helper.longArrayFromCompound(Helper.tagFromCompound(section, "block_states"), "data");
+		ListTag palette = NbtHelper.tagFromCompound(NbtHelper.tagFromCompound(section, "block_states"), "palette");
+		long[] blockStates = NbtHelper.longArrayFromCompound(NbtHelper.tagFromCompound(section, "block_states"), "data");
 		if (palette == null) {
 			return;
 		}
 
-		ListTag biomesPalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
-		long[] biomeIndices = Helper.longArrayFromCompound(Helper.tagFromCompound(section, "biomes"), "data");
+		ListTag biomesPalette = NbtHelper.tagFromCompound(NbtHelper.tagFromCompound(section, "biomes"), "palette");
+		long[] biomeIndices = NbtHelper.longArrayFromCompound(NbtHelper.tagFromCompound(section, "biomes"), "data");
 
 		height = height + 64;
 
@@ -167,7 +167,7 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public void drawCaves(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, short[] terrainHeights, int height) {
-		ListTag sections = Helper.tagFromCompound(root, "sections");
+		ListTag sections = NbtHelper.tagFromCompound(root, "sections");
 		if (sections == null) {
 			return;
 		}
@@ -181,14 +181,14 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 		ListTag[] biomePalettes = new ListTag[sMax];
 		long[][] biomesArray = new long[sMax][];
 		sections.forEach(s -> {
-			ListTag p = Helper.tagFromCompound(Helper.tagFromCompound(s, "block_states"), "palette");
+			ListTag p = NbtHelper.tagFromCompound(NbtHelper.tagFromCompound(s, "block_states"), "palette");
 
-			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
+			int y = NbtHelper.numberFromCompound(s, "Y", -5).intValue();
 			if (y >= -4 && y < yMax && p != null) {
 				palettes[y + 4] = p;
-				blockStatesArray[y + 4] = Helper.longArrayFromCompound(Helper.tagFromCompound(s, "block_states"), "data");
-				biomePalettes[y + 4] = Helper.tagFromCompound(Helper.tagFromCompound(s, "biomes"), "palette");
-				biomesArray[y + 4] = Helper.longArrayFromCompound(Helper.tagFromCompound(s, "biomes"), "data");
+				blockStatesArray[y + 4] = NbtHelper.longArrayFromCompound(NbtHelper.tagFromCompound(s, "block_states"), "data");
+				biomePalettes[y + 4] = NbtHelper.tagFromCompound(NbtHelper.tagFromCompound(s, "biomes"), "palette");
+				biomesArray[y + 4] = NbtHelper.longArrayFromCompound(NbtHelper.tagFromCompound(s, "biomes"), "data");
 			}
 		});
 
@@ -253,7 +253,7 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 
 	@Override
 	public CompoundTag minimizeChunk(CompoundTag root) {
-		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
+		Integer dataVersion = NbtHelper.intFromCompound(root, "DataVersion");
 		if (dataVersion == null) {
 			return root;
 		}
@@ -271,18 +271,18 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 	}
 
 	private boolean isWater(CompoundTag blockData) {
-		return switch (Helper.stringFromCompound(blockData, "Name", "")) {
+		return switch (NbtHelper.stringFromCompound(blockData, "Name", "")) {
 			case "minecraft:water", "minecraft:bubble_column" -> true;
 			default -> false;
 		};
 	}
 
 	private boolean isWaterlogged(CompoundTag data) {
-		return data.get("Properties") != null && "true".equals(Helper.stringFromCompound(Helper.tagFromCompound(data, "Properties"), "waterlogged", null));
+		return data.get("Properties") != null && "true".equals(NbtHelper.stringFromCompound(NbtHelper.tagFromCompound(data, "Properties"), "waterlogged", null));
 	}
 
 	private boolean isEmpty(CompoundTag blockData) {
-		return switch (Helper.stringFromCompound(blockData, "Name", "")) {
+		return switch (NbtHelper.stringFromCompound(blockData, "Name", "")) {
 			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void", "minecraft:light" -> blockData.size() == 1;
 			default -> false;
 		};
@@ -290,7 +290,7 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 
 	private boolean isEmptyOrFoliage(CompoundTag blockData, ColorMapping colorMapping) {
 		String name;
-		return switch (name = Helper.stringFromCompound(blockData, "Name", "")) {
+		return switch (name = NbtHelper.stringFromCompound(blockData, "Name", "")) {
 			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void", "minecraft:light", "minecraft:snow" -> blockData.size() == 1;
 			default -> colorMapping.isFoliage(name);
 		};

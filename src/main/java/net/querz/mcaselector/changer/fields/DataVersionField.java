@@ -14,7 +14,7 @@ public class DataVersionField extends Field<Integer> {
 
 	@Override
 	public Integer getOldValue(ChunkData data) {
-		return ValidationHelper.withDefault(() -> data.region().getData().getInt("DataVersion"), null);
+		return ValidationHelper.withDefault(data::getDataVersion, null);
 	}
 
 	@Override
@@ -31,37 +31,25 @@ public class DataVersionField extends Field<Integer> {
 	}
 
 	@Override
-	public void change(ChunkData data) {
+	public void change(ChunkData data, boolean force) {
 		IntTag tag = data.region().getData().getIntTag("DataVersion");
-		if (tag != null) {
+		if (tag != null || force) {
 			data.region().getData().putInt("DataVersion", getNewValue());
 		}
 
 		if (data.poi() != null) {
 			tag = data.poi().getData().getIntTag("DataVersion");
-			if (tag != null) {
+			if (tag != null || force) {
 				data.region().getData().putInt("DataVersion", getNewValue());
 			}
 		}
 
 		if (data.entities() != null) {
 			tag = data.entities().getData().getIntTag("DataVersion");
-			if (tag != null) {
+			if (tag != null || force) {
 				data.region().getData().putInt("DataVersion", getNewValue());
 			}
 		}
 	}
-
-	@Override
-	public void force(ChunkData data) {
-		data.region().getData().putInt("DataVersion", getNewValue());
-
-		if (data.poi() != null) {
-			data.poi().getData().putInt("DataVersion", getNewValue());
-		}
-
-		if (data.entities() != null) {
-			data.entities().getData().putInt("DataVersion", getNewValue());
-		}
-	}
+	
 }

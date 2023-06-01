@@ -21,7 +21,7 @@ public class LastUpdateOverlay extends Overlay {
 
 	@Override
 	public int parseValue(ChunkData chunkData) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.getDataVersion());
 		LongTag tag = chunkFilter.getLastUpdate(chunkData.region().getData());
 		return tag == null ? 0 : tag.asInt();
 	}

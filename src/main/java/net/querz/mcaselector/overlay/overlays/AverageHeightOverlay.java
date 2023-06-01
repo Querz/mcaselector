@@ -20,7 +20,7 @@ public class AverageHeightOverlay extends Overlay {
 		if (chunkData.region() == null || chunkData.region().getData() == null) {
 			return 0;
 		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.getDataVersion());
 		return chunkFilter.getAverageHeight(chunkData.region().getData());
 	}
 

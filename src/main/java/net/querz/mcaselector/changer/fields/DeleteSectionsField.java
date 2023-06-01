@@ -38,21 +38,16 @@ public class DeleteSectionsField extends Field<List<Range>> {
 	}
 
 	@Override
-	public void change(ChunkData data) {
+	public void change(ChunkData data, boolean force) {
 		if (data.region() != null && data.region().getData() != null) {
-			ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+			ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 			chunkFilter.deleteSections(data.region().getData(), getNewValue());
 		}
 		// delete entities and poi as well
 		if (data.entities() != null && data.entities().getData() != null) {
-			EntityFilter entityFilter = VersionController.getEntityFilter(data.entities().getData().getInt("DataVersion"));
+			EntityFilter entityFilter = VersionController.getEntityFilter(data.getDataVersion());
 			entityFilter.deleteEntities(data, getNewValue());
 		}
-	}
-
-	@Override
-	public void force(ChunkData data) {
-		change(data);
 	}
 
 	@Override

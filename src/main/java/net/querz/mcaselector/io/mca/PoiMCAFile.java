@@ -11,7 +11,7 @@ import net.querz.nbt.CompoundTag;
 import java.io.File;
 import java.util.List;
 
-public class PoiMCAFile extends MCAFile<PoiChunk> implements Cloneable {
+public class PoiMCAFile extends MCAFile<PoiChunk> {
 
 	public PoiMCAFile(File file) {
 		super(file, PoiChunk::new);

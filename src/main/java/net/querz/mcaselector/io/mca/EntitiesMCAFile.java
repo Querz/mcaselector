@@ -11,7 +11,7 @@ import net.querz.nbt.CompoundTag;
 import java.io.File;
 import java.util.List;
 
-public class EntitiesMCAFile extends MCAFile<EntitiesChunk> implements Cloneable {
+public class EntitiesMCAFile extends MCAFile<EntitiesChunk> {
 
 	public EntitiesMCAFile(File file) {
 		super(file, EntitiesChunk::new);

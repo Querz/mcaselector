@@ -3,7 +3,7 @@ package net.querz.mcaselector.version.anvil117;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.version.EntityFilter;
-import net.querz.mcaselector.version.Helper;
+import net.querz.mcaselector.version.NbtHelper;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import java.util.List;
@@ -12,11 +12,11 @@ public class Anvil117EntityFilter implements EntityFilter {
 
 	@Override
 	public void deleteEntities(ChunkData data, List<Range> ranges) {
-		ListTag entities = Helper.tagFromLevelFromRoot(data.entities().getData(), "Entities", null);
+		ListTag entities = NbtHelper.tagFromLevelFromRoot(data.entities().getData(), "Entities", null);
 		deleteEntities(entities, ranges);
 
 		// delete proto-entities
-		ListTag protoEntities = Helper.tagFromLevelFromRoot(data.region().getData(), "Entities", null);
+		ListTag protoEntities = NbtHelper.tagFromLevelFromRoot(data.region().getData(), "Entities", null);
 		deleteEntities(protoEntities, ranges);
 	}
 
@@ -30,7 +30,7 @@ public class Anvil117EntityFilter implements EntityFilter {
 			for (int i = 0; i < entities.size(); i++) {
 				CompoundTag entity = entities.getCompound(i);
 				for (Range range : ranges) {
-					ListTag entityPos = Helper.tagFromCompound(entity, "Pos");
+					ListTag entityPos = NbtHelper.tagFromCompound(entity, "Pos");
 					if (entityPos != null && entityPos.size() == 3) {
 						if (range.contains(entityPos.getInt(1) >> 4)) {
 							entities.remove(i);
@@ -47,6 +47,6 @@ public class Anvil117EntityFilter implements EntityFilter {
 		if (data.entities() == null) {
 			return null;
 		}
-		return Helper.tagFromCompound(data.entities().getData(), "Entities", null);
+		return NbtHelper.tagFromCompound(data.entities().getData(), "Entities", null);
 	}
 }

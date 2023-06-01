@@ -26,12 +26,8 @@ public class DeleteEntitiesField extends Field<Boolean> {
 	}
 
 	@Override
-	public void change(ChunkData data) {
-		VersionController.getEntityFilter(data.region().getData().getInt("DataVersion")).deleteEntities(data, null);
+	public void change(ChunkData data, boolean force) {
+		VersionController.getEntityFilter(data.getDataVersion()).deleteEntities(data, null);
 	}
 
-	@Override
-	public void force(ChunkData data) {
-		change(data);
-	}
 }

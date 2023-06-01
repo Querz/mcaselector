@@ -11,7 +11,7 @@ import net.querz.nbt.CompoundTag;
 import java.io.File;
 import java.util.List;
 
-public class EntitiesChunk extends Chunk implements Cloneable {
+public class EntitiesChunk extends Chunk {
 
 	public EntitiesChunk(Point2i absoluteLocation) {
 		super(absoluteLocation);

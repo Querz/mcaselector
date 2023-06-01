@@ -31,14 +31,14 @@ public class ReferenceField extends Field<Boolean> {
 	}
 
 	@Override
-	public void change(ChunkData data) {
+	public void change(ChunkData data, boolean force) {
 		if (!getNewValue()) {
 			return;
 		}
 
 		// attempt to fix chunk coordinates of structure references
 
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		CompoundTag references = chunkFilter.getStructureReferences(data.region().getData());
 		int xPos = chunkFilter.getXPos(data.region().getData()).asInt();
 		int zPos = chunkFilter.getZPos(data.region().getData()).asInt();
@@ -57,8 +57,4 @@ public class ReferenceField extends Field<Boolean> {
 		}
 	}
 
-	@Override
-	public void force(ChunkData data) {
-		change(data);
-	}
 }

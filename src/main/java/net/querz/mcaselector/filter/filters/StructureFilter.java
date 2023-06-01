@@ -27,7 +27,7 @@ public class StructureFilter extends TextFilter<List<String>> {
 		if (data.region() == null || data.region().getData() == null) {
 			return false;
 		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		CompoundTag references = chunkFilter.getStructureReferences(data.region().getData());
 		if (references == null) {
 			return false;
@@ -56,7 +56,7 @@ public class StructureFilter extends TextFilter<List<String>> {
 		if (data.region() == null || data.region().getData() == null) {
 			return false;
 		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.getDataVersion());
 		CompoundTag references = chunkFilter.getStructureReferences(data.region().getData());
 		if (references == null) {
 			return false;
