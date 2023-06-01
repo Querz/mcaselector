@@ -11,6 +11,9 @@ menu.selection;Selectie
 menu.tools;Gereedschap
 menu.about;Over
 menu.file.open_world;Open een wereld
+menu.file.open_dimension;Een andere dimensie openen
+menu.file.open_recent_world;Een vorige wereld openen
+menu.file.open_recent_world.clear;Wissen
 menu.file.settings;Instellingen
 menu.file.render_settings;Renderinstellingen
 menu.file.quit;Stoppen

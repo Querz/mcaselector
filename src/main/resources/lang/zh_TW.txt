@@ -11,6 +11,9 @@ menu.selection;選擇
 menu.tools;工具
 menu.about;關於
 menu.file.open_world;打開世界
+menu.file.open_dimension;打開另一個維度
+menu.file.open_recent_world;打開一個以前的世界
+menu.file.open_recent_world.clear;重置
 menu.file.settings;設置
 menu.file.render_settings;渲染設置
 menu.file.quit;退出

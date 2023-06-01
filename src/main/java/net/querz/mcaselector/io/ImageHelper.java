@@ -1,26 +1,22 @@
 package net.querz.mcaselector.io;
 
-import ar.com.hjg.pngj.FilterType;
-import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.ImageLineHelper;
-import ar.com.hjg.pngj.ImageLineInt;
-import ar.com.hjg.pngj.PngWriter;
-import javafx.scene.image.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.tile.Tile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.awt.*;
+
+import javax.imageio.ImageIO;
+import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 public final class ImageHelper {
 
@@ -124,31 +120,25 @@ public final class ImageHelper {
 	}
 
 	public static void saveImageData(int[] data, int width, int height, File file, Progress progressChannel) throws IOException {
-		progressChannel.setMax(height);
+		progressChannel.setMax(height + 1); // +1 for the writing of the file
 		progressChannel.updateProgress("", 0);
 
 		Timer t = new Timer();
 
-		ImageInfo imi = new ImageInfo(width, height, 8, true); // 8 bits per channel, alpha
+		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
-		try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file), 65536)) {
-			PngWriter png = new PngWriter(bos, imi);
-			png.setFilterType(FilterType.FILTER_ADAPTIVE_FAST);
-
-			for (int row = 0; row < png.imgInfo.rows && !progressChannel.taskCancelled(); row++) {
-				ImageLineInt iline = new ImageLineInt(imi);
-				int[] copy = Arrays.copyOfRange(data, row * width, row * width + width);
-				ImageLineHelper.setPixelsRGBA8(iline, copy);
-				png.writeRow(iline);
-
-				progressChannel.incrementProgress("");
+		for (int y = 0; y < height && !progressChannel.taskCancelled(); y++) {
+			int start = y * width;
+			for (int x = 0; x < width; x++) {
+				img.setRGB(x, y, data[start + x]);
 			}
-
-			png.end();
-
-		} finally {
-			progressChannel.done("done");
-			LOGGER.debug("took {} to save image {}", t, file);
+			progressChannel.incrementProgress("");
 		}
+
+		ImageIO.write(img, "png", file);
+		progressChannel.incrementProgress("");
+
+		progressChannel.done("done");
+		LOGGER.debug("took {} to save image {}", t, file);
 	}
 }

@@ -2,7 +2,9 @@ package net.querz.mcaselector.io.job;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.Config;
+import net.querz.mcaselector.config.ConfigProvider;
+import net.querz.mcaselector.config.WorldConfig;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.tile.Tile;
@@ -54,7 +56,7 @@ public final class RegionImageGenerator {
 			}
 			if (cacheEligibilityChecker != null && cacheEligibilityChecker.apply(regionMCAFile.getLocation())) {
 				if (!cachedMCAFiles.containsKey(regionMCAFile.getLocation())) {
-					if (cachedMCAFiles.size() >= Config.getMaxLoadedFiles()) {
+					if (cachedMCAFiles.size() >= ConfigProvider.GLOBAL.getMaxLoadedFiles()) {
 						cachedMCAFiles.remove(cachedMCAFiles.keySet().iterator().next());
 					}
 					cachedMCAFiles.put(regionMCAFile.getLocation(), regionMCAFile.minimizeForRendering());
@@ -104,21 +106,23 @@ public final class RegionImageGenerator {
 		private final boolean caves;
 
 		private UniqueID() {
-			this.world = Config.getWorldUUID();
-			this.height = Config.getRenderHeight();
-			this.layerOnly = Config.renderLayerOnly();
-			this.shade = Config.shade();
-			this.shadeWater = Config.shadeWater();
-			this.caves = Config.renderCaves();
+			WorldConfig worldConfig = ConfigProvider.WORLD;
+			this.world = worldConfig.getWorldUUID();
+			this.height = worldConfig.getRenderHeight();
+			this.layerOnly = worldConfig.getRenderLayerOnly();
+			this.shade = worldConfig.getShade();
+			this.shadeWater = worldConfig.getShadeWater();
+			this.caves = worldConfig.getRenderCaves();
 		}
 
 		public boolean matchesCurrentConfig() {
-			return world.equals(Config.getWorldUUID())
-					&& height == Config.getRenderHeight()
-					&& layerOnly == Config.renderLayerOnly()
-					&& shade == Config.shade()
-					&& shadeWater == Config.shadeWater()
-					&& caves == Config.renderCaves();
+			WorldConfig worldConfig = ConfigProvider.WORLD;
+			return world.equals(worldConfig.getWorldUUID())
+					&& height == worldConfig.getRenderHeight()
+					&& layerOnly == worldConfig.getRenderLayerOnly()
+					&& shade == worldConfig.getShade()
+					&& shadeWater == worldConfig.getShadeWater()
+					&& caves == worldConfig.getRenderCaves();
 		}
 	}
 
@@ -180,7 +184,7 @@ public final class RegionImageGenerator {
 			}
 
 			if (zoomLevel == null) {
-				for (int z = Config.getMinZoomLevel(); z <= Config.getMaxZoomLevel(); z *= 2) {
+				for (int z = Config.MIN_ZOOM_LEVEL; z <= Config.MAX_ZOOM_LEVEL; z *= 2) {
 					Timer t = new Timer();
 					Image image = TileImage.generateImage(cachedRegion, z);
 					LOGGER.debug("took {} to generate image for region {}", t, tile.getLocation());
@@ -265,7 +269,7 @@ public final class RegionImageGenerator {
 			// save image to cache
 			try {
 				BufferedImage img = SwingFXUtils.fromFXImage(getData(), null);
-				File cacheFile = FileHelper.createPNGFilePath(Config.getCacheDir(zoomLevel), tile.getLocation());
+				File cacheFile = FileHelper.createPNGFilePath(ConfigProvider.WORLD.getCacheDir(zoomLevel), tile.getLocation());
 				if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
 					LOGGER.warn("failed to create cache directory for {}", cacheFile.getAbsolutePath());
 				}

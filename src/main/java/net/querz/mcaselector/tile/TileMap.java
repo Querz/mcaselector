@@ -15,7 +15,8 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
@@ -115,7 +116,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		super(width, height);
 		this.window = window;
 		context = getGraphicsContext2D();
-		context.setImageSmoothing(Config.smoothRendering());
+		context.setImageSmoothing(ConfigProvider.WORLD.getSmoothRendering());
 		context.setFont(Font.font("Monospaced", FontWeight.BOLD, null, 16));
 		setFocusTraversable(true);
 		this.setOnMousePressed(this::onMousePressed);
@@ -146,8 +147,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		overlayPool = new OverlayPool(this);
 		imgPool = new ImagePool(this, Config.IMAGE_POOL_SIZE);
 
-		setOverlays(Config.getOverlays());
-		showNonexistentRegions = Config.showNonExistentRegions();
+		setOverlays(ConfigProvider.OVERLAY.getOverlays());
+		showNonexistentRegions = ConfigProvider.WORLD.getShowNonexistentRegions();
 
 		RegionImageGenerator.setCacheEligibilityChecker(region -> {
 			DataProperty<Boolean> eligible = new DataProperty<>(false);
@@ -155,7 +156,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				if (region.equals(r)) {
 					eligible.set(true);
 				}
-			}, new Point2f(), () -> scale, Config.getMaxLoadedFiles());
+			}, new Point2f(), () -> scale, ConfigProvider.GLOBAL.getMaxLoadedFiles());
 			return eligible.get();
 		});
 
@@ -170,7 +171,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		updateService = Executors.newSingleThreadScheduledExecutor();
 		updateService.scheduleAtFixedRate(() -> {
 			try {
-				if (Config.getWorldDir() == null) {
+				if (ConfigProvider.WORLD.getRegionDir() == null) {
 					return;
 				}
 
@@ -601,7 +602,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 			WorldDirectories wd = FileHelper.testWorldDirectoriesValid(db.getFiles(), getWindow().getPrimaryStage());
 			if (wd != null) {
-				DialogHelper.setWorld(wd, this, window.getPrimaryStage());
+				DialogHelper.setWorld(wd, List.of(wd.getRegion().getParentFile()), this, window.getPrimaryStage());
 			}
 			event.setDropCompleted(true);
 		}
@@ -1047,7 +1048,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	private void drawPastedChunks(GraphicsContext ctx, Point2i region, Point2f pos) {
-		javafx.scene.paint.Color color = Config.getPasteChunksColor().makeJavaFXColor();
+		javafx.scene.paint.Color color = ConfigProvider.GLOBAL.getPasteChunksColor().makeJavaFXColor();
 		ctx.setFill(color);
 
 		if (pastedChunks.isRegionSelected(region.asLong())) {

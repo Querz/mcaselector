@@ -2,6 +2,8 @@ package net.querz.mcaselector;
 
 import net.querz.mcaselector.cli.CLIJFX;
 import net.querz.mcaselector.cli.ParamExecutor;
+import net.querz.mcaselector.config.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.text.Translation;
@@ -16,7 +18,7 @@ import java.util.concurrent.Future;
 public class Main {
 
 	public static void main(String[] args) throws ExecutionException, InterruptedException {
-		Logging.setLogDir(Config.getLogDir());
+		Logging.setLogDir(Config.BASE_LOG_DIR);
 		Logging.updateThreadContext();
 		Logger LOGGER = LogManager.getLogger(Main.class);
 
@@ -34,10 +36,11 @@ public class Main {
 			System.exit(0);
 		}
 
-		Config.loadFromIni();
-		ShutdownHooks.addShutdownHook(Config::exportConfig);
-		Translation.load(Config.getLocale());
-		Locale.setDefault(Config.getLocale());
+		ConfigProvider.loadGlobalConfig();
+		ConfigProvider.loadOverlayConfig();
+		ShutdownHooks.addShutdownHook(ConfigProvider::saveAll);
+		Translation.load(ConfigProvider.GLOBAL.getLocale());
+		Locale.setDefault(ConfigProvider.GLOBAL.getLocale());
 
 		Window.launch(Window.class, args);
 	}

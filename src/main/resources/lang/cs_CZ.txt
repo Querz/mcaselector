@@ -11,6 +11,9 @@ menu.selection;Výběr
 menu.tools;Nástroje
 menu.about;O aplikaci
 menu.file.open_world;Otevřete svět
+menu.file.open_dimension;Otevřete další Dimenzi
+menu.file.open_recent_world;Otevřít předchozí svět
+menu.file.open_recent_world.clear;Vyčistit
 menu.file.settings;Nastavení
 menu.file.render_settings;Nastavení vykreslování
 menu.file.quit;Opustit

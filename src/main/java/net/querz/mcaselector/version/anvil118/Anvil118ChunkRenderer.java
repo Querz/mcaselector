@@ -31,7 +31,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 		long[][] blockStatesArray = new long[sMax][];
 		ListTag[] biomePalettes = new ListTag[sMax];
 		long[][] biomesArray = new long[sMax][];
-		for (CompoundTag s : sections.iterateType(CompoundTag.TYPE)) {
+		for (CompoundTag s : sections.iterateType(CompoundTag.class)) {
 			ListTag p = LegacyHelper.getPalette(s, dataVersion);
 			long[] b = LegacyHelper.getBlockStates(s, dataVersion);
 
@@ -224,7 +224,7 @@ public class Anvil118ChunkRenderer implements ChunkRenderer {
 		long[][] blockStatesArray = new long[sMax][];
 		ListTag[] biomePalettes = new ListTag[sMax];
 		long[][] biomesArray = new long[sMax][];
-		for (CompoundTag s : sections.iterateType(CompoundTag.TYPE)) {
+		for (CompoundTag s : sections.iterateType(CompoundTag.class)) {
 			ListTag p = LegacyHelper.getPalette(s, dataVersion);
 			long[] b = LegacyHelper.getBlockStates(s, dataVersion);
 

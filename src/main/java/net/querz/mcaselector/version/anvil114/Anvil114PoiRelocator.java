@@ -26,10 +26,10 @@ public class Anvil114PoiRelocator implements ChunkRelocator {
 				continue;
 			}
 
-			if (section.containsKey("Records") && section.get("Records").getID() != Tag.LONG_ARRAY) {
+			if (section.containsKey("Records") && section.get("Records").getType() != Tag.Type.LONG_ARRAY) {
 				ListTag records = Helper.tagFromCompound(section, "Records");
 				if (records != null) {
-					for (CompoundTag record : records.iterateType(CompoundTag.TYPE)) {
+					for (CompoundTag record : records.iterateType(CompoundTag.class)) {
 						int[] pos = Helper.intArrayFromCompound(record, "pos");
 						Helper.applyOffsetToIntArrayPos(pos, offset);
 					}

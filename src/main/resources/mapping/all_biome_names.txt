@@ -1,4 +1,3 @@
-invalid
 badlands
 badlands_plateau
 bamboo_jungle
@@ -7,6 +6,7 @@ basalt_deltas
 beach
 birch_forest
 birch_forest_hills
+cherry_grove
 cold_ocean
 crimson_forest
 dark_forest
@@ -37,6 +37,7 @@ giant_tree_taiga_hills
 gravelly_mountains
 grove
 ice_spikes
+invalid
 jagged_peaks
 jungle
 jungle_edge

@@ -5,7 +5,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
@@ -77,7 +77,7 @@ public final class SelectionImageExporter {
 			Image image = null;
 
 			// test if the image is already in cache
-			File cacheImage = FileHelper.createPNGFilePath(Config.getCacheDir(), 1, getRegionDirectories().getLocation());
+			File cacheImage = FileHelper.createPNGFilePath(ConfigProvider.WORLD.getCacheDir(), 1, getRegionDirectories().getLocation());
 			File regionFile = FileHelper.createRegionMCAFilePath(getRegionDirectories().getLocation());
 			RegionMCAFile mcaFile = null;
 			if (cacheImage.exists()) {
@@ -113,7 +113,7 @@ public final class SelectionImageExporter {
 				// load overlay image
 				overlay = overlayPool.getImage(getRegionDirectories().getLocation(), mcaFile, null, null);
 				// scale up
-				BufferedImage scaled = ImageHelper.scaleImage(SwingFXUtils.fromFXImage(overlay, null), 512, Config.smoothOverlays());
+				BufferedImage scaled = ImageHelper.scaleImage(SwingFXUtils.fromFXImage(overlay, null), 512, ConfigProvider.WORLD.getSmoothOverlays());
 				overlay = SwingFXUtils.toFXImage(scaled, null);
 			}
 

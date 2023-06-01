@@ -11,6 +11,9 @@ menu.selection;選択
 menu.tools;ツール
 menu.about;詳細
 menu.file.open_world;ワールドを開く
+menu.file.open_dimension;別の次元を開く
+menu.file.open_recent_world;前の世界を開く
+menu.file.open_recent_world.clear;クリア
 menu.file.settings;設定
 menu.file.render_settings;描画設定
 menu.file.quit;終了

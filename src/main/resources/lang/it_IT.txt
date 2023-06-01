@@ -11,6 +11,9 @@ menu.selection;Selezione
 menu.tools;Strumenti
 menu.about;Info
 menu.file.open_world;Apri un mondo
+menu.file.open_dimension;Apri un'altra dimensione
+menu.file.open_recent_world;Aprire un mondo precedente
+menu.file.open_recent_world.clear;Svuota
 menu.file.settings;Impostazioni
 menu.file.render_settings;Impostazioni di rendering
 menu.file.quit;Esci

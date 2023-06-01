@@ -37,11 +37,11 @@ public class BlockAmountOverlay extends Overlay {
 		try {
 			int value = Integer.parseInt(raw);
 			if (value < MIN_VALUE || value > MAX_VALUE) {
-				return setMin((Integer) null);
+				return setMinInt((Integer) null);
 			}
-			return setMin(value);
+			return setMinInt(value);
 		} catch (NumberFormatException ex) {
-			return setMin((Integer) null);
+			return setMinInt((Integer) null);
 		}
 	}
 
@@ -51,16 +51,16 @@ public class BlockAmountOverlay extends Overlay {
 		try {
 			int value = Integer.parseInt(raw);
 			if (value < MIN_VALUE || value > MAX_VALUE) {
-				return setMax((Integer) null);
+				return setMaxInt((Integer) null);
 			}
-			return setMax(value);
+			return setMaxInt(value);
 		} catch (NumberFormatException ex) {
-			return setMax((Integer) null);
+			return setMaxInt((Integer) null);
 		}
 	}
 
 	@Override
-	public boolean setMultiValues(String raw) {
+	public boolean setMultiValuesString(String raw) {
 		if (raw == null) {
 			setMultiValues(new String[0]);
 			return false;

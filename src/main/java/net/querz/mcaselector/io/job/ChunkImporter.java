@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.JobHandler;
@@ -41,7 +41,7 @@ public final class ChunkImporter {
 
 	public static void importChunks(WorldDirectories source, Progress progressChannel, boolean cli, boolean overwrite, Selection sourceSelection, Selection targetSelection, List<Range> ranges, Point3i offset, DataProperty<Map<Point2i, RegionDirectories>> tempFiles) {
 		try {
-			WorldDirectories wd = Config.getWorldDirs();
+			WorldDirectories wd = ConfigProvider.WORLD.getWorldDirs();
 			RegionDirectories[] rd = wd.listRegions(targetSelection);
 			if (rd == null || rd.length == 0) {
 				if (cli) {
@@ -62,7 +62,7 @@ public final class ChunkImporter {
 
 			// if source world and target world is the same, we need to create temp files of all source files
 			Map<Point2i, RegionDirectories> tempFilesMap = null;
-			if (source.sharesDirectories(Config.getWorldDirs())) {
+			if (source.sharesDirectories(ConfigProvider.WORLD.getWorldDirs())) {
 				tempFilesMap = new HashMap<>();
 			}
 			tempFiles.set(tempFilesMap);
@@ -337,7 +337,7 @@ public final class ChunkImporter {
 
 				ChunkSet targetChunks = null;
 				if (targetSelection != null) {
-					targetChunks = sourceSelection.getSelectedChunks(target);
+					targetChunks = targetSelection.getSelectedChunks(target);
 				}
 
 				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMappingRegion.entrySet()) {
