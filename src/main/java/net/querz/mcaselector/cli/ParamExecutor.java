@@ -107,6 +107,11 @@ public final class ParamExecutor {
 			.desc("Whether to force NBT tags during NBT change")
 			.build());
 		options.addOption(Option.builder()
+			.longOpt("sections")
+			.desc("One or a range of section indices to import into the target world during chunk import")
+			.hasArg()
+			.build());
+		options.addOption(Option.builder()
 			.longOpt("render-height")
 			.desc("The highest Y level to render in image mode")
 			.hasArg()
@@ -340,7 +345,7 @@ public final class ParamExecutor {
 	private void printHelp() {
 		String[] helpOrder = new String[]{
 			"help", "version", "mode", "output", "query", "selection", "source-selection", "radius", "x-offset",
-			"y-offset", "z-offset", "overwrite", "force", "render-height", "render-caves", "render-layer-only",
+			"y-offset", "z-offset", "overwrite", "force", "sections", "render-height", "render-caves", "render-layer-only",
 			"render-shade", "render-water-shade", "overlay-type", "overlay-min-value", "overlay-max-value",
 			"overlay-data", "overlay-min-hue", "overlay-max-hue", "zoom-level", "world", "region", "poi", "entities",
 			"source-world", "source-region", "source-poi", "source-entities", "output-world", "output-region",
@@ -513,7 +518,7 @@ public final class ParamExecutor {
 			poi = parseDirAndCreate(poiName);
 		} else {
 			poi = new File(world, "poi");
-			if (!region.mkdirs()) {
+			if (!poi.mkdirs()) {
 				throw new ParseException(String.format("failed to create poi directory %s", poi));
 			}
 		}
