@@ -10,14 +10,14 @@ menu.view;檢視
 menu.selection;選擇
 menu.tools;工具
 menu.about;關於
-menu.file.open_world;打開世界
+menu.file.open_world;開啟世界
 menu.file.open_dimension;打開另一個維度
 menu.file.open_recent_world;打開一個以前的世界
 menu.file.open_recent_world.clear;重置
-menu.file.settings;設置
-menu.file.render_settings;渲染設置
+menu.file.settings;設定
+menu.file.render_settings;渲染設定
 menu.file.quit;退出
-menu.view.reload;重新加載
+menu.view.reload;重新載入
 menu.view.chunk_grid;區塊網格
 menu.view.region_grid;區域網格
 menu.view.coordinates;坐標
@@ -46,16 +46,16 @@ menu.tools.edit_overlays;編輯疊加
 menu.tools.next_overlay;下一個疊加
 menu.tools.next_overlay_type;疊加類型
 dialog.select_world.title;選擇維度
-dialog.settings.title;設置
-dialog.settings.global.language;語
-dialog.settings.global.language.language;語
-dialog.settings.processing.process.process_threads;進程線程
+dialog.settings.title;設定
+dialog.settings.global.language;語言
+dialog.settings.global.language.language;語言
+dialog.settings.processing.process.process_threads;執行緒
 dialog.settings.processing.process;過程
-dialog.settings.processing.process.write_threads;寫線程
-dialog.settings.processing.files.max_files;最大文件數
+dialog.settings.processing.process.write_threads;寫入執行緒
+dialog.settings.processing.files.max_files;最大檔案數
 dialog.settings.global.selection.region_color;區域顏色
-dialog.settings.global.selection.chunk_color;塊色
-dialog.settings.global.selection.pasted_chunks_color;粘貼的塊顏色
+dialog.settings.global.selection.chunk_color;區塊顏色
+dialog.settings.global.selection.pasted_chunks_color;貼上的區塊顏色
 dialog.settings.rendering.shade.shade;陰影
 dialog.settings.rendering.shade;陰影
 dialog.settings.rendering.shade.shade_water;遮蔭水
@@ -64,16 +64,16 @@ dialog.settings.rendering.smooth.smooth_rendering;平滑渲染
 dialog.settings.rendering.smooth.smooth_overlays;平滑疊加
 dialog.settings.rendering.background.background_pattern;背景圖案
 dialog.settings.rendering.background;背景
-dialog.settings.global.misc.mc_saves_dir;MC 保存目錄
+dialog.settings.global.misc.mc_saves_dir;MC 儲存目錄
 dialog.settings.global.misc.print_debug;打印調試信息
-dialog.settings.global.misc.show_log_file;顯示日誌文件
+dialog.settings.global.misc.show_log_file;顯示日誌檔案
 dialog.settings.reset;重置
-dialog.settings.tab_global;全球的
-dialog.settings.tab_processing;加工
+dialog.settings.tab_global;全域
+dialog.settings.tab_processing;處理
 dialog.settings.tab_rendering;渲染
 dialog.settings.tab_world;世界
 dialog.settings.global.misc;雜項
-dialog.settings.processing.files;文件
+dialog.settings.processing.files;檔案
 dialog.settings.rendering.smooth;光滑的
 dialog.settings.global.selection;選擇
 dialog.settings.world.paths;路徑
@@ -84,25 +84,25 @@ dialog.settings.rendering.layers.render_layer_only;僅渲染層
 dialog.settings.rendering.layers;圖層
 dialog.settings.rendering.layers.render_caves;渲染洞穴
 dialog.goto.title;前往位置
-dialog.confirmation.question;你確定嗎？
+dialog.confirmation.question;您確定嗎？
 dialog.delete_chunks_confirmation.title;刪除區塊
-dialog.delete_chunks_confirmation.header_short;你將要從這個世界中刪除未知數量的區塊。
-dialog.delete_chunks_confirmation.header_verbose;你將要從這個世界中刪除 %d 個區塊。
+dialog.delete_chunks_confirmation.header_short;您將要從這個世界中刪除未知數量的區塊。
+dialog.delete_chunks_confirmation.header_verbose;您將要從這個世界中刪除 %d 個區塊。
 dialog.image_export_confirmation.title;匯出圖片
-dialog.image_export_confirmation.header_short;您將要創建比例未知的圖像。
-dialog.image_export_confirmation.header_verbose;您將要創建尺寸為 %dx%d 的圖像。
+dialog.image_export_confirmation.header_short;您將要建立比例未知的圖像。
+dialog.image_export_confirmation.header_verbose;您將要建立尺寸為 %dx%d 的圖像。
 dialog.import_chunks_confirmation.title;匯入區塊
-dialog.import_chunks_confirmation.header;你將要向這個世界匯入未知數量的區塊。
+dialog.import_chunks_confirmation.header;您將要向這個世界匯入未知數量的區塊。
 dialog.import_chunks_confirmation.options;選項
 dialog.import_chunks_confirmation.options.offset;偏移
 dialog.import_chunks_confirmation.options.overwrite;覆蓋現有區塊
 dialog.import_chunks_confirmation.options.selection_only;僅適用於已選擇的內容
-dialog.import_chunks_confirmation.options.y_offset;Y偏移
+dialog.import_chunks_confirmation.options.y_offset;Y 軸偏移
 dialog.import_chunks_confirmation.options.sections;部分
 dialog.import_chunks_confirmation.warning;警告：匯入區塊時使用偏移並不會更新指令方塊的內容。
 dialog.export_chunks_confirmation.title;匯出區塊
-dialog.export_chunks_confirmation.header_short;你將要從這個世界匯出未知數量的區塊。
-dialog.export_chunks_confirmation.header_verbose;你將要從這個世界匯出 %d 個區塊。
+dialog.export_chunks_confirmation.header_short;您將要從這個世界匯出未知數量的區塊。
+dialog.export_chunks_confirmation.header_verbose;您將要從這個世界匯出 %d 個區塊。
 dialog.import_selection.title;從 .csv 導入選擇
 dialog.import_selection.header;這個世界已經有一個選擇。\n應該如何導入新的選擇？
 dialog.import_selection.overwrite;覆蓋
@@ -133,11 +133,12 @@ dialog.change_nbt.force.tooltip;如果標記不存在時則建立標記。
 dialog.change_nbt.selection_only;僅適用於已選擇的內容
 dialog.change_nbt.selection_only.tooltip;此篩選器是否只套用於已選擇的內容。
 dialog.change_nbt_confirmation.title;變更 NBT
-dialog.change_nbt_confirmation.header_short;你將要在此世界中變更未知數量的區塊的資料。
+dialog.change_nbt_confirmation.header_short;您將要在此世界中變更未知數量的區塊的資料。
+dialog.change_nbt_confirmation.header_verbose;您將要在此世界中變更 %d 個區塊的資料。
 dialog.edit_nbt.title;編輯區塊
 dialog.edit_nbt.placeholder.loading;載入中…
 dialog.edit_nbt.placeholder.no_chunk_data;找不到塊數據
-dialog.edit_nbt.placeholder.no_region_file;區域文件不存在
+dialog.edit_nbt.placeholder.no_region_file;區域檔案不存在
 dialog.edit_array.index;索引
 dialog.edit_array.value;值
 dialog.about.title;關於
@@ -152,27 +153,27 @@ dialog.about.license;許可：
 dialog.about.copyright;版權：
 dialog.about.source;來源：
 dialog.progress.no_files;沒有檔案
-dialog.progress.running;正在運行…
+dialog.progress.running;正在執行…
 dialog.progress.cancelling;正在取消…
-dialog.progress.collecting_data;收集資料中…
+dialog.progress.collecting_data;正在收集資料…
 dialog.progress.done;完成。
-dialog.progress.scanning_files;正在掃描文件...
-dialog.progress.title.loading_world;加載世界...
-dialog.progress.title.deleting_selection;正在刪除選擇…
-dialog.progress.title.creating_image;正在創建圖片…
-dialog.progress.title.saving_image;正在保存圖片…
-dialog.progress.title.exporting_selection;正在匯出選擇…
+dialog.progress.scanning_files;正在掃描檔案...
+dialog.progress.title.loading_world;正在載入世界...
+dialog.progress.title.deleting_selection;正在刪除所選項目…
+dialog.progress.title.creating_image;正在建立圖片…
+dialog.progress.title.saving_image;正在儲存圖片…
+dialog.progress.title.exporting_selection;正在匯出所選項目…
 dialog.progress.title.importing_chunks;正在匯入區塊…
 dialog.progress.title.deleting_filtered_chunks;正在刪除篩選區塊…
 dialog.progress.title.exporting_filtered_chunks;正在匯出篩選區塊…
 dialog.progress.title.selecting_filtered_chunks;正在選擇篩選區塊…
 dialog.progress.title.changing_nbt_data;正在變更 NBT 資料…
-dialog.progress.title.saving_chunk;正在將塊保存到文件…
-dialog.error.button.copy_to_clipboard;複製到剪貼板
+dialog.progress.title.saving_chunk;正在將塊儲存到檔案…
+dialog.error.button.copy_to_clipboard;複製到剪貼簿
 dialog.error.title;錯誤
 dialog.error.header;發生錯誤
 dialog.error.copied_to_clipboard;已複製到剪貼簿！
-dialog.unsaved_selection.title;未保存的選擇
-dialog.unsaved_selection.header;有一個未保存的選擇。
+dialog.unsaved_selection.title;未儲存的更改
+dialog.unsaved_selection.header;您有未儲存的更改。
 button.cancel;取消
 button.ok;確定
