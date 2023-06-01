@@ -42,7 +42,7 @@ dependencies {
 	implementation 'commons-cli:commons-cli:1.5.0'
 	implementation 'me.tongfei:progressbar:0.9.3'
 	implementation 'org.codehaus.groovy:groovy-jsr223:3.0.11'
-
+  
 	shadow 'com.github.Querz:NBT:3196993049'
 	shadow 'com.google.code.gson:gson:2.10.1'
 	shadow 'org.xerial:sqlite-jdbc:3.36.0.3'
