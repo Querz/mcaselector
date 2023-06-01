@@ -1,23 +1,27 @@
 package net.querz.mcaselector.io.job;
 
-import net.querz.mcaselector.Config;
-import net.querz.mcaselector.filter.GroupFilter;
-import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.config.ConfigProvider;
+import net.querz.mcaselector.filter.filters.GroupFilter;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
-import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
+import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import java.util.function.Consumer;
 
 public final class ChunkFilterDeleter {
 
+	private static final Logger LOGGER = LogManager.getLogger(ChunkFilterDeleter.class);
+
 	private ChunkFilterDeleter() {}
 
-	public static void deleteFilter(GroupFilter filter, SelectionData selection, Progress progressChannel, boolean headless) {
-		WorldDirectories wd = Config.getWorldDirs();
+	public static void deleteFilter(GroupFilter filter, Selection selection, Progress progressChannel, boolean headless) {
+		WorldDirectories wd = ConfigProvider.WORLD.getWorldDirs();
 		RegionDirectories[] rd = wd.listRegions(selection);
 		if (rd == null || rd.length == 0) {
 			if (headless) {
@@ -33,8 +37,12 @@ public final class ChunkFilterDeleter {
 		progressChannel.setMax(rd.length);
 		progressChannel.updateProgress(rd[0].getLocationAsFileName(), 0);
 
+		Consumer<Throwable> errorHandler = t -> progressChannel.incrementProgress("error");
+
 		for (RegionDirectories r : rd) {
-			JobHandler.addJob(new MCADeleteFilterProcessJob(r, filter, selection, progressChannel));
+			MCADeleteFilterProcessJob job = new MCADeleteFilterProcessJob(r, filter, selection, progressChannel);
+			job.errorHandler = errorHandler;
+			JobHandler.addJob(job);
 		}
 	}
 
@@ -42,9 +50,9 @@ public final class ChunkFilterDeleter {
 
 		private final Progress progressChannel;
 		private final GroupFilter filter;
-		private final SelectionData selection;
+		private final Selection selection;
 
-		private MCADeleteFilterProcessJob(RegionDirectories dirs, GroupFilter filter, SelectionData selection, Progress progressChannel) {
+		private MCADeleteFilterProcessJob(RegionDirectories dirs, GroupFilter filter, Selection selection, Progress progressChannel) {
 			super(dirs, PRIORITY_LOW);
 			this.filter = filter;
 			this.selection = selection;
@@ -56,8 +64,8 @@ public final class ChunkFilterDeleter {
 			// load all files
 			Point2i location = getRegionDirectories().getLocation();
 
-			if (!filter.appliesToRegion(location) || selection != null && !selection.isRegionSelected(location)) {
-				Debug.dump("filter does not apply to region " + getRegionDirectories().getLocation());
+			if (!filter.appliesToRegion(location) || selection != null && !selection.isAnyChunkInRegionSelected(location)) {
+				LOGGER.debug("filter does not apply to region {}", getRegionDirectories().getLocation());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return true;
 			}
@@ -67,7 +75,7 @@ public final class ChunkFilterDeleter {
 			byte[] entitiesData = loadEntities();
 
 			if (regionData == null && poiData == null && entitiesData == null) {
-				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
+				LOGGER.warn("failed to load any data from {}", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return true;
 			}
@@ -79,15 +87,17 @@ public final class ChunkFilterDeleter {
 
 				if (region.deleteChunks(filter, selection)) {
 					// only save file if we actually deleted something
-					JobHandler.executeSaveData(new MCADeleteFilterSaveJob(getRegionDirectories(), region, progressChannel));
+					MCADeleteFilterSaveJob job = new MCADeleteFilterSaveJob(getRegionDirectories(), region, progressChannel);
+					job.errorHandler = errorHandler;
+					JobHandler.executeSaveData(job);
 					return false;
 				} else {
 					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-					Debug.dumpf("nothing to delete in %s, not saving", getRegionDirectories().getLocationAsFileName());
+					LOGGER.debug("nothing to delete in {}, not saving", getRegionDirectories().getLocationAsFileName());
 				}
 			} catch (Exception ex) {
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				Debug.errorf("error deleting chunk indices in %s", getRegionDirectories().getLocationAsFileName());
+				LOGGER.warn("error deleting chunk indices in {}", getRegionDirectories().getLocationAsFileName());
 			}
 			return true;
 		}
@@ -107,7 +117,7 @@ public final class ChunkFilterDeleter {
 			try {
 				getData().deFragment();
 			} catch (Exception ex) {
-				Debug.dumpException("failed to delete filtered chunks from " + getRegionDirectories().getLocationAsFileName(), ex);
+				LOGGER.warn("failed to delete filtered chunks from {}", getRegionDirectories().getLocationAsFileName(), ex);
 			}
 			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 		}

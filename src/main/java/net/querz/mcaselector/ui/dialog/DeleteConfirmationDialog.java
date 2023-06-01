@@ -1,7 +1,7 @@
 package net.querz.mcaselector.ui.dialog;
 
 import javafx.stage.Stage;
-import net.querz.mcaselector.tiles.TileMap;
+import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.text.Translation;
 
 public class DeleteConfirmationDialog extends ConfirmationDialog {
@@ -15,7 +15,7 @@ public class DeleteConfirmationDialog extends ConfirmationDialog {
 		);
 
 		if (tileMap != null) {
-			if (!tileMap.isSelectionInverted()) {
+			if (!tileMap.getSelection().isInverted()) {
 				headerTextProperty().unbind();
 				setHeaderText(String.format(Translation.DIALOG_DELETE_CHUNKS_CONFIRMATION_HEADER_VERBOSE.toString(), tileMap.getSelectedChunks()));
 			}

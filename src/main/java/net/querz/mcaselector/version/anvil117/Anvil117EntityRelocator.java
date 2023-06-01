@@ -3,11 +3,7 @@ package net.querz.mcaselector.version.anvil117;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.version.ChunkRelocator;
 import net.querz.mcaselector.version.Helper;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.DoubleTag;
-import net.querz.nbt.tag.IntArrayTag;
-import net.querz.nbt.tag.IntTag;
-import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.*;
 import static net.querz.mcaselector.version.anvil117.Anvil117ChunkRelocator.*;
 
 public class Anvil117EntityRelocator implements ChunkRelocator {
@@ -23,9 +19,9 @@ public class Anvil117EntityRelocator implements ChunkRelocator {
 		position[1] += offset.blockToChunk().getZ();
 
 		// adjust entity positions
-		ListTag<CompoundTag> entities = Helper.tagFromCompound(root, "Entities");
+		ListTag entities = Helper.tagFromCompound(root, "Entities");
 		if (entities != null) {
-			entities.forEach(v -> applyOffsetToEntity(v, offset));
+			entities.forEach(v -> applyOffsetToEntity((CompoundTag) v, offset));
 		}
 
 		return true;
@@ -36,11 +32,11 @@ public class Anvil117EntityRelocator implements ChunkRelocator {
 			return;
 		}
 
-		ListTag<DoubleTag> entityPos = Helper.tagFromCompound(entity, "Pos");
+		ListTag entityPos = Helper.tagFromCompound(entity, "Pos");
 		if (entityPos != null && entityPos.size() == 3) {
-			entityPos.set(0, new DoubleTag(entityPos.get(0).asDouble() + offset.getX()));
-			entityPos.set(1, new DoubleTag(entityPos.get(1).asDouble() + offset.getY()));
-			entityPos.set(2, new DoubleTag(entityPos.get(2).asDouble() + offset.getZ()));
+			entityPos.set(0, DoubleTag.valueOf(entityPos.getDouble(0) + offset.getX()));
+			entityPos.set(1, DoubleTag.valueOf(entityPos.getDouble(1) + offset.getY()));
+			entityPos.set(2, DoubleTag.valueOf(entityPos.getDouble(2) + offset.getZ()));
 		}
 
 		// leashed entities
@@ -113,27 +109,27 @@ public class Anvil117EntityRelocator implements ChunkRelocator {
 		}
 
 		// recursively update passengers
-		ListTag<CompoundTag> passengers = Helper.tagFromCompound(entity, "Passengers");
+		ListTag passengers = Helper.tagFromCompound(entity, "Passengers");
 		if (passengers != null) {
-			passengers.forEach(p -> applyOffsetToEntity(p, offset));
+			passengers.forEach(p -> applyOffsetToEntity((CompoundTag) p, offset));
 		}
 
 		CompoundTag item = Helper.tagFromCompound(entity, "Item");
 		applyOffsetToItem(item, offset);
 
-		ListTag<CompoundTag> items = Helper.tagFromCompound(entity, "Items");
+		ListTag items = Helper.tagFromCompound(entity, "Items");
 		if (items != null) {
-			items.forEach(i -> applyOffsetToItem(i, offset));
+			items.forEach(i -> applyOffsetToItem((CompoundTag) i, offset));
 		}
 
-		ListTag<CompoundTag> handItems = Helper.tagFromCompound(entity, "HandItems");
+		ListTag handItems = Helper.tagFromCompound(entity, "HandItems");
 		if (handItems != null) {
-			handItems.forEach(i -> applyOffsetToItem(i, offset));
+			handItems.forEach(i -> applyOffsetToItem((CompoundTag) i, offset));
 		}
 
-		ListTag<CompoundTag> armorItems = Helper.tagFromCompound(entity, "ArmorItems");
+		ListTag armorItems = Helper.tagFromCompound(entity, "ArmorItems");
 		if (armorItems != null) {
-			armorItems.forEach(i -> applyOffsetToItem(i, offset));
+			armorItems.forEach(i -> applyOffsetToItem((CompoundTag) i, offset));
 		}
 
 		Helper.fixEntityUUID(entity);
@@ -143,7 +139,7 @@ public class Anvil117EntityRelocator implements ChunkRelocator {
 		IntArrayTag mPos = Helper.tagFromCompound(memory, "pos");
 		Helper.applyOffsetToIntArrayPos(mPos, offset);
 		if (mPos == null) {
-			ListTag<IntTag> lPos = Helper.tagFromCompound(memory, "pos");
+			ListTag lPos = Helper.tagFromCompound(memory, "pos");
 			Helper.applyOffsetToIntListPos(lPos, offset);
 		}
 	}

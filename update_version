@@ -1,0 +1,39 @@
+#!/bin/bash
+# a script to update all files containing the version.
+
+gradlePropertiesFile='gradle.properties'
+
+ReadGradleProperty() {
+  local value=`cat $gradlePropertiesFile | grep "$1" | cut -d'=' -f2`
+  echo "$value"
+}
+
+applicationVersion=$(ReadGradleProperty 'version')
+
+# update README.md
+sed -i -E "s/<!--vs-->[0-9]+\.[0-9]+(\.[0-9]+)?<!--ve-->/<!--vs-->$applicationVersion<!--ve-->/g" 'README.md'
+sed -i -E "s/download\/[0-9]+\.[0-9]+(\.[0-9]+)?/download\/$applicationVersion/g" 'README.md'
+sed -i -E "s/mcaselector-[0-9]+\.[0-9]+(\.[0-9]+)?\.jar/mcaselector-$applicationVersion.jar/g" 'README.md'
+
+# update GitHub workflows
+sed -i -E "s/mcaselector-[0-9]+\.[0-9]+(\.[0-9]+)?\.jar/mcaselector-$applicationVersion.jar/g" '.github/workflows/release.yml'
+sed -i -E "s/echo -n [0-9]+\.[0-9]+(\.[0-9]+)?/echo -n $applicationVersion/g" '.github/workflows/release.yml'
+
+# update issue template
+sed -i -E "s/Version of MCA Selector \[e\.g\. [0-9]+\.[0-9]+(\.[0-9]+)?\]/Version of MCA Selector [e.g. $applicationVersion]/g" '.github/ISSUE_TEMPLATE/bug_report.md'
+
+Len() {
+  local res=${1//[^.]}
+  echo "${#res}"
+}
+
+# update installer/res/resource.rc
+if [ $(Len $applicationVersion) = 2 ]; then
+  sed -i -E "s/[0-9]+\.[0-9]+\.[0-9]+\.0/$applicationVersion.0/g" 'installer/res/resource.rc'
+  sed -i -E "s/[0-9]+,[0-9]+,[0-9]+,0/$(echo "$applicationVersion" | sed -r 's/\./,/g'),0/g" 'installer/res/resource.rc'
+else
+  sed -i -E "s/[0-9]+\.[0-9]+\.[0-9]+\.0/$applicationVersion.0.0/g" 'installer/res/resource.rc'
+  sed -i -E "s/[0-9]+,[0-9]+,[0-9]+,0/$(echo "$applicationVersion" | sed -r 's/\./,/g'),0,0/g" 'installer/res/resource.rc'
+fi
+
+sed -i -E 's/"[0-9]+\.[0-9]+(\.[0-9]+)?\\0"/"'$applicationVersion'\\0"/g' 'installer/res/resource.rc'

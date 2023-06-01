@@ -11,7 +11,9 @@ menu.selection;選擇
 menu.tools;工具
 menu.about;關於
 menu.file.open_world;開啟世界
-menu.file.open;開啟區域
+menu.file.open_dimension;打開另一個維度
+menu.file.open_recent_world;打開一個以前的世界
+menu.file.open_recent_world.clear;重置
 menu.file.settings;設定
 menu.file.render_settings;渲染設定
 menu.file.quit;退出
@@ -101,6 +103,10 @@ dialog.import_chunks_confirmation.warning;警告：匯入區塊時使用偏移�
 dialog.export_chunks_confirmation.title;匯出區塊
 dialog.export_chunks_confirmation.header_short;您將要從這個世界匯出未知數量的區塊。
 dialog.export_chunks_confirmation.header_verbose;您將要從這個世界匯出 %d 個區塊。
+dialog.import_selection.title;從 .csv 導入選擇
+dialog.import_selection.header;這個世界已經有一個選擇。\n應該如何導入新的選擇？
+dialog.import_selection.overwrite;覆蓋
+dialog.import_selection.merge;添加
 dialog.filter_chunks.title;篩選區塊
 dialog.filter_chunks.filter.add.tooltip;在此條件下增加新條件。
 dialog.filter_chunks.filter.delete.tooltip;刪除此條件。
@@ -116,7 +122,6 @@ dialog.filter_chunks.delete.tooltip;從這個世界中刪除所有受影響的�
 dialog.filter_chunks.selection_only;僅適用於已選擇的內容
 dialog.filter_chunks.overwrite_selection;覆蓋選擇
 dialog.filter_chunks.selection_radius;選擇半徑
-dialog.filter_chunks.selection_only.tooltip;此篩選器是否只套用於已選擇的內容。
 dialog.edit_overlays.title;編輯疊加
 dialog.edit_overlays.overlay_active.tooltip;已啟用
 dialog.edit_overlays.delete.tooltip;刪除
@@ -147,7 +152,6 @@ dialog.about.version.error;錯誤
 dialog.about.license;許可：
 dialog.about.copyright;版權：
 dialog.about.source;來源：
-dialog.progress.title;進度
 dialog.progress.no_files;沒有檔案
 dialog.progress.running;正在執行…
 dialog.progress.cancelling;正在取消…
@@ -169,7 +173,7 @@ dialog.error.button.copy_to_clipboard;複製到剪貼簿
 dialog.error.title;錯誤
 dialog.error.header;發生錯誤
 dialog.error.copied_to_clipboard;已複製到剪貼簿！
-dialog.unsaved_changes.title;未儲存的更改
-dialog.unsaved_changes.header;您有未儲存的更改。
+dialog.unsaved_selection.title;未儲存的更改
+dialog.unsaved_selection.header;您有未儲存的更改。
 button.cancel;取消
 button.ok;確定

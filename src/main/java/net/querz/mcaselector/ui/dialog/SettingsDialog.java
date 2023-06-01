@@ -3,6 +3,7 @@ package net.querz.mcaselector.ui.dialog;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -10,35 +11,21 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.Config;
+import net.querz.mcaselector.config.ConfigProvider;
+import net.querz.mcaselector.config.GlobalConfig;
+import net.querz.mcaselector.config.WorldConfig;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.ui.FileTextField;
-import net.querz.mcaselector.ui.TileMapBox;
+import net.querz.mcaselector.ui.component.FileTextField;
+import net.querz.mcaselector.ui.component.HeightSlider;
+import net.querz.mcaselector.ui.component.TileMapBox;
 import net.querz.mcaselector.ui.UIFactory;
 import java.io.File;
 import java.util.*;
 
 public class SettingsDialog extends Dialog<SettingsDialog.Result> {
-
-	/*
-	* Region selection color and opacity
-	* Chunk selection color and opacity
-	* MCAFilePipe thread options:
-	* - Number of threads for file reading
-	* - Number of threads for processing
-	* - Number of threads for writing
-	* - Maximum amount of loaded files
-	* toggle shading
-	* toggle shading of water
-	* toggle showing non-existent regions
-	* toggle smooth rendering
-	* toggle smooth overlays
-	* background pattern
-	* minecraft saves folder
-	* toggle debug
-	* */
 
 	private static final int processorCount = Runtime.getRuntime().availableProcessors();
 	private static final long maxMemory = Runtime.getRuntime().maxMemory();
@@ -51,10 +38,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 	private final ComboBox<Locale> languages = new ComboBox<>();
 
-	private final Slider processThreadsSlider = createSlider(1, processorCount * 2, 1, Config.getProcessThreads());
-	private final Slider writeThreadsSlider = createSlider(1, processorCount, 1, Config.getWriteThreads());
-	private final Slider maxLoadedFilesSlider = createSlider(1, (int) Math.max(Math.ceil(maxMemory / 1_000_000_000D) * 6, 4), 1, Config.getMaxLoadedFiles());
-	private final Slider heightSlider = new Slider(-64, 319, 319);
+	private final Slider processThreadsSlider = createSlider(1, processorCount * 2, 1, ConfigProvider.GLOBAL.getProcessThreads());
+	private final Slider writeThreadsSlider = createSlider(1, processorCount, 1, ConfigProvider.GLOBAL.getWriteThreads());
+	private final Slider maxLoadedFilesSlider = createSlider(1, (int) Math.max(Math.ceil(maxMemory / 1_000_000_000D) * 6, 4), 1, ConfigProvider.GLOBAL.getMaxLoadedFiles());
+	private final HeightSlider hSlider = new HeightSlider(ConfigProvider.WORLD.getRenderHeight(), false);
 	private final CheckBox layerOnly = new CheckBox();
 	private final CheckBox caves = new CheckBox();
 	private final Button regionSelectionColorPreview = new Button();
@@ -71,9 +58,9 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private final FileTextField poiField = new FileTextField();
 	private final FileTextField entitiesField = new FileTextField();
 
-	private Color regionSelectionColor = Config.getRegionSelectionColor().makeJavaFXColor();
-	private Color chunkSelectionColor = Config.getChunkSelectionColor().makeJavaFXColor();
-	private Color pasteChunksColor = Config.getPasteChunksColor().makeJavaFXColor();
+	private Color regionSelectionColor = ConfigProvider.GLOBAL.getRegionSelectionColor().makeJavaFXColor();
+	private Color chunkSelectionColor = ConfigProvider.GLOBAL.getChunkSelectionColor().makeJavaFXColor();
+	private Color pasteChunksColor = ConfigProvider.GLOBAL.getPasteChunksColor().makeJavaFXColor();
 
 	private final ButtonType reset = new ButtonType(Translation.DIALOG_SETTINGS_RESET.toString(), ButtonBar.ButtonData.LEFT);
 
@@ -86,58 +73,30 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		getDialogPane().lookupButton(reset).addEventFilter(ActionEvent.ACTION, e -> {
 			e.consume();
-			languages.setValue(Config.DEFAULT_LOCALE);
-			processThreadsSlider.setValue(Config.DEFAULT_PROCESS_THREADS);
-			writeThreadsSlider.setValue(Config.DEFAULT_WRITE_THREADS);
-			maxLoadedFilesSlider.setValue(Config.DEFAULT_MAX_LOADED_FILES);
-			regionSelectionColor = Config.DEFAULT_REGION_SELECTION_COLOR.makeJavaFXColor();
-			regionSelectionColorPreview.setBackground(new Background(new BackgroundFill(Config.DEFAULT_REGION_SELECTION_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
-			chunkSelectionColor = Config.DEFAULT_CHUNK_SELECTION_COLOR.makeJavaFXColor();
-			chunkSelectionColorPreview.setBackground(new Background(new BackgroundFill(Config.DEFAULT_CHUNK_SELECTION_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
-			pasteChunksColor = Config.DEFAULT_PASTE_CHUNKS_COLOR.makeJavaFXColor();
-			pasteChunksColorPreview.setBackground(new Background(new BackgroundFill(Config.DEFAULT_PASTE_CHUNKS_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
-			shadeCheckBox.setSelected(Config.DEFAULT_SHADE);
-			shadeWaterCheckBox.setSelected(Config.DEFAULT_SHADE_WATER);
-			showNonexistentRegionsCheckBox.setSelected(Config.DEFAULT_SHOW_NONEXISTENT_REGIONS);
-			smoothRendering.setSelected(Config.DEFAULT_SMOOTH_RENDERING);
-			smoothOverlays.setSelected(Config.DEFAULT_SMOOTH_OVERLAYS);
-			heightSlider.setValue(heightSlider.getMax());
-			caves.setSelected(Config.DEFAULT_RENDER_CAVES);
-			tileMapBackgrounds.setValue(TileMapBox.TileMapBoxBackground.valueOf(Config.DEFAULT_TILEMAP_BACKGROUND));
-			mcSavesDir.setFile(Config.DEFAULT_MC_SAVES_DIR == null ? null : new File(Config.DEFAULT_MC_SAVES_DIR));
-			debugCheckBox.setSelected(Config.DEFAULT_DEBUG);
-		});
-
-		setResultConverter(c -> {
-			if (c.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				return new Result(
-					languages.getSelectionModel().getSelectedItem(),
-					(int) processThreadsSlider.getValue(),
-					(int) writeThreadsSlider.getValue(),
-					(int) maxLoadedFilesSlider.getValue(),
-					regionSelectionColor,
-					chunkSelectionColor,
-					pasteChunksColor,
-					shadeCheckBox.isSelected(),
-					shadeWaterCheckBox.isSelected(),
-					showNonexistentRegionsCheckBox.isSelected(),
-					smoothRendering.isSelected(),
-					smoothOverlays.isSelected(),
-					tileMapBackgrounds.getSelectionModel().getSelectedItem(),
-					mcSavesDir.getFile(),
-					debugCheckBox.isSelected(),
-					(int) heightSlider.getValue(),
-					layerOnly.isSelected(),
-					caves.isSelected(),
-					poiField.getFile(),
-					entitiesField.getFile()
-				);
-			}
-			return null;
+			languages.setValue(GlobalConfig.DEFAULT_LOCALE);
+			processThreadsSlider.setValue(GlobalConfig.DEFAULT_PROCESS_THREADS);
+			writeThreadsSlider.setValue(GlobalConfig.DEFAULT_WRITE_THREADS);
+			maxLoadedFilesSlider.setValue(GlobalConfig.DEFAULT_MAX_LOADED_FILES);
+			regionSelectionColor = GlobalConfig.DEFAULT_REGION_SELECTION_COLOR.makeJavaFXColor();
+			regionSelectionColorPreview.setBackground(new Background(new BackgroundFill(GlobalConfig.DEFAULT_REGION_SELECTION_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
+			chunkSelectionColor = GlobalConfig.DEFAULT_CHUNK_SELECTION_COLOR.makeJavaFXColor();
+			chunkSelectionColorPreview.setBackground(new Background(new BackgroundFill(GlobalConfig.DEFAULT_CHUNK_SELECTION_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
+			pasteChunksColor = GlobalConfig.DEFAULT_PASTE_CHUNKS_COLOR.makeJavaFXColor();
+			pasteChunksColorPreview.setBackground(new Background(new BackgroundFill(GlobalConfig.DEFAULT_PASTE_CHUNKS_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
+			shadeCheckBox.setSelected(WorldConfig.DEFAULT_SHADE);
+			shadeWaterCheckBox.setSelected(WorldConfig.DEFAULT_SHADE_WATER);
+			showNonexistentRegionsCheckBox.setSelected(WorldConfig.DEFAULT_SHOW_NONEXISTENT_REGIONS);
+			smoothRendering.setSelected(WorldConfig.DEFAULT_SMOOTH_RENDERING);
+			smoothOverlays.setSelected(WorldConfig.DEFAULT_SMOOTH_OVERLAYS);
+			hSlider.valueProperty().set(hSlider.getValue());
+			caves.setSelected(WorldConfig.DEFAULT_RENDER_CAVES);
+			tileMapBackgrounds.setValue(TileMapBox.TileMapBoxBackground.valueOf(WorldConfig.DEFAULT_TILEMAP_BACKGROUND));
+			mcSavesDir.setFile(GlobalConfig.DEFAULT_MC_SAVES_DIR == null ? null : new File(GlobalConfig.DEFAULT_MC_SAVES_DIR));
+			debugCheckBox.setSelected(GlobalConfig.DEFAULT_DEBUG);
 		});
 
 		languages.getItems().addAll(Translation.getAvailableLanguages());
-		languages.setValue(Config.getLocale());
+		languages.setValue(ConfigProvider.GLOBAL.getLocale());
 		languages.setConverter(new StringConverter<>() {
 
 			final Map<String, Locale> cache = new HashMap<>();
@@ -165,14 +124,14 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		regionSelectionColorPreview.setBackground(new Background(new BackgroundFill(regionSelectionColor, CornerRadii.EMPTY, Insets.EMPTY)));
 		chunkSelectionColorPreview.setBackground(new Background(new BackgroundFill(chunkSelectionColor, CornerRadii.EMPTY, Insets.EMPTY)));
 		pasteChunksColorPreview.setBackground(new Background(new BackgroundFill(pasteChunksColor, CornerRadii.EMPTY, Insets.EMPTY)));
-		shadeCheckBox.setSelected(Config.shade());
-		shadeWaterCheckBox.setSelected(Config.shadeWater());
-		showNonexistentRegionsCheckBox.setSelected(Config.showNonExistentRegions());
-		smoothRendering.setSelected(Config.smoothRendering());
-		smoothOverlays.setSelected(Config.smoothOverlays());
-		heightSlider.setValue(Config.getRenderHeight());
-		layerOnly.setSelected(Config.renderLayerOnly());
-		caves.setSelected(Config.renderCaves());
+		shadeCheckBox.setSelected(ConfigProvider.WORLD.getShade());
+		shadeWaterCheckBox.setSelected(ConfigProvider.WORLD.getShadeWater());
+		showNonexistentRegionsCheckBox.setSelected(ConfigProvider.WORLD.getShowNonexistentRegions());
+		smoothRendering.setSelected(ConfigProvider.WORLD.getSmoothRendering());
+		smoothOverlays.setSelected(ConfigProvider.WORLD.getSmoothOverlays());
+		hSlider.valueProperty().set(ConfigProvider.WORLD.getRenderHeight());
+		layerOnly.setSelected(ConfigProvider.WORLD.getRenderLayerOnly());
+		caves.setSelected(ConfigProvider.WORLD.getRenderCaves());
 		tileMapBackgrounds.getItems().addAll(TileMapBox.TileMapBoxBackground.values());
 
 		tileMapBackgrounds.setCellFactory((listView) -> {
@@ -195,9 +154,9 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		tileMapBackgrounds.setButtonCell(tileMapBackgrounds.getCellFactory().call(null));
 		tileMapBackgrounds.getStyleClass().add("tilemap-backgrounds-combo-box");
 
-		tileMapBackgrounds.setValue(TileMapBox.TileMapBoxBackground.valueOf(Config.getTileMapBackground()));
-		mcSavesDir.setFile(Config.getMCSavesDir() == null ? null : new File(Config.getMCSavesDir()));
-		debugCheckBox.setSelected(Config.debug());
+		tileMapBackgrounds.setValue(TileMapBox.TileMapBoxBackground.valueOf(ConfigProvider.WORLD.getTileMapBackground()));
+		mcSavesDir.setFile(ConfigProvider.GLOBAL.getMcSavesDir() == null ? null : new File(ConfigProvider.GLOBAL.getMcSavesDir()));
+		debugCheckBox.setSelected(ConfigProvider.GLOBAL.getDebug());
 
 		regionSelectionColorPreview.setOnMousePressed(e -> {
 			Optional<Color> result = new ColorPicker(getDialogPane().getScene().getWindow(), regionSelectionColor).showColorPicker();
@@ -241,20 +200,17 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		HBox debugBox = new HBox();
 		debugBox.getStyleClass().add("debug-box");
-		Hyperlink logFileLink = UIFactory.explorerLink(Translation.DIALOG_SETTINGS_GLOBAL_MISC_SHOW_LOG_FILE, Config.getLogFile().getParentFile(), null);
+		Hyperlink logFileLink = UIFactory.explorerLink(Translation.DIALOG_SETTINGS_GLOBAL_MISC_SHOW_LOG_FILE, Config.BASE_LOG_DIR, null);
 		debugBox.getChildren().addAll(debugCheckBox, logFileLink);
 
-		if (Config.getWorldDirs() != null) {
-			WorldDirectories worldDirectories = Config.getWorldDirs().clone();
+		if (ConfigProvider.WORLD.getWorldDirs() != null) {
+			WorldDirectories worldDirectories = ConfigProvider.WORLD.getWorldDirs().clone();
 			poiField.setFile(worldDirectories.getPoi());
 			entitiesField.setFile(worldDirectories.getEntities());
 		}
 
-		heightSlider.setValue(Config.getRenderHeight());
-		heightSlider.setSnapToTicks(true);
-		heightSlider.setMajorTickUnit(64);
-		heightSlider.setMinorTickCount(384);
-		heightSlider.setBlockIncrement(1);
+		hSlider.setMajorTickUnit(64);
+		hSlider.setAlignment(Pos.CENTER_LEFT);
 
 		toggleGroup.selectedToggleProperty().addListener((v, o, n) -> {
 			if (n == null) {
@@ -333,7 +289,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		shadingAndSmooth.getChildren().addAll(shade, smooth);
 
 		GridPane layerGrid = createGrid();
-		addPairToGrid(layerGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_LAYERS_RENDER_HEIGHT), heightSlider, UIFactory.attachTextFieldToSlider(heightSlider));
+		addPairToGrid(layerGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_LAYERS_RENDER_HEIGHT), hSlider);
 		addPairToGrid(layerGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_LAYERS_RENDER_LAYER_ONLY), layerOnly);
 		addPairToGrid(layerGrid, 2, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_LAYERS_RENDER_CAVES), caves);
 		BorderedTitledPane layers = new BorderedTitledPane(Translation.DIALOG_SETTINGS_RENDERING_LAYERS, layerGrid);
@@ -364,15 +320,15 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		// -------------------------------------------------------------------------------------------------------------
 
-		renderingTab.setDisable(Config.getWorldDirs() == null);
-		worldTab.setDisable(Config.getWorldDirs() == null);
-		renderingToggleButton.setDisable(Config.getWorldDirs() == null);
-		worldToggleButton.setDisable(Config.getWorldDirs() == null);
+		renderingTab.setDisable(ConfigProvider.WORLD.getWorldDirs() == null);
+		worldTab.setDisable(ConfigProvider.WORLD.getWorldDirs() == null);
+		renderingToggleButton.setDisable(ConfigProvider.WORLD.getWorldDirs() == null);
+		worldToggleButton.setDisable(ConfigProvider.WORLD.getWorldDirs() == null);
 
 		tabPane.getTabs().addAll(globalTab, processingTab, renderingTab, worldTab);
 
 		final DataProperty<Tab> focusedTab = new DataProperty<>(globalTab);
-		if (Config.getWorldDirs() != null && renderSettings) {
+		if (ConfigProvider.WORLD.getWorldDirs() != null && renderSettings) {
 			focusedTab.set(renderingTab);
 			toggleGroup.selectToggle(renderingToggleButton);
 		} else {
@@ -388,6 +344,33 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		content.getChildren().addAll(tabBox, tabPane);
 
 		getDialogPane().setContent(content);
+
+		setResultConverter(c -> {
+			if (c.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+				return new Result(
+					languages.getSelectionModel().getSelectedItem(),
+					(int) processThreadsSlider.getValue(),
+					(int) writeThreadsSlider.getValue(),
+					(int) maxLoadedFilesSlider.getValue(),
+					regionSelectionColor,
+					chunkSelectionColor,
+					pasteChunksColor,
+					shadeCheckBox.isSelected(),
+					shadeWaterCheckBox.isSelected(),
+					showNonexistentRegionsCheckBox.isSelected(),
+					smoothRendering.isSelected(),
+					smoothOverlays.isSelected(),
+					tileMapBackgrounds.getSelectionModel().getSelectedItem(),
+					mcSavesDir.getFile(),
+					debugCheckBox.isSelected(),
+					hSlider.getValue(),
+					layerOnly.isSelected(),
+					caves.isSelected(),
+					poiField.getFile(),
+					entitiesField.getFile());
+			}
+			return null;
+		});
 	}
 
 	private <T extends Node> T withAlignment(T node) {
@@ -473,7 +456,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			this.smoothRendering = smoothRendering;
 			this.smoothOverlays = smoothOverlays;
 			this.tileMapBackground = tileMapBackground;
-			this.mcSavesDir = Objects.requireNonNullElseGet(mcSavesDir, () -> new File(Config.DEFAULT_MC_SAVES_DIR));
+			this.mcSavesDir = Objects.requireNonNullElseGet(mcSavesDir, () -> new File(GlobalConfig.DEFAULT_MC_SAVES_DIR));
 			this.debug = debug;
 			this.height = height;
 			this.layerOnly = layerOnly;

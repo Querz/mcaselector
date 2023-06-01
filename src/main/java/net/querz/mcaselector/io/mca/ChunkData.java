@@ -3,32 +3,10 @@ package net.querz.mcaselector.io.mca;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.tiles.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.Overlay;
 import java.util.List;
 
-public class ChunkData {
-
-	private final RegionChunk region;
-	private final EntitiesChunk entities;
-	private final PoiChunk poi;
-
-	public ChunkData(RegionChunk region, PoiChunk poi, EntitiesChunk entities) {
-		this.region = region;
-		this.entities = entities;
-		this.poi = poi;
-	}
-
-	public RegionChunk getRegion() {
-		return region;
-	}
-
-	public EntitiesChunk getEntities() {
-		return entities;
-	}
-
-	public PoiChunk getPoi() {
-		return poi;
-	}
+public record ChunkData(RegionChunk region, PoiChunk poi, EntitiesChunk entities) {
 
 	public boolean relocate(Point3i offset) {
 		boolean result = true;
@@ -54,7 +32,7 @@ public class ChunkData {
 		}
 	}
 
-	public int parseData(OverlayParser parser) {
+	public int parseData(Overlay parser) {
 		return parser.parseValue(this);
 	}
 }

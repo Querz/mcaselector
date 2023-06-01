@@ -2,15 +2,18 @@ package net.querz.mcaselector.io.job;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.Config;
+import net.querz.mcaselector.config.ConfigProvider;
+import net.querz.mcaselector.config.WorldConfig;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
-import net.querz.mcaselector.tiles.Tile;
-import net.querz.mcaselector.tiles.TileImage;
-import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.tile.Tile;
+import net.querz.mcaselector.tile.TileImage;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
 import net.querz.mcaselector.progress.Timer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -23,6 +26,8 @@ import java.util.function.Supplier;
 
 public final class RegionImageGenerator {
 
+	private static final Logger LOGGER = LogManager.getLogger(RegionImageGenerator.class);
+
 	private static final Set<Point2i> loading = ConcurrentHashMap.newKeySet();
 
 	private static final LinkedHashMap<Point2i, RegionMCAFile> cachedMCAFiles = new LinkedHashMap<>();
@@ -32,10 +37,10 @@ public final class RegionImageGenerator {
 
 	private RegionImageGenerator() {}
 
-	public static void generate(Tile tile, BiConsumer<Image, UniqueID> callback, int scale, Progress progressChannel, boolean canSkipSaving, Supplier<Integer> prioritySupplier) {
-		Debug.dumpf("adding job %s, tile:%s, scale:%d, loading:%s, image:%s, loaded:%s",
-			MCAImageProcessJob.class.getSimpleName(), tile.getLocation(), scale, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
-		JobHandler.addJob(new MCAImageProcessJob(tile, new UniqueID(), callback, scale, progressChannel, canSkipSaving, prioritySupplier));
+	public static void generate(Tile tile, BiConsumer<Image, UniqueID> callback, Integer zoomLevel, Progress progressChannel, boolean canSkipSaving, Supplier<Integer> prioritySupplier) {
+		LOGGER.debug("adding job {}, tile:{}, scale:{}, loading:{}, image:{}, loaded:{}",
+			MCAImageProcessJob.class.getSimpleName(), tile.getLocation(), zoomLevel, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
+		JobHandler.addJob(new MCAImageProcessJob(tile, new UniqueID(), callback, zoomLevel, progressChannel, canSkipSaving, prioritySupplier));
 	}
 
 	public static RegionMCAFile getCachedRegionMCAFile(Point2i region) {
@@ -51,7 +56,7 @@ public final class RegionImageGenerator {
 			}
 			if (cacheEligibilityChecker != null && cacheEligibilityChecker.apply(regionMCAFile.getLocation())) {
 				if (!cachedMCAFiles.containsKey(regionMCAFile.getLocation())) {
-					if (cachedMCAFiles.size() >= Config.getMaxLoadedFiles()) {
+					if (cachedMCAFiles.size() >= ConfigProvider.GLOBAL.getMaxLoadedFiles()) {
 						cachedMCAFiles.remove(cachedMCAFiles.keySet().iterator().next());
 					}
 					cachedMCAFiles.put(regionMCAFile.getLocation(), regionMCAFile.minimizeForRendering());
@@ -81,7 +86,7 @@ public final class RegionImageGenerator {
 	}
 
 	public static void setLoading(Tile tile, boolean loading) {
-		Debug.dumpf("set loading from mca for %s to %s, image:%s, loaded:%s",
+		LOGGER.debug("set loading from mca for {} to {}, image:{}, loaded:{}",
 			tile.getLocation(), loading, tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
 
 		if (loading) {
@@ -101,21 +106,23 @@ public final class RegionImageGenerator {
 		private final boolean caves;
 
 		private UniqueID() {
-			this.world = Config.getWorldUUID();
-			this.height = Config.getRenderHeight();
-			this.layerOnly = Config.renderLayerOnly();
-			this.shade = Config.shade();
-			this.shadeWater = Config.shadeWater();
-			this.caves = Config.renderCaves();
+			WorldConfig worldConfig = ConfigProvider.WORLD;
+			this.world = worldConfig.getWorldUUID();
+			this.height = worldConfig.getRenderHeight();
+			this.layerOnly = worldConfig.getRenderLayerOnly();
+			this.shade = worldConfig.getShade();
+			this.shadeWater = worldConfig.getShadeWater();
+			this.caves = worldConfig.getRenderCaves();
 		}
 
 		public boolean matchesCurrentConfig() {
-			return world.equals(Config.getWorldUUID())
-					&& height == Config.getRenderHeight()
-					&& layerOnly == Config.renderLayerOnly()
-					&& shade == Config.shade()
-					&& shadeWater == Config.shadeWater()
-					&& caves == Config.renderCaves();
+			WorldConfig worldConfig = ConfigProvider.WORLD;
+			return world.equals(worldConfig.getWorldUUID())
+					&& height == worldConfig.getRenderHeight()
+					&& layerOnly == worldConfig.getRenderLayerOnly()
+					&& shade == worldConfig.getShade()
+					&& shadeWater == worldConfig.getShadeWater()
+					&& caves == worldConfig.getRenderCaves();
 		}
 	}
 
@@ -124,20 +131,23 @@ public final class RegionImageGenerator {
 		private final Tile tile;
 		private final UniqueID uniqueID;
 		private final BiConsumer<Image, UniqueID> callback;
-		private final int scale;
+		private final Integer zoomLevel;
 		private final Progress progressChannel;
 		private final boolean canSkipSaving;
 		private final Supplier<Integer> prioritySupplier;
 
-		private MCAImageProcessJob(Tile tile, UniqueID uniqueID, BiConsumer<Image, UniqueID> callback, int scale, Progress progressChannel, boolean canSkipSaving, Supplier<Integer> prioritySupplier) {
+		private MCAImageProcessJob(Tile tile, UniqueID uniqueID, BiConsumer<Image, UniqueID> callback, Integer zoomLevel, Progress progressChannel, boolean canSkipSaving, Supplier<Integer> prioritySupplier) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null), PRIORITY_LOW);
 			this.tile = tile;
 			this.uniqueID = uniqueID;
 			this.callback = callback;
-			this.scale = scale;
+			this.zoomLevel = zoomLevel;
 			this.progressChannel = progressChannel;
 			this.canSkipSaving = canSkipSaving;
 			this.prioritySupplier = prioritySupplier;
+			if (progressChannel != null) {
+				errorHandler = t -> progressChannel.incrementProgress("error");
+			}
 		}
 
 		@Override
@@ -155,7 +165,7 @@ public final class RegionImageGenerator {
 				return true;
 			}
 
-			Debug.dumpf("generating image for %s", tile.getMCAFile().getAbsolutePath());
+			LOGGER.debug("generating image for {}", tile.getMCAFile().getAbsolutePath());
 
 			File file = tile.getMCAFile();
 			ByteArrayPointer ptr = new ByteArrayPointer(data);
@@ -165,37 +175,57 @@ public final class RegionImageGenerator {
 				try {
 					Timer t = new Timer();
 					cachedRegion.load(ptr);
-					Debug.dumpf("took %s to read mca file %s", t, cachedRegion.getFile().getName());
+					LOGGER.debug("took {} to read mca file {}", t, cachedRegion.getFile().getName());
 				} catch (IOException ex) {
-					Debug.dumpf("failed to load mca file %s", cachedRegion.getFile().getName());
+					LOGGER.warn("failed to load mca file {}", cachedRegion.getFile().getName());
 				}
 			} else {
 				isCached = true;
 			}
 
-			Timer t = new Timer();
-			Image image = TileImage.generateImage(cachedRegion, scale);
-			Debug.dumpf("took %s to generate image for region %s", t, tile.getLocation());
+			if (zoomLevel == null) {
+				for (int z = Config.MIN_ZOOM_LEVEL; z <= Config.MAX_ZOOM_LEVEL; z *= 2) {
+					Timer t = new Timer();
+					Image image = TileImage.generateImage(cachedRegion, z);
+					LOGGER.debug("took {} to generate image for region {}", t, tile.getLocation());
 
-			callback.accept(image, uniqueID);
+					callback.accept(image, uniqueID);
 
-			cacheRegionMCAFile(cachedRegion, uniqueID);
+					// don't cache in memory, we only want the file cache
 
-			if (image != null && !isCached) {
-				JobHandler.executeSaveData(new MCAImageSaveCacheJob(image, tile, uniqueID, scale, progressChannel, canSkipSaving));
-				return false;
-			} else {
+					new MCAImageSaveCacheJob(image, tile, z, null, canSkipSaving).execute();
+				}
 				if (progressChannel != null) {
 					progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 				}
+				return true;
+			} else {
+				Timer t = new Timer();
+				Image image = TileImage.generateImage(cachedRegion, zoomLevel);
+				LOGGER.debug("took {} to generate image for region {}", t, tile.getLocation());
+
+				callback.accept(image, uniqueID);
+
+				cacheRegionMCAFile(cachedRegion, uniqueID);
+
+				if (image != null && !isCached) {
+					MCAImageSaveCacheJob job = new MCAImageSaveCacheJob(image, tile, zoomLevel, progressChannel, canSkipSaving);
+					job.errorHandler = errorHandler;
+					JobHandler.executeSaveData(job);
+					return false;
+				} else {
+					if (progressChannel != null) {
+						progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
+					}
+				}
+				return true;
 			}
-			return true;
 		}
 
 		@Override
 		public void cancel() {
-			Debug.dumpf("cancelling job %s, tile:%s, scale:%d, loading:%s, image:%s, loaded:%s",
-				MCAImageProcessJob.class.getSimpleName(), tile.getLocation(), scale, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
+			LOGGER.debug("cancelling job {}, tile:{}, scale:{}, loading:{}, image:{}, loaded:{}",
+				MCAImageProcessJob.class.getSimpleName(), tile.getLocation(), zoomLevel, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
 
 			setLoading(tile, false);
 
@@ -220,15 +250,13 @@ public final class RegionImageGenerator {
 	private static class MCAImageSaveCacheJob extends SaveDataJob<Image> {
 
 		private final Tile tile;
-		private final UniqueID uniqueID;
 		private final int zoomLevel;
 		private final Progress progressChannel;
 		private final boolean canSkip;
 
-		private MCAImageSaveCacheJob(Image data, Tile tile, UniqueID uniqueID, int zoomLevel, Progress progressChannel, boolean canSkip) {
+		private MCAImageSaveCacheJob(Image data, Tile tile, int zoomLevel, Progress progressChannel, boolean canSkip) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null), data);
 			this.tile = tile;
-			this.uniqueID = uniqueID;
 			this.zoomLevel = zoomLevel;
 			this.progressChannel = progressChannel;
 			this.canSkip = canSkip;
@@ -241,21 +269,21 @@ public final class RegionImageGenerator {
 			// save image to cache
 			try {
 				BufferedImage img = SwingFXUtils.fromFXImage(getData(), null);
-				File cacheFile = FileHelper.createPNGFilePath(Config.getCacheDirForWorldUUID(uniqueID.world, zoomLevel), tile.getLocation());
+				File cacheFile = FileHelper.createPNGFilePath(ConfigProvider.WORLD.getCacheDir(zoomLevel), tile.getLocation());
 				if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
-					Debug.errorf("failed to create cache directory for %s", cacheFile.getAbsolutePath());
+					LOGGER.warn("failed to create cache directory for {}", cacheFile.getAbsolutePath());
 				}
-				Debug.dumpf("writing cache file %s", cacheFile.getAbsolutePath());
+				LOGGER.debug("writing cache file {}", cacheFile.getAbsolutePath());
 				ImageIO.write(img, "png", cacheFile);
 			} catch (IOException ex) {
-				Debug.dumpException("failed to save images to cache for " + tile.getLocation(), ex);
+				LOGGER.warn("failed to save images to cache for {}", tile.getLocation(), ex);
 			}
 
 			if (progressChannel != null) {
 				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 			}
 
-			Debug.dumpf("took %s to cache image of %s to %s", t, tile.getMCAFile().getName(), FileHelper.createPNGFileName(tile.getLocation()));
+			LOGGER.debug("took {} to cache image of {} to {}", t, tile.getMCAFile().getName(), FileHelper.createPNGFileName(tile.getLocation()));
 
 			done();
 		}

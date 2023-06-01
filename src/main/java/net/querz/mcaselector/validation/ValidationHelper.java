@@ -1,9 +1,12 @@
 package net.querz.mcaselector.validation;
 
-import net.querz.mcaselector.debug.Debug;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.function.Supplier;
 
 public class ValidationHelper {
+
+	private static final Logger LOGGER = LogManager.getLogger(ValidationHelper.class);
 
 	private ValidationHelper() {}
 
@@ -11,7 +14,7 @@ public class ValidationHelper {
 		try {
 			return s.get();
 		} catch (Exception ex) {
-			Debug.dumpException("validation error", ex);
+			LOGGER.warn("validation error", ex);
 			return def;
 		}
 	}
@@ -28,7 +31,7 @@ public class ValidationHelper {
 		try {
 			return s.get();
 		} catch (ClassCastException ex) {
-			Debug.dumpException("validation error", ex);
+			LOGGER.warn("validation error", ex);
 			return null;
 		}
 	}

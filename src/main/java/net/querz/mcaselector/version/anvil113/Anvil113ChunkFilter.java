@@ -4,18 +4,18 @@ import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.math.Bits;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.Helper;
-import net.querz.nbt.tag.*;
-
+import net.querz.nbt.*;
 import java.util.*;
 
 public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchBlockNames(CompoundTag data, Collection<String> names) {
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
@@ -23,12 +23,12 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		int c = 0;
 		nameLoop:
 		for (String name : names) {
-			for (CompoundTag t : sections) {
-				ListTag<CompoundTag> palette = Helper.tagFromCompound(t, "Palette", null);
+			for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
+				ListTag palette = Helper.tagFromCompound(t, "Palette", null);
 				if (palette == null) {
 					continue;
 				}
-				for (CompoundTag p : palette) {
+				for (CompoundTag p : palette.iterateType(CompoundTag.class)) {
 					if (name.equals(Helper.stringFromCompound(p, "Name"))) {
 						c++;
 						continue nameLoop;
@@ -41,18 +41,18 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchAnyBlockName(CompoundTag data, Collection<String> names) {
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
 
 		for (String name : names) {
-			for (CompoundTag t : sections) {
-				ListTag<CompoundTag> palette = Helper.tagFromCompound(t, "Palette", null);
+			for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
+				ListTag palette = Helper.tagFromCompound(t, "Palette", null);
 				if (palette == null) {
 					continue;
 				}
-				for (CompoundTag p : palette) {
+				for (CompoundTag p : palette.iterateType(CompoundTag.class)) {
 					if (name.equals(Helper.stringFromCompound(p, "Name"))) {
 						return true;
 					}
@@ -64,18 +64,18 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean paletteEquals(CompoundTag data, Collection<String> names) {
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
 
 		Set<String> blocks = new HashSet<>();
-		for (CompoundTag t : sections) {
-			ListTag<CompoundTag> palette = Helper.tagFromCompound(t, "Palette", null);
+		for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
+			ListTag palette = Helper.tagFromCompound(t, "Palette", null);
 			if (palette == null) {
 				continue;
 			}
-			for (CompoundTag p : palette) {
+			for (CompoundTag p : palette.iterateType(CompoundTag.class)) {
 				String n;
 				if ((n = Helper.stringFromCompound(p, "Name")) != null) {
 					if (!names.contains(n)) {
@@ -152,12 +152,12 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace) {
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return;
 		}
 
-		CompoundTag level = data.getCompoundTag("Level");
+		CompoundTag level = data.getCompound("Level");
 
 		Point2i pos = Helper.point2iFromCompound(level, "xPos", "zPos");
 		if (pos == null) {
@@ -169,9 +169,9 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		if (replace.containsKey("minecraft:air")) {
 			Map<Integer, CompoundTag> sectionMap = new HashMap<>();
 			List<Integer> heights = new ArrayList<>(18);
-			for (CompoundTag section : sections) {
-				sectionMap.put(section.getNumber("Y").intValue(), section);
-				heights.add(section.getNumber("Y").intValue());
+			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+				sectionMap.put(section.getInt("Y"), section);
+				heights.add(section.getInt("Y"));
 			}
 
 			for (int y = 0; y < 16; y++) {
@@ -194,13 +194,13 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 			}
 		}
 
-		ListTag<CompoundTag> tileEntities = Helper.tagFromCompound(level, "TileEntities", null);
+		ListTag tileEntities = Helper.tagFromCompound(level, "TileEntities", null);
 		if (tileEntities == null) {
-			tileEntities = new ListTag<>(CompoundTag.class);
+			tileEntities = new ListTag();
 		}
 
-		for (CompoundTag section : sections) {
-			ListTag<CompoundTag> palette = Helper.tagFromCompound(section, "Palette", null);
+		for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+			ListTag palette = Helper.tagFromCompound(section, "Palette", null);
 			if (palette == null) {
 				continue;
 			}
@@ -215,11 +215,17 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 				continue;
 			}
 
+			section.remove("BlockLight");
+			section.remove("SkyLight");
+
 			for (int i = 0; i < 4096; i++) {
 				CompoundTag blockState = getBlockAt(i, blockStates, palette);
 
-				BlockReplaceData replacement = replace.get(blockState.getString("Name"));
-				if (replacement != null) {
+				for (Map.Entry<String, BlockReplaceData> entry : replace.entrySet()) {
+					if (!blockState.getString("Name").matches(entry.getKey())) {
+						continue;
+					}
+					BlockReplaceData replacement = entry.getValue();
 
 					try {
 						blockStates = setBlockAt(i, replacement.getState(), blockStates, palette);
@@ -230,14 +236,14 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 					Point3i location = indexToLocation(i).add(pos.getX(), y * 16, pos.getZ());
 
 					if (replacement.getTile() != null) {
-						CompoundTag tile = replacement.getTile().clone();
+						CompoundTag tile = replacement.getTile().copy();
 						tile.putInt("x", location.getX());
 						tile.putInt("y", location.getY());
 						tile.putInt("z", location.getZ());
 						tileEntities.add(tile);
 					} else if (tileEntities.size() != 0) {
 						for (int t = 0; t < tileEntities.size(); t++) {
-							CompoundTag tile = tileEntities.get(t);
+							CompoundTag tile = tileEntities.getCompound(t);
 							if (tile.getInt("x") == location.getX()
 									&& tile.getInt("y") == location.getY()
 									&& tile.getInt("z") == location.getZ()) {
@@ -269,13 +275,13 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 	}
 
 	// returns the block state at the given index
-	protected CompoundTag getBlockAt(int index, long[] blockStates, ListTag<CompoundTag> palette) {
-		return palette.get(getPaletteIndex(index, blockStates));
+	protected CompoundTag getBlockAt(int index, long[] blockStates, ListTag palette) {
+		return palette.getCompound(getPaletteIndex(index, blockStates));
 	}
 
 	// sets a new block state at the given index.
 	// if the length of blockStates changes, a new blockStates array is returned, otherwise blockStates is returned.
-	protected long[] setBlockAt(int index, CompoundTag blockState, long[] blockStates, ListTag<CompoundTag> palette) {
+	protected long[] setBlockAt(int index, CompoundTag blockState, long[] blockStates, ListTag palette) {
 		// search palette for block and add it if necessary
 		int paletteIndex = -1;
 		for (int i = 0; i < palette.size(); i++) {
@@ -326,7 +332,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		}
 	}
 
-	protected long[] adjustBlockStateBits(ListTag<CompoundTag> palette, long[] blockStates, Map<Integer, Integer> oldToNewMapping) {
+	protected long[] adjustBlockStateBits(ListTag palette, long[] blockStates, Map<Integer, Integer> oldToNewMapping) {
 		int newBits = 32 - Integer.numberOfLeadingZeros(palette.size() - 1);
 		newBits = Math.max(newBits, 4);
 
@@ -350,7 +356,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		return newBlockStates;
 	}
 
-	protected long[] cleanupPalette(long[] blockStates, ListTag<CompoundTag> palette) {
+	protected long[] cleanupPalette(long[] blockStates, ListTag palette) {
 		// create mapping of old --> new indices
 		Map<Integer, Integer> allIndices = new HashMap<>(palette.size());
 		for (int i = 0; i < 4096; i++) {
@@ -380,9 +386,9 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		return adjustBlockStateBits(palette, blockStates, allIndices);
 	}
 
-	protected boolean paletteContainsAir(ListTag<CompoundTag> palette) {
+	protected boolean paletteContainsAir(ListTag palette) {
 		for (int i = 0; i < palette.size(); i++) {
-			if (palette.get(i).getString("Name").equals("minecraft:air")) {
+			if (palette.getCompound(i).getString("Name").equals("minecraft:air")) {
 				return true;
 			}
 		}
@@ -393,7 +399,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		CompoundTag newSection = new CompoundTag();
 		newSection.putByte("Y", (byte) y);
 		newSection.putLongArray("BlockStates", new long[256]);
-		ListTag<CompoundTag> newPalette = new ListTag<>(CompoundTag.class);
+		ListTag newPalette = new ListTag();
 		CompoundTag newBlockState = new CompoundTag();
 		newBlockState.putString("Name", "minecraft:air");
 		newPalette.add(newBlockState);
@@ -403,7 +409,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 	@Override
 	public int getAverageHeight(CompoundTag data) {
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return 0;
 		}
@@ -415,8 +421,8 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
-				for (CompoundTag section : sections) {
-					ListTag<CompoundTag> palette = Helper.tagFromCompound(section, "Palette", null);
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+					ListTag palette = Helper.tagFromCompound(section, "Palette", null);
 					if (palette == null) {
 						continue;
 					}
@@ -446,37 +452,34 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 	}
 
 	protected boolean isEmpty(CompoundTag blockData) {
-		switch (Helper.stringFromCompound(blockData, "Name", "")) {
-			case "minecraft:air":
-			case "minecraft:cave_air":
-			case "minecraft:barrier":
-			case "minecraft:structure_void":
-				return blockData.size() == 1;
-		}
-		return false;
+		return switch (Helper.stringFromCompound(blockData, "Name", "")) {
+			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void" ->
+					blockData.size() == 1;
+			default -> false;
+		};
 	}
 
-	protected int filterSections(CompoundTag sectionA, CompoundTag sectionB) {
+	protected int filterSections(Tag sectionA, Tag sectionB) {
 		return Helper.numberFromCompound(sectionB, "Y", -1).intValue() - Helper.numberFromCompound(sectionA, "Y", -1).intValue();
 	}
 
 	@Override
 	public int getBlockAmount(CompoundTag data, String[] blocks) {
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return 0;
 		}
 
 		int result = 0;
 
-		for (CompoundTag section : sections) {
-			ListTag<CompoundTag> palette = Helper.tagFromCompound(section, "Palette", null);
+		for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+			ListTag palette = Helper.tagFromCompound(section, "Palette", null);
 			if (palette == null) {
 				continue;
 			}
 
 			for (int i = 0; i < palette.size(); i++) {
-				CompoundTag blockState = palette.get(i);
+				CompoundTag blockState = palette.getCompound(i);
 				String name = Helper.stringFromCompound(blockState, "Name");
 				if (name == null) {
 					continue;
@@ -505,7 +508,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 	}
 
 	@Override
-	public ListTag<CompoundTag> getTileEntities(CompoundTag data) {
+	public ListTag getTileEntities(CompoundTag data) {
 		return Helper.tagFromLevelFromRoot(data, "TileEntities");
 	}
 
@@ -522,8 +525,25 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 	}
 
 	@Override
-	public ListTag<CompoundTag> getSections(CompoundTag data) {
+	public ListTag getSections(CompoundTag data) {
 		return Helper.tagFromLevelFromRoot(data, "Sections");
+	}
+
+	@Override
+	public void deleteSections(CompoundTag data, List<Range> ranges) {
+		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections");
+		if (sections == null) {
+			return;
+		}
+		for (int i = 0; i < sections.size(); i++) {
+			CompoundTag section = sections.getCompound(i);
+			for (Range range : ranges) {
+				if (range.contains(section.getInt("Y"))) {
+					sections.remove(i);
+					i--;
+				}
+			}
+		}
 	}
 
 	@Override

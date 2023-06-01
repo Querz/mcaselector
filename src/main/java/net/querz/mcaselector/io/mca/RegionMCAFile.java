@@ -4,10 +4,11 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.version.ChunkMerger;
 import net.querz.mcaselector.version.ChunkRenderer;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.CompoundTag;
 import java.io.File;
 import java.util.List;
 
@@ -32,8 +33,8 @@ public class RegionMCAFile extends MCAFile<RegionChunk> implements Cloneable {
 	}
 
 	@Override
-	public void mergeChunksInto(MCAFile<RegionChunk> destination, Point3i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges) {
-		mergeChunksInto(destination, offset, overwrite, sourceChunks, selection, ranges, RegionMCAFile::newEmptyChunk);
+	public void mergeChunksInto(MCAFile<RegionChunk> destination, Point3i offset, boolean overwrite, ChunkSet sourceChunks, ChunkSet targetChunks, List<Range> ranges) {
+		mergeChunksInto(destination, offset, overwrite, sourceChunks, targetChunks, ranges, RegionMCAFile::newEmptyChunk);
 	}
 
 	public RegionMCAFile minimizeForRendering() {

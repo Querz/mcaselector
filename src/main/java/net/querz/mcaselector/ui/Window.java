@@ -6,8 +6,12 @@ import javafx.scene.control.Dialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import net.querz.mcaselector.tiles.TileMap;
+import net.querz.mcaselector.logging.Logging;
+import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.ui.component.OptionBar;
+import net.querz.mcaselector.ui.component.StatusBar;
+import net.querz.mcaselector.ui.component.TileMapBox;
 import net.querz.mcaselector.ui.dialog.PreviewDisclaimerDialog;
 import java.io.IOException;
 import java.net.URL;
@@ -92,6 +96,7 @@ public class Window extends Application {
 			}
 		});
 
+		Logging.updateThreadContext();
 		primaryStage.show();
 	}
 

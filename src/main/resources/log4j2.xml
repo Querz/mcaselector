@@ -1,0 +1,29 @@
+<Configuration status="WARN" packages="net.querz.mcaselector.logging">
+	<ExceptionBurstFilter duration="20000"/>
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %p %c: %m%n"/>
+		</Console>
+		<RollingFile name="File" fileName="${sys:logDir}/mcaselector.log" filePattern="${sys:logDir}/mcaselector-%d{yyyyMMdd-HHmmss}-%i.log">
+			<DynamicThresholdFilter key="dynamicLogLevel" defaultThreshold="INFO" onMatch="ACCEPT" onMismatch="DENY">
+				<KeyValuePair key="TRACE" value="TRACE"/>
+				<KeyValuePair key="DEBUG" value="DEBUG"/>
+				<KeyValuePair key="WARN" value="WARN"/>
+				<KeyValuePair key="ERROR" value="ERROR"/>
+				<KeyValuePair key="FATAL" value="FATAL"/>
+			</DynamicThresholdFilter>
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %p %c{1}: %m%n"/>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50MB"/>
+				<OnStartupTriggeringPolicy/>
+			</Policies>
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Root level="WARN">
+			<AppenderRef ref="Console"/>
+			<AppenderRef ref="File"/>
+		</Root>
+	</Loggers>
+</Configuration>

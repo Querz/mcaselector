@@ -1,6 +1,7 @@
 package net.querz.mcaselector.io;
 
 import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.selection.Selection;
 import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -52,13 +53,13 @@ public class WorldDirectories implements Serializable, Cloneable {
 		return rd;
 	}
 
-	public RegionDirectories[] listRegions(SelectionData selection) {
+	public RegionDirectories[] listRegions(Selection selection) {
 		Map<Point2i, RegionDirectories> regionDirectories = new HashMap<>();
 		File[] r = this.region.listFiles((d, n) -> FileHelper.MCA_FILE_PATTERN.matcher(n).matches());
 		if (r != null) {
 			for (File f : r) {
 				Point2i l = FileHelper.parseMCAFileName(f);
-				if (selection == null || selection.isRegionSelected(l)) {
+				if (selection == null || selection.isAnyChunkInRegionSelected(l.asLong())) {
 					regionDirectories.put(l, new RegionDirectories(l, f, null, null));
 				}
 			}
@@ -69,11 +70,11 @@ public class WorldDirectories implements Serializable, Cloneable {
 			if (p != null) {
 				for (File f : p) {
 					Point2i l = FileHelper.parseMCAFileName(f);
-					if (selection == null || selection.isRegionSelected(l)) {
+					if (selection == null || selection.isAnyChunkInRegionSelected(l.asLong())) {
 						if (regionDirectories.containsKey(l)) {
 							regionDirectories.get(l).setEntities(f);
 						} else {
-							regionDirectories.put(l, new RegionDirectories(l, null, f, null));
+							regionDirectories.put(l, new RegionDirectories(l, null, null, f));
 						}
 					}
 				}
@@ -85,11 +86,11 @@ public class WorldDirectories implements Serializable, Cloneable {
 			if (e != null) {
 				for (File f : e) {
 					Point2i l = FileHelper.parseMCAFileName(f);
-					if (selection == null || selection.isRegionSelected(l)) {
+					if (selection == null || selection.isAnyChunkInRegionSelected(l.asLong())) {
 						if (regionDirectories.containsKey(l)) {
 							regionDirectories.get(l).setPoi(f);
 						} else {
-							regionDirectories.put(l, new RegionDirectories(l, null, null, f));
+							regionDirectories.put(l, new RegionDirectories(l, null, f, null));
 						}
 					}
 				}

@@ -1,6 +1,5 @@
 package net.querz.mcaselector.io.job;
 
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.mca.ChunkData;
@@ -9,8 +8,10 @@ import net.querz.mcaselector.io.mca.PoiMCAFile;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Timer;
-import net.querz.mcaselector.tiles.Tile;
-import net.querz.mcaselector.tiles.overlay.OverlayParser;
+import net.querz.mcaselector.tile.Tile;
+import net.querz.mcaselector.overlay.Overlay;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
@@ -20,19 +21,40 @@ import java.util.function.Supplier;
 
 public class ParseDataJob extends ProcessDataJob {
 
+	private static final Logger LOGGER = LogManager.getLogger(ParseDataJob.class);
+
 	private static final Set<Point2i> loading = ConcurrentHashMap.newKeySet();
 
 	private final BiConsumer<int[], UUID> dataCallback;
 	private final UUID world;
-	private final OverlayParser parser;
+	private final RegionMCAFile region;
+	private final PoiMCAFile poi;
+	private final EntitiesMCAFile entities;
+	private final Overlay parser;
 	private final Tile tile;
 	private final Supplier<Integer> prioritySupplier;
 
-	public ParseDataJob(Tile tile, RegionDirectories dirs, UUID world, BiConsumer<int[], UUID> dataCallback, OverlayParser parser, Supplier<Integer> prioritySupplier) {
+	public ParseDataJob(Tile tile, RegionDirectories dirs, UUID world, RegionMCAFile region, PoiMCAFile poi, EntitiesMCAFile entities, BiConsumer<int[], UUID> dataCallback, Overlay parser, Supplier<Integer> prioritySupplier) {
 		super(dirs, PRIORITY_LOW);
 		this.tile = tile;
 		this.dataCallback = dataCallback;
 		this.world = world;
+		this.region = region;
+		this.poi = poi;
+		this.entities = entities;
+		this.parser = parser;
+		this.prioritySupplier = prioritySupplier;
+		setLoading(tile, true);
+	}
+
+	public ParseDataJob(Tile tile, RegionDirectories dirs, UUID world, BiConsumer<int[], UUID> dataCallback, Overlay parser, Supplier<Integer> prioritySupplier) {
+		super(dirs, PRIORITY_LOW);
+		this.tile = tile;
+		this.dataCallback = dataCallback;
+		this.world = world;
+		this.region = null;
+		this.poi = null;
+		this.entities = null;
 		this.parser = parser;
 		this.prioritySupplier = prioritySupplier;
 		setLoading(tile, true);
@@ -64,7 +86,9 @@ public class ParseDataJob extends ProcessDataJob {
 		Timer t = new Timer();
 
 		RegionMCAFile regionMCAFile = null;
-		if (getRegionDirectories().getRegion() != null && getRegionDirectories().getRegion().exists() && getRegionDirectories().getRegion().length() > 0) {
+		if (region != null) {
+			regionMCAFile = region;
+		} else if (getRegionDirectories().getRegion() != null && getRegionDirectories().getRegion().exists() && getRegionDirectories().getRegion().length() > 0) {
 			byte[] regionData = loadRegion();
 			regionMCAFile = new RegionMCAFile(getRegionDirectories().getRegion());
 			if (regionData != null) {
@@ -73,13 +97,15 @@ public class ParseDataJob extends ProcessDataJob {
 				try {
 					regionMCAFile.load(ptr);
 				} catch (IOException ex) {
-					Debug.errorf("failed to read mca file header from %s", getRegionDirectories().getRegion());
+					LOGGER.warn("failed to read mca file header from {}", getRegionDirectories().getRegion());
 				}
 			}
 		}
 
 		EntitiesMCAFile entitiesMCAFile = null;
-		if (getRegionDirectories().getEntities() != null && getRegionDirectories().getEntities().exists() && getRegionDirectories().getEntities().length() > 0) {
+		if (entities != null) {
+			entitiesMCAFile = entities;
+		} else if (getRegionDirectories().getEntities() != null && getRegionDirectories().getEntities().exists() && getRegionDirectories().getEntities().length() > 0) {
 			byte[] entitiesData = loadEntities();
 			entitiesMCAFile = new EntitiesMCAFile(getRegionDirectories().getEntities());
 			if (entitiesData != null) {
@@ -88,13 +114,15 @@ public class ParseDataJob extends ProcessDataJob {
 				try {
 					entitiesMCAFile.load(ptr);
 				} catch (IOException ex) {
-					Debug.errorf("failed to read mca file header from %s", getRegionDirectories().getEntities());
+					LOGGER.warn("failed to read mca file header from {}", getRegionDirectories().getEntities());
 				}
 			}
 		}
 
 		PoiMCAFile poiMCAFile = null;
-		if (getRegionDirectories().getPoi() != null && getRegionDirectories().getPoi().exists() && getRegionDirectories().getPoi().length() > 0) {
+		if (poi != null) {
+			poiMCAFile = poi;
+		} else if (getRegionDirectories().getPoi() != null && getRegionDirectories().getPoi().exists() && getRegionDirectories().getPoi().length() > 0) {
 			byte[] poiData = loadPoi();
 			poiMCAFile = new PoiMCAFile(getRegionDirectories().getPoi());
 			if (poiData != null) {
@@ -103,14 +131,14 @@ public class ParseDataJob extends ProcessDataJob {
 				try {
 					poiMCAFile.load(ptr);
 				} catch (IOException ex) {
-					Debug.errorf("failed to read mca file header from %s", getRegionDirectories().getPoi());
+					LOGGER.warn("failed to read mca file header from {}", getRegionDirectories().getPoi());
 				}
 			}
 		}
 
 		if (regionMCAFile == null && poiMCAFile == null && entitiesMCAFile == null) {
 			dataCallback.accept(null, world);
-			Debug.dumpf("no data to load and parse for region %s", getRegionDirectories().getLocation());
+			LOGGER.warn("no data to load and parse for region {}", getRegionDirectories().getLocation());
 			setLoading(tile, false);
 			return true;
 		}
@@ -124,14 +152,14 @@ public class ParseDataJob extends ProcessDataJob {
 			try {
 				data[i] = chunkData.parseData(parser);
 			} catch (Exception ex) {
-				Debug.dumpException("failed to parse chunk data at index " + i, ex);
+				LOGGER.warn("failed to parse chunk data at index {}", i, ex);
 			}
 		}
 
 		dataCallback.accept(data, world);
 		setLoading(tile, false);
 
-		Debug.dumpf("took %s to load and parse data for region %s", t, getRegionDirectories().getLocation());
+		LOGGER.debug("took {} to load and parse data for region {}", t, getRegionDirectories().getLocation());
 		return true;
 	}
 

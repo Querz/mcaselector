@@ -1,23 +1,26 @@
 package net.querz.mcaselector.io.mca;
 
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.changer.Field;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.RegionDirectories;
-import net.querz.mcaselector.io.SelectionData;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.selection.ChunkSet;
+import net.querz.mcaselector.selection.Selection;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 // holds data for chunks, poi and entities
 public class Region {
+
+	private static final Logger LOGGER = LogManager.getLogger(Region.class);
 
 	private RegionMCAFile region;
 	private PoiMCAFile poi;
@@ -31,7 +34,6 @@ public class Region {
 		Region r = new Region();
 		if (dirs.getRegion() != null && dirs.getRegion().length() > FileHelper.HEADER_SIZE && regionData != null) {
 			r.loadRegion(dirs.getRegion(), new ByteArrayPointer(regionData));
-			r.location = dirs.getLocation();
 		}
 		if (dirs.getPoi() != null && poiData != null) {
 			r.loadPoi(dirs.getPoi(), new ByteArrayPointer(poiData));
@@ -39,6 +41,7 @@ public class Region {
 		if (dirs.getEntities() != null && entitiesData != null) {
 			r.loadEntities(dirs.getEntities(), new ByteArrayPointer(entitiesData));
 		}
+		r.location = dirs.getLocation();
 		r.directories = dirs;
 		return r;
 	}
@@ -54,6 +57,7 @@ public class Region {
 		if (dirs.getEntities() != null) {
 			r.loadEntities(dirs.getEntities());
 		}
+		r.location = dirs.getLocation();
 		r.directories = dirs;
 		return r;
 	}
@@ -211,6 +215,7 @@ public class Region {
 		if (entities != null) {
 			entitiesChunk = entities.getChunk(index);
 		}
+		Point2i location = this.location == null ? new Point2i() : new Point2i(index).add(this.location.regionToChunk());
 		return new ChunkData(regionChunk, poiChunk, entitiesChunk);
 	}
 
@@ -225,13 +230,13 @@ public class Region {
 			entities = new EntitiesMCAFile(directories.getEntities());
 		}
 		if (region != null) {
-			region.setChunkAt(location, chunkData.getRegion());
+			region.setChunkAt(location, chunkData.region());
 		}
 		if (poi != null) {
-			poi.setChunkAt(location, chunkData.getPoi());
+			poi.setChunkAt(location, chunkData.poi());
 		}
 		if (entities != null) {
-			entities.setChunkAt(location, chunkData.getEntities());
+			entities.setChunkAt(location, chunkData.entities());
 		}
 	}
 
@@ -307,7 +312,7 @@ public class Region {
 		}
 	}
 
-	public void deleteChunks(LongOpenHashSet selection) {
+	public void deleteChunks(ChunkSet selection) {
 		if (region != null) {
 			region.deleteChunks(selection);
 		}
@@ -319,22 +324,25 @@ public class Region {
 		}
 	}
 
-	public boolean deleteChunks(Filter<?> filter, SelectionData selection) {
+	public boolean deleteChunks(Filter<?> filter, Selection selection) {
 		boolean deleted = false;
-		Point2i regionChunk = location.regionToChunk();
 		for (int i = 0; i < 1024; i++) {
 			RegionChunk region = this.region.getChunk(i);
 			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
 			PoiChunk poi = this.poi == null ? null : this.poi.getChunk(i);
 
-			if (region == null || region.isEmpty() || selection != null && !selection.isRegionSelected(region.getAbsoluteLocation())) {
+			if (region == null || region.isEmpty() || selection != null && !selection.isAnyChunkInRegionSelected(region.getAbsoluteLocation())) {
 				continue;
 			}
 
 			ChunkData filterData = new ChunkData(region, poi, entities);
 
-			Point2i chunk = new Point2i(i & 31, i >> 5).add(regionChunk);
-			if ((selection == null || selection.isChunkSelected(chunk)) && filter.matches(filterData)) {
+			Point2i location = region.getAbsoluteLocation();
+			if (location == null) {
+				continue;
+			}
+
+			if ((selection == null || selection.isChunkSelected(location)) && filter.matches(filterData)) {
 				deleteChunkIndex(i);
 				deleted = true;
 			}
@@ -342,9 +350,8 @@ public class Region {
 		return deleted;
 	}
 
-	public boolean keepChunks(Filter<?> filter, SelectionData selection) {
+	public boolean keepChunks(Filter<?> filter, Selection selection) {
 		boolean deleted = false;
-		Point2i regionChunk = location.regionToChunk();
 		for (int i = 0; i < 1024; i++) {
 			RegionChunk region = this.region.getChunk(i);
 			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
@@ -356,10 +363,14 @@ public class Region {
 
 			ChunkData filterData = new ChunkData(region, poi, entities);
 
+			Point2i location = region.getAbsoluteLocation();
+			if (location == null) {
+				continue;
+			}
+
 			// keep chunk if filter AND selection applies
 			// ignore selection if it's null
-			Point2i chunk = new Point2i(i & 31, i >> 5).add(regionChunk);
-			if (!filter.matches(filterData) || selection != null && !selection.isChunkSelected(chunk)) {
+			if (!filter.matches(filterData) || selection != null && !selection.isChunkSelected(location)) {
 				deleteChunkIndex(i);
 				deleted = true;
 			}
@@ -379,39 +390,30 @@ public class Region {
 		}
 	}
 
-	public LongOpenHashSet getFilteredChunks(Filter<?> filter, SelectionData selection) {
-		LongOpenHashSet chunks = new LongOpenHashSet();
+	public ChunkSet getFilteredChunks(Filter<?> filter, Selection selection) {
+		ChunkSet chunks = new ChunkSet();
 
-		Point2i regionChunk = location.regionToChunk();
 		for (int i = 0; i < 1024; i++) {
-			RegionChunk region = this.region.getChunk(i);
-			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
-			PoiChunk poi = this.poi == null ? null : this.poi.getChunk(i);
+			RegionChunk regionChunk = this.region == null ? null : this.region.getChunk(i);
+			EntitiesChunk entitiesChunk = this.entities == null ? null : this.entities.getChunk(i);
+			PoiChunk poiChunk = this.poi == null ? null : this.poi.getChunk(i);
 
-			if (region == null || region.isEmpty()) {
-				continue;
-			}
+			ChunkData filterData = new ChunkData(regionChunk, poiChunk, entitiesChunk);
 
-			ChunkData filterData = new ChunkData(region, poi, entities);
-
-			Point2i location = region.getAbsoluteLocation();
-			if (location == null) {
-				continue;
-			}
+			Point2i chunkLocation = location.regionToChunk().add(new Point2i(i));
 
 			try {
-				Point2i chunk = new Point2i(i & 31, i >> 5).add(regionChunk);
-				if ((selection == null || selection.isChunkSelected(chunk)) && filter.matches(filterData)) {
-					chunks.add(location.asLong());
+				if ((selection == null || selection.isChunkSelected(chunkLocation)) && filter.matches(filterData)) {
+					chunks.set(i);
 				}
 			} catch (Exception ex) {
-				Debug.dumpException(String.format("failed to select chunk %s", location), ex);
+				LOGGER.warn("failed to select chunk {}: {}", chunkLocation, ex.getMessage());
 			}
 		}
 		return chunks;
 	}
 
-	public void applyFieldChanges(List<Field<?>> fields, boolean force, SelectionData selection) {
+	public void applyFieldChanges(List<Field<?>> fields, boolean force, Selection selection) {
 		Timer t = new Timer();
 		for (int x = 0; x < 32; x++) {
 			for (int z = 0; z < 32; z++) {
@@ -421,23 +423,23 @@ public class Region {
 					try {
 						chunkData.applyFieldChanges(fields, force);
 					} catch (Exception ex) {
-						Debug.dumpException("failed to apply field changes to chunk " + absoluteLocation, ex);
+						LOGGER.warn("failed to apply field changes to chunk {}: {}", absoluteLocation, ex.getMessage());
 					}
 				}
 			}
 		}
-		Debug.printf("took %s to apply field changes to region %s", t, location);
+		LOGGER.debug("took {} to apply field changes to region {}", t, location);
 	}
 
-	public void mergeInto(Region region, Point3i offset, boolean overwrite, LongOpenHashSet sourceChunks, LongOpenHashSet selection, List<Range> ranges) {
+	public void mergeInto(Region region, Point3i offset, boolean overwrite, ChunkSet sourceChunks, ChunkSet targetChunks, List<Range> ranges) {
 		if (this.region != null) {
-			this.region.mergeChunksInto(region.region, offset, overwrite, sourceChunks, selection, ranges);
+			this.region.mergeChunksInto(region.region, offset, overwrite, sourceChunks, targetChunks, ranges);
 		}
 		if (this.poi != null) {
-			this.poi.mergeChunksInto(region.poi, offset, overwrite, sourceChunks, selection, ranges);
+			this.poi.mergeChunksInto(region.poi, offset, overwrite, sourceChunks, targetChunks, ranges);
 		}
 		if (this.entities != null) {
-			this.entities.mergeChunksInto(region.entities, offset, overwrite, sourceChunks, selection, ranges);
+			this.entities.mergeChunksInto(region.entities, offset, overwrite, sourceChunks, targetChunks, ranges);
 		}
 	}
 

@@ -3,10 +3,11 @@ package net.querz.mcaselector.version.anvil118;
 import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.anvil117.Anvil117ChunkFilter;
-import net.querz.nbt.tag.*;
+import net.querz.nbt.*;
 import java.util.*;
 
 public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
@@ -18,7 +19,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			return false;
 		}
 
-		ListTag<CompoundTag> sections = LegacyHelper.getSections(data, dataVersion);
+		ListTag sections = LegacyHelper.getSections(data, dataVersion);
 		if (sections == null) {
 			return false;
 		}
@@ -26,12 +27,12 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		int c = 0;
 		nameLoop:
 		for (String name : names) {
-			for (CompoundTag t : sections) {
-				ListTag<CompoundTag> palette = LegacyHelper.getPalette(t, dataVersion);
+			for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
+				ListTag palette = LegacyHelper.getPalette(t, dataVersion);
 				if (palette == null) {
 					continue;
 				}
-				for (CompoundTag p : palette) {
+				for (CompoundTag p : palette.iterateType(CompoundTag.class)) {
 					if (name.equals(Helper.stringFromCompound(p, "Name"))) {
 						c++;
 						continue nameLoop;
@@ -49,18 +50,18 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			return false;
 		}
 
-		ListTag<CompoundTag> sections = LegacyHelper.getSections(data, dataVersion);
+		ListTag sections = LegacyHelper.getSections(data, dataVersion);
 		if (sections == null) {
 			return false;
 		}
 
 		for (String name : names) {
-			for (CompoundTag t : sections) {
-				ListTag<CompoundTag> palette = LegacyHelper.getPalette(t, dataVersion);
+			for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
+				ListTag palette = LegacyHelper.getPalette(t, dataVersion);
 				if (palette == null) {
 					continue;
 				}
-				for (CompoundTag p : palette) {
+				for (CompoundTag p : palette.iterateType(CompoundTag.class)) {
 					if (name.equals(Helper.stringFromCompound(p, "Name"))) {
 						return true;
 					}
@@ -77,18 +78,18 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			return false;
 		}
 
-		ListTag<CompoundTag> sections = LegacyHelper.getSections(data, dataVersion);
+		ListTag sections = LegacyHelper.getSections(data, dataVersion);
 		if (sections == null) {
 			return false;
 		}
 
 		Set<String> blocks = new HashSet<>();
-		for (CompoundTag t : sections) {
-			ListTag<CompoundTag> palette = LegacyHelper.getPalette(t, dataVersion);
+		for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
+			ListTag palette = LegacyHelper.getPalette(t, dataVersion);
 			if (palette == null) {
 				continue;
 			}
-			for (CompoundTag p : palette) {
+			for (CompoundTag p : palette.iterateType(CompoundTag.class)) {
 				String n;
 				if ((n = Helper.stringFromCompound(p, "Name")) != null) {
 					if (!names.contains(n)) {
@@ -117,7 +118,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		}
 
 		if (dataVersion >= 2834) {
-			ListTag<CompoundTag> sections = LegacyHelper.getSections(data, dataVersion);
+			ListTag sections = LegacyHelper.getSections(data, dataVersion);
 			if (sections == null) {
 				return false;
 			}
@@ -126,12 +127,12 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 			filterLoop:
 			for (BiomeRegistry.BiomeIdentifier identifier : biomes) {
-				for (CompoundTag section : sections) {
-					ListTag<StringTag> biomePalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+					ListTag biomePalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
 					if (biomePalette == null) {
 						continue filterLoop;
 					}
-					for (StringTag biomeName : biomePalette) {
+					for (StringTag biomeName : biomePalette.iterateType(StringTag.class)) {
 						if (identifier.matches(biomeName.getValue())) {
 							names.add(biomeName.getValue());
 							continue filterLoop;
@@ -167,18 +168,18 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		}
 
 		if (dataVersion >= 2834) {
-			ListTag<CompoundTag> sections = LegacyHelper.getSections(data, dataVersion);
+			ListTag sections = LegacyHelper.getSections(data, dataVersion);
 			if (sections == null) {
 				return false;
 			}
 
 			for (BiomeRegistry.BiomeIdentifier identifier : biomes) {
-				for (CompoundTag section : sections) {
-					ListTag<StringTag> biomePalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+					ListTag biomePalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
 					if (biomePalette == null) {
 						continue;
 					}
-					for (StringTag biomeName : biomePalette) {
+					for (StringTag biomeName : biomePalette.iterateType(StringTag.class)) {
 						if (identifier.matches(biomeName.getValue())) {
 							return true;
 						}
@@ -211,18 +212,18 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		}
 
 		if (dataVersion >= 2834) {
-			ListTag<CompoundTag> sections = LegacyHelper.getSections(data, dataVersion);
+			ListTag sections = LegacyHelper.getSections(data, dataVersion);
 			if (sections == null) {
 				return;
 			}
 
-			for (CompoundTag section : sections) {
+			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				CompoundTag biomes = Helper.tagFromCompound(section, "biomes");
 				if (biomes == null) {
 					continue;
 				}
 
-				ListTag<StringTag> newBiomePalette = new ListTag<>(StringTag.class);
+				ListTag newBiomePalette = new ListTag();
 				newBiomePalette.addString(biome.getName());
 				biomes.put("palette", newBiomePalette);
 				biomes.putLongArray("data", new long[1]);
@@ -243,14 +244,14 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		}
 
 		if (dataVersion >= 2834) {
-			ListTag<CompoundTag> sections = LegacyHelper.getSections(data, dataVersion);
+			ListTag sections = LegacyHelper.getSections(data, dataVersion);
 			if (sections == null) {
 				return;
 			}
 
-			for (CompoundTag section : sections) {
+			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				CompoundTag biomes = new CompoundTag();
-				ListTag<StringTag> newBiomePalette = new ListTag<>(StringTag.class);
+				ListTag newBiomePalette = new ListTag();
 				newBiomePalette.addString(biome.getName());
 				biomes.put("palette", newBiomePalette);
 				biomes.putLongArray("data", new long[1]);
@@ -279,7 +280,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			return;
 		}
 
-		ListTag<CompoundTag> sections = LegacyHelper.getSections(data, dataVersion);
+		ListTag sections = LegacyHelper.getSections(data, dataVersion);
 		if (sections == null) {
 			return;
 		}
@@ -291,16 +292,18 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			}
 			pos = pos.chunkToBlock();
 
+			int yMax = Helper.findHighestSection(sections, -4);
+
 			// handle the special case when someone wants to replace air with something else
 			if (replace.containsKey("minecraft:air")) {
 				Map<Integer, CompoundTag> sectionMap = new HashMap<>();
-				List<Integer> heights = new ArrayList<>(26);
-				for (CompoundTag section : sections) {
-					sectionMap.put(section.getNumber("Y").intValue(), section);
-					heights.add(section.getNumber("Y").intValue());
+				List<Integer> heights = new ArrayList<>(yMax + 5);
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+					sectionMap.put(section.getInt("Y"), section);
+					heights.add(section.getInt("Y"));
 				}
 
-				for (int y = -4; y < 20; y++) {
+				for (int y = -4; y <= yMax; y++) {
 					if (!sectionMap.containsKey(y)) {
 						sectionMap.put(y, completeSection(new CompoundTag(), y));
 						heights.add(y);
@@ -320,14 +323,14 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				}
 			}
 
-			ListTag<CompoundTag> tileEntities = LegacyHelper.getTileEntities(data, dataVersion);
+			ListTag tileEntities = LegacyHelper.getTileEntities(data, dataVersion);
 			if (tileEntities == null) {
-				tileEntities = new ListTag<>(CompoundTag.class);
+				tileEntities = new ListTag();
 			}
 
-			for (CompoundTag section : sections) {
-				CompoundTag blockStatesTag = section.getCompoundTag("block_states");
-				ListTag<CompoundTag> palette = Helper.tagFromCompound(blockStatesTag, "palette");
+			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+				CompoundTag blockStatesTag = section.getCompound("block_states");
+				ListTag palette = Helper.tagFromCompound(blockStatesTag, "palette");
 				long[] blockStates = Helper.longArrayFromCompound(blockStatesTag, "data");
 				if (palette == null) {
 					continue;
@@ -338,15 +341,21 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				}
 
 				int y = Helper.numberFromCompound(section, "Y", -5).intValue();
-				if (y < -4 || y > 19) {
+				if (y < -4 || y > yMax) {
 					continue;
 				}
+
+				section.remove("BlockLight");
+				section.remove("SkyLight");
 
 				for (int i = 0; i < 4096; i++) {
 					CompoundTag blockState = getBlockAt(i, blockStates, palette);
 
-					BlockReplaceData replacement = replace.get(blockState.getString("Name"));
-					if (replacement != null) {
+					for (Map.Entry<String, BlockReplaceData> entry : replace.entrySet()) {
+						if (!blockState.getString("Name").matches(entry.getKey())) {
+							continue;
+						}
+						BlockReplaceData replacement = entry.getValue();
 
 						try {
 							blockStates = setBlockAt(i, replacement.getState(), blockStates, palette);
@@ -357,14 +366,14 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 						Point3i location = indexToLocation(i).add(pos.getX(), y * 16, pos.getZ());
 
 						if (replacement.getTile() != null) {
-							CompoundTag tile = replacement.getTile().clone();
+							CompoundTag tile = replacement.getTile().copy();
 							tile.putInt("x", location.getX());
 							tile.putInt("y", location.getY());
 							tile.putInt("z", location.getZ());
 							tileEntities.add(tile);
 						} else if (tileEntities.size() != 0) {
 							for (int t = 0; t < tileEntities.size(); t++) {
-								CompoundTag tile = tileEntities.get(t);
+								CompoundTag tile = tileEntities.getCompound(t);
 								if (tile.getInt("x") == location.getX()
 									&& tile.getInt("y") == location.getY()
 									&& tile.getInt("z") == location.getZ()) {
@@ -391,7 +400,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 
 			LegacyHelper.putTileEntities(data, tileEntities, dataVersion);
 		} else {
-			CompoundTag level = data.getCompoundTag("Level");
+			CompoundTag level = data.getCompound("Level");
 
 			Point2i pos = Helper.point2iFromCompound(level, "xPos", "zPos");
 			if (pos == null) {
@@ -403,9 +412,9 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			if (replace.containsKey("minecraft:air")) {
 				Map<Integer, CompoundTag> sectionMap = new HashMap<>();
 				List<Integer> heights = new ArrayList<>(18);
-				for (CompoundTag section : sections) {
-					sectionMap.put(section.getNumber("Y").intValue(), section);
-					heights.add(section.getNumber("Y").intValue());
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+					sectionMap.put(section.getInt("Y"), section);
+					heights.add(section.getInt("Y"));
 				}
 
 				for (int y = 0; y < 16; y++) {
@@ -428,13 +437,13 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				}
 			}
 
-			ListTag<CompoundTag> tileEntities = Helper.tagFromCompound(level, "TileEntities", null);
+			ListTag tileEntities = Helper.tagFromCompound(level, "TileEntities", null);
 			if (tileEntities == null) {
-				tileEntities = new ListTag<>(CompoundTag.class);
+				tileEntities = new ListTag();
 			}
 
-			for (CompoundTag section : sections) {
-				ListTag<CompoundTag> palette = Helper.tagFromCompound(section, "Palette", null);
+			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+				ListTag palette = Helper.tagFromCompound(section, "Palette", null);
 				if (palette == null) {
 					continue;
 				}
@@ -449,11 +458,17 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 					continue;
 				}
 
+				section.remove("BlockLight");
+				section.remove("SkyLight");
+
 				for (int i = 0; i < 4096; i++) {
 					CompoundTag blockState = getBlockAt(i, blockStates, palette);
 
-					BlockReplaceData replacement = replace.get(blockState.getString("Name"));
-					if (replacement != null) {
+					for (Map.Entry<String, BlockReplaceData> entry : replace.entrySet()) {
+						if (!blockState.getString("Name").matches(entry.getKey())) {
+							continue;
+						}
+						BlockReplaceData replacement = entry.getValue();
 
 						try {
 							blockStates = setBlockAt(i, replacement.getState(), blockStates, palette);
@@ -464,14 +479,14 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 						Point3i location = indexToLocation(i).add(pos.getX(), y * 16, pos.getZ());
 
 						if (replacement.getTile() != null) {
-							CompoundTag tile = replacement.getTile().clone();
+							CompoundTag tile = replacement.getTile().copy();
 							tile.putInt("x", location.getX());
 							tile.putInt("y", location.getY());
 							tile.putInt("z", location.getZ());
 							tileEntities.add(tile);
 						} else if (tileEntities.size() != 0) {
 							for (int t = 0; t < tileEntities.size(); t++) {
-								CompoundTag tile = tileEntities.get(t);
+								CompoundTag tile = tileEntities.getCompound(t);
 								if (tile.getInt("x") == location.getX()
 									&& tile.getInt("y") == location.getY()
 									&& tile.getInt("z") == location.getZ()) {
@@ -497,7 +512,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 	}
 
 	@Override
-	protected long[] adjustBlockStateBits(ListTag<CompoundTag> palette, long[] blockStates, Map<Integer, Integer> oldToNewMapping) {
+	protected long[] adjustBlockStateBits(ListTag palette, long[] blockStates, Map<Integer, Integer> oldToNewMapping) {
 		if (palette.size() == 1) {
 			return null;
 		}
@@ -518,13 +533,13 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			CompoundTag newBlockStates = new CompoundTag();
 			section.put("block_states", newBlockStates);
 		}
-		CompoundTag blockStates = section.getCompoundTag("block_states");
+		CompoundTag blockStates = section.getCompound("block_states");
 
 		if (!blockStates.containsKey("data")) {
 			blockStates.putLongArray("data", new long[256]);
 		}
 		if (!blockStates.containsKey("palette")) {
-			ListTag<CompoundTag> newPalette = new ListTag<>(CompoundTag.class);
+			ListTag newPalette = new ListTag();
 			CompoundTag newBlockState = new CompoundTag();
 			newBlockState.putString("Name", "minecraft:air");
 			newPalette.add(newBlockState);
@@ -535,10 +550,10 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			CompoundTag newBiomes = new CompoundTag();
 			section.put("biomes", newBiomes);
 		}
-		CompoundTag biomes = section.getCompoundTag("biomes");
+		CompoundTag biomes = section.getCompound("biomes");
 
 		if (!biomes.containsKey("palette")) {
-			ListTag<StringTag> biomePalette = new ListTag<>(StringTag.class);
+			ListTag biomePalette = new ListTag();
 			biomePalette.addString("minecraft:plains");
 			biomes.put("palette", biomePalette);
 		}
@@ -555,7 +570,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			return 0;
 		}
 
-		ListTag<CompoundTag> sections = LegacyHelper.getSections(data, dataVersion);
+		ListTag sections = LegacyHelper.getSections(data, dataVersion);
 		if (sections == null) {
 			return 0;
 		}
@@ -567,8 +582,8 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
-				for (CompoundTag section : sections) {
-					ListTag<CompoundTag> palette = LegacyHelper.getPalette(section, dataVersion);
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+					ListTag palette = LegacyHelper.getPalette(section, dataVersion);
 					long[] blockStates = LegacyHelper.getBlockStates(section, dataVersion);
 					if (palette == null) {
 						continue;
@@ -600,22 +615,22 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 			return 0;
 		}
 
-		ListTag<CompoundTag> sections = LegacyHelper.getSections(data, dataVersion);
+		ListTag sections = LegacyHelper.getSections(data, dataVersion);
 		if (sections == null) {
 			return 0;
 		}
 
 		int result = 0;
 
-		for (CompoundTag section : sections) {
-			ListTag<CompoundTag> palette = LegacyHelper.getPalette(section, dataVersion);
+		for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+			ListTag palette = LegacyHelper.getPalette(section, dataVersion);
 			long[] blockStates = LegacyHelper.getBlockStates(section, dataVersion);
 			if (palette == null) {
 				continue;
 			}
 
 			for (int i = 0; i < palette.size(); i++) {
-				CompoundTag blockState = palette.get(i);
+				CompoundTag blockState = palette.getCompound(i);
 				String name = Helper.stringFromCompound(blockState, "Name");
 				if (name == null) {
 					continue;
@@ -638,7 +653,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 	}
 
 	@Override
-	public ListTag<CompoundTag> getTileEntities(CompoundTag data) {
+	public ListTag getTileEntities(CompoundTag data) {
 		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return null;
@@ -666,12 +681,52 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 	}
 
 	@Override
-	public ListTag<CompoundTag> getSections(CompoundTag data) {
+	public ListTag getSections(CompoundTag data) {
 		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return null;
 		}
 		return LegacyHelper.getSections(data, dataVersion);
+	}
+
+	@Override
+	public void deleteSections(CompoundTag data, List<Range> ranges) {
+		switch (data.getString("Status")) {
+			case "light":
+			case "spawn":
+			case "heightmaps":
+			case "full":
+				// need to reset the Status to pre-light to prevent the game to crash
+				// when it attempts to calculate light based on missing data
+				data.putString("Status", "features");
+				break;
+			default:
+				return;
+		}
+		ListTag sections = Helper.tagFromCompound(data, "sections");
+		if (sections == null) {
+			return;
+		}
+		for (int i = 0; i < sections.size(); i++) {
+			CompoundTag section = sections.getCompound(i);
+			for (Range range : ranges) {
+				if (range.contains(section.getInt("Y"))) {
+					deleteSection(section);
+				}
+			}
+		}
+	}
+
+	// only delete blocks, not biomes
+	private void deleteSection(CompoundTag section) {
+		CompoundTag blockStates = section.getCompound("block_states");
+		blockStates.remove("data");
+		ListTag blockPalette = new ListTag();
+		CompoundTag air = new CompoundTag();
+		air.putString("Name", "minecraft:air");
+		blockPalette.add(air);
+		blockStates.put("palette", blockPalette);
+		section.remove("BlockLight");
 	}
 
 	@Override

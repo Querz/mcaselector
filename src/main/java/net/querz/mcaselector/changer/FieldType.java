@@ -1,5 +1,6 @@
 package net.querz.mcaselector.changer;
 
+import net.querz.mcaselector.changer.fields.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -20,7 +21,8 @@ public enum FieldType {
 	DELETE_STRUCTURE("DeleteStructureReference", DeleteStructureField::new, false, false),
 	STRUCTURE_REFERENCE("FixStructureReferences", ReferenceField::new, true, false),
 	PREVENT_RETROGEN("PreventRetrogen", PreventRetrogenField::new, false, false),
-	FORCE_BLEND("ForceBlend", ForceBlendField::new, false, false);
+	FORCE_BLEND("ForceBlend", ForceBlendField::new, false, false),
+	CUSTOM("Custom", CustomField::new, false, false);
 
 	private final String name;
 	private final Supplier<? extends Field<?>> constructor;

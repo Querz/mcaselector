@@ -1,9 +1,10 @@
 package net.querz.mcaselector.text;
 
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.exception.ParseException;
-import net.querz.mcaselector.filter.PaletteFilter;
+import net.querz.mcaselector.filter.filters.PaletteFilter;
 import net.querz.mcaselector.io.StringPointer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,7 +18,6 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +28,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class TextHelper {
+
+	private static final Logger LOGGER = LogManager.getLogger(TextHelper.class);
 
 	private TextHelper() {}
 
@@ -52,7 +54,7 @@ public final class TextHelper {
 				validBLockNames.add(line);
 			}
 		} catch (IOException ex) {
-			Debug.dumpException("error reading mapping/all_block_names.txt", ex);
+			LOGGER.error("error reading mapping/all_block_names.txt", ex);
 		}
 	}
 
@@ -155,9 +157,8 @@ public final class TextHelper {
 			ZonedDateTime zdt = ZonedDateTime.of(date, ZONE_ID);
 			return (int) zdt.toInstant().getEpochSecond();
 		} catch (DateTimeParseException e) {
-			Debug.dump(e.getMessage());
+			throw new IllegalArgumentException("could not parse date time");
 		}
-		throw new IllegalArgumentException("could not parse date time");
 	}
 
 	public static Integer parseInt(String s, int radix) {

@@ -1,15 +1,16 @@
 package net.querz.mcaselector.io.mca;
 
+import net.querz.io.ExposedByteArrayOutputStream;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.validation.ValidationHelper;
-import net.querz.nbt.io.NBTDeserializer;
-import net.querz.nbt.io.NBTSerializer;
-import net.querz.nbt.io.NamedTag;
-import net.querz.nbt.io.SNBTUtil;
-import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.NBTUtil;
+import net.querz.nbt.Tag;
+import net.querz.nbt.io.NBTReader;
+import net.querz.nbt.io.NBTWriter;
+import net.querz.nbt.CompoundTag;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -51,12 +52,12 @@ public abstract class Chunk {
 			case NONE_EXT -> new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile())));
 		};
 
-		NamedTag tag = new NBTDeserializer(false).fromStream(nbtIn);
+		Tag tag = new NBTReader().read(nbtIn);
 
-		if (tag.getTag() instanceof CompoundTag) {
-			data = (CompoundTag) tag.getTag();
+		if (tag instanceof CompoundTag) {
+			data = (CompoundTag) tag;
 		} else {
-			throw new IOException("unexpected chunk data tag type " + tag.getTag().getID() + ", expected " + CompoundTag.ID);
+			throw new IOException("unexpected chunk data tag type " + tag.getType() + ", expected " + Tag.Type.COMPOUND);
 		}
 	}
 
@@ -73,12 +74,12 @@ public abstract class Chunk {
 			case NONE_EXT -> new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile())));
 		};
 
-		NamedTag tag = new NBTDeserializer(false).fromStream(nbtIn);
+		Tag tag = new NBTReader().read(nbtIn);
 
-		if (tag.getTag() instanceof CompoundTag) {
-			data = (CompoundTag) tag.getTag();
+		if (tag instanceof CompoundTag) {
+			data = (CompoundTag) tag;
 		} else {
-			throw new IOException("unexpected chunk data tag type " + tag.getTag().getID() + ", expected " + CompoundTag.ID);
+			throw new IOException("unexpected chunk data tag type " + tag.getType() + ", expected " + Tag.Type.COMPOUND);
 		}
 	}
 
@@ -91,7 +92,7 @@ public abstract class Chunk {
 			case NONE, NONE_EXT -> new DataOutputStream(new BufferedOutputStream(baos = new ExposedByteArrayOutputStream()));
 		};
 
-		new NBTSerializer(false).toStream(new NamedTag(null, data), nbtOut);
+		new NBTWriter().write(nbtOut, data);
 		nbtOut.close();
 
 		// save mcc file if chunk doesn't fit in mca file
@@ -159,12 +160,7 @@ public abstract class Chunk {
 
 	@Override
 	public String toString() {
-		String s;
-		try {
-			 s = SNBTUtil.toSNBT(data);
-		} catch (IOException e) {
-			s = "error";
-		}
+		String s = NBTUtil.toSNBT(data);
 		return "<absoluteLoaction=" + absoluteLocation + ", compressionType=" + compressionType + ", data=" + s + ">";
 	}
 
@@ -173,7 +169,7 @@ public abstract class Chunk {
 		clone.compressionType = compressionType;
 		clone.timestamp = timestamp;
 		if (data != null) {
-			clone.data = data.clone();
+			clone.data = data.copy();
 		}
 		return clone;
 	}

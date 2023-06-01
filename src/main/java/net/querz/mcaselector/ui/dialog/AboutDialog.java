@@ -15,7 +15,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.github.VersionChecker;
 import net.querz.mcaselector.text.Translation;
@@ -48,7 +47,7 @@ public class AboutDialog extends Alert {
 			applicationVersion = FileHelper.getManifestAttributes().getValue("Application-Version");
 			versionLabel.getChildren().add(new Label(applicationVersion));
 		} catch (IOException ex) {
-			versionLabel.getChildren().add(new Label("unknown"));
+			versionLabel.getChildren().add(UIFactory.label(Translation.DIALOG_ABOUT_VERSION_UNKNOWN));
 		}
 		Button checkForUpdates = UIFactory.button(Translation.DIALOG_ABOUT_VERSION_CHECK);
 		final String finalApplicationVersion = applicationVersion;
@@ -101,7 +100,6 @@ public class AboutDialog extends Alert {
 					Platform.runLater(() -> resultUIHandler.accept(upToDate));
 				}
 			} catch (Exception ex) {
-				Debug.dumpException("failed to check for latest version", ex);
 				Label error = UIFactory.label(Translation.DIALOG_ABOUT_VERSION_ERROR);
 				error.getStyleClass().add("label-hint");
 				Platform.runLater(() -> resultUIHandler.accept(error));

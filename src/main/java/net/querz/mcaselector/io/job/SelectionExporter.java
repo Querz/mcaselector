@@ -1,57 +1,61 @@
 package net.querz.mcaselector.io.job;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
-import net.querz.mcaselector.io.SelectionData;
-import net.querz.mcaselector.io.SelectionHelper;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.Region;
-import net.querz.mcaselector.tiles.Tile;
-import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.selection.ChunkSet;
+import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.function.Consumer;
 
 public final class SelectionExporter {
 
+	private static final Logger LOGGER = LogManager.getLogger(SelectionExporter.class);
+
 	private SelectionExporter() {}
 
-	public static void exportSelection(SelectionData selection, WorldDirectories destination, Progress progressChannel) {
-		if (selection.selection().isEmpty() && !selection.inverted()) {
+	public static void exportSelection(Selection selection, WorldDirectories destination, Progress progressChannel) {
+		if (selection.isEmpty()) {
 			progressChannel.done("no selection");
 			return;
 		}
 
 		JobHandler.clearQueues();
 
-		Long2ObjectOpenHashMap<LongOpenHashSet> sel = SelectionHelper.getTrueSelection(selection);
+		Selection trueSelection = selection.getTrueSelection(destination);
 
-		progressChannel.setMax(sel.size());
-		Point2i first = new Point2i(sel.long2ObjectEntrySet().iterator().next().getLongKey());
-		progressChannel.updateProgress(FileHelper.createMCAFileName(first), 0);
+		progressChannel.setMax(trueSelection.size());
+		progressChannel.updateProgress(FileHelper.createMCAFileName(trueSelection.one()), 0);
 
-		for (Long2ObjectMap.Entry<LongOpenHashSet> entry : sel.long2ObjectEntrySet()) {
-			JobHandler.addJob(new MCADeleteSelectionProcessJob(
+		Consumer<Throwable> errorHandler = t -> progressChannel.incrementProgress("error");
+
+		for (Long2ObjectMap.Entry<ChunkSet> entry : trueSelection) {
+			MCADeleteSelectionProcessJob job = new MCADeleteSelectionProcessJob(
 					FileHelper.createRegionDirectories(new Point2i(entry.getLongKey())),
 					entry.getValue(),
 					destination,
-					progressChannel));
+					progressChannel);
+			job.errorHandler = errorHandler;
+			JobHandler.addJob(job);
 		}
 	}
 
 	private static class MCADeleteSelectionProcessJob extends ProcessDataJob {
 
 		private final Progress progressChannel;
-		private final LongOpenHashSet chunksToBeExported;
+		private final ChunkSet chunksToBeExported;
 		private final WorldDirectories destination;
 
-		private MCADeleteSelectionProcessJob(RegionDirectories dirs, LongOpenHashSet chunksToBeExported, WorldDirectories destination, Progress progressChannel) {
+		private MCADeleteSelectionProcessJob(RegionDirectories dirs, ChunkSet chunksToBeExported, WorldDirectories destination, Progress progressChannel) {
 			super(dirs, PRIORITY_LOW);
 			this.chunksToBeExported = chunksToBeExported;
 			this.destination = destination;
@@ -64,7 +68,7 @@ public final class SelectionExporter {
 			File toPoi = new File(destination.getPoi(), getRegionDirectories().getLocationAsFileName());
 			File toEntities = new File(destination.getEntities(), getRegionDirectories().getLocationAsFileName());
 			if (toRegion.exists() || toPoi.exists() || toEntities.exists()) {
-				Debug.dumpf("%s exists, not overwriting", getRegionDirectories().getLocationAsFileName());
+				LOGGER.debug("{} exists, not overwriting", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return true;
 			}
@@ -76,25 +80,25 @@ public final class SelectionExporter {
 				// copy region
 				try {
 					Files.copy(getRegionDirectories().getRegion().toPath(), to.getRegion().toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Debug.dumpf("copied file %s", getRegionDirectories().getRegion());
+					LOGGER.debug("copied file {}", getRegionDirectories().getRegion());
 				} catch (Exception ex) {
-					Debug.dumpException("failed to copy file " + getRegionDirectories().getRegion(), ex);
+					LOGGER.warn("failed to copy file {}", getRegionDirectories().getRegion(), ex);
 				}
 
 				// copy poi
 				try {
 					Files.copy(getRegionDirectories().getPoi().toPath(), to.getPoi().toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Debug.dumpf("copied file %s", getRegionDirectories().getPoi());
+					LOGGER.debug("copied file {}", getRegionDirectories().getPoi());
 				} catch (Exception ex) {
-					Debug.dumpException("failed to copy file " + getRegionDirectories().getPoi(), ex);
+					LOGGER.warn("failed to copy file {}", getRegionDirectories().getPoi(), ex);
 				}
 
 				// copy entities
 				try {
 					Files.copy(getRegionDirectories().getEntities().toPath(), to.getEntities().toPath(), StandardCopyOption.REPLACE_EXISTING);
-					Debug.dumpf("copied file %s", getRegionDirectories().getEntities());
+					LOGGER.debug("copied file {}", getRegionDirectories().getEntities());
 				} catch (Exception ex) {
-					Debug.dumpException("failed to copy file " + getRegionDirectories().getEntities(), ex);
+					LOGGER.warn("failed to copy file {}", getRegionDirectories().getEntities(), ex);
 				}
 
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
@@ -106,7 +110,7 @@ public final class SelectionExporter {
 			byte[] entitiesData = loadEntitiesHeader();
 
 			if (regionData == null && poiData == null && entitiesData == null) {
-				Debug.errorf("failed to load any data from %s", getRegionDirectories().getLocationAsFileName());
+				LOGGER.warn("failed to load any data from {}", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return true;
 			}
@@ -115,24 +119,14 @@ public final class SelectionExporter {
 			try {
 				// only load headers, because we don't care for chunk data
 				Region region = Region.loadRegionHeaders(getRegionDirectories(), regionData, poiData, entitiesData);
-
-				LongOpenHashSet inverted = new LongOpenHashSet(Tile.CHUNKS - chunksToBeExported.size());
-				Point2i origin = new Point2i(chunksToBeExported.iterator().nextLong()).chunkToRegion().regionToChunk();
-				for (int x = origin.getX(); x < origin.getX() + Tile.SIZE_IN_CHUNKS; x++) {
-					for (int z = origin.getZ(); z < origin.getZ() + Tile.SIZE_IN_CHUNKS; z++) {
-						long cp = new Point2i(x, z).asLong();
-						if (!chunksToBeExported.contains(cp)) {
-							inverted.add(cp);
-						}
-					}
-				}
-
-				region.deleteChunks(inverted);
-				JobHandler.executeSaveData(new MCADeleteSelectionSaveJob(getRegionDirectories(), region, to, progressChannel));
+				region.deleteChunks(chunksToBeExported.flip());
+				MCADeleteSelectionSaveJob job = new MCADeleteSelectionSaveJob(getRegionDirectories(), region, to, progressChannel);
+				job.errorHandler = errorHandler;
+				JobHandler.executeSaveData(job);
 				return false;
 
 			} catch (Exception ex) {
-				Debug.dumpException("error deleting chunk indices in " + getRegionDirectories().getLocationAsFileName(), ex);
+				LOGGER.warn("error deleting chunk indices in {}", getRegionDirectories().getLocationAsFileName(), ex);
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 			}
 			return true;
@@ -155,7 +149,7 @@ public final class SelectionExporter {
 			try {
 				getData().deFragment(destinations);
 			} catch (Exception ex) {
-				Debug.dumpException("failed to export filtered chunks from " + getRegionDirectories().getLocationAsFileName(), ex);
+				LOGGER.warn("failed to export filtered chunks from {}", getRegionDirectories().getLocationAsFileName(), ex);
 			}
 			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 		}

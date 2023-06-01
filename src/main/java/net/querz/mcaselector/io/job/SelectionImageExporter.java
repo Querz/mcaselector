@@ -1,28 +1,26 @@
 package net.querz.mcaselector.io.job;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
-import net.querz.mcaselector.Config;
-import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
-import net.querz.mcaselector.io.SelectionData;
-import net.querz.mcaselector.io.SelectionHelper;
-import net.querz.mcaselector.io.SelectionInfo;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.progress.Progress;
-import net.querz.mcaselector.tiles.OverlayPool;
-import net.querz.mcaselector.tiles.Tile;
-import net.querz.mcaselector.tiles.TileImage;
+import net.querz.mcaselector.selection.ChunkSet;
+import net.querz.mcaselector.selection.SelectionData;
+import net.querz.mcaselector.tile.OverlayPool;
+import net.querz.mcaselector.tile.Tile;
+import net.querz.mcaselector.tile.TileImage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -31,65 +29,45 @@ import java.util.function.Consumer;
 
 public final class SelectionImageExporter {
 
+	private static final Logger LOGGER = LogManager.getLogger(SelectionImageExporter.class);
+
 	private SelectionImageExporter() {}
 
 	// returns the unfinished image that is currently written to. image is done when progressChannel is done.
-	public static int[] exportSelectionImage(SelectionDataInfo selection, OverlayPool overlayPool, Progress progressChannel) {
+	public static int[] exportSelectionImage(SelectionData data, OverlayPool overlayPool, Progress progressChannel) {
 		JobHandler.clearQueues();
 
-		progressChannel.setMax(selection.selection.size());
-		Point2i first = new Point2i(selection.selection.long2ObjectEntrySet().iterator().next().getLongKey());
-		progressChannel.updateProgress(FileHelper.createMCAFileName(first), 0);
+		progressChannel.setMax(data.size());
+		progressChannel.updateProgress(FileHelper.createMCAFileName(data.getSelection().one()), 0);
 
-		Debug.dumpf("creating image generation jobs for image: %s", selection.selectionInfo);
+		LOGGER.debug("creating image generation jobs for image: {}", data);
 
-		int[] pixels = new int[(int) selection.selectionInfo.getWidth() * 16 * (int) selection.selectionInfo.getHeight() * 16];
+		int[] pixels = new int[(int) (data.getWidth() * 16 * data.getHeight() * 16)];
 
-		for (Long2ObjectMap.Entry<LongOpenHashSet> entry : selection.selection.long2ObjectEntrySet()) {
-			JobHandler.addJob(new ExportSelectionImageProcessJob(new Point2i(entry.getLongKey()), entry.getValue(), selection.selectionInfo, pixels, overlayPool, progressChannel));
+		Consumer<Throwable> errorHandler = t -> progressChannel.incrementProgress("error");
+
+		for (Long2ObjectMap.Entry<ChunkSet> entry : data.getSelection()) {
+			ExportSelectionImageProcessJob job = new ExportSelectionImageProcessJob(new Point2i(entry.getLongKey()), entry.getValue(), data, pixels, overlayPool, progressChannel);
+			job.errorHandler = errorHandler;
+			JobHandler.addJob(job);
 		}
 
 		return pixels;
 	}
 
-	public static SelectionDataInfo calculateSelectionInfo(SelectionData selection) {
-		Long2ObjectOpenHashMap<LongOpenHashSet> sel = SelectionHelper.getTrueSelection(selection);
-		SelectionInfo selectionInfo = SelectionHelper.getSelectionInfo(sel);
-		return new SelectionDataInfo(sel, selectionInfo);
-	}
-
-	public static class SelectionDataInfo {
-
-		private final Long2ObjectOpenHashMap<LongOpenHashSet> selection;
-		private final SelectionInfo selectionInfo;
-
-		SelectionDataInfo(Long2ObjectOpenHashMap<LongOpenHashSet> selection, SelectionInfo selectionInfo) {
-			this.selection = selection;
-			this.selectionInfo = selectionInfo;
-		}
-
-		public Long2ObjectOpenHashMap<LongOpenHashSet> getSelectionData() {
-			return selection;
-		}
-
-		public SelectionInfo getSelectionInfo() {
-			return selectionInfo;
-		}
-	}
-
 	private static class ExportSelectionImageProcessJob extends ProcessDataJob {
 
 		private final int[] pixels;
-		private final LongOpenHashSet chunks;
-		private final SelectionInfo selectionInfo;
+		private final ChunkSet chunks;
+		private final SelectionData data;
 		private final Progress progressChannel;
 		private final OverlayPool overlayPool;
 
-		public ExportSelectionImageProcessJob(Point2i region, LongOpenHashSet chunks, SelectionInfo selectionInfo, int[] pixels, OverlayPool overlayPool, Progress progressChannel) {
+		public ExportSelectionImageProcessJob(Point2i region, ChunkSet chunks, SelectionData data, int[] pixels, OverlayPool overlayPool, Progress progressChannel) {
 			super(new RegionDirectories(region, null, null, null), PRIORITY_LOW);
 			this.pixels = pixels;
 			this.chunks = chunks;
-			this.selectionInfo = selectionInfo;
+			this.data = data;
 			this.progressChannel = progressChannel;
 			this.overlayPool = overlayPool;
 		}
@@ -99,8 +77,9 @@ public final class SelectionImageExporter {
 			Image image = null;
 
 			// test if the image is already in cache
-			File cacheImage = FileHelper.createPNGFilePath(Config.getCacheDir(), 1, getRegionDirectories().getLocation());
+			File cacheImage = FileHelper.createPNGFilePath(ConfigProvider.WORLD.getCacheDir(), 1, getRegionDirectories().getLocation());
 			File regionFile = FileHelper.createRegionMCAFilePath(getRegionDirectories().getLocation());
+			RegionMCAFile mcaFile = null;
 			if (cacheImage.exists()) {
 				// load cached image
 				image = new Image(cacheImage.toURI().toString(), false);
@@ -113,7 +92,7 @@ public final class SelectionImageExporter {
 					return true;
 				}
 
-				RegionMCAFile mcaFile = new RegionMCAFile(regionFile);
+				mcaFile = new RegionMCAFile(regionFile);
 				try {
 					mcaFile.load(new ByteArrayPointer(data));
 				} catch (IOException ex) {
@@ -132,9 +111,9 @@ public final class SelectionImageExporter {
 			Image overlay = null;
 			if (overlayPool != null && overlayPool.getParser() != null) {
 				// load overlay image
-				overlay = overlayPool.getImage(getRegionDirectories().getLocation());
+				overlay = overlayPool.getImage(getRegionDirectories().getLocation(), mcaFile, null, null);
 				// scale up
-				BufferedImage scaled = ImageHelper.scaleImage(SwingFXUtils.fromFXImage(overlay, null), 512, Config.smoothOverlays());
+				BufferedImage scaled = ImageHelper.scaleImage(SwingFXUtils.fromFXImage(overlay, null), 512, ConfigProvider.WORLD.getSmoothOverlays());
 				overlay = SwingFXUtils.toFXImage(scaled, null);
 			}
 
@@ -154,20 +133,17 @@ public final class SelectionImageExporter {
 			}
 
 			iterateChunks(chunks, getRegionDirectories().getLocation(), chunk -> {
-				Point2i relChunk = chunk.mod(32);
-				int x = relChunk.getX() >= 0 ? relChunk.getX() : (32 + relChunk.getX());
-				int z = relChunk.getZ() >= 0 ? relChunk.getZ() : (32 + relChunk.getZ());
-				Point2i relBlock = new Point2i(x, z).chunkToBlock();
+				Point2i relBlock = chunk.asRelativeChunk().chunkToBlock();
 
 				int[] pixelData = new int[256];
 				pixelReader.getPixels(relBlock.getX(), relBlock.getZ(), Tile.CHUNK_SIZE, Tile.CHUNK_SIZE, PixelFormat.getIntArgbPreInstance(), pixelData, 0, Tile.CHUNK_SIZE);
 
-				Point2i blockInSelection = selectionInfo.getPointInSelection(chunk).chunkToBlock();
+				Point2i blockInSelection = chunk.sub(data.getMin()).chunkToBlock();
 
 				for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 					for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
 						int srcIndex = cz * Tile.CHUNK_SIZE + cx;
-						int dstIndex = (blockInSelection.getZ() + cz) * (int) selectionInfo.getWidth() * 16 + (blockInSelection.getX() + cx);
+						int dstIndex = (blockInSelection.getZ() + cz) * (int) data.getWidth() * 16 + (blockInSelection.getX() + cx);
 						pixels[dstIndex] = pixelData[srcIndex];
 					}
 				}
@@ -177,7 +153,7 @@ public final class SelectionImageExporter {
 		}
 	}
 
-	private static void iterateChunks(LongOpenHashSet chunks, Point2i region, Consumer<Point2i> chunkConsumer) {
+	private static void iterateChunks(ChunkSet chunks, Point2i region, Consumer<Point2i> chunkConsumer) {
 		if (chunks == null) {
 			Point2i regionChunk = region.regionToChunk();
 			for (int x = regionChunk.getX(); x < regionChunk.getX() + 32; x++) {
@@ -186,9 +162,8 @@ public final class SelectionImageExporter {
 				}
 			}
 		} else {
-			for (long chunk : chunks) {
-				chunkConsumer.accept(new Point2i(chunk));
-			}
+			Point2i regionChunk = region.regionToChunk();
+			chunks.forEach(chunk -> chunkConsumer.accept(regionChunk.add(new Point2i(chunk))));
 		}
 	}
 }
