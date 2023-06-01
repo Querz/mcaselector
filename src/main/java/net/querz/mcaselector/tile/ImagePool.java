@@ -5,7 +5,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import javafx.scene.image.Image;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.io.db.CacheDBController;
@@ -44,8 +45,7 @@ public final class ImagePool {
 	// poolSize is a percentage indicating the amount of images cached in relation to the visible region
 	public ImagePool(TileMap tileMap, double poolSize) {
 		// initialize pool
-		int maxZoomLevel = Config.getMaxZoomLevel();
-		for (int i = 1; i <= maxZoomLevel; i *= 2) {
+		for (int i = 1; i <= Config.MAX_ZOOM_LEVEL; i *= 2) {
 			pool.put(i, new Long2ObjectLinkedOpenHashMap<>());
 		}
 
@@ -76,7 +76,7 @@ public final class ImagePool {
 		}
 
 		// try to get a higher res image for this tile from memory cache
-		for (int zl = 1; zl <= Config.getMaxZoomLevel(); zl *= 2) {
+		for (int zl = 1; zl <= Config.MAX_ZOOM_LEVEL; zl *= 2) {
 			if (zl == zoomLevel) {
 				continue;
 			}
@@ -102,7 +102,7 @@ public final class ImagePool {
 		}
 
 		// image in disk cache?
-		File diskCacheImageFile = FileHelper.createPNGFilePath(Config.getCacheDir(), zoomLevel, tile.location);
+		File diskCacheImageFile = FileHelper.createPNGFilePath(ConfigProvider.WORLD.getCacheDir(), zoomLevel, tile.location);
 		if (diskCacheImageFile.exists()) {
 			CachedImageLoadJob.setLoading(tile, true);
 			CachedImageLoadJob.load(tile, diskCacheImageFile, zoomLevel, zoomLevel, img -> {
@@ -117,12 +117,12 @@ public final class ImagePool {
 			return;
 		}
 
-		for (int zl = 1; zl <= Config.getMaxZoomLevel(); zl *= 2) {
+		for (int zl = 1; zl <= Config.MAX_ZOOM_LEVEL; zl *= 2) {
 			if (zl == zoomLevel) {
 				continue;
 			}
 
-			diskCacheImageFile = FileHelper.createPNGFilePath(Config.getCacheDir(), zl, tile.location);
+			diskCacheImageFile = FileHelper.createPNGFilePath(ConfigProvider.WORLD.getCacheDir(), zl, tile.location);
 			if (diskCacheImageFile.exists()) {
 				if (zl < zoomLevel) {
 					// image is larger than needed
@@ -241,7 +241,7 @@ public final class ImagePool {
 		}
 
 		// get all files that match the "r.<x>.<z>.mca" name
-		File[] files = Config.getWorldDirs().getRegion().listFiles();
+		File[] files = ConfigProvider.WORLD.getWorldDirs().getRegion().listFiles();
 		if (files == null) {
 			return;
 		}
@@ -250,7 +250,7 @@ public final class ImagePool {
 			task.setMax(files.length);
 		}
 
-		ForkJoinPool threadPool = new ForkJoinPool(Config.getProcessThreads());
+		ForkJoinPool threadPool = new ForkJoinPool(ConfigProvider.GLOBAL.getProcessThreads());
 		try {
 			List<Point2i> points = threadPool.submit(() -> Arrays.stream(files).parallel()
 					.filter(file -> file.length() > FileHelper.HEADER_SIZE) // only files that have more data than just the header
@@ -295,9 +295,8 @@ public final class ImagePool {
 	public void discardCachedImage(Point2i region) {
 		discardImage(region);
 		RegionImageGenerator.uncacheRegionMCAFile(region);
-		int maxZoomLevel = Config.getMaxZoomLevel();
-		for (int i = 1; i <= maxZoomLevel; i *= 2) {
-			File png = FileHelper.createPNGFilePath(Config.getCacheDir(), i, region);
+		for (int i = 1; i <= Config.MAX_ZOOM_LEVEL; i *= 2) {
+			File png = FileHelper.createPNGFilePath(ConfigProvider.WORLD.getCacheDir(), i, region);
 			png.delete();
 		}
 	}

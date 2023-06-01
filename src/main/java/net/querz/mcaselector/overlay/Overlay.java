@@ -1,9 +1,10 @@
 package net.querz.mcaselector.overlay;
 
+import com.google.gson.stream.JsonWriter;
 import net.querz.mcaselector.io.mca.ChunkData;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.UUID;
 
 public abstract class Overlay implements Cloneable {
@@ -99,12 +100,12 @@ public abstract class Overlay implements Cloneable {
 		this.rawMultiValuesShort = null;
 	}
 
-	protected boolean setMin(Integer min) {
+	public boolean setMinInt(Integer min) {
 		this.min = min;
 		return isValid();
 	}
 
-	protected boolean setMax(Integer max) {
+	public boolean setMaxInt(Integer max) {
 		this.max = max;
 		return isValid();
 	}
@@ -143,7 +144,7 @@ public abstract class Overlay implements Cloneable {
 	public abstract boolean setMax(String raw);
 
 	// can be overwritten to set additional data points for a single overlay
-	public boolean setMultiValues(String raw) {
+	public boolean setMultiValuesString(String raw) {
 		return true;
 	}
 
@@ -152,51 +153,9 @@ public abstract class Overlay implements Cloneable {
 		return multiValues;
 	}
 
-	public JSONObject toJSON() {
-		JSONObject object = new JSONObject();
-		object.put("type", type.name());
-		object.put("active", active);
-		object.put("min", min == null ? JSONObject.NULL : min);
-		object.put("max", max == null ? JSONObject.NULL : max);
-		object.put("rawMin", rawMin == null ? JSONObject.NULL : rawMin);
-		object.put("rawMax", rawMax == null ? JSONObject.NULL : rawMax);
-		object.put("multiValues", multiValues == null ? JSONObject.NULL : multiValues);
-		object.put("rawMultiValues", rawMultiValues == null ? JSONObject.NULL : rawMultiValues);
-		object.put("minHue", minHue);
-		object.put("maxHue", maxHue);
-		return object;
-	}
+	public void writeCustomJSON(JsonWriter out) throws IOException {}
 
-	public static Overlay fromJSON(JSONObject object) {
-		OverlayType type = OverlayType.valueOf(object.getString("type"));
-		Overlay parser = type.instance();
-		parser.active = object.getBoolean("active");
-		parser.min = object.get("min") == JSONObject.NULL ? null : object.getInt("min");
-		parser.max = object.get("max") == JSONObject.NULL ? null : object.getInt("max");
-		parser.rawMin = object.get("rawMin") == JSONObject.NULL ? null : object.getString("rawMin");
-		parser.rawMax = object.get("rawMax") == JSONObject.NULL ? null : object.getString("rawMax");
-		if (object.has("multiValues") && object.get("multiValues") instanceof JSONArray) {
-			JSONArray multiValues = object.getJSONArray("multiValues");
-			if (multiValues != null) {
-				String[] mv = new String[multiValues.length()];
-				for (int i = 0; i < multiValues.length(); i++) {
-					Object o = multiValues.get(i);
-					if (!(o instanceof String)) {
-						throw new IllegalArgumentException("multiValues only allows strings");
-					}
-					mv[i] = (String) o;
-				}
-				parser.setMultiValues(mv);
-			}
-		}
-		parser.rawMultiValues = object.get("rawMultiValues") == JSONObject.NULL ? null : object.getString("rawMultiValues");
-		parser.minHue = object.getFloat("minHue");
-		parser.maxHue = object.getFloat("maxHue");
-		parser.parseCustomJSON(object);
-		return parser;
-	}
-
-	public void parseCustomJSON(JSONObject object) {}
+	public void readCustomJSON(Map<String, Object> object) throws IOException {}
 
 	@Override
 	public String toString() {

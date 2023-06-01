@@ -1,12 +1,12 @@
 package net.querz.mcaselector.github;
 
+import com.google.gson.Gson;
 import net.querz.mcaselector.validation.ValidationHelper;
-import org.json.JSONException;
-import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Map;
 
 public class VersionChecker {
 
@@ -35,8 +35,9 @@ public class VersionChecker {
 		return parseJson(stringBuilder.toString());
 	}
 
-	private VersionData parseJson(String json) throws JSONException {
-		JSONObject result = new JSONObject(json);
+	private VersionData parseJson(String json) {
+		Gson gson = new Gson();
+		Map<String, Object> result = gson.fromJson(json, Map.class);
 
 		int latestID = 0;
 		String latestTag = null;
@@ -45,13 +46,13 @@ public class VersionChecker {
 
 		for (String key : result.keySet()) {
 			if ("id".equals(key)) {
-				latestID = result.getInt("id");
+				latestID = ((Double) result.get("id")).intValue();
 			} else if ("tag_name".equals(key)) {
-				latestTag = result.getString("tag_name");
+				latestTag = (String) result.get("tag_name");
 			} else if ("html_url".equals(key)) {
-				latestLink = result.getString("html_url");
+				latestLink = (String) result.get("html_url");
 			} else if ("prerelease".equals(key)) {
-				prerelease = result.getBoolean("prerelease");
+				prerelease = (Boolean) result.get("prerelease");
 			}
 		}
 

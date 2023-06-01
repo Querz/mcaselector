@@ -36,7 +36,7 @@ public class OverlayParser {
 		Overlay o = t.instance();
 		o.setMin(min);
 		o.setMax(max);
-		o.setMultiValues(data);
+		o.setMultiValuesString(data);
 		if (!o.isValid()) {
 			throw new ParseException("failed to parse values for " + type + " overlay");
 		}

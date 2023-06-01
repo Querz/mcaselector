@@ -2,6 +2,7 @@ acacia_button;a85a32
 acacia_door;a75f3c
 acacia_fence;a85a32
 acacia_fence_gate;a85a32
+acacia_hanging_sign;ae5c3b
 acacia_leaves;959494;f
 acacia_log;965837
 acacia_planks;a85a32
@@ -11,6 +12,7 @@ acacia_sign;a85a32
 acacia_slab;a85a32
 acacia_stairs;a85a32
 acacia_trapdoor;9c5733
+acacia_wall_hanging_sign;ae5c3b
 acacia_wall_sign;a85a32
 acacia_wood;676056
 activator_rail:powered=false,shape=ascending_east;73574a
@@ -40,7 +42,26 @@ azalea;657c2f
 azalea_leaves;5a722c
 azure_bluet;a9cc7f
 bamboo;5d9013
+bamboo_block:axis=x;7f9039
+bamboo_block:axis=y;8b8d3e
+bamboo_block:axis=z;7f9039
+bamboo_button;c1ad50
+bamboo_door;bfab51
+bamboo_fence;ceba59
+bamboo_fence_gate;cfbb58
+bamboo_hanging_sign;c1ad50
+bamboo_mosaic;beaa4e
+bamboo_mosaic_slab;beaa4e
+bamboo_mosaic_stairs;beaa4e
+bamboo_planks;c1ad50
+bamboo_pressure_plate;c1ad50
 bamboo_sapling;5c5923
+bamboo_sign;c1ad50
+bamboo_slab;c1ad50
+bamboo_stairs;c1ad50
+bamboo_trapdoor;c6b355
+bamboo_wall_hanging_sign;c1ad50
+bamboo_wall_sign;c1ad50
 barrel:facing=down,open=false;86643a
 barrel:facing=down,open=true;5c4322
 barrel:facing=east,open=false;86643a
@@ -70,6 +91,7 @@ birch_button;c0af79
 birch_door;dcd1b0
 birch_fence;c0af79
 birch_fence_gate;c0af79
+birch_hanging_sign;c4b076
 birch_leaves;41542b
 birch_log;c1b387
 birch_planks;c0af79
@@ -79,6 +101,7 @@ birch_sign;c0af79
 birch_slab;c0af79
 birch_stairs;c0af79
 birch_trapdoor;cfc29d
+birch_wall_hanging_sign;c4b076
 birch_wall_sign;c0af79
 birch_wood;d8d7d2
 black_banner;a2824e
@@ -218,8 +241,28 @@ chain_command_block:conditional=true,facing=north;81a193
 chain_command_block:conditional=true,facing=south;81a193
 chain_command_block:conditional=true,facing=up;81a193
 chain_command_block:conditional=true,facing=west;81a193
+cherry_button;e2b2ac
+cherry_door;dfaaa4
+cherry_fence;e2b2ac
+cherry_fence_gate;e2b2ac
+cherry_hanging_sign;d79194
+cherry_leaves;e5acc2
+cherry_log:axis=x;36212c
+cherry_log:axis=y;b98d89
+cherry_log:axis=z;36212c
+cherry_planks;e2b2ac
+cherry_pressure_plate;e2b2ac
+cherry_sapling;a4758f
+cherry_sign;e2b2ac
+cherry_slab;e2b2ac
+cherry_stairs;e2b2ac
+cherry_trapdoor;e2b2ac
+cherry_wall_hanging_sign;d79194
+cherry_wall_sign;e2b2ac
+cherry_wood;36212c
 chest;a2824e
 chipped_anvil;484848
+chiseled_bookshelf;b29058
 chiseled_deepslate;363636
 chiseled_nether_bricks;2f171c
 chiseled_polished_blackstone;353038
@@ -305,6 +348,7 @@ crimson_door;72364f
 crimson_fence;653046
 crimson_fence_gate;653046
 crimson_fungus;8d2c1d
+crimson_hanging_sign;89395a
 crimson_hyphae;5c191d
 crimson_nylium;821f1f
 crimson_planks;653046
@@ -315,6 +359,7 @@ crimson_slab;653046
 crimson_stairs;653046
 crimson_stem;703146
 crimson_trapdoor;673248
+crimson_wall_hanging_sign;89395a
 crimson_wall_sign;653046
 crying_obsidian;200a3c
 cut_copper;bf6a50
@@ -351,6 +396,7 @@ dark_oak_button;422b14
 dark_oak_door;4c3319
 dark_oak_fence;422b14
 dark_oak_fence_gate;422b14
+dark_oak_hanging_sign;483824
 dark_oak_leaves;969696;f
 dark_oak_log;432d16
 dark_oak_planks;422b14
@@ -360,6 +406,7 @@ dark_oak_sign;422b14
 dark_oak_slab;422b14
 dark_oak_stairs;422b14
 dark_oak_trapdoor;4b3117
+dark_oak_wall_hanging_sign;483824
 dark_oak_wall_sign;422b14
 dark_oak_wood;3c2e1a
 dark_prismarine;335b4b
@@ -388,6 +435,7 @@ dead_tube_coral;766f6b
 dead_tube_coral_block;827b77
 dead_tube_coral_fan;807a76
 dead_tube_coral_wall_fan;807a76
+decorated_pot;985e43
 deepslate;575759
 deepslate_brick_slab;464647
 deepslate_brick_stairs;464647
@@ -570,6 +618,7 @@ jungle_button;a07350
 jungle_door;a37754
 jungle_fence;a07350
 jungle_fence_gate;a07350
+jungle_hanging_sign;ab8454
 jungle_leaves;9c9a8f;f
 jungle_log;956d46
 jungle_planks;a07350
@@ -579,6 +628,7 @@ jungle_sign;a07350
 jungle_slab;a07350
 jungle_stairs;a07350
 jungle_trapdoor;986e4d
+jungle_wall_hanging_sign;ab8454
 jungle_wall_sign;a07350
 jungle_wood;554319
 kelp;578c2c
@@ -718,6 +768,7 @@ mangrove_button;753630
 mangrove_door;70302e
 mangrove_fence;753630
 mangrove_fence_gate;753630
+mangrove_hanging_sign;77362f
 mangrove_leaves;818080;f
 mangrove_log;66302a
 mangrove_planks;753630
@@ -737,6 +788,7 @@ mangrove_sign;753630
 mangrove_slab;753630
 mangrove_stairs;753630
 mangrove_trapdoor;6e2e2a
+mangrove_wall_hanging_sign;77362f
 mangrove_wall_sign;753630
 mangrove_wood;534229
 medium_amethyst_bud;9e78c9
@@ -783,6 +835,7 @@ oak_button;a2824e
 oak_door;8c6e42
 oak_fence;a2824e
 oak_fence_gate;a2824e
+oak_hanging_sign;b19056
 oak_leaves;909090;f
 oak_log;977949
 oak_planks;a2824e
@@ -792,6 +845,7 @@ oak_sign;a2824e
 oak_slab;a2824e
 oak_stairs;a2824e
 oak_trapdoor;7c6338
+oak_wall_hanging_sign;b19056
 oak_wall_sign;a2824e
 oak_wood;6d5532
 observer;626262
@@ -830,6 +884,8 @@ pearlescent_froglight;f5f0ef
 peony:half=lower;56655d
 peony:half=upper;817e8b
 petrified_oak_slab;a2824e
+piglin_head;513e32
+piglin_wall_head;513e32
 pink_banner;a2824e
 pink_bed;a2824e
 pink_candle:candles=1,lit=false;d0658e
@@ -845,6 +901,7 @@ pink_carpet;ed8dac
 pink_concrete;d5658e
 pink_concrete_powder;e499b5
 pink_glazed_terracotta;eb9ab5
+pink_petals;f6b4da
 pink_shulker_box;e6799d
 pink_stained_glass;f27fa4
 pink_stained_glass_pane;e97ba0
@@ -910,6 +967,7 @@ potted_birch_sapling;7c4435
 potted_blue_orchid;7c4435
 potted_brown_mushroom;7c4435
 potted_cactus;7c4435
+potted_cherry_sapling;7c4435
 potted_cornflower;7c4435
 potted_crimson_fungus;7c4435
 potted_crimson_roots;7c4435
@@ -929,6 +987,7 @@ potted_poppy;7c4435
 potted_red_mushroom;7c4435
 potted_red_tulip;7c4435
 potted_spruce_sapling;7c4435
+potted_torchflower;7c4435
 potted_warped_fungus;7c4435
 potted_warped_roots;7c4435
 potted_white_tulip;7c4435
@@ -1137,7 +1196,7 @@ sandstone;dfd6aa
 sandstone_slab;dfd6aa
 sandstone_stairs;dfd6aa
 sandstone_wall;d8cb9b
-scaffolding;ae8650
+scaffolding;aa8349
 sculk;0c1d24
 sculk_catalyst:bloom=false;0f1f26
 sculk_catalyst:bloom=true;102d32
@@ -1198,6 +1257,7 @@ spruce_button;725430
 spruce_door;6a5030
 spruce_fence;725430
 spruce_fence_gate;725430
+spruce_hanging_sign;735934
 spruce_leaves;2f4b2f
 spruce_log;6c502e
 spruce_planks;725430
@@ -1207,6 +1267,7 @@ spruce_sign;725430
 spruce_slab;725430
 spruce_stairs;725430
 spruce_trapdoor;674f2f
+spruce_wall_hanging_sign;735934
 spruce_wall_sign;725430
 spruce_wood;3a2510
 sticky_piston;6d6860
@@ -1222,8 +1283,15 @@ stone_stairs;7d7d7d
 stonecutter;7b766f
 stripped_acacia_log;a65b33
 stripped_acacia_wood;ae5c3b
+stripped_bamboo_block:axis=x;c1ad50
+stripped_bamboo_block:axis=y;b29e48
+stripped_bamboo_block:axis=z;c1ad50
 stripped_birch_log;bfab74
 stripped_birch_wood;c4b076
+stripped_cherry_log:axis=x;d79194
+stripped_cherry_log:axis=y;dda49d
+stripped_cherry_log:axis=z;d79194
+stripped_cherry_wood;d79194
 stripped_crimson_hyphae;89395a
 stripped_crimson_stem;793852
 stripped_dark_oak_log;412c16
@@ -1246,6 +1314,10 @@ structure_void;18565d
 sugar_cane;94c065
 sunflower:half=lower;38871e
 sunflower:half=upper;31811b
+suspicious_sand:dusted=0;d9cc9f
+suspicious_sand:dusted=1;d8ca9c
+suspicious_sand:dusted=2;d6c697
+suspicious_sand:dusted=3;d2c191
 sweet_berry_bush:age=0;2a5938
 sweet_berry_bush:age=1;2f5e39
 sweet_berry_bush:age=2;3b5838
@@ -1259,6 +1331,10 @@ terracotta;985e43
 tinted_glass;2b262c
 tnt;8e3e35
 torch;8a713f
+torchflower;64654d
+torchflower_crop:age=0;1c6143
+torchflower_crop:age=1;406d4c
+torchflower_crop:age=2;64654d
 trapped_chest;a2824e
 tripwire;818181
 tripwire_hook;8e8576
@@ -1289,6 +1365,7 @@ warped_door;2c7e78
 warped_fence;2b6863
 warped_fence_gate;2b6863
 warped_fungus;4a6d57
+warped_hanging_sign;399693
 warped_hyphae;3a3a4d
 warped_nylium;2b7265
 warped_planks;2b6863
@@ -1299,6 +1376,7 @@ warped_slab;2b6863
 warped_stairs;2b6863
 warped_stem;356d6e
 warped_trapdoor;2f776f
+warped_wall_hanging_sign;399693
 warped_wall_sign;2b6863
 warped_wart_block;167779
 water;b0b0b0

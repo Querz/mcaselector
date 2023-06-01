@@ -1,6 +1,6 @@
 package net.querz.mcaselector.io;
 
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.ProcessDataJob;
 import net.querz.mcaselector.io.job.SaveDataJob;
@@ -58,13 +58,13 @@ public final class JobHandler {
 		}
 
 		processExecutor = new PausableThreadPoolExecutor(
-			Config.getProcessThreads(), Config.getProcessThreads(),
+			ConfigProvider.GLOBAL.getProcessThreads(), ConfigProvider.GLOBAL.getProcessThreads(),
 			0L, TimeUnit.MILLISECONDS,
 			new DynamicPriorityBlockingQueue<>(),
 			new NamedThreadFactory("processPool"),
 			job -> {
 				int i;
-				if ((i = runningTasks.incrementAndGet()) > Config.getProcessThreads() && !trimSaveData) {
+				if ((i = runningTasks.incrementAndGet()) > ConfigProvider.GLOBAL.getProcessThreads() && !trimSaveData) {
 					processExecutor.pause("pausing process");
 				}
 				LOGGER.debug("+ active jobs: {} ({} queued)", i, processExecutor.getQueue().size());
@@ -78,10 +78,10 @@ public final class JobHandler {
 				}
 			});
 
-		LOGGER.debug("created data processor ThreadPoolExecutor with {} threads", Config.getProcessThreads());
+		LOGGER.debug("created data processor ThreadPoolExecutor with {} threads", ConfigProvider.GLOBAL.getProcessThreads());
 
 		saveExecutor = new PausableThreadPoolExecutor(
-			Config.getWriteThreads(), Config.getWriteThreads(),
+			ConfigProvider.GLOBAL.getWriteThreads(), ConfigProvider.GLOBAL.getWriteThreads(),
 			0L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingDeque<>(),
 			new NamedThreadFactory("savePool"),
@@ -92,7 +92,7 @@ public final class JobHandler {
 			},
 			job -> {});
 
-		LOGGER.debug("created data save ThreadPoolExecutor with {} threads", Config.getWriteThreads());
+		LOGGER.debug("created data save ThreadPoolExecutor with {} threads", ConfigProvider.GLOBAL.getWriteThreads());
 
 		parseExecutor = new ThreadPoolExecutor(
 			1, 1,
@@ -108,7 +108,7 @@ public final class JobHandler {
 	}
 
 	public static void executeSaveData(SaveDataJob<?> job) {
-		if (runningTasks.get() <= Config.getProcessThreads() + 1) {
+		if (runningTasks.get() <= ConfigProvider.GLOBAL.getProcessThreads() + 1) {
 			saveExecutor.execute(new WrapperJob(job));
 		} else {
 			if (!trimSaveData) {
@@ -116,7 +116,7 @@ public final class JobHandler {
 				saveExecutor.execute(new WrapperJob(job));
 			} else {
 				int i;
-				if ((i = runningTasks.decrementAndGet()) <= Config.getProcessThreads() + 1) {
+				if ((i = runningTasks.decrementAndGet()) <= ConfigProvider.GLOBAL.getProcessThreads() + 1) {
 					job.cancel();
 					processExecutor.resume("skipping save data");
 					LOGGER.debug("too many tasks: skipping save data");

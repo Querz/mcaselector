@@ -1,8 +1,11 @@
 package net.querz.mcaselector.cli;
 
-import net.querz.mcaselector.Config;
 import net.querz.mcaselector.changer.ChangeParser;
 import net.querz.mcaselector.changer.Field;
+import net.querz.mcaselector.config.Config;
+import net.querz.mcaselector.config.ConfigProvider;
+import net.querz.mcaselector.config.GlobalConfig;
+import net.querz.mcaselector.config.WorldConfig;
 import net.querz.mcaselector.filter.FilterParser;
 import net.querz.mcaselector.filter.filters.GroupFilter;
 import net.querz.mcaselector.io.*;
@@ -160,6 +163,11 @@ public final class ParamExecutor {
 			.hasArg()
 			.build());
 		options.addOption(Option.builder()
+			.longOpt("fields")
+			.desc("The fields to change")
+			.hasArg()
+			.build());
+		options.addOption(Option.builder()
 			.longOpt("zoom-level")
 			.desc("The zoom level for the cache to be generated. When not specified, all zoom levels will be generated")
 			.hasArg()
@@ -260,6 +268,18 @@ public final class ParamExecutor {
 	private CommandLine line = null;
 
 	public ParamExecutor(String[] args) {
+		if (Arrays.asList(args).contains("--use-alternative-command-parsing")) {
+			try {
+				String[] altArgs = new CustomCommandParser(args).parse();
+				List<String> altList = new ArrayList<>(Arrays.asList(altArgs));
+				altList.remove("--use-alternative-command-parsing");
+				this.args = altList.toArray(new String[0]);
+				LOGGER.warn("preprocessed args with custom command parser, original args: {}", Arrays.toString(args));
+				return;
+			} catch (net.querz.mcaselector.exception.ParseException e) {
+				throw new RuntimeException(e);
+			}
+		}
 		this.args = args;
 	}
 
@@ -342,7 +362,7 @@ public final class ParamExecutor {
 			"help", "version", "mode", "output", "query", "selection", "source-selection", "radius", "x-offset",
 			"y-offset", "z-offset", "overwrite", "force", "render-height", "render-caves", "render-layer-only",
 			"render-shade", "render-water-shade", "overlay-type", "overlay-min-value", "overlay-max-value",
-			"overlay-data", "overlay-min-hue", "overlay-max-hue", "zoom-level", "world", "region", "poi", "entities",
+			"overlay-data", "overlay-min-hue", "overlay-max-hue", "fields", "zoom-level", "world", "region", "poi", "entities",
 			"source-world", "source-region", "source-poi", "source-entities", "output-world", "output-region",
 			"output-poi", "output-entities", "debug", "process-threads", "write-threads"
 		};
@@ -366,9 +386,10 @@ public final class ParamExecutor {
 	}
 
 	private void parseConfig() throws ParseException {
-		Config.setDebug(line.hasOption("debug"));
-		Config.setProcessThreads(parseInt("process-threads", Config.DEFAULT_PROCESS_THREADS, 1, 128));
-		Config.setProcessThreads(parseInt("write-threads", Config.DEFAULT_WRITE_THREADS, 1, 128));
+		ConfigProvider.GLOBAL = new GlobalConfig();
+		ConfigProvider.GLOBAL.setDebug(line.hasOption("debug"));
+		ConfigProvider.GLOBAL.setProcessThreads(parseInt("process-threads", GlobalConfig.DEFAULT_PROCESS_THREADS, 1, 128));
+		ConfigProvider.GLOBAL.setProcessThreads(parseInt("write-threads", GlobalConfig.DEFAULT_WRITE_THREADS, 1, 128));
 	}
 
 	private void printError(String msg, Object... params) {
@@ -647,7 +668,7 @@ public final class ParamExecutor {
 		} catch (NumberFormatException ex) {
 			throw new ParseException(ex.getMessage());
 		}
-		for (int z = Config.getMinZoomLevel(); z <= Config.getMaxZoomLevel(); z *= 2) {
+		for (int z = Config.MIN_ZOOM_LEVEL; z <= Config.MAX_ZOOM_LEVEL; z *= 2) {
 			if (zoomLevel == z) {
 				return zoomLevel;
 			}
@@ -667,7 +688,8 @@ public final class ParamExecutor {
 	// modes
 
 	private void select(FutureTask<Boolean> future) throws ParseException {
-		Config.setWorldDirs(parseWorldDirectories(""));
+		ConfigProvider.WORLD = new WorldConfig();
+		ConfigProvider.WORLD.setWorldDirs(parseWorldDirectories(""));
 		File output = parseFileAndCreateParentDirectories("output", "csv");
 		GroupFilter query = parseQuery(true);
 		Selection selectionData = loadSelection(false, false);
@@ -683,7 +705,8 @@ public final class ParamExecutor {
 	}
 
 	private void export(FutureTask<Boolean> future) throws ParseException {
-		Config.setWorldDirs(parseWorldDirectories(""));
+		ConfigProvider.WORLD = new WorldConfig();
+		ConfigProvider.WORLD.setWorldDirs(parseWorldDirectories(""));
 		WorldDirectories output = parseAndCreateWorldDirectories("output");
 		GroupFilter query = parseQuery(false);
 		Selection selection = loadSelection(false, false);
@@ -700,7 +723,8 @@ public final class ParamExecutor {
 	}
 
 	private void imp(FutureTask<Boolean> future) throws ParseException {
-		Config.setWorldDirs(parseWorldDirectories(""));
+		ConfigProvider.WORLD = new WorldConfig();
+		ConfigProvider.WORLD.setWorldDirs(parseWorldDirectories(""));
 		WorldDirectories source = parseWorldDirectories("source");
 		int offsetX = parseInt("x-offset", 0);
 		int offsetY = parseInt("y-offset", 0, -24, 24);
@@ -732,7 +756,8 @@ public final class ParamExecutor {
 	}
 
 	private void delete(FutureTask<Boolean> future) throws ParseException {
-		Config.setWorldDirs(parseWorldDirectories(""));
+		ConfigProvider.WORLD = new WorldConfig();
+		ConfigProvider.WORLD.setWorldDirs(parseWorldDirectories(""));
 		GroupFilter query = parseQuery(false);
 		Selection selection = loadSelection(false, false);
 
@@ -749,7 +774,8 @@ public final class ParamExecutor {
 	}
 
 	private void change(FutureTask<Boolean> future) throws ParseException {
-		Config.setWorldDirs(parseWorldDirectories(""));
+		ConfigProvider.WORLD = new WorldConfig();
+		ConfigProvider.WORLD.setWorldDirs(parseWorldDirectories(""));
 		Selection selection = loadSelection(false, false);
 		boolean force = line.hasOption("force");
 		List<Field<?>> fields = parseFields(true);
@@ -761,13 +787,14 @@ public final class ParamExecutor {
 	}
 
 	private void cache(FutureTask<Boolean> future) throws ParseException, ExecutionException, InterruptedException {
-		Config.setWorldDirs(parseWorldDirectories(""));
+		ConfigProvider.WORLD = new WorldConfig();
+		ConfigProvider.WORLD.setWorldDirs(parseWorldDirectories(""));
 		if (!CLIJFX.hasJavaFX()) {
 			throw new ParseException("no JavaFX installation found");
 		}
 
 		File output = parseDirAndCreate("output");
-		Config.setCacheDir(output);
+		ConfigProvider.WORLD.setCacheDir(output);
 		Integer zoomLevel = parseZoomLevel();
 
 		CLIJFX.launch();
@@ -779,14 +806,15 @@ public final class ParamExecutor {
 	}
 
 	private void image(FutureTask<Boolean> future) throws ParseException, ExecutionException, InterruptedException {
-		Config.setWorldDirs(parseWorldDirectories(""));
+		ConfigProvider.WORLD = new WorldConfig();
+		ConfigProvider.WORLD.setWorldDirs(parseWorldDirectories(""));
 		if (!CLIJFX.hasJavaFX()) {
 			throw new ParseException("no JavaFX installation found");
 		}
 
 		File output = parseFileAndCreateParentDirectories("output", "png");
 		Selection selection = loadSelection(false, true);
-		SelectionData data = new SelectionData(selection, Config.getWorldDirs());
+		SelectionData data = new SelectionData(selection, ConfigProvider.WORLD.getWorldDirs());
 		if (data.getWidth() *  16 * data.getHeight() * 16 > Integer.MAX_VALUE) {
 			throw new ParseException(String.format("dimensions of %dx%d too large to generate an image", data.getWidth() * 16, data.getHeight() * 16));
 		}
@@ -804,11 +832,11 @@ public final class ParamExecutor {
 		boolean renderShade = parseBoolean("render-shade", false, !renderCaves && !renderLayerOnly);
 		boolean renderWaterShade = parseBoolean("render-water-shade", false, !renderCaves && !renderLayerOnly);
 
-		Config.setRenderHeight(renderHeight);
-		Config.setRenderCaves(renderCaves);
-		Config.setRenderLayerOnly(renderLayerOnly);
-		Config.setShade(renderShade);
-		Config.setShadeWater(renderWaterShade);
+		ConfigProvider.WORLD.setRenderHeight(renderHeight);
+		ConfigProvider.WORLD.setRenderCaves(renderCaves);
+		ConfigProvider.WORLD.setRenderLayerOnly(renderLayerOnly);
+		ConfigProvider.WORLD.setShade(renderShade);
+		ConfigProvider.WORLD.setShadeWater(renderWaterShade);
 
 		CLIJFX.launch();
 
@@ -843,7 +871,7 @@ public final class ParamExecutor {
 			try {
 				Overlay overlay = new OverlayParser(type, min, max, additionalData, minHue, maxHue).parse();
 				overlayPool = new OverlayPool(null);
-				overlayPool.switchTo(new File(Config.getCacheDir(), "cache.db").toString(), List.of(overlay));
+				overlayPool.switchTo(new File(ConfigProvider.WORLD.getCacheDir(), "cache.db").toString(), List.of(overlay));
 				overlayPool.setParser(overlay);
 			} catch (Exception ex) {
 				throw new ParseException(ex.getMessage());

@@ -1,7 +1,7 @@
 package net.querz.mcaselector.io;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.selection.ChunkSet;
@@ -9,17 +9,14 @@ import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.progress.Progress;
-import net.querz.mcaselector.ui.component.TileMapBox;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.regex.Matcher;
 
 public final class CacheHelper {
@@ -29,7 +26,7 @@ public final class CacheHelper {
 	private CacheHelper() {}
 
 	public static void forceGenerateCache(Integer zoomLevel, Progress progressChannel) {
-		File[] files = Config.getWorldDir().listFiles((d, n) -> FileHelper.MCA_FILE_PATTERN.matcher(n).matches());
+		File[] files = ConfigProvider.WORLD.getRegionDir().listFiles((d, n) -> FileHelper.MCA_FILE_PATTERN.matcher(n).matches());
 		if (files == null || files.length == 0) {
 			return;
 		}
@@ -49,12 +46,12 @@ public final class CacheHelper {
 
 	public static void clearAllCache(TileMap tileMap) {
 		JobHandler.cancelAllJobsAndFlush();
-		for (File cacheDir : Config.getCacheDirs()) {
+		for (File cacheDir : ConfigProvider.WORLD.getCacheDirs()) {
 			FileHelper.deleteDirectory(cacheDir);
 		}
 		RegionImageGenerator.invalidateCachedMCAFiles();
 		updateVersionFile();
-		updateWorldSettingsFile();
+		ConfigProvider.WORLD.save();
 		tileMap.clear();
 		tileMap.draw();
 	}
@@ -64,11 +61,11 @@ public final class CacheHelper {
 	public static void clearAllCacheAsync(TileMap tileMap, Runnable callback) {
 		Thread clear = new Thread(() -> {
 			JobHandler.cancelAllJobsAndFlush();
-			for (File cacheDir : Config.getCacheDirs()) {
+			for (File cacheDir : ConfigProvider.WORLD.getCacheDirs()) {
 				FileHelper.deleteDirectory(cacheDir);
 			}
 			updateVersionFile();
-			updateWorldSettingsFile();
+			ConfigProvider.WORLD.save();
 
 			tileMap.markAllTilesAsObsolete();
 			tileMap.draw();
@@ -79,7 +76,7 @@ public final class CacheHelper {
 
 	public static void clearViewCache(TileMap tileMap) {
 		for (Point2i region : tileMap.getVisibleRegions()) {
-			for (File cacheDir : Config.getCacheDirs()) {
+			for (File cacheDir : ConfigProvider.WORLD.getCacheDirs()) {
 				File file = FileHelper.createPNGFilePath(cacheDir, region);
 				if (file.exists()) {
 					if (!file.delete()) {
@@ -95,11 +92,11 @@ public final class CacheHelper {
 	}
 
 	public static void clearSelectionCache(TileMap tileMap) {
-		Selection selection = tileMap.getSelection().getTrueSelection(Config.getWorldDirs());
+		Selection selection = tileMap.getSelection().getTrueSelection(ConfigProvider.WORLD.getWorldDirs());
 
 		for (Long2ObjectMap.Entry<ChunkSet> entry : selection) {
 			Point2i region = new Point2i(entry.getLongKey());
-			for (File cacheDir : Config.getCacheDirs()) {
+			for (File cacheDir : ConfigProvider.WORLD.getCacheDirs()) {
 				File file = FileHelper.createPNGFilePath(cacheDir, region);
 				if (file.exists()) {
 					if (!file.delete()) {
@@ -128,7 +125,7 @@ public final class CacheHelper {
 			return;
 		}
 
-		File cacheVersionFile = new File(Config.getCacheDir(), "version");
+		File cacheVersionFile = new File(ConfigProvider.WORLD.getCacheDir(), "version");
 		String version = null;
 		if(cacheVersionFile.exists()) {
 			version = readVersionFromFile(cacheVersionFile);
@@ -163,7 +160,7 @@ public final class CacheHelper {
 			return;
 		}
 
-		File versionFile = new File(Config.getCacheDir(), "version");
+		File versionFile = new File(ConfigProvider.WORLD.getCacheDir(), "version");
 		if (!versionFile.getParentFile().exists()) {
 			if (!versionFile.getParentFile().mkdirs()) {
 				LOGGER.warn("failed to create directory for {}", versionFile);
@@ -174,94 +171,6 @@ public final class CacheHelper {
 			bw.write(applicationVersion);
 		} catch (IOException ex) {
 			LOGGER.warn("failed to write cache version file", ex);
-		}
-	}
-
-	public static void readWorldSettingsFile(TileMap tileMap) {
-		File worldSettingsFile = new File(Config.getCacheDir(), "world_settings.json");
-		if (!worldSettingsFile.exists()) {
-			return;
-		}
-
-		String poi = null;
-		String entities = null;
-		int height = Config.DEFAULT_RENDER_HEIGHT;
-		boolean layerOnly = Config.DEFAULT_RENDER_LAYER_ONLY;
-		boolean caves = Config.DEFAULT_RENDER_CAVES;
-		boolean shade = Config.DEFAULT_SHADE;
-		boolean shadeWater = Config.DEFAULT_SHADE_WATER;
-		boolean smooth = Config.DEFAULT_SMOOTH_RENDERING;
-		boolean smoothOverlays = Config.DEFAULT_SMOOTH_OVERLAYS;
-		String tileMapBackground = Config.DEFAULT_TILEMAP_BACKGROUND;
-		boolean showNonexistentRegions = Config.DEFAULT_SHOW_NONEXISTENT_REGIONS;
-
-		try {
-			byte[] data = Files.readAllBytes(worldSettingsFile.toPath());
-			JSONObject root = new JSONObject(new String(data));
-			poi = root.has("poi") ? root.getString("poi") : null;
-			entities = root.has("entities") ? root.getString("entities") : null;
-			height = root.has("height") ? root.getInt("height") : Config.DEFAULT_RENDER_HEIGHT;
-			layerOnly = root.has("layerOnly") ? root.getBoolean("layerOnly") : Config.DEFAULT_RENDER_LAYER_ONLY;
-			caves = root.has("caves") ? root.getBoolean("caves") : Config.DEFAULT_RENDER_CAVES;
-			shade = root.has("shade") ? root.getBoolean("shade") : Config.DEFAULT_SHADE;
-			shadeWater = root.has("shadeWater") ? root.getBoolean("shadeWater") : Config.DEFAULT_SHADE_WATER;
-			smooth = root.has("smooth") ? root.getBoolean("smooth") : Config.DEFAULT_SMOOTH_RENDERING;
-			smoothOverlays = root.has("smoothOverlays") ? root.getBoolean("smoothOverlays") : Config.DEFAULT_SMOOTH_OVERLAYS;
-			tileMapBackground = root.has("tileMapBackground") ? root.getString("tileMapBackground") : Config.DEFAULT_TILEMAP_BACKGROUND;
-			showNonexistentRegions = root.has("showNonexistentRegions") ? root.getBoolean("showNonexistentRegions") : Config.DEFAULT_SHOW_NONEXISTENT_REGIONS;
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-
-		if (poi != null && !poi.isEmpty() && !poi.equals("null")) {
-			Config.getWorldDirs().setPoi(new File(poi));
-		}
-		if (entities != null && !entities.isEmpty() && !entities.equals("null")) {
-			Config.getWorldDirs().setEntities(new File(entities));
-		}
-		Config.setRenderHeight(height);
-		Config.setRenderLayerOnly(layerOnly);
-		Config.setRenderCaves(caves);
-		Config.setShade(shade);
-		Config.setShadeWater(shadeWater);
-		Config.setSmoothRendering(smooth);
-		Config.setSmoothOverlays(smoothOverlays);
-		Config.setTileMapBackground(tileMapBackground);
-		try {
-			tileMap.getWindow().getTileMapBox().setBackground(TileMapBox.TileMapBoxBackground.valueOf(tileMapBackground).getBackground());
-		} catch (IllegalArgumentException ex) {
-			ex.printStackTrace();
-		}
-		Config.setShowNonExistentRegions(showNonexistentRegions);
-
-		LOGGER.debug(Config.asString());
-	}
-
-	public static void updateWorldSettingsFile() {
-		File worldSettingsFile = new File(Config.getCacheDir(), "world_settings.json");
-		if (!worldSettingsFile.getParentFile().exists()) {
-			if (!worldSettingsFile.getParentFile().mkdirs()) {
-				LOGGER.warn("failed to create directory for {}", worldSettingsFile);
-			}
-		}
-
-		JSONObject root = new JSONObject();
-		root.put("poi", Config.getWorldDirs().getPoi());
-		root.put("entities", Config.getWorldDirs().getEntities());
-		root.put("height", Config.getRenderHeight());
-		root.put("layerOnly", Config.renderLayerOnly());
-		root.put("caves", Config.renderCaves());
-		root.put("shade", Config.shade());
-		root.put("shadeWater", Config.shadeWater());
-		root.put("smooth", Config.smoothRendering());
-		root.put("smoothOverlays", Config.smoothOverlays());
-		root.put("tileMapBackground", Config.getTileMapBackground());
-		root.put("showNonexistentRegions", Config.showNonExistentRegions());
-
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(worldSettingsFile))) {
-			bw.write(root.toString());
-		} catch (IOException ex) {
-			LOGGER.warn("failed to write world settings file", ex);
 		}
 	}
 }

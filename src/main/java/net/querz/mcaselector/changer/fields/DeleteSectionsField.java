@@ -8,8 +8,6 @@ import net.querz.mcaselector.range.RangeParser;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.EntityFilter;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.CompoundTag;
-import net.querz.nbt.ListTag;
 import java.util.List;
 import java.util.StringJoiner;
 

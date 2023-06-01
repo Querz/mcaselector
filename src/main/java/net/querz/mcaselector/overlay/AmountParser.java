@@ -10,12 +10,12 @@ public abstract class AmountParser extends Overlay {
 	public boolean setMin(String raw) {
 		setRawMin(raw);
 		if (raw == null || raw.isEmpty()) {
-			return setMin((Integer) null);
+			return setMinInt(null);
 		}
 		try {
-			return setMin(Integer.parseInt(raw));
+			return setMinInt(Integer.parseInt(raw));
 		} catch (NumberFormatException ex) {
-			return setMin((Integer) null);
+			return setMinInt(null);
 		}
 	}
 
@@ -23,12 +23,12 @@ public abstract class AmountParser extends Overlay {
 	public boolean setMax(String raw) {
 		setRawMax(raw);
 		if (raw == null || raw.isEmpty()) {
-			return setMax((Integer) null);
+			return setMaxInt(null);
 		}
 		try {
-			return setMax(Integer.parseInt(raw));
+			return setMaxInt(Integer.parseInt(raw));
 		} catch (NumberFormatException ex) {
-			return setMax((Integer) null);
+			return setMaxInt(null);
 		}
 	}
 }

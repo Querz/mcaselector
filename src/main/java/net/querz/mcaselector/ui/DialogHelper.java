@@ -10,7 +10,7 @@ import javafx.scene.image.WritableImage;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.job.ChunkFilterDeleter;
 import net.querz.mcaselector.io.job.ChunkFilterExporter;
@@ -265,55 +265,55 @@ public class DialogHelper {
 
 		Optional<SettingsDialog.Result> result = new SettingsDialog(primaryStage, renderSettings).showAndWait();
 		result.ifPresent(r -> {
-			if (Config.getProcessThreads() != r.processThreads
-					|| Config.getWriteThreads() != r.writeThreads) {
-				Config.setProcessThreads(r.processThreads);
-				Config.setWriteThreads(r.writeThreads);
+			if (ConfigProvider.GLOBAL.getProcessThreads() != r.processThreads
+					|| ConfigProvider.GLOBAL.getWriteThreads() != r.writeThreads) {
+				ConfigProvider.GLOBAL.setProcessThreads(r.processThreads);
+				ConfigProvider.GLOBAL.setWriteThreads(r.writeThreads);
 				JobHandler.init();
 			}
-			Config.setMaxLoadedFiles(r.maxLoadedFiles);
+			ConfigProvider.GLOBAL.setMaxLoadedFiles(r.maxLoadedFiles);
 
-			if (!Config.getLocale().equals(r.locale)) {
-				Config.setLocale(r.locale);
-				Locale.setDefault(Config.getLocale());
-				Translation.load(Config.getLocale());
+			if (!ConfigProvider.GLOBAL.getLocale().equals(r.locale)) {
+				ConfigProvider.GLOBAL.setLocale(r.locale);
+				Locale.setDefault(ConfigProvider.GLOBAL.getLocale());
 			}
-			Config.setRegionSelectionColor(new Color(r.regionColor));
-			Config.setChunkSelectionColor(new Color(r.regionColor));
-			Config.setPasteChunksColor(new Color(r.pasteColor));
+			ConfigProvider.GLOBAL.setRegionSelectionColor(new Color(r.regionColor));
+			ConfigProvider.GLOBAL.setChunkSelectionColor(new Color(r.chunkColor));
+			ConfigProvider.GLOBAL.setPasteChunksColor(new Color(r.pasteColor));
 			tileMap.redrawOverlays();
-			Config.setMCSavesDir(r.mcSavesDir + "");
-			Config.setDebug(r.debug);
+			ConfigProvider.GLOBAL.setMcSavesDir(r.mcSavesDir + "");
+			ConfigProvider.GLOBAL.setDebug(r.debug);
 
 			if (!tileMap.getDisabled()) {
-				Config.setShowNonExistentRegions(r.showNonexistentRegions);
+				ConfigProvider.WORLD.setShowNonexistentRegions(r.showNonexistentRegions);
 				tileMap.setShowNonexistentRegions(r.showNonexistentRegions);
-				Config.setSmoothRendering(r.smoothRendering);
+				ConfigProvider.WORLD.setSmoothRendering(r.smoothRendering);
 				tileMap.setSmoothRendering(r.smoothRendering);
-				Config.setSmoothOverlays(r.smoothOverlays);
-				Config.setTileMapBackground(r.tileMapBackground.name());
+				ConfigProvider.WORLD.setSmoothOverlays(r.smoothOverlays);
+				ConfigProvider.WORLD.setTileMapBackground(r.tileMapBackground.name());
 				tileMap.getWindow().getTileMapBox().setBackground(r.tileMapBackground.getBackground());
 
-				if (r.height != Config.getRenderHeight() || r.layerOnly != Config.renderLayerOnly()
-					|| r.shade != Config.shade() || r.shadeWater != Config.shadeWater() || r.caves != Config.renderCaves()) {
-					Config.setRenderHeight(r.height);
-					Config.setRenderLayerOnly(r.layerOnly);
-					Config.setRenderCaves(r.caves);
+				if (r.height != ConfigProvider.WORLD.getRenderHeight() || r.layerOnly != ConfigProvider.WORLD.getRenderLayerOnly()
+					|| r.shade != ConfigProvider.WORLD.getShade() || r.shadeWater != ConfigProvider.WORLD.getShadeWater() || r.caves != ConfigProvider.WORLD.getRenderCaves()) {
+					ConfigProvider.WORLD.setRenderHeight(r.height);
+					ConfigProvider.WORLD.setRenderLayerOnly(r.layerOnly);
+					ConfigProvider.WORLD.setRenderCaves(r.caves);
 					tileMap.getWindow().getOptionBar().setRenderHeight(r.height);
-					Config.setShade(r.shade);
-					Config.setShadeWater(r.shadeWater);
+					ConfigProvider.WORLD.setShade(r.shade);
+					ConfigProvider.WORLD.setShadeWater(r.shadeWater);
 					// only clear the cache if the actual image rendering changed
 					CacheHelper.clearAllCache(tileMap);
 				}
 
-				WorldDirectories worldDirectories = Config.getWorldDirs();
+				WorldDirectories worldDirectories = ConfigProvider.WORLD.getWorldDirs();
 				worldDirectories.setPoi(r.poi);
 				worldDirectories.setEntities(r.entities);
 
-				CacheHelper.updateWorldSettingsFile();
+				ConfigProvider.WORLD.save();
 			}
 
-			Config.exportConfig();
+			ConfigProvider.GLOBAL.save();
+			ConfigProvider.OVERLAY.save();
 
 			tileMap.draw();
 		});
@@ -471,7 +471,7 @@ public class DialogHelper {
 
 	public static void copySelectedChunks(TileMap tileMap) {
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		SelectionData data = new SelectionData(tileMap.getSelection(), Config.getWorldDirs());
+		SelectionData data = new SelectionData(tileMap.getSelection(), ConfigProvider.WORLD.getWorldDirs());
 		ClipboardSelection clipboardSelection = new ClipboardSelection(data);
 		clipboard.setContents(clipboardSelection, tileMap);
 	}
@@ -541,7 +541,7 @@ public class DialogHelper {
 			}
 		}
 
-		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", Config.getMCSavesDir());
+		String lastOpenDirectory = FileHelper.getLastOpenedDirectory("open_world", ConfigProvider.GLOBAL.getMcSavesDir());
 		File file = createDirectoryChooser(lastOpenDirectory).showDialog(primaryStage);
 		if (file != null && file.isDirectory()) {
 			List<File> dimensions = FileHelper.detectDimensionDirectories(file);
@@ -553,30 +553,31 @@ public class DialogHelper {
 
 			// if there is only one dimension, open it instantly
 			if (dimensions.size() == 1) {
-				setWorld(FileHelper.detectWorldDirectories(dimensions.get(0)), tileMap, primaryStage);
+				setWorld(FileHelper.detectWorldDirectories(dimensions.get(0)), dimensions, tileMap, primaryStage);
 				return;
 			}
 			// show world selection dialog
 			Optional<File> result = new SelectWorldDialog(dimensions, primaryStage).showAndWait();
-			result.ifPresent(dim -> setWorld(FileHelper.detectWorldDirectories(dim), tileMap, primaryStage));
+			result.ifPresent(dim -> setWorld(FileHelper.detectWorldDirectories(dim), dimensions, tileMap, primaryStage));
 		} else if (file != null) {
 			new ErrorDialog(primaryStage, String.format("%s is not a directory", file));
 		}
 	}
 
-	public static void setWorld(WorldDirectories worldDirectories, TileMap tileMap, Stage primaryStage) {
+	public static void setWorld(WorldDirectories worldDirectories, List<File> dimensionDirectories, TileMap tileMap, Stage primaryStage) {
+		ConfigProvider.GLOBAL.addRecentWorld(worldDirectories.getRegion().getParentFile(), dimensionDirectories);
+
 		new ProgressDialog(Translation.DIALOG_PROGRESS_TITLE_LOADING_WORLD, primaryStage).showProgressBar((task) -> {
-			Config.setWorldDirs(worldDirectories);
+			ConfigProvider.loadWorldConfig(worldDirectories, dimensionDirectories);
 			CacheHelper.validateCacheVersion(tileMap);
-			CacheHelper.readWorldSettingsFile(tileMap);
 			RegionImageGenerator.invalidateCachedMCAFiles();
-			tileMap.getWindow().getOptionBar().setRenderHeight(Config.getRenderHeight());
+			tileMap.getWindow().getOptionBar().setRenderHeight(ConfigProvider.WORLD.getRenderHeight());
 			tileMap.clear(task);
 			tileMap.clearSelection();
 			tileMap.draw();
 			tileMap.disable(false);
-			tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap);
-			tileMap.getOverlayPool().switchTo(new File(Config.getCacheDir(), "cache.db").toString(), tileMap.getOverlays());
+			tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap, primaryStage);
+			tileMap.getOverlayPool().switchTo(new File(ConfigProvider.WORLD.getCacheDir(), "cache.db").toString(), tileMap.getOverlays());
 			task.done(Translation.DIALOG_PROGRESS_DONE.toString());
 			Platform.runLater(() -> tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent()));
 		});

@@ -57,7 +57,7 @@ public class Anvil112ChunkRelocator implements ChunkRelocator {
 		ListTag sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
 		if (sections != null) {
 			ListTag newSections = new ListTag();
-			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				if (applyOffsetToSection(section, offset.blockToSection(), 0, 15)) {
 					newSections.add(section);
 				}
@@ -196,7 +196,7 @@ public class Anvil112ChunkRelocator implements ChunkRelocator {
 			case "minecraft:mob_spawner" -> {
 				ListTag spawnPotentials = Helper.tagFromCompound(tileEntity, "SpawnPotentials");
 				if (spawnPotentials != null) {
-					for (CompoundTag spawnPotential : spawnPotentials.iterateType(CompoundTag.TYPE)) {
+					for (CompoundTag spawnPotential : spawnPotentials.iterateType(CompoundTag.class)) {
 						CompoundTag entity = Helper.tagFromCompound(spawnPotential, "Entity");
 						applyOffsetToEntity(entity, offset);
 					}

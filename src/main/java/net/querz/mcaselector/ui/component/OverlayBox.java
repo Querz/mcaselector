@@ -236,7 +236,7 @@ public class OverlayBox extends BorderPane {
 	}
 
 	private void onAdditionalDataInput(String newValue) {
-		displayValid(getValue().setMultiValues(newValue));
+		displayValid(getValue().setMultiValuesString(newValue));
 		if (onValuesChange != null) {
 			onValuesChange.accept(getValue());
 		}

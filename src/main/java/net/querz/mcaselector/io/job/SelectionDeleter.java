@@ -1,7 +1,7 @@
 package net.querz.mcaselector.io.job;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
@@ -13,7 +13,6 @@ import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.util.function.Consumer;
 
 public final class SelectionDeleter {
@@ -32,7 +31,7 @@ public final class SelectionDeleter {
 
 		progressChannel.setMessage("preparing");
 
-		Selection trueSelection = selection.getTrueSelection(Config.getWorldDirs());
+		Selection trueSelection = selection.getTrueSelection(ConfigProvider.WORLD.getWorldDirs());
 
 		progressChannel.setMax(trueSelection.size());
 

@@ -41,6 +41,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import static net.querz.nbt.Tag.Type.*;
 
 public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 
@@ -160,7 +161,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 			}
 		});
 
-		Map<Integer, Label> addTagLabels = new LinkedHashMap<>();
+		Map<Tag.Type, Label> addTagLabels = new LinkedHashMap<>();
 
 		delete.setOnMouseClicked(e -> {
 			if (nbtTreeView.getSelectionModel().getSelectedItem().getParent() == null) {
@@ -194,30 +195,30 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		return tab;
 	}
 
-	private void enableAddTagLabels(int[] ids, Map<Integer, Label> addTagLabels) {
-		for (Map.Entry<Integer, Label> label : addTagLabels.entrySet()) {
+	private void enableAddTagLabels(Tag.Type[] types, Map<Tag.Type, Label> addTagLabels) {
+		for (Map.Entry<Tag.Type, Label> label : addTagLabels.entrySet()) {
 			label.getValue().setDisable(true);
 		}
-		if (ids != null) {
-			for (int id : ids) {
-				addTagLabels.get(id).setDisable(false);
+		if (types != null) {
+			for (Tag.Type type : types) {
+				addTagLabels.get(type).setDisable(false);
 			}
 		}
 	}
 
-	private void initAddTagLabels(NBTTreeView nbtTreeView, Map<Integer, Label> addTagLabels, BorderPane treeViewHolder, Consumer<CompoundTag> consumer) {
-		addTagLabels.put(1, iconLabel("img/nbt/byte", () -> ByteTag.valueOf((byte) 0), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(2, iconLabel("img/nbt/short", () -> ShortTag.valueOf((short) 0), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(3, iconLabel("img/nbt/int", () -> IntTag.valueOf(0), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(4, iconLabel("img/nbt/long", () -> LongTag.valueOf(0), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(5, iconLabel("img/nbt/float", () -> FloatTag.valueOf(0), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(6, iconLabel("img/nbt/double", () -> DoubleTag.valueOf(0), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(8, iconLabel("img/nbt/string", () -> StringTag.valueOf(""), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(9, iconLabel("img/nbt/list", ListTag::new, nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(10, iconLabel("img/nbt/compound", CompoundTag::new, nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(7, iconLabel("img/nbt/byte_array", () -> new ByteArrayTag(new byte[0]), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(11, iconLabel("img/nbt/int_array", () -> new IntArrayTag(new int[0]), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(12, iconLabel("img/nbt/long_array", () -> new LongArrayTag(new long[0]), nbtTreeView, treeViewHolder, consumer));
+	private void initAddTagLabels(NBTTreeView nbtTreeView, Map<Tag.Type, Label> addTagLabels, BorderPane treeViewHolder, Consumer<CompoundTag> consumer) {
+		addTagLabels.put(BYTE, iconLabel("img/nbt/byte", () -> ByteTag.valueOf((byte) 0), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(SHORT, iconLabel("img/nbt/short", () -> ShortTag.valueOf((short) 0), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(INT, iconLabel("img/nbt/int", () -> IntTag.valueOf(0), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(LONG, iconLabel("img/nbt/long", () -> LongTag.valueOf(0), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(FLOAT, iconLabel("img/nbt/float", () -> FloatTag.valueOf(0), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(DOUBLE, iconLabel("img/nbt/double", () -> DoubleTag.valueOf(0), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(STRING, iconLabel("img/nbt/string", () -> StringTag.valueOf(""), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(LIST, iconLabel("img/nbt/list", ListTag::new, nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(COMPOUND, iconLabel("img/nbt/compound", CompoundTag::new, nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(BYTE_ARRAY, iconLabel("img/nbt/byte_array", () -> new ByteArrayTag(new byte[0]), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(INT_ARRAY, iconLabel("img/nbt/int_array", () -> new IntArrayTag(new int[0]), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(LONG_ARRAY, iconLabel("img/nbt/long_array", () -> new LongArrayTag(new long[0]), nbtTreeView, treeViewHolder, consumer));
 		// disable all add tag labels
 		enableAddTagLabels(null, addTagLabels);
 	}
@@ -240,7 +241,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		return label;
 	}
 
-	private <T extends Chunk> void readSingleChunkAsync(MCAFile<T> mcaFile, NBTTreeView treeView, BorderPane treeViewHolder, Map<Integer, Label> addTagLabels, Consumer<CompoundTag> consumer) {
+	private <T extends Chunk> void readSingleChunkAsync(MCAFile<T> mcaFile, NBTTreeView treeView, BorderPane treeViewHolder, Map<Tag.Type, Label> addTagLabels, Consumer<CompoundTag> consumer) {
 		new Thread(() -> {
 			LOGGER.debug("attempting to read single chunk from file: {}", selectedChunk);
 			if (mcaFile.getFile().exists()) {
@@ -248,7 +249,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 					T chunkData = mcaFile.loadSingleChunk(selectedChunk);
 					if (chunkData == null || chunkData.getData() == null) {
 						LOGGER.debug("no chunk data found for: {}", selectedChunk);
-						enableAddTagLabels(new int[]{10}, addTagLabels);
+						enableAddTagLabels(new Tag.Type[]{COMPOUND}, addTagLabels);
 						Platform.runLater(() -> treeViewHolder.setCenter(UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_NO_CHUNK_DATA)));
 						return;
 					}
@@ -263,7 +264,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 					LOGGER.warn("failed to load chunk from file {}", mcaFile.getFile(), ex);
 				}
 			} else {
-				enableAddTagLabels(new int[]{10}, addTagLabels);
+				enableAddTagLabels(new Tag.Type[]{COMPOUND}, addTagLabels);
 				Platform.runLater(() -> treeViewHolder.setCenter(UIFactory.label(Translation.DIALOG_EDIT_NBT_PLACEHOLDER_NO_REGION_FILE)));
 			}
 		}).start();
