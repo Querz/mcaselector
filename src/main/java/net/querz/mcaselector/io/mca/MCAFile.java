@@ -79,10 +79,12 @@ public abstract class MCAFile<T extends Chunk> {
 			result = save(raf);
 		}
 		if (!result) {
-			if (dest.delete()) {
-				LOGGER.debug("deleted empty region file {}", dest);
-			} else {
-				LOGGER.warn("failed to delete empty region file {}", dest);
+			if (dest.exists()) {
+				if (dest.delete()) {
+					LOGGER.debug("deleted empty region file {}", dest);
+				} else {
+					LOGGER.warn("failed to delete empty region file {}", dest);
+				}
 			}
 
 			if (!tempFile.delete()) {
