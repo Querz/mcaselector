@@ -7,6 +7,7 @@ import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.EntityFilter;
+import net.querz.mcaselector.version.HeightmapCalculator;
 import net.querz.mcaselector.version.VersionController;
 import java.util.List;
 import java.util.StringJoiner;
@@ -38,8 +39,16 @@ public class DeleteSectionsField extends Field<List<Range>> {
 	@Override
 	public void change(ChunkData data) {
 		if (data.region() != null && data.region().getData() != null) {
-			ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+			int dataVersion = data.region().getData().getInt("DataVersion");
+			ChunkFilter chunkFilter = VersionController.getChunkFilter(dataVersion);
 			chunkFilter.deleteSections(data.region().getData(), getNewValue());
+
+			// fix heightmaps
+			HeightmapCalculator heightmapCalculator = VersionController.getHeightmapCalculator(dataVersion);
+			heightmapCalculator.worldSurface(data.region().getData());
+			heightmapCalculator.oceanFloor(data.region().getData());
+			heightmapCalculator.motionBlocking(data.region().getData());
+			heightmapCalculator.motionBlockingNoLeaves(data.region().getData());
 		}
 		// delete entities and poi as well
 		if (data.entities() != null && data.entities().getData() != null) {
