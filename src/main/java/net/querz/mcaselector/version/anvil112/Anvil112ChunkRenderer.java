@@ -22,7 +22,7 @@ public class Anvil112ChunkRenderer implements ChunkRenderer {
 		byte[][] dataArray = new byte[16][];
 		for (CompoundTag s : sections.iterateType(CompoundTag.class)) {
 			if (!s.containsKey("Blocks") || !s.containsKey("Data")) {
-				return;
+				continue;
 			}
 			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
 			byte[] b = Helper.byteArrayFromCompound(s, "Blocks");

@@ -213,6 +213,25 @@ public final class LegacyHelper {
 		}
 	}
 
+	static CompoundTag getHeightmaps(CompoundTag data, int dataVersion) {
+		if (dataVersion > 2843) {
+			return data.getCompoundTag("Heightmaps");
+		} else {
+			return Helper.tagFromLevelFromRoot(data, "Heightmaps");
+		}
+	}
+
+	static void setHeightmaps(CompoundTag data, CompoundTag heightmaps, int dataVersion) {
+		if (dataVersion > 2843) {
+			data.put("Heightmaps", heightmaps);
+		} else {
+			CompoundTag level = Helper.levelFromRoot(data);
+			if (level != null) {
+				level.put("Heightmaps", heightmaps);
+			}
+		}
+	}
+
 	static IntTag getZPos(CompoundTag data, int dataVersion) {
 		if (dataVersion > 2843) {
 			return Helper.tagFromCompound(data, "zPos");
