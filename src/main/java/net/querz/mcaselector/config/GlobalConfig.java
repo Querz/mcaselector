@@ -160,7 +160,9 @@ public class GlobalConfig extends Config {
 		if (json == null) {
 			return new GlobalConfig();
 		}
-		return gsonInstance.fromJson(json, GlobalConfig.class);
+		GlobalConfig cfg = gsonInstance.fromJson(json, GlobalConfig.class);
+		cfg.setDebug(cfg.getDebug()); // trigger potential change in debug level
+		return cfg;
 	}
 
 	private static final Gson toStringGsonInstance;
