@@ -26,7 +26,6 @@ public final class ChunkFilterSelector {
 
 	public static void selectFilter(GroupFilter filter, Selection selection, int radius, Consumer<Selection> callback, Progress progressChannel, boolean cli) {
 		WorldDirectories wd = ConfigProvider.WORLD.getWorldDirs();
-		System.out.println(wd);
 		RegionDirectories[] rd = wd.listRegions(selection);
 		if (rd == null || rd.length == 0) {
 			if (cli) {
@@ -36,8 +35,6 @@ public final class ChunkFilterSelector {
 			}
 			return;
 		}
-
-		System.out.println(Arrays.toString(rd));
 
 		JobHandler.clearQueues();
 
