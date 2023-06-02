@@ -7,9 +7,28 @@ import net.querz.mcaselector.version.Helper;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.StringTag;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public class Anvil113HeightmapCalculator implements HeightmapCalculator {
+
+	private static final Set<String> nonLightBlockingBlocks = new HashSet<>();
+
+	static {
+		try (BufferedReader bis = new BufferedReader(new InputStreamReader(Objects.requireNonNull(Data.class.getClassLoader().getResourceAsStream("mapping/113/heightmap_data.txt"))))) {
+			String line;
+			while ((line = bis.readLine()) != null) {
+				nonLightBlockingBlocks.add("minecraft:" + line);
+			}
+		} catch (IOException ex) {
+			throw new RuntimeException("failed to read mapping/113/heightmap_data.txt");
+		}
+	}
 
 	@Override
 	public void worldSurface(CompoundTag root) {
@@ -19,6 +38,14 @@ public class Anvil113HeightmapCalculator implements HeightmapCalculator {
 				return false;
 			}
 			return !isAir(name.getValue());
+		}));
+
+		setHeightMap(root, "LIGHT_BLOCKING", getHeightMap(root, blockState -> {
+			StringTag name = blockState.getStringTag("Name");
+			if (name == null) {
+				return false;
+			}
+			return !nonLightBlockingBlocks.contains(name.getValue());
 		}));
 	}
 
