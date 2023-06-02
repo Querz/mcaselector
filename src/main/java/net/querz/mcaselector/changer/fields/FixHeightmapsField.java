@@ -3,11 +3,8 @@ package net.querz.mcaselector.changer.fields;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.HeightmapCalculator;
 import net.querz.mcaselector.version.VersionController;
-import net.querz.nbt.ListTag;
-import net.querz.nbt.StringTag;
 
 public class FixHeightmapsField extends Field<Boolean> {
 

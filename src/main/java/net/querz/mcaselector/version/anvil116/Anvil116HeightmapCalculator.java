@@ -6,7 +6,6 @@ import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.anvil113.Anvil113HeightmapCalculator;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
-
 import java.util.function.Predicate;
 
 public class Anvil116HeightmapCalculator extends Anvil113HeightmapCalculator {
