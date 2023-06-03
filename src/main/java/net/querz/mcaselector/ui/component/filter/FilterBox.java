@@ -110,8 +110,8 @@ public abstract class FilterBox extends BorderPane {
 
 		setLeft(filterOperators);
 
-		add.setOnMouseReleased(e -> onAdd(filter));
-		delete.setOnMouseReleased(e -> onDelete(filter));
+		add.setOnMouseReleased(e -> onAdd(this.filter));
+		delete.setOnMouseReleased(e -> onDelete(this.filter));
 
 		setFilter(filter);
 	}
