@@ -12,7 +12,7 @@ import net.querz.mcaselector.ui.UIFactory;
 
 public class TextFilterBox extends FilterBox {
 
-	private final TextField input = new TextField();
+	protected final TextField input = new TextField();
 	private final ComboBox<Comparator> comparator = new ComboBox<>();
 
 	private static final PseudoClass invalid = PseudoClass.getPseudoClass("invalid");

@@ -363,6 +363,7 @@ public abstract class FilterBox extends BorderPane {
 				case GROUP -> newBox = new GroupFilterBox(this.parent, (GroupFilter) f, false);
 				case TEXT -> newBox = new TextFilterBox(this.parent, (TextFilter<?>) f, false);
 				case NUMBER -> newBox = new NumberFilterBox(this.parent, (NumberFilter<?>) f, false);
+				case FILE -> newBox = new FileFilterBox(this.parent, (TextFilter<?>) f, false);
 				default -> throw new RuntimeException("unknown FilterType format: " + type.getFormat());
 			}
 
