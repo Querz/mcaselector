@@ -56,19 +56,19 @@ public class EntityFilter extends TextFilter<List<String>> {
 	public boolean contains(List<String> value, ChunkData data) {
 		int dataVersion;
 		if (data.region() != null && data.region().getData() != null) {
-			dataVersion = data.region().getData().getInt("DataVersion");
+			dataVersion = data.region().getData().getIntOrDefault("DataVersion", 0);
 		} else if (data.entities() != null && data.entities().getData() != null) {
-			dataVersion = data.entities().getData().getInt("DataVersion");
+			dataVersion = data.entities().getData().getIntOrDefault("DataVersion", 0);
 		} else {
 			return false;
 		}
 		ListTag entities = VersionController.getEntityFilter(dataVersion).getEntities(data);
-		if (entities == null || entities.getID() == Tag.LONG_ARRAY) {
+		if (entities == null || entities.getType() == Tag.Type.LONG_ARRAY) {
 			return false;
 		}
 		nameLoop:
 		for (String name : getFilterValue()) {
-			for (CompoundTag entity : entities.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag entity : entities.iterateType(CompoundTag.class)) {
 				String id = entity.getString("id");
 				if (name.equals(id)) {
 					continue nameLoop;
@@ -84,12 +84,12 @@ public class EntityFilter extends TextFilter<List<String>> {
 		if (data.region() == null || data.region().getData() == null) {
 			return false;
 		}
-		ListTag entities = VersionController.getEntityFilter(data.region().getData().getInt("DataVersion")).getEntities(data);
-		if (entities == null || entities.getID() == Tag.LONG_ARRAY) {
+		ListTag entities = VersionController.getEntityFilter(data.region().getData().getIntOrDefault("DataVersion", 0)).getEntities(data);
+		if (entities == null || entities.getType() == Tag.Type.LONG_ARRAY) {
 			return false;
 		}
 		for (String name : getFilterValue()) {
-			for (CompoundTag entity : entities.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag entity : entities.iterateType(CompoundTag.class)) {
 				String id = entity.getString("id");
 				if (name.equals(id)) {
 					return true;

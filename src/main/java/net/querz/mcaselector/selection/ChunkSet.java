@@ -167,7 +167,7 @@ public class ChunkSet implements IntIterable, Serializable, Cloneable {
 
 	public int getMinZ(int max) {
 		int l = max >> 1;
-		for (int i = 0; i < l; i++) {
+		for (int i = 0; i <= l; i++) {
 			if (words[i] == 0) {
 				continue;
 			}
@@ -181,14 +181,14 @@ public class ChunkSet implements IntIterable, Serializable, Cloneable {
 
 	public int getMaxZ(int min) {
 		int l = min >> 1;
-		for (int i = 15; i > l; i--) {
+		for (int i = 15; i >= l; i--) {
 			if (words[i] == 0) {
 				continue;
 			}
-			if ((words[i] & 0xFFFFFFFFL) == 0) {
-				return i * 2 + 1;
+			if ((words[i] & 0xFFFFFFFF00000000L) == 0) {
+				return i * 2;
 			}
-			return i * 2;
+			return i * 2 + 1;
 		}
 		return min;
 	}

@@ -5,7 +5,6 @@ import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.Helper;
-import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -130,7 +129,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 				LOGGER.debug("no mapping found for {}", name);
 				continue;
 			}
-			for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
 				byte[] blocks = Helper.byteArrayFromCompound(t, "Blocks");
 				if (blocks == null) {
 					continue;
@@ -174,7 +173,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 			blockData.addAll(Arrays.asList(bd));
 		}
 
-		for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
+		for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
 			byte[] blockBytes = Helper.byteArrayFromCompound(t, "Blocks");
 			if (blockBytes == null) {
 				continue;
@@ -315,7 +314,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		if (replace.containsKey("minecraft:air")) {
 			Map<Integer, CompoundTag> sectionMap = new HashMap<>();
 			List<Integer> heights = new ArrayList<>(18);
-			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				sectionMap.put(section.getInt("Y"), section);
 				heights.add(section.getInt("Y"));
 			}
@@ -340,7 +339,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 			}
 		}
 
-		for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+		for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 			for (Map.Entry<String, BlockReplaceData> entry : replace.entrySet()) {
 				BlockData[] bd = mapping.get(entry.getKey());
 				BlockData bdr = mapping.get(entry.getValue().getName())[0];
@@ -404,7 +403,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
-				for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 					byte[] blocks = Helper.byteArrayFromCompound(section, "Blocks");
 					if (blocks == null) {
 						continue;
@@ -453,7 +452,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 			BlockData[] blockData = mapping.get(blockName);
 
-			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				byte[] blockIDs = Helper.byteArrayFromCompound(section, "Blocks");
 				if (blockIDs == null) {
 					continue;

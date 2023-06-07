@@ -4,7 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.NamedThreadFactory;
@@ -115,9 +115,9 @@ public class OverlayPool {
 				ParseDataJob.setLoading(tile, false);
 			} else {
 				// calculate data
-				JobHandler.executeParseData(new ParseDataJob(tile, FileHelper.createRegionDirectories(tile.location), Config.getWorldUUID(),
+				JobHandler.executeParseData(new ParseDataJob(tile, FileHelper.createRegionDirectories(tile.location), ConfigProvider.WORLD.getWorldUUID(),
 						(d, u) -> {
-					if (u.equals(Config.getWorldUUID())) {
+					if (u.equals(ConfigProvider.WORLD.getWorldUUID())) {
 						if (d == null) {
 							noData.add(tile.location);
 							tile.overlayLoaded = true;
@@ -149,8 +149,8 @@ public class OverlayPool {
 		DataProperty<Image> image = new DataProperty<>();
 		new ParseDataJob(
 				new Tile(location),
-				Config.getWorldDirs().makeRegionDirectories(location),
-				Config.getWorldUUID(),
+				ConfigProvider.WORLD.getWorldDirs().makeRegionDirectories(location),
+				ConfigProvider.WORLD.getWorldUUID(),
 				region, poi, entities,
 				(i, u) -> {
 					if (i != null) {

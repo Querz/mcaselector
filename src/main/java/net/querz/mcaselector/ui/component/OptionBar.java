@@ -1,10 +1,8 @@
 package net.querz.mcaselector.ui.component;
 
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
@@ -14,22 +12,21 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.ConfigProvider;
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.selection.ClipboardSelection;
 import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.io.CacheHelper;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.DialogHelper;
 import net.querz.mcaselector.ui.UIFactory;
-
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.util.Arrays;
+import java.io.File;
+import java.util.List;
 
 public class OptionBar extends BorderPane {
 	/*
@@ -56,6 +53,8 @@ public class OptionBar extends BorderPane {
 
 	private final HeightSlider hSlider = new HeightSlider(319, true);
 	private final MenuItem openWorld = UIFactory.menuItem(Translation.MENU_FILE_OPEN_WORLD);
+	private final Menu openDimension = UIFactory.menu(Translation.MENU_FILE_OPEN_DIMENSION);
+	private final Menu openRecent = UIFactory.menu(Translation.MENU_FILE_OPEN_RECENT_WORLD);
 	private final MenuItem settings = UIFactory.menuItem(Translation.MENU_FILE_SETTINGS);
 	private final MenuItem renderSettings = UIFactory.menuItem(Translation.MENU_FILE_RENDER_SETTINGS);
 	private final MenuItem quit = UIFactory.menuItem(Translation.MENU_FILE_QUIT);
@@ -100,7 +99,9 @@ public class OptionBar extends BorderPane {
 		tileMap.setOnUpdate(this::onUpdate);
 
 		file.getItems().addAll(
-				openWorld, UIFactory.separator(),
+				openWorld,
+				openDimension,
+				openRecent, UIFactory.separator(),
 				settings, renderSettings, UIFactory.separator(),
 				quit);
 		view.getItems().addAll(
@@ -131,7 +132,7 @@ public class OptionBar extends BorderPane {
 		heightValue.addListener((v, o, n) -> {
 			if (!tileMap.getDisabled()) {
 				heightDisabled.set(true);
-				Config.setRenderHeight(n.intValue());
+				ConfigProvider.WORLD.setRenderHeight(n.intValue());
 				CacheHelper.clearAllCacheAsync(tileMap, () -> {
 					heightDisabled.set(false);
 					if (hSlider.getValue() != heightValue.get()) {
@@ -217,7 +218,7 @@ public class OptionBar extends BorderPane {
 		nextOverlayType.setAccelerator(new KeyCodeCombination(KeyCode.N));
 
 		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks(), tileMap.getSelection().isInverted());
-		setWorldDependentMenuItemsEnabled(false, tileMap);
+		setWorldDependentMenuItemsEnabled(false, tileMap, primaryStage);
 
 		Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> paste.setDisable(!hasValidClipboardContent(tileMap) || tileMap.getDisabled()));
 
@@ -236,7 +237,7 @@ public class OptionBar extends BorderPane {
 		nextOverlay.setDisable(tileMap.getOverlay() == null);
 	}
 
-	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap) {
+	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap, Stage primaryStage) {
 		renderSettings.setDisable(!enabled);
 		clearViewCache.setDisable(!enabled);
 		clearAllCache.setDisable(!enabled);
@@ -250,6 +251,44 @@ public class OptionBar extends BorderPane {
 		nextOverlay.setDisable(!enabled);
 		nextOverlayType.setDisable(!enabled);
 		hSlider.setDisable(!enabled);
+		openDimension.getItems().clear();
+
+		if (enabled && ConfigProvider.WORLD.getDimensionDirectories() != null && ConfigProvider.WORLD.getDimensionDirectories().size() > 1) {
+			File currentWorldDir = ConfigProvider.WORLD.getRegionDir().getParentFile();
+			ConfigProvider.WORLD.getDimensionDirectories().forEach(f -> {
+				if (!f.equals(currentWorldDir)) {
+					MenuItem dimItem = new MenuItem(f.getName());
+					dimItem.setMnemonicParsing(false);
+					dimItem.setOnAction(e -> DialogHelper.setWorld(FileHelper.detectWorldDirectories(f), ConfigProvider.WORLD.getDimensionDirectories(), tileMap, primaryStage));
+					openDimension.getItems().add(dimItem);
+				}
+			});
+		}
+
+		openDimension.setDisable(!enabled || openDimension.getItems().size() == 0);
+
+		if (ConfigProvider.GLOBAL.getRecentWorlds().size() > 0) {
+			openRecent.getItems().clear();
+			File currentWorld = ConfigProvider.WORLD.getRegionDir();
+			ConfigProvider.GLOBAL.getRecentWorlds().descendingMap().forEach((k, v) -> {
+				if (currentWorld == null || !v.recentWorld().equals(currentWorld.getParentFile())) {
+					MenuItem openRecentItem = new MenuItem(v.toString());
+					openRecentItem.setMnemonicParsing(false);
+					openRecentItem.setOnAction(e -> DialogHelper.setWorld(FileHelper.detectWorldDirectories(v.recentWorld()), v.dimensionDirectories(), tileMap, primaryStage));
+					openRecent.getItems().add(openRecentItem);
+				}
+			});
+			openRecent.getItems().add(UIFactory.separator());
+			MenuItem clear = UIFactory.menuItem(Translation.MENU_FILE_OPEN_RECENT_WORLD_CLEAR);
+			clear.setOnAction(e -> {
+				openRecent.getItems().clear();
+				ConfigProvider.GLOBAL.getRecentWorlds().clear();
+				openRecent.setDisable(true);
+			});
+			openRecent.getItems().add(clear);
+		}
+
+		openRecent.setDisable(openRecent.getItems().size() <= 2); // "empty" means it either has no items or it only has the separator and the clear button
 	}
 
 	public void setEditOverlaysEnabled(boolean enabled) {

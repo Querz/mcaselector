@@ -118,7 +118,7 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 		}
 
 		CompoundTag section = null;
-		for (CompoundTag s : sections.iterateType(CompoundTag.TYPE)) {
+		for (CompoundTag s : sections.iterateType(CompoundTag.class)) {
 			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
 			if (y == height >> 4) {
 				section = s;

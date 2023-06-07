@@ -20,7 +20,7 @@ public class AverageHeightOverlay extends Overlay {
 		if (chunkData.region() == null || chunkData.region().getData() == null) {
 			return 0;
 		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.region().getData().getIntOrDefault("DataVersion", 0));
 		return chunkFilter.getAverageHeight(chunkData.region().getData());
 	}
 
@@ -35,11 +35,11 @@ public class AverageHeightOverlay extends Overlay {
 		try {
 			int value = Integer.parseInt(raw);
 			if (value < MIN_VALUE || value > MAX_VALUE) {
-				return setMin((Integer) null);
+				return setMinInt(null);
 			}
-			return setMin(value);
+			return setMinInt(value);
 		} catch (NumberFormatException ex) {
-			return setMin((Integer) null);
+			return setMinInt(null);
 		}
 	}
 
@@ -49,11 +49,11 @@ public class AverageHeightOverlay extends Overlay {
 		try {
 			int value = Integer.parseInt(raw);
 			if (value < MIN_VALUE || value > MAX_VALUE) {
-				return setMax((Integer) null);
+				return setMaxInt(null);
 			}
-			return setMax(value);
+			return setMaxInt(value);
 		} catch (NumberFormatException ex) {
-			return setMax((Integer) null);
+			return setMaxInt(null);
 		}
 	}
 }

@@ -4,6 +4,7 @@ import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.HeightmapCalculator;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.io.snbt.ParseException;
@@ -180,8 +181,15 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 
 	@Override
 	public void change(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		int dataVersion = data.region().getData().getIntOrDefault("DataVersion", 0);
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(dataVersion);
 		chunkFilter.replaceBlocks(data.region().getData(), getNewValue());
+
+		HeightmapCalculator heightmapCalculator = VersionController.getHeightmapCalculator(dataVersion);
+		heightmapCalculator.worldSurface(data.region().getData());
+		heightmapCalculator.oceanFloor(data.region().getData());
+		heightmapCalculator.motionBlocking(data.region().getData());
+		heightmapCalculator.motionBlockingNoLeaves(data.region().getData());
 	}
 
 	@Override

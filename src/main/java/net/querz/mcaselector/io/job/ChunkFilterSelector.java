@@ -1,6 +1,6 @@
 package net.querz.mcaselector.io.job;
 
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.filter.filters.GroupFilter;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
@@ -15,7 +15,6 @@ import net.querz.mcaselector.progress.Timer;
 import net.querz.mcaselector.text.Translation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.util.Arrays;
 import java.util.function.Consumer;
 
@@ -26,8 +25,7 @@ public final class ChunkFilterSelector {
 	private ChunkFilterSelector() {}
 
 	public static void selectFilter(GroupFilter filter, Selection selection, int radius, Consumer<Selection> callback, Progress progressChannel, boolean cli) {
-		WorldDirectories wd = Config.getWorldDirs();
-		System.out.println(wd);
+		WorldDirectories wd = ConfigProvider.WORLD.getWorldDirs();
 		RegionDirectories[] rd = wd.listRegions(selection);
 		if (rd == null || rd.length == 0) {
 			if (cli) {
@@ -37,8 +35,6 @@ public final class ChunkFilterSelector {
 			}
 			return;
 		}
-
-		System.out.println(Arrays.toString(rd));
 
 		JobHandler.clearQueues();
 

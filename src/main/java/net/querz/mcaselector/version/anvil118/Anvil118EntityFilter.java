@@ -17,7 +17,7 @@ public class Anvil118EntityFilter extends Anvil117EntityFilter {
 		}
 
 		// delete proto-entities
-		ListTag protoEntities = LegacyHelper.getProtoEntities(data.region().getData(), data.region().getData().getInt("DataVersion"));
+		ListTag protoEntities = LegacyHelper.getProtoEntities(data.region().getData(), data.region().getData().getIntOrDefault("DataVersion", 0));
 		deleteEntities(protoEntities, ranges);
 	}
 }

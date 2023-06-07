@@ -8,6 +8,7 @@ import net.querz.mcaselector.version.anvil116.*;
 import net.querz.mcaselector.version.anvil117.*;
 import net.querz.mcaselector.version.anvil118.*;
 import net.querz.mcaselector.version.anvil119.*;
+import net.querz.mcaselector.version.anvil120.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,6 +58,10 @@ public final class VersionController {
 		return Mapping.match(dataVersion).getEntityFilter();
 	}
 
+	public static HeightmapCalculator getHeightmapCalculator(int dataVersion) {
+		return Mapping.match(dataVersion).getHeightmapCalculator();
+	}
+
 	private static final Map<Supplier<? extends ChunkFilter>, ChunkFilter> chunkFilterInstances = new ConcurrentHashMap<>();
 	private static final Map<Supplier<? extends ChunkMerger>, ChunkMerger> chunkMergerInstances = new ConcurrentHashMap<>();
 	private static final Map<Supplier<? extends ChunkMerger>, ChunkMerger> poiMergerInstances = new ConcurrentHashMap<>();
@@ -67,17 +72,19 @@ public final class VersionController {
 	private static final Map<Supplier<? extends EntityFilter>, EntityFilter> entityFilterInstances = new ConcurrentHashMap<>();
 	private static final Map<Supplier<? extends ChunkRenderer>, ChunkRenderer> chunkRendererInstances = new ConcurrentHashMap<>();
 	private static final Map<Supplier<? extends ColorMapping>, ColorMapping> colorMappingInstances = new ConcurrentHashMap<>();
+	private static final Map<Supplier<? extends HeightmapCalculator>, HeightmapCalculator> heightmapCalculatorInstances = new ConcurrentHashMap<>();
 
 	private enum Mapping {
 
-		ANVIL112(0,    1343, Anvil112ChunkFilter::new, Anvil112ChunkMerger::new, Anvil112PoiMerger::new, Anvil112EntityMerger::new, Anvil112ChunkRelocator::new, Anvil112PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil112ChunkRenderer::new, Anvil112ColorMapping::new),
-		ANVIL113(1344, 1631, Anvil113ChunkFilter::new, Anvil113ChunkMerger::new, Anvil112PoiMerger::new, Anvil112EntityMerger::new, Anvil113ChunkRelocator::new, Anvil112PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil113ChunkRenderer::new, Anvil113ColorMapping::new),
-		ANVIL114(1632, 2201, Anvil113ChunkFilter::new, Anvil114ChunkMerger::new, Anvil114PoiMerger::new, Anvil112EntityMerger::new, Anvil114ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil113ChunkRenderer::new, Anvil114ColorMapping::new),
-		ANVIL115(2202, 2526, Anvil115ChunkFilter::new, Anvil115ChunkMerger::new, Anvil114PoiMerger::new, Anvil112EntityMerger::new, Anvil115ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil115ChunkRenderer::new, Anvil115ColorMapping::new),
-		ANVIL116(2527, 2686, Anvil116ChunkFilter::new, Anvil115ChunkMerger::new, Anvil114PoiMerger::new, Anvil112EntityMerger::new, Anvil116ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil116ChunkRenderer::new, Anvil116ColorMapping::new),
-		ANVIL117(2687, 2824, Anvil117ChunkFilter::new, Anvil117ChunkMerger::new, Anvil114PoiMerger::new, Anvil117EntityMerger::new, Anvil117ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil117EntityRelocator::new, Anvil117EntityFilter::new, Anvil117ChunkRenderer::new, Anvil117ColorMapping::new),
-		ANVIL118(2825, 3065, Anvil118ChunkFilter::new, Anvil118ChunkMerger::new, Anvil114PoiMerger::new, Anvil117EntityMerger::new, Anvil118ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil117EntityRelocator::new, Anvil118EntityFilter::new, Anvil118ChunkRenderer::new, Anvil118ColorMapping::new),
-		ANVIL119(3066, Integer.MAX_VALUE, Anvil119ChunkFilter::new, Anvil119ChunkMerger::new, Anvil114PoiMerger::new, Anvil117EntityMerger::new, Anvil119ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil117EntityRelocator::new, Anvil118EntityFilter::new, Anvil119ChunkRenderer::new, Anvil119ColorMapping::new);
+		ANVIL112(0,    1343, Anvil112ChunkFilter::new, Anvil112ChunkMerger::new, Anvil112PoiMerger::new, Anvil112EntityMerger::new, Anvil112ChunkRelocator::new, Anvil112PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil112HeightmapCalculator::new, Anvil112ChunkRenderer::new, Anvil112ColorMapping::new),
+		ANVIL113(1344, 1631, Anvil113ChunkFilter::new, Anvil113ChunkMerger::new, Anvil112PoiMerger::new, Anvil112EntityMerger::new, Anvil113ChunkRelocator::new, Anvil112PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil113HeightmapCalculator::new, Anvil113ChunkRenderer::new, Anvil113ColorMapping::new),
+		ANVIL114(1632, 2201, Anvil113ChunkFilter::new, Anvil114ChunkMerger::new, Anvil114PoiMerger::new, Anvil112EntityMerger::new, Anvil114ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil113HeightmapCalculator::new, Anvil113ChunkRenderer::new, Anvil114ColorMapping::new),
+		ANVIL115(2202, 2526, Anvil115ChunkFilter::new, Anvil115ChunkMerger::new, Anvil114PoiMerger::new, Anvil112EntityMerger::new, Anvil115ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil113HeightmapCalculator::new, Anvil115ChunkRenderer::new, Anvil115ColorMapping::new),
+		ANVIL116(2527, 2686, Anvil116ChunkFilter::new, Anvil115ChunkMerger::new, Anvil114PoiMerger::new, Anvil112EntityMerger::new, Anvil116ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil112EntityRelocator::new, Anvil112EntityFilter::new, Anvil116HeightmapCalculator::new, Anvil116ChunkRenderer::new, Anvil116ColorMapping::new),
+		ANVIL117(2687, 2824, Anvil117ChunkFilter::new, Anvil117ChunkMerger::new, Anvil114PoiMerger::new, Anvil117EntityMerger::new, Anvil117ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil117EntityRelocator::new, Anvil117EntityFilter::new, Anvil117HeightmapCalculator::new, Anvil117ChunkRenderer::new, Anvil117ColorMapping::new),
+		ANVIL118(2825, 3065, Anvil118ChunkFilter::new, Anvil118ChunkMerger::new, Anvil114PoiMerger::new, Anvil117EntityMerger::new, Anvil118ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil117EntityRelocator::new, Anvil118EntityFilter::new, Anvil118HeightmapCalculator::new, Anvil118ChunkRenderer::new, Anvil118ColorMapping::new),
+		ANVIL119(3066, 3441, Anvil119ChunkFilter::new, Anvil119ChunkMerger::new, Anvil114PoiMerger::new, Anvil117EntityMerger::new, Anvil119ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil117EntityRelocator::new, Anvil118EntityFilter::new, Anvil119HeightmapCalculator::new, Anvil119ChunkRenderer::new, Anvil119ColorMapping::new),
+		ANVIL120(3442, Integer.MAX_VALUE, Anvil119ChunkFilter::new, Anvil119ChunkMerger::new, Anvil114PoiMerger::new, Anvil117EntityMerger::new, Anvil119ChunkRelocator::new, Anvil114PoiRelocator::new, Anvil117EntityRelocator::new, Anvil118EntityFilter::new, Anvil119HeightmapCalculator::new, Anvil119ChunkRenderer::new, Anvil120ColorMapping::new);
 
 
 		private final int minVersion, maxVersion;
@@ -89,6 +96,7 @@ public final class VersionController {
 		private final Supplier<? extends ChunkRelocator> poiRelocator;
 		private final Supplier<? extends ChunkRelocator> entityRelocator;
 		private final Supplier<? extends EntityFilter> entityFilter;
+		private final Supplier<? extends HeightmapCalculator> heightmapCalculator;
 
 		private final Supplier<? extends ChunkRenderer> chunkRenderer;
 		private final Supplier<? extends ColorMapping> colorMapping;
@@ -106,6 +114,7 @@ public final class VersionController {
 				Supplier<? extends ChunkRelocator> poiRelocator,
 				Supplier<? extends ChunkRelocator> entityRelocator,
 				Supplier<? extends EntityFilter> entityFilter,
+				Supplier<? extends HeightmapCalculator> heightmapCalculator,
 				Supplier<? extends ChunkRenderer> chunkRenderer,
 				Supplier<? extends ColorMapping> colorMapping) {
 			this.minVersion = minVersion;
@@ -118,6 +127,7 @@ public final class VersionController {
 			this.poiRelocator = poiRelocator;
 			this.entityRelocator = entityRelocator;
 			this.entityFilter = entityFilter;
+			this.heightmapCalculator = heightmapCalculator;
 			this.chunkRenderer = chunkRenderer;
 			this.colorMapping = colorMapping;
 		}
@@ -152,6 +162,10 @@ public final class VersionController {
 
 		EntityFilter getEntityFilter() {
 			return entityFilterInstances.computeIfAbsent(entityFilter, Supplier::get);
+		}
+
+		HeightmapCalculator getHeightmapCalculator() {
+			return heightmapCalculatorInstances.computeIfAbsent(heightmapCalculator, Supplier::get);
 		}
 
 		ChunkRenderer getChunkRenderer() {

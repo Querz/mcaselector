@@ -11,6 +11,9 @@ menu.selection;Sélection
 menu.tools;Outils
 menu.about;À propos
 menu.file.open_world;Ouvrir un monde
+menu.file.open_dimension;Ouvrir une autre dimension
+menu.file.open_recent_world;Ouvrir un monde précédent
+menu.file.open_recent_world.clear;Nettoyer
 menu.file.settings;Options
 menu.file.render_settings;Paramètres de rendu
 menu.file.quit;Quitter

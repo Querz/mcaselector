@@ -1,11 +1,13 @@
 package net.querz.mcaselector.tile;
 
 import javafx.scene.image.Image;
+import net.querz.mcaselector.math.Bits;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.io.ImageHelper;
-import java.io.*;
+
+import java.io.File;
 
 public class Tile {
 
@@ -38,11 +40,7 @@ public class Tile {
 	}
 
 	public static int getZoomLevel(float scale) {
-		int b = 1;
-		while (b <= scale) {
-			b = b << 1;
-		}
-		return (int) Math.ceil(b / 2.0);
+		return Bits.getMsb((int) scale);
 	}
 
 	public boolean isVisible(TileMap tileMap) {

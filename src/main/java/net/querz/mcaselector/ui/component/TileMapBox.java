@@ -14,7 +14,8 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.ConfigProvider;
+import net.querz.mcaselector.config.WorldConfig;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.tile.Tile;
@@ -121,9 +122,9 @@ public class TileMapBox extends HBox {
 		bind();
 
 		try {
-			setBackground(TileMapBoxBackground.valueOf(Config.getTileMapBackground()).getBackground());
+			setBackground(TileMapBoxBackground.valueOf(ConfigProvider.WORLD == null ? WorldConfig.DEFAULT_TILEMAP_BACKGROUND : ConfigProvider.WORLD.getTileMapBackground()).getBackground());
 		} catch (IllegalArgumentException ex) {
-			setBackground(TileMapBoxBackground.valueOf(Config.DEFAULT_TILEMAP_BACKGROUND).getBackground());
+			setBackground(TileMapBoxBackground.valueOf(WorldConfig.DEFAULT_TILEMAP_BACKGROUND).getBackground());
 		}
 	}
 

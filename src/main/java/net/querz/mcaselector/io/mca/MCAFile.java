@@ -79,10 +79,12 @@ public abstract class MCAFile<T extends Chunk> {
 			result = save(raf);
 		}
 		if (!result) {
-			if (dest.delete()) {
-				LOGGER.debug("deleted empty region file {}", dest);
-			} else {
-				LOGGER.warn("failed to delete empty region file {}", dest);
+			if (dest.exists()) {
+				if (dest.delete()) {
+					LOGGER.debug("deleted empty region file {}", dest);
+				} else {
+					LOGGER.warn("failed to delete empty region file {}", dest);
+				}
 			}
 
 			if (!tempFile.delete()) {
@@ -450,7 +452,7 @@ public abstract class MCAFile<T extends Chunk> {
 					}
 
 					if (ranges != null) {
-						int sourceVersion = sourceChunk.getData().getInt("DataVersion");
+						int sourceVersion = sourceChunk.getData().getIntOrDefault("DataVersion", 0);
 						if (sourceVersion == 0) {
 							continue;
 						}
@@ -459,7 +461,7 @@ public abstract class MCAFile<T extends Chunk> {
 						if (destinationChunk == null || destinationChunk.isEmpty()) {
 							destinationChunk = chunkCreator.apply(destChunk, sourceVersion);
 							destination.chunks[destIndex] = destinationChunk;
-						} else if (sourceVersion != (destinationVersion = destinationChunk.getData().getInt("DataVersion"))) {
+						} else if (sourceVersion != (destinationVersion = destinationChunk.getData().getIntOrDefault("DataVersion", 0))) {
 							Point2i srcChunk = location.regionToChunk().add(x, z);
 							LOGGER.warn("failed to merge chunk at {} into chunk at {} because their DataVersion does not match ({} != {})",
 									srcChunk, destChunk, sourceVersion, destinationVersion);

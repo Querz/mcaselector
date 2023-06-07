@@ -1,5 +1,6 @@
 package net.querz.mcaselector.overlay.overlays;
 
+import com.google.gson.stream.JsonWriter;
 import net.querz.mcaselector.exception.ParseException;
 import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.ChunkData;
@@ -11,10 +12,10 @@ import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.NumberTag;
 import net.querz.nbt.Tag;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,7 +68,7 @@ public class CustomOverlay extends AmountParser {
 			return number.asInt();
 		} else if (current instanceof CompoundTag compound && size) {
 			return compound.size();
-		} else if (current instanceof CollectionTag collection && size) {
+		} else if (current instanceof CollectionTag<?> collection && size) {
 			return collection.size();
 		}
 		return 0;
@@ -79,7 +80,7 @@ public class CustomOverlay extends AmountParser {
 	}
 
 	@Override
-	public boolean setMultiValues(String raw) {
+	public boolean setMultiValuesString(String raw) {
 		path.clear();
 		size = false;
 		root = "";
@@ -148,26 +149,24 @@ public class CustomOverlay extends AmountParser {
 	}
 
 	@Override
-	public JSONObject toJSON() {
-		JSONObject object = super.toJSON();
-		JSONArray path = new JSONArray();
+	public void writeCustomJSON(JsonWriter out) throws IOException {
+		out.name("path");
+		out.beginArray();
 		for (Node node : this.path) {
-			path.put(node.toString());
+			out.value(node.toString());
 		}
-		object.put("path", path);
-		object.put("root", root == null ? JSONObject.NULL : root);
-		object.put("size", size);
-		return object;
+		out.endArray();
+		out.name("root").value(root);
+		out.name("size").value(size);
 	}
 
 	@Override
-	public void parseCustomJSON(JSONObject object) {
-		if (object.has("path") && object.get("path") instanceof JSONArray) {
-			JSONArray path = object.getJSONArray("path");
+	public void readCustomJSON(Map<String, Object> object) throws IOException {
+		if (object.containsKey("path") && object.get("path") instanceof ArrayList) {
+			ArrayList<Object> path = (ArrayList<Object>) object.get("path");
 			if (path != null) {
 				this.path = new ArrayList<>();
-				for (int i = 0; i < path.length(); i++) {
-					Object o = path.get(i);
+				for (Object o : path) {
 					if (!(o instanceof String)) {
 						throw new IllegalArgumentException("path only allows nodes");
 					}
@@ -175,8 +174,8 @@ public class CustomOverlay extends AmountParser {
 				}
 			}
 		}
-		root = object.get("root") == JSONObject.NULL ? "" : object.getString("root");
-		size = object.get("size") != JSONObject.NULL && object.getBoolean("size");
+		root = object.get("root") == null ? "" : (String) object.get("root");
+		size = object.get("size") != null && (Boolean) object.get("size");
 	}
 
 	private abstract static class Node {}

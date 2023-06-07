@@ -41,7 +41,7 @@ public final class Helper {
 	@SuppressWarnings("unchecked")
 	public static <T extends Tag> T getSectionsFromCompound(Tag compound, String name) {
 		Tag section = tagFromCompound(compound, name, null);
-		if (section == null || section.getID() == Tag.LONG_ARRAY) {
+		if (section == null || section.getType() == Tag.Type.LONG_ARRAY) {
 			return null;
 		}
 		return (T) section;
@@ -246,7 +246,7 @@ public final class Helper {
 	public static int findHighestSection(ListTag sections, int lowest) {
 		int max = lowest;
 		int current;
-		for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+		for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 			if ((current = section.getInt("Y")) > max) {
 				max = current;
 			}

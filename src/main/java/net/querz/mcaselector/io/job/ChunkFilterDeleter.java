@@ -1,6 +1,6 @@
 package net.querz.mcaselector.io.job;
 
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.filter.filters.GroupFilter;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
@@ -12,7 +12,6 @@ import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.util.function.Consumer;
 
 public final class ChunkFilterDeleter {
@@ -22,7 +21,7 @@ public final class ChunkFilterDeleter {
 	private ChunkFilterDeleter() {}
 
 	public static void deleteFilter(GroupFilter filter, Selection selection, Progress progressChannel, boolean headless) {
-		WorldDirectories wd = Config.getWorldDirs();
+		WorldDirectories wd = ConfigProvider.WORLD.getWorldDirs();
 		RegionDirectories[] rd = wd.listRegions(selection);
 		if (rd == null || rd.length == 0) {
 			if (headless) {

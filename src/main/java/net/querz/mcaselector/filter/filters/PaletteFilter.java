@@ -52,7 +52,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 		if (data.region() == null || data.region().getData() == null) {
 			return false;
 		}
-		return VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"))
+		return VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0))
 				.matchBlockNames(data.region().getData(), value);
 	}
 
@@ -66,7 +66,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 		if (data.region() == null || data.region().getData() == null) {
 			return false;
 		}
-		return VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"))
+		return VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0))
 				.matchAnyBlockName(data.region().getData(), value);
 	}
 
@@ -74,7 +74,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 		if (data.region() == null || data.region().getData() == null) {
 			return false;
 		}
-		return VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"))
+		return VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0))
 			.paletteEquals(data.region().getData(), value);
 	}
 

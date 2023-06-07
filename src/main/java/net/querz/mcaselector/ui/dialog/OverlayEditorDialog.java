@@ -14,7 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
@@ -66,7 +66,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, e -> {
 			tileMap.setOverlays(overlays);
-			Config.setOverlays(overlays);
+			ConfigProvider.OVERLAY.setOverlays(overlays);
 			tileMap.getWindow().getOptionBar().setEditOverlaysEnabled(true);
 			tileMap.getWindow().untrackDialog(this);
 			closedWithOK.set(true);

@@ -69,7 +69,7 @@ public class Anvil115ChunkRelocator implements ChunkRelocator {
 		ListTag sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
 		if (sections != null) {
 			ListTag newSections = new ListTag();
-			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				if (applyOffsetToSection(section, offset.blockToSection(), 0, 15)) {
 					newSections.add(section);
 				}
@@ -234,7 +234,7 @@ public class Anvil115ChunkRelocator implements ChunkRelocator {
 
 				ListTag processed = Helper.tagFromCompound(structure, "Processed");
 				if (processed != null) {
-					for (CompoundTag chunk : processed.iterateType(CompoundTag.TYPE)) {
+					for (CompoundTag chunk : processed.iterateType(CompoundTag.class)) {
 						Helper.applyIntIfPresent(chunk, "X", chunkOffset.getX());
 						Helper.applyIntIfPresent(chunk, "Z", chunkOffset.getZ());
 					}
@@ -242,7 +242,7 @@ public class Anvil115ChunkRelocator implements ChunkRelocator {
 
 				ListTag children = Helper.tagFromCompound(structure, "Children");
 				if (children != null) {
-					for (CompoundTag child : children.iterateType(CompoundTag.TYPE)) {
+					for (CompoundTag child : children.iterateType(CompoundTag.class)) {
 						Helper.applyIntOffsetIfRootPresent(child, "TPX", "TPY", "TPZ", offset);
 						Helper.applyIntOffsetIfRootPresent(child, "PosX", "PosY", "PosZ", offset);
 						Helper.applyOffsetToBB(Helper.intArrayFromCompound(child, "BB"), offset);
@@ -254,7 +254,7 @@ public class Anvil115ChunkRelocator implements ChunkRelocator {
 
 						ListTag junctions = Helper.tagFromCompound(child, "junctions");
 						if (junctions != null) {
-							for (CompoundTag junction : junctions.iterateType(CompoundTag.TYPE)) {
+							for (CompoundTag junction : junctions.iterateType(CompoundTag.class)) {
 								Helper.applyIntOffsetIfRootPresent(junction, "source_x", "source_y", "source_z", offset);
 							}
 						}
@@ -283,7 +283,7 @@ public class Anvil115ChunkRelocator implements ChunkRelocator {
 			Helper.applyIntOffsetIfRootPresent(flowerPos, "X", "Y", "Z", offset);
 			ListTag bees = Helper.tagFromCompound(tileEntity, "Bees");
 			if (bees != null) {
-				for (CompoundTag bee : bees.iterateType(CompoundTag.TYPE)) {
+				for (CompoundTag bee : bees.iterateType(CompoundTag.class)) {
 					applyOffsetToEntity(Helper.tagFromCompound(bee, "EntityData"), offset);
 				}
 			}
@@ -298,7 +298,7 @@ public class Anvil115ChunkRelocator implements ChunkRelocator {
 		case "minecraft:mob_spawner":
 			ListTag spawnPotentials = Helper.tagFromCompound(tileEntity, "SpawnPotentials");
 			if (spawnPotentials != null) {
-				for (CompoundTag spawnPotential : spawnPotentials.iterateType(CompoundTag.TYPE)) {
+				for (CompoundTag spawnPotential : spawnPotentials.iterateType(CompoundTag.class)) {
 					CompoundTag entity = Helper.tagFromCompound(spawnPotential, "Entity");
 					applyOffsetToEntity(entity, offset);
 				}

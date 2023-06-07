@@ -226,6 +226,11 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 		addChunk(chunk.chunkToRegion().asLong(), chunk.asChunkIndex());
 	}
 
+	public void setSelection(Selection other) {
+		this.selection = other.selection;
+		this.inverted = other.inverted;
+	}
+
 	protected void addChunk(long region, short chunk) {
 		if (inverted) {
 			if (selection.containsKey(region)) {

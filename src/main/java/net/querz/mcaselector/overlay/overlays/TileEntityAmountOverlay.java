@@ -18,7 +18,7 @@ public class TileEntityAmountOverlay extends AmountParser {
 		if (chunkData.region() == null) {
 			return 0;
 		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.region().getData().getIntOrDefault("DataVersion", 0));
 		ListTag tileEntities = chunkFilter.getTileEntities(chunkData.region().getData());
 		return tileEntities == null ? 0 : tileEntities.size();
 	}

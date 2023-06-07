@@ -23,12 +23,12 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		int c = 0;
 		nameLoop:
 		for (String name : names) {
-			for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
 				ListTag palette = Helper.tagFromCompound(t, "Palette", null);
 				if (palette == null) {
 					continue;
 				}
-				for (CompoundTag p : palette.iterateType(CompoundTag.TYPE)) {
+				for (CompoundTag p : palette.iterateType(CompoundTag.class)) {
 					if (name.equals(Helper.stringFromCompound(p, "Name"))) {
 						c++;
 						continue nameLoop;
@@ -47,12 +47,12 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		}
 
 		for (String name : names) {
-			for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
 				ListTag palette = Helper.tagFromCompound(t, "Palette", null);
 				if (palette == null) {
 					continue;
 				}
-				for (CompoundTag p : palette.iterateType(CompoundTag.TYPE)) {
+				for (CompoundTag p : palette.iterateType(CompoundTag.class)) {
 					if (name.equals(Helper.stringFromCompound(p, "Name"))) {
 						return true;
 					}
@@ -70,12 +70,12 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		}
 
 		Set<String> blocks = new HashSet<>();
-		for (CompoundTag t : sections.iterateType(CompoundTag.TYPE)) {
+		for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
 			ListTag palette = Helper.tagFromCompound(t, "Palette", null);
 			if (palette == null) {
 				continue;
 			}
-			for (CompoundTag p : palette.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag p : palette.iterateType(CompoundTag.class)) {
 				String n;
 				if ((n = Helper.stringFromCompound(p, "Name")) != null) {
 					if (!names.contains(n)) {
@@ -169,7 +169,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		if (replace.containsKey("minecraft:air")) {
 			Map<Integer, CompoundTag> sectionMap = new HashMap<>();
 			List<Integer> heights = new ArrayList<>(18);
-			for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				sectionMap.put(section.getInt("Y"), section);
 				heights.add(section.getInt("Y"));
 			}
@@ -199,7 +199,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 			tileEntities = new ListTag();
 		}
 
-		for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+		for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 			ListTag palette = Helper.tagFromCompound(section, "Palette", null);
 			if (palette == null) {
 				continue;
@@ -421,7 +421,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
-				for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 					ListTag palette = Helper.tagFromCompound(section, "Palette", null);
 					if (palette == null) {
 						continue;
@@ -472,7 +472,7 @@ public class Anvil113ChunkFilter implements ChunkFilter {
 
 		int result = 0;
 
-		for (CompoundTag section : sections.iterateType(CompoundTag.TYPE)) {
+		for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 			ListTag palette = Helper.tagFromCompound(section, "Palette", null);
 			if (palette == null) {
 				continue;

@@ -1,6 +1,6 @@
 package net.querz.mcaselector.io.job;
 
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.filter.filters.GroupFilter;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
@@ -23,7 +23,7 @@ public final class ChunkFilterExporter {
 	private ChunkFilterExporter() {}
 
 	public static void exportFilter(GroupFilter filter, Selection selection, WorldDirectories destination, Progress progressChannel, boolean headless) {
-		WorldDirectories wd = Config.getWorldDirs();
+		WorldDirectories wd = ConfigProvider.WORLD.getWorldDirs();
 		RegionDirectories[] rd = wd.listRegions(selection);
 		if (rd == null || rd.length == 0) {
 			if (headless) {

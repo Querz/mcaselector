@@ -102,7 +102,7 @@ public abstract class FilterBox extends BorderPane {
 
 		operator.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_OPERATOR_TOOLTIP));
 		operator.getItems().addAll(Operator.values());
-		operator.setOnAction(e -> onOperator(filter));
+		operator.setOnAction(e -> onOperator(this.filter));
 		operator.getStyleClass().add("filter-operator-combo-box");
 		filterOperators.add(operator, 0, 0, 1, 1);
 
@@ -110,8 +110,8 @@ public abstract class FilterBox extends BorderPane {
 
 		setLeft(filterOperators);
 
-		add.setOnMouseReleased(e -> onAdd(filter));
-		delete.setOnMouseReleased(e -> onDelete(filter));
+		add.setOnMouseReleased(e -> onAdd(this.filter));
+		delete.setOnMouseReleased(e -> onDelete(this.filter));
 
 		setFilter(filter);
 	}
@@ -363,6 +363,7 @@ public abstract class FilterBox extends BorderPane {
 				case GROUP -> newBox = new GroupFilterBox(this.parent, (GroupFilter) f, false);
 				case TEXT -> newBox = new TextFilterBox(this.parent, (TextFilter<?>) f, false);
 				case NUMBER -> newBox = new NumberFilterBox(this.parent, (NumberFilter<?>) f, false);
+				case FILE -> newBox = new FileFilterBox(this.parent, (TextFilter<?>) f, false);
 				default -> throw new RuntimeException("unknown FilterType format: " + type.getFormat());
 			}
 

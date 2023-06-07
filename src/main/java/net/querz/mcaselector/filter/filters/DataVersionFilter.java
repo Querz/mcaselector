@@ -5,6 +5,7 @@ import net.querz.mcaselector.filter.FilterType;
 import net.querz.mcaselector.filter.IntFilter;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.nbt.IntTag;
 
 public class DataVersionFilter extends IntFilter {
 
@@ -21,7 +22,8 @@ public class DataVersionFilter extends IntFilter {
 		if (data.region() == null || data.region().getData() == null) {
 			return 0;
 		}
-		return data.region().getData().getInt("DataVersion");
+		IntTag tag = data.region().getData().getIntTag("DataVersion");
+		return tag == null ? null : tag.asInt();
 	}
 
 	@Override

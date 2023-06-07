@@ -6,7 +6,7 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import net.querz.mcaselector.Config;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
@@ -44,21 +44,21 @@ public final class TileImage {
 
 		if (tile != null) {
 			if (tile.image != null) {
-				ctx.setImageSmoothing(Config.smoothRendering());
+				ctx.setImageSmoothing(ConfigProvider.WORLD.getSmoothRendering());
 				ctx.drawImage(tile.image, offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 				ctx.setImageSmoothing(false);
 			}
 
 			if (overlay && tile.overlay != null) {
 				ctx.setGlobalAlpha(0.5);
-				ctx.setImageSmoothing(Config.smoothOverlays());
+				ctx.setImageSmoothing(ConfigProvider.WORLD.getSmoothOverlays());
 				ctx.drawImage(tile.getOverlay(), offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 				ctx.setGlobalAlpha(1);
 				ctx.setImageSmoothing(false);
 			}
 
 			if (selection.isRegionSelected(tile.getLongLocation())) {
-				ctx.setFill(Config.getRegionSelectionColor().makeJavaFXColor());
+				ctx.setFill(ConfigProvider.GLOBAL.getRegionSelectionColor().makeJavaFXColor());
 				ctx.fillRect(offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 			} else if (selection.isAnyChunkInRegionSelected(tile.getLongLocation())) {
 				if (tile.markedChunksImage == null) {
@@ -68,7 +68,7 @@ public final class TileImage {
 			}
 
 		} else if (selection.isInverted()) {
-			ctx.setFill(Config.getRegionSelectionColor().makeJavaFXColor());
+			ctx.setFill(ConfigProvider.GLOBAL.getRegionSelectionColor().makeJavaFXColor());
 			ctx.fillRect(offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
 		}
 	}
@@ -81,7 +81,7 @@ public final class TileImage {
 		WritableImage wImage = new WritableImage(32, 32);
 		PixelWriter writer = wImage.getPixelWriter();
 
-		javafx.scene.paint.Color chunkSelectionColor = Config.getChunkSelectionColor().makeJavaFXColor();
+		javafx.scene.paint.Color chunkSelectionColor = ConfigProvider.GLOBAL.getChunkSelectionColor().makeJavaFXColor();
 
 		selection.forEach(s -> {
 			Point2i regionChunk = new Point2i(s);
@@ -102,9 +102,9 @@ public final class TileImage {
 			WritableImage finalImage = new WritableImage(size, size);
 			PixelWriter writer = finalImage.getPixelWriter();
 			int[] pixelBuffer = new int[pixels];
-			int[] waterPixels = Config.shade() && Config.shadeWater() && !Config.renderCaves() ? new int[pixels] : null;
+			int[] waterPixels = ConfigProvider.WORLD.getShade() && ConfigProvider.WORLD.getShadeWater() && !ConfigProvider.WORLD.getRenderCaves() ? new int[pixels] : null;
 			short[] terrainHeights = new short[pixels];
-			short[] waterHeights = Config.shade() && Config.shadeWater() && !Config.renderCaves() ? new short[pixels] : null;
+			short[] waterHeights = ConfigProvider.WORLD.getShade() && ConfigProvider.WORLD.getShadeWater() && !ConfigProvider.WORLD.getRenderCaves() ? new short[pixels] : null;
 
 			for (int cx = 0; cx < Tile.SIZE_IN_CHUNKS; cx++) {
 				for (int cz = 0; cz < Tile.SIZE_IN_CHUNKS; cz++) {
@@ -120,9 +120,9 @@ public final class TileImage {
 				}
 			}
 
-			if (Config.renderCaves()) {
+			if (ConfigProvider.WORLD.getRenderCaves()) {
 				flatShade(pixelBuffer, terrainHeights, scale);
-			} else if (Config.shade() && !Config.renderLayerOnly()) {
+			} else if (ConfigProvider.WORLD.getShade() && !ConfigProvider.WORLD.getRenderLayerOnly()) {
 				shade(pixelBuffer, waterPixels, terrainHeights, waterHeights, scale);
 			}
 
@@ -140,24 +140,24 @@ public final class TileImage {
 		if (chunkData.getData() == null) {
 			return;
 		}
-		int dataVersion = chunkData.getData().getInt("DataVersion");
+		int dataVersion = chunkData.getData().getIntOrDefault("DataVersion", 0);
 		try {
-			if (Config.renderCaves()) {
+			if (ConfigProvider.WORLD.getRenderCaves()) {
 				VersionController.getChunkRenderer(dataVersion).drawCaves(
 						chunkData.getData(),
 						VersionController.getColorMapping(dataVersion),
 						x, z, scale,
 						pixelBuffer,
 						terrainHeights,
-						Config.getRenderHeight()
+						ConfigProvider.WORLD.getRenderHeight()
 				);
-			} else if (Config.renderLayerOnly()) {
+			} else if (ConfigProvider.WORLD.getRenderLayerOnly()) {
 				VersionController.getChunkRenderer(dataVersion).drawLayer(
 						chunkData.getData(),
 						VersionController.getColorMapping(dataVersion),
 						x, z, scale,
 						pixelBuffer,
-						Config.getRenderHeight()
+						ConfigProvider.WORLD.getRenderHeight()
 				);
 			} else {
 				VersionController.getChunkRenderer(dataVersion).drawChunk(
@@ -168,8 +168,8 @@ public final class TileImage {
 						waterPixels,
 						terrainHeights,
 						waterHeights,
-						Config.shade() && Config.shadeWater(),
-						Config.getRenderHeight()
+						ConfigProvider.WORLD.getShade() && ConfigProvider.WORLD.getShadeWater(),
+						ConfigProvider.WORLD.getRenderHeight()
 				);
 			}
 		} catch (Exception ex) {
@@ -200,7 +200,7 @@ public final class TileImage {
 	}
 
 	private static void shade(int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, int scale) {
-		if (!Config.shadeWater() || !Config.shade()) {
+		if (!ConfigProvider.WORLD.getShadeWater() || !ConfigProvider.WORLD.getShade()) {
 			waterHeights = terrainHeights;
 		}
 
