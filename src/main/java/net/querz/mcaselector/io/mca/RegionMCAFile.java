@@ -65,7 +65,7 @@ public class RegionMCAFile extends MCAFile<RegionChunk> implements Cloneable {
 						continue;
 					}
 
-					HeightmapCalculator heightmapCalculator = VersionController.getHeightmapCalculator(destinationChunk.getData().getInt("DataVersion"));
+					HeightmapCalculator heightmapCalculator = VersionController.getHeightmapCalculator(destinationChunk.getData().getIntOrDefault("DataVersion", 0));
 					heightmapCalculator.worldSurface(destinationChunk.getData());
 					heightmapCalculator.oceanFloor(destinationChunk.getData());
 					heightmapCalculator.motionBlocking(destinationChunk.getData());
@@ -87,7 +87,7 @@ public class RegionMCAFile extends MCAFile<RegionChunk> implements Cloneable {
 			}
 
 			try {
-				ChunkRenderer chunkRenderer = VersionController.getChunkRenderer(chunk.data.getInt("DataVersion"));
+				ChunkRenderer chunkRenderer = VersionController.getChunkRenderer(chunk.data.getIntOrDefault("DataVersion", 0));
 				CompoundTag minData = chunkRenderer.minimizeChunk(chunk.data);
 
 				RegionChunk minChunk = new RegionChunk(chunk.absoluteLocation.clone());

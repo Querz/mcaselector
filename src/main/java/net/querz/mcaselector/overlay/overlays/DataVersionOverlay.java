@@ -15,7 +15,7 @@ public class DataVersionOverlay extends Overlay {
 		if (chunkData.region() == null || chunkData.region().getData() == null) {
 			return 0;
 		}
-		return chunkData.region().getData().getInt("DataVersion");
+		return chunkData.region().getData().getIntOrDefault("DataVersion", 0);
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class DataVersionOverlay extends Overlay {
 		try {
 			return setMinInt(Integer.parseInt(raw));
 		} catch (NumberFormatException ex) {
-			return setMinInt((Integer) null);
+			return setMinInt(null);
 		}
 	}
 
@@ -39,7 +39,7 @@ public class DataVersionOverlay extends Overlay {
 		try {
 			return setMaxInt(Integer.parseInt(raw));
 		} catch (NumberFormatException ex) {
-			return setMaxInt((Integer) null);
+			return setMaxInt(null);
 		}
 	}
 }

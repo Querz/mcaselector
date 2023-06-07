@@ -28,7 +28,7 @@ public class FixHeightmapsField extends Field<Boolean> {
 
 	@Override
 	public void change(ChunkData data) {
-		HeightmapCalculator heightmapCalculator = VersionController.getHeightmapCalculator(data.region().getData().getInt("DataVersion"));
+		HeightmapCalculator heightmapCalculator = VersionController.getHeightmapCalculator(data.region().getData().getIntOrDefault("DataVersion", 0));
 		heightmapCalculator.worldSurface(data.region().getData());
 		heightmapCalculator.oceanFloor(data.region().getData());
 		heightmapCalculator.motionBlocking(data.region().getData());

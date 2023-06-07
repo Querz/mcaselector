@@ -14,7 +14,7 @@ public class Anvil118HeightmapCalculator extends Anvil117HeightmapCalculator {
 		if (heightmap == null) {
 			return;
 		}
-		int dataVersion = root.getInt("DataVersion");
+		int dataVersion = root.getIntOrDefault("DataVersion", 0);
 		CompoundTag heightmaps = LegacyHelper.getHeightmaps(root, dataVersion);
 		if (heightmaps == null) {
 			heightmaps = new CompoundTag();

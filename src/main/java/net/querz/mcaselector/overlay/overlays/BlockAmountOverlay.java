@@ -22,7 +22,7 @@ public class BlockAmountOverlay extends Overlay {
 		if (chunkData.region() == null || chunkData.region().getData() == null) {
 			return 0;
 		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.region().getData().getIntOrDefault("DataVersion", 0));
 		return chunkFilter.getBlockAmount(chunkData.region().getData(), multiValues());
 	}
 
@@ -37,11 +37,11 @@ public class BlockAmountOverlay extends Overlay {
 		try {
 			int value = Integer.parseInt(raw);
 			if (value < MIN_VALUE || value > MAX_VALUE) {
-				return setMinInt((Integer) null);
+				return setMinInt(null);
 			}
 			return setMinInt(value);
 		} catch (NumberFormatException ex) {
-			return setMinInt((Integer) null);
+			return setMinInt(null);
 		}
 	}
 
@@ -51,11 +51,11 @@ public class BlockAmountOverlay extends Overlay {
 		try {
 			int value = Integer.parseInt(raw);
 			if (value < MIN_VALUE || value > MAX_VALUE) {
-				return setMaxInt((Integer) null);
+				return setMaxInt(null);
 			}
 			return setMaxInt(value);
 		} catch (NumberFormatException ex) {
-			return setMaxInt((Integer) null);
+			return setMaxInt(null);
 		}
 	}
 

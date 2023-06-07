@@ -98,10 +98,7 @@ public abstract class Chunk {
 		// save mcc file if chunk doesn't fit in mca file
 		if (baos.size() > 1048576) {
 			// if the chunk's version is below 2203, we throw an exception instead
-			Integer dataVersion = ValidationHelper.withDefault(() -> data.getInt("DataVersion"), null);
-			if (dataVersion == null) {
-				throw new RuntimeException("no DataVersion for oversized chunk");
-			}
+			int dataVersion = data.getInt("DataVersion");
 			if (dataVersion < 2203) {
 				throw new RuntimeException("chunk at " + absoluteLocation + " is oversized and can't be saved when DataVersion is below 2203");
 			}

@@ -181,7 +181,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 
 	@Override
 	public void change(ChunkData data) {
-		int dataVersion = data.region().getData().getInt("DataVersion");
+		int dataVersion = data.region().getData().getIntOrDefault("DataVersion", 0);
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(dataVersion);
 		chunkFilter.replaceBlocks(data.region().getData(), getNewValue());
 

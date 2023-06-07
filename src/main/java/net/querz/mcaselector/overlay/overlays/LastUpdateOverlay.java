@@ -21,7 +21,7 @@ public class LastUpdateOverlay extends Overlay {
 
 	@Override
 	public int parseValue(ChunkData chunkData) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.region().getData().getIntOrDefault("DataVersion", 0));
 		LongTag tag = chunkFilter.getLastUpdate(chunkData.region().getData());
 		return tag == null ? 0 : tag.asInt();
 	}
@@ -44,7 +44,7 @@ public class LastUpdateOverlay extends Overlay {
 		setRawMin(raw);
 		minDuration = null;
 		if (raw == null || raw.isEmpty()) {
-			return setMinInt((Integer) null);
+			return setMinInt(null);
 		}
 		try {
 			return setMinInt(Integer.parseInt(raw));
@@ -52,7 +52,7 @@ public class LastUpdateOverlay extends Overlay {
 			try {
 				long duration = TextHelper.parseDuration(raw);
 				if (duration > MAX_VALUE || duration < MIN_VALUE) {
-					return setMinInt((Integer) null);
+					return setMinInt(null);
 				}
 				boolean res = setMinInt((int) (duration * 20));
 				if (res) {
@@ -60,7 +60,7 @@ public class LastUpdateOverlay extends Overlay {
 				}
 				return res;
 			} catch (IllegalArgumentException ex2) {
-				return setMinInt((Integer) null);
+				return setMinInt(null);
 			}
 		}
 	}
@@ -70,7 +70,7 @@ public class LastUpdateOverlay extends Overlay {
 		setRawMax(raw);
 		maxDuration = null;
 		if (raw == null || raw.isEmpty()) {
-			return setMaxInt((Integer) null);
+			return setMaxInt(null);
 		}
 		try {
 			return setMaxInt(Integer.parseInt(raw));
@@ -78,7 +78,7 @@ public class LastUpdateOverlay extends Overlay {
 			try {
 				long duration = TextHelper.parseDuration(raw);
 				if (duration > MAX_VALUE || duration < MIN_VALUE) {
-					return setMaxInt((Integer) null);
+					return setMaxInt(null);
 				}
 				boolean res = setMaxInt((int) (duration * 20));
 				if (res) {
@@ -86,7 +86,7 @@ public class LastUpdateOverlay extends Overlay {
 				}
 				return res;
 			} catch (IllegalArgumentException ex2) {
-				return setMaxInt((Integer) null);
+				return setMaxInt(null);
 			}
 		}
 	}

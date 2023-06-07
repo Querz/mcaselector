@@ -63,7 +63,7 @@ public class SelectionFilter extends TextFilter<File> implements RegionMatcher {
 			}
 		}
 
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
 		IntTag xPos = chunkFilter.getXPos(data.region().getData());
 		IntTag zPos = chunkFilter.getZPos(data.region().getData());
 		if (xPos == null || zPos == null) {

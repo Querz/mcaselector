@@ -25,7 +25,7 @@ public class InhabitedTimeFilter extends LongFilter {
 		if (data.region() == null || data.region().getData() == null) {
 			return 0L;
 		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getInt("DataVersion"));
+		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
 		LongTag tag = chunkFilter.getInhabitedTime(data.region().getData());
 		return tag == null ? 0L : tag.asLong();
 	}

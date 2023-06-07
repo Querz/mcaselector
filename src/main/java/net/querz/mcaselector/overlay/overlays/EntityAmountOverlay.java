@@ -18,7 +18,7 @@ public class EntityAmountOverlay extends AmountParser {
 		if (chunkData.region() == null || chunkData.region().getData() == null) {
 			return 0;
 		}
-		EntityFilter entityFilter = VersionController.getEntityFilter(chunkData.region().getData().getInt("DataVersion"));
+		EntityFilter entityFilter = VersionController.getEntityFilter(chunkData.region().getData().getIntOrDefault("DataVersion", 0));
 		ListTag entities = entityFilter.getEntities(chunkData);
 		return entities == null ? 0 : entities.size();
 	}

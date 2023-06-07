@@ -23,9 +23,9 @@ public class EntityAmountFilter extends IntFilter {
 	protected Integer getNumber(ChunkData data) {
 		int dataVersion;
 		if (data.region() != null && data.region().getData() != null) {
-			dataVersion = data.region().getData().getInt("DataVersion");
+			dataVersion = data.region().getData().getIntOrDefault("DataVersion", 0);
 		} else if (data.entities() != null && data.entities().getData() != null) {
-			dataVersion = data.entities().getData().getInt("DataVersion");
+			dataVersion = data.entities().getData().getIntOrDefault("DataVersion", 0);
 		} else {
 			return 0;
 		}

@@ -43,7 +43,10 @@ public class PlayerSpawnFilter extends PlayerLocationFilter {
 
 				Object dim = null;
 				if (dimTag instanceof IntTag) {
-					dim = root.getInt("SpawnDimension");
+					IntTag tag = root.getIntTag("SpawnDimension");
+					if (tag != null) {
+						dim = tag.asInt();
+					}
 				} else if (dimTag instanceof StringTag) {
 					dim = root.getString("SpawnDimension");
 				}

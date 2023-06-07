@@ -102,7 +102,7 @@ public abstract class FilterBox extends BorderPane {
 
 		operator.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_OPERATOR_TOOLTIP));
 		operator.getItems().addAll(Operator.values());
-		operator.setOnAction(e -> onOperator(filter));
+		operator.setOnAction(e -> onOperator(this.filter));
 		operator.getStyleClass().add("filter-operator-combo-box");
 		filterOperators.add(operator, 0, 0, 1, 1);
 

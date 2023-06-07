@@ -68,7 +68,7 @@ public class CustomOverlay extends AmountParser {
 			return number.asInt();
 		} else if (current instanceof CompoundTag compound && size) {
 			return compound.size();
-		} else if (current instanceof CollectionTag collection && size) {
+		} else if (current instanceof CollectionTag<?> collection && size) {
 			return collection.size();
 		}
 		return 0;

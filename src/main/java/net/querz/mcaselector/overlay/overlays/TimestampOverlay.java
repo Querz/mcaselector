@@ -40,7 +40,7 @@ public class TimestampOverlay extends Overlay {
 		setRawMin(raw);
 		minTimestamp = null;
 		if (raw == null || raw.isEmpty()) {
-			return setMinInt((Integer) null);
+			return setMinInt(null);
 		}
 		try {
 			return setMinInt(Integer.parseInt(raw));
@@ -53,7 +53,7 @@ public class TimestampOverlay extends Overlay {
 				}
 				return res;
 			} catch (IllegalArgumentException ex2) {
-				return setMinInt((Integer) null);
+				return setMinInt(null);
 			}
 		}
 	}
@@ -63,7 +63,7 @@ public class TimestampOverlay extends Overlay {
 		setRawMax(raw);
 		maxTimestamp = null;
 		if (raw == null || raw.isEmpty()) {
-			return setMaxInt((Integer) null);
+			return setMaxInt(null);
 		}
 		try {
 			return setMaxInt(Integer.parseInt(raw));
@@ -76,7 +76,7 @@ public class TimestampOverlay extends Overlay {
 				}
 				return res;
 			} catch (IllegalArgumentException ex2) {
-				return setMaxInt((Integer) null);
+				return setMaxInt(null);
 			}
 		}
 	}
