@@ -387,7 +387,7 @@ public class DialogHelper {
 			LongArrayList chunks = new LongArrayList(2);
 			for (Long2ObjectMap.Entry<ChunkSet> entry : markedChunks) {
 				for (int markedChunk : entry.getValue()) {
-					chunks.add(new Point2i(entry.getLongKey()).add(new Point2i(markedChunk)).asLong());
+					chunks.add(new Point2i(entry.getLongKey()).regionToChunk().add(new Point2i(markedChunk)).asLong());
 				}
 			}
 			if (chunks.size() != 2) {
