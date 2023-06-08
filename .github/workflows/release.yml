@@ -70,7 +70,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout Wiki
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
         with:
           repository: Querz/mcaselector-wiki
           path: mcaselector-wiki
