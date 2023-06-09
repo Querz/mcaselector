@@ -23,7 +23,7 @@ public abstract class Overlay implements Cloneable {
 	private float minHue = 0.66666667f; // blue
 	private float maxHue = 0f; // red
 
-	private String multiValuesID = "";
+	private transient String multiValuesID = "";
 
 	public Overlay(OverlayType type) {
 		this.type = type;
@@ -128,7 +128,11 @@ public abstract class Overlay implements Cloneable {
 
 	public void setMultiValues(String[] multiValues) {
 		this.multiValues = multiValues;
-		multiValuesID = UUID.nameUUIDFromBytes(String.join("", multiValues).getBytes()).toString().replace("-", "");
+		if (multiValues == null) {
+			multiValuesID = "";
+		} else {
+			multiValuesID = UUID.nameUUIDFromBytes(String.join("", multiValues).getBytes()).toString().replace("-", "");
+		}
 	}
 
 	public String getMultiValuesID() {

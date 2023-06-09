@@ -17,18 +17,30 @@ public final class ConfigProvider {
 	private ConfigProvider() {}
 
 	public static void loadGlobalConfig() {
-		GLOBAL = GlobalConfig.load();
-		LOGGER.debug("loaded global config: {}", GLOBAL);
+		try {
+			GLOBAL = GlobalConfig.load();
+			LOGGER.debug("loaded global config: {}", GLOBAL);
+		} catch (Exception ex) {
+			LOGGER.warn("failed to load global config", ex);
+		}
 	}
 
 	public static void loadWorldConfig(WorldDirectories worldDirectories, List<File> dimensionDirectories) {
-		WORLD = WorldConfig.load(worldDirectories, dimensionDirectories);
-		LOGGER.debug("loaded world config: {}", WORLD);
+		try {
+			WORLD = WorldConfig.load(worldDirectories, dimensionDirectories);
+			LOGGER.debug("loaded world config: {}", WORLD);
+		} catch (Exception ex) {
+			LOGGER.warn("failed to load world config", ex);
+		}
 	}
 
 	public static void loadOverlayConfig() {
-		OVERLAY = OverlayConfig.load();
-		LOGGER.debug("loaded overlay config: {}", OVERLAY);
+		try {
+			OVERLAY = OverlayConfig.load();
+			LOGGER.debug("loaded overlay config: {}", OVERLAY);
+		} catch (Exception ex) {
+			LOGGER.warn("failed to load overlay config", ex);
+		}
 	}
 
 	public static void saveAll() {

@@ -22,15 +22,13 @@ public class OverlayAdapter extends TypeAdapter<Overlay> {
 		out.name("max").value(value.max());
 		out.name("rawMin").value(value.getRawMin());
 		out.name("rawMax").value(value.getRawMax());
-		out.name("multiValues");
 		if (value.multiValues() != null) {
+			out.name("multiValues");
 			out.beginArray();
 			for (String multiValue : value.multiValues()) {
 				out.value(multiValue);
 			}
 			out.endArray();
-		} else {
-			out.nullValue();
 		}
 		out.name("rawMultiValues").value(value.getRawMultiValues());
 		out.name("minHue").value(value.getMinHue());
@@ -46,11 +44,12 @@ public class OverlayAdapter extends TypeAdapter<Overlay> {
 		OverlayType type = OverlayType.valueOf((String) map.get("type"));
 		Overlay overlay = type.instance();
 		overlay.setActive(get(map, "active", false, v -> (Boolean) v));
-		overlay.setMinInt(get(map, "min", null, v -> Integer.parseInt((String) v)));
-		overlay.setMaxInt(get(map, "max", null, v -> Integer.parseInt((String) v)));
+		overlay.setMinInt(get(map, "min", null, v -> ((Double) v).intValue()));
+		overlay.setMaxInt(get(map, "max", null, v -> ((Double) v).intValue()));
 		overlay.setRawMin(get(map, "rawMin", null, v -> (String) v));
 		overlay.setRawMax(get(map, "rawMax", null, v -> (String) v));
 		overlay.setMultiValues(get(map, "multiValues", null, v -> {
+			@SuppressWarnings("unchecked")
 			ArrayList<Object> list = (ArrayList<Object>) v;
 			String[] multiValues = new String[list.size()];
 			for (int i = 0; i < list.size(); i++) {
@@ -59,10 +58,10 @@ public class OverlayAdapter extends TypeAdapter<Overlay> {
 			return multiValues;
 		}));
 		overlay.setRawMultiValues(get(map, "rawMultiValues", null, v -> (String) v));
-		overlay.setMinHue(get(map, "minHue", 0.0f, v -> Float.parseFloat((String) v)));
-		overlay.setMaxHue(get(map, "maxHue", 0.0f, v -> Float.parseFloat((String) v)));
+		overlay.setMinHue(get(map, "minHue", 0.0f, v -> ((Double) v).floatValue()));
+		overlay.setMaxHue(get(map, "maxHue", 0.0f, v -> ((Double) v).floatValue()));
 		overlay.readCustomJSON(map);
-		return null;
+		return overlay;
 	}
 
 	private <T> T get(Map<String, Object> map, String name, T def, Function<Object, T> parser) {
