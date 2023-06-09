@@ -89,4 +89,5 @@ jobs:
           git config --global user.email 'wiki@querz.net'
           git remote set-url origin https://x-access-token:${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}@github.com/Querz/mcaselector-wiki
           git commit -am "Automated version update to 2.2.2"
+          git push
         shell: bash
