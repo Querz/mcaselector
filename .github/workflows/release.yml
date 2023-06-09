@@ -83,12 +83,10 @@ jobs:
         shell: bash
 
       - name: Push Wiki
-        uses: cpina/github-action-push-to-another-repository@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-        with:
-          source-directory: mcaselector-wiki
-          destination-github-username: Querz
-          destination-repository-name: mcaselector-wiki
-          user-email: wiki@querz.net
-          target-branch: main
+        run: |
+          cd mcaselector-wiki
+          git config --global user.name 'Querz'
+          git config --global user.email 'wiki@querz.net'
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}@github.com/Querz/mcaselector-wiki
+          git commit -am "Automated version update to 2.2.1"
+        shell: bash
