@@ -143,10 +143,7 @@ public class Point3i implements Cloneable, Serializable {
 
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof Point3i
-				&& ((Point3i) other).x == x
-				&& ((Point3i) other).y == y
-				&& ((Point3i) other).z == z;
+		return other instanceof Point3i p && p.x == x && p.y == y && p.z == z;
 	}
 
 	public Point3i blockToRegion() {

@@ -304,7 +304,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 	}
 
 	@Override
-	public void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace) {
+	public void replaceBlocks(CompoundTag data, Map<BlockReplaceData, BlockReplaceData> replace) {
 		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return;
@@ -340,7 +340,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		}
 
 		for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
-			for (Map.Entry<String, BlockReplaceData> entry : replace.entrySet()) {
+			for (Map.Entry<BlockReplaceData, BlockReplaceData> entry : replace.entrySet()) {
 				BlockData[] bd = mapping.get(entry.getKey());
 				BlockData bdr = mapping.get(entry.getValue().getName())[0];
 

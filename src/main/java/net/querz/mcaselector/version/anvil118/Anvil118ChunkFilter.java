@@ -274,7 +274,7 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 	}
 
 	@Override
-	public void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace) {
+	public void replaceBlocks(CompoundTag data, Map<BlockReplaceData, BlockReplaceData> replace) {
 		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return;
@@ -351,8 +351,8 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				for (int i = 0; i < 4096; i++) {
 					CompoundTag blockState = getBlockAt(i, blockStates, palette);
 
-					for (Map.Entry<String, BlockReplaceData> entry : replace.entrySet()) {
-						if (!blockState.getString("Name").matches(entry.getKey())) {
+					for (Map.Entry<BlockReplaceData, BlockReplaceData> entry : replace.entrySet()) {
+						if (!blockState.getString("Name").matches(entry.getKey().getName())) {
 							continue;
 						}
 						BlockReplaceData replacement = entry.getValue();
@@ -464,8 +464,8 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				for (int i = 0; i < 4096; i++) {
 					CompoundTag blockState = getBlockAt(i, blockStates, palette);
 
-					for (Map.Entry<String, BlockReplaceData> entry : replace.entrySet()) {
-						if (!blockState.getString("Name").matches(entry.getKey())) {
+					for (Map.Entry<BlockReplaceData, BlockReplaceData> entry : replace.entrySet()) {
+						if (!blockState.getString("Name").matches(entry.getKey().getName())) {
 							continue;
 						}
 						BlockReplaceData replacement = entry.getValue();

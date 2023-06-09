@@ -183,7 +183,7 @@ public class Anvil119ChunkFilter extends Anvil117ChunkFilter {
 	}
 
 	@Override
-	public void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace) {
+	public void replaceBlocks(CompoundTag data, Map<BlockReplaceData, BlockReplaceData> replace) {
 		ListTag sections = Helper.tagFromCompound(data, "sections");
 		if (sections == null) {
 			return;
@@ -198,7 +198,7 @@ public class Anvil119ChunkFilter extends Anvil117ChunkFilter {
 		int yMax = Helper.findHighestSection(sections, -4);
 
 		// handle the special case when someone wants to replace air with something else
-		if (replace.containsKey("minecraft:air")) {
+		if (replace.containsKey(BlockReplaceData.AIR)) {
 			Map<Integer, CompoundTag> sectionMap = new HashMap<>();
 			List<Integer> heights = new ArrayList<>(yMax + 5);
 			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
@@ -231,6 +231,15 @@ public class Anvil119ChunkFilter extends Anvil117ChunkFilter {
 			tileEntities = new ListTag();
 		}
 
+		// index tile entities
+		Map<Point3i, CompoundTag> tileEntityMap = new HashMap<>();
+		for (CompoundTag tileEntity : tileEntities.iterateType(CompoundTag.class)) {
+			int x = tileEntity.getIntOrDefault("x", 0);
+			int y = tileEntity.getIntOrDefault("y", 0);
+			int z = tileEntity.getIntOrDefault("z", 0);
+			tileEntityMap.put(new Point3i(x, y, z), tileEntity);
+		}
+
 		for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 			CompoundTag blockStatesTag = section.getCompound("block_states");
 			ListTag palette = Helper.tagFromCompound(blockStatesTag, "palette");
@@ -252,12 +261,16 @@ public class Anvil119ChunkFilter extends Anvil117ChunkFilter {
 			section.remove("SkyLight");
 
 			for (int i = 0; i < 4096; i++) {
-				CompoundTag blockState = getBlockAt(i, blockStates, palette);
+				Point3i location = indexToLocation(i).add(pos.getX(), y * 16, pos.getZ());
 
-				for (Map.Entry<String, BlockReplaceData> entry : replace.entrySet()) {
-					if (!blockState.getString("Name").matches(entry.getKey())) {
+				CompoundTag blockState = getBlockAt(i, blockStates, palette);
+				CompoundTag tileEntity = tileEntityMap.get(location);
+
+				for (Map.Entry<BlockReplaceData, BlockReplaceData> entry : replace.entrySet()) {
+					if (!entry.getKey().matches(blockState, tileEntity)) {
 						continue;
 					}
+
 					BlockReplaceData replacement = entry.getValue();
 
 					try {
@@ -265,8 +278,6 @@ public class Anvil119ChunkFilter extends Anvil117ChunkFilter {
 					} catch (Exception ex) {
 						throw new RuntimeException("failed to set block in section " + y, ex);
 					}
-
-					Point3i location = indexToLocation(i).add(pos.getX(), y * 16, pos.getZ());
 
 					if (replacement.getTile() != null) {
 						CompoundTag tile = replacement.getTile().copy();

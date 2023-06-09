@@ -1,12 +1,20 @@
 package net.querz.mcaselector.version;
 
+import net.querz.mcaselector.changer.fields.ReplaceBlocksField;
+import net.querz.mcaselector.exception.ParseException;
+import net.querz.mcaselector.io.StringPointer;
 import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.range.Range;
 import net.querz.nbt.NBTUtil;
 import net.querz.nbt.*;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import net.querz.nbt.io.snbt.SNBTParser;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
 
 public interface ChunkFilter {
 
@@ -29,7 +37,7 @@ public interface ChunkFilter {
 
 	void forceBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome);
 
-	void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace);
+	void replaceBlocks(CompoundTag data, Map<BlockReplaceData, BlockReplaceData> replace);
 
 	int getAverageHeight(CompoundTag data);
 
@@ -69,12 +77,72 @@ public interface ChunkFilter {
 
 	void forceBlending(CompoundTag data);
 
+
+	public static void main(String[] args) {
+		String s = "minecraft:stone;{tile:test}";
+
+//		BlockReplaceData.parse(s);
+	}
+
 	class BlockReplaceData {
+
+		private static final Logger LOGGER = LogManager.getLogger(ReplaceBlocksField.class);
+
+		private static final Set<String> validNames = new HashSet<>();
+
+		static {
+			try (BufferedReader bis = new BufferedReader(
+					new InputStreamReader(Objects.requireNonNull(ReplaceBlocksField.class.getClassLoader().getResourceAsStream("mapping/all_block_names.txt"))))) {
+				String line;
+				while ((line = bis.readLine()) != null) {
+					validNames.add("minecraft:" + line);
+				}
+			} catch (IOException ex) {
+				LOGGER.error("error reading mapping/all_block_names.txt", ex);
+			}
+		}
+
+		public static final BlockReplaceData AIR = new BlockReplaceData("minecraft:air");
 
 		private String name;
 		private CompoundTag state;
 		private CompoundTag tile;
 		private final BlockReplaceType type;
+
+		public static BlockReplaceData parse(String s) throws ParseException, net.querz.nbt.io.snbt.ParseException {
+			// minecraft:<block-name>
+			// <block-name>
+			// '<custom-block-name-with-namespace>'
+			// <snbt-string-block-state>
+			// <from>;<snbt-string-tile-entity>
+
+			StringPointer sp = new StringPointer(s);
+			sp.skipWhitespace();
+			CompoundTag state = null;
+			String name = null;
+			switch (sp.currentChar()) {
+				case '{': // start of snbt
+					String remaining = s.substring(sp.index());
+					SNBTParser parser = new SNBTParser(remaining);
+					state = (CompoundTag) parser.parse(true);
+					int read = parser.getReadChars() - 1;
+					sp.skip(read);
+				case '\'': // start of custom name
+					name = sp.parseQuotedString('\'');
+				default: // start of registered minecraft name
+
+			}
+			sp.skipWhitespace();
+
+			// parse tile
+			CompoundTag tile = null;
+			if (sp.hasNext() && sp.currentChar() == ';') {
+				sp.skip(1);
+				String remaining = s.substring(sp.index());
+				tile = (CompoundTag) NBTUtil.fromSNBT(remaining, true);
+			}
+			return null;
+		}
 
 		public BlockReplaceData(String name) {
 			type = BlockReplaceType.NAME;
@@ -132,6 +200,15 @@ public interface ChunkFilter {
 			return tile;
 		}
 
+		public boolean matches(CompoundTag state, CompoundTag tile) {
+			return switch (type) {
+				case NAME -> state.getStringOrDefault("Name", "").matches(name);
+				case NAME_TILE -> state.getStringOrDefault("Name", "").matches(name) && (this.tile == null || this.tile.partOf(tile));
+				case STATE -> this.state.partOf(state);
+				case STATE_TILE -> this.state.partOf(state) && (this.tile == null || this.tile.partOf(tile));
+			};
+		}
+
 		@Override
 		public String toString() {
 			switch (type) {
@@ -154,6 +231,20 @@ public interface ChunkFilter {
 				default:
 					return null;
 			}
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(name, state, tile, type);
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			return other instanceof BlockReplaceData o
+					&& name.equals(o.name)
+					&& state.equals(o.state)
+					&& (tile == null || tile.equals(o.tile))
+					&& type == o.type;
 		}
 	}
 

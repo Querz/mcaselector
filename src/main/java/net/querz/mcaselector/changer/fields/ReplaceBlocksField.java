@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockReplaceData>> {
+public class ReplaceBlocksField extends Field<Map<ChunkFilter.BlockReplaceData, ChunkFilter.BlockReplaceData>> {
 
 	private static final Logger LOGGER = LogManager.getLogger(ReplaceBlocksField.class);
 
@@ -49,13 +49,15 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 		// from format: minecraft:<block-name>
 		//              <block-name>
 		//              '<custom-block-name-with-namespace>'
+		//              <snbt-string-block-state>
+		//              <from>;<snbt-string-tile-entity>
 		// to format:   minecraft:<block-name>
 		//              <block-name>
 		//              '<custom-block-name-with-namespace>'
 		//              <snbt-string-block-state>
 		//              <to>;<snbt-string-tile-entity>
 
-		Map<String, ChunkFilter.BlockReplaceData> newValue = new HashMap<>();
+		Map<ChunkFilter.BlockReplaceData, ChunkFilter.BlockReplaceData> newValue = new HashMap<>();
 
 		String trimmed = s.trim();
 
@@ -153,7 +155,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 			} else {
 				return super.parseNewValue(s);
 			}
-			newValue.put(from, data);
+			newValue.put(null, data);
 
 			to = to.trim();
 
@@ -175,7 +177,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 	}
 
 	@Override
-	public Map<String, ChunkFilter.BlockReplaceData> getOldValue(ChunkData data) {
+	public Map<ChunkFilter.BlockReplaceData, ChunkFilter.BlockReplaceData> getOldValue(ChunkData data) {
 		return null;
 	}
 
@@ -205,22 +207,22 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 	@Override
 	public String valueToString() {
 		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (Map.Entry<String, ChunkFilter.BlockReplaceData> entry : getNewValue().entrySet()) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(", ");
-			}
-			String from = entry.getKey();
-			if (!from.startsWith("minecraft:")) {
-				sb.append("'").append(from).append("'");
-			} else {
-				sb.append(entry.getKey());
-			}
-			sb.append("=");
-			sb.append(escapeString(entry.getValue().toString()));
-		}
+//		boolean first = true;
+//		for (Map.Entry<ChunkFilter.BlockReplaceData, ChunkFilter.BlockReplaceData> entry : getNewValue().entrySet()) {
+//			if (first) {
+//				first = false;
+//			} else {
+//				sb.append(", ");
+//			}
+//			ChunkFilter.BlockReplaceData from = entry.getKey();
+//			if (!from.startsWith("minecraft:")) {
+//				sb.append("'").append(from).append("'");
+//			} else {
+//				sb.append(entry.getKey());
+//			}
+//			sb.append("=");
+//			sb.append(escapeString(entry.getValue().toString()));
+//		}
 		return sb.toString();
 	}
 
