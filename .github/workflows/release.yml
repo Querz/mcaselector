@@ -23,13 +23,13 @@ jobs:
         shell: cmd
 
       - name: Download WinRun4J
-        uses: suisei-cn/actions-download-file@v1
+        uses: suisei-cn/actions-download-file@v1.4.0
         with:
           url: https://github.com/poidasmith/winrun4j/files/1822558/winrun4J-0.4.5.zip
           target: .
 
       - name: Download ResourceHacker
-        uses: suisei-cn/actions-download-file@v1
+        uses: suisei-cn/actions-download-file@v1.4.0
         with:
           url: http://www.angusj.com/resourcehacker/resource_hacker.zip
           target: .
@@ -51,7 +51,7 @@ jobs:
         shell: cmd
 
       - name: Download 7za
-        uses: suisei-cn/actions-download-file@v1
+        uses: suisei-cn/actions-download-file@v1.4.0
         with:
           url: https://www.7-zip.org/a/7za920.zip
           target: .
@@ -64,7 +64,7 @@ jobs:
         shell: cmd
 
       - name: Upload assets
-        uses: AButler/upload-release-assets@v2.0
+        uses: AButler/upload-release-assets@v2.0.2
         with:
           files: build/inno/Output/MCA_Selector_Setup.exe;build/libs/mcaselector-2.2.2.jar
           repo-token: ${{ secrets.GITHUB_TOKEN }}
