@@ -1,6 +1,7 @@
 package net.querz.mcaselector.version.anvil119;
 
 import net.querz.mcaselector.io.registry.BiomeRegistry;
+import net.querz.mcaselector.io.registry.StatusRegistry;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
@@ -506,10 +507,19 @@ public class Anvil119ChunkFilter extends Anvil117ChunkFilter {
 	}
 
 	@Override
-	public void setStatus(CompoundTag data, String status) {
+	public void setStatus(CompoundTag data, StatusRegistry.StatusIdentifier status) {
 		if (data != null) {
-			data.putString("Status", status);
+			data.putString("Status", status.getStatus());
 		}
+	}
+
+	@Override
+	public boolean matchStatus(CompoundTag data, StatusRegistry.StatusIdentifier status) {
+		StringTag tag = getStatus(data);
+		if (tag == null) {
+			return false;
+		}
+		return status.getStatus().equals(tag.getValue());
 	}
 
 	@Override

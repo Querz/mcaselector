@@ -1,6 +1,7 @@
 package net.querz.mcaselector.version.anvil118;
 
 import net.querz.mcaselector.io.registry.BiomeRegistry;
+import net.querz.mcaselector.io.registry.StatusRegistry;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
@@ -757,12 +758,12 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 	}
 
 	@Override
-	public void setStatus(CompoundTag data, String status) {
+	public void setStatus(CompoundTag data, StatusRegistry.StatusIdentifier status) {
 		Integer dataVersion = Helper.intFromCompound(data, "DataVersion");
 		if (dataVersion == null) {
 			return;
 		}
-		LegacyHelper.setStatus(data, status, dataVersion);
+		LegacyHelper.setStatus(data, status.getStatus(), dataVersion);
 	}
 
 	@Override

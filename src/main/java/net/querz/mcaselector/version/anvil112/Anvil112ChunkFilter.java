@@ -1,6 +1,7 @@
 package net.querz.mcaselector.version.anvil112;
 
 import net.querz.mcaselector.io.registry.BiomeRegistry;
+import net.querz.mcaselector.io.registry.StatusRegistry;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
@@ -536,11 +537,20 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 	}
 
 	@Override
-	public void setStatus(CompoundTag data, String status) {
+	public void setStatus(CompoundTag data, StatusRegistry.StatusIdentifier status) {
 		CompoundTag level = Helper.levelFromRoot(data);
 		if (level != null) {
-			level.putString("Status", status);
+			level.putString("Status", status.getStatus());
 		}
+	}
+
+	@Override
+	public boolean matchStatus(CompoundTag data, StatusRegistry.StatusIdentifier status) {
+		StringTag tag = getStatus(data);
+		if (tag == null) {
+			return false;
+		}
+		return status.getStatus().equals(tag.getValue());
 	}
 
 	@Override

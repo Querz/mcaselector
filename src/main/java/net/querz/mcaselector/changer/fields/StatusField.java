@@ -2,53 +2,29 @@ package net.querz.mcaselector.changer.fields;
 
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
-import net.querz.mcaselector.filter.filters.BiomeFilter;
 import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.io.registry.StatusRegistry;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionController;
 import net.querz.nbt.StringTag;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
 
-public class StatusField extends Field<String> {
-
-	private static final Logger LOGGER = LogManager.getLogger(StatusField.class);
-
-	private static final Set<String> validStatus = new HashSet<>();
-
-	static {
-		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Objects.requireNonNull(BiomeFilter.class.getClassLoader().getResourceAsStream("mapping/all_status.txt"))))) {
-			String line;
-			while ((line = bis.readLine()) != null) {
-				validStatus.add(line);
-			}
-		} catch (IOException ex) {
-			LOGGER.error("error reading mapping/all_status.txt for StatusFilter", ex);
-		}
-	}
+public class StatusField extends Field<StatusRegistry.StatusIdentifier> {
 
 	public StatusField() {
 		super(FieldType.STATUS);
 	}
 
 	@Override
-	public String getOldValue(ChunkData data) {
+	public StatusRegistry.StatusIdentifier getOldValue(ChunkData data) {
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
 		StringTag status = chunkFilter.getStatus(data.region().getData());
-		return status == null ? null : status.getValue();
+		return status == null ? null : new StatusRegistry.StatusIdentifier(status.getValue(), true);
 	}
 
 	@Override
 	public boolean parseNewValue(String s) {
-		if (validStatus.contains(s)) {
-			setNewValue(s);
+		if (StatusRegistry.isValidName(s)) {
+			setNewValue(new StatusRegistry.StatusIdentifier(s));
 			return true;
 		}
 		return super.parseNewValue(s);
@@ -67,5 +43,10 @@ public class StatusField extends Field<String> {
 	public void force(ChunkData data) {
 		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
 		chunkFilter.setStatus(data.region().getData(), getNewValue());
+	}
+
+	@Override
+	public String valueToString() {
+		return getNewValue().getStatusWithNamespace();
 	}
 }

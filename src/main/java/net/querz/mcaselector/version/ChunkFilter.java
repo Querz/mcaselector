@@ -1,6 +1,7 @@
 package net.querz.mcaselector.version;
 
 import net.querz.mcaselector.io.registry.BiomeRegistry;
+import net.querz.mcaselector.io.registry.StatusRegistry;
 import net.querz.mcaselector.range.Range;
 import net.querz.nbt.NBTUtil;
 import net.querz.nbt.*;
@@ -51,7 +52,9 @@ public interface ChunkFilter {
 
 	StringTag getStatus(CompoundTag data);
 
-	void setStatus(CompoundTag data, String status);
+	void setStatus(CompoundTag data, StatusRegistry.StatusIdentifier status);
+
+	boolean matchStatus(CompoundTag data, StatusRegistry.StatusIdentifier status);
 
 	LongTag getLastUpdate(CompoundTag data);
 
