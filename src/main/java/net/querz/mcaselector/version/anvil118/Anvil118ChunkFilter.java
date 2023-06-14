@@ -131,11 +131,14 @@ public class Anvil118ChunkFilter extends Anvil117ChunkFilter {
 				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 					ListTag biomePalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
 					if (biomePalette == null) {
-						continue filterLoop;
+						continue;
 					}
 					for (StringTag biomeName : biomePalette.iterateType(StringTag.class)) {
 						if (identifier.matches(biomeName.getValue())) {
 							names.add(biomeName.getValue());
+							if (biomes.size() == names.size()) {
+								return true;
+							}
 							continue filterLoop;
 						}
 					}
