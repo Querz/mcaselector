@@ -1,15 +1,13 @@
 package net.querz.mcaselector.overlay;
 
-import com.google.gson.stream.JsonWriter;
+import com.google.gson.JsonObject;
 import net.querz.mcaselector.io.mca.ChunkData;
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.UUID;
 
 public abstract class Overlay implements Cloneable {
 
-	private transient UUID id;
+	private UUID id;
 
 	private final OverlayType type;
 	private boolean active;
@@ -19,7 +17,7 @@ public abstract class Overlay implements Cloneable {
 	private String rawMax;
 	private String[] multiValues = null;
 	private String rawMultiValues;
-	private transient String rawMultiValuesShort;
+	private String rawMultiValuesShort;
 	private float minHue = 0.66666667f; // blue
 	private float maxHue = 0f; // red
 
@@ -157,9 +155,9 @@ public abstract class Overlay implements Cloneable {
 		return multiValues;
 	}
 
-	public void writeCustomJSON(JsonWriter out) throws IOException {}
+	public void writeCustomJSON(JsonObject obj) {}
 
-	public void readCustomJSON(Map<String, Object> object) throws IOException {}
+	public void readCustomJSON(JsonObject obj) {}
 
 	@Override
 	public String toString() {

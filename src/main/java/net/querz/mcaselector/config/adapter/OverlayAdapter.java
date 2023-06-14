@@ -1,77 +1,73 @@
 package net.querz.mcaselector.config.adapter;
 
-import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.overlay.OverlayType;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
+import java.lang.reflect.Type;
 import java.util.function.Function;
 
-public class OverlayAdapter extends TypeAdapter<Overlay> {
+public class OverlayAdapter implements JsonSerializer<Overlay>, JsonDeserializer<Overlay> {
 
 	@Override
-	public void write(JsonWriter out, Overlay value) throws IOException {
-		out.beginObject();
-		out.name("type").value(value.getType().name());
-		out.name("active").value(value.isActive());
-		out.name("min").value(value.min());
-		out.name("max").value(value.max());
-		out.name("rawMin").value(value.getRawMin());
-		out.name("rawMax").value(value.getRawMax());
-		if (value.multiValues() != null) {
-			out.name("multiValues");
-			out.beginArray();
-			for (String multiValue : value.multiValues()) {
-				out.value(multiValue);
+	public JsonElement serialize(Overlay src, Type typeOfSrc, JsonSerializationContext context) {
+		JsonObject obj = new JsonObject();
+		obj.addProperty("type", src.getType().name());
+		obj.addProperty("active", src.isActive());
+		obj.addProperty("min", src.min());
+		obj.addProperty("max", src.max());
+		obj.addProperty("rawMin", src.getRawMin());
+		obj.addProperty("rawMax", src.getRawMax());
+		if (src.multiValues() != null) {
+			JsonArray multiValues = new JsonArray();
+			for (String multiValue : src.multiValues()) {
+				multiValues.add(multiValue);
 			}
-			out.endArray();
+			obj.add("multiValues", multiValues);
 		}
-		out.name("rawMultiValues").value(value.getRawMultiValues());
-		out.name("minHue").value(value.getMinHue());
-		out.name("maxHue").value(value.getMaxHue());
-		value.writeCustomJSON(out);
-		out.endObject();
+		obj.addProperty("rawMultiValues", src.getRawMultiValues());
+		obj.addProperty("minHue", src.getMinHue());
+		obj.addProperty("maxHue", src.getMaxHue());
+		src.writeCustomJSON(obj);
+		return obj;
 	}
 
 	@Override
-	public Overlay read(JsonReader in) throws IOException {
-		Gson gson = new Gson();
-		Map<String, Object> map = gson.fromJson(in, Map.class);
-		OverlayType type = OverlayType.valueOf((String) map.get("type"));
+	public Overlay deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		JsonObject obj = json.getAsJsonObject();
+		OverlayType type = OverlayType.valueOf(obj.get("type").getAsString());
 		Overlay overlay = type.instance();
-		overlay.setActive(get(map, "active", false, v -> (Boolean) v));
-		overlay.setMinInt(get(map, "min", null, v -> ((Double) v).intValue()));
-		overlay.setMaxInt(get(map, "max", null, v -> ((Double) v).intValue()));
-		overlay.setRawMin(get(map, "rawMin", null, v -> (String) v));
-		overlay.setRawMax(get(map, "rawMax", null, v -> (String) v));
-		overlay.setMultiValues(get(map, "multiValues", null, v -> {
-			@SuppressWarnings("unchecked")
-			ArrayList<Object> list = (ArrayList<Object>) v;
-			String[] multiValues = new String[list.size()];
-			for (int i = 0; i < list.size(); i++) {
-				multiValues[i] = (String) list.get(i);
+		overlay.setActive(get(obj, "active", false, JsonElement::getAsBoolean));
+		overlay.setMinInt(get(obj, "min", null, JsonElement::getAsInt));
+		overlay.setMaxInt(get(obj, "max", null, JsonElement::getAsInt));
+		overlay.setRawMin(get(obj, "rawMin", null, JsonElement::getAsString));
+		overlay.setRawMax(get(obj, "rawMax", null, JsonElement::getAsString));
+		JsonArray mv = get(obj, "multiValues", null, JsonElement::getAsJsonArray);
+		if (mv != null) {
+			String[] multiValues = new String[mv.size()];
+			for (int i = 0; i < mv.size(); i++) {
+				multiValues[i] = mv.get(i).getAsString();
 			}
-			return multiValues;
-		}));
-		overlay.setRawMultiValues(get(map, "rawMultiValues", null, v -> (String) v));
-		overlay.setMinHue(get(map, "minHue", 0.0f, v -> ((Double) v).floatValue()));
-		overlay.setMaxHue(get(map, "maxHue", 0.0f, v -> ((Double) v).floatValue()));
-		overlay.readCustomJSON(map);
+			overlay.setMultiValues(multiValues);
+		}
+		overlay.setRawMultiValues(get(obj, "rawMultiValues", null, JsonElement::getAsString));
+		overlay.setMinHue(get(obj, "minHue", 0.0f, JsonElement::getAsFloat));
+		overlay.setMaxHue(get(obj, "maxHue", 0.0f, JsonElement::getAsFloat));
+		overlay.readCustomJSON(obj);
 		return overlay;
 	}
 
-	private <T> T get(Map<String, Object> map, String name, T def, Function<Object, T> parser) {
-		if (!map.containsKey(name)) {
+	public static <T> T get(JsonObject obj, String name, T def, Function<JsonElement, T> parser) {
+		JsonElement e = obj.get(name);
+		if (e == null || e.isJsonNull()) {
 			return def;
 		}
-		Object o = map.get(name);
-		if (o == null) {
-			return def;
-		}
-		return parser.apply(o);
+		return parser.apply(e);
 	}
 }

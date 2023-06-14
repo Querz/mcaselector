@@ -1,6 +1,9 @@
 package net.querz.mcaselector.overlay.overlays;
 
-import com.google.gson.stream.JsonWriter;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import net.querz.mcaselector.config.adapter.OverlayAdapter;
 import net.querz.mcaselector.exception.ParseException;
 import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.ChunkData;
@@ -12,10 +15,8 @@ import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.NumberTag;
 import net.querz.nbt.Tag;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -149,33 +150,22 @@ public class CustomOverlay extends AmountParser {
 	}
 
 	@Override
-	public void writeCustomJSON(JsonWriter out) throws IOException {
-		out.name("path");
-		out.beginArray();
-		for (Node node : this.path) {
-			out.value(node.toString());
-		}
-		out.endArray();
-		out.name("root").value(root);
-		out.name("size").value(size);
+	public void writeCustomJSON(JsonObject obj) {
+		JsonArray path = new JsonArray();
+		this.path.forEach(n -> path.add(n.toString()));
+		obj.add("path", path);
+		obj.addProperty("root", root);
+		obj.addProperty("size", size);
 	}
 
 	@Override
-	public void readCustomJSON(Map<String, Object> object) throws IOException {
-		if (object.containsKey("path") && object.get("path") instanceof ArrayList) {
-			ArrayList<Object> path = (ArrayList<Object>) object.get("path");
-			if (path != null) {
-				this.path = new ArrayList<>();
-				for (Object o : path) {
-					if (!(o instanceof String)) {
-						throw new IllegalArgumentException("path only allows nodes");
-					}
-					parseElement((String) o);
-				}
-			}
+	public void readCustomJSON(JsonObject obj) {
+		JsonArray p = OverlayAdapter.get(obj, "path", null, JsonElement::getAsJsonArray);
+		if (p != null) {
+			p.forEach(e -> parseElement(e.getAsString()));
 		}
-		root = object.get("root") == null ? "" : (String) object.get("root");
-		size = object.get("size") != null && (Boolean) object.get("size");
+		root = OverlayAdapter.get(obj, "root", "", JsonElement::getAsString);
+		size = OverlayAdapter.get(obj, "size", false, JsonElement::getAsBoolean);
 	}
 
 	private abstract static class Node {}

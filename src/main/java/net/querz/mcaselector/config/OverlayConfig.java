@@ -14,7 +14,7 @@ public class OverlayConfig extends Config {
 
 	static {
 		GsonBuilder builder = new GsonBuilder();
-		builder.registerTypeAdapter(Overlay.class, new OverlayAdapter());
+		builder.registerTypeHierarchyAdapter(Overlay.class, new OverlayAdapter());
 		gsonInstance = builder.create();
 	}
 
