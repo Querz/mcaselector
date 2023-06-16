@@ -12,7 +12,7 @@ public class Anvil118EntityFilter extends Anvil117EntityFilter {
 	@Override
 	public void deleteEntities(ChunkData data, List<Range> ranges) {
 		if (data.entities() != null) {
-			ListTag entities = Helper.tagFromLevelFromRoot(data.entities().getData(), "Entities", null);
+			ListTag entities = LegacyHelper.getEntities(data.entities().getData(), data.entities().getData().getIntOrDefault("DataVersion", 0));
 			deleteEntities(entities, ranges);
 		}
 

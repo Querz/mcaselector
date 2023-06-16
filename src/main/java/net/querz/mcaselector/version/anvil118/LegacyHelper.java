@@ -17,6 +17,14 @@ public final class LegacyHelper {
 		}
 	}
 
+	static ListTag getEntities(CompoundTag root, int dataVersion) {
+		if (dataVersion > 2843) {
+			return Helper.tagFromCompound(root, "Entities");
+		} else {
+			return Helper.tagFromLevelFromRoot(root, "Entities");
+		}
+	}
+
 	static ListTag getSections(CompoundTag root, int dataVersion) {
 		if (dataVersion > 2843) { // 21w42a
 			return Helper.tagFromCompound(root, "sections");
