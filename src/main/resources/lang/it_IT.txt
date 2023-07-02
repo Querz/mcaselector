@@ -17,7 +17,7 @@ menu.file.open_recent_world.clear;Svuota
 menu.file.settings;Impostazioni
 menu.file.render_settings;Impostazioni di rendering
 menu.file.quit;Esci
-menu.view.reload;Ricaricare
+menu.view.reload;Ricarica
 menu.view.chunk_grid;Griglia dei chunk
 menu.view.region_grid;Griglia della regione
 menu.view.coordinates;Coordinate
@@ -49,10 +49,10 @@ dialog.select_world.title;Seleziona una dimensione
 dialog.settings.title;Impostazioni
 dialog.settings.global.language;Lingua
 dialog.settings.global.language.language;Lingua
-dialog.settings.processing.process.process_threads;Discussioni di processo
+dialog.settings.processing.process.process_threads;Thread di elaborazione
 dialog.settings.processing.process;Processi
-dialog.settings.processing.process.write_threads;Scrivi discussioni
-dialog.settings.processing.files.max_files;File massimi
+dialog.settings.processing.process.write_threads;Thread di scrittura
+dialog.settings.processing.files.max_files;Numero massimo di file
 dialog.settings.global.selection.region_color;Colore della regione
 dialog.settings.global.selection.chunk_color;Colore del pezzo
 dialog.settings.global.selection.pasted_chunks_color;Colore pezzi incollati
@@ -69,7 +69,7 @@ dialog.settings.global.misc.print_debug;Stampa messaggi di debug
 dialog.settings.global.misc.show_log_file;Mostra file di registro
 dialog.settings.reset;Reset
 dialog.settings.tab_global;Globale
-dialog.settings.tab_processing;in lavorazione
+dialog.settings.tab_processing;Elaborazione
 dialog.settings.tab_rendering;Rendering
 dialog.settings.tab_world;Mondo
 dialog.settings.global.misc;Varie
