@@ -1,0 +1,178 @@
+status.region;régió
+status.chunk;chunk
+status.block;block
+status.selected;kijelölve
+status.queue;várólista
+status.total;összesen
+status.overlay;overlay
+menu.file;Fájl
+menu.view;Nézet
+menu.selection;Kijelölés
+menu.tools;Eszközök
+menu.about;Rólunk
+menu.file.open_world;Világ Megnyitása
+menu.file.open_dimension;Dimenzió Megnyitása
+menu.file.open_recent_world;Legutóbbi Világ megynitása
+menu.file.open_recent_world.clear;Előzmények törlése
+menu.file.settings;Beállítások
+menu.file.render_settings;Renderelési Beállítások
+menu.file.quit;Kilépés
+menu.view.reload;Újratöltés
+menu.view.chunk_grid;Chunk Rács
+menu.view.region_grid;Régió Rács
+menu.view.coordinates;Koordináták
+menu.view.goto;Koordinátához lépés
+menu.view.reset_zoom;Alap nagyítás
+menu.view.save_screenshot;Képernyőkép mentése
+menu.view.clear_cache;Gyorsítótár törlése
+menu.view.clear_all_cache;Minden gyorsítótár törlése
+menu.selection.clear;Törlés
+menu.selection.invert;Megfordítás
+menu.selection.invert_regions;Kijelölt régiók megfordítása
+menu.selection.copy_chunks;Chunkok másolása
+menu.selection.paste_chunks;Chunkok beillesztése
+menu.selection.export_chunks;Kijelölt chunkok exportálása
+menu.selection.delete_chunks;Kijelölt chunkok törlése
+menu.selection.import_selection;Kijelölés importálása .csv fájlból
+menu.selection.export_selection;Kijelölés exportálása .csv fájlba
+menu.selection.export_image;Exportálás Képként
+menu.selection.clear_cache;Gyorsítótár törlése
+menu.tools.import_chunks;Chunkok importálása
+menu.tools.filter_chunks;Chunkok szűrése
+menu.tools.change_fields;Mezők megváltoztatása
+menu.tools.edit_nbt;Chunk szerkesztése
+menu.tools.swap_chunks;Chunkok kicserélése
+menu.tools.edit_overlays;Overlay szerkesztése
+menu.tools.next_overlay;Következő overlay
+menu.tools.next_overlay_type;Következő overlay típus
+dialog.select_world.title;Dimenzió kiválasztása
+dialog.settings.title;Beállítások
+dialog.settings.global.language;Nyelv
+dialog.settings.global.language.language;Nyelv
+dialog.settings.processing.process.process_threads;Folyamat szálai
+dialog.settings.processing.process;Folyamat
+dialog.settings.processing.process.write_threads;Író szálak
+dialog.settings.processing.files.max_files;Fájlok maximum száma
+dialog.settings.global.selection.region_color;Régió színe
+dialog.settings.global.selection.chunk_color;Chunk színe
+dialog.settings.global.selection.pasted_chunks_color;Beillesztett chunkok színe
+dialog.settings.rendering.shade.shade;Árnyalás
+dialog.settings.rendering.shade;Árnyalás
+dialog.settings.rendering.shade.shade_water;Víz árnyalása
+dialog.settings.rendering.background.show_nonexistent_regions;Nem létező régiók mutatása
+dialog.settings.rendering.smooth.smooth_rendering;Simított renderelés
+dialog.settings.rendering.smooth.smooth_overlays;Simított overlay
+dialog.settings.rendering.background.background_pattern;Háttér mintája
+dialog.settings.rendering.background;Háttér
+dialog.settings.global.misc.mc_saves_dir;MC mentések mappája
+dialog.settings.global.misc.print_debug;Debug üzenetek kiírása
+dialog.settings.global.misc.show_log_file;Log file mutatása
+dialog.settings.reset;Alapértelmezett beállítások
+dialog.settings.tab_global;Általános
+dialog.settings.tab_processing;Folyamatok
+dialog.settings.tab_rendering;Renderelés
+dialog.settings.tab_world;Világ
+dialog.settings.global.misc;Egyéb
+dialog.settings.processing.files;Fájlok
+dialog.settings.rendering.smooth;Simítás
+dialog.settings.global.selection;Kijelölés
+dialog.settings.world.paths;Elérési utak
+dialog.settings.world.paths.poi;POI
+dialog.settings.world.paths.entities;Entities
+dialog.settings.rendering.layers.render_height;Renderelés magassága
+dialog.settings.rendering.layers.render_layer_only;Csak az adott réteg renderelése
+dialog.settings.rendering.layers;Rétegek
+dialog.settings.rendering.layers.render_caves;Barlangok renderelése
+dialog.goto.title;Koordinátához lépés
+dialog.confirmation.question;Biztos vagy benne?
+dialog.delete_chunks_confirmation.title;Chunkok törlése
+dialog.delete_chunks_confirmation.header_short;Ezzel kitörölsz ismeretlen mennyiségű chunkot a világból.
+dialog.delete_chunks_confirmation.header_verbose;Ezzel kitörölsz %d chunkot a világból.
+dialog.image_export_confirmation.title;Exportálás képként
+dialog.image_export_confirmation.header_short;Ezzel egy ismeretlen méretű képet készítesz.
+dialog.image_export_confirmation.header_verbose;Ezzel egy %dx%d méretű képet készítesz.
+dialog.import_chunks_confirmation.title;Chunkok importálása
+dialog.import_chunks_confirmation.header;Ezzel importálsz ismeretlen mennyiségű chunkot a világba.
+dialog.import_chunks_confirmation.options;Beállítások
+dialog.import_chunks_confirmation.options.offset;Eltolás
+dialog.import_chunks_confirmation.options.overwrite;Létező chunkok felülírása
+dialog.import_chunks_confirmation.options.selection_only;Csak a kijelölt részre
+dialog.import_chunks_confirmation.options.y_offset;Y eltolás
+dialog.import_chunks_confirmation.options.sections;Szakaszok
+dialog.import_chunks_confirmation.warning;Figyelem: Chunkok eltolással való importálása nem változtatja meg a command blockok tartalmát.
+dialog.export_chunks_confirmation.title;Chunkok exportálása
+dialog.export_chunks_confirmation.header_short;Ezzel ismeretlen mennyiségű chunkot exportálsz a világból.
+dialog.export_chunks_confirmation.header_verbose;Ezzel %d chunkot exportálsz a világból.
+dialog.import_selection.title;Kijelölés importálása .csv fájlból
+dialog.import_selection.header;A világban már van egy kijelölés.\nHogyan szeretnéd importálni a kijelölést?
+dialog.import_selection.overwrite;Felülírás
+dialog.import_selection.merge;Egyesítés
+dialog.filter_chunks.title;Chunkok szűrése
+dialog.filter_chunks.filter.add.tooltip;Új feltétel hozzáadása ez alá.
+dialog.filter_chunks.filter.delete.tooltip;Feltétel törlése.
+dialog.filter_chunks.filter.type.tooltip;A feltétel típusa.
+dialog.filter_chunks.filter.operator.tooltip;Több feltételt összekötő operátor.
+dialog.filter_chunks.filter.comparator.tooltip;Az összehasonlító operátor.
+dialog.filter_chunks.select;Kijelölés
+dialog.filter_chunks.select.tooltip;Kijelöli a megfelelő chunkokat.
+dialog.filter_chunks.export;Exportálás
+dialog.filter_chunks.export.tooltip;Exportálja a megfelelő chunkokat.
+dialog.filter_chunks.delete;Kitörlés
+dialog.filter_chunks.delete.tooltip;Kitörli a megfelelő chunkokat.
+dialog.filter_chunks.selection_only;Csak a kijelölt chunkokon
+dialog.filter_chunks.overwrite_selection;Kijelölés felülírása
+dialog.filter_chunks.selection_radius;Kijelölés sugara
+dialog.edit_overlays.title;Overlayek szerkesztése
+dialog.edit_overlays.overlay_active.tooltip;Aktív
+dialog.edit_overlays.delete.tooltip;Törlés
+dialog.change_nbt.title;NBT Változtatása
+dialog.change_nbt.change;Változtatás
+dialog.change_nbt.change.tooltip;Megváltoztatja az értéket, ha az adott kulcs létezik.
+dialog.change_nbt.force;Változtatás kényszerítése
+dialog.change_nbt.force.tooltip;Létrehozza a címkét, ha az nem létezik.
+dialog.change_nbt.selection_only;Csak a kijelölt chunkokon
+dialog.change_nbt.selection_only.tooltip;Csak a kijelölt chunkokra hasson a szűrés.
+dialog.change_nbt_confirmation.title;NBT Változtatása
+dialog.change_nbt_confirmation.header_short;Ezzel ismeretlen számú chunkban megváltoztatsz adatokat.
+dialog.edit_nbt.title;Chunk szerkesztése
+dialog.edit_nbt.placeholder.loading;betöltés...
+dialog.edit_nbt.placeholder.no_chunk_data;chunk adatok nem találhatóak
+dialog.edit_nbt.placeholder.no_region_file;régió fájl nem létezik
+dialog.edit_array.index;Index
+dialog.edit_array.value;Érték
+dialog.about.title;Rólunk
+dialog.about.header;Az MCA Selector programról
+dialog.about.version;Verzió:
+dialog.about.version.unknown;ismeretlen
+dialog.about.version.check;ellenőrzés
+dialog.about.version.checking;ellenőrzés...
+dialog.about.version.up_to_date;Friss verzió
+dialog.about.version.error;Hiba
+dialog.about.license;Licensz:
+dialog.about.copyright;Szerzői jog:
+dialog.about.source;Forráskód:
+dialog.progress.no_files;nincsenek fájlok
+dialog.progress.running;futtatás...
+dialog.progress.cancelling;visszavonás...
+dialog.progress.collecting_data;adatok begyűjtése...
+dialog.progress.done;kész.
+dialog.progress.scanning_files;Fájlok keresése...
+dialog.progress.title.loading_world;Világ betöltése...
+dialog.progress.title.deleting_selection;Kijelölés törlése...
+dialog.progress.title.creating_image;Kép készítése...
+dialog.progress.title.saving_image;Kép mentése...
+dialog.progress.title.exporting_selection;Kijelölés exportálása...
+dialog.progress.title.importing_chunks;Chunkok importálása...
+dialog.progress.title.deleting_filtered_chunks;Szűrt chunkok törlése...
+dialog.progress.title.exporting_filtered_chunks;Szűrt chunkok exportálása...
+dialog.progress.title.selecting_filtered_chunks;Szűrt chunkok kijelölése...
+dialog.progress.title.changing_nbt_data;NBT adatok megváltoztatása...
+dialog.progress.title.saving_chunk;Chunk mentése...
+dialog.error.button.copy_to_clipboard;Másolás Vágólapra
+dialog.error.title;Hiba
+dialog.error.header;Hiba történt
+dialog.error.copied_to_clipboard;Vágólapra másolva!
+dialog.unsaved_selection.title;Nem mentett kijelölés
+dialog.unsaved_selection.header;Van egy nem mentett kijelölés.
+button.cancel;Visszavonás
+button.ok;OK
