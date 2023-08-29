@@ -14,7 +14,7 @@ public class CustomFilter extends TextFilter<String> {
 
 	private static final Logger LOGGER = LogManager.getLogger(CustomFilter.class);
 
-	private static final String baseScript = "import net.querz.nbt.*; def test() {%s}";
+	private static final String baseScript = "import net.querz.nbt.*; %s";
 
 	private static ScriptEngine engine;
 	private static final Object lock = new Object();
@@ -48,7 +48,13 @@ public class CustomFilter extends TextFilter<String> {
 	@Override
 	public void setFilterValue(String raw) {
 		try {
-			String script = String.format(baseScript, raw);
+			String script = baseScript.formatted(raw);
+			//returns whether the script has a filter() function
+            String hasFilterFunc = script.replaceAll("return", "")
+                    + ";return this.metaClass.respondsTo(this, 'filter') ? true : false";
+            if (!(boolean) engine.eval(hasFilterFunc)) {
+				script = baseScript.formatted("def filter() {" + raw + "}");
+			}
 			engine.eval(script);
 			setValue(raw);
 			setRawValue(raw);
@@ -90,7 +96,7 @@ public class CustomFilter extends TextFilter<String> {
 			engine.put("entities", data.entities() != null && data.entities().getData() != null ? data.entities().getData() : null);
 
 			try {
-				Object result = ((Invocable) engine).invokeFunction("test");
+				Object result = ((Invocable) engine).invokeFunction("filter");
 				return result instanceof Boolean && (boolean) result;
 			} catch (ScriptException | NoSuchMethodException ex) {
 				LOGGER.warn("failed to invoke custom script", ex);
