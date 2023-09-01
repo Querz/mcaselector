@@ -45,6 +45,7 @@ menu.tools.swap_chunks;Swap chunks
 menu.tools.edit_overlays;Edit overlays
 menu.tools.next_overlay;Next overlay
 menu.tools.next_overlay_type;Next overlay type
+menu.tools.sum_selection;Sum selection
 dialog.select_world.title;Select Dimension
 dialog.settings.title;Settings
 dialog.settings.global.language;Language
