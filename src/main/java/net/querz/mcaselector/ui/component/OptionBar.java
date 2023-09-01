@@ -184,6 +184,7 @@ public class OptionBar extends BorderPane {
 		editOverlays.setOnAction(e -> DialogHelper.editOverlays(tileMap, primaryStage));
 		nextOverlay.setOnAction(e -> tileMap.nextOverlay());
 		nextOverlayType.setOnAction(e -> tileMap.nextOverlayType());
+		sumSelection.setOnAction(e -> DialogHelper.sumSelection(tileMap, primaryStage));
 
 
 		openWorld.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN));

@@ -12,15 +12,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.*;
-import net.querz.mcaselector.io.job.ChunkFilterDeleter;
-import net.querz.mcaselector.io.job.ChunkFilterExporter;
-import net.querz.mcaselector.io.job.ChunkFilterSelector;
-import net.querz.mcaselector.io.job.ChunkImporter;
-import net.querz.mcaselector.io.job.FieldChanger;
-import net.querz.mcaselector.io.job.RegionImageGenerator;
-import net.querz.mcaselector.io.job.SelectionDeleter;
-import net.querz.mcaselector.io.job.SelectionExporter;
-import net.querz.mcaselector.io.job.SelectionImageExporter;
+import net.querz.mcaselector.io.job.*;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.selection.ChunkSet;
@@ -46,6 +38,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static net.querz.mcaselector.ui.dialog.ImportConfirmationDialog.ChunkImportConfirmationData;
 
 public class DialogHelper {
@@ -628,6 +622,24 @@ public class DialogHelper {
 			FileHelper.setLastOpenedDirectory("selection_import_export", file.getParent());
 			tileMap.setSelectionSaved();
 			tileMap.draw();
+		}
+	}
+
+	public static void sumSelection(TileMap tileMap, Stage primaryStage) {
+		net.querz.mcaselector.selection.SelectionData data = new net.querz.mcaselector.selection.SelectionData(tileMap.getSelection(), null);
+
+		if(tileMap.getOverlay() == null) { // here can be checked if the overlay does not make sense for summing (ex. Timestamp, LastUpdate, etc.)
+			String error = "a right overlay must be active in order to sum the selection";
+			LOGGER.warn(error);
+			new ErrorDialog(primaryStage, error);
+			return;
+		}
+
+		DataProperty<AtomicInteger> sum = new DataProperty<AtomicInteger>();
+		CancellableProgressDialog cpd = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SUMMING, primaryStage);
+		cpd.showProgressBar(t -> sum.set(SelectionSummer.sumSelection(tileMap.getSelectedChunks(), data, tileMap.getOverlay(), t)));
+		if (!cpd.cancelled()) {
+			new NumberDialog(primaryStage, sum.get().get()).showAndWait();
 		}
 	}
 
