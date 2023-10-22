@@ -33,7 +33,7 @@ menu.selection.copy_chunks;Копіювати чанки
 menu.selection.paste_chunks;Вставити чанки
 menu.selection.export_chunks;Експортувати виділені чанки
 menu.selection.delete_chunks;Видалити виділені чанки
-menu.selection.import_selection;Імпортува виділення з .csv файлу
+menu.selection.import_selection;Імпортувати виділення з .csv файлу
 menu.selection.export_selection;Зберегти виділення як .csv файл
 menu.selection.export_image;Зберегти як зображення
 menu.selection.clear_cache;Очистити кеш
