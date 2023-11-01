@@ -1,9 +1,10 @@
 package net.querz.mcaselector.io.db;
 
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.tiles.overlay.OverlayParser;
+import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.validation.ShutdownHooks;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -22,6 +23,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 public final class CacheDBController {
+
+	private static final Logger LOGGER = LogManager.getLogger(CacheDBController.class);
 
 	private volatile Connection connection;
 	private String dbPath;
@@ -49,7 +52,7 @@ public final class CacheDBController {
 		return instance;
 	}
 
-	public void switchTo(String dbPath, List<OverlayParser> parsers) throws SQLException {
+	public void switchTo(String dbPath, List<Overlay> overlays) throws SQLException {
 		removeCloseShutdownHook();
 		close();
 
@@ -64,14 +67,14 @@ public final class CacheDBController {
 		try {
 			connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 		} catch (SQLException ex) {
-			Debug.dumpException("failed to open cache db", ex);
-			Debug.dump("attempting to create new cache db");
+			LOGGER.warn("failed to open cache db", ex);
+			LOGGER.debug("attempting to create new cache db");
 
 			if (new File(dbPath).delete()) {
-				Debug.dump("successfully deleted corrupted cache db");
+				LOGGER.debug("successfully deleted corrupted cache db");
 				connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 			} else {
-				Debug.dump("failed to delete corrupted cache db");
+				LOGGER.warn("failed to delete corrupted cache db");
 				throw new SQLException("failed to delete corrupted cache db");
 			}
 		}
@@ -79,12 +82,12 @@ public final class CacheDBController {
 		this.dbPath = dbPath;
 		addCloseShutdownHook();
 
-		initTables(parsers);
+		initTables(overlays);
 	}
 
-	public void initTables(List<OverlayParser> parsers) throws SQLException {
+	public void initTables(List<Overlay> overlays) throws SQLException {
 		Statement statement = connection.createStatement();
-		for (OverlayParser parser : parsers) {
+		for (Overlay parser : overlays) {
 			statement.executeUpdate(String.format(
 					"CREATE TABLE IF NOT EXISTS %s%s (" +
 							"p BIGINT PRIMARY KEY, " +
@@ -106,9 +109,9 @@ public final class CacheDBController {
 		if (connection != null && !connection.isClosed()) {
 			connection.close();
 			if (connection.isClosed()) {
-				Debug.dump("cache db connection closed");
+				LOGGER.debug("cache db connection closed");
 			} else {
-				Debug.dump("failed to close cache db connection");
+				LOGGER.debug("failed to close cache db connection");
 			}
 			dbPath = null;
 			connection = null;
@@ -123,7 +126,7 @@ public final class CacheDBController {
 		try {
 			close();
 		} catch (SQLException ex) {
-			Debug.dumpException("failed to close cache db connection with exception", ex);
+			LOGGER.warn("failed to close cache db connection with exception", ex);
 		}
 	}
 
@@ -170,7 +173,7 @@ public final class CacheDBController {
 		ps.executeBatch();
 	}
 
-	public int[] getData(OverlayParser parser, Point2i region) throws IOException, SQLException {
+	public int[] getData(Overlay parser, Point2i region) throws IOException, SQLException {
 		Statement statement = connection.createStatement();
 		ResultSet result = statement.executeQuery(String.format(
 				"SELECT d FROM %s%s WHERE p=%s;", parser.name(), parser.getMultiValuesID(), region.asLong()));
@@ -186,7 +189,7 @@ public final class CacheDBController {
 		return data;
 	}
 
-	public void setData(OverlayParser parser, Point2i region, int[] data) throws IOException, SQLException {
+	public void setData(Overlay parser, Point2i region, int[] data) throws IOException, SQLException {
 		PreparedStatement ps = connection.prepareStatement(String.format(
 				"INSERT INTO %s%s (p, d) " +
 						"VALUES (?, ?) " +
@@ -206,7 +209,7 @@ public final class CacheDBController {
 		ps.executeBatch();
 	}
 
-	public void deleteData(OverlayParser parser, Point2i region) throws SQLException {
+	public void deleteData(Overlay parser, Point2i region) throws SQLException {
 		PreparedStatement ps = connection.prepareStatement(String.format(
 				"DELETE FROM %s%s WHERE p=?;", parser.name(), parser.getMultiValuesID()));
 		ps.setLong(1, region.asLong());
@@ -215,7 +218,7 @@ public final class CacheDBController {
 
 	public void deleteData(Point2i region) throws SQLException {
 		if (!isInitialized()) {
-			Debug.errorf("failed to delete region %s from cache because it hasn't been initialized yet", region);
+			LOGGER.warn("failed to delete region {} from cache because it hasn't been initialized yet", region);
 			return;
 		}
 		for (String table : allTables) {
@@ -226,17 +229,17 @@ public final class CacheDBController {
 		}
 	}
 
-	public void clear(List<OverlayParser> parsers) throws IOException, SQLException {
+	public void clear(List<Overlay> overlays) throws IOException, SQLException {
 		if (dbPath == null) {
 			return;
 		}
 		File dbFile = new File(this.dbPath);
 		close();
 		if (dbFile.delete()) {
-			Debug.dumpf("deleted cache db %s", dbFile);
+			LOGGER.debug("deleted cache db {}", dbFile);
 		} else {
 			throw new IOException(String.format("failed to delete cache db %s", dbFile.getCanonicalPath()));
 		}
-		switchTo(dbFile.getPath(), parsers);
+		switchTo(dbFile.getPath(), overlays);
 	}
 }

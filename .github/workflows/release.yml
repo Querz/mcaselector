@@ -1,0 +1,93 @@
+name: Release
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Build jar
+        run: gradlew build shadowJar --stacktrace --warning-mode all
+        shell: cmd
+
+      - name: Download WinRun4J
+        uses: suisei-cn/actions-download-file@v1.4.0
+        with:
+          url: https://github.com/poidasmith/winrun4j/files/1822558/winrun4J-0.4.5.zip
+          target: .
+
+      - name: Download ResourceHacker
+        uses: suisei-cn/actions-download-file@v1.4.0
+        with:
+          url: http://www.angusj.com/resourcehacker/resource_hacker.zip
+          target: .
+
+      - name: Initialize resources for installer
+        run: ./installer/init .
+        shell: bash
+
+      - name: Build exe
+        run: |
+          7z x winrun4J-0.4.5.zip -owr4j
+          7z x resource_hacker.zip -orh
+          rh\ResourceHacker.exe -open wr4j\winrun4j\bin\WinRun4J64.exe -save "MCA Selector.exe" -action delete -mask ,,
+          wr4j\winrun4j\bin\RCEDIT64.exe /I "MCA Selector.exe" installer\img\icon.ico
+          wr4j\winrun4j\bin\RCEDIT64.exe /N "MCA Selector.exe" installer\res\winrun4j.ini
+          rh\ResourceHacker.exe -open installer\res\resource.rc -save resource.res -action compile
+          rh\ResourceHacker.exe -open "MCA Selector.exe" -save "MCA Selector.exe" -action add -resource resource.res
+          move "MCA Selector.exe" build\inno
+        shell: cmd
+
+      - name: Download 7za
+        uses: suisei-cn/actions-download-file@v1.4.0
+        with:
+          url: https://www.7-zip.org/a/7za920.zip
+          target: .
+
+      - name: Build installer
+        run: |
+          7z x 7za920.zip -o7z
+          move 7z\7za.exe build\inno
+          "%programfiles(x86)%/Inno Setup 6/iscc.exe" build/inno/inno.iss /q
+        shell: cmd
+
+      - name: Upload assets
+        uses: AButler/upload-release-assets@v2.0.2
+        with:
+          files: build/inno/Output/MCA_Selector_Setup.exe;build/libs/mcaselector-2.2.2.jar
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout Wiki
+        uses: actions/checkout@v3
+        with:
+          repository: Querz/mcaselector-wiki
+          path: mcaselector-wiki
+
+      - name: Update Wiki
+        run: |
+          cd mcaselector-wiki
+          echo -n 2.2.2 > version.txt
+          ./update_version
+        shell: bash
+
+      - name: Push Wiki
+        run: |
+          cd mcaselector-wiki
+          git config --global user.name 'Querz'
+          git config --global user.email 'wiki@querz.net'
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}@github.com/Querz/mcaselector-wiki
+          git commit -am "Automated version update to 2.2.2"
+          git push
+        shell: bash

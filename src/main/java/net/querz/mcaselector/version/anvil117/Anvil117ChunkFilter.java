@@ -3,7 +3,7 @@ package net.querz.mcaselector.version.anvil117;
 import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.anvil116.Anvil116ChunkFilter;
-import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.CompoundTag;
 import java.util.Arrays;
 
 public class Anvil117ChunkFilter extends Anvil116ChunkFilter {

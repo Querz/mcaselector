@@ -1,11 +1,12 @@
 package net.querz.mcaselector.version;
 
 import net.querz.mcaselector.io.registry.BiomeRegistry;
-import net.querz.nbt.io.SNBTUtil;
-import net.querz.nbt.tag.*;
-
-import java.io.IOException;
+import net.querz.mcaselector.io.registry.StatusRegistry;
+import net.querz.mcaselector.range.Range;
+import net.querz.nbt.NBTUtil;
+import net.querz.nbt.*;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public interface ChunkFilter {
@@ -35,13 +36,15 @@ public interface ChunkFilter {
 
 	int getBlockAmount(CompoundTag data, String[] blocks);
 
-	ListTag<CompoundTag> getTileEntities(CompoundTag data);
+	ListTag getTileEntities(CompoundTag data);
 
 	CompoundTag getStructureStarts(CompoundTag data);
 
 	CompoundTag getStructureReferences(CompoundTag data);
 
-	ListTag<CompoundTag> getSections(CompoundTag data);
+	ListTag getSections(CompoundTag data);
+
+	void deleteSections(CompoundTag data, List<Range> ranges);
 
 	LongTag getInhabitedTime(CompoundTag data);
 
@@ -49,7 +52,9 @@ public interface ChunkFilter {
 
 	StringTag getStatus(CompoundTag data);
 
-	void setStatus(CompoundTag data, String status);
+	void setStatus(CompoundTag data, StatusRegistry.StatusIdentifier status);
+
+	boolean matchStatus(CompoundTag data, StatusRegistry.StatusIdentifier status);
 
 	LongTag getLastUpdate(CompoundTag data);
 
@@ -64,6 +69,8 @@ public interface ChunkFilter {
 	ByteTag getLightPopulated(CompoundTag data);
 
 	void setLightPopulated(CompoundTag data, byte lightPopulated);
+
+	void forceBlending(CompoundTag data);
 
 	class BlockReplaceData {
 
@@ -130,29 +137,25 @@ public interface ChunkFilter {
 
 		@Override
 		public String toString() {
-			try {
-				switch (type) {
-					case NAME:
-						if (name.startsWith("minecraft:")) {
-							return name;
-						} else {
-							return "'" + name + "'";
-						}
-					case STATE:
-						return SNBTUtil.toSNBT(state);
-					case STATE_TILE:
-						return SNBTUtil.toSNBT(state) + ";" + SNBTUtil.toSNBT(tile);
-					case NAME_TILE:
-						if (name.startsWith("minecraft:")) {
-							return name + ";" + SNBTUtil.toSNBT(tile);
-						} else {
-							return "'" + name + "';" + SNBTUtil.toSNBT(tile);
-						}
-					default:
-						return null;
-				}
-			} catch (IOException ex) {
-				return null;
+			switch (type) {
+				case NAME:
+					if (name.startsWith("minecraft:")) {
+						return name;
+					} else {
+						return "'" + name + "'";
+					}
+				case STATE:
+					return NBTUtil.toSNBT(state);
+				case STATE_TILE:
+					return NBTUtil.toSNBT(state) + ";" + NBTUtil.toSNBT(tile);
+				case NAME_TILE:
+					if (name.startsWith("minecraft:")) {
+						return name + ";" + NBTUtil.toSNBT(tile);
+					} else {
+						return "'" + name + "';" + NBTUtil.toSNBT(tile);
+					}
+				default:
+					return null;
 			}
 		}
 	}

@@ -21,6 +21,16 @@ public class Point2i implements Cloneable, Serializable {
 		this.z = (int) l;
 	}
 
+	public Point2i(int chunkIndex) {
+		this.x = chunkIndex & 0x1F;
+		this.z = chunkIndex >> 5;
+	}
+
+	public Point2i(short chunkIndex) {
+		this.x = chunkIndex & 0x1F;
+		this.z = chunkIndex >> 5;
+	}
+
 	public int getX() {
 		return x;
 	}
@@ -196,11 +206,15 @@ public class Point2i implements Cloneable, Serializable {
 		return (long) x << 32 | z & 0xFFFFFFFFL;
 	}
 
-	public Point2i normalizeChunkInRegion() {
-		int nx = x % 32;
-		nx = nx < 0 ? 32 + nx : nx;
-		int nz = z % 32;
-		nz = nz < 0 ? 32 + nz : nz;
-		return new Point2i(nx, nz);
+	// converts this absolute chunk coordinate into a relative chunk coordinate
+	public Point2i asRelativeChunk() {
+		return new Point2i(x & 0x1F, z & 0x1F);
+	}
+
+	// returns a short containing relative chunk coordinates (0|0 to 31|31).
+	// only the first 1024 bits are populated which allows easy looping without having to convert.
+	public short asChunkIndex() {
+		Point2i n = asRelativeChunk();
+		return (short) (n.z << 5 | n.x & 0x1F);
 	}
 }

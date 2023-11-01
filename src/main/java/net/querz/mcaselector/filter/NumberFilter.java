@@ -63,21 +63,21 @@ public abstract class NumberFilter<T extends Number> extends Filter<T> {
 
 	public abstract String getFormatText();
 
-	abstract T getFilterNumber();
+	protected abstract T getFilterNumber();
 
-	abstract void setFilterNumber(T value);
+	protected abstract void setFilterNumber(T value);
 
-	abstract T getNumber(ChunkData data);
+	protected abstract T getNumber(ChunkData data);
 
-	abstract boolean isEqual(T a, T b);
+	protected abstract boolean isEqual(T a, T b);
 
-	abstract boolean isNotEqual(T a, T b);
+	protected abstract boolean isNotEqual(T a, T b);
 
-	abstract boolean isLargerThan(T a, T b);
+	protected abstract boolean isLargerThan(T a, T b);
 
-	abstract boolean isSmallerThan(T a, T b);
+	protected abstract boolean isSmallerThan(T a, T b);
 
-	abstract boolean isLargerEqual(T a, T b);
+	protected abstract boolean isLargerEqual(T a, T b);
 
-	abstract boolean isSmallerEqual(T a, T b);
+	protected abstract boolean isSmallerEqual(T a, T b);
 }

@@ -26,10 +26,9 @@ public enum Operator {
 	}
 
 	public static Operator negate(Operator o) {
-		switch (o) {
-			case AND: return OR;
-			case OR: return AND;
-		}
-		throw new IllegalArgumentException("failed to negate operator " + o);
+		return switch (o) {
+			case AND -> OR;
+			case OR -> AND;
+		};
 	}
 }

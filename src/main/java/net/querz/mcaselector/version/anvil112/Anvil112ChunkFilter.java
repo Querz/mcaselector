@@ -1,18 +1,22 @@
 package net.querz.mcaselector.version.anvil112;
 
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.io.registry.BiomeRegistry;
-import net.querz.mcaselector.tiles.Tile;
+import net.querz.mcaselector.io.registry.StatusRegistry;
+import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.Helper;
-import net.querz.nbt.tag.*;
-
+import net.querz.nbt.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
 public class Anvil112ChunkFilter implements ChunkFilter {
+
+	private static final Logger LOGGER = LogManager.getLogger(Anvil112ChunkFilter.class);
 
 	private final Map<String, BlockData[]> mapping = new HashMap<>();
 
@@ -27,7 +31,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 				}
 				String[] elements = line.split(";");
 				if (elements.length != 3 && !line.endsWith(";")) {
-					Debug.error("invalid line in block id mapping file: \"" + line + "\"");
+					LOGGER.error("invalid line in block id mapping file: \"{}\"", line);
 					continue;
 				}
 
@@ -46,7 +50,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 						}
 					}
 				} catch (NumberFormatException ex) {
-					Debug.dumpException(String.format("unable to parse block id or data in block id mapping file: \"%s\"", line), ex);
+					LOGGER.error("unable to parse block id or data in block id mapping file: \"{}\"", line, ex);
 					continue;
 				}
 
@@ -75,7 +79,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchBlockNames(CompoundTag data, Collection<String> names) {
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
@@ -84,10 +88,10 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		for (String name : names) {
 			BlockData[] bd = mapping.get(name);
 			if (bd == null) {
-				Debug.dump("no mapping found for " + name);
+				LOGGER.debug("no mapping found for {}", name);
 				continue;
 			}
-			for (CompoundTag t : sections) {
+			for (Tag t : sections) {
 				byte[] blocks = Helper.byteArrayFromCompound(t, "Blocks");
 				if (blocks == null) {
 					continue;
@@ -116,17 +120,17 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean matchAnyBlockName(CompoundTag data, Collection<String> names) {
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
 		for (String name : names) {
 			BlockData[] bd = mapping.get(name);
 			if (bd == null) {
-				Debug.dump("no mapping found for " + name);
+				LOGGER.debug("no mapping found for {}", name);
 				continue;
 			}
-			for (CompoundTag t : sections) {
+			for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
 				byte[] blocks = Helper.byteArrayFromCompound(t, "Blocks");
 				if (blocks == null) {
 					continue;
@@ -154,7 +158,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public boolean paletteEquals(CompoundTag data, Collection<String> names) {
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return false;
 		}
@@ -164,13 +168,13 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		for (String name : names) {
 			BlockData[] bd = mapping.get(name);
 			if (bd == null) {
-				Debug.dump("no mapping found for " + name);
+				LOGGER.debug("no mapping found for {}", name);
 				continue;
 			}
 			blockData.addAll(Arrays.asList(bd));
 		}
 
-		for (CompoundTag t : sections) {
+		for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
 			byte[] blockBytes = Helper.byteArrayFromCompound(t, "Blocks");
 			if (blockBytes == null) {
 				continue;
@@ -302,7 +306,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace) {
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return;
 		}
@@ -311,9 +315,9 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		if (replace.containsKey("minecraft:air")) {
 			Map<Integer, CompoundTag> sectionMap = new HashMap<>();
 			List<Integer> heights = new ArrayList<>(18);
-			for (CompoundTag section : sections) {
-				sectionMap.put(section.getNumber("Y").intValue(), section);
-				heights.add(section.getNumber("Y").intValue());
+			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+				sectionMap.put(section.getInt("Y"), section);
+				heights.add(section.getInt("Y"));
 			}
 
 			for (int y = 0; y < 16; y++) {
@@ -336,13 +340,16 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 			}
 		}
 
-		for (CompoundTag section : sections) {
+		for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 			for (Map.Entry<String, BlockReplaceData> entry : replace.entrySet()) {
 				BlockData[] bd = mapping.get(entry.getKey());
 				BlockData bdr = mapping.get(entry.getValue().getName())[0];
 
 				byte[] blocks = section.getByteArray("Blocks");
 				byte[] blockData = section.getByteArray("Data");
+
+				section.remove("BlockLight");
+				section.remove("SkyLight");
 
 				blockLoop:
 				for (int i = 0; i < blocks.length; i++) {
@@ -362,10 +369,10 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 		// delete tile entities with that name
 
-		ListTag<CompoundTag> tileEntities = Helper.tagFromLevelFromRoot(data, "TileEntities", null);
+		ListTag tileEntities = Helper.tagFromLevelFromRoot(data, "TileEntities", null);
 		if (tileEntities != null) {
 			for (int i = 0; i < tileEntities.size(); i++) {
-				CompoundTag tileEntity = tileEntities.get(i);
+				CompoundTag tileEntity = tileEntities.getCompound(i);
 				String id = Helper.stringFromCompound(tileEntity, "id");
 				if (id != null && replace.containsKey(id)) {
 					tileEntities.remove(i);
@@ -385,7 +392,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 	@Override
 	public int getAverageHeight(CompoundTag data) {
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return 0;
 		}
@@ -397,7 +404,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
 			zLoop:
 			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
-				for (CompoundTag section : sections) {
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 					byte[] blocks = Helper.byteArrayFromCompound(section, "Blocks");
 					if (blocks == null) {
 						continue;
@@ -425,13 +432,13 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		return blockID == 0 || blockID == 166 || blockID == 217;
 	}
 
-	private int filterSections(CompoundTag sectionA, CompoundTag sectionB) {
+	private int filterSections(Tag sectionA, Tag sectionB) {
 		return Helper.numberFromCompound(sectionB, "Y", -1).intValue() - Helper.numberFromCompound(sectionA, "Y", -1).intValue();
 	}
 
 	@Override
 	public int getBlockAmount(CompoundTag data, String[] blocks) {
-		ListTag<CompoundTag> sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
+		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections", null);
 		if (sections == null) {
 			return 0;
 		}
@@ -446,7 +453,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 
 			BlockData[] blockData = mapping.get(blockName);
 
-			for (CompoundTag section : sections) {
+			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				byte[] blockIDs = Helper.byteArrayFromCompound(section, "Blocks");
 				if (blockIDs == null) {
 					continue;
@@ -473,7 +480,7 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 	}
 
 	@Override
-	public ListTag<CompoundTag> getTileEntities(CompoundTag data) {
+	public ListTag getTileEntities(CompoundTag data) {
 		return Helper.tagFromLevelFromRoot(data, "TileEntities");
 	}
 
@@ -490,8 +497,25 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 	}
 
 	@Override
-	public ListTag<CompoundTag> getSections(CompoundTag data) {
+	public ListTag getSections(CompoundTag data) {
 		return Helper.tagFromLevelFromRoot(data, "Sections");
+	}
+
+	@Override
+	public void deleteSections(CompoundTag data, List<Range> ranges) {
+		ListTag sections = Helper.tagFromLevelFromRoot(data, "Sections");
+		if (sections == null) {
+			return;
+		}
+		for (int i = 0; i < sections.size(); i++) {
+			CompoundTag section = sections.getCompound(i);
+			for (Range range : ranges) {
+				if (range.contains(section.getInt("Y"))) {
+					sections.remove(i);
+					i--;
+				}
+			}
+		}
 	}
 
 	@Override
@@ -513,11 +537,20 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 	}
 
 	@Override
-	public void setStatus(CompoundTag data, String status) {
+	public void setStatus(CompoundTag data, StatusRegistry.StatusIdentifier status) {
 		CompoundTag level = Helper.levelFromRoot(data);
 		if (level != null) {
-			level.putString("Status", status);
+			level.putString("Status", status.getStatus());
 		}
+	}
+
+	@Override
+	public boolean matchStatus(CompoundTag data, StatusRegistry.StatusIdentifier status) {
+		StringTag tag = getStatus(data);
+		if (tag == null) {
+			return false;
+		}
+		return status.getStatus().equals(tag.getValue());
 	}
 
 	@Override
@@ -559,5 +592,10 @@ public class Anvil112ChunkFilter implements ChunkFilter {
 		if (level != null) {
 			level.putLong("LightPopulated", lightPopulated);
 		}
+	}
+
+	@Override
+	public void forceBlending(CompoundTag data) {
+		// do nothing
 	}
 }

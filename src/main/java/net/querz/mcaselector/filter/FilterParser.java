@@ -1,6 +1,7 @@
 package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.exception.ParseException;
+import net.querz.mcaselector.filter.filters.GroupFilter;
 import net.querz.mcaselector.io.StringPointer;
 
 public class FilterParser {

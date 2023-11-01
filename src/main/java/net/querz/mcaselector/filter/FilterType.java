@@ -1,5 +1,7 @@
 package net.querz.mcaselector.filter;
 
+import net.querz.mcaselector.filter.filters.*;
+
 import java.util.function.Supplier;
 
 public enum FilterType {
@@ -16,15 +18,18 @@ public enum FilterType {
 	PALETTE("Palette", PaletteFilter::new, Format.TEXT),
 	BIOME("Biome", BiomeFilter::new, Format.TEXT),
 	STATUS("Status", StatusFilter::new, Format.TEXT),
-	PLAYER_DATA("PlayerLocation", PlayerLocationFilter::new, Format.TEXT),
-	PLAYER_SPAWN("PlayerSpawn", PlayerSpawnFilter::new, Format.TEXT),
+	PLAYER_DATA("PlayerLocation", PlayerLocationFilter::new, Format.FILE),
+	PLAYER_SPAWN("PlayerSpawn", PlayerSpawnFilter::new, Format.FILE),
+	SELECTION("Selection", SelectionFilter::new, Format.FILE),
 	LIGHT_POPULATED("LightPopulated", LightPopulatedFilter::new, Format.NUMBER),
 	ENTITIES("Entities", EntityFilter::new, Format.TEXT),
 	STRUCTURES("Structures", StructureFilter::new, Format.TEXT),
 	ENTITY_AMOUNT("#Entities", EntityAmountFilter::new, Format.NUMBER),
+	PROTO_ENTITY_AMOUNT("#ProtoEntities", ProtoEntityAmountFilter::new, Format.NUMBER),
 	TILE_ENTITY_AMOUNT("#TileEntities", TileEntityAmountFilter::new, Format.NUMBER),
 	CIRCLE("Circle", CircleFilter::new, Format.TEXT),
-	BORDER("Border", BorderFilter::new, Format.NUMBER);
+	BORDER("Border", BorderFilter::new, Format.NUMBER),
+	CUSTOM("Custom", CustomFilter::new, Format.TEXT);
 
 	private final String string;
 	private final Supplier<? extends Filter<?>> creator;
@@ -59,6 +64,6 @@ public enum FilterType {
 	}
 
 	public enum Format {
-		GROUP, NUMBER, TEXT
+		GROUP, NUMBER, TEXT, FILE
 	}
 }

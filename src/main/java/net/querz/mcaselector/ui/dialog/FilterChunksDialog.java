@@ -19,14 +19,19 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import net.querz.mcaselector.debug.Debug;
 import net.querz.mcaselector.filter.*;
 import net.querz.mcaselector.exception.ParseException;
+import net.querz.mcaselector.filter.filters.GroupFilter;
+import net.querz.mcaselector.filter.filters.InhabitedTimeFilter;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.ui.GroupFilterBox;
+import net.querz.mcaselector.ui.component.filter.GroupFilterBox;
 import net.querz.mcaselector.ui.UIFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
+
+	private static final Logger LOGGER = LogManager.getLogger(FilterChunksDialog.class);
 
 	private static GroupFilter gf = new GroupFilter();
 	static {
@@ -118,11 +123,11 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 			try {
 				gf = fp.parse();
 				gf = FilterParser.unwrap(gf);
-				Debug.dumpf("parsed filter query from: %s, to: %s", filterQuery.getText(), gf);
+				LOGGER.debug("parsed filter query from: {}, to: {}", filterQuery.getText(), gf);
 				value = gf;
 				groupFilterBox.setFilter(gf);
 			} catch (ParseException ex) {
-				Debug.dumpf("failed to parse filter query from: %s, error: %s", filterQuery.getText(), ex.getMessage());
+				LOGGER.warn("failed to parse filter query from: {}, error: {}", filterQuery.getText(), ex.getMessage());
 			}
 		});
 

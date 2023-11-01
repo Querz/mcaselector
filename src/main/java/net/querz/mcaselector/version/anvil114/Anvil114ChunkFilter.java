@@ -2,7 +2,7 @@ package net.querz.mcaselector.version.anvil114;
 
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.anvil113.Anvil113ChunkFilter;
-import net.querz.nbt.tag.*;
+import net.querz.nbt.*;
 
 public class Anvil114ChunkFilter extends Anvil113ChunkFilter {
 

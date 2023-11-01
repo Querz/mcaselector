@@ -3,11 +3,12 @@ package net.querz.mcaselector.io;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import net.querz.mcaselector.Config;
-import net.querz.mcaselector.debug.Debug;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -31,6 +32,9 @@ import java.util.regex.Pattern;
 
 public final class FileHelper {
 
+	private static final Logger LOGGER = LogManager.getLogger(FileHelper.class);
+
+	public static final int HEADER_SIZE = 8192;
 	public static final Pattern MCA_FILE_PATTERN = Pattern.compile("^r\\.-?\\d+\\.-?\\d+\\.mca$");
 	public static final Pattern REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
 	public static final Pattern DAT_REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.dat$");
@@ -125,27 +129,27 @@ public final class FileHelper {
 	}
 
 	public static File createRegionMCAFilePath(Point2i r) {
-		return new File(Config.getWorldDirs().getRegion(), createMCAFileName(r));
+		return new File(ConfigProvider.WORLD.getWorldDirs().getRegion(), createMCAFileName(r));
 	}
 
 	public static File createPoiMCAFilePath(Point2i r) {
-		return new File(Config.getWorldDirs().getPoi(), createMCAFileName(r));
+		return new File(ConfigProvider.WORLD.getWorldDirs().getPoi(), createMCAFileName(r));
 	}
 
 	public static File createEntitiesMCAFilePath(Point2i r) {
-		return new File(Config.getWorldDirs().getEntities(), createMCAFileName(r));
+		return new File(ConfigProvider.WORLD.getWorldDirs().getEntities(), createMCAFileName(r));
 	}
 
 	public static File createRegionMCCFilePath(Point2i c) {
-		return new File(Config.getWorldDirs().getRegion(), createMCCFileName(c));
+		return new File(ConfigProvider.WORLD.getWorldDirs().getRegion(), createMCCFileName(c));
 	}
 
 	public static File createPoiMCCFilePath(Point2i c) {
-		return new File(Config.getWorldDirs().getPoi(), createMCCFileName(c));
+		return new File(ConfigProvider.WORLD.getWorldDirs().getPoi(), createMCCFileName(c));
 	}
 
 	public static File createEntitiesMCCFilePath(Point2i c) {
-		return new File(Config.getWorldDirs().getEntities(), createMCCFileName(c));
+		return new File(ConfigProvider.WORLD.getWorldDirs().getEntities(), createMCCFileName(c));
 	}
 
 	public static WorldDirectories validateWorldDirectories(File dir) {
@@ -166,11 +170,11 @@ public final class FileHelper {
 	}
 
 	public static File createMCAFilePath(Point2i r) {
-		return new File(Config.getWorldDir(), createMCAFileName(r));
+		return new File(ConfigProvider.WORLD.getRegionDir(), createMCAFileName(r));
 	}
 
 	public static File createMCCFilePath(Point2i c) {
-		return new File(Config.getWorldDir(), createMCCFileName(c));
+		return new File(ConfigProvider.WORLD.getRegionDir(), createMCCFileName(c));
 	}
 
 	public static File createPNGFilePath(File cacheDir, Point2i r) {
@@ -245,7 +249,7 @@ public final class FileHelper {
 			createDirectoryOrThrowException(file, "entities");
 			return new WorldDirectories(new File(file, "region"), new File(file, "poi"), new File(file, "entities"));
 		} catch (IOException ex) {
-			Debug.dumpException("failed to create directories", ex);
+			LOGGER.warn("failed to create directories", ex);
 			return null;
 		}
 	}

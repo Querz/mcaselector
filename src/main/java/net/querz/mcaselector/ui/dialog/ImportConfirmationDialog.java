@@ -14,7 +14,7 @@ import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.ui.LocationInput;
+import net.querz.mcaselector.ui.component.LocationInput;
 import net.querz.mcaselector.ui.UIFactory;
 import java.util.List;
 import java.util.function.Consumer;

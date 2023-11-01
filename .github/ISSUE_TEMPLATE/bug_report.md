@@ -31,8 +31,8 @@ To create the 'debug.log' file, follow these steps:
 
 **Environment (please complete the following information):**
 - OS: [e.g. Windows 10]
-- Java version: [e.g. 16.0.1 and no, "newest version" is not a version]
-- Version of MCA Selector [e.g. 1.16.2]
+- Java version: [e.g. 17.0.1 and no, "newest version" is not a version]
+- Version of MCA Selector [e.g. 2.2.2]
 
 **Additional context**
 Add any other context about the problem here, e.g.:
