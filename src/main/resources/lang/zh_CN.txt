@@ -45,20 +45,20 @@ menu.tools.swap_chunks;交换区块
 menu.tools.edit_overlays;编辑叠加
 menu.tools.next_overlay;下一个叠加
 menu.tools.next_overlay_type;叠加类型
-dialog.select_world.title;选择一个尺寸
+dialog.select_world.title;选择维度
 dialog.settings.title;设置
-dialog.settings.global.language;语
-dialog.settings.global.language.language;语
-dialog.settings.processing.process.process_threads;进程线程
-dialog.settings.processing.process;过程
-dialog.settings.processing.process.write_threads;写线程
+dialog.settings.global.language;语言
+dialog.settings.global.language.language;语言
+dialog.settings.processing.process.process_threads;处理线程数
+dialog.settings.processing.process;处理
+dialog.settings.processing.process.write_threads;写入线程数
 dialog.settings.processing.files.max_files;最大文件数
 dialog.settings.global.selection.region_color;区域颜色
-dialog.settings.global.selection.chunk_color;块色
-dialog.settings.global.selection.pasted_chunks_color;粘贴的块颜色
+dialog.settings.global.selection.chunk_color;区块颜色
+dialog.settings.global.selection.pasted_chunks_color;粘贴的区块颜色
 dialog.settings.rendering.shade.shade;阴影
 dialog.settings.rendering.shade;阴影
-dialog.settings.rendering.shade.shade_water;遮荫水
+dialog.settings.rendering.shade.shade_water;水体阴影
 dialog.settings.rendering.background.show_nonexistent_regions;显示不存在的区域
 dialog.settings.rendering.smooth.smooth_rendering;平滑渲染
 dialog.settings.rendering.smooth.smooth_overlays;平滑叠加
@@ -68,27 +68,27 @@ dialog.settings.global.misc.mc_saves_dir;MC 保存目录
 dialog.settings.global.misc.print_debug;打印调试信息
 dialog.settings.global.misc.show_log_file;显示日志文件
 dialog.settings.reset;重置
-dialog.settings.tab_global;全球的
-dialog.settings.tab_processing;加工
+dialog.settings.tab_global;全局
+dialog.settings.tab_processing;进程
 dialog.settings.tab_rendering;渲染
 dialog.settings.tab_world;世界
 dialog.settings.global.misc;杂项
 dialog.settings.processing.files;文件
-dialog.settings.rendering.smooth;光滑的
+dialog.settings.rendering.smooth;平滑
 dialog.settings.global.selection;选择
 dialog.settings.world.paths;路径
 dialog.settings.world.paths.poi;兴趣点
 dialog.settings.world.paths.entities;实体
 dialog.settings.rendering.layers.render_height;渲染高度
-dialog.settings.rendering.layers.render_layer_only;仅渲染层
-dialog.settings.rendering.layers;图层
+dialog.settings.rendering.layers.render_layer_only;仅渲染此层
+dialog.settings.rendering.layers;层
 dialog.settings.rendering.layers.render_caves;渲染洞穴
-dialog.goto.title;转到位置
 dialog.confirmation.question;你确定吗?
+dialog.goto.title;跳转到位置
 dialog.delete_chunks_confirmation.title;删除区块
 dialog.delete_chunks_confirmation.header_short;您将要从这个世界中删除未知数量的区块.
 dialog.delete_chunks_confirmation.header_verbose;你将要从这个世界中删除 %d 个区块.
-dialog.image_export_confirmation.title;汇出图片
+dialog.image_export_confirmation.title;导出图片
 dialog.image_export_confirmation.header_short;您将要创建未知比例的图像.
 dialog.image_export_confirmation.header_verbose;您将要创建尺寸为 %dx%d 的图像.
 dialog.import_chunks_confirmation.title;导入区块
@@ -97,7 +97,7 @@ dialog.import_chunks_confirmation.options;选项
 dialog.import_chunks_confirmation.options.offset;抵消
 dialog.import_chunks_confirmation.options.overwrite;覆盖现有区块
 dialog.import_chunks_confirmation.options.selection_only;仅应用于所选内容
-dialog.import_chunks_confirmation.options.y_offset;Y偏移
+dialog.import_chunks_confirmation.options.y_offset;Y坐标偏移量
 dialog.import_chunks_confirmation.options.sections;部分
 dialog.import_chunks_confirmation.warning;警告: 使用偏移量导入块不会更新命令块的内容.
 dialog.export_chunks_confirmation.title;导出区块
@@ -122,8 +122,8 @@ dialog.filter_chunks.delete.tooltip;从当前世界中删除所有受影响的�
 dialog.filter_chunks.selection_only;仅应用于所选内容
 dialog.filter_chunks.overwrite_selection;覆盖选择
 dialog.filter_chunks.selection_radius;选择半径
-dialog.edit_overlays.title;编辑叠加
-dialog.edit_overlays.overlay_active.tooltip;积极的
+dialog.edit_overlays.title;编辑叠加层
+dialog.edit_overlays.overlay_active.tooltip;激活的
 dialog.edit_overlays.delete.tooltip;删除
 dialog.change_nbt.title;更改NBT
 dialog.change_nbt.change;更改
@@ -167,7 +167,7 @@ dialog.progress.title.deleting_filtered_chunks;正在删除筛选区块...
 dialog.progress.title.exporting_filtered_chunks;正在导出筛选区块...
 dialog.progress.title.selecting_filtered_chunks;正在选择筛选区块...
 dialog.progress.title.changing_nbt_data;正在更改 NBT 数据...
-dialog.progress.title.saving_chunk;正在将块保存到文件...
+dialog.progress.title.saving_chunk;正在将区块保存到文件...
 dialog.error.button.copy_to_clipboard;复制到剪贴板
 dialog.error.title;错误
 dialog.error.header;发生错误
