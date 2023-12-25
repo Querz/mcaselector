@@ -986,7 +986,6 @@
 .key-value-tree-cell {
 	-fx-background-color: transparent;
 	-fx-text-fill: -color-text-light;
-	-fx-pref-height: 25px;
 }
 
 .key-value-tree-cell > .tree-disclosure-node > .arrow {
