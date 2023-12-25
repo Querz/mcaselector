@@ -466,6 +466,12 @@
 	-fx-text-fill: -color-text-light;
 }
 
+.hyperlink-menu-update {
+	-fx-background-color: red;
+	-fx-text-fill: -color-text-light;
+	-fx-padding: 0 2 0 2;
+}
+
 /*---------- ERROR DIALOG ----------*/
 
 .error-dialog-pane .copied-to-clipboard-label {

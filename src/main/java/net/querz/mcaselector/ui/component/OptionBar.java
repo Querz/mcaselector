@@ -1,5 +1,6 @@
 package net.querz.mcaselector.ui.component;
 
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -14,6 +15,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import net.querz.mcaselector.config.ConfigProvider;
+import net.querz.mcaselector.github.VersionChecker;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.selection.ClipboardSelection;
 import net.querz.mcaselector.tile.TileMap;
@@ -26,7 +28,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.io.File;
-import java.util.List;
+import java.io.IOException;
 
 public class OptionBar extends BorderPane {
 	/*
@@ -224,6 +226,39 @@ public class OptionBar extends BorderPane {
 
 		setLeft(menuBar);
 		setRight(hSlider);
+
+		checkForUpdateAsync();
+	}
+
+	private void checkForUpdateAsync() {
+		new Thread(() -> {
+			String applicationVersion;
+			try {
+				applicationVersion = FileHelper.getManifestAttributes().getValue("Application-Version");
+			} catch (IOException ex) {
+				// don't check for updates if we're in dev mode
+				return;
+			}
+
+			VersionChecker checker = new VersionChecker("Querz", "mcaselector");
+			VersionChecker.VersionData data;
+			try {
+				data = checker.fetchLatestVersion();
+			} catch (Exception e) {
+				// don't show update possibility when we failed to check the version
+				return;
+			}
+
+			if (data != null && data.isNewerThan(applicationVersion)) {
+				Platform.runLater(() -> {
+					Hyperlink download = UIFactory.hyperlink("Update", data.getLink(), null);
+					download.getStyleClass().add("hyperlink-menu-update");
+					Menu updateMenu = new Menu();
+					updateMenu.setGraphic(download);
+					menuBar.getMenus().add(updateMenu);
+				});
+			}
+		}).start();
 	}
 
 	private void onUpdate(TileMap tileMap) {
