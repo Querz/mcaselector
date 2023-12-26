@@ -11,8 +11,8 @@ menu.selection;選択
 menu.tools;ツール
 menu.about;詳細
 menu.file.open_world;ワールドを開く
-menu.file.open_dimension;別の次元を開く
-menu.file.open_recent_world;前の世界を開く
+menu.file.open_dimension;別のディメンションを開く
+menu.file.open_recent_world;以前のワールドを開く
 menu.file.open_recent_world.clear;クリア
 menu.file.settings;設定
 menu.file.render_settings;描画設定
@@ -20,9 +20,9 @@ menu.file.quit;終了
 menu.view.reload;リロード
 menu.view.chunk_grid;チャンクの境界
 menu.view.region_grid;リージョンの境界
-menu.view.coordinates;コーディネート
+menu.view.coordinates;座標
 menu.view.goto;移動
-menu.view.reset_zoom;拡大率をリセット
+menu.view.reset_zoom;ズームをリセット
 menu.view.save_screenshot;スクリーンショットを保存
 menu.view.clear_cache;キャッシュをクリア
 menu.view.clear_all_cache;すべてのキャッシュをクリア
@@ -31,13 +31,13 @@ menu.selection.invert;反転
 menu.selection.invert_regions;選択範囲を反転する
 menu.selection.copy_chunks;チャンクをコピー
 menu.selection.paste_chunks;チャンクをペースト
-menu.selection.export_chunks;チャンクのエクスポート
-menu.selection.delete_chunks;チャンクの削除
-menu.selection.import_selection;.csvから選択をインポートします
+menu.selection.export_chunks;チャンクをエクスポート
+menu.selection.delete_chunks;チャンクを削除
+menu.selection.import_selection;選択範囲を.csvからインポート
 menu.selection.export_selection;選択範囲を.csvとしてエクスポート
 menu.selection.export_image;画像としてエクスポート
 menu.selection.clear_cache;キャッシュをクリア
-menu.tools.import_chunks;チャンクのインポート
+menu.tools.import_chunks;チャンクをインポート
 menu.tools.filter_chunks;フィルター
 menu.tools.change_fields;フィールドを変更
 menu.tools.edit_nbt;NBTを編集
@@ -45,16 +45,16 @@ menu.tools.swap_chunks;チャンクを入れ替える
 menu.tools.edit_overlays;オーバーレイ
 menu.tools.next_overlay;次のオーバーレイ
 menu.tools.next_overlay_type;次のオーバーレイのタイプ
-dialog.select_world.title;ディメンションの選択
+dialog.select_world.title;ディメンションを選択
 dialog.settings.title;設定
 dialog.settings.global.language;言語
 dialog.settings.global.language.language;言語
 dialog.settings.processing.process.process_threads;プロセススレッド
 dialog.settings.processing.process;プロセス
 dialog.settings.processing.process.write_threads;書き込みスレッド
-dialog.settings.processing.files.max_files;読み込めるファイル数
-dialog.settings.global.selection.region_color;選択しているリージョンの色
-dialog.settings.global.selection.chunk_color;選択しているチャンクの色
+dialog.settings.processing.files.max_files;読み込める最大ファイル数
+dialog.settings.global.selection.region_color;選択中のリージョンの色
+dialog.settings.global.selection.chunk_color;選択中のチャンクの色
 dialog.settings.global.selection.pasted_chunks_color;ペーストするチャンクの色
 dialog.settings.rendering.shade.shade;影/透過
 dialog.settings.rendering.shade;影/透過
@@ -66,7 +66,7 @@ dialog.settings.rendering.background.background_pattern;背景パターン
 dialog.settings.rendering.background;背景
 dialog.settings.global.misc.mc_saves_dir;セーブフォルダ
 dialog.settings.global.misc.print_debug;デバッグ情報を出力
-dialog.settings.global.misc.show_log_file;ログを表示
+dialog.settings.global.misc.show_log_file;ログファイルを表示
 dialog.settings.reset;リセット
 dialog.settings.tab_global;一般
 dialog.settings.tab_processing;処理
@@ -74,7 +74,7 @@ dialog.settings.tab_rendering;描画
 dialog.settings.tab_world;ワールド
 dialog.settings.global.misc;その他
 dialog.settings.processing.files;ファイル
-dialog.settings.rendering.smooth;滑らか
+dialog.settings.rendering.smooth;滑らかさ
 dialog.settings.global.selection;選択
 dialog.settings.world.paths;パス
 dialog.settings.world.paths.poi;POI
@@ -103,35 +103,35 @@ dialog.import_chunks_confirmation.warning;警告：オフセットを使用し�
 dialog.export_chunks_confirmation.title;チャンクをエクスポート
 dialog.export_chunks_confirmation.header_short;不明な数のチャンクをエクスポートしようとしています
 dialog.export_chunks_confirmation.header_verbose;%d個のチャンクをエクスポートしようとしています
-dialog.import_selection.title;.csvから選択をインポートします
-dialog.import_selection.header;この世界にはすでに選択範囲があります。\n新しい選択範囲をどのようにインポートする必要がありますか？
+dialog.import_selection.title;.csvから選択範囲をインポート
+dialog.import_selection.header;このワールドにはすでに選択されている範囲があります\n新しい選択範囲をどのようにインポートしますか？
 dialog.import_selection.overwrite;上書き
 dialog.import_selection.merge;追加
 dialog.filter_chunks.title;フィルター
-dialog.filter_chunks.filter.add.tooltip;フィルターを追加します
-dialog.filter_chunks.filter.delete.tooltip;フィルターを削除します
+dialog.filter_chunks.filter.add.tooltip;フィルターを追加
+dialog.filter_chunks.filter.delete.tooltip;フィルターを削除
 dialog.filter_chunks.filter.type.tooltip;フィルターのタイプ
 dialog.filter_chunks.filter.operator.tooltip;フィルターをリンクする演算子
 dialog.filter_chunks.filter.comparator.tooltip;比較演算子
 dialog.filter_chunks.select;選択
-dialog.filter_chunks.select.tooltip;当てはまるチャンクを選択します
+dialog.filter_chunks.select.tooltip;該当するチャンクを選択
 dialog.filter_chunks.export;エクスポート
-dialog.filter_chunks.export.tooltip;当てはまるチャンクを新しいディレクトリにエクスポートします
+dialog.filter_chunks.export.tooltip;該当するチャンクを新しいディレクトリにエクスポート
 dialog.filter_chunks.delete;削除
-dialog.filter_chunks.delete.tooltip;当てはまるチャンクをワールドから削除します
+dialog.filter_chunks.delete.tooltip;該当するチャンクをワールドから削除
 dialog.filter_chunks.selection_only;選択範囲のみに適用
-dialog.filter_chunks.overwrite_selection;選択範囲を上書きする
+dialog.filter_chunks.overwrite_selection;選択範囲を上書き
 dialog.filter_chunks.selection_radius;選択範囲の半径
 dialog.edit_overlays.title;オーバレイ
 dialog.edit_overlays.overlay_active.tooltip;有効化
 dialog.edit_overlays.delete.tooltip;削除
 dialog.change_nbt.title;NBTを変更
 dialog.change_nbt.change;変更
-dialog.change_nbt.change.tooltip;キーが存在する場合にのみ値を変更します
+dialog.change_nbt.change.tooltip;キーが存在する場合のみに値を変更
 dialog.change_nbt.force;強制
-dialog.change_nbt.force.tooltip;タグが存在しない場合はタグを作成します
+dialog.change_nbt.force.tooltip;タグが存在しない場合はタグを作成
 dialog.change_nbt.selection_only;選択範囲のみに適用
-dialog.change_nbt.selection_only.tooltip;このフィルターを現在の選択範囲にのみ適用する必要がある場合
+dialog.change_nbt.selection_only.tooltip;このフィルターを現在の選択範囲のみに適用
 dialog.change_nbt_confirmation.title;NBTを変更
 dialog.change_nbt_confirmation.header_short;不明な数のチャンクのデータを変更しようとしています
 dialog.edit_nbt.title;NBTを編集
@@ -144,13 +144,13 @@ dialog.about.title;詳細
 dialog.about.header;MCA Selectorについて
 dialog.about.version;バージョン：
 dialog.about.version.unknown;不明
-dialog.about.version.check;更新
+dialog.about.version.check;更新を確認
 dialog.about.version.checking;確認中...
 dialog.about.version.up_to_date;なし
 dialog.about.version.error;エラー
 dialog.about.license;ライセンス：
 dialog.about.copyright;著作権：
-dialog.about.source;ソース：
+dialog.about.source;ソースコード：
 dialog.progress.no_files;ファイルがありません
 dialog.progress.running;実行中...
 dialog.progress.cancelling;キャンセルしています...
@@ -173,6 +173,6 @@ dialog.error.title;エラー
 dialog.error.header;エラーが発生しました
 dialog.error.copied_to_clipboard;コピーしました
 dialog.unsaved_selection.title;保存されていない選択
-dialog.unsaved_selection.header;保存されていない選択があります。
+dialog.unsaved_selection.header;保存されていない選択があります
 button.cancel;キャンセル
 button.ok;OK
