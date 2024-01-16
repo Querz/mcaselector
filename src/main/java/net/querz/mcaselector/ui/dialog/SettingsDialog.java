@@ -18,6 +18,7 @@ import net.querz.mcaselector.config.WorldConfig;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.component.BorderedTitledPane;
 import net.querz.mcaselector.ui.component.FileTextField;
 import net.querz.mcaselector.ui.component.HeightSlider;
 import net.querz.mcaselector.ui.component.TileMapBox;
@@ -228,7 +229,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		// -------------------------------------------------------------------------------------------------------------
 
 		// GLOBAL
-		Tab globalTab = createTab(Translation.DIALOG_SETTINGS_TAB_GLOBAL);
+		Tab globalTab = UIFactory.tab(Translation.DIALOG_SETTINGS_TAB_GLOBAL);
 		VBox globalBox = new VBox();
 
 		GridPane languageGrid = createGrid();
@@ -252,7 +253,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		leftTabs.getChildren().add(globalToggleButton);
 
 		// PROCESSING
-		Tab processingTab = createTab(Translation.DIALOG_SETTINGS_TAB_PROCESSING);
+		Tab processingTab = UIFactory.tab(Translation.DIALOG_SETTINGS_TAB_PROCESSING);
 		VBox processingBox = new VBox();
 
 		GridPane threadGrid = createGrid();
@@ -269,7 +270,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		leftTabs.getChildren().add(createToggleButton(processingTab, Translation.DIALOG_SETTINGS_TAB_PROCESSING));
 
 		// RENDERING
-		Tab renderingTab = createTab(Translation.DIALOG_SETTINGS_TAB_RENDERING);
+		Tab renderingTab = UIFactory.tab(Translation.DIALOG_SETTINGS_TAB_RENDERING);
 		VBox renderingBox = new VBox();
 
 		HBox shadingAndSmooth = new HBox();
@@ -305,7 +306,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		rightTabs.getChildren().add(renderingToggleButton);
 
 		// WORLD
-		Tab worldTab = createTab(Translation.DIALOG_SETTINGS_TAB_WORLD);
+		Tab worldTab = UIFactory.tab(Translation.DIALOG_SETTINGS_TAB_WORLD);
 		VBox worldBox = new VBox();
 
 		GridPane worldGrid = createGrid();
@@ -371,18 +372,13 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			}
 			return null;
 		});
+
+		getDialogPane().getStylesheets().add(SettingsDialog.class.getClassLoader().getResource("style/component/settings-dialog.css").toExternalForm());
 	}
 
 	private <T extends Node> T withAlignment(T node) {
 		GridPane.setFillWidth(node, true);
 		return node;
-	}
-
-	private Tab createTab(Translation name) {
-		Tab tab = new Tab();
-		tab.setClosable(false);
-		tab.textProperty().bind(name.getProperty());
-		return tab;
 	}
 
 	private ToggleButton createToggleButton(Tab tab, Translation name) {

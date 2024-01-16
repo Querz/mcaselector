@@ -1,0 +1,50 @@
+* {
+    -color-tree-view-background: #46494b;
+    -color-tree-cell-selected: #3c3f41;
+    -color-treeview-cell-insert: #636769;
+}
+
+.nbt-tree-view {
+    -fx-background-color: -color-tree-view-background;
+    -fx-padding: 0;
+    -fx-min-width: 400px;
+    -fx-min-height: 500px;
+}
+
+.key-value-tree-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text-light;
+}
+
+.key-value-tree-cell > .tree-disclosure-node > .arrow {
+    -fx-background-color: -color-combo-box-arrow;
+}
+
+.key-value-tree-cell:selected {
+    -fx-background-color: -color-tree-cell-selected;
+}
+
+.key-value-tree-cell .text-field {
+    -fx-padding: 0 0 0 2;
+}
+
+.key-value-tree-cell .key-value-tree-cell-value {
+    -fx-pref-width: 80px;
+    -fx-max-width: 80px;
+}
+
+.drop-target-before {
+    -fx-background-color: linear-gradient(from 0% 100% to 0% 0%, -color-tree-view-background, -color-tree-view-background 70%, -color-treeview-cell-insert 90%, -color-treeview-cell-insert);
+}
+
+.drop-target-into {
+    -fx-background-color: linear-gradient(from 0% 100% to 0% 0%, -color-tree-view-background, -color-tree-view-background 20%, -color-treeview-cell-insert 40%, -color-treeview-cell-insert 60%, -color-tree-view-background 80%, -color-tree-view-background);
+}
+
+.drop-target-after {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, -color-tree-view-background, -color-tree-view-background 70%, -color-treeview-cell-insert 90%, -color-treeview-cell-insert);
+}
+
+.nbt-tree-view-drop-parent {
+    -fx-background-color: linear-gradient(from 0% 100% to 0% 0%, -color-tree-view-background, -color-tree-view-background 95%, -color-treeview-cell-insert);
+}

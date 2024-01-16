@@ -148,7 +148,8 @@ public class ParseDataJob extends ProcessDataJob {
 			ChunkData chunkData = new ChunkData(
 					regionMCAFile == null ? null : regionMCAFile.getChunk(i),
 					poiMCAFile == null ? null : poiMCAFile.getChunk(i),
-					entitiesMCAFile == null ? null : entitiesMCAFile.getChunk(i));
+					entitiesMCAFile == null ? null : entitiesMCAFile.getChunk(i),
+					false);
 			try {
 				data[i] = chunkData.parseData(parser);
 			} catch (Exception ex) {

@@ -122,6 +122,8 @@ dialog.filter_chunks.delete.tooltip;Kitörli a megfelelő chunkokat.
 dialog.filter_chunks.selection_only;Csak a kijelölt chunkokon
 dialog.filter_chunks.overwrite_selection;Kijelölés felülírása
 dialog.filter_chunks.selection_radius;Kijelölés sugara
+dialog.filter_chunks.tab_query;
+dialog.filter_chunks.tab_script;
 dialog.edit_overlays.title;Overlayek szerkesztése
 dialog.edit_overlays.overlay_active.tooltip;Aktív
 dialog.edit_overlays.delete.tooltip;Törlés
@@ -134,6 +136,8 @@ dialog.change_nbt.selection_only;Csak a kijelölt chunkokon
 dialog.change_nbt.selection_only.tooltip;Csak a kijelölt chunkokra hasson a szűrés.
 dialog.change_nbt_confirmation.title;NBT Változtatása
 dialog.change_nbt_confirmation.header_short;Ezzel ismeretlen számú chunkban megváltoztatsz adatokat.
+dialog.change_nbt.tab_query;
+dialog.change_nbt.tab_script;
 dialog.edit_nbt.title;Chunk szerkesztése
 dialog.edit_nbt.placeholder.loading;betöltés...
 dialog.edit_nbt.placeholder.no_chunk_data;chunk adatok nem találhatóak
@@ -168,6 +172,8 @@ dialog.progress.title.exporting_filtered_chunks;Szűrt chunkok exportálása...
 dialog.progress.title.selecting_filtered_chunks;Szűrt chunkok kijelölése...
 dialog.progress.title.changing_nbt_data;NBT adatok megváltoztatása...
 dialog.progress.title.saving_chunk;Chunk mentése...
+dialog.progress.title.running_before;
+dialog.progress.title.running_after;
 dialog.error.button.copy_to_clipboard;Másolás Vágólapra
 dialog.error.title;Hiba
 dialog.error.header;Hiba történt

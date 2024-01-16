@@ -17,6 +17,7 @@ public class HueRangeSlider extends RangeSlider {
 
 	public HueRangeSlider(float minHue, float maxHue, float low, float high, int width) {
 		super(minHue, maxHue, minHue, maxHue);
+		getStylesheets().add(HueRangeSlider.class.getClassLoader().getResource("style/component/hue-range-slider.css").toExternalForm());
 		this.width = width;
 
 		if (low > high) {

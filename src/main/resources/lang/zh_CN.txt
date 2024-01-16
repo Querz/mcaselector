@@ -83,8 +83,8 @@ dialog.settings.rendering.layers.render_height;渲染高度
 dialog.settings.rendering.layers.render_layer_only;仅渲染此层
 dialog.settings.rendering.layers;层
 dialog.settings.rendering.layers.render_caves;渲染洞穴
-dialog.confirmation.question;你确定吗?
 dialog.goto.title;跳转到位置
+dialog.confirmation.question;你确定吗?
 dialog.delete_chunks_confirmation.title;删除区块
 dialog.delete_chunks_confirmation.header_short;您将要从这个世界中删除未知数量的区块.
 dialog.delete_chunks_confirmation.header_verbose;你将要从这个世界中删除 %d 个区块.
@@ -122,6 +122,8 @@ dialog.filter_chunks.delete.tooltip;从当前世界中删除所有受影响的�
 dialog.filter_chunks.selection_only;仅应用于所选内容
 dialog.filter_chunks.overwrite_selection;覆盖选择
 dialog.filter_chunks.selection_radius;选择半径
+dialog.filter_chunks.tab_query;
+dialog.filter_chunks.tab_script;
 dialog.edit_overlays.title;编辑叠加层
 dialog.edit_overlays.overlay_active.tooltip;激活的
 dialog.edit_overlays.delete.tooltip;删除
@@ -134,6 +136,8 @@ dialog.change_nbt.selection_only;仅适用于选择
 dialog.change_nbt.selection_only.tooltip;此筛选器是否只应用于当前所选内容.
 dialog.change_nbt_confirmation.title;更改NBT
 dialog.change_nbt_confirmation.header_short;您将要在此世界中更改未知数量的区块的数据.
+dialog.change_nbt.tab_query;
+dialog.change_nbt.tab_script;
 dialog.edit_nbt.title;编辑区块
 dialog.edit_nbt.placeholder.loading;载入中...
 dialog.edit_nbt.placeholder.no_chunk_data;找不到区块数据
@@ -168,6 +172,8 @@ dialog.progress.title.exporting_filtered_chunks;正在导出筛选区块...
 dialog.progress.title.selecting_filtered_chunks;正在选择筛选区块...
 dialog.progress.title.changing_nbt_data;正在更改 NBT 数据...
 dialog.progress.title.saving_chunk;正在将区块保存到文件...
+dialog.progress.title.running_before;
+dialog.progress.title.running_after;
 dialog.error.button.copy_to_clipboard;复制到剪贴板
 dialog.error.title;错误
 dialog.error.header;发生错误

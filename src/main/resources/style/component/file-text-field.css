@@ -1,0 +1,7 @@
+.file-text-field {
+    -fx-spacing: 5;
+}
+
+.file-text-field .button {
+    -fx-padding: 0 10 0 10;
+}

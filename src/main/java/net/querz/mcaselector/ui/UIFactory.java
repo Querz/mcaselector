@@ -2,18 +2,12 @@ package net.querz.mcaselector.ui;
 
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.ScrollEvent;
 import net.querz.mcaselector.text.Translation;
 import org.apache.logging.log4j.LogManager;
@@ -82,6 +76,13 @@ public final class UIFactory {
 		RadioButton radio = new RadioButton();
 		radio.textProperty().bind(translation.getProperty());
 		return radio;
+	}
+
+	public static Tab tab(Translation translation) {
+		Tab tab = new Tab();
+		tab.setClosable(false);
+		tab.textProperty().bind(translation.getProperty());
+		return tab;
 	}
 
 	public static TextField attachTextFieldToSlider(Slider slider) {

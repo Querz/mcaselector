@@ -1,0 +1,56 @@
+.slider-grid-pane .slider {
+    -fx-pref-width: 240;
+    -fx-padding: 0 10 0 0;
+}
+
+.slider-grid-pane .color-preview-button, .slider-grid-pane .file-text-field, .slider-grid-pane .combo-box {
+    -fx-pref-width: 280;
+}
+
+.slider-grid-pane .label {
+    -fx-padding: 10 10 10 0;
+    -fx-min-width: 200;
+}
+
+.slider-grid-pane .debug-box {
+    -fx-padding: 4 0 -3 0;
+}
+
+.settings-dialog-pane .file-text-field {
+    -fx-padding: 8 0 0 0;
+}
+
+.settings-dialog-pane .tab-pane {
+    -fx-tab-min-height: 0;
+    -fx-tab-max-height: 0;
+}
+
+.settings-dialog-pane .tab-pane .tab-header-area {
+    -fx-padding: 0 0 0 0;
+}
+
+.settings-dialog-pane .tab-pane .tab-header-area .headers-region .tab {
+    -fx-padding: 0 0 1 0;
+}
+
+.settings-dialog-pane .toggle-button {
+    -fx-background-color: -color-button-background;
+}
+
+.settings-dialog-pane .toggle-button:hover {
+    -fx-background-color: -color-button-hover-background;
+}
+
+.settings-dialog-pane .toggle-button {
+    -fx-text-fill: -color-text-light;
+}
+.settings-dialog-pane .toggle-button:selected {
+    -fx-border-color: -color-text-field-focused-shadow;
+    -fx-border-insets: -1;
+    -fx-border-radius: 2;
+    -fx-border-width: 1;
+}
+
+.settings-dialog-pane .tab-box {
+    -fx-spacing: 1;
+}

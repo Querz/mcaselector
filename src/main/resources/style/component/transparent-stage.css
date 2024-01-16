@@ -1,0 +1,15 @@
+.transparent-stage-content {
+    -fx-padding: 10;
+    -fx-background-insets: 10;
+}
+
+.transparent-stage-shadow {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 10, 0, 0, 0);
+    -fx-background-insets: 10;
+}
+
+.transparent-stage-content-root {
+    -fx-background-color: rgba(255, 255, 255, 0.0);
+    -fx-background-insets: 10;
+}

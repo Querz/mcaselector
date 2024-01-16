@@ -21,6 +21,7 @@ import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.UIFactory;
+import net.querz.mcaselector.ui.component.FileTextField;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -61,6 +62,8 @@ public abstract class FilterBox extends BorderPane {
 		USE_DRAGVIEW_OFFSET = osName.contains("windows");
 	}
 
+	private static final String stylesheet = FilterBox.class.getClassLoader().getResource("style/component/filter-box.css").toExternalForm();
+
 	public FilterBox(FilterBox parent, Filter<?> filter, boolean root) {
 		this.parent = parent;
 		this.root = root;
@@ -94,7 +97,7 @@ public abstract class FilterBox extends BorderPane {
 		filterOperators.getStyleClass().add("filter-operators-grid");
 		
 		type.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_TYPE_TOOLTIP));
-		type.getItems().addAll(FilterType.values());
+		type.getItems().addAll(FilterType.queuables());
 		type.getSelectionModel().select(filter.getType());
 		type.setOnAction(e -> update(type.getSelectionModel().getSelectedItem()));
 		type.getStyleClass().add("filter-type-combo-box");
@@ -114,6 +117,8 @@ public abstract class FilterBox extends BorderPane {
 		delete.setOnMouseReleased(e -> onDelete(this.filter));
 
 		setFilter(filter);
+
+		getStylesheets().add(stylesheet);
 	}
 
 	private void onDragDetected(MouseEvent e) {

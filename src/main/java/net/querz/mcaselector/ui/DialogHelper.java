@@ -32,6 +32,7 @@ import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.dialog.*;
+import net.querz.mcaselector.validation.BeforeAfterCallback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import javax.imageio.ImageIO;
@@ -62,14 +63,17 @@ public class DialogHelper {
 			Optional<ButtonType> confRes = new ChangeFieldsConfirmationDialog(null, primaryStage).showAndWait();
 			confRes.ifPresent(confR -> {
 				if (confR == ButtonType.OK) {
-					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_CHANGING_NBT_DATA, primaryStage)
-							.showProgressBar(t -> FieldChanger.changeNBTFields(
-									r.fields(),
-									r.force(),
-									r.selectionOnly() ? tileMap.getSelection() : null,
-									t,
-									false
-							));
+					if (runBefore(r, primaryStage)) {
+						return;
+					}
+					CancellableProgressDialog c = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_CHANGING_NBT_DATA, primaryStage);
+					c.showProgressBar(t -> FieldChanger.changeNBTFields(
+							r.fields(),
+							r.force(),
+							r.selectionOnly() ? tileMap.getSelection() : null,
+							t,
+							false
+					));
 					if (r.requiresClearCache()) {
 						if (r.selectionOnly()) {
 							CacheHelper.clearSelectionCache(tileMap);
@@ -77,6 +81,10 @@ public class DialogHelper {
 							CacheHelper.clearAllCache(tileMap);
 						}
 					}
+					if (c.cancelled()) {
+						return;
+					}
+					runAfter(r, primaryStage);
 				}
 			});
 		});
@@ -85,32 +93,39 @@ public class DialogHelper {
 	public static void filterChunks(TileMap tileMap, Stage primaryStage) {
 		Optional<FilterChunksDialog.Result> result = new FilterChunksDialog(primaryStage).showAndWait();
 		result.ifPresent(r -> {
-			LOGGER.debug("chunk filter query: {}", r.getFilter());
-			if (r.getFilter().isEmpty()) {
+			LOGGER.debug("chunk filter query: {}", r.filter());
+			if (r.filter().isEmpty()) {
 				LOGGER.debug("filter is empty, won't delete everything");
 				return;
 			}
 
-			switch (r.getType()) {
+			switch (r.type()) {
 				case DELETE -> {
 					Optional<ButtonType> confRes = new DeleteConfirmationDialog(null, primaryStage).showAndWait();
 					confRes.ifPresent(confR -> {
 						if (confR == ButtonType.OK) {
-							new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_FILTERED_CHUNKS, primaryStage)
-								.showProgressBar(t -> ChunkFilterDeleter.deleteFilter(
-									r.getFilter(),
-									r.isSelectionOnly() ? tileMap.getSelection() : null,
-									t,
-									false
-								));
-							r.getFilter().resetTempData();
-							if (r.isSelectionOnly()) {
+							if (runBefore(r, primaryStage)) {
+								return;
+							}
+							CancellableProgressDialog c = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_FILTERED_CHUNKS, primaryStage);
+							c.showProgressBar(t -> ChunkFilterDeleter.deleteFilter(
+								r.filter(),
+								r.selectionOnly() ? tileMap.getSelection() : null,
+								t,
+								false
+							));
+							r.filter().resetTempData();
+							if (r.selectionOnly()) {
 								CacheHelper.clearSelectionCache(tileMap);
 								tileMap.clear();
 								tileMap.clearSelection();
 							} else {
 								CacheHelper.clearAllCache(tileMap);
 							}
+							if (c.cancelled()) {
+								return;
+							}
+							runAfter(r, primaryStage);
 						}
 					});
 				}
@@ -130,15 +145,22 @@ public class DialogHelper {
 									return;
 								}
 
-								new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_FILTERED_CHUNKS, primaryStage)
-									.showProgressBar(t -> ChunkFilterExporter.exportFilter(
-										r.getFilter(),
-										r.isSelectionOnly() ? tileMap.getSelection() : null,
-										worldDirectories,
-										t,
-										false
-									));
-								r.getFilter().resetTempData();
+								if (runBefore(r, primaryStage)) {
+									return;
+								}
+								CancellableProgressDialog c = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_FILTERED_CHUNKS, primaryStage);
+								c.showProgressBar(t -> ChunkFilterExporter.exportFilter(
+									r.filter(),
+									r.selectionOnly() ? tileMap.getSelection() : null,
+									worldDirectories,
+									t,
+									false
+								));
+								r.filter().resetTempData();
+								if (c.cancelled()) {
+									return;
+								}
+								runAfter(r, primaryStage);
 							}
 						});
 					} else {
@@ -147,24 +169,57 @@ public class DialogHelper {
 				}
 				case SELECT -> {
 					Selection selection = tileMap.getSelection();
-					if (r.isOverwriteSelection()) {
+					if (r.overwriteSelection()) {
 						tileMap.clearSelection();
 					}
-					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS, primaryStage)
-						.showProgressBar(t -> ChunkFilterSelector.selectFilter(
-							r.getFilter(),
-							r.isSelectionOnly() ? (selection.isEmpty() ? null : selection) : null,
-							r.getRadius(),
-							s -> Platform.runLater(() -> {
-								tileMap.addSelection(s);
-								tileMap.draw();
-							}), t, false));
-					r.getFilter().resetTempData();
+					if (runBefore(r, primaryStage)) {
+						break;
+					}
+					CancellableProgressDialog c = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS, primaryStage);
+					c.showProgressBar(t -> ChunkFilterSelector.selectFilter(
+						r.filter(),
+						r.selectionOnly() ? (selection.isEmpty() ? null : selection) : null,
+						r.radius(),
+						s -> Platform.runLater(() -> {
+							tileMap.addSelection(s);
+							tileMap.draw();
+						}), t, false));
+					r.filter().resetTempData();
+					if (c.cancelled()) {
+						break;
+					}
+					runAfter(r, primaryStage);
 				}
 				default -> LOGGER.debug("i have no idea how you got no selection there...");
 			}
 		});
 		tileMap.draw();
+	}
+
+	private static boolean runBefore(BeforeAfterCallback result, Stage primaryStage) {
+		if (result.valid()) {
+			CancellableProgressDialog c = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_RUNNING_BEFORE, primaryStage);
+			c.showProgressBar(t -> {
+				t.setIndeterminate("running before()...");
+				result.before();
+				t.done("done");
+			});
+			return c.cancelled();
+		}
+		return false;
+	}
+
+	private static boolean runAfter(BeforeAfterCallback result, Stage primaryStage) {
+		if (result.valid()) {
+			CancellableProgressDialog c = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_RUNNING_AFTER, primaryStage);
+			c.showProgressBar(t -> {
+				t.setIndeterminate("running after()...");
+				result.after();
+				t.done("done");
+			});
+			return c.cancelled();
+		}
+		return false;
 	}
 
 	public static void quit(TileMap tileMap, Stage primaryStage) {
@@ -433,10 +488,10 @@ public class DialogHelper {
 			Point2i fromOffset = toChunk.sub(fromChunk);
 			Point2i toOffset = fromChunk.sub(toChunk);
 
-			ChunkData fromData = from.getChunkDataAt(fromChunk);
+			ChunkData fromData = from.getChunkDataAt(fromChunk, true);
 			fromData.relocate(fromOffset.chunkToBlock().toPoint3i());
 
-			ChunkData toData = to.getChunkDataAt(toChunk);
+			ChunkData toData = to.getChunkDataAt(toChunk, true);
 			toData.relocate(toOffset.chunkToBlock().toPoint3i());
 
 			from.setChunkDataAt(toData, fromChunk);

@@ -1,0 +1,85 @@
+* {
+    -color-code-area-background: #2b2b2b;
+    -color-text-default: #acb7c5;
+    -color-keyword: #c07c41;
+    -color-string: #70865e;
+    -color-comment: #808080;
+    -color-function: #f6c87b;
+    -color-row-highlight: #323232;
+
+    -fx-tab-size: 4;
+}
+
+.code-area {
+    -fx-background-color: -color-code-area-background;
+}
+
+.caret {
+    -fx-stroke: -color-text-default;
+    /*-fx-stroke-width: 2;*/ /* doesn't work for some reason */
+}
+
+.text {
+    -fx-font-family: Monospaced;
+    -fx-fill: -color-text-default;
+}
+
+.keyword {
+    -fx-fill: -color-keyword;
+    -fx-font-weight: bold;
+}
+
+.semicolon {
+    -fx-font-weight: bold;
+}
+
+.paren {
+    -fx-fill: -color-text-default;
+    -fx-font-weight: bold;
+}
+
+.bracket {
+    -fx-fill: -color-text-default;
+    -fx-font-weight: bold;
+}
+
+.brace {
+    -fx-fill: -color-text-default;
+    -fx-font-weight: bold;
+}
+
+.string {
+    -fx-fill: -color-string;
+}
+
+.comment {
+    -fx-fill: -color-comment;
+}
+
+.function {
+    -fx-fill: -color-function;
+}
+
+.paragraph-text {
+    -fx-padding: 0 3 0 3;
+}
+
+.paragraph-box:first-paragraph .paragraph-text {
+    -fx-padding: 3 3 0 3;
+}
+
+.paragraph-box:last-paragraph .paragraph-text {
+    -fx-padding: 0 3 3 3;
+}
+
+.paragraph-box:has-caret {
+    -fx-background-color: -color-row-highlight;
+}
+
+.lineno {
+    -fx-background-color: -color-button-background;
+    -fx-font-family: Monospaced;
+    -fx-font-style: normal;
+    -fx-font-weight: bold;
+    -fx-font-size: 15;
+}

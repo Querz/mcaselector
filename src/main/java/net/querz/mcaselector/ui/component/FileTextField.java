@@ -23,6 +23,8 @@ public class FileTextField extends HBox {
 
 	public FileTextField() {
 		getStyleClass().add("file-text-field");
+		getStylesheets().add(FileTextField.class.getClassLoader().getResource("style/component/file-text-field.css").toExternalForm());
+
 
 		HBox.setHgrow(textField, Priority.ALWAYS);
 

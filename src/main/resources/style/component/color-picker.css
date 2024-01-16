@@ -1,0 +1,37 @@
+* {
+    -color-picker-preview-shadow: #000000;
+}
+
+.color-picker-sliders, .border-element-vertical, .color-picker-button-box {
+    -fx-background-color: -color-dialog-background;
+    -fx-padding: 10;
+}
+
+.color-picker-sliders {
+    -fx-hgap: 10;
+}
+
+.color-picker-button-box {
+    -fx-alignment: center-right;
+    -fx-spacing: 10;
+}
+
+.color-picker-button-box .button {
+    -fx-padding: 0 10 0 10;
+}
+
+.color-picker-slider-label {
+    -fx-text-fill: -color-text-light;
+}
+
+.color-picker-sliders .slider {
+    -fx-show-tick-labels: false;
+    -fx-show-tick-marks: false;
+    -fx-snap-to-ticks: false;
+    -fx-padding: 10;
+}
+
+.color-picker-preview {
+    -fx-pref-height: 30;
+    -fx-effect: innershadow(gaussian, -color-picker-preview-shadow, 8, 0, 0, 0);
+}

@@ -98,6 +98,8 @@ public class OptionBar extends BorderPane {
 		getStyleClass().add("option-bar-box");
 		menuBar.getStyleClass().add("option-bar");
 
+		getStylesheets().add(OptionBar.class.getClassLoader().getResource("style/component/option-bar.css").toExternalForm());
+
 		tileMap.setOnUpdate(this::onUpdate);
 
 		file.getItems().addAll(

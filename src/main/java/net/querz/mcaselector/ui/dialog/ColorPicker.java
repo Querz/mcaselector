@@ -77,6 +77,8 @@ public class ColorPicker extends TransparentStage {
 		borderPane.setRight(borderElement("border-element-vertical"));
 
 		setContent(borderPane);
+
+		getScene().getStylesheets().add(ColorPicker.class.getClassLoader().getResource("style/component/color-picker.css").toExternalForm());
 	}
 
 	public Optional<Color> showColorPicker() {

@@ -122,6 +122,8 @@ dialog.filter_chunks.delete.tooltip;Удаляет все подверженны
 dialog.filter_chunks.selection_only;Применить только к выбранным
 dialog.filter_chunks.overwrite_selection;Перезаписать выбор
 dialog.filter_chunks.selection_radius;Радиус выбора
+dialog.filter_chunks.tab_query;
+dialog.filter_chunks.tab_script;
 dialog.edit_overlays.title;Редактировать наложения
 dialog.edit_overlays.overlay_active.tooltip;Активный
 dialog.edit_overlays.delete.tooltip;Удалить
@@ -134,6 +136,8 @@ dialog.change_nbt.selection_only;Применить только к выбран
 dialog.change_nbt.selection_only.tooltip;Если этот фильтр должен применяться только к выбранным
 dialog.change_nbt_confirmation.title;Изменить NBT
 dialog.change_nbt_confirmation.header_short;Вы изменяете параметры у неизвестного числа чанков в этом мире.
+dialog.change_nbt.tab_query;
+dialog.change_nbt.tab_script;
 dialog.edit_nbt.title;Редактировать чанк
 dialog.edit_nbt.placeholder.loading;загрузка...
 dialog.edit_nbt.placeholder.no_chunk_data;не найдено информации чанка
@@ -168,6 +172,8 @@ dialog.progress.title.exporting_filtered_chunks;Экспорт указанны�
 dialog.progress.title.selecting_filtered_chunks;Выбор указанных чанков...
 dialog.progress.title.changing_nbt_data;изменение NBT параметров...
 dialog.progress.title.saving_chunk;Сохранение фрагмента в файл...
+dialog.progress.title.running_before;
+dialog.progress.title.running_after;
 dialog.error.button.copy_to_clipboard;Скопировать в буфер обмена
 dialog.error.title;Ошибка
 dialog.error.header;Произошла ошибка
