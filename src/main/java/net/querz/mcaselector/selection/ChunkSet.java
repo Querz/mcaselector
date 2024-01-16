@@ -61,6 +61,7 @@ public class ChunkSet implements IntIterable, Serializable, Cloneable {
 		for (int i = 0; i < 16; i++) {
 			result.words[i] = ~words[i];
 		}
+		result.setBits = (short) (1024 - setBits);
 		return result;
 	}
 
