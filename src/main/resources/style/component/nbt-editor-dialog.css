@@ -1,3 +1,7 @@
+* {
+    -color-tree-view-background: #46494b;
+}
+
 .nbt-editor-options {
     -fx-spacing: 3px;
     -fx-padding: 5 0 0 0;
