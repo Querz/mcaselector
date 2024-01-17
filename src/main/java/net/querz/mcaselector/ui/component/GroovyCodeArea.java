@@ -52,7 +52,7 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 	private static final String BRACE_PATTERN = "(?<BRACE>[{}])";
 	private static final String BRACKET_PATTERN = "(?<BRACKET>[\\[\\]])";
 	private static final String SEMICOLON_PATTERN = "(?<SEMICOLON>;)";
-	private static final String STRING_PATTERN = "(?<STRING>[\"']([^\"\\\\]|\\\\.)*[\"'])";
+	private static final String STRING_PATTERN = "(?<STRING>[\"']([^\"'\\\\]|\\\\.)*[\"'])";
 	private static final String COMMENT_PATTERN = "(?<COMMENT>//[^\n]*|/\\*(.|\\R)*?\\*/)";
 	private static final String FUNCTION_PATTERN = "(?<FUNCTION>[a-zA-Z_$][\\w$]*)\\(";
 
@@ -83,7 +83,10 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 						return Optional.empty();
 					}
 				})
-				.subscribe(h -> setStyleSpans(0, h));
+				.subscribe(h -> {
+					System.out.println(h);
+					setStyleSpans(0, h);
+				});
 
 		if (eval) {
 			engine = new GroovyScriptEngine();
