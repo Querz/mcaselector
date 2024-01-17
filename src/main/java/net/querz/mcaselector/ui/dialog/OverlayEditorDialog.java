@@ -63,6 +63,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		getDialogPane().getStyleClass().add("overlay-dialog-pane");
 		setResultConverter(p -> p == ButtonType.OK ? new Result(overlays) : null);
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+		getDialogPane().getStylesheets().add(OverlayEditorDialog.class.getClassLoader().getResource("style/component/overlay-editor-dialog.css").toExternalForm());
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, e -> {
 			tileMap.setOverlays(overlays);

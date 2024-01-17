@@ -61,7 +61,7 @@ public class Window extends Application {
 
 		Scene scene = new Scene(pane, width, height);
 
-		URL cssRes = Window.class.getClassLoader().getResource("style.css");
+		URL cssRes = Window.class.getClassLoader().getResource("style/base.css");
 		if (cssRes != null) {
 			String styleSheet = cssRes.toExternalForm();
 			scene.getStylesheets().add(styleSheet);

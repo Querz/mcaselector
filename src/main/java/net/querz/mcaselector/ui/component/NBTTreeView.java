@@ -65,6 +65,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		getStyleClass().add("nbt-tree-view");
 		setEditable(true);
 		setCellFactory(tv -> new KeyValueTreeCell());
+		getStylesheets().add(NBTTreeView.class.getClassLoader().getResource("style/component/nbt-tree-view.css").toExternalForm());
 	}
 
 	public void setOnSelectionChanged(BiConsumer<TreeItem<NamedTag>, TreeItem<NamedTag>> c) {

@@ -22,3 +22,4 @@ export/
 !src/test/resources/anvil*/*.mca
 7za.exe
 /test
+.DS_Store

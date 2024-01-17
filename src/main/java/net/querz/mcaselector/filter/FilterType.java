@@ -2,6 +2,8 @@ package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.filter.filters.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 public enum FilterType {
@@ -29,16 +31,40 @@ public enum FilterType {
 	TILE_ENTITY_AMOUNT("#TileEntities", TileEntityAmountFilter::new, Format.NUMBER),
 	CIRCLE("Circle", CircleFilter::new, Format.TEXT),
 	BORDER("Border", BorderFilter::new, Format.NUMBER),
-	CUSTOM("Custom", CustomFilter::new, Format.TEXT);
+	CUSTOM("Custom", CustomFilter::new, Format.TEXT),
+	SCRIPT("Script", CustomFilter::new, Format.TEXT, false);
 
 	private final String string;
 	private final Supplier<? extends Filter<?>> creator;
 	private final Format format;
+	private final boolean queue;
+
+	private static FilterType[] queuables;
+
+	static {
+		List<FilterType> queuable = new ArrayList<>(8);
+		for (FilterType filterType : values()) {
+			if (filterType.queue) {
+				queuable.add(filterType);
+			}
+		}
+		FilterType.queuables = queuable.toArray(new FilterType[0]);
+	}
 
 	FilterType(String string, Supplier<? extends Filter<?>> creator, Format format) {
+		this(string, creator, format, true);
+	}
+
+	FilterType(String string, Supplier<? extends Filter<?>> creator, Format format, boolean queue) {
 		this.string = string;
 		this.creator = creator;
 		this.format = format;
+		this.queue = queue;
+	}
+
+
+	public static FilterType[] queuables() {
+		return queuables;
 	}
 
 	public Format getFormat() {

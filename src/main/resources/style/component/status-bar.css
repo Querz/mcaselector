@@ -1,0 +1,12 @@
+.status-bar {
+    -fx-background-color: -color-menu-background;
+    -fx-min-width: 0;
+}
+
+.status-bar .label {
+    -fx-text-fill: -color-text-light;
+}
+
+.status-bar-grid {
+    -fx-hgap: 5px;
+}

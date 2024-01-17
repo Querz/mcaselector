@@ -11,6 +11,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -60,6 +61,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		setResultConverter(p -> p == ButtonType.APPLY ? new Result(regionData, poiData, entitiesData) : null);
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
 		getDialogPane().getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+		getDialogPane().getScene().getStylesheets().add(NBTEditorDialog.class.getClassLoader().getResource("style/component/nbt-editor-dialog.css").toExternalForm());
 		getDialogPane().getButtonTypes().addAll(ButtonType.APPLY, ButtonType.CANCEL);
 		getDialogPane().lookupButton(ButtonType.APPLY).setDisable(true);
 
@@ -106,6 +108,8 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		editors.getTabs().addAll(regionTab, poiTab, entitiesTab);
 
 		getDialogPane().setContent(editors);
+
+		setResizable(true);
 
 		Platform.runLater(editors::requestFocus);
 	}
@@ -185,6 +189,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		options.getChildren().addAll(addTagLabels.values());
 
 		VBox box = new VBox();
+		VBox.setVgrow(treeViewHolder, Priority.ALWAYS);
 		box.getChildren().addAll(treeViewHolder, options);
 
 		Tab tab = new Tab(title, box);

@@ -1,12 +1,11 @@
 package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.changer.Field;
-import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.overlay.Overlay;
 import java.util.List;
 
-public record ChunkData(RegionChunk region, PoiChunk poi, EntitiesChunk entities) {
+public record ChunkData(RegionChunk region, PoiChunk poi, EntitiesChunk entities, boolean selected) {
 
 	public boolean relocate(Point3i offset) {
 		boolean result = true;

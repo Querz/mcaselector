@@ -16,6 +16,7 @@ public class TextFilterBox extends FilterBox {
 	private final ComboBox<Comparator> comparator = new ComboBox<>();
 
 	private static final PseudoClass invalid = PseudoClass.getPseudoClass("invalid");
+	private static final String stylesheet = TextFilterBox.class.getClassLoader().getResource("style/component/text-filter-box.css").toExternalForm();
 
 	public TextFilterBox(FilterBox parent, TextFilter<?> filter, boolean root) {
 		super(parent, filter, root);
@@ -36,6 +37,8 @@ public class TextFilterBox extends FilterBox {
 		setCenter(input);
 		setText(filter.getRawValue());
 		onTextInput(filter, filter.getRawValue());
+
+		getStylesheets().add(stylesheet);
 	}
 
 	public void setText(String text) {

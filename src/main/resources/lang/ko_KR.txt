@@ -122,6 +122,8 @@ dialog.filter_chunks.delete.tooltip;현재 월드에서 영향받는 모든 청�
 dialog.filter_chunks.selection_only;선택 항목에만 적용
 dialog.filter_chunks.overwrite_selection;선택 덮어쓰기
 dialog.filter_chunks.selection_radius;선택 반경
+dialog.filter_chunks.tab_query;
+dialog.filter_chunks.tab_script;
 dialog.edit_overlays.title;오버레이 수정
 dialog.edit_overlays.overlay_active.tooltip;활성화
 dialog.edit_overlays.delete.tooltip;삭제하기
@@ -134,6 +136,8 @@ dialog.change_nbt.selection_only;선택 항목에만 적용
 dialog.change_nbt.selection_only.tooltip;이 필터가 현재 선택 항목에만 적용되어야 하는지 여부
 dialog.change_nbt_confirmation.title;NBT 변경하기
 dialog.change_nbt_confirmation.header_short;이 월드에서 알 수 없는 수 만큼의 청크를 변경하려고 합니다.
+dialog.change_nbt.tab_query;
+dialog.change_nbt.tab_script;
 dialog.edit_nbt.title;청크 수정하기
 dialog.edit_nbt.placeholder.loading;로딩 중...
 dialog.edit_nbt.placeholder.no_chunk_data;청크 데이터를 찾을 수 없습니다.
@@ -168,6 +172,8 @@ dialog.progress.title.exporting_filtered_chunks;필터링된 청크를 내보내
 dialog.progress.title.selecting_filtered_chunks;필터링된 청크를 선택 중...
 dialog.progress.title.changing_nbt_data;NBT 데이터를 변경하는 중 입니다....
 dialog.progress.title.saving_chunk;청크를 저장하는 중입니다...
+dialog.progress.title.running_before;
+dialog.progress.title.running_after;
 dialog.error.button.copy_to_clipboard;클립보드에 복사하기
 dialog.error.title;오류
 dialog.error.header;오류가 발생하였습니다.

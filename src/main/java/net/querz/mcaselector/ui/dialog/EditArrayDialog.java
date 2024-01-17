@@ -191,6 +191,8 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 		applyArray();
 
 		getDialogPane().setContent(content);
+
+		getDialogPane().getStylesheets().add(EditArrayDialog.class.getClassLoader().getResource("style/component/edit-array-dialog.css").toExternalForm());
 	}
 
 	private void reloadBitValues(BitCount bits) {

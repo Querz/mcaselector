@@ -158,7 +158,7 @@ public abstract class Chunk {
 	@Override
 	public String toString() {
 		String s = NBTUtil.toSNBT(data);
-		return "<absoluteLoaction=" + absoluteLocation + ", compressionType=" + compressionType + ", data=" + s + ">";
+		return "<absoluteLocation=" + absoluteLocation + ", compressionType=" + compressionType + ", data=" + s + ">";
 	}
 
 	protected <T extends Chunk> T clone(Function<Point2i, T> chunkConstructor) {

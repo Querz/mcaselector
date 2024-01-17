@@ -31,6 +31,7 @@ public class AboutDialog extends Alert {
 	public AboutDialog(Stage primaryStage) {
 		super(AlertType.INFORMATION, null, ButtonType.OK);
 		initStyle(StageStyle.UTILITY);
+		getDialogPane().getStylesheets().add(AboutDialog.class.getClassLoader().getResource("style/component/about-dialog.css").toExternalForm());
 		getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
 		getDialogPane().getStyleClass().add("about-dialog-pane");
 		titleProperty().bind(Translation.DIALOG_ABOUT_TITLE.getProperty());

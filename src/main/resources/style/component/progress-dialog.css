@@ -1,0 +1,54 @@
+* {
+    -color-progress-bar-track: #616b6b;
+    -color-progress-bar-background: #494d50;
+}
+
+.progress-dialog {
+    -fx-background-color: transparent;
+    -fx-pref-width: 200;
+    -fx-pref-height: 120;
+    -fx-background-insets: 5 10 10 5;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 4, 4)
+}
+
+.progress-dialog .progress-title {
+    -fx-background-color: -color-dialog-background;
+    -fx-text-fill: -color-text-light;
+    -fx-padding: 10 15 5 15;
+    -fx-background-insets: 5 15 0 5;
+}
+
+.progress-dialog .progress-bar {
+    -fx-background-color: -color-progress-bar-background;
+    -fx-padding: 5 20 5 10;
+    -fx-background-insets: 0 15 0 5;
+}
+
+.progress-dialog .progress-bar .bar {
+    -fx-background-insets: 0 5 0 5;
+    -fx-padding: 5;
+}
+
+.progress-dialog .progress-bar .track {
+    -fx-background-color: -color-progress-bar-track;
+    -fx-background-radius: 1;
+    -fx-background-insets: 0 5 0 5;
+}
+
+.progress-dialog .progress-info {
+    -fx-background-color: -color-dialog-background;
+    -fx-text-fill: -color-text-light;
+    -fx-padding: 5 10 20 15;
+    -fx-background-insets: 0 15 15 5;
+}
+
+.progress-dialog .cancel-box {
+    -fx-alignment: top-center;
+    -fx-background-color: -color-dialog-background;
+    -fx-padding: -10 15 5 0;
+    -fx-background-insets: -15 15 0 5;
+}
+
+.progress-dialog .cancel-box .button {
+    -fx-padding: 0 10 0 10;
+}

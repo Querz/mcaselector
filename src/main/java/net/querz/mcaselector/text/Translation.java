@@ -142,6 +142,8 @@ public enum Translation {
 	DIALOG_FILTER_CHUNKS_SELECTION_ONLY("dialog.filter_chunks.selection_only"),
 	DIALOG_FILTER_CHUNKS_OVERWRITE_SELECTION("dialog.filter_chunks.overwrite_selection"),
 	DIALOG_FILTER_CHUNKS_SELECTION_RADIUS("dialog.filter_chunks.selection_radius"),
+	DIALOG_FILTER_CHUNKS_TAB_QUERY("dialog.filter_chunks.tab_query"),
+	DIALOG_FILTER_CHUNKS_TAB_SCRIPT("dialog.filter_chunks.tab_script"),
 	DIALOG_EDIT_OVERLAYS_TITLE("dialog.edit_overlays.title"),
 	DIALOG_EDIT_OVERLAYS_OVERLAY_ACTIVE_TOOLTIP("dialog.edit_overlays.overlay_active.tooltip"),
 	DIALOG_EDIT_OVERLAYS_DELETE_TOOLTIP("dialog.edit_overlays.delete.tooltip"),
@@ -154,6 +156,8 @@ public enum Translation {
 	DIALOG_CHANGE_NBT_SELECTION_ONLY_TOOLTIP("dialog.change_nbt.selection_only.tooltip"),
 	DIALOG_CHANGE_NBT_CONFIRMATION_TITLE("dialog.change_nbt_confirmation.title"),
 	DIALOG_CHANGE_NBT_CONFIRMATION_HEADER_SHORT("dialog.change_nbt_confirmation.header_short"),
+	DIALOG_CHANGE_NBT_TAB_QUERY("dialog.change_nbt.tab_query"),
+	DIALOG_CHANGE_NBT_TAB_SCRIPT("dialog.change_nbt.tab_script"),
 	DIALOG_EDIT_NBT_TITLE("dialog.edit_nbt.title"),
 	DIALOG_EDIT_NBT_PLACEHOLDER_LOADING("dialog.edit_nbt.placeholder.loading"),
 	DIALOG_EDIT_NBT_PLACEHOLDER_NO_CHUNK_DATA("dialog.edit_nbt.placeholder.no_chunk_data"),
@@ -188,6 +192,8 @@ public enum Translation {
 	DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS("dialog.progress.title.selecting_filtered_chunks"),
 	DIALOG_PROGRESS_TITLE_CHANGING_NBT_DATA("dialog.progress.title.changing_nbt_data"),
 	DIALOG_PROGRESS_TITLE_SAVING_CHUNK("dialog.progress.title.saving_chunk"),
+	DIALOG_PROGRESS_TITLE_RUNNING_BEFORE("dialog.progress.title.running_before"),
+	DIALOG_PROGRESS_TITLE_RUNNING_AFTER("dialog.progress.title.running_after"),
 	DIALOG_PROGRESS_TITLE_SUMMING("dialog.progress.title.summing"),
 	DIALOG_ERROR_BUTTON_COPY_TO_CLIPBOARD("dialog.error.button.copy_to_clipboard"),
 	DIALOG_ERROR_TITLE("dialog.error.title"),
@@ -203,13 +209,13 @@ public enum Translation {
 
 	private static final Set<Locale> availableLanguages = new HashSet<>();
 
-	private static final Pattern languangeFilePattern = Pattern.compile("^(?<locale>-?(?<language>-?[a-z]{2})_(?<country>-?[A-Z]{2}))\\.txt$");
+	private static final Pattern languageFilePattern = Pattern.compile("^(?<locale>-?(?<language>-?[a-z]{2})_(?<country>-?[A-Z]{2}))\\.txt$");
 
 	static {
 		String[] langFiles = getResourceListing(Translation.class, "lang");
 		if (langFiles != null) {
 			for (String langFile : langFiles) {
-				Matcher matcher = languangeFilePattern.matcher(langFile);
+				Matcher matcher = languageFilePattern.matcher(langFile);
 				if (matcher.matches()) {
 					String language = matcher.group("language");
 					String country = matcher.group("country");

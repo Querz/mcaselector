@@ -11,15 +11,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.changer.ChangeParser;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
+import net.querz.mcaselector.changer.fields.ScriptField;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.RegionChunk;
@@ -30,8 +35,11 @@ import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.ui.UIFactory;
+import net.querz.mcaselector.ui.component.GroovyCodeArea;
+import net.querz.mcaselector.validation.BeforeAfterCallback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.fxmisc.flowless.VirtualizedScrollPane;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,11 +50,33 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 
 	private static final Logger LOGGER = LogManager.getLogger(ChangeNBTDialog.class);
 
+	private static final String initScript = """
+			import net.querz.mcaselector.io.mca.ChunkData;
+			import net.querz.nbt.*;
+
+			void before() {
+			\t
+			}
+			
+			void apply(ChunkData data) {
+			\t
+			}
+			
+			void after() {
+			\t
+			}""";
+
 	private final List<Field<?>> fields = new ArrayList<>();
+	private final TabPane tabs = new TabPane();
 	private final TextField changeQuery = new TextField();
 	private final RadioButton change = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_CHANGE);
 	private final RadioButton force = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_FORCE);
 	private final CheckBox selectionOnly = UIFactory.checkbox(Translation.DIALOG_CHANGE_NBT_SELECTION_ONLY);
+	private static final GroovyCodeArea codeArea = new GroovyCodeArea(true);
+
+	static {
+		codeArea.setText(initScript);
+	}
 
 	public ChangeNBTDialog(TileMap tileMap, Stage primaryStage) {
 		titleProperty().bind(Translation.DIALOG_CHANGE_NBT_TITLE.getProperty());
@@ -58,20 +88,33 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		getDialogPane().getStyleClass().add("change-nbt-dialog-pane");
 
 		setResultConverter(p -> {
-			if (p == ButtonType.OK) {
+			if (p != ButtonType.OK) {
+				return null;
+			}
+			if (tabs.getSelectionModel().isSelected(0)) {
 				for (int i = 0; i < fields.size(); i++) {
 					if (!fields.get(i).needsChange()) {
 						fields.remove(i);
 						i--;
 					}
 				}
-				return fields.isEmpty() ? null : new Result(fields, force.isSelected(), selectionOnly.isSelected());
+				if (fields.isEmpty()) {
+					return null;
+				}
+				return new Result(fields, force.isSelected(), selectionOnly.isSelected(), null);
+			} else {
+				ScriptField scriptField = new ScriptField();
+				scriptField.parseNewValue(codeArea.getText());
+				if (!scriptField.needsChange()) {
+					return null;
+				}
+				return new Result(Collections.singletonList(scriptField), force.isSelected(), selectionOnly.isSelected(), scriptField);
 			}
-			return null;
 		});
 
 		// apply same stylesheets to this dialog
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+		getDialogPane().getStylesheets().add(ChangeNBTDialog.class.getClassLoader().getResource("style/component/change-nbt-dialog.css").toExternalForm());
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
@@ -122,9 +165,27 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		HBox selectionBox = new HBox();
 		selectionBox.getChildren().addAll(actionBox, optionBox);
 
-		VBox box = new VBox();
-		box.getChildren().addAll(scrollPane, new Separator(), changeQuery, new Separator(), selectionBox);
-		getDialogPane().setContent(box);
+		VBox mainBox = new VBox();
+		mainBox.getChildren().addAll(scrollPane, new Separator(), changeQuery);
+
+		VBox scriptBox = new VBox();
+		StackPane scriptPane = new StackPane(new VirtualizedScrollPane<>(codeArea));
+		Label errorLabel = new Label();
+		errorLabel.getStyleClass().add("script-error-label");
+		errorLabel.textProperty().bind(codeArea.errorProperty());
+		VBox.setVgrow(scriptPane, Priority.ALWAYS);
+		scriptBox.getChildren().addAll(scriptPane, errorLabel);
+
+		Tab mainTab = UIFactory.tab(Translation.DIALOG_CHANGE_NBT_TAB_QUERY);
+		mainTab.setContent(mainBox);
+		Tab scriptTab = UIFactory.tab(Translation.DIALOG_CHANGE_NBT_TAB_SCRIPT);
+		scriptTab.setContent(scriptBox);
+
+		tabs.getTabs().addAll(mainTab, scriptTab);
+
+		VBox panelBox = new VBox();
+		panelBox.getChildren().addAll(tabs, new Separator(), selectionBox);
+		getDialogPane().setContent(panelBox);
 	}
 
 	private void readSingleChunkAsync(TileMap tileMap, FieldView fieldView) {
@@ -142,7 +203,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 				try {
 					// only load region for now, there is no field in entities or poi that we could display
 					RegionChunk regionChunk = new RegionMCAFile(file).loadSingleChunk(chunk.get());
-					ChunkData chunkData = new ChunkData(regionChunk, null, null);
+					ChunkData chunkData = new ChunkData(regionChunk, null, null, true);
 
 					fieldView.getChildren().forEach(child -> {
 						FieldCell cell = (FieldCell) child;
@@ -235,7 +296,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		}
 	}
 
-	public record Result(List<Field<?>> fields, boolean force, boolean selectionOnly) {
+	public record Result(List<Field<?>> fields, boolean force, boolean selectionOnly, ScriptField script) implements BeforeAfterCallback {
 		public boolean requiresClearCache() {
 				for (Field<?> field : fields) {
 					if (field.getType().requiresClearCache()) {
@@ -244,5 +305,20 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 				}
 				return false;
 			}
+
+		@Override
+		public void before() {
+			script.before();
 		}
+
+		@Override
+		public void after() {
+			script.after();
+		}
+
+		@Override
+		public boolean valid() {
+			return script != null;
+		}
+	}
 }

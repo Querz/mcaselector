@@ -1,0 +1,28 @@
+.filter-dialog-option-box {
+    -fx-hgap: 20;
+    -fx-vgap: 5;
+}
+
+.filter-dialog-option-box .filter-dialog-stack-pane .text-field {
+    -fx-min-width: 40px;
+    -fx-pref-width: 40px;
+    -fx-alignment: center;
+}
+
+.filter-dialog-pane .scroll-pane {
+    -fx-pref-height: 1000px;
+    -fx-max-height: 1000px;
+}
+
+.filter-dialog-pane {
+    -fx-pref-height: 500px;
+}
+
+.script-error-label * {
+    -fx-font-family: Monospaced;
+    -fx-min-height: 50;
+}
+
+.script-error-label {
+    -fx-text-fill: -color-error-text !important;
+}

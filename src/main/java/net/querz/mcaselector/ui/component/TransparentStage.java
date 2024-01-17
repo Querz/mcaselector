@@ -65,6 +65,7 @@ public class TransparentStage extends Stage {
 		scene.setFill(Color.TRANSPARENT);
 		scene.getStylesheets().addAll(parent.getScene().getStylesheets());
 		setScene(scene);
+		scene.getStylesheets().add(TransparentStage.class.getClassLoader().getResource("style/component/transparent-stage.css").toExternalForm());
 	}
 
 	public void setContent(Node node) {
