@@ -45,6 +45,7 @@ menu.tools.swap_chunks;Scambia i chunk
 menu.tools.edit_overlays;Modifica le sovrapposizioni
 menu.tools.next_overlay;Sovrapposizione successiva
 menu.tools.next_overlay_type;Tipo di sovrapposizione
+menu.tools.sum_selection;Somma della selezione
 dialog.select_world.title;Seleziona una dimensione
 dialog.settings.title;Impostazioni
 dialog.settings.global.language;Lingua
@@ -122,8 +123,8 @@ dialog.filter_chunks.delete.tooltip;Elimina tutti i chunk affetti dal mondo corr
 dialog.filter_chunks.selection_only;Applica solo alla selezione
 dialog.filter_chunks.overwrite_selection;Sovrascrivi selezione
 dialog.filter_chunks.selection_radius;Raggio di selezione
-dialog.filter_chunks.tab_query;
-dialog.filter_chunks.tab_script;
+dialog.filter_chunks.tab_query;Query
+dialog.filter_chunks.tab_script;Script
 dialog.edit_overlays.title;Modifica le sovrapposizioni
 dialog.edit_overlays.overlay_active.tooltip;Attivo
 dialog.edit_overlays.delete.tooltip;Elimina
@@ -136,8 +137,8 @@ dialog.change_nbt.selection_only;Applica solo alla selezione
 dialog.change_nbt.selection_only.tooltip;Se questo filtro deve essere applicato solo alla selezione corrente.
 dialog.change_nbt_confirmation.title;Change NBT
 dialog.change_nbt_confirmation.header_short;You are about to change data in an unknown number of chunks in this world.
-dialog.change_nbt.tab_query;
-dialog.change_nbt.tab_script;
+dialog.change_nbt.tab_query;Query
+dialog.change_nbt.tab_script;Script
 dialog.edit_nbt.title;Modifica chunk
 dialog.edit_nbt.placeholder.loading;caricamento...
 dialog.edit_nbt.placeholder.no_chunk_data;nessun dato di chunk trovato
@@ -172,8 +173,9 @@ dialog.progress.title.exporting_filtered_chunks;Esportando i chunk filtrati...
 dialog.progress.title.selecting_filtered_chunks;Selezionando i chunk filtrati...
 dialog.progress.title.changing_nbt_data;Cambiando dati NBT...
 dialog.progress.title.saving_chunk;Salvataggio i chunk...
-dialog.progress.title.running_before;
-dialog.progress.title.running_after;
+dialog.progress.title.running_before;Esegui "before()"...
+dialog.progress.title.running_after;Esegui "after()"...
+dialog.progress.title.summing;Conta l'importo...
 dialog.error.button.copy_to_clipboard;Copia negli appunti
 dialog.error.title;Errore
 dialog.error.header;Si è verificato un errore

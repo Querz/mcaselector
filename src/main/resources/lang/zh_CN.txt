@@ -45,6 +45,7 @@ menu.tools.swap_chunks;交换区块
 menu.tools.edit_overlays;编辑叠加
 menu.tools.next_overlay;下一个叠加
 menu.tools.next_overlay_type;叠加类型
+menu.tools.sum_selection;选择总和
 dialog.select_world.title;选择维度
 dialog.settings.title;设置
 dialog.settings.global.language;语言
@@ -122,8 +123,8 @@ dialog.filter_chunks.delete.tooltip;从当前世界中删除所有受影响的�
 dialog.filter_chunks.selection_only;仅应用于所选内容
 dialog.filter_chunks.overwrite_selection;覆盖选择
 dialog.filter_chunks.selection_radius;选择半径
-dialog.filter_chunks.tab_query;
-dialog.filter_chunks.tab_script;
+dialog.filter_chunks.tab_query;询问
+dialog.filter_chunks.tab_script;脚本
 dialog.edit_overlays.title;编辑叠加层
 dialog.edit_overlays.overlay_active.tooltip;激活的
 dialog.edit_overlays.delete.tooltip;删除
@@ -136,8 +137,8 @@ dialog.change_nbt.selection_only;仅适用于选择
 dialog.change_nbt.selection_only.tooltip;此筛选器是否只应用于当前所选内容.
 dialog.change_nbt_confirmation.title;更改NBT
 dialog.change_nbt_confirmation.header_short;您将要在此世界中更改未知数量的区块的数据.
-dialog.change_nbt.tab_query;
-dialog.change_nbt.tab_script;
+dialog.change_nbt.tab_query;询问
+dialog.change_nbt.tab_script;脚本
 dialog.edit_nbt.title;编辑区块
 dialog.edit_nbt.placeholder.loading;载入中...
 dialog.edit_nbt.placeholder.no_chunk_data;找不到区块数据
@@ -172,8 +173,9 @@ dialog.progress.title.exporting_filtered_chunks;正在导出筛选区块...
 dialog.progress.title.selecting_filtered_chunks;正在选择筛选区块...
 dialog.progress.title.changing_nbt_data;正在更改 NBT 数据...
 dialog.progress.title.saving_chunk;正在将区块保存到文件...
-dialog.progress.title.running_before;
-dialog.progress.title.running_after;
+dialog.progress.title.running_before;执行“before()”...
+dialog.progress.title.running_after;执行“after()”...
+dialog.progress.title.summing;数一下金额...
 dialog.error.button.copy_to_clipboard;复制到剪贴板
 dialog.error.title;错误
 dialog.error.header;发生错误

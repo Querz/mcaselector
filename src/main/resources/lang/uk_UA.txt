@@ -45,6 +45,7 @@ menu.tools.swap_chunks;Переставити чанки
 menu.tools.edit_overlays;Редагувати накладання
 menu.tools.next_overlay;Наступне накладання
 menu.tools.next_overlay_type;Наступний тип накладання
+menu.tools.sum_selection;Сума відбору
 dialog.select_world.title;Вибрати вимір
 dialog.settings.title;Налаштування
 dialog.settings.global.language;Мова
@@ -122,8 +123,8 @@ dialog.filter_chunks.delete.tooltip;Виділити всі виділені ч�
 dialog.filter_chunks.selection_only;Застосувати лише до виділених чанків
 dialog.filter_chunks.overwrite_selection;Перезаписати виділення
 dialog.filter_chunks.selection_radius;Радіус виділення
-dialog.filter_chunks.tab_query;
-dialog.filter_chunks.tab_script;
+dialog.filter_chunks.tab_query;Запит
+dialog.filter_chunks.tab_script;Сценарій
 dialog.edit_overlays.title;Редагувати накладання
 dialog.edit_overlays.overlay_active.tooltip;Активний
 dialog.edit_overlays.delete.tooltip;Видалити
@@ -136,8 +137,8 @@ dialog.change_nbt.selection_only;Застосувати лише до виділ
 dialog.change_nbt.selection_only.tooltip;Цей фільтр повинен застосовуватися лише до даного виділення.
 dialog.change_nbt_confirmation.title;Змінити NBT
 dialog.change_nbt_confirmation.header_short;Ви збираєтеся змінити дані у невідомій кількості чанків у цьому світі.
-dialog.change_nbt.tab_query;
-dialog.change_nbt.tab_script;
+dialog.change_nbt.tab_query;Запит
+dialog.change_nbt.tab_script;Сценарій
 dialog.edit_nbt.title;Редагувати чанк
 dialog.edit_nbt.placeholder.loading;завантаження...
 dialog.edit_nbt.placeholder.no_chunk_data;не знайдено інформації про чанк
@@ -172,8 +173,9 @@ dialog.progress.title.exporting_filtered_chunks;Експорт відфільт�
 dialog.progress.title.selecting_filtered_chunks;Виділення відфільтрованих чанків...
 dialog.progress.title.changing_nbt_data;Зміна NBT даних...
 dialog.progress.title.saving_chunk;Збереження чанку...
-dialog.progress.title.running_before;
-dialog.progress.title.running_after;
+dialog.progress.title.running_before;Виконати "before()"...
+dialog.progress.title.running_after;Виконати "after()"...
+dialog.progress.title.summing;Порахуйте суму...
 dialog.error.button.copy_to_clipboard;Копіювати до буфера обміну
 dialog.error.title;Помилка
 dialog.error.header;Сталася помика

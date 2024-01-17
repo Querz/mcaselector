@@ -45,6 +45,7 @@ menu.tools.swap_chunks;Chunks tauschen
 menu.tools.edit_overlays;Overlays editieren
 menu.tools.next_overlay;Nächstes Overlay
 menu.tools.next_overlay_type;Overlaytyp
+menu.tools.sum_selection;Auswahl summieren
 dialog.select_world.title;Dimension auswählen
 dialog.settings.title;Einstellungen
 dialog.settings.global.language;Sprache
@@ -123,7 +124,7 @@ dialog.filter_chunks.selection_only;Nur auf Selektion anwenden
 dialog.filter_chunks.overwrite_selection;Selektion überschreiben
 dialog.filter_chunks.selection_radius;Selektionsradius
 dialog.filter_chunks.tab_query;Query
-dialog.filter_chunks.tab_script;Skript
+dialog.filter_chunks.tab_script;Script
 dialog.edit_overlays.title;Overlays editieren
 dialog.edit_overlays.overlay_active.tooltip;Aktiv
 dialog.edit_overlays.delete.tooltip;Löschen
@@ -137,7 +138,7 @@ dialog.change_nbt.selection_only.tooltip;Ob der Filter nur auf die Chunks einer 
 dialog.change_nbt_confirmation.title;NBT ändern
 dialog.change_nbt_confirmation.header_short;Diese Aktion ändert Werte einer unbekannten Anzahl von Chunks in dieser Welt.
 dialog.change_nbt.tab_query;Query
-dialog.change_nbt.tab_script;Skript
+dialog.change_nbt.tab_script;Script
 dialog.edit_nbt.title;Chunk editieren
 dialog.edit_nbt.placeholder.loading;Lädt...
 dialog.edit_nbt.placeholder.no_chunk_data;Keine Chunk-Daten gefunden
@@ -174,6 +175,7 @@ dialog.progress.title.changing_nbt_data;Ändere NBT-Daten...
 dialog.progress.title.saving_chunk;Speichere Chunk...
 dialog.progress.title.running_before;Führe before() aus...
 dialog.progress.title.running_after;Führe after() aus...
+dialog.progress.title.summing;Summiere...
 dialog.error.button.copy_to_clipboard;In die Zwischenablage
 dialog.error.title;Fehler
 dialog.error.header;Fehler

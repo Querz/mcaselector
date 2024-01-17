@@ -45,6 +45,7 @@ menu.tools.swap_chunks;Chunk'ı Değiştir
 menu.tools.edit_overlays;Kaplamaları Düzenle
 menu.tools.next_overlay;Sonraki Kaplama
 menu.tools.next_overlay_type;Sonraki Kaplama Türü
+menu.tools.sum_selection;Seçim toplamı
 dialog.select_world.title;Boyut Seç
 dialog.settings.title;Ayarlar
 dialog.settings.global.language;Dil
@@ -122,8 +123,8 @@ dialog.filter_chunks.delete.tooltip;Geçerli dünyadan etkilenen tüm chunkları
 dialog.filter_chunks.selection_only;Yalnızca seçime uygula
 dialog.filter_chunks.overwrite_selection;Seçimin üzerine yaz
 dialog.filter_chunks.selection_radius;Seçim yarıçapı
-dialog.filter_chunks.tab_query;
-dialog.filter_chunks.tab_script;
+dialog.filter_chunks.tab_query;Sorgu
+dialog.filter_chunks.tab_script;Senaryo
 dialog.edit_overlays.title;Düzenle
 dialog.edit_overlays.overlay_active.tooltip;Aktif
 dialog.edit_overlays.delete.tooltip;Sil
@@ -136,8 +137,8 @@ dialog.change_nbt.selection_only;Yalnızca seçime uygula
 dialog.change_nbt.selection_only.tooltip;Bu filtre yalnızca geçerli seçim için geçerliyse.
 dialog.change_nbt_confirmation.title;NBT'yi değiştir
 dialog.change_nbt_confirmation.header_short;Bu dünyada bilinmeyen sayıda chunk verileri değiştirmek üzeresiniz.
-dialog.change_nbt.tab_query;
-dialog.change_nbt.tab_script;
+dialog.change_nbt.tab_query;Sorgu
+dialog.change_nbt.tab_script;Senaryo
 dialog.edit_nbt.title;Chunk'ı Düzenle
 dialog.edit_nbt.placeholder.loading;Yükleniyor...
 dialog.edit_nbt.placeholder.no_chunk_data;chunk verisi bulunamadı
@@ -172,8 +173,9 @@ dialog.progress.title.exporting_filtered_chunks;Filtrelenmiş chunklar dışa ak
 dialog.progress.title.selecting_filtered_chunks;Filtrelenmiş chunklar seçiliyor...
 dialog.progress.title.changing_nbt_data;NBT verileri değiştiriliyor...
 dialog.progress.title.saving_chunk;Chunk kaydediliyor...
-dialog.progress.title.running_before;
-dialog.progress.title.running_after;
+dialog.progress.title.running_before;"before()" işlemini yürütün...
+dialog.progress.title.running_after;"after()" işlemini yürütün...
+dialog.progress.title.summing;Miktarı sayın...
 dialog.error.button.copy_to_clipboard;Panoya kopyala
 dialog.error.title;Hata
 dialog.error.header;Bir hata oluştu
