@@ -20,7 +20,7 @@
 }
 
 .text {
-    -fx-font-family: Monospaced;
+    -fx-font-family: "Noto Sans Mono";
     -fx-fill: -color-text-default;
 }
 
@@ -78,7 +78,7 @@
 
 .lineno {
     -fx-background-color: -color-button-background;
-    -fx-font-family: Monospaced;
+    -fx-font-family: "Noto Sans Mono";
     -fx-font-style: normal;
     -fx-font-weight: bold;
     -fx-font-size: 15;

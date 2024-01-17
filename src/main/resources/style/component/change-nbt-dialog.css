@@ -48,7 +48,7 @@
 }
 
 .script-error-label * {
-    -fx-font-family: Monospaced;
+    -fx-font-family: "Noto Sans Mono";
     -fx-min-height: 50;
 }
 
