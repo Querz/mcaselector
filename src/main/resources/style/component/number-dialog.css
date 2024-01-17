@@ -1,0 +1,22 @@
+.number-label {
+    -fx-font-size: 16;
+}
+
+.number-box {
+    -fx-alignment: center;
+    -fx-spacing: 20;
+}
+
+.dialog-pane {
+    -fx-pref-width: 100;
+    -fx-pref-heigh: 30;
+    -fx-padding: 5 10 10 10;
+}
+
+.dialog-pane .button {
+    -fx-padding: 3;
+}
+
+.content-box {
+    -fx-spacing: 5;
+}

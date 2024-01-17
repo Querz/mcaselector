@@ -41,7 +41,7 @@ public class OptionBar extends BorderPane {
 	*					- Clear cache   	- Delete selected chunks	- Edit overlays
 	*					- Clear all cache	- Import selection			- Next overlay
 	*										- Export selection          - Next overlay type
-	*                                       - Export as image
+	*                                       - Export as image			- Sum selection
 	* 										- Clear cache
 	* */
 
@@ -88,6 +88,7 @@ public class OptionBar extends BorderPane {
 	private final MenuItem editOverlays = UIFactory.menuItem(Translation.MENU_TOOLS_EDIT_OVERLAYS);
 	private final MenuItem nextOverlay = UIFactory.menuItem(Translation.MENU_TOOLS_NEXT_OVERLAY);
 	private final MenuItem nextOverlayType = UIFactory.menuItem(Translation.MENU_TOOLS_NEXT_OVERLAY_TYPE);
+	private final MenuItem sumSelection = UIFactory.menuItem(Translation.MENU_TOOLS_SUM_SELECTION);
 
 	private int previousSelectedChunks = 0;
 	private boolean previousInvertedSelection = false;
@@ -124,7 +125,7 @@ public class OptionBar extends BorderPane {
 		tools.getItems().addAll(
 				importChunks, filterChunks, changeFields, editNBT, UIFactory.separator(),
 				swapChunks, UIFactory.separator(),
-				editOverlays, nextOverlay, nextOverlayType);
+				editOverlays, nextOverlay, nextOverlayType, sumSelection);
 		about.setOnMouseClicked(e -> DialogHelper.showAboutDialog(primaryStage));
 		Menu aboutMenu = new Menu();
 		aboutMenu.setGraphic(about);
@@ -187,6 +188,7 @@ public class OptionBar extends BorderPane {
 		editOverlays.setOnAction(e -> DialogHelper.editOverlays(tileMap, primaryStage));
 		nextOverlay.setOnAction(e -> tileMap.nextOverlay());
 		nextOverlayType.setOnAction(e -> tileMap.nextOverlayType());
+		sumSelection.setOnAction(e -> DialogHelper.sumSelection(tileMap, primaryStage));
 
 
 		openWorld.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN));
@@ -221,7 +223,7 @@ public class OptionBar extends BorderPane {
 		nextOverlay.setAccelerator(new KeyCodeCombination(KeyCode.O));
 		nextOverlayType.setAccelerator(new KeyCodeCombination(KeyCode.N));
 
-		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks(), tileMap.getSelection().isInverted());
+		setSelectionDependentMenuItemsEnabled(tileMap, tileMap.getSelectedChunks(), tileMap.getSelection().isInverted());
 		setWorldDependentMenuItemsEnabled(false, tileMap, primaryStage);
 
 		Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> paste.setDisable(!hasValidClipboardContent(tileMap) || tileMap.getDisabled()));
@@ -267,11 +269,12 @@ public class OptionBar extends BorderPane {
 		int selectedChunks = tileMap.getSelectedChunks();
 		boolean invertedSelection = tileMap.getSelection().isInverted();
 		if (previousSelectedChunks != selectedChunks || previousInvertedSelection != invertedSelection) {
-			setSelectionDependentMenuItemsEnabled(selectedChunks, invertedSelection);
+			setSelectionDependentMenuItemsEnabled(tileMap, selectedChunks, invertedSelection);
 		}
 		previousSelectedChunks = selectedChunks;
 		previousInvertedSelection = invertedSelection;
 		nextOverlay.setDisable(tileMap.getOverlay() == null);
+		sumSelection.setDisable(tileMap.getOverlay() == null || tileMap.getSelectedChunks() == 0);
 	}
 
 	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap, Stage primaryStage) {
@@ -287,6 +290,7 @@ public class OptionBar extends BorderPane {
 		paste.setDisable(!enabled || !hasValidClipboardContent(tileMap));
 		nextOverlay.setDisable(!enabled);
 		nextOverlayType.setDisable(!enabled);
+		sumSelection.setDisable(!enabled || tileMap.getOverlay() == null || tileMap.getSelectedChunks() == 0);
 		hSlider.setDisable(!enabled);
 		openDimension.getItems().clear();
 
@@ -332,7 +336,7 @@ public class OptionBar extends BorderPane {
 		editOverlays.setDisable(!enabled);
 	}
 
-	private void setSelectionDependentMenuItemsEnabled(int selected, boolean inverted) {
+	private void setSelectionDependentMenuItemsEnabled(TileMap tileMap, int selected, boolean inverted) {
 		clear.setDisable(selected == 0 && !inverted);
 		exportChunks.setDisable(selected == 0 && !inverted);
 		exportSelection.setDisable(selected == 0 && !inverted);
@@ -343,6 +347,7 @@ public class OptionBar extends BorderPane {
 		swapChunks.setDisable(selected != 2 || inverted);
 		copy.setDisable(selected == 0 && !inverted);
 		invertRegions.setDisable(selected == 0 || inverted);
+		sumSelection.setDisable((tileMap.getOverlay() == null || selected == 0));
 	}
 
 	private boolean hasValidClipboardContent(TileMap tileMap) {
