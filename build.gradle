@@ -67,9 +67,11 @@ task copyRuntimeLibs(type: Copy) {
 
 task minifyCss {
 	doLast {
-		minCss(
-			new File("${sourceSets.main.resources.srcDirs[0]}/style.css"),
-			new File("${sourceSets.main.output.resourcesDir}/style.css"))
+		var styleDir = java.nio.file.Path.of("${sourceSets.main.resources.srcDirs[0]}", "style")
+		Files.find(styleDir, Integer.MAX_VALUE, (filePath, fileAttr) -> fileAttr.isRegularFile())
+		.forEach(p -> {
+			minCss(p, java.nio.file.Path.of("${sourceSets.main.output.resourcesDir}", "style", styleDir.relativize(p).toString()))
+		})
 	}
 	dependsOn processResources
 }
@@ -115,8 +117,11 @@ assemble.dependsOn shadowJar
  */
 import java.nio.file.Files
 
-static minCss(File i, File o) throws IOException {
-	String s = Files.readString(i.toPath())
+static minCss(i, o) throws IOException {
+	String s = Files.readString(i)
 	s = s.replace("\t", "").replace("\r\n", " ").replace("\n", " ").replaceAll("/\\*.*?\\*/", "").replaceAll(" {2,}", " ").trim()
-	Files.writeString(o.toPath(), s)
+	try {Files.writeString(o, s)}
+	catch (Exception ex) {
+		ex.printStackTrace()
+	}
 }
