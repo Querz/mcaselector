@@ -682,14 +682,12 @@ public class DialogHelper {
 	}
 
 	public static void sumSelection(TileMap tileMap, Stage primaryStage) {
-
 		if(tileMap.getOverlay() == null) { // here can be checked if the overlay does not make sense for summing (ex. Timestamp, LastUpdate, etc.)
 			String error = "a right overlay must be active in order to sum the selection";
 			LOGGER.warn(error);
 			new ErrorDialog(primaryStage, error);
 			return;
 		}
-
 		DataProperty<AtomicLong> sum = new DataProperty<>();
 		CancellableProgressDialog cpd = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SUMMING, primaryStage);
 		cpd.showProgressBar(t -> sum.set(SelectionSummer.sumSelection(tileMap.getSelectedChunks(), tileMap.getSelection(), tileMap.getOverlay(), t)));

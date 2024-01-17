@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 public class SelectionSummer {
-
+  
 	private static final Logger LOGGER = LogManager.getLogger(SelectionSummer.class);
 
 	private SelectionSummer() {}
@@ -164,5 +164,4 @@ public class SelectionSummer {
 			chunks.forEach(chunk -> chunkConsumer.accept(regionChunk.add(new Point2i(chunk))));
 		}
 	}
-
 }
