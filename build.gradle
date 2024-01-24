@@ -43,6 +43,7 @@ dependencies {
 	implementation 'me.tongfei:progressbar:0.9.3'
 	implementation 'org.codehaus.groovy:groovy-jsr223:3.0.11'
 	implementation 'org.fxmisc.richtext:richtextfx:0.11.2'
+	implementation 'org.lz4:lz4-java:1.8.0'
   
 	shadow 'com.github.Querz:NBT:3196993049'
 	shadow 'com.google.code.gson:gson:2.10.1'
@@ -54,6 +55,7 @@ dependencies {
 	shadow 'me.tongfei:progressbar:0.9.3'
 	shadow 'org.codehaus.groovy:groovy-jsr223:3.0.11'
 	shadow 'org.fxmisc.richtext:richtextfx:0.11.2'
+	shadow 'org.lz4:lz4-java:1.8.0'
 
 	testImplementation 'junit:junit:4.13.2'
 	testImplementation 'commons-io:commons-io:2.11.0'
