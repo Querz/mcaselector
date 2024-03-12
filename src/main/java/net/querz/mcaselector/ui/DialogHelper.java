@@ -595,11 +595,13 @@ public class DialogHelper {
 		File file = createDirectoryChooser(lastOpenDirectory).showDialog(primaryStage);
 		if (file != null && file.isDirectory()) {
 			List<File> dimensions = FileHelper.detectDimensionDirectories(file);
-			if (dimensions.size() == 0) {
+			if (dimensions.isEmpty()) {
 				new ErrorDialog(primaryStage, String.format("no dimensions found in %s", file.getAbsolutePath()));
 				LOGGER.warn("no dimensions found in {}", file.getAbsolutePath());
 				return;
 			}
+
+			FileHelper.setLastOpenedDirectory("open_world", file.getAbsolutePath());
 
 			// if there is only one dimension, open it instantly
 			if (dimensions.size() == 1) {
