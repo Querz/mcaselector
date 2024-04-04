@@ -1,6 +1,7 @@
 * {
     -color-tree-view-background: #46494b;
     -color-tree-cell-selected: #3c3f41;
+    -color-tree-cell-line-color: #636769;
     -color-treeview-cell-insert: #636769;
 }
 
@@ -14,10 +15,40 @@
 .key-value-tree-cell {
     -fx-background-color: transparent;
     -fx-text-fill: -color-text-light;
+    -fx-translate-x: -20;
+}
+
+.line-char {
+    -fx-text-fill: -color-tree-cell-line-color !important;
+    -fx-scale-y: 1.6;
+    -fx-scale-x: 1.6;
+}
+
+.cell-expand {
+    -fx-background-color: -color-tree-view-background;
+    -fx-border-color: -color-tree-cell-line-color;
+    -fx-border-width: 1;
+    -fx-min-width: 11;
+    -fx-min-height: 11;
+    -fx-max-height: 11;
+    -fx-max-width: 11;
+    -fx-padding: -7 0 0 0;
+    -fx-translate-x: 4;
+    -fx-alignment: center;
+}
+
+.cell-graphic {
+    -fx-spacing: 8;
+    -fx-alignment: center-left;
+}
+
+.line-node {
+    -fx-alignment: center;
 }
 
 .key-value-tree-cell > .tree-disclosure-node > .arrow {
-    -fx-background-color: -color-combo-box-arrow;
+    -fx-background-color: rgba(0, 0, 0, 0); /*make invisible to keep functionality*/
+    -fx-translate-x: 20; /*move right to overlap with line*/
 }
 
 .key-value-tree-cell:selected {
