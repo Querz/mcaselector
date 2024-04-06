@@ -87,6 +87,7 @@ jobs:
           cd mcaselector-wiki
           git config --global user.name 'Querz'
           git config --global user.email 'wiki@querz.net'
+          git config --unset-all http.https://github.com/.extraheader
           git remote set-url origin https://x-access-token:${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}@github.com/Querz/mcaselector-wiki
           git commit -am "Automated version update to 2.3"
           git push
