@@ -46,7 +46,7 @@ dependencies {
 	implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
 	implementation 'commons-cli:commons-cli:1.5.0'
 	implementation 'me.tongfei:progressbar:0.10.1'
-	implementation 'org.codehaus.groovy:groovy-jsr223:3.0.11'
+	implementation 'org.apache.groovy:groovy-jsr223:4.0.21'
 	implementation 'org.fxmisc.richtext:richtextfx:0.11.2'
 	implementation 'org.lz4:lz4-java:1.8.0'
   
@@ -58,7 +58,7 @@ dependencies {
 	shadow 'org.apache.logging.log4j:log4j-core:2.17.2'
 	shadow 'commons-cli:commons-cli:1.5.0'
 	shadow 'me.tongfei:progressbar:0.10.1'
-	shadow 'org.codehaus.groovy:groovy-jsr223:3.0.11'
+	shadow 'org.apache.groovy:groovy-jsr223:4.0.21'
 	shadow 'org.fxmisc.richtext:richtextfx:0.11.2'
 	shadow 'org.lz4:lz4-java:1.8.0'
 
