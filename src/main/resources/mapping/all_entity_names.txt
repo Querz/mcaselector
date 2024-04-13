@@ -1,5 +1,6 @@
 allay
 area_effect_cloud
+armadillo
 armor_stand
 arrow
 axolotl
@@ -8,6 +9,8 @@ bee
 blaze
 block_display
 boat
+breeze
+breeze_wind_charge
 camel
 cat
 cave_spider
@@ -67,6 +70,7 @@ minecart
 mooshroom
 mule
 ocelot
+ominous_item_spawner
 painting
 panda
 parrot
@@ -112,6 +116,7 @@ villager
 vindicator
 wandering_trader
 warden
+wind_charge
 witch
 wither
 wither_skeleton

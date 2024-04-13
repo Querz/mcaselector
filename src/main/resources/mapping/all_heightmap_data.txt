@@ -124,6 +124,7 @@ m;redstone_wire
 m;repeater
 m;rose_bush
 m;seagrass
+m;short_grass
 m;soul_fire
 m;soul_torch
 m;soul_wall_torch
