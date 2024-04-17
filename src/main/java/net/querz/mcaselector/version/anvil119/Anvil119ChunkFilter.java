@@ -236,7 +236,12 @@ public class Anvil119ChunkFilter extends Anvil117ChunkFilter {
 		}
 
 		for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
-			CompoundTag blockStatesTag = section.getCompound("block_states");
+			CompoundTag blockStatesTag;
+			try {
+				blockStatesTag = section.getCompound("block_states");
+			} catch (NoSuchElementException ex) {
+				continue;
+			}
 			ListTag palette = Helper.tagFromCompound(blockStatesTag, "palette");
 			long[] blockStates = Helper.longArrayFromCompound(blockStatesTag, "data");
 			if (palette == null) {
