@@ -3,11 +3,11 @@ package net.querz.mcaselector.version.anvil120;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.version.ChunkRelocator;
 import net.querz.mcaselector.version.Helper;
-import net.querz.mcaselector.version.anvil117.Anvil117EntityRelocator;
+import net.querz.mcaselector.version.anvil118.Anvil118EntityRelocator;
 import net.querz.nbt.*;
 import java.util.Map;
 import static net.querz.mcaselector.validation.ValidationHelper.silent;
-import static net.querz.mcaselector.version.anvil117.Anvil117EntityRelocator.applyOffsetToEntity;
+import static net.querz.mcaselector.version.anvil118.Anvil118EntityRelocator.applyOffsetToEntity;
 
 public class Anvil120ChunkRelocator implements ChunkRelocator {
 
@@ -170,7 +170,7 @@ public class Anvil120ChunkRelocator implements ChunkRelocator {
 				if (spawnPotentials != null) {
 					for (CompoundTag spawnPotential : spawnPotentials.iterateType(CompoundTag.class)) {
 						CompoundTag entity = Helper.tagFromCompound(spawnPotential, "Entity");
-						Anvil117EntityRelocator.applyOffsetToEntity(entity, offset);
+						Anvil118EntityRelocator.applyOffsetToEntity(entity, offset);
 					}
 				}
 		}
