@@ -1,9 +1,11 @@
 name: Release
 
 on:
+  workflow_dispatch:
+    branches: [master]
   release:
-    types:
-      - created
+    branches: [master]
+    types: [published]
 
 jobs:
   publish:
