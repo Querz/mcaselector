@@ -65,12 +65,6 @@ jobs:
           "%programfiles(x86)%/Inno Setup 6/iscc.exe" build/inno/inno.iss /q
         shell: cmd
 
-      - name: Upload assets
-        uses: AButler/upload-release-assets@v3.0
-        with:
-          files: build/inno/Output/MCA_Selector_Setup.exe;build/libs/mcaselector-2.4.jar
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Upload artifacts
         uses: actions/upload-artifact@v4.3.3
         with:
@@ -78,6 +72,12 @@ jobs:
           path: |
             build/inno/Output/MCA_Selector_Setup.exe
             build/libs/mcaselector-2.4.jar
+
+      - name: Upload assets
+        uses: AButler/upload-release-assets@v3.0
+        with:
+          files: build/inno/Output/MCA_Selector_Setup.exe;build/libs/mcaselector-2.4.jar
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout Wiki
         uses: actions/checkout@v4.1.3
