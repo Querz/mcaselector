@@ -1,4 +1,4 @@
-package net.querz.mcaselector.ui.dialog;
+package net.querz.mcaselector.ui.component;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -6,9 +6,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import net.querz.mcaselector.text.Translation;
 
-class BorderedTitledPane extends StackPane {
+public class BorderedTitledPane extends StackPane {
 
-	BorderedTitledPane(Translation titleString, Node content) {
+	public BorderedTitledPane(Translation titleString, Node content) {
 		Label title = new Label(" " + titleString.toString() + " ");
 		title.getStyleClass().remove("label");
 		title.getStyleClass().add("bordered-titled-title");
@@ -21,5 +21,7 @@ class BorderedTitledPane extends StackPane {
 
 		getStyleClass().add("bordered-titled-border");
 		getChildren().addAll(title, contentPane);
+
+		getStylesheets().add(BorderedTitledPane.class.getClassLoader().getResource("style/component/bordered-titled-pane.css").toExternalForm());
 	}
 }

@@ -31,6 +31,7 @@ public class AboutDialog extends Alert {
 	public AboutDialog(Stage primaryStage) {
 		super(AlertType.INFORMATION, null, ButtonType.OK);
 		initStyle(StageStyle.UTILITY);
+		getDialogPane().getStylesheets().add(AboutDialog.class.getClassLoader().getResource("style/component/about-dialog.css").toExternalForm());
 		getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
 		getDialogPane().getStyleClass().add("about-dialog-pane");
 		titleProperty().bind(Translation.DIALOG_ABOUT_TITLE.getProperty());
@@ -61,7 +62,7 @@ public class AboutDialog extends Alert {
 		grid.add(UIFactory.label(Translation.DIALOG_ABOUT_LICENSE), 0, 1);
 		grid.add(new Label("MIT"), 1, 1);
 		grid.add(UIFactory.label(Translation.DIALOG_ABOUT_COPYRIGHT), 0, 2);
-		grid.add(new Label("\u00A9 2018 - 2023 Querz"), 1, 2);
+		grid.add(new Label("\u00A9 2018 - 2024 Querz"), 1, 2);
 		grid.add(UIFactory.label(Translation.DIALOG_ABOUT_SOURCE), 0, 3);
 		ImageView imgView = new ImageView(githubMark);
 		imgView.setScaleX(0.5);

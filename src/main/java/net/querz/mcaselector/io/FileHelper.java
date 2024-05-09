@@ -121,7 +121,13 @@ public final class FileHelper {
 
 	public static String getLastOpenedDirectory(String key, String def) {
 		String value = lastOpenedDirectoryMap.getOrDefault(key, def);
-		return value == null || !new File(value).exists() ? def : value;
+		if (value != null && new File(value).exists()) {
+			return value;
+		}
+		if (def != null && new File(def).exists()) {
+			return def;
+		}
+		return System.getProperty("user.home");
 	}
 
 	public static void setLastOpenedDirectory(String key, String lastOpenedDirectory) {

@@ -5,9 +5,13 @@ public enum CompressionType {
 	NONE(0), // indicates that there is no data present
 	GZIP(1),
 	ZLIB(2),
+	UNCOMPRESSED(3),
+	LZ4(4),
 	NONE_EXT(-128), // indicates that the chunk data is oversized and saved in a c.x.z.mcc file
 	GZIP_EXT(-127),
-	ZLIB_EXT(-126);
+	ZLIB_EXT(-126),
+	UNCOMPRESSED_EXT(-125),
+	LZ4_EXT(-124);
 
 	private final byte type;
 
@@ -33,6 +37,8 @@ public enum CompressionType {
 			case NONE -> NONE_EXT;
 			case GZIP -> GZIP_EXT;
 			case ZLIB -> ZLIB_EXT;
+			case UNCOMPRESSED -> UNCOMPRESSED_EXT;
+			case LZ4 -> LZ4_EXT;
 			default ->
 				// this is already an external type
 				this;

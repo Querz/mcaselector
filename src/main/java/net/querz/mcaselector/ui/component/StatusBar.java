@@ -41,6 +41,7 @@ public class StatusBar extends StackPane {
 
 	public StatusBar(TileMap tileMap) {
 		getStyleClass().add("status-bar");
+		getStylesheets().add(StatusBar.class.getClassLoader().getResource("style/component/status-bar.css").toExternalForm());
 		grid.getStyleClass().add("status-bar-grid");
 
 		tileMap.setOnUpdate(this::update);

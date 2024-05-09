@@ -45,6 +45,7 @@ menu.tools.swap_chunks;Byt chunks
 menu.tools.edit_overlays;Redigera överlägg
 menu.tools.next_overlay;Nästa överlägg
 menu.tools.next_overlay_type;Överläggstyp
+menu.tools.sum_selection;Summan av urval
 dialog.select_world.title;Välj dimension
 dialog.settings.title;Inställningar
 dialog.settings.global.language;Språk
@@ -122,6 +123,8 @@ dialog.filter_chunks.delete.tooltip;Raderar alla påverkade chunks från världe
 dialog.filter_chunks.selection_only;Tillämpa endast till markering
 dialog.filter_chunks.overwrite_selection;Skriv över urval
 dialog.filter_chunks.selection_radius;Urvalsradie
+dialog.filter_chunks.tab_query;Query
+dialog.filter_chunks.tab_script;Script
 dialog.edit_overlays.title;Redigera överlägg
 dialog.edit_overlays.overlay_active.tooltip;Aktiva
 dialog.edit_overlays.delete.tooltip;Radera
@@ -134,6 +137,8 @@ dialog.change_nbt.selection_only;Tillämpa endast till markering
 dialog.change_nbt.selection_only.tooltip;Om detta filter enbart ska appliceras till den nuvarande markeringen.
 dialog.change_nbt_confirmation.title;Ändra NBT
 dialog.change_nbt_confirmation.header_short;Du är på väg att förändra data i ett okänt antal chunks i denna värld.
+dialog.change_nbt.tab_query;Query
+dialog.change_nbt.tab_script;Script
 dialog.edit_nbt.title;Ändra chunk
 dialog.edit_nbt.placeholder.loading;laddar...
 dialog.edit_nbt.placeholder.no_chunk_data;ingen chunkdata hittades
@@ -168,6 +173,9 @@ dialog.progress.title.exporting_filtered_chunks;Exporterar filtrerade chunks...
 dialog.progress.title.selecting_filtered_chunks;Markerar filtrerade chunks...
 dialog.progress.title.changing_nbt_data;Ändrar NBT-data...
 dialog.progress.title.saving_chunk;Sparar chunk till fil...
+dialog.progress.title.running_before;Kör "before()"...
+dialog.progress.title.running_after;Kör "after()"...
+dialog.progress.title.summing;Räkna summan...
 dialog.error.button.copy_to_clipboard;Kopiera till urklipp
 dialog.error.title;Fel
 dialog.error.header;Ett fel uppstod

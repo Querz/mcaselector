@@ -1,0 +1,57 @@
+* {
+    -color-field-valid-shadow: #00ff40;
+    -color-field-valid-background: #489d5e;
+}
+
+.change-nbt-dialog-pane .text-field {
+    -fx-text-fill: -color-text-light;
+}
+
+.change-nbt-dialog-pane .field-view {
+    -fx-background-color: -color-dialog-background;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell {
+    -fx-padding: 2 5 2 5;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell:even {
+    -fx-background-color: -color-field-cell-even;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell:odd {
+    -fx-background-color: -color-field-cell-odd;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell .label {
+    -fx-text-fill: -color-text-light;
+    -fx-pref-width: 150;
+    -fx-min-width: 150;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell-text:valid {
+    -fx-background-color: -color-field-valid-background;
+    -fx-effect: dropshadow(gaussian, -color-field-valid-shadow, 4, 0, 0, 0);
+}
+
+.change-nbt-dialog-pane .field-view .field-cell-text {
+    -fx-min-width: 130;
+}
+
+.change-nbt-dialog-pane .scroll-pane {
+    -fx-pref-height: 1000;
+    -fx-max-height: 1000;
+}
+
+.change-nbt-dialog-pane {
+    -fx-pref-height: 500;
+}
+
+.script-error-label * {
+    -fx-font-family: "Noto Sans Mono";
+    -fx-min-height: 50;
+}
+
+.script-error-label {
+    -fx-text-fill: -color-error-text !important;
+}

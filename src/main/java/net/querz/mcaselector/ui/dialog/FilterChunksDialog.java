@@ -2,32 +2,34 @@ package net.querz.mcaselector.ui.dialog;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.filter.*;
 import net.querz.mcaselector.exception.ParseException;
 import net.querz.mcaselector.filter.filters.GroupFilter;
 import net.querz.mcaselector.filter.filters.InhabitedTimeFilter;
+import net.querz.mcaselector.filter.filters.ScriptFilter;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.component.GroovyCodeArea;
 import net.querz.mcaselector.ui.component.filter.GroupFilterBox;
 import net.querz.mcaselector.ui.UIFactory;
+import net.querz.mcaselector.validation.BeforeAfterCallback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.fxmisc.flowless.VirtualizedScrollPane;
 
 public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
@@ -40,7 +42,24 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		gf.addFilter(fiveMins);
 	}
 
+	private static final String initScript = """
+			import net.querz.mcaselector.io.mca.ChunkData;
+			import net.querz.nbt.*;
+
+			void before() {
+			\t
+			}
+			
+			boolean filter(ChunkData data) {
+			\t
+			}
+			
+			void after() {
+			\t
+			}""";
+
 	private GroupFilter value = gf;
+	private final TabPane tabs = new TabPane();
 	private final TextField filterQuery = new TextField();
 	private final GroupFilterBox groupFilterBox = new GroupFilterBox(null, value, true);
 	private final RadioButton select = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_SELECT);
@@ -52,6 +71,11 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 	private final CheckBox selectionOnly = new CheckBox();
 	private final CheckBox overwriteSelection = new CheckBox();
 	private final TextField selectionRadius = new TextField();
+	private static final GroovyCodeArea codeArea = new GroovyCodeArea(true);
+
+	static {
+		codeArea.setText(initScript);
+	}
 
 	private static int radius;
 	private static boolean applyToSelectionOnly;
@@ -64,10 +88,26 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 
 		getDialogPane().getStyleClass().add("filter-dialog-pane");
 
-		setResultConverter(p -> p == ButtonType.OK ? new Result(value, getHandleType(), applyToSelectionOnly, applyOverwriteSelection, radius) : null);
+		setResultConverter(p -> {
+			if (p != ButtonType.OK) {
+				return null;
+			}
+			GroupFilter filter;
+			ScriptFilter scriptFilter = null;
+			if (tabs.getSelectionModel().isSelected(0)) {
+				filter = value;
+			} else {
+				filter = new GroupFilter();
+				scriptFilter = new ScriptFilter();
+				scriptFilter.setFilterValue(codeArea.getText());
+				filter.addFilter(scriptFilter);
+			}
+			return new Result(filter, getHandleType(), applyToSelectionOnly, applyOverwriteSelection, radius, scriptFilter);
+		});
 
 		// apply same stylesheets to this dialog
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+		getDialogPane().getStylesheets().add(FilterChunksDialog.class.getClassLoader().getResource("style/component/filter-chunks-dialog.css").toExternalForm());
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
@@ -149,9 +189,29 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		HBox selectionBox = new HBox();
 		selectionBox.getChildren().addAll(actionBox, optionBox);
 
-		VBox box = new VBox();
-		box.getChildren().addAll(scrollPane, new Separator(), filterQuery, new Separator(), selectionBox);
-		getDialogPane().setContent(box);
+//		setOnCloseRequest(e -> codeArea.close());
+
+		VBox mainBox = new VBox();
+		mainBox.getChildren().addAll(scrollPane, new Separator(), filterQuery);
+
+		VBox scriptBox = new VBox();
+		StackPane scriptPane = new StackPane(new VirtualizedScrollPane<>(codeArea));
+		Label errorLabel = new Label();
+		errorLabel.getStyleClass().add("script-error-label");
+		errorLabel.textProperty().bind(codeArea.errorProperty());
+		VBox.setVgrow(scriptPane, Priority.ALWAYS);
+		scriptBox.getChildren().addAll(scriptPane, errorLabel);
+
+		Tab mainTab = UIFactory.tab(Translation.DIALOG_FILTER_CHUNKS_TAB_QUERY);
+		mainTab.setContent(mainBox);
+		Tab scriptTab = UIFactory.tab(Translation.DIALOG_FILTER_CHUNKS_TAB_SCRIPT);
+		scriptTab.setContent(scriptBox);
+
+		tabs.getTabs().addAll(mainTab, scriptTab);
+
+		VBox panelBox = new VBox();
+		panelBox.getChildren().addAll(tabs, new Separator(), selectionBox);
+		getDialogPane().setContent(panelBox);
 	}
 
 	private StackPane withStackPane(Node n) {
@@ -185,40 +245,21 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		return null;
 	}
 
-	public static class Result {
+	public record Result(GroupFilter filter, HandleType type, boolean selectionOnly, boolean overwriteSelection, int radius, ScriptFilter script) implements BeforeAfterCallback {
 
-		private final HandleType type;
-		private final boolean selectionOnly;
-		private final boolean overwriteSelection;
-		private final GroupFilter filter;
-		private final int radius;
-
-		public Result(GroupFilter filter, HandleType type, boolean selectionOnly, boolean overwriteSelection, int radius) {
-			this.filter = filter;
-			this.type = type;
-			this.selectionOnly = selectionOnly;
-			this.overwriteSelection = overwriteSelection;
-			this.radius = radius;
+		@Override
+		public void before() {
+			script.before();
 		}
 
-		public HandleType getType() {
-			return type;
+		@Override
+		public void after() {
+			script.after();
 		}
 
-		public GroupFilter getFilter() {
-			return filter;
-		}
-
-		public boolean isSelectionOnly() {
-			return selectionOnly;
-		}
-
-		public boolean isOverwriteSelection() {
-			return overwriteSelection;
-		}
-
-		public int getRadius() {
-			return radius;
+		@Override
+		public boolean valid() {
+			return script != null;
 		}
 	}
 

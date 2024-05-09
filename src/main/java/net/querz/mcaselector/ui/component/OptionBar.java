@@ -1,5 +1,6 @@
 package net.querz.mcaselector.ui.component;
 
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -14,6 +15,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import net.querz.mcaselector.config.ConfigProvider;
+import net.querz.mcaselector.github.VersionChecker;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.selection.ClipboardSelection;
 import net.querz.mcaselector.tile.TileMap;
@@ -26,7 +28,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.io.File;
-import java.util.List;
+import java.io.IOException;
 
 public class OptionBar extends BorderPane {
 	/*
@@ -39,7 +41,7 @@ public class OptionBar extends BorderPane {
 	*					- Clear cache   	- Delete selected chunks	- Edit overlays
 	*					- Clear all cache	- Import selection			- Next overlay
 	*										- Export selection          - Next overlay type
-	*                                       - Export as image
+	*                                       - Export as image			- Sum selection
 	* 										- Clear cache
 	* */
 
@@ -86,6 +88,7 @@ public class OptionBar extends BorderPane {
 	private final MenuItem editOverlays = UIFactory.menuItem(Translation.MENU_TOOLS_EDIT_OVERLAYS);
 	private final MenuItem nextOverlay = UIFactory.menuItem(Translation.MENU_TOOLS_NEXT_OVERLAY);
 	private final MenuItem nextOverlayType = UIFactory.menuItem(Translation.MENU_TOOLS_NEXT_OVERLAY_TYPE);
+	private final MenuItem sumSelection = UIFactory.menuItem(Translation.MENU_TOOLS_SUM_SELECTION);
 
 	private int previousSelectedChunks = 0;
 	private boolean previousInvertedSelection = false;
@@ -95,6 +98,8 @@ public class OptionBar extends BorderPane {
 	public OptionBar(TileMap tileMap, Stage primaryStage) {
 		getStyleClass().add("option-bar-box");
 		menuBar.getStyleClass().add("option-bar");
+
+		getStylesheets().add(OptionBar.class.getClassLoader().getResource("style/component/option-bar.css").toExternalForm());
 
 		tileMap.setOnUpdate(this::onUpdate);
 
@@ -120,7 +125,7 @@ public class OptionBar extends BorderPane {
 		tools.getItems().addAll(
 				importChunks, filterChunks, changeFields, editNBT, UIFactory.separator(),
 				swapChunks, UIFactory.separator(),
-				editOverlays, nextOverlay, nextOverlayType);
+				editOverlays, nextOverlay, nextOverlayType, sumSelection);
 		about.setOnMouseClicked(e -> DialogHelper.showAboutDialog(primaryStage));
 		Menu aboutMenu = new Menu();
 		aboutMenu.setGraphic(about);
@@ -183,6 +188,7 @@ public class OptionBar extends BorderPane {
 		editOverlays.setOnAction(e -> DialogHelper.editOverlays(tileMap, primaryStage));
 		nextOverlay.setOnAction(e -> tileMap.nextOverlay());
 		nextOverlayType.setOnAction(e -> tileMap.nextOverlayType());
+		sumSelection.setOnAction(e -> DialogHelper.sumSelection(tileMap, primaryStage));
 
 
 		openWorld.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCodeCombination.SHORTCUT_DOWN));
@@ -217,24 +223,58 @@ public class OptionBar extends BorderPane {
 		nextOverlay.setAccelerator(new KeyCodeCombination(KeyCode.O));
 		nextOverlayType.setAccelerator(new KeyCodeCombination(KeyCode.N));
 
-		setSelectionDependentMenuItemsEnabled(tileMap.getSelectedChunks(), tileMap.getSelection().isInverted());
+		setSelectionDependentMenuItemsEnabled(tileMap, tileMap.getSelectedChunks(), tileMap.getSelection().isInverted());
 		setWorldDependentMenuItemsEnabled(false, tileMap, primaryStage);
 
 		Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> paste.setDisable(!hasValidClipboardContent(tileMap) || tileMap.getDisabled()));
 
 		setLeft(menuBar);
 		setRight(hSlider);
+
+		checkForUpdateAsync();
+	}
+
+	private void checkForUpdateAsync() {
+		new Thread(() -> {
+			String applicationVersion;
+			try {
+				applicationVersion = FileHelper.getManifestAttributes().getValue("Application-Version");
+			} catch (IOException ex) {
+				// don't check for updates if we're in dev mode
+				return;
+			}
+
+			VersionChecker checker = new VersionChecker("Querz", "mcaselector");
+			VersionChecker.VersionData data;
+			try {
+				data = checker.fetchLatestVersion();
+			} catch (Exception e) {
+				// don't show update possibility when we failed to check the version
+				return;
+			}
+
+			if (data != null && data.isNewerThan(applicationVersion)) {
+				Platform.runLater(() -> {
+					Hyperlink download = UIFactory.hyperlink("Update", data.getLink(), null);
+					download.getStyleClass().add("hyperlink-menu-update");
+					Menu updateMenu = new Menu();
+					updateMenu.setGraphic(download);
+					menuBar.getMenus().add(updateMenu);
+				});
+			}
+		}).start();
 	}
 
 	private void onUpdate(TileMap tileMap) {
 		int selectedChunks = tileMap.getSelectedChunks();
 		boolean invertedSelection = tileMap.getSelection().isInverted();
 		if (previousSelectedChunks != selectedChunks || previousInvertedSelection != invertedSelection) {
-			setSelectionDependentMenuItemsEnabled(selectedChunks, invertedSelection);
+			setSelectionDependentMenuItemsEnabled(tileMap, selectedChunks, invertedSelection);
 		}
 		previousSelectedChunks = selectedChunks;
 		previousInvertedSelection = invertedSelection;
 		nextOverlay.setDisable(tileMap.getOverlay() == null);
+		sumSelection.setDisable(tileMap.getOverlay() == null || tileMap.getSelectedChunks() == 0);
 	}
 
 	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap, Stage primaryStage) {
@@ -250,6 +290,7 @@ public class OptionBar extends BorderPane {
 		paste.setDisable(!enabled || !hasValidClipboardContent(tileMap));
 		nextOverlay.setDisable(!enabled);
 		nextOverlayType.setDisable(!enabled);
+		sumSelection.setDisable(!enabled || tileMap.getOverlay() == null || tileMap.getSelectedChunks() == 0);
 		hSlider.setDisable(!enabled);
 		openDimension.getItems().clear();
 
@@ -295,7 +336,7 @@ public class OptionBar extends BorderPane {
 		editOverlays.setDisable(!enabled);
 	}
 
-	private void setSelectionDependentMenuItemsEnabled(int selected, boolean inverted) {
+	private void setSelectionDependentMenuItemsEnabled(TileMap tileMap, int selected, boolean inverted) {
 		clear.setDisable(selected == 0 && !inverted);
 		exportChunks.setDisable(selected == 0 && !inverted);
 		exportSelection.setDisable(selected == 0 && !inverted);
@@ -306,6 +347,7 @@ public class OptionBar extends BorderPane {
 		swapChunks.setDisable(selected != 2 || inverted);
 		copy.setDisable(selected == 0 && !inverted);
 		invertRegions.setDisable(selected == 0 || inverted);
+		sumSelection.setDisable((tileMap.getOverlay() == null || selected == 0));
 	}
 
 	private boolean hasValidClipboardContent(TileMap tileMap) {

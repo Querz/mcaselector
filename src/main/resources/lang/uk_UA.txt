@@ -1,0 +1,186 @@
+status.region;регіон
+status.chunk;чанк
+status.block;блок
+status.selected;виділено
+status.queue;черга
+status.total;загалом
+status.overlay;накладання
+menu.file;Файл
+menu.view;Перегляд
+menu.selection;Виділення
+menu.tools;Інструменти
+menu.about;Про
+menu.file.open_world;Відкрити світ
+menu.file.open_dimension;Відкрити вимір
+menu.file.open_recent_world;Відкрити останній світ
+menu.file.open_recent_world.clear;Очистити
+menu.file.settings;Налаштування
+menu.file.render_settings;Відмальовка
+menu.file.quit;Вийти
+menu.view.reload;Перезавантажити
+menu.view.chunk_grid;Сітка чанків
+menu.view.region_grid;Сітка регіонів
+menu.view.coordinates;Координати
+menu.view.goto;Переміститися
+menu.view.reset_zoom;Скинути наближення
+menu.view.save_screenshot;Зберегти знімок екрана
+menu.view.clear_cache;Очистити кеш
+menu.view.clear_all_cache;Очистити весь кеш
+menu.selection.clear;Очитити вибірку
+menu.selection.invert;Вставити
+menu.selection.invert_regions;Вставити виділений регіон
+menu.selection.copy_chunks;Копіювати чанки
+menu.selection.paste_chunks;Вставити чанки
+menu.selection.export_chunks;Експортувати виділені чанки
+menu.selection.delete_chunks;Видалити виділені чанки
+menu.selection.import_selection;Імпортувати виділення з .csv файлу
+menu.selection.export_selection;Зберегти виділення як .csv файл
+menu.selection.export_image;Зберегти як зображення
+menu.selection.clear_cache;Очистити кеш
+menu.tools.import_chunks;Імпортувати чанки
+menu.tools.filter_chunks;Фільтрувати чанки
+menu.tools.change_fields;Змінити параметри
+menu.tools.edit_nbt;Редагувати чанки
+menu.tools.swap_chunks;Переставити чанки
+menu.tools.edit_overlays;Редагувати накладання
+menu.tools.next_overlay;Наступне накладання
+menu.tools.next_overlay_type;Наступний тип накладання
+menu.tools.sum_selection;Сума відбору
+dialog.select_world.title;Вибрати вимір
+dialog.settings.title;Налаштування
+dialog.settings.global.language;Мова
+dialog.settings.global.language.language;Мова
+dialog.settings.processing.process.process_threads;Оброблюючі потоки
+dialog.settings.processing.process;Обробка
+dialog.settings.processing.process.write_threads;Записуючі потоки
+dialog.settings.processing.files.max_files;Максимальна кількість файлів
+dialog.settings.global.selection.region_color;Колір регіону
+dialog.settings.global.selection.chunk_color;Колір чанку
+dialog.settings.global.selection.pasted_chunks_color;Колір вставлених чанків
+dialog.settings.rendering.shade.shade;Відтінок
+dialog.settings.rendering.shade;Відтінок
+dialog.settings.rendering.shade.shade_water;Відтінок води
+dialog.settings.rendering.background.show_nonexistent_regions;Показувати неіснуючі регіони
+dialog.settings.rendering.smooth.smooth_rendering;Гладка відмальовка
+dialog.settings.rendering.smooth.smooth_overlays;Гладке накладання
+dialog.settings.rendering.background.background_pattern;Патерн фону
+dialog.settings.rendering.background;Фон
+dialog.settings.global.misc.mc_saves_dir;Папка збережень
+dialog.settings.global.misc.print_debug;Відображати повідомлення налагодження
+dialog.settings.global.misc.show_log_file;Відображати логи
+dialog.settings.reset;Скинути налаштування
+dialog.settings.tab_global;Загальні
+dialog.settings.tab_processing;Обробка
+dialog.settings.tab_rendering;Відмальовка
+dialog.settings.tab_world;Світ
+dialog.settings.global.misc;Різне
+dialog.settings.processing.files;Файли
+dialog.settings.rendering.smooth;Гладка відмальовка
+dialog.settings.global.selection;Виділення
+dialog.settings.world.paths;Шляхи
+dialog.settings.world.paths.poi;POI
+dialog.settings.world.paths.entities;Сутності
+dialog.settings.rendering.layers.render_height;Висота відмальовки
+dialog.settings.rendering.layers.render_layer_only;Лише на вказаній висоті
+dialog.settings.rendering.layers;Шари
+dialog.settings.rendering.layers.render_caves;Відмальовувати печери
+dialog.goto.title;Перейти до локації
+dialog.confirmation.question;Ви впевнені?
+dialog.delete_chunks_confirmation.title;Видалити чанк
+dialog.delete_chunks_confirmation.header_short;Ви збираєтеся видалити невідому кількість чанків з цього світу.
+dialog.delete_chunks_confirmation.header_verbose;Ви збираєтеся видалити %d чанків з цього світу.
+dialog.image_export_confirmation.title;Зберегти як зображення
+dialog.image_export_confirmation.header_short;Ви збираєтеся створити зображення з невідомим розміром.
+dialog.image_export_confirmation.header_verbose;Ви збираєтеся створити зображення з розміром %dx%d.
+dialog.import_chunks_confirmation.title;Імпортувати чанки
+dialog.import_chunks_confirmation.header;Ви збираєтеся імпортувати невідому кількість чанків до цього світу.
+dialog.import_chunks_confirmation.options;Параметри
+dialog.import_chunks_confirmation.options.offset;Зсув
+dialog.import_chunks_confirmation.options.overwrite;Перезаписати існуючі чанки
+dialog.import_chunks_confirmation.options.selection_only;Застосувати лише до виділених
+dialog.import_chunks_confirmation.options.y_offset;Зміщення по осі Y
+dialog.import_chunks_confirmation.options.sections;Виділення
+dialog.import_chunks_confirmation.warning;Увага: Імпорт чанків зі зміщенням не змінить вміст командних блоків.
+dialog.export_chunks_confirmation.title;Експортувати чанки
+dialog.export_chunks_confirmation.header_short;Ви збираєтеся експотувати невідому кількість чанків з цього світу.
+dialog.export_chunks_confirmation.header_verbose;Ви збираєтеся експотувати %d чанків з цього світу.
+dialog.import_selection.title;Імпортувати виділення з .csv файлу
+dialog.import_selection.header;Цей світ уже має виділення.\nЯк би ви хотіли імпортувати виділення?
+dialog.import_selection.overwrite;Перезаписати
+dialog.import_selection.merge;Об'єднати
+dialog.filter_chunks.title;Відфільтрувати чанки
+dialog.filter_chunks.filter.add.tooltip;Додати нову умову під цією.
+dialog.filter_chunks.filter.delete.tooltip;Видалити цю умову.
+dialog.filter_chunks.filter.type.tooltip;Тип цієї умови.
+dialog.filter_chunks.filter.operator.tooltip;Оператор для зв'язку декількох умов.
+dialog.filter_chunks.filter.comparator.tooltip;Компаратор.
+dialog.filter_chunks.select;Виділити
+dialog.filter_chunks.select.tooltip;Створює набір виділених чанків.
+dialog.filter_chunks.export;Експорт
+dialog.filter_chunks.export.tooltip;Експортувати всі виділені чанки до нової папки.
+dialog.filter_chunks.delete;Видалити
+dialog.filter_chunks.delete.tooltip;Виділити всі виділені чанки зі світу.
+dialog.filter_chunks.selection_only;Застосувати лише до виділених чанків
+dialog.filter_chunks.overwrite_selection;Перезаписати виділення
+dialog.filter_chunks.selection_radius;Радіус виділення
+dialog.filter_chunks.tab_query;Запит
+dialog.filter_chunks.tab_script;Сценарій
+dialog.edit_overlays.title;Редагувати накладання
+dialog.edit_overlays.overlay_active.tooltip;Активний
+dialog.edit_overlays.delete.tooltip;Видалити
+dialog.change_nbt.title;Змінити NBT
+dialog.change_nbt.change;Змінити
+dialog.change_nbt.change.tooltip;Змінити значення якщо його ключ існує
+dialog.change_nbt.force;Примусово
+dialog.change_nbt.force.tooltip;Створити тег якщо його не існує.
+dialog.change_nbt.selection_only;Застосувати лише до виділеного
+dialog.change_nbt.selection_only.tooltip;Цей фільтр повинен застосовуватися лише до даного виділення.
+dialog.change_nbt_confirmation.title;Змінити NBT
+dialog.change_nbt_confirmation.header_short;Ви збираєтеся змінити дані у невідомій кількості чанків у цьому світі.
+dialog.change_nbt.tab_query;Запит
+dialog.change_nbt.tab_script;Сценарій
+dialog.edit_nbt.title;Редагувати чанк
+dialog.edit_nbt.placeholder.loading;завантаження...
+dialog.edit_nbt.placeholder.no_chunk_data;не знайдено інформації про чанк
+dialog.edit_nbt.placeholder.no_region_file;файл регіону не існує
+dialog.edit_array.index;Індекс
+dialog.edit_array.value;Значення
+dialog.about.title;Про
+dialog.about.header;Про MCA Selector
+dialog.about.version;Версія:
+dialog.about.version.unknown;невідома
+dialog.about.version.check;перевірено
+dialog.about.version.checking;перевірка...
+dialog.about.version.up_to_date;Остання версія
+dialog.about.version.error;Помилка
+dialog.about.license;Ліцензія:
+dialog.about.copyright;Копірайт:
+dialog.about.source;Джерельний код:
+dialog.progress.no_files;немає файлів
+dialog.progress.running;запуск...
+dialog.progress.cancelling;відміна...
+dialog.progress.collecting_data;збір інформації...
+dialog.progress.done;готово.
+dialog.progress.scanning_files;Сканування файлів...
+dialog.progress.title.loading_world;завантаження світу...
+dialog.progress.title.deleting_selection;Видалення вибірки...
+dialog.progress.title.creating_image;Створення зображення...
+dialog.progress.title.saving_image;Збереження зображення...
+dialog.progress.title.exporting_selection;Експорт виділення...
+dialog.progress.title.importing_chunks;Імпорт чанків...
+dialog.progress.title.deleting_filtered_chunks;Видалення відфільтрованих чанків...
+dialog.progress.title.exporting_filtered_chunks;Експорт відфільтрованих чанків...
+dialog.progress.title.selecting_filtered_chunks;Виділення відфільтрованих чанків...
+dialog.progress.title.changing_nbt_data;Зміна NBT даних...
+dialog.progress.title.saving_chunk;Збереження чанку...
+dialog.progress.title.running_before;Виконати "before()"...
+dialog.progress.title.running_after;Виконати "after()"...
+dialog.progress.title.summing;Порахуйте суму...
+dialog.error.button.copy_to_clipboard;Копіювати до буфера обміну
+dialog.error.title;Помилка
+dialog.error.header;Сталася помика
+dialog.error.copied_to_clipboard;Скопійовано до буферу обміну!
+dialog.unsaved_selection.title;Не збережене виділення
+dialog.unsaved_selection.header;Це не збережене виділення.
+button.cancel;Скасувати
+button.ok;OK

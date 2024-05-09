@@ -1,0 +1,52 @@
+* {
+    -color-overlay-box-invalid-background: #9e494a;
+    -color-overlay-box-invalid-shadow: #ff4000;
+    -color-overlay-box-control-hover-background: #494d50;
+}
+
+.overlay-input-grid {
+    -fx-hgap: 5;
+    -fx-padding: 2 5 0 0;
+}
+
+.overlay-options-grid {
+    -fx-hgap: 5;
+    -fx-padding: 0 2 0 5;
+}
+
+.overlay-box {
+    -fx-padding: 6 0 6 10;
+    -fx-background-color: -color-dialog-background;
+    -fx-border-width: 1 0 0 1;
+    -fx-border-color: -color-dialog-separator;
+}
+
+.overlay-box:invalid .text-field {
+    -fx-background-color: -color-overlay-box-invalid-background;
+    -fx-effect: dropshadow(gaussian, -color-overlay-box-invalid-shadow, 4, 0, 0, 0);
+}
+
+.overlay-box:selected {
+    -fx-background-color: -color-menu-hover-background;
+}
+
+.overlay-box .text-field:disabled {
+    -fx-background-color: -color-text-field-background-disabled;
+    -fx-effect: null;
+}
+
+.overlay-box .control-label:hover {
+    -fx-background-color: -color-overlay-box-control-hover-background
+}
+
+.gradient-label {
+    -fx-pref-width: 50;
+}
+
+.slider-box {
+    -fx-spacing: 10;
+}
+
+.flip-label:hover {
+    -fx-background-color: -color-flip-label-hover-background
+}

@@ -11,13 +11,17 @@ public class GroupFilterBox extends FilterBox {
 	// has a listview in the bottom part of the border pane
 	protected VBox filters = new VBox();
 
+	private static final String stylesheet = GroupFilterBox.class.getClassLoader().getResource("style/component/group-filter-box.css").toExternalForm();
+
 	public GroupFilterBox(FilterBox parent, GroupFilter filter, boolean root) {
 		super(parent, filter, root);
 		setFilter(parent, filter, root);
+		getStylesheets().add(stylesheet);
 	}
 
 	public void setFilter(GroupFilter filter) {
 		setFilter(null, filter, true);
+		getStylesheets().add(stylesheet);
 	}
 
 	private void setFilter(FilterBox parent, GroupFilter filter, boolean root) {

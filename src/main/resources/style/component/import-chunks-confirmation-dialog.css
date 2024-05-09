@@ -1,0 +1,21 @@
+* {
+    -color-warning-text: #ff6651;
+}
+
+.import-chunks-options-grid {
+    -fx-vgap: 15;
+    -fx-hgap: 10;
+}
+
+.import-confirmation-dialog-content >.v-box >.import-chunks-confirmation-label {
+    -fx-padding: 20 0 5 0;
+}
+
+.import-chunks-warning-invisible {
+    visibility: hidden;
+}
+
+.import-confirmation-dialog-content >.v-box >.import-chunks-warning {
+    -fx-text-fill: -color-warning-text;
+    -fx-padding: 0 0 -10 0;
+}

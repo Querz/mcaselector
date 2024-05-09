@@ -1,0 +1,33 @@
+* {
+    -color-tree-view-background: #46494b;
+}
+
+.nbt-editor-options {
+    -fx-spacing: 3px;
+    -fx-padding: 5 0 0 0;
+}
+
+.nbt-editor-add-tag-label {
+    -fx-padding: 3 0 3 0;
+}
+
+.nbt-editor-add-tag-label:hover {
+    -fx-padding: 2 -1 2 -1;
+}
+
+.nbt-editor-delete-tag-label {
+    -fx-border-width: 0 2 0 0;
+    -fx-padding: 0 2 0 0;
+    -fx-border-color: -color-dialog-separator;
+}
+
+.nbt-editor-delete-tag-label-enabled:hover {
+    -fx-padding: -1 1 -1 -1;
+}
+
+.nbt-tree-view-holder {
+    -fx-background-color: -color-tree-view-background;
+    -fx-padding: 0;
+    -fx-min-width: 400px;
+    -fx-min-height: 500px;
+}

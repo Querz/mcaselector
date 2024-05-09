@@ -37,6 +37,8 @@ public class VersionChecker {
 
 	private VersionData parseJson(String json) {
 		Gson gson = new Gson();
+
+		@SuppressWarnings("unchecked")
 		Map<String, Object> result = gson.fromJson(json, Map.class);
 
 		int latestID = 0;

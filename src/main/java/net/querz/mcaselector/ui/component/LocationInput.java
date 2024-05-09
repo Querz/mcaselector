@@ -16,14 +16,16 @@ public class LocationInput extends HBox {
 	private final boolean emptyIsZero;
 
 	public LocationInput(boolean emptyIsZero) {
+		getStyleClass().add("location-input");
+
+		getStylesheets().add(LocationInput.class.getClassLoader().getResource("style/component/location-input.css").toExternalForm());
+
 		this.emptyIsZero = emptyIsZero;
 
 		if (emptyIsZero) {
 			x = z = 0;
 			value = new Point2i(0, 0);
 		}
-
-		getStyleClass().add("location-input");
 
 		xValue = new TextField();
 		xValue.setPromptText("X");

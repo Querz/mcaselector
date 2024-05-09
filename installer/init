@@ -67,8 +67,9 @@ Installer() {
 
   # add winrun4j license
   finalLicense=$(AppendLicense "$1/installer/license/winrun4j.txt" "$finalLicense")
-  # add notosans license
-  finalLicense=$(AppendLicense "$1/build/resources/main/font/license/notosans-regular.txt" "$finalLicense")
+  # add notosans licenses
+  finalLicense=$(AppendLicense "$1/build/resources/main/font/license/notosans.txt" "$finalLicense")
+  finalLicense=$(AppendLicense "$1/build/resources/main/font/license/notosansmono.txt" "$finalLicense")
 
   echo "$finalLicense" > "$1/build/inno/LICENSE"
 

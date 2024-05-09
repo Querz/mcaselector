@@ -45,6 +45,7 @@ menu.tools.swap_chunks;Zamień chunki
 menu.tools.edit_overlays;Edytuj nakładki
 menu.tools.next_overlay;Następna nakładka
 menu.tools.next_overlay_type;Typ nakładki
+menu.tools.sum_selection;Suma wyboru
 dialog.select_world.title;Wybierz wymiar
 dialog.settings.title;Ustawienia
 dialog.settings.global.language;Język
@@ -122,6 +123,8 @@ dialog.filter_chunks.delete.tooltip;Usuwa ze świata chunki wybrane przez filtr.
 dialog.filter_chunks.selection_only;Zastosuj tylko do zaznaczenia
 dialog.filter_chunks.overwrite_selection;Zastąp zaznaczenie
 dialog.filter_chunks.selection_radius;Promień zaznaczenia
+dialog.filter_chunks.tab_query;Zapytanie
+dialog.filter_chunks.tab_script;Scenariusz
 dialog.edit_overlays.title;Edytuj nakładki
 dialog.edit_overlays.overlay_active.tooltip;Aktywny
 dialog.edit_overlays.delete.tooltip;Usunąć
@@ -134,6 +137,8 @@ dialog.change_nbt.selection_only;Zastosuj tylko do zaznaczenia
 dialog.change_nbt.selection_only.tooltip;Zaznacz jeśli chcesz wprowadzać zmiany tylko w obecnym zaznaczeniu.
 dialog.change_nbt_confirmation.title;Zmień NBT
 dialog.change_nbt_confirmation.header_short;Zamierzasz zmienić dane w nieznanej ilości chunków w tym świecie.
+dialog.change_nbt.tab_query;Zapytanie
+dialog.change_nbt.tab_script;Scenariusz
 dialog.edit_nbt.title;Edytuj chunk
 dialog.edit_nbt.placeholder.loading;ładowanie...
 dialog.edit_nbt.placeholder.no_chunk_data;nie znaleziono danych chunków
@@ -168,6 +173,9 @@ dialog.progress.title.exporting_filtered_chunks;Filtrowanie i eksportowanie...
 dialog.progress.title.selecting_filtered_chunks;Filtrowanie i zaznaczanie...
 dialog.progress.title.changing_nbt_data;Zmienianie danych NBT...
 dialog.progress.title.saving_chunk;Zapisywanie fragmentu do pliku...
+dialog.progress.title.running_before;Wykonaj "before()"...
+dialog.progress.title.running_after;Wykonaj "after()"...
+dialog.progress.title.summing;Policz kwotę...
 dialog.error.button.copy_to_clipboard;Skopiuj do schowka
 dialog.error.title;Błąd
 dialog.error.header;Wystąpił błąd

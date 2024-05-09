@@ -57,6 +57,8 @@ public class OverlayBox extends BorderPane {
 	private final Label delete = new Label("", new ImageView(deleteIcon));
 
 	public OverlayBox(Overlay value) {
+		getStylesheets().add(OverlayBox.class.getClassLoader().getResource("style/component/overlay-box.css").toExternalForm());
+
 		valueProperty = new DataProperty<>(value);
 
 		getStyleClass().add("overlay-box");

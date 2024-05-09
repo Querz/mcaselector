@@ -17,7 +17,7 @@ menu.file.open_recent_world.clear;Svuota
 menu.file.settings;Impostazioni
 menu.file.render_settings;Impostazioni di rendering
 menu.file.quit;Esci
-menu.view.reload;Ricaricare
+menu.view.reload;Ricarica
 menu.view.chunk_grid;Griglia dei chunk
 menu.view.region_grid;Griglia della regione
 menu.view.coordinates;Coordinate
@@ -27,7 +27,7 @@ menu.view.save_screenshot;Salva screenshot
 menu.view.clear_cache;Svuota la cache
 menu.view.clear_all_cache;Svuota tutta la cache
 menu.selection.clear;Svuota
-menu.selection.invert;Invertire
+menu.selection.invert;Inverti
 menu.selection.invert_regions;Inverti le regioni selezionate
 menu.selection.copy_chunks;Copia i chunk
 menu.selection.paste_chunks;Incolla i chunk
@@ -45,14 +45,15 @@ menu.tools.swap_chunks;Scambia i chunk
 menu.tools.edit_overlays;Modifica le sovrapposizioni
 menu.tools.next_overlay;Sovrapposizione successiva
 menu.tools.next_overlay_type;Tipo di sovrapposizione
+menu.tools.sum_selection;Somma della selezione
 dialog.select_world.title;Seleziona una dimensione
 dialog.settings.title;Impostazioni
 dialog.settings.global.language;Lingua
 dialog.settings.global.language.language;Lingua
-dialog.settings.processing.process.process_threads;Discussioni di processo
+dialog.settings.processing.process.process_threads;Thread di elaborazione
 dialog.settings.processing.process;Processi
-dialog.settings.processing.process.write_threads;Scrivi discussioni
-dialog.settings.processing.files.max_files;File massimi
+dialog.settings.processing.process.write_threads;Thread di scrittura
+dialog.settings.processing.files.max_files;Numero massimo di file
 dialog.settings.global.selection.region_color;Colore della regione
 dialog.settings.global.selection.chunk_color;Colore del pezzo
 dialog.settings.global.selection.pasted_chunks_color;Colore pezzi incollati
@@ -69,7 +70,7 @@ dialog.settings.global.misc.print_debug;Stampa messaggi di debug
 dialog.settings.global.misc.show_log_file;Mostra file di registro
 dialog.settings.reset;Reset
 dialog.settings.tab_global;Globale
-dialog.settings.tab_processing;in lavorazione
+dialog.settings.tab_processing;Elaborazione
 dialog.settings.tab_rendering;Rendering
 dialog.settings.tab_world;Mondo
 dialog.settings.global.misc;Varie
@@ -82,12 +83,12 @@ dialog.settings.world.paths.entities;Entità
 dialog.settings.rendering.layers.render_height;Altezza di rendering
 dialog.settings.rendering.layers.render_layer_only;Rendering solo livello
 dialog.settings.rendering.layers;strati
-dialog.settings.rendering.layers.render_caves;Render grotte
+dialog.settings.rendering.layers.render_caves;Rendering grotte
 dialog.goto.title;Vai in un posto
-dialog.confirmation.question;Sei sicuro
+dialog.confirmation.question;Sei sicuro?
 dialog.delete_chunks_confirmation.title;Elimina chunk
 dialog.delete_chunks_confirmation.header_short;Stai per eleminare un numero ignoto di chunk da questo mondo.
-dialog.delete_chunks_confirmation.header_verbose;Sei sicuro di voler eliminare %d chunk da questo mondo.
+dialog.delete_chunks_confirmation.header_verbose;Sei sicuro di voler eliminare %d chunk da questo mondo?
 dialog.image_export_confirmation.title;Esporta immagine
 dialog.image_export_confirmation.header_short;Stai per creare un'immagine di proporzioni sconosciute.
 dialog.image_export_confirmation.header_verbose;Stai per creare un'immagine con le dimensioni %dx%d.
@@ -99,7 +100,7 @@ dialog.import_chunks_confirmation.options.overwrite;Sovrascrivi chunk esistenti
 dialog.import_chunks_confirmation.options.selection_only;Applica solo alla selezione
 dialog.import_chunks_confirmation.options.y_offset;Offset Y
 dialog.import_chunks_confirmation.options.sections;Sezioni
-dialog.import_chunks_confirmation.warning;Attenzione Importare chunk con offset non modificher� le impostazioni dei command block.
+dialog.import_chunks_confirmation.warning;Attenzione! Importare chunk con offset non modificherà le impostazioni dei command block.
 dialog.export_chunks_confirmation.title;Esporta chunk
 dialog.export_chunks_confirmation.header_short;Stai per esportare un numero ignoto di chunk da questo mondo.
 dialog.export_chunks_confirmation.header_verbose;Stai per esportare %d chunk da questo mondo.
@@ -113,7 +114,7 @@ dialog.filter_chunks.filter.delete.tooltip;Elimina questa condizione.
 dialog.filter_chunks.filter.type.tooltip;Il tipo di questa condizione.
 dialog.filter_chunks.filter.operator.tooltip;L'operatore per collegare multiple condizioni.
 dialog.filter_chunks.filter.comparator.tooltip;Il comparatore.
-dialog.filter_chunks.select;Select
+dialog.filter_chunks.select;Selezione
 dialog.filter_chunks.select.tooltip;Crea una selezione dei chunk affetti.
 dialog.filter_chunks.export;Esporta
 dialog.filter_chunks.export.tooltip;Esporta tutti i chunk affetti.
@@ -122,6 +123,8 @@ dialog.filter_chunks.delete.tooltip;Elimina tutti i chunk affetti dal mondo corr
 dialog.filter_chunks.selection_only;Applica solo alla selezione
 dialog.filter_chunks.overwrite_selection;Sovrascrivi selezione
 dialog.filter_chunks.selection_radius;Raggio di selezione
+dialog.filter_chunks.tab_query;Query
+dialog.filter_chunks.tab_script;Script
 dialog.edit_overlays.title;Modifica le sovrapposizioni
 dialog.edit_overlays.overlay_active.tooltip;Attivo
 dialog.edit_overlays.delete.tooltip;Elimina
@@ -134,6 +137,8 @@ dialog.change_nbt.selection_only;Applica solo alla selezione
 dialog.change_nbt.selection_only.tooltip;Se questo filtro deve essere applicato solo alla selezione corrente.
 dialog.change_nbt_confirmation.title;Change NBT
 dialog.change_nbt_confirmation.header_short;You are about to change data in an unknown number of chunks in this world.
+dialog.change_nbt.tab_query;Query
+dialog.change_nbt.tab_script;Script
 dialog.edit_nbt.title;Modifica chunk
 dialog.edit_nbt.placeholder.loading;caricamento...
 dialog.edit_nbt.placeholder.no_chunk_data;nessun dato di chunk trovato
@@ -168,6 +173,9 @@ dialog.progress.title.exporting_filtered_chunks;Esportando i chunk filtrati...
 dialog.progress.title.selecting_filtered_chunks;Selezionando i chunk filtrati...
 dialog.progress.title.changing_nbt_data;Cambiando dati NBT...
 dialog.progress.title.saving_chunk;Salvataggio i chunk...
+dialog.progress.title.running_before;Esegui "before()"...
+dialog.progress.title.running_after;Esegui "after()"...
+dialog.progress.title.summing;Conta l'importo...
 dialog.error.button.copy_to_clipboard;Copia negli appunti
 dialog.error.title;Errore
 dialog.error.header;Si è verificato un errore

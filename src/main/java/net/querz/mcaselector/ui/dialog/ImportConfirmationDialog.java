@@ -14,6 +14,7 @@ import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.range.RangeParser;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.ui.component.BorderedTitledPane;
 import net.querz.mcaselector.ui.component.LocationInput;
 import net.querz.mcaselector.ui.UIFactory;
 import java.util.List;
@@ -144,6 +145,8 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 				range.setText(preFill.ranges.stream().map(Range::toString).collect(Collectors.joining(",")));
 			}
 		}
+
+		getDialogPane().getStylesheets().add(ImportConfirmationDialog.class.getClassLoader().getResource("style/component/import-chunks-confirmation-dialog.css").toExternalForm());
 	}
 
 	public static class ChunkImportConfirmationData {

@@ -31,6 +31,7 @@ public class ErrorDialog extends Alert {
 	public ErrorDialog(Stage primaryStage, Exception ex) {
 		super(AlertType.ERROR, null, ButtonType.CLOSE);
 		init(primaryStage);
+		getDialogPane().getStylesheets().add(ErrorDialog.class.getClassLoader().getResource("style/component/error-dialog.css").toExternalForm());
 
 		String errorMessage = TextHelper.getStacktraceAsString(ex);
 		ButtonType copyToClipboard = new ButtonType(Translation.DIALOG_ERROR_BUTTON_COPY_TO_CLIPBOARD.toString(), ButtonBar.ButtonData.BACK_PREVIOUS);

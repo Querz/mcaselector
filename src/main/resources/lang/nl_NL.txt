@@ -45,6 +45,7 @@ menu.tools.swap_chunks;Chunks omwisselen
 menu.tools.edit_overlays;Bewerk overlays
 menu.tools.next_overlay;Volgende overlay
 menu.tools.next_overlay_type;Overlaytype
+menu.tools.sum_selection;Som van selectie
 dialog.select_world.title;Selecteer een dimensie
 dialog.settings.title;Instellingen
 dialog.settings.global.language;Taal
@@ -122,6 +123,8 @@ dialog.filter_chunks.delete.tooltip;Verwijdert alle aangepaste chunks uit de hui
 dialog.filter_chunks.selection_only;Alleen van toepassing op selectie
 dialog.filter_chunks.overwrite_selection;Selectie overschrijven
 dialog.filter_chunks.selection_radius;Selectie radius
+dialog.filter_chunks.tab_query;Vraag
+dialog.filter_chunks.tab_script;Script
 dialog.edit_overlays.title;Bewerk overlays
 dialog.edit_overlays.overlay_active.tooltip;Actief
 dialog.edit_overlays.delete.tooltip;Verwijderen
@@ -134,6 +137,8 @@ dialog.change_nbt.selection_only;Alleen van toepassing op selectie
 dialog.change_nbt.selection_only.tooltip;Of dit filter alleen van toepassing is op de huidige selectie.
 dialog.change_nbt_confirmation.title;NBT aanpassen
 dialog.change_nbt_confirmation.header_short;Je staat op het punt de gegevens van een onbekend aantal chunks in deze wereld te veranderen.
+dialog.change_nbt.tab_query;Vraag
+dialog.change_nbt.tab_script;Script
 dialog.edit_nbt.title;Chunk aanpassen
 dialog.edit_nbt.placeholder.loading;bezig met laden...
 dialog.edit_nbt.placeholder.no_chunk_data;geen chunk gegevens gevonden
@@ -168,6 +173,9 @@ dialog.progress.title.exporting_filtered_chunks;Gefilterde chunks exporteren...
 dialog.progress.title.selecting_filtered_chunks;Gefilterde chunks selecteren...
 dialog.progress.title.changing_nbt_data;NBT gegevens aanpassen...
 dialog.progress.title.saving_chunk;Chunk opslaan in bestand...
+dialog.progress.title.running_before;Voer "before()" uit...
+dialog.progress.title.running_after;Voer "after()" uit...
+dialog.progress.title.summing;Tel het bedrag...
 dialog.error.button.copy_to_clipboard;Kopieer naar klembord
 dialog.error.title;Fout
 dialog.error.header;Er is een fout opgetreden

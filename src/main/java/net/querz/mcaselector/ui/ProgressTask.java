@@ -46,7 +46,7 @@ public abstract class ProgressTask extends Task<Void> implements Progress {
 
 	@Override
 	public void incrementProgress(String info, int count) {
-		updateProgress(info, current.getAndAdd(count), max);
+		updateProgress(info, current.addAndGet(count), max);
 	}
 
 	public void setLocked(boolean locked) {

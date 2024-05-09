@@ -1,0 +1,9 @@
+* {
+    -color-filter-box-invalid-background: #9e494a;
+    -color-filter-box-invalid-shadow: #ff4000;
+}
+
+.number-filter-box:invalid .text-field {
+    -fx-background-color: -color-filter-box-invalid-background;
+    -fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
+}

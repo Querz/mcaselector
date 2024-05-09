@@ -1,25 +1,18 @@
 package net.querz.mcaselector.io.mca;
 
+import net.jpountz.lz4.LZ4BlockInputStream;
+import net.jpountz.lz4.LZ4BlockOutputStream;
 import net.querz.io.ExposedByteArrayOutputStream;
 import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
-import net.querz.mcaselector.validation.ValidationHelper;
 import net.querz.nbt.NBTUtil;
 import net.querz.nbt.Tag;
 import net.querz.nbt.io.NBTReader;
 import net.querz.nbt.io.NBTWriter;
 import net.querz.nbt.CompoundTag;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.util.List;
 import java.util.function.Function;
 import java.util.zip.DeflaterOutputStream;
@@ -46,10 +39,12 @@ public abstract class Chunk {
 		DataInputStream nbtIn = switch (compressionType) {
 			case GZIP -> new DataInputStream(new BufferedInputStream(new GZIPInputStream(ptr, length)));
 			case ZLIB -> new DataInputStream(new BufferedInputStream(new InflaterInputStream(ptr, new Inflater(), length)));
-			case NONE -> new DataInputStream(ptr);
+			case LZ4 -> new DataInputStream(new BufferedInputStream(new LZ4BlockInputStream(ptr)));
+			case NONE, UNCOMPRESSED -> new DataInputStream(ptr);
 			case GZIP_EXT -> new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(getMCCFile()))));
 			case ZLIB_EXT -> new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(getMCCFile()))));
-			case NONE_EXT -> new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile())));
+			case LZ4_EXT -> new DataInputStream(new BufferedInputStream(new LZ4BlockInputStream(new FileInputStream(getMCCFile()))));
+			case NONE_EXT, UNCOMPRESSED_EXT -> new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile())));
 		};
 
 		Tag tag = new NBTReader().read(nbtIn);
@@ -68,10 +63,12 @@ public abstract class Chunk {
 		DataInputStream nbtIn = switch (compressionType) {
 			case GZIP -> new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(raf.getFD()))));
 			case ZLIB -> new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(raf.getFD()))));
-			case NONE -> new DataInputStream(new BufferedInputStream(new FileInputStream(raf.getFD()), length - 1));
+			case LZ4 -> new DataInputStream(new BufferedInputStream(new LZ4BlockInputStream(new FileInputStream(raf.getFD()))));
+			case NONE, UNCOMPRESSED -> new DataInputStream(new BufferedInputStream(new FileInputStream(raf.getFD()), length - 1));
 			case GZIP_EXT -> new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(getMCCFile()))));
 			case ZLIB_EXT -> new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(getMCCFile()))));
-			case NONE_EXT -> new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile())));
+			case LZ4_EXT -> new DataInputStream(new BufferedInputStream(new LZ4BlockInputStream(new FileInputStream(getMCCFile()))));
+			case NONE_EXT, UNCOMPRESSED_EXT -> new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile())));
 		};
 
 		Tag tag = new NBTReader().read(nbtIn);
@@ -89,7 +86,8 @@ public abstract class Chunk {
 		DataOutputStream nbtOut = switch (compressionType) {
 			case GZIP, GZIP_EXT -> new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(baos = new ExposedByteArrayOutputStream())));
 			case ZLIB, ZLIB_EXT -> new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(baos = new ExposedByteArrayOutputStream())));
-			case NONE, NONE_EXT -> new DataOutputStream(new BufferedOutputStream(baos = new ExposedByteArrayOutputStream()));
+			case LZ4, LZ4_EXT -> new DataOutputStream(new BufferedOutputStream(new LZ4BlockOutputStream(baos = new ExposedByteArrayOutputStream())));
+			case NONE, NONE_EXT, UNCOMPRESSED, UNCOMPRESSED_EXT -> new DataOutputStream(new BufferedOutputStream(baos = new ExposedByteArrayOutputStream()));
 		};
 
 		new NBTWriter().write(nbtOut, data);
@@ -158,7 +156,7 @@ public abstract class Chunk {
 	@Override
 	public String toString() {
 		String s = NBTUtil.toSNBT(data);
-		return "<absoluteLoaction=" + absoluteLocation + ", compressionType=" + compressionType + ", data=" + s + ">";
+		return "<absoluteLocation=" + absoluteLocation + ", compressionType=" + compressionType + ", data=" + s + ">";
 	}
 
 	protected <T extends Chunk> T clone(Function<Point2i, T> chunkConstructor) {

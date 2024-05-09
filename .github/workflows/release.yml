@@ -1,35 +1,37 @@
 name: Release
 
 on:
+  workflow_dispatch:
+    branches: [master]
   release:
-    types:
-      - created
+    branches: [master]
+    types: [published]
 
 jobs:
   publish:
     runs-on: windows-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.3
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4.2.1
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
 
       - name: Build jar
         run: gradlew build shadowJar --stacktrace --warning-mode all
         shell: cmd
 
       - name: Download WinRun4J
-        uses: suisei-cn/actions-download-file@v1.4.0
+        uses: suisei-cn/actions-download-file@v1.6.0
         with:
           url: https://github.com/poidasmith/winrun4j/files/1822558/winrun4J-0.4.5.zip
           target: .
 
       - name: Download ResourceHacker
-        uses: suisei-cn/actions-download-file@v1.4.0
+        uses: suisei-cn/actions-download-file@v1.6.0
         with:
           url: http://www.angusj.com/resourcehacker/resource_hacker.zip
           target: .
@@ -51,7 +53,7 @@ jobs:
         shell: cmd
 
       - name: Download 7za
-        uses: suisei-cn/actions-download-file@v1.4.0
+        uses: suisei-cn/actions-download-file@v1.6.0
         with:
           url: https://www.7-zip.org/a/7za920.zip
           target: .
@@ -63,14 +65,22 @@ jobs:
           "%programfiles(x86)%/Inno Setup 6/iscc.exe" build/inno/inno.iss /q
         shell: cmd
 
-      - name: Upload assets
-        uses: AButler/upload-release-assets@v2.0.2
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4.3.3
         with:
-          files: build/inno/Output/MCA_Selector_Setup.exe;build/libs/mcaselector-2.2.2.jar
+          name: Artifact
+          path: |
+            build/inno/Output/MCA_Selector_Setup.exe
+            build/libs/mcaselector-2.4.jar
+
+      - name: Upload assets
+        uses: AButler/upload-release-assets@v3.0
+        with:
+          files: build/inno/Output/MCA_Selector_Setup.exe;build/libs/mcaselector-2.4.jar
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout Wiki
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.3
         with:
           repository: Querz/mcaselector-wiki
           path: mcaselector-wiki
@@ -78,7 +88,7 @@ jobs:
       - name: Update Wiki
         run: |
           cd mcaselector-wiki
-          echo -n 2.2.2 > version.txt
+          echo -n 2.4 > version.txt
           ./update_version
         shell: bash
 
@@ -87,7 +97,8 @@ jobs:
           cd mcaselector-wiki
           git config --global user.name 'Querz'
           git config --global user.email 'wiki@querz.net'
+          git config --unset-all http.https://github.com/.extraheader
           git remote set-url origin https://x-access-token:${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}@github.com/Querz/mcaselector-wiki
-          git commit -am "Automated version update to 2.2.2"
+          git commit -am "Automated version update to 2.4"
           git push
         shell: bash

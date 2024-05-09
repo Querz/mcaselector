@@ -4,19 +4,21 @@ plugins {
 	id 'eclipse'
 	id 'idea'
 	id 'org.openjfx.javafxplugin' version '0.0.12'
-	id 'com.github.johnrengelman.shadow' version '7.1.2'
+	id 'io.github.goooler.shadow' version '8.1.7'
 	id 'com.github.ben-manes.versions' version '0.42.0'
 }
 
 group 'net.querz'
-sourceCompatibility = JavaLanguageVersion.of(17)
-targetCompatibility = JavaLanguageVersion.of(17)
 compileJava.options.encoding = 'UTF-8'
 application.mainClass = 'net.querz.mcaselector.Main'
-configurations.implementation.canBeResolved = true
+//configurations.implementation.canBeResolved = true
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_21
+}
 
 javafx {
-	version = "$sourceCompatibility"
+	version = "$java.sourceCompatibility"
 	modules = ['javafx.controls', 'javafx.swing']
 }
 
@@ -30,28 +32,35 @@ repositories {
 	maven {
 		url 'https://jitpack.io/'
 	}
+	maven {
+		url 'https://plugins.gradle.org/m2/'
+	}
 }
 
 dependencies {
-	implementation 'com.github.Querz:NBT:3196993049'
+	implementation 'com.github.Querz:NBT:56ac2af621'
 	implementation 'com.google.code.gson:gson:2.10.1'
-	implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
+	implementation 'org.xerial:sqlite-jdbc:3.45.2.0'
 	implementation 'it.unimi.dsi:fastutil:8.5.8'
 	implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
 	implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
 	implementation 'commons-cli:commons-cli:1.5.0'
-	implementation 'me.tongfei:progressbar:0.9.3'
-	implementation 'org.codehaus.groovy:groovy-jsr223:3.0.11'
+	implementation 'me.tongfei:progressbar:0.10.1'
+	implementation 'org.apache.groovy:groovy-jsr223:4.0.21'
+	implementation 'org.fxmisc.richtext:richtextfx:0.11.2'
+	implementation 'org.lz4:lz4-java:1.8.0'
   
-	shadow 'com.github.Querz:NBT:3196993049'
+	shadow 'com.github.Querz:NBT:56ac2af621'
 	shadow 'com.google.code.gson:gson:2.10.1'
-	shadow 'org.xerial:sqlite-jdbc:3.36.0.3'
+	shadow 'org.xerial:sqlite-jdbc:3.45.2.0'
 	shadow 'it.unimi.dsi:fastutil:8.5.8'
 	shadow 'org.apache.logging.log4j:log4j-api:2.17.2'
 	shadow 'org.apache.logging.log4j:log4j-core:2.17.2'
 	shadow 'commons-cli:commons-cli:1.5.0'
-	shadow 'me.tongfei:progressbar:0.9.3'
-	shadow 'org.codehaus.groovy:groovy-jsr223:3.0.11'
+	shadow 'me.tongfei:progressbar:0.10.1'
+	shadow 'org.apache.groovy:groovy-jsr223:4.0.21'
+	shadow 'org.fxmisc.richtext:richtextfx:0.11.2'
+	shadow 'org.lz4:lz4-java:1.8.0'
 
 	testImplementation 'junit:junit:4.13.2'
 	testImplementation 'commons-io:commons-io:2.11.0'
@@ -59,15 +68,17 @@ dependencies {
 
 task copyRuntimeLibs(type: Copy) {
 	from configurations.shadow
-	into file("$buildDir/libs/lib/")
+	into layout.buildDirectory.dir('libs/lib')
 	exclude {it.file.name.startsWith('javafx')}
 }
 
 task minifyCss {
 	doLast {
-		minCss(
-			new File("${sourceSets.main.resources.srcDirs[0]}/style.css"),
-			new File("${sourceSets.main.output.resourcesDir}/style.css"))
+		var styleDir = java.nio.file.Path.of("${sourceSets.main.resources.srcDirs[0]}", "style")
+		Files.find(styleDir, Integer.MAX_VALUE, (filePath, fileAttr) -> fileAttr.isRegularFile())
+		.forEach(p -> {
+			minCss(p, java.nio.file.Path.of("${sourceSets.main.output.resourcesDir}", "style", styleDir.relativize(p).toString()))
+		})
 	}
 	dependsOn processResources
 }
@@ -113,8 +124,11 @@ assemble.dependsOn shadowJar
  */
 import java.nio.file.Files
 
-static minCss(File i, File o) throws IOException {
-	String s = Files.readString(i.toPath())
+static minCss(i, o) throws IOException {
+	String s = Files.readString(i)
 	s = s.replace("\t", "").replace("\r\n", " ").replace("\n", " ").replaceAll("/\\*.*?\\*/", "").replaceAll(" {2,}", " ").trim()
-	Files.writeString(o.toPath(), s)
+	try {Files.writeString(o, s)}
+	catch (Exception ex) {
+		ex.printStackTrace()
+	}
 }

@@ -1,6 +1,5 @@
 package net.querz.mcaselector.filter.filters;
 
-import net.querz.mca.parsers.EntityParser;
 import net.querz.mcaselector.filter.Comparator;
 import net.querz.mcaselector.filter.FilterType;
 import net.querz.mcaselector.filter.Operator;
@@ -26,7 +25,7 @@ import java.util.regex.Pattern;
 
 public class EntityFilter extends TextFilter<List<String>> {
 
-	private static final Logger LOGGER = LogManager.getLogger(EntityParser.class);
+	private static final Logger LOGGER = LogManager.getLogger(EntityFilter.class);
 
 	private static final Set<String> validNames = new HashSet<>();
 	private static final Pattern entityNamePattern = Pattern.compile("^(?<space>[a-z_]*):?(?<id>[a-z_]*)$");

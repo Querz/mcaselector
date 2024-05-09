@@ -1,0 +1,3 @@
+Copyright 2020 The lz4-java contributors.
+
+License: http://www.apache.org/licenses/LICENSE-2.0

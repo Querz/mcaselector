@@ -45,6 +45,7 @@ menu.tools.swap_chunks;Trocar chunks
 menu.tools.edit_overlays;Editar sobreposições
 menu.tools.next_overlay;Próxima sobreposição
 menu.tools.next_overlay_type;Tipo de sobreposição
+menu.tools.sum_selection;Suma de selección
 dialog.select_world.title;Selecione uma dimensão
 dialog.settings.title;Configuração
 dialog.settings.global.language;Língua
@@ -122,6 +123,8 @@ dialog.filter_chunks.delete.tooltip;Apaga todos os chunks afetados do mundo atua
 dialog.filter_chunks.selection_only;Aplicar somente na seleção.
 dialog.filter_chunks.overwrite_selection;Sobrescrever a seleção
 dialog.filter_chunks.selection_radius;Raio de seleção
+dialog.filter_chunks.tab_query;Query
+dialog.filter_chunks.tab_script;Script
 dialog.edit_overlays.title;Editar sobreposições
 dialog.edit_overlays.overlay_active.tooltip;Ativo
 dialog.edit_overlays.delete.tooltip;Excluir
@@ -134,6 +137,8 @@ dialog.change_nbt.selection_only;Aplicar somente na seleção.
 dialog.change_nbt.selection_only.tooltip;Se esse filtro aplica-se apenas à seleção atual.
 dialog.change_nbt_confirmation.title;Alterar NBT
 dialog.change_nbt_confirmation.header_short;Serão alterados os dados em um número desconhecido de chunks desse mundo.
+dialog.change_nbt.tab_query;Query
+dialog.change_nbt.tab_script;Script
 dialog.edit_nbt.title;Editar chunk
 dialog.edit_nbt.placeholder.loading;carregando...
 dialog.edit_nbt.placeholder.no_chunk_data;nenhum dado de bloco chunk
@@ -168,6 +173,9 @@ dialog.progress.title.exporting_filtered_chunks;Exportando chunks filtrados...
 dialog.progress.title.selecting_filtered_chunks;Selecionando chunks filtrados...
 dialog.progress.title.changing_nbt_data;Alterando dados do NBT...
 dialog.progress.title.saving_chunk;Salvando chunk no arquivo...
+dialog.progress.title.running_before;Ejecutar "before()"...
+dialog.progress.title.running_after;Ejecutar "after()"...
+dialog.progress.title.summing;Cuenta la cantidad...
 dialog.error.button.copy_to_clipboard;Copiar para área de transferência
 dialog.error.title;Erro
 dialog.error.header;Um erro ocorreu

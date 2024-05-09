@@ -45,6 +45,7 @@ menu.tools.swap_chunks;チャンクを入れ替える
 menu.tools.edit_overlays;オーバーレイ
 menu.tools.next_overlay;次のオーバーレイ
 menu.tools.next_overlay_type;次のオーバーレイのタイプ
+menu.tools.sum_selection;選択の合計
 dialog.select_world.title;ディメンションの選択
 dialog.settings.title;設定
 dialog.settings.global.language;言語
@@ -122,6 +123,8 @@ dialog.filter_chunks.delete.tooltip;当てはまるチャンクをワールド�
 dialog.filter_chunks.selection_only;選択範囲のみに適用
 dialog.filter_chunks.overwrite_selection;選択範囲を上書きする
 dialog.filter_chunks.selection_radius;選択範囲の半径
+dialog.filter_chunks.tab_query;クエリ
+dialog.filter_chunks.tab_script;脚本
 dialog.edit_overlays.title;オーバレイ
 dialog.edit_overlays.overlay_active.tooltip;有効化
 dialog.edit_overlays.delete.tooltip;削除
@@ -134,6 +137,8 @@ dialog.change_nbt.selection_only;選択範囲のみに適用
 dialog.change_nbt.selection_only.tooltip;このフィルターを現在の選択範囲にのみ適用する必要がある場合
 dialog.change_nbt_confirmation.title;NBTを変更
 dialog.change_nbt_confirmation.header_short;不明な数のチャンクのデータを変更しようとしています
+dialog.change_nbt.tab_query;クエリ
+dialog.change_nbt.tab_script;脚本
 dialog.edit_nbt.title;NBTを編集
 dialog.edit_nbt.placeholder.loading;ロード中...
 dialog.edit_nbt.placeholder.no_chunk_data;チャンクデータが存在しません
@@ -168,6 +173,9 @@ dialog.progress.title.exporting_filtered_chunks;フィルターされたチャ�
 dialog.progress.title.selecting_filtered_chunks;フィルターされたチャンクを選択しています...
 dialog.progress.title.changing_nbt_data;NBTを変更中...
 dialog.progress.title.saving_chunk;チャンクを保存しています...
+dialog.progress.title.running_before;「before()」を実行します...
+dialog.progress.title.running_after;「after()」を実行します...
+dialog.progress.title.summing;金額を数えて…
 dialog.error.button.copy_to_clipboard;クリップボードにコピー
 dialog.error.title;エラー
 dialog.error.header;エラーが発生しました

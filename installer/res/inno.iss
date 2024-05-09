@@ -48,7 +48,7 @@ Type: filesandordirs; Name: "{app}\\jre"
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\\jre"
-Type: filesandordirs; Name: "{app}\\zulu17.30.15-ca-fx-jre17.0.1-win_x64"
+Type: filesandordirs; Name: "{app}\\zulu21.32.17-ca-fx-jre21.0.2-win_x64"
 Type: filesandordirs; Name: "{app}\\MCA Selector.ini"
 
 [Icons]
@@ -79,7 +79,7 @@ function NextButtonClick(CurPageID: Integer): Boolean;
 begin
 	if CurPageID = wpReady then begin
 		DownloadPage.Clear;
-		DownloadPage.Add('https://cdn.azul.com/zulu/bin/zulu17.30.15-ca-fx-jre17.0.1-win_x64.zip', 'jre.zip', '');
+		DownloadPage.Add('https://cdn.azul.com/zulu/bin/zulu21.32.17-ca-fx-jre21.0.2-win_x64.zip', 'jre.zip', '');
 		DownloadPage.Show;
 		try
 			try
@@ -99,8 +99,8 @@ end;
 procedure RenameJRE;
 begin
 	Log('Renaming jre directory');
-	if not RenameFile(ExpandConstant('{app}\\zulu17.30.15-ca-fx-jre17.0.1-win_x64'), ExpandConstant('{app}\\jre')) then begin
+	if not RenameFile(ExpandConstant('{app}\\zulu21.32.17-ca-fx-jre21.0.2-win_x64'), ExpandConstant('{app}\\jre')) then begin
 		Log('Failed to rename jre folder, creating custom ini');
-		SaveStringToFile(ExpandConstant('{app}\\MCA Selector.ini'), 'vm.location=zulu17.30.15-ca-fx-jre17.0.1-win_x64\\bin\\server\\jvm.dll', False);
+		SaveStringToFile(ExpandConstant('{app}\\MCA Selector.ini'), 'vm.location=zulu21.32.17-ca-fx-jre21.0.2-win_x64\\bin\\server\\jvm.dll', False);
 	end;
 end;

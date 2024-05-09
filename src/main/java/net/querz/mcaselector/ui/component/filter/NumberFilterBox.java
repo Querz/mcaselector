@@ -16,6 +16,7 @@ public class NumberFilterBox extends FilterBox {
 	private final ComboBox<Comparator> comparator = new ComboBox<>();
 
 	private static final PseudoClass invalid = PseudoClass.getPseudoClass("invalid");
+	private static final String stylesheet = NumberFilterBox.class.getClassLoader().getResource("style/component/number-filter-box.css").toExternalForm();
 
 	public NumberFilterBox(FilterBox parent, NumberFilter<?> filter, boolean root) {
 		super(parent, filter, root);
@@ -36,6 +37,8 @@ public class NumberFilterBox extends FilterBox {
 		setCenter(input);
 		setText(filter.getRawValue());
 		onTextInput(filter, filter.getRawValue());
+
+		getStylesheets().add(stylesheet);
 	}
 
 	public void setText(String text) {

@@ -47,6 +47,7 @@ public class ProgressDialog extends Stage {
 		scene.setFill(Color.TRANSPARENT);
 
 		scene.getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+		scene.getStylesheets().add(ProgressDialog.class.getClassLoader().getResource("style/component/progress-dialog.css").toExternalForm());
 
 		setScene(scene);
 	}
