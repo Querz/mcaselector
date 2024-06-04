@@ -101,7 +101,7 @@ jar {
 shadowJar {
 	minimize {
 		exclude(dependency('org.apache.logging.log4j:log4j-core:.*'))
-		exclude(dependency('org.codehaus.groovy:groovy-jsr223:.*'))
+		exclude(dependency('org.apache.groovy:groovy-jsr223:.*'))
 	}
 	dependencies {
 		exclude(dependency(':javafx.*:.*'))
