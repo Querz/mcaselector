@@ -86,22 +86,23 @@ public final class CacheDBController {
 	}
 
 	public void initTables(List<Overlay> overlays) throws SQLException {
-		Statement statement = connection.createStatement();
-		for (Overlay parser : overlays) {
-			statement.executeUpdate(String.format(
-					"CREATE TABLE IF NOT EXISTS %s%s (" +
-							"p BIGINT PRIMARY KEY, " +
-							"d BLOB);", parser.name(), parser.getMultiValuesID()));
-		}
+		try (Statement statement = connection.createStatement();) {
+			for (Overlay parser : overlays) {
+				statement.executeUpdate(String.format(
+						"CREATE TABLE IF NOT EXISTS %s%s (" +
+								"p BIGINT PRIMARY KEY, " +
+								"d BLOB);", parser.name(), parser.getMultiValuesID()));
+			}
 
-		statement.executeUpdate("CREATE TABLE IF NOT EXISTS file_times (" +
-			"p BIGINT PRIMARY KEY, " +
-			"t BIGINT);");
+			statement.executeUpdate("CREATE TABLE IF NOT EXISTS file_times (" +
+				"p BIGINT PRIMARY KEY, " +
+				"t BIGINT);");
 
-		allTables = new ArrayList<>();
-		ResultSet result = statement.executeQuery("SELECT name FROM sqlite_master WHERE type='table';");
-		while (result.next()) {
-			allTables.add(result.getString(1));
+			allTables = new ArrayList<>();
+			ResultSet result = statement.executeQuery("SELECT name FROM sqlite_master WHERE type='table';");
+			while (result.next()) {
+				allTables.add(result.getString(1));
+			}
 		}
 	}
 
@@ -149,71 +150,76 @@ public final class CacheDBController {
 		while (connection == null) {
 			Thread.onSpinWait();
 		}
-		Statement statement = connection.createStatement();
-		ResultSet result = statement.executeQuery(String.format("SELECT t FROM file_times WHERE p=%s;", region.asLong()));
-		if (!result.next()) {
-			return -1;
+		try (Statement statement = connection.createStatement();) {
+			ResultSet result = statement.executeQuery(String.format("SELECT t FROM file_times WHERE p=%s;", region.asLong()));
+			if (!result.next()) {
+				return -1;
+			}
+			return result.getLong(1);
 		}
-		return result.getLong(1);
 	}
 
 	public void setFileTime(Point2i region, long time) throws SQLException {
 		while (connection == null) {
 			Thread.onSpinWait();
 		}
-		PreparedStatement ps = connection.prepareStatement(
+		try (PreparedStatement ps = connection.prepareStatement(
 			"INSERT INTO file_times (p, t) " +
 				"VALUES (?, ?) " +
 				"ON CONFLICT(p) DO UPDATE " +
-				"SET t=?;");
-		ps.setLong(1, region.asLong());
-		ps.setLong(2, time);
-		ps.setLong(3, time);
-		ps.addBatch();
-		ps.executeBatch();
+				"SET t=?;");) {
+			ps.setLong(1, region.asLong());
+			ps.setLong(2, time);
+			ps.setLong(3, time);
+			ps.addBatch();
+			ps.executeBatch();
+		}
 	}
 
 	public int[] getData(Overlay parser, Point2i region) throws IOException, SQLException {
-		Statement statement = connection.createStatement();
-		ResultSet result = statement.executeQuery(String.format(
-				"SELECT d FROM %s%s WHERE p=%s;", parser.name(), parser.getMultiValuesID(), region.asLong()));
-		if (!result.next()) {
-			return null;
-		}
-		int[] data = new int[1024];
-		try (DataInputStream dis = new DataInputStream(new GZIPInputStream(new ByteArrayInputStream(result.getBytes(1))))) {
-			for (int i = 0; i < 1024; i++) {
-				data[i] = dis.readInt();
+		try (Statement statement = connection.createStatement();) {
+			ResultSet result = statement.executeQuery(String.format(
+					"SELECT d FROM %s%s WHERE p=%s;", parser.name(), parser.getMultiValuesID(), region.asLong()));
+			if (!result.next()) {
+				return null;
 			}
+			int[] data = new int[1024];
+			try (DataInputStream dis = new DataInputStream(new GZIPInputStream(new ByteArrayInputStream(result.getBytes(1))))) {
+				for (int i = 0; i < 1024; i++) {
+					data[i] = dis.readInt();
+				}
+			}
+			return data;
 		}
-		return data;
 	}
 
 	public void setData(Overlay parser, Point2i region, int[] data) throws IOException, SQLException {
-		PreparedStatement ps = connection.prepareStatement(String.format(
+		try (PreparedStatement ps = connection.prepareStatement(String.format(
 				"INSERT INTO %s%s (p, d) " +
 						"VALUES (?, ?) " +
 						"ON CONFLICT(p) DO UPDATE " +
-						"SET d=?;", parser.name(), parser.getMultiValuesID()));
-		ps.setLong(1, region.asLong());
-		ByteArrayOutputStream baos;
-		try (DataOutputStream dos = new DataOutputStream(new GZIPOutputStream(baos = new ByteArrayOutputStream()))) {
-			for (int i = 0; i < 1024; i++) {
-				dos.writeInt(data[i]);
+						"SET d=?;", parser.name(), parser.getMultiValuesID()));) {
+			ps.setLong(1, region.asLong());
+			ByteArrayOutputStream baos;
+			try (DataOutputStream dos = new DataOutputStream(new GZIPOutputStream(baos = new ByteArrayOutputStream()))) {
+				for (int i = 0; i < 1024; i++) {
+					dos.writeInt(data[i]);
+				}
 			}
+			byte[] gzipped = baos.toByteArray();
+			ps.setBytes(2, gzipped);
+			ps.setBytes(3, gzipped);
+			ps.addBatch();
+			ps.executeBatch();
 		}
-		byte[] gzipped = baos.toByteArray();
-		ps.setBytes(2, gzipped);
-		ps.setBytes(3, gzipped);
-		ps.addBatch();
-		ps.executeBatch();
 	}
 
 	public void deleteData(Overlay parser, Point2i region) throws SQLException {
-		PreparedStatement ps = connection.prepareStatement(String.format(
-				"DELETE FROM %s%s WHERE p=?;", parser.name(), parser.getMultiValuesID()));
-		ps.setLong(1, region.asLong());
-		ps.execute();
+		try (PreparedStatement ps = connection.prepareStatement(String.format(
+				"DELETE FROM %s%s WHERE p=?;", parser.name(), parser.getMultiValuesID()));) {
+			ps.setLong(1, region.asLong());
+			ps.execute();
+		}
 	}
 
 	public void deleteData(Point2i region) throws SQLException {
@@ -222,10 +228,11 @@ public final class CacheDBController {
 			return;
 		}
 		for (String table : allTables) {
-			PreparedStatement ps = connection.prepareStatement(String.format(
-					"DELETE FROM %s WHERE p=?;", table));
-			ps.setLong(1, region.asLong());
-			ps.execute();
+			try (PreparedStatement ps = connection.prepareStatement(String.format(
+					"DELETE FROM %s WHERE p=?;", table));) {
+				ps.setLong(1, region.asLong());
+				ps.execute();
+			}
 		}
 	}
 
