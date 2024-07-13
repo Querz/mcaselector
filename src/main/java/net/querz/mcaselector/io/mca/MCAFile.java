@@ -178,14 +178,15 @@ public abstract class MCAFile<T extends Chunk> {
 				source.seek(offsets[i] * 4096L);
 				rafTmp.seek(globalOffset * 4096L);
 
-				DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(source.getFD()), sectors * 4096));
-				DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(rafTmp.getFD()), sectors * 4096));
+				try (DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(source.getFD()), sectors * 4096));
+					DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(rafTmp.getFD()), sectors * 4096));) {
 
-				byte[] data = new byte[sectors * 4096];
-				dis.read(data);
-				dos.write(data);
-				offsets[i] = globalOffset; // always keep MCAFile information up to date
-				globalOffset += sectors;
+					byte[] data = new byte[sectors * 4096];
+					dis.read(data);
+					dos.write(data);
+					offsets[i] = globalOffset; // always keep MCAFile information up to date
+					globalOffset += sectors;
+				}
 			}
 		}
 
