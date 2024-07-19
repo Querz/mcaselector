@@ -47,10 +47,11 @@ public abstract class Config {
 			BASE_CONFIG_FILE = getEnvFilesWithDefault(BASE_DIR.getAbsolutePath(), "mcaselector/settings.json", ';', "LOCALAPPDATA");
 			BASE_OVERLAYS_FILE = getEnvFilesWithDefault(BASE_DIR.getAbsolutePath(), "mcaselector/overlays.json", ';', "LOCALAPPDATA");
 		} else {
-			BASE_CACHE_DIR = getEnvFilesWithDefault("~/.cache", "mcaselector", ':', "XDG_CACHE_HOME", "XDG_CACHE_DIRS");
-			BASE_LOG_DIR = getEnvFilesWithDefault("~/.local/share", "mcaselector/log", ':', "XDG_DATA_HOME", "XDG_DATA_DIRS");
-			BASE_CONFIG_FILE = getEnvFilesWithDefault("~/.mcaselector", "mcaselector/settings.json", ':', "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
-			BASE_OVERLAYS_FILE = getEnvFilesWithDefault("~/.mcaselector", "mcaselector/overlays.json", ':', "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
+			BASE_CACHE_DIR = getFileFromPreferencedPaths("mcaselector", getEnvWithDefault("XDG_CACHE_HOME", "~/.cache"));
+			BASE_LOG_DIR = getFileFromPreferencedPaths("mcaselector/log", getEnvWithDefault("XDG_STATE_HOME", "~/.local/state"));
+			BASE_CONFIG_FILE = getFileFromPreferencedPaths("mcaselector/settings.json", getEnvWithDefault("XDG_CONFIG_HOME", "~/.config") + ":" + getEnvWithDefault("XDG_CONFIG_DIRS", "/etc/xdg"));
+			BASE_OVERLAYS_FILE = getFileFromPreferencedPaths("mcaselector/overlays.json", getEnvWithDefault("XDG_CONFIG_HOME", "~/.config") + ":" + getEnvWithDefault("XDG_CONFIG_DIRS", "/etc/xdg"));
+
 		}
 
 		if (!BASE_CACHE_DIR.exists()) {
@@ -92,6 +93,33 @@ public abstract class Config {
 			return file;
 		}
 		throw new RuntimeException("failed to create directories for " + suffix + ", please check permissions for " + resolveHome(def));
+	}
+
+	private static File getFileFromPreferencedPaths(String suffix, String paths) {
+		File f;
+
+		String[] pathsArray = paths.split(":");
+		for (String path : pathsArray) {
+			f = new File(resolveHome(path), suffix);
+			if (f.exists()) {
+				return f;
+			}
+		}
+
+		f = new File(resolveHome(pathsArray[0]), suffix);
+		if (attemptCreateDirectory(f)) {
+			return f;
+		}
+		throw new RuntimeException("failed to create directories for " + suffix + ", please check permissions for " + resolveHome(pathsArray[0]));
+	}
+
+	private static String getEnvWithDefault(String env, String def) {
+		String systemValue = System.getenv(env);
+		if (systemValue != null && !systemValue.isEmpty()) {
+			return systemValue;
+		} else {
+			return def;
+		}
 	}
 
 	private static boolean attemptCreateDirectory(File file) {
