@@ -11,6 +11,7 @@ public enum FieldType {
 	DATA_VERSION("DataVersion", DataVersionField::new, false, false),
 	INHABITED_TIME("InhabitedTime", InhabitedTimeField::new, false, false),
 	TIMESTAMP("Timestamp", TimestampField::new, false, false),
+	COMPRESSION("Compression", CompressionField::new, false, false),
 	LAST_UPDATE("LastUpdate", LastUpdateField::new, false, false),
 	STATUS("Status", StatusField::new, false, true),
 	BIOME("Biome", BiomeField::new, false, false),
