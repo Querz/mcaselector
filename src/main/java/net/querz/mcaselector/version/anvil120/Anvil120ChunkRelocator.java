@@ -5,8 +5,9 @@ import net.querz.mcaselector.version.ChunkRelocator;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.anvil118.Anvil118EntityRelocator;
 import net.querz.nbt.*;
+import org.apache.logging.log4j.LogManager;
+
 import java.util.Map;
-import java.util.logging.LogManager;
 
 import static net.querz.mcaselector.validation.ValidationHelper.silent;
 import static net.querz.mcaselector.version.anvil118.Anvil118EntityRelocator.applyOffsetToEntity;
@@ -182,7 +183,7 @@ public class Anvil120ChunkRelocator implements ChunkRelocator {
             if(itemsTag instanceof CompoundTag items){
                 items.forEach(i -> applyOffsetToItem((CompoundTag) i, offset, dataVersion));
             }else{
-                LogManager.getLogManager().getLogger(Anvil120ChunkRelocator.class.getName()).warning("Skipping "+ ((StringTag) tileEntity.get("id")).getValue());
+                LogManager.getLogger(Anvil120ChunkRelocator.class).warn("Skipping {}", ((StringTag) tileEntity.get("id")).getValue());
             }
         }
 	}
@@ -242,7 +243,7 @@ public class Anvil120ChunkRelocator implements ChunkRelocator {
                 if(itemsTag instanceof ListTag items){
                     items.forEach(i -> applyOffsetToItem((CompoundTag) i, offset, dataVersion));
                 }else{
-                    LogManager.getLogManager().getLogger(Anvil120ChunkRelocator.class.getName()).warning("Skipping "+ ((StringTag) item.get("id")).getValue());
+                    LogManager.getLogger(Anvil120ChunkRelocator.class).warn("Skipping {}", ((StringTag) item.get("id")).getValue());
                 }
 			}
 		}
