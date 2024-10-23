@@ -10,6 +10,7 @@ f;flowering_azalea_leaves
 f;jungle_leaves
 f;mangrove_leaves
 f;oak_leaves
+f;pale_oak_leaves
 f;spruce_leaves
 m;acacia_fence_gate
 m;acacia_sapling
@@ -72,6 +73,8 @@ m;oak_fence_gate
 m;oak_sapling
 m;orange_tulip
 m;oxeye_daisy
+m;pale_hanging_moss
+m;pale_oak_sapling
 m;peony
 m;pink_petals
 m;pink_tulip
@@ -103,6 +106,7 @@ m;potted_mangrove_propagule
 m;potted_oak_sapling
 m;potted_orange_tulip
 m;potted_oxeye_daisy
+m;potted_pale_oak_sapling
 m;potted_pink_tulip
 m;potted_poppy
 m;potted_red_mushroom

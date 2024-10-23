@@ -37,6 +37,7 @@ ocean;8eb971;71a74d;3f76e4
 old_growth_birch_forest;88bb67;6ba941;3f76e4
 old_growth_pine_taiga;86b87f;68a55f;3f76e4
 old_growth_spruce_taiga;86b783;68a464;3f76e4
+pale_garden;778272;878d76;76889d
 plains;91bd59;77ab2f;3f76e4
 river;8eb971;71a74d;3f76e4
 savanna;bfb755;aea42a;3f76e4

@@ -20,6 +20,8 @@ chicken
 cod
 command_block_minecart
 cow
+creaking
+creaking_transient
 creeper
 dolphin
 donkey
