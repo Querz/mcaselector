@@ -71,12 +71,12 @@ jobs:
           name: Artifact
           path: |
             build/inno/Output/MCA_Selector_Setup.exe
-            build/libs/mcaselector-2.4.1.jar
+            build/libs/mcaselector-2.4.2.jar
 
       - name: Upload assets
         uses: AButler/upload-release-assets@v3.0
         with:
-          files: build/inno/Output/MCA_Selector_Setup.exe;build/libs/mcaselector-2.4.1.jar
+          files: build/inno/Output/MCA_Selector_Setup.exe;build/libs/mcaselector-2.4.2.jar
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout Wiki
@@ -88,7 +88,7 @@ jobs:
       - name: Update Wiki
         run: |
           cd mcaselector-wiki
-          echo -n 2.4.1 > version.txt
+          echo -n 2.4.2 > version.txt
           ./update_version
         shell: bash
 
@@ -99,6 +99,6 @@ jobs:
           git config --global user.email 'wiki@querz.net'
           git config --unset-all http.https://github.com/.extraheader
           git remote set-url origin https://x-access-token:${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}@github.com/Querz/mcaselector-wiki
-          git commit -am "Automated version update to 2.4.1"
+          git commit -am "Automated version update to 2.4.2"
           git push
         shell: bash
