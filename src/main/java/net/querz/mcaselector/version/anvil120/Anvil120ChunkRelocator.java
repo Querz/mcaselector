@@ -5,7 +5,10 @@ import net.querz.mcaselector.version.ChunkRelocator;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.anvil118.Anvil118EntityRelocator;
 import net.querz.nbt.*;
+import org.apache.logging.log4j.LogManager;
+
 import java.util.Map;
+
 import static net.querz.mcaselector.validation.ValidationHelper.silent;
 import static net.querz.mcaselector.version.anvil118.Anvil118EntityRelocator.applyOffsetToEntity;
 
@@ -175,10 +178,14 @@ public class Anvil120ChunkRelocator implements ChunkRelocator {
 				}
 		}
 
-		ListTag items = Helper.tagFromCompound(tileEntity, "Items");
-		if (items != null) {
-			items.forEach(i -> applyOffsetToItem((CompoundTag) i, offset, dataVersion));
-		}
+        Tag itemsTag = Helper.tagFromCompound(tileEntity, "Items");
+        if (itemsTag != null) {
+            if(itemsTag instanceof CompoundTag items){
+                items.forEach(i -> applyOffsetToItem((CompoundTag) i, offset, dataVersion));
+            }else{
+                LogManager.getLogger(Anvil120ChunkRelocator.class).warn("Skipping {}", ((StringTag) tileEntity.get("id")).getValue());
+            }
+        }
 	}
 
 	static void applyOffsetToItem(CompoundTag item, Point3i offset, int dataVersion) {
@@ -231,9 +238,13 @@ public class Anvil120ChunkRelocator implements ChunkRelocator {
 
 			// recursively update all items in child containers
 			CompoundTag blockEntityTag = Helper.tagFromCompound(tag, "BlockEntityTag");
-			ListTag items = Helper.tagFromCompound(blockEntityTag, "Items");
-			if (items != null) {
-				items.forEach(i -> applyOffsetToItem((CompoundTag) i, offset, dataVersion));
+			Tag itemsTag = Helper.tagFromCompound(blockEntityTag, "Items");
+			if (itemsTag != null) {
+                if(itemsTag instanceof ListTag items){
+                    items.forEach(i -> applyOffsetToItem((CompoundTag) i, offset, dataVersion));
+                }else{
+                    LogManager.getLogger(Anvil120ChunkRelocator.class).warn("Skipping {}", ((StringTag) item.get("id")).getValue());
+                }
 			}
 		}
 	}
