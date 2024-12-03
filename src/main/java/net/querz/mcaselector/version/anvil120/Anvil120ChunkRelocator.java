@@ -196,9 +196,10 @@ public class Anvil120ChunkRelocator implements ChunkRelocator {
 			String id = Helper.stringFromCompound(item, "id", "");
 			switch (id) {
 			case "minecraft:compass":
-				CompoundTag lodestoneTarget = Helper.tagFromCompound(components, "minecraft:lodestone_target");
-				if (lodestoneTarget != null) {
-					IntArrayTag pos = lodestoneTarget.getIntArrayTag("pos");
+				CompoundTag lodestoneTracker = Helper.tagFromCompound(components, "minecraft:lodestone_tracker");
+				if (lodestoneTracker != null) {
+					CompoundTag target = Helper.tagFromCompound(lodestoneTracker, "target");
+					IntArrayTag pos = target.getIntArrayTag("pos");
 					if (pos != null) {
 						Helper.applyOffsetToIntArrayPos(pos, offset);
 					}
