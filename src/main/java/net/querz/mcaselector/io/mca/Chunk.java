@@ -4,6 +4,7 @@ import net.jpountz.lz4.LZ4BlockInputStream;
 import net.jpountz.lz4.LZ4BlockOutputStream;
 import net.querz.io.ExposedByteArrayOutputStream;
 import net.querz.mcaselector.io.ByteArrayPointer;
+import net.querz.mcaselector.io.ByteBufferBackedInputStream;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
@@ -13,6 +14,7 @@ import net.querz.nbt.io.NBTReader;
 import net.querz.nbt.io.NBTWriter;
 import net.querz.nbt.CompoundTag;
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.function.Function;
 import java.util.zip.DeflaterOutputStream;
@@ -72,6 +74,30 @@ public abstract class Chunk {
 		};
 
 		Tag tag = new NBTReader().read(nbtIn);
+
+		if (tag instanceof CompoundTag) {
+			data = (CompoundTag) tag;
+		} else {
+			throw new IOException("unexpected chunk data tag type " + tag.getType() + ", expected " + Tag.Type.COMPOUND);
+		}
+	}
+
+	public void loadRaw(ByteBuffer buf) throws IOException {
+		int length = buf.getInt();
+		compressionType = CompressionType.fromByte(buf.get());
+
+		DataInputStream nbtIn = switch (compressionType) {
+			case GZIP -> new DataInputStream(new GZIPInputStream(new ByteBufferBackedInputStream(buf)));
+			case ZLIB -> new DataInputStream(new InflaterInputStream(new ByteBufferBackedInputStream(buf)));
+			case LZ4 -> new DataInputStream(new LZ4BlockInputStream(new ByteBufferBackedInputStream(buf)));
+			case NONE, UNCOMPRESSED -> new DataInputStream(new ByteBufferBackedInputStream(buf));
+			case GZIP_EXT -> new DataInputStream(new GZIPInputStream(new FileInputStream(getMCCFile()), 4096 * length));
+			case ZLIB_EXT -> new DataInputStream(new InflaterInputStream(new FileInputStream(getMCCFile())));
+			case LZ4_EXT -> new DataInputStream(new LZ4BlockInputStream(new FileInputStream(getMCCFile())));
+			case NONE_EXT, UNCOMPRESSED_EXT -> new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile()), 4096 * length));
+		};
+
+		Tag tag = new NBTReader().rawArrays(true).read(nbtIn);
 
 		if (tag instanceof CompoundTag) {
 			data = (CompoundTag) tag;

@@ -7,6 +7,10 @@ import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.version.Helper;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
+
+import java.nio.ByteBuffer;
+import java.nio.LongBuffer;
+
 import static net.querz.mcaselector.validation.ValidationHelper.silent;
 
 public class Anvil119ChunkRenderer implements ChunkRenderer {
@@ -23,18 +27,24 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 		int yMax = 1 + (height >> 4);
 		int sMax = yMax + 4;
 		ListTag[] palettes = new ListTag[sMax];
-		long[][] blockStatesArray = new long[sMax][];
+		LongBuffer[] blockStatesArray = new LongBuffer[sMax];
 		ListTag[] biomePalettes = new ListTag[sMax];
-		long[][] biomesArray = new long[sMax][];
+		LongBuffer[] biomesArray = new LongBuffer[sMax];
 		sections.forEach(s -> {
 			ListTag p = Helper.tagFromCompound(Helper.tagFromCompound(s, "block_states"), "palette");
 
 			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
 			if (y >= -4 && y < yMax && p != null) {
 				palettes[y + 4] = p;
-				blockStatesArray[y + 4] = Helper.longArrayFromCompound(Helper.tagFromCompound(s, "block_states"), "data");;
+				byte[] data = Helper.byteArrayFromCompound(Helper.tagFromCompound(s, "block_states"), "data");
+				if (data != null) {
+					blockStatesArray[y + 4] = ByteBuffer.wrap(data).asLongBuffer();
+				}
 				biomePalettes[y + 4] = Helper.tagFromCompound(Helper.tagFromCompound(s, "biomes"), "palette");
-				biomesArray[y + 4] = Helper.longArrayFromCompound(Helper.tagFromCompound(s, "biomes"), "data");
+				byte[] biomes = Helper.byteArrayFromCompound(Helper.tagFromCompound(s, "biomes"), "data");
+				if (biomes != null) {
+					biomesArray[y + 4] = ByteBuffer.wrap(biomes).asLongBuffer();
+				}
 			}
 		});
 
@@ -49,14 +59,14 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 					if (palette == null) {
 						continue;
 					}
-					long[] blockStates = blockStatesArray[i];
+					LongBuffer blockStates = blockStatesArray[i];
 
 					int sectionHeight = (i - 4) * Tile.CHUNK_SIZE;
 
-					int bits = blockStates == null ? 0 : blockStates.length >> 6;
+					int bits = blockStates == null ? 0 : blockStates.limit() >> 6;
 					int clean = ((int) Math.pow(2, bits) - 1);
 
-					long[] biomeIndices = biomesArray[i];
+					LongBuffer biomeIndices = biomesArray[i];
 					ListTag biomesPalette = biomePalettes[i];
 
 					int biomeBits = 1;
@@ -131,18 +141,26 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 
 
 		ListTag palette = Helper.tagFromCompound(Helper.tagFromCompound(section, "block_states"), "palette");
-		long[] blockStates = Helper.longArrayFromCompound(Helper.tagFromCompound(section, "block_states"), "data");
+		byte[] data = Helper.byteArrayFromCompound(Helper.tagFromCompound(section, "block_states"), "data");
+		LongBuffer blockStates = null;
+		if (data != null) {
+			blockStates = ByteBuffer.wrap(data).asLongBuffer();
+		}
 		if (palette == null) {
 			return;
 		}
 
 		ListTag biomesPalette = Helper.tagFromCompound(Helper.tagFromCompound(section, "biomes"), "palette");
-		long[] biomeIndices = Helper.longArrayFromCompound(Helper.tagFromCompound(section, "biomes"), "data");
+		byte[] biomes = Helper.byteArrayFromCompound(Helper.tagFromCompound(section, "biomes"), "data");
+		LongBuffer biomeIndices = null;
+		if (biomes != null) {
+			biomeIndices = ByteBuffer.wrap(biomes).asLongBuffer();
+		}
 
 		height = height + 64;
 
 		int cy = height % 16;
-		int bits = blockStates == null ? 0 : blockStates.length >> 6;
+		int bits = blockStates == null ? 0 : blockStates.limit() >> 6;
 		int clean = ((int) Math.pow(2, bits) - 1);
 
 		int biomeBits = 1;
@@ -177,18 +195,24 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 		int yMax = 1 + (height >> 4);
 		int sMax = yMax + 4;
 		ListTag[] palettes = new ListTag[sMax];
-		long[][] blockStatesArray = new long[sMax][];
+		LongBuffer[] blockStatesArray = new LongBuffer[sMax];
 		ListTag[] biomePalettes = new ListTag[sMax];
-		long[][] biomesArray = new long[sMax][];
+		LongBuffer[] biomesArray = new LongBuffer[sMax];
 		sections.forEach(s -> {
 			ListTag p = Helper.tagFromCompound(Helper.tagFromCompound(s, "block_states"), "palette");
 
 			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
 			if (y >= -4 && y < yMax && p != null) {
 				palettes[y + 4] = p;
-				blockStatesArray[y + 4] = Helper.longArrayFromCompound(Helper.tagFromCompound(s, "block_states"), "data");
+				byte[] data = Helper.byteArrayFromCompound(Helper.tagFromCompound(s, "block_states"), "data");
+				if (data != null) {
+					blockStatesArray[y + 4] = ByteBuffer.wrap(data).asLongBuffer();
+				}
 				biomePalettes[y + 4] = Helper.tagFromCompound(Helper.tagFromCompound(s, "biomes"), "palette");
-				biomesArray[y + 4] = Helper.longArrayFromCompound(Helper.tagFromCompound(s, "biomes"), "data");
+				byte[] biomes = Helper.byteArrayFromCompound(Helper.tagFromCompound(s, "biomes"), "data");
+				if (biomes != null) {
+					biomesArray[y + 4] = ByteBuffer.wrap(biomes).asLongBuffer();
+				}
 			}
 		});
 
@@ -205,14 +229,14 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 					if (palette == null) {
 						continue;
 					}
-					long[] blockStates = blockStatesArray[i];
+					LongBuffer blockStates = blockStatesArray[i];
 
 					int sectionHeight = (i - 4) * Tile.CHUNK_SIZE;
 
-					int bits = blockStates == null ? 0 : blockStates.length >> 6;
+					int bits = blockStates == null ? 0 : blockStates.limit() >> 6;
 					int clean = ((int) Math.pow(2, bits) - 1);
 
-					long[] biomeIndices = biomesArray[i];
+					LongBuffer biomeIndices = biomesArray[i];
 					ListTag biomesPalette = biomePalettes[i];
 
 					int biomeBits = 1;
@@ -311,11 +335,11 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 		return biomes[getBiomeIndex(biomeX / 4, (biomeY + 64) / 4, biomeZ / 4)];
 	}
 
-	private String getBiomeAtBlock(long[] biomes, ListTag palette, int biomeX, int biomeY, int biomeZ, int bits) {
+	private String getBiomeAtBlock(LongBuffer biomes, ListTag palette, int biomeX, int biomeY, int biomeZ, int bits) {
 		if (palette == null) {
 			return "";
 		}
-		if (biomes == null || biomes.length == 0) {
+		if (biomes == null || biomes.limit() == 0) {
 			return palette.getString(0);
 		}
 
@@ -323,17 +347,17 @@ public class Anvil119ChunkRenderer implements ChunkRenderer {
 		int biomeIndex = getBiomeIndex(biomeX >> 2 % 4, biomeY >> 2 % 4, biomeZ >> 2 % 4);
 		int biomeLongIndex = biomeIndex / indexesPerLong;
 		int startBit = (biomeIndex % indexesPerLong) * bits;
-		return silent(() -> palette.getString((int) Bits.bitRange(biomes[biomeLongIndex], startBit, startBit + bits)), "");
+		return silent(() -> palette.getString((int) Bits.bitRange(biomes.get(biomeLongIndex), startBit, startBit + bits)), "");
 	}
 
-	private int getPaletteIndex(int index, long[] blockStates, int bits, int clean) {
+	private int getPaletteIndex(int index, LongBuffer blockStates, int bits, int clean) {
 		if (blockStates == null) {
 			return 0;
 		}
 		int indicesPerLong = (int) (64D / bits);
 		int blockStatesIndex = index / indicesPerLong;
 		int startBit = (index % indicesPerLong) * bits;
-		return (int) (blockStates[blockStatesIndex] >> startBit) & clean;
+		return (int) (blockStates.get(blockStatesIndex) >> startBit) & clean;
 	}
 
 }

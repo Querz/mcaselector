@@ -17,8 +17,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -235,6 +238,35 @@ public abstract class MCAFile<T extends Chunk> {
 		}
 	}
 
+	public int[] loadRaw() throws IOException {
+		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
+			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+			loadHeader(buf);
+
+			Point2i origin = location.regionToChunk();
+
+			for (short i = 0; i < 1024; i++) {
+				if (offsets[i] == 0) {
+					chunks[i] = null;
+					continue;
+				}
+				buf.position(offsets[i] * 4096);
+
+				Point2i chunkLocation = origin.add(i);
+
+				try {
+					chunks[i] = chunkConstructor.apply(chunkLocation);
+					chunks[i].setTimestamp(timestamps[i]);
+					chunks[i].loadRaw(buf);
+				} catch (Exception ex) {
+					chunks[i] = null;
+					LOGGER.warn("failed to load chunk at {}", chunkLocation, ex);
+				}
+			}
+			return offsets;
+		}
+	}
+
 	public int[] load(ByteArrayPointer ptr) throws IOException {
 		loadHeader(ptr);
 
@@ -296,6 +328,29 @@ public abstract class MCAFile<T extends Chunk> {
 			timestamps = new int[1024];
 			for (int i = 0; i < 1024; i++) {
 				timestamps[i] = ptr.readInt();
+			}
+		} catch (ArrayIndexOutOfBoundsException ex) {
+			throw new IOException(ex);
+		}
+	}
+
+	public void loadHeader(ByteBuffer buf) throws IOException {
+		offsets = new int[1024];
+		sectors = new byte[1024];
+
+		try {
+			buf.position(0);
+			for (int i = 0; i < offsets.length; i++) {
+				int offset = (buf.get()) << 16;
+				offset |= (buf.get() & 0xFF) << 8;
+				offsets[i] = offset | buf.get() & 0xFF;
+				sectors[i] = buf.get();
+			}
+
+			// read timestamps
+			timestamps = new int[1024];
+			for (int i = 0; i < 1024; i++) {
+				timestamps[i] = buf.getInt();
 			}
 		} catch (ArrayIndexOutOfBoundsException ex) {
 			throw new IOException(ex);
