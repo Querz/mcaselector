@@ -5,7 +5,8 @@ import net.querz.mcaselector.filter.FilterType;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.Tag;
@@ -53,15 +54,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean contains(List<String> value, ChunkData data) {
-		int dataVersion;
-		if (data.region() != null && data.region().getData() != null) {
-			dataVersion = data.region().getData().getIntOrDefault("DataVersion", 0);
-		} else if (data.entities() != null && data.entities().getData() != null) {
-			dataVersion = data.entities().getData().getIntOrDefault("DataVersion", 0);
-		} else {
-			return false;
-		}
-		ListTag entities = VersionController.getEntityFilter(dataVersion).getEntities(data);
+		ListTag entities = VersionHandler.getImpl(data, ChunkFilter.Entities.class).getEntities(data);
 		if (entities == null || entities.getType() == Tag.Type.LONG_ARRAY) {
 			return false;
 		}
@@ -80,10 +73,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean intersects(List<String> value, ChunkData data) {
-		if (data.region() == null || data.region().getData() == null) {
-			return false;
-		}
-		ListTag entities = VersionController.getEntityFilter(data.region().getData().getIntOrDefault("DataVersion", 0)).getEntities(data);
+		ListTag entities = VersionHandler.getImpl(data, ChunkFilter.Entities.class).getEntities(data);
 		if (entities == null || entities.getType() == Tag.Type.LONG_ARRAY) {
 			return false;
 		}

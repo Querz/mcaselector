@@ -4,7 +4,7 @@ import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.LongTag;
 
 public class LastUpdateField extends Field<Long> {
@@ -15,8 +15,8 @@ public class LastUpdateField extends Field<Long> {
 
 	@Override
 	public Long getOldValue(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		LongTag lastUpdate = chunkFilter.getLastUpdate(data.region().getData());
+		ChunkFilter.LastUpdate filter = VersionHandler.getImpl(data, ChunkFilter.LastUpdate.class);
+		LongTag lastUpdate = filter.getLastUpdate(data);
 		return lastUpdate == null ? null : lastUpdate.asLong();
 	}
 
@@ -32,16 +32,15 @@ public class LastUpdateField extends Field<Long> {
 
 	@Override
 	public void change(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		LongTag tag = chunkFilter.getLastUpdate(data.region().getData());
+		ChunkFilter.LastUpdate filter = VersionHandler.getImpl(data, ChunkFilter.LastUpdate.class);
+		LongTag tag = filter.getLastUpdate(data);
 		if (tag != null) {
-			chunkFilter.setLastUpdate(data.region().getData(), getNewValue());
+			filter.setLastUpdate(data, getNewValue());
 		}
 	}
 
 	@Override
 	public void force(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		chunkFilter.setLastUpdate(data.region().getData(), getNewValue());
+		VersionHandler.getImpl(data, ChunkFilter.LastUpdate.class).setLastUpdate(data, getNewValue());
 	}
 }

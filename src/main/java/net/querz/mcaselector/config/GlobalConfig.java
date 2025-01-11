@@ -34,7 +34,7 @@ public class GlobalConfig extends Config {
 	public static final Locale DEFAULT_LOCALE = Locale.UK;
 	public static final int DEFAULT_PROCESS_THREADS = Math.min(Math.max(Runtime.getRuntime().availableProcessors() - 2, 1), 4);
 	public static final int DEFAULT_WRITE_THREADS = Math.min(Math.max(Runtime.getRuntime().availableProcessors(), 1), 4);
-	public static final int DEFAULT_MAX_LOADED_FILES = (int) Math.min(Math.max(Math.ceil(Runtime.getRuntime().maxMemory() / 1_000_000_000D) * 2, 1), 16);
+	public static final int DEFAULT_MAX_LOADED_FILES = 1;
 	public static final boolean DEFAULT_DEBUG = false;
 	public static final String DEFAULT_MC_SAVES_DIR = FileHelper.getMCSavesDir();
 

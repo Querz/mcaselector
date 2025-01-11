@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 public class CustomOverlay extends AmountParser {
 
-	private List<Node> path = new ArrayList<>();
+	private final List<Node> path = new ArrayList<>();
 	private String root;
 	private boolean size;
 
@@ -34,11 +34,11 @@ public class CustomOverlay extends AmountParser {
 	}
 
 	@Override
-	public int parseValue(ChunkData chunkData) {
+	public int parseValue(ChunkData data) {
 		return switch (root) {
-			case "region" -> getValue(chunkData.region());
-			case "poi" -> getValue(chunkData.poi());
-			case "entities" -> getValue(chunkData.entities());
+			case "region" -> getValue(data.region());
+			case "poi" -> getValue(data.poi());
+			case "entities" -> getValue(data.entities());
 			default -> 0;
 		};
 	}

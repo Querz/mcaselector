@@ -137,7 +137,7 @@ public abstract class Overlay implements Cloneable {
 		return multiValuesID;
 	}
 
-	public abstract int parseValue(ChunkData chunkData);
+	public abstract int parseValue(ChunkData data);
 
 	public abstract String name();
 

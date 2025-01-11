@@ -3,8 +3,8 @@ package net.querz.mcaselector.changer.fields;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.version.EntityFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionHandler;
 
 public class DeleteEntitiesField extends Field<Boolean> {
 
@@ -28,16 +28,7 @@ public class DeleteEntitiesField extends Field<Boolean> {
 
 	@Override
 	public void change(ChunkData data) {
-		int dataVersion;
-		if (data.region() != null) {
-			dataVersion = data.region().getData().getIntOrDefault("DataVersion", 0);
-		} else if (data.entities() != null) {
-			dataVersion = data.entities().getData().getIntOrDefault("DataVersion", 0);
-		} else {
-			return;
-		}
-		EntityFilter entityFilter = VersionController.getEntityFilter(dataVersion);
-		entityFilter.deleteEntities(data, null);
+		VersionHandler.getImpl(data, ChunkFilter.Entities.class).deleteEntities(data, null);
 	}
 
 	@Override

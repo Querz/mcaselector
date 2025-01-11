@@ -4,8 +4,7 @@ import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.HeightmapCalculator;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.io.snbt.ParseException;
 import net.querz.nbt.io.snbt.SNBTParser;
@@ -59,7 +58,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 
 		String trimmed = s.trim();
 
-		while (trimmed.length() > 0) {
+		while (!trimmed.isEmpty()) {
 			String[] fromTo = trimmed.split("=", 2);
 			if (fromTo.length != 2) {
 				return super.parseNewValue(s);
@@ -128,7 +127,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 			CompoundTag toTile = null;
 			if (to.startsWith(";")) {
 				to = to.substring(1).trim();
-				if (to.length() == 0) {
+				if (to.isEmpty()) {
 					return super.parseNewValue(s);
 				}
 				try {
@@ -159,7 +158,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 
 			if (to.startsWith(",")) {
 				trimmed = to.substring(1).trim();
-			} else if (to.length() != 0) {
+			} else if (!to.isEmpty()) {
 				return super.parseNewValue(s);
 			} else {
 				break;
@@ -181,15 +180,12 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 
 	@Override
 	public void change(ChunkData data) {
-		int dataVersion = data.region().getData().getIntOrDefault("DataVersion", 0);
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(dataVersion);
-		chunkFilter.replaceBlocks(data.region().getData(), getNewValue());
-
-		HeightmapCalculator heightmapCalculator = VersionController.getHeightmapCalculator(dataVersion);
-		heightmapCalculator.worldSurface(data.region().getData());
-		heightmapCalculator.oceanFloor(data.region().getData());
-		heightmapCalculator.motionBlocking(data.region().getData());
-		heightmapCalculator.motionBlockingNoLeaves(data.region().getData());
+		VersionHandler.getImpl(data, ChunkFilter.Blocks.class).replaceBlocks(data, getNewValue());
+		ChunkFilter.Heightmap heightmap = VersionHandler.getImpl(data, ChunkFilter.Heightmap.class);
+		heightmap.worldSurface(data);
+		heightmap.oceanFloor(data);
+		heightmap.motionBlocking(data);
+		heightmap.motionBlockingNoLeaves(data);
 	}
 
 	@Override

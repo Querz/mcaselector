@@ -58,7 +58,7 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 		table.setPlaceholder(new Label());
 		table.getStyleClass().add("array-editor-table-view");
 		table.setEditable(true);
-		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 
 
 		TableColumn<Row, Integer> indexColumn = new TableColumn<>();

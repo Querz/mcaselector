@@ -13,7 +13,7 @@ import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.StringTag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,8 +46,8 @@ public class BorderFilter extends IntFilter {
 			return 9;
 		}
 
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		StringTag tag = chunkFilter.getStatus(data.region().getData());
+		ChunkFilter.Status filter = VersionHandler.getImpl(data, ChunkFilter.Status.class);
+		StringTag tag = filter.getStatus(data);
 		if (tag == null || !tag.getValue().equals("full")) {
 			return 9;
 		}

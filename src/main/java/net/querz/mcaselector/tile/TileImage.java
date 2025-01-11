@@ -17,7 +17,9 @@ import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.ImageHelper;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.ChunkRenderer;
+import net.querz.mcaselector.version.ColorMapping;
+import net.querz.mcaselector.version.VersionHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -143,26 +145,26 @@ public final class TileImage {
 		int dataVersion = chunkData.getData().getIntOrDefault("DataVersion", 0);
 		try {
 			if (ConfigProvider.WORLD.getRenderCaves()) {
-				VersionController.getChunkRenderer(dataVersion).drawCaves(
+				VersionHandler.getImpl(dataVersion, ChunkRenderer.class).drawCaves(
 						chunkData.getData(),
-						VersionController.getColorMapping(dataVersion),
+						VersionHandler.getImpl(dataVersion, ColorMapping.class),
 						x, z, scale,
 						pixelBuffer,
 						terrainHeights,
 						ConfigProvider.WORLD.getRenderHeight()
 				);
 			} else if (ConfigProvider.WORLD.getRenderLayerOnly()) {
-				VersionController.getChunkRenderer(dataVersion).drawLayer(
+				VersionHandler.getImpl(dataVersion, ChunkRenderer.class).drawLayer(
 						chunkData.getData(),
-						VersionController.getColorMapping(dataVersion),
+						VersionHandler.getImpl(dataVersion, ColorMapping.class),
 						x, z, scale,
 						pixelBuffer,
 						ConfigProvider.WORLD.getRenderHeight()
 				);
 			} else {
-				VersionController.getChunkRenderer(dataVersion).drawChunk(
+				VersionHandler.getImpl(dataVersion, ChunkRenderer.class).drawChunk(
 						chunkData.getData(),
-						VersionController.getColorMapping(dataVersion),
+						VersionHandler.getImpl(dataVersion, ColorMapping.class),
 						x, z, scale,
 						pixelBuffer,
 						waterPixels,

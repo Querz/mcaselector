@@ -5,6 +5,7 @@ import net.querz.mcaselector.validation.ValidationHelper;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public class VersionChecker {
 
 	public VersionData fetchLatestVersion() throws Exception {
 		String endpoint = String.format(endpointTemplate, owner, repository);
-		URL url = new URL(endpoint);
+		URL url = new URI(endpoint).toURL();
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 		StringBuilder stringBuilder = new StringBuilder();

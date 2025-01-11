@@ -3,8 +3,7 @@ package net.querz.mcaselector.changer.fields;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.version.HeightmapCalculator;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.*;
 
 public class FixHeightmapsField extends Field<Boolean> {
 
@@ -28,11 +27,11 @@ public class FixHeightmapsField extends Field<Boolean> {
 
 	@Override
 	public void change(ChunkData data) {
-		HeightmapCalculator heightmapCalculator = VersionController.getHeightmapCalculator(data.region().getData().getIntOrDefault("DataVersion", 0));
-		heightmapCalculator.worldSurface(data.region().getData());
-		heightmapCalculator.oceanFloor(data.region().getData());
-		heightmapCalculator.motionBlocking(data.region().getData());
-		heightmapCalculator.motionBlockingNoLeaves(data.region().getData());
+		ChunkFilter.Heightmap heightmap = VersionHandler.getImpl(data, ChunkFilter.Heightmap.class);
+		heightmap.worldSurface(data);
+		heightmap.oceanFloor(data);
+		heightmap.motionBlocking(data);
+		heightmap.motionBlockingNoLeaves(data);
 	}
 
 	@Override

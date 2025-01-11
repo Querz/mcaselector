@@ -7,7 +7,7 @@ import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.LongTag;
 
 public class InhabitedTimeFilter extends LongFilter {
@@ -22,11 +22,7 @@ public class InhabitedTimeFilter extends LongFilter {
 
 	@Override
 	protected Long getNumber(ChunkData data) {
-		if (data.region() == null || data.region().getData() == null) {
-			return 0L;
-		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		LongTag tag = chunkFilter.getInhabitedTime(data.region().getData());
+		LongTag tag = VersionHandler.getImpl(data, ChunkFilter.InhabitedTime.class).getInhabitedTime(data);
 		return tag == null ? 0L : tag.asLong();
 	}
 

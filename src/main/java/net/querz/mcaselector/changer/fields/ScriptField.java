@@ -6,7 +6,6 @@ import net.querz.mcaselector.io.GroovyScriptEngine;
 import net.querz.mcaselector.io.mca.ChunkData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import javax.script.ScriptException;
 
 public class ScriptField extends Field<String> {
@@ -20,7 +19,7 @@ public class ScriptField extends Field<String> {
 	}
 
 	@Override
-	public String getOldValue(ChunkData root) {
+	public String getOldValue(ChunkData data) {
 		return null;
 	}
 
@@ -36,9 +35,9 @@ public class ScriptField extends Field<String> {
 	}
 
 	@Override
-	public void change(ChunkData root) {
+	public void change(ChunkData data) {
 		try {
-			engine.run("apply", root);
+			engine.run("apply", data);
 		} catch (ScriptException | NoSuchMethodException e) {
 			LOGGER.warn("failed to invoke apply function in custom script");
 		}
@@ -61,7 +60,7 @@ public class ScriptField extends Field<String> {
 	}
 
 	@Override
-	public void force(ChunkData root) {
-		change(root);
+	public void force(ChunkData data) {
+		change(data);
 	}
 }

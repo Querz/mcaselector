@@ -3,6 +3,8 @@ package net.querz.mcaselector.overlay.overlays;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.overlay.OverlayType;
+import net.querz.mcaselector.version.Helper;
+import net.querz.nbt.CompoundTag;
 
 public class DataVersionOverlay extends Overlay {
 
@@ -11,11 +13,12 @@ public class DataVersionOverlay extends Overlay {
 	}
 
 	@Override
-	public int parseValue(ChunkData chunkData) {
-		if (chunkData.region() == null || chunkData.region().getData() == null) {
+	public int parseValue(ChunkData data) {
+		CompoundTag root = Helper.getRegion(data);
+		if (root == null) {
 			return 0;
 		}
-		return chunkData.region().getData().getIntOrDefault("DataVersion", 0);
+		return root.getIntOrDefault("DataVersion", 0);
 	}
 
 	@Override

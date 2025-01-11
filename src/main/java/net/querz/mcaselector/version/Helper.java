@@ -1,5 +1,6 @@
 package net.querz.mcaselector.version;
 
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.nbt.*;
@@ -253,4 +254,33 @@ public final class Helper {
 		}
 		return max;
 	}
+
+	public static int getDataVersion(CompoundTag root) {
+		if (root == null) {
+			return 100;
+		}
+		return root.getIntOrDefault("DataVersion", 100);
+	}
+
+	public static CompoundTag getRegion(ChunkData data) {
+		if (data == null || data.region() == null) {
+			return null;
+		}
+		return data.region().getData();
+	}
+
+	public static CompoundTag getPOI(ChunkData data) {
+		if (data == null || data.poi() == null) {
+			return null;
+		}
+		return data.poi().getData();
+	}
+
+	public static CompoundTag getEntities(ChunkData data) {
+		if (data == null || data.entities() == null) {
+			return null;
+		}
+		return data.entities().getData();
+	}
+
 }

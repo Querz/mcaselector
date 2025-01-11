@@ -1,7 +1,6 @@
 package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.filter.filters.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;

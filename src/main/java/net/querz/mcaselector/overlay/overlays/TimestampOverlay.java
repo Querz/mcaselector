@@ -15,11 +15,11 @@ public class TimestampOverlay extends Overlay {
 	}
 
 	@Override
-	public int parseValue(ChunkData chunkData) {
-		if (chunkData.region() == null) {
+	public int parseValue(ChunkData data) {
+		if (data.region() == null) {
 			return 0;
 		}
-		return chunkData.region().getTimestamp();
+		return data.region().getTimestamp();
 	}
 
 	@Override

@@ -12,6 +12,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -209,7 +211,12 @@ public final class FileHelper {
 		if (!classPath.startsWith("jar")) {
 			throw new IOException("application not running in jar file");
 		}
-		URL url = new URL(classPath);
+		URL url;
+		try {
+			url = new URI(classPath).toURL();
+		} catch (URISyntaxException e) {
+			throw new IOException(e);
+		}
 		JarURLConnection jarConnection = (JarURLConnection) url.openConnection();
 		Manifest manifest = jarConnection.getManifest();
 		return manifest.getMainAttributes();

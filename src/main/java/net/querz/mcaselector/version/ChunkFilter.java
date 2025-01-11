@@ -1,76 +1,219 @@
 package net.querz.mcaselector.version;
 
+import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.io.registry.StatusRegistry;
+import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
 import net.querz.nbt.NBTUtil;
 import net.querz.nbt.*;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
+import java.util.function.Function;
 
 public interface ChunkFilter {
 
-	// returns true if ALL block names are present
-	boolean matchBlockNames(CompoundTag data, Collection<String> names);
+	interface Biomes {
+		boolean matchBiomes(ChunkData data, Collection<BiomeRegistry.BiomeIdentifier> biomes);
+		boolean matchAnyBiome(ChunkData data, Collection<BiomeRegistry.BiomeIdentifier> biomes);
+		void changeBiome(ChunkData data, BiomeRegistry.BiomeIdentifier biome);
+		void forceBiome(ChunkData data, BiomeRegistry.BiomeIdentifier biome);
+	}
 
-	// returns true if ALL biomes are present
-	boolean matchBiomes(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes);
+	interface Blocks {
+		boolean matchBlockNames(ChunkData data, Collection<String> names);
+		boolean matchAnyBlockName(ChunkData data, Collection<String> names);
+		void replaceBlocks(ChunkData data, Map<String, BlockReplaceData> replace);
+		int getBlockAmount(ChunkData data, String[] blocks);
+		int getAverageHeight(ChunkData data);
+	}
 
-	// returns true if AT LEAST ONE block name is present
-	boolean matchAnyBlockName(CompoundTag data, Collection<String> names);
+	interface Palette {
+		boolean paletteEquals(ChunkData data, Collection<String> names);
+	}
 
-	// returns true if the palette ONLY contains the block names, ignoring air
-	boolean paletteEquals(CompoundTag data, Collection<String> names);
+	interface TileEntities {
+		ListTag getTileEntities(ChunkData data);
+	}
 
-	// returns true if AT LEAST ONE biome is present
-	boolean matchAnyBiome(CompoundTag data, Collection<BiomeRegistry.BiomeIdentifier> biomes);
+	interface Sections {
+		ListTag getSections(ChunkData data);
+		void deleteSections(ChunkData data, List<Range> ranges);
+	}
 
-	void changeBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome);
+	interface InhabitedTime {
+		LongTag getInhabitedTime(ChunkData data);
+		void setInhabitedTime(ChunkData data, long inhabitedTime);
+	}
 
-	void forceBiome(CompoundTag data, BiomeRegistry.BiomeIdentifier biome);
+	interface Status {
+		StringTag getStatus(ChunkData data);
+		void setStatus(ChunkData data, StatusRegistry.StatusIdentifier status);
+		boolean matchStatus(ChunkData data, StatusRegistry.StatusIdentifier status);
+	}
 
-	void replaceBlocks(CompoundTag data, Map<String, BlockReplaceData> replace);
+	interface LastUpdate {
+		LongTag getLastUpdate(ChunkData data);
+		void setLastUpdate(ChunkData data, long lastUpdate);
+	}
 
-	int getAverageHeight(CompoundTag data);
+	interface Pos {
+		IntTag getXPos(ChunkData data);
+		IntTag getYPos(ChunkData data);
+		IntTag getZPos(ChunkData data);
+	}
 
-	int getBlockAmount(CompoundTag data, String[] blocks);
+	interface Structures {
+		CompoundTag getStructureStarts(ChunkData data);
+		CompoundTag getStructureReferences(ChunkData data);
+	}
 
-	ListTag getTileEntities(CompoundTag data);
+	interface LightPopulated {
+		ByteTag getLightPopulated(ChunkData data);
+		void setLightPopulated(ChunkData data, byte lightPopulated);
+	}
 
-	CompoundTag getStructureStarts(CompoundTag data);
+	interface Blending {
+		void forceBlending(ChunkData data);
+	}
 
-	CompoundTag getStructureReferences(CompoundTag data);
+	interface Relocate {
+		boolean relocate(CompoundTag root, Point3i offset);
 
-	ListTag getSections(CompoundTag data);
+		default boolean applyOffsetToSection(CompoundTag section, Point3i offset, int minY, int maxY) {
+			NumberTag value;
+			if ((value = Helper.tagFromCompound(section, "Y")) != null) {
+				if (value.asByte() > maxY || value.asByte() < minY) {
+					return false;
+				}
 
-	void deleteSections(CompoundTag data, List<Range> ranges);
+				int y = value.asByte() + offset.getY();
+				if (y > maxY || y < minY) {
+					return false;
+				}
+				section.putByte("Y", (byte) y);
+			}
+			return true;
+		}
+	}
 
-	LongTag getInhabitedTime(CompoundTag data);
+	interface RelocateEntities extends Relocate {}
 
-	void setInhabitedTime(CompoundTag data, long inhabitedTime);
+	interface RelocatePOI extends Relocate {}
 
-	StringTag getStatus(CompoundTag data);
+	interface Merge {
+		void mergeChunks(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset);
 
-	void setStatus(CompoundTag data, StatusRegistry.StatusIdentifier status);
+		CompoundTag newEmptyChunk(Point2i absoluteLocation, int dataVersion);
 
-	boolean matchStatus(CompoundTag data, StatusRegistry.StatusIdentifier status);
+		default ListTag mergeLists(ListTag source, ListTag destination, List<Range> ranges, Function<Tag, Integer> ySupplier, int yOffset) {
+			ListTag result = new ListTag();
+			for (Tag dest : destination) {
+				int y = ySupplier.apply(dest);
+				for (Range range : ranges) {
+					if (!range.contains(y)) {
+						result.add(dest);
+					}
+				}
+			}
 
-	LongTag getLastUpdate(CompoundTag data);
+			for (Tag sourceElement : source) {
+				int y = ySupplier.apply(sourceElement);
+				for (Range range : ranges) {
+					if (range.contains(y - yOffset)) {
+						result.add(sourceElement);
+						break;
+					}
+				}
+			}
 
-	void setLastUpdate(CompoundTag data, long lastUpdate);
+			return result;
+		}
 
-	IntTag getXPos(CompoundTag data);
+		default void mergeListTagLists(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset, String name) {
+			ListTag sourceList = Helper.tagFromLevelFromRoot(source, name);
+			ListTag destinationList = Helper.tagFromLevelFromRoot(destination, name, sourceList);
 
-	IntTag getYPos(CompoundTag data);
+			if (sourceList == null || destinationList == null || sourceList.size() != destinationList.size()) {
+				return;
+			}
 
-	IntTag getZPos(CompoundTag data);
+			for (Range range : ranges) {
+				int m = Math.min(range.getTo() + yOffset, sourceList.size() - 1);
+				for (int i = Math.max(range.getFrom() + yOffset, 0); i <= m; i++) {
+					destinationList.set(i, sourceList.get(i));
+				}
+			}
 
-	ByteTag getLightPopulated(CompoundTag data);
+			initLevel(destination).put(name, destinationList);
+		}
 
-	void setLightPopulated(CompoundTag data, byte lightPopulated);
+		default void mergeCompoundTagListsFromLevel(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset, String name, Function<Tag, Integer> ySupplier) {
+			ListTag sourceElements = Helper.tagFromLevelFromRoot(source, name, new ListTag());
+			ListTag destinationElements = Helper.tagFromLevelFromRoot(destination, name, new ListTag());
 
-	void forceBlending(CompoundTag data);
+			initLevel(destination).put(name, mergeLists(sourceElements, destinationElements, ranges, ySupplier, yOffset));
+		}
+
+		default void mergeCompoundTagLists(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset, String name, Function<Tag, Integer> ySupplier) {
+			ListTag sourceElements = Helper.tagFromCompound(source, name, new ListTag());
+			ListTag destinationElements = Helper.tagFromCompound(destination, name, new ListTag());
+
+			destination.put(name, mergeLists(sourceElements, destinationElements, ranges, ySupplier, yOffset));
+		}
+
+		// merge based on compound tag keys, assuming compound tag keys are ints
+		default void mergeCompoundTags(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset, String name) {
+			CompoundTag sourceElements = Helper.tagFromCompound(source, name, new CompoundTag());
+			CompoundTag destinationElements = Helper.tagFromCompound(destination, name, new CompoundTag());
+
+			for (Map.Entry<String, Tag> sourceElement : sourceElements) {
+				if (sourceElement.getKey().matches("^-?[0-9]{1,2}$")) {
+					int y = Integer.parseInt(sourceElement.getKey());
+					for (Range range : ranges) {
+						if (range.contains(y - yOffset)) {
+							destinationElements.put(sourceElement.getKey(), sourceElement.getValue());
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		default CompoundTag initLevel(CompoundTag c) {
+			CompoundTag level = Helper.levelFromRoot(c);
+			if (level == null) {
+				c.put("Level", level = new CompoundTag());
+			}
+			return level;
+		}
+
+		default void fixEntityUUIDs(CompoundTag root) {
+			ListTag entities = Helper.tagFromCompound(root, "Entities", null);
+			if (entities != null) {
+				entities.forEach(e -> fixEntityUUID((CompoundTag) e));
+			}
+		}
+
+		private static void fixEntityUUID(CompoundTag entity) {
+			Helper.fixEntityUUID(entity);
+			if (entity.containsKey("Passengers")) {
+				ListTag passengers = Helper.tagFromCompound(entity, "Passengers", null);
+				if (passengers != null) {
+					passengers.forEach(e -> fixEntityUUID((CompoundTag) e));
+				}
+			}
+		}
+	}
+
+	interface MergeEntities extends Merge {}
+
+	interface MergePOI extends Merge {}
 
 	class BlockReplaceData {
 
@@ -162,5 +305,68 @@ public interface ChunkFilter {
 
 	enum BlockReplaceType {
 		NAME, STATE, STATE_TILE, NAME_TILE
+	}
+
+	interface Entities {
+		void deleteEntities(ChunkData data, List<Range> ranges);
+		ListTag getEntities(ChunkData data);
+	}
+
+	interface Heightmap {
+		void worldSurface(ChunkData data);
+		void oceanFloor(ChunkData data);
+		void motionBlocking(ChunkData data);
+		void motionBlockingNoLeaves(ChunkData data);
+
+		default boolean isNonMotionBlocking(String blockName) {
+			return Data.nonMotionBlocking.contains(blockName);
+		}
+
+		default boolean isFoliage(String blockName) {
+			return Data.foliage.contains(blockName);
+		}
+
+		default boolean isAir(String blockName) {
+			return Data.air.contains(blockName);
+		}
+
+		default boolean isLiquid(String blockName) {
+			return Data.liquid.contains(blockName);
+		}
+
+		final class Data {
+			private static final Set<String> nonMotionBlocking = new HashSet<>();
+			private static final Set<String> foliage = new HashSet<>();
+			private static final Set<String> air = new HashSet<>();
+			private static final Set<String> liquid = new HashSet<>();
+
+			private Data() {}
+
+			private static final Logger LOGGER = LogManager.getLogger(Data.class);
+
+			static {
+				try (BufferedReader bis = new BufferedReader(new InputStreamReader(Objects.requireNonNull(Data.class.getClassLoader().getResourceAsStream("mapping/all_heightmap_data.txt"))))) {
+					String line;
+					while ((line = bis.readLine()) != null) {
+						String[] elements = line.split(";");
+						if (elements.length != 2) {
+							LOGGER.error("invalid line in heightmap data file: \"{}\"", line);
+							continue;
+						}
+						String type = elements[0];
+						String blockName = elements[1];
+						switch (type) {
+							case "m" -> nonMotionBlocking.add("minecraft:" + blockName);
+							case "f" -> foliage.add("minecraft:" + blockName);
+							case "w" -> liquid.add("minecraft:" + blockName);
+							case "a" -> air.add("minecraft:" + blockName);
+							default -> LOGGER.error("invalid heightmap data type \"{}\"", type);
+						}
+					}
+				} catch (IOException ex) {
+					throw new RuntimeException("failed to read mapping/all_heightmap_data.txt");
+				}
+			}
+		}
 	}
 }

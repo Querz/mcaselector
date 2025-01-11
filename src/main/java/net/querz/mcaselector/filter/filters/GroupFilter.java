@@ -185,7 +185,7 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 		// add (...) if depth is not 0
 		// don't add empty groups
 
-		boolean showGroup = (negated || depth != 0) && children.size() > 0;
+		boolean showGroup = (negated || depth != 0) && !children.isEmpty();
 
 		StringBuilder s = new StringBuilder(showGroup ? negated ? "!(" : "(" : "");
 		for (int i = 0; i < children.size(); i++) {
@@ -195,7 +195,7 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 			} else {
 				child = children.get(i).toString();
 			}
-			if (child.length() != 0) {
+			if (!child.isEmpty()) {
 				s.append(i != 0 ? " " + children.get(i).getOperator() + " " : "").append(child);
 			}
 		}

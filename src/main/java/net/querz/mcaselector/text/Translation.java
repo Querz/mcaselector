@@ -219,7 +219,7 @@ public enum Translation {
 				if (matcher.matches()) {
 					String language = matcher.group("language");
 					String country = matcher.group("country");
-					availableLanguages.add(new Locale(language, country));
+					availableLanguages.add(Locale.of(language, country));
 				} else {
 					LOGGER.error("invalid language file: {}", langFile);
 				}

@@ -3,6 +3,8 @@ package net.querz.mcaselector.changer.fields;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.version.Helper;
+import net.querz.nbt.CompoundTag;
 
 public class PreventRetrogenField extends Field<Boolean> {
 
@@ -26,11 +28,12 @@ public class PreventRetrogenField extends Field<Boolean> {
 
 	@Override
 	public void change(ChunkData data) {
-		if (data.region() == null || data.region().getData() == null) {
+		CompoundTag root = Helper.getRegion(data);
+		if (root == null) {
 			return;
 		}
-		data.region().getData().remove("below_zero_retrogen");
-		data.region().getData().putString("Status", "full");
+		root.remove("below_zero_retrogen");
+		root.putString("Status", "full");
 	}
 
 	@Override

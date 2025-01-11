@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
@@ -91,7 +92,7 @@ public final class UIFactory {
 		sliderValue.textProperty().addListener((l, o, n) -> {
 			if (!n.matches("-?\\d*")) {
 				sliderValue.setText(n.replaceAll("[^\\-\\d]", ""));
-			} else if ("".equals(n)) {
+			} else if (n.isEmpty()) {
 				slider.setValue(slider.getMin());
 			} else {
 				try {
@@ -137,7 +138,7 @@ public final class UIFactory {
 		hyperlink.setOnAction(e -> {
 			if (Desktop.isDesktopSupported()) {
 				try {
-					Desktop.getDesktop().browse(new URL(url).toURI());
+					Desktop.getDesktop().browse(new URI(url));
 				} catch (IOException | URISyntaxException ex) {
 					LOGGER.warn("cannot open url using a default browser", ex);
 				}
