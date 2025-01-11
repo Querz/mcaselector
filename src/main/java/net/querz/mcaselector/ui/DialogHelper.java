@@ -692,7 +692,7 @@ public class DialogHelper {
 		}
 		DataProperty<AtomicLong> sum = new DataProperty<>();
 		CancellableProgressDialog cpd = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SUMMING, primaryStage);
-		cpd.showProgressBar(t -> sum.set(SelectionSummer.sumSelection(tileMap.getSelectedChunks(), tileMap.getSelection(), tileMap.getOverlay(), t)));
+		cpd.showProgressBar(t -> sum.set(SelectionSummer.sumSelection(tileMap.getSelection(), tileMap.getOverlay(), t)));
 		if (!cpd.cancelled()) {
 			String s = tileMap.getOverlay().getShortMultiValues();
 			String title = tileMap.getOverlay().getType() + (s == null ? "" : "(" + s + ")");

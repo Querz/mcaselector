@@ -274,7 +274,7 @@ public class OptionBar extends BorderPane {
 		previousSelectedChunks = selectedChunks;
 		previousInvertedSelection = invertedSelection;
 		nextOverlay.setDisable(tileMap.getOverlay() == null);
-		sumSelection.setDisable(tileMap.getOverlay() == null || tileMap.getSelectedChunks() == 0);
+		sumSelection.setDisable(tileMap.getOverlay() == null || tileMap.getSelectedChunks() == 0 && !invertedSelection);
 	}
 
 	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap, Stage primaryStage) {
@@ -306,9 +306,9 @@ public class OptionBar extends BorderPane {
 			});
 		}
 
-		openDimension.setDisable(!enabled || openDimension.getItems().size() == 0);
+		openDimension.setDisable(!enabled || openDimension.getItems().isEmpty());
 
-		if (ConfigProvider.GLOBAL.getRecentWorlds().size() > 0) {
+		if (!ConfigProvider.GLOBAL.getRecentWorlds().isEmpty()) {
 			openRecent.getItems().clear();
 			File currentWorld = ConfigProvider.WORLD.getRegionDir();
 			ConfigProvider.GLOBAL.getRecentWorlds().descendingMap().forEach((k, v) -> {
@@ -347,7 +347,7 @@ public class OptionBar extends BorderPane {
 		swapChunks.setDisable(selected != 2 || inverted);
 		copy.setDisable(selected == 0 && !inverted);
 		invertRegions.setDisable(selected == 0 || inverted);
-		sumSelection.setDisable((tileMap.getOverlay() == null || selected == 0));
+		sumSelection.setDisable(tileMap.getOverlay() == null || selected == 0 && !inverted);
 	}
 
 	private boolean hasValidClipboardContent(TileMap tileMap) {

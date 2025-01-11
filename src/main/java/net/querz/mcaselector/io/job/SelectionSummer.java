@@ -1,6 +1,7 @@
 package net.querz.mcaselector.io.job;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.mca.*;
 import net.querz.mcaselector.overlay.Overlay;
@@ -22,15 +23,17 @@ public class SelectionSummer {
 
 	private SelectionSummer() {}
 
-	public static AtomicLong sumSelection(int selected, Selection data, Overlay overlay, Progress progressChannel) {
+	public static AtomicLong sumSelection(Selection data, Overlay overlay, Progress progressChannel) {
 		AtomicLong answer = new AtomicLong();
 		answer.set(0);
 
 		JobHandler.clearQueues();
 
-		progressChannel.setMax(selected);
-		progressChannel.updateProgress("0", 0);
+		data = data.getTrueSelection(ConfigProvider.WORLD.getWorldDirs());
 
+		progressChannel.setMax(data.count());
+		progressChannel.updateProgress("0", 0);
+		
 		LOGGER.debug("creating counting jobs: {}", data);
 
 		Consumer<Throwable> errorHandler = t -> {
