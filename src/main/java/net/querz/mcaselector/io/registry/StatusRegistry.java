@@ -59,7 +59,8 @@ public final class StatusRegistry {
 			}
 		}
 
-		private void initValid(String name) {if (name.startsWith("minecraft:")) {
+		private void initValid(String name) {
+			if (name.startsWith("minecraft:")) {
 				this.name = valid.get(name);
 				this.nameWithNamespace = name;
 			} else {
@@ -87,6 +88,11 @@ public final class StatusRegistry {
 				return name.equals(value);
 			}
 			return value.startsWith("minecraft:") && value.equals(nameWithNamespace) || value.equals(name);
+		}
+
+		@Override
+		public String toString() {
+			return name;
 		}
 	}
 }
