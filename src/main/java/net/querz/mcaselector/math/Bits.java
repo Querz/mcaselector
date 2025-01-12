@@ -39,10 +39,18 @@ public final class Bits {
 		return i;
 	}
 
-	private static final byte[] multiplyDeBruijnBitPosition = new byte[]{0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9};
+	private static final byte[] multiplyDeBruijnBitPositionLSB = new byte[]{0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9};
 
 	// returns the position of the least significant 1 bit; 0 when i is 0.
 	public static int lsbPosition(int i) {
-		return multiplyDeBruijnBitPosition[((i & -i) * 0x077CB531) >> 27];
+		return multiplyDeBruijnBitPositionLSB[((i & -i) * 0x077CB531) >> 27];
+	}
+
+	public static int msbPosition(int i) {
+		int r = 0;
+		while ((i >>= 1) > 0) {
+			r++;
+		}
+		return r;
 	}
 }
