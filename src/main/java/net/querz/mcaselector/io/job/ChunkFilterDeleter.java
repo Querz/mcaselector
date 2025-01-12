@@ -70,20 +70,9 @@ public final class ChunkFilterDeleter {
 				return true;
 			}
 
-			byte[] regionData = loadRegion();
-			byte[] poiData = loadPoi();
-			byte[] entitiesData = loadEntities();
-
-			if (regionData == null && poiData == null && entitiesData == null) {
-				LOGGER.warn("failed to load any data from {}", getRegionDirectories().getLocationAsFileName());
-				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return true;
-			}
-
-
 			try {
 				// parse raw data
-				Region region = Region.loadRegion(getRegionDirectories(), regionData, poiData, entitiesData);
+				Region region = Region.loadRegion(getRegionDirectories());
 
 				if (region.deleteChunks(filter, selection)) {
 					// only save file if we actually deleted something

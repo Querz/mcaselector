@@ -6,7 +6,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import net.querz.mcaselector.config.ConfigProvider;
-import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.io.JobHandler;
@@ -85,16 +84,9 @@ public final class SelectionImageExporter {
 				image = new Image(cacheImage.toURI().toString(), false);
 			} else if (regionFile.exists()) {
 				// generate image from region file
-
-				byte[] data = load(regionFile);
-				if (data == null) {
-					progressChannel.incrementProgress(regionFile.getName());
-					return true;
-				}
-
 				mcaFile = new RegionMCAFile(regionFile);
 				try {
-					mcaFile.load(new ByteArrayPointer(data));
+					mcaFile.load(true);
 				} catch (IOException ex) {
 					progressChannel.incrementProgress(regionFile.getName());
 					return true;

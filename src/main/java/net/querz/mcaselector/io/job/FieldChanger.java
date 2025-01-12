@@ -74,19 +74,9 @@ public final class FieldChanger {
 				}
 			}
 
-			byte[] regionData = loadRegion();
-			byte[] poiData = loadPoi();
-			byte[] entitiesData = loadEntities();
-
-			if (regionData == null && poiData == null && entitiesData == null) {
-				LOGGER.warn("failed to load any data from {}", getRegionDirectories().getLocationAsFileName());
-				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return true;
-			}
-
 			//load MCAFile
 			try {
-				Region region = Region.loadRegion(getRegionDirectories(), regionData, poiData, entitiesData);
+				Region region = Region.loadRegion(getRegionDirectories());
 
 				region.applyFieldChanges(fields, force, selection);
 

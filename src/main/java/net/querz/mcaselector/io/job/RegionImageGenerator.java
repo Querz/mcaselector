@@ -162,7 +162,7 @@ public final class RegionImageGenerator {
 				cachedRegion = new RegionMCAFile(file);
 				try {
 					Timer t = new Timer();
-					cachedRegion.loadRaw();
+					cachedRegion.load(true);
 					LOGGER.debug("took {} to read mca file {}", t, cachedRegion.getFile().getName());
 				} catch (IOException ex) {
 					LOGGER.warn("failed to load mca file {}", cachedRegion.getFile().getName());

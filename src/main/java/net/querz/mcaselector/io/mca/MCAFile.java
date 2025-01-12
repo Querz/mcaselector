@@ -1,6 +1,5 @@
 package net.querz.mcaselector.io.mca;
 
-import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
@@ -210,35 +209,7 @@ public abstract class MCAFile<T extends Chunk> {
 		}
 	}
 
-	public int[] load() throws IOException {
-		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
-			loadHeader(raf);
-
-			Point2i origin = location.regionToChunk();
-
-			for (short i = 0; i < 1024; i++) {
-				if (offsets[i] == 0) {
-					chunks[i] = null;
-					continue;
-				}
-				raf.seek(offsets[i] * 4096L);
-
-				Point2i chunkLocation = origin.add(new Point2i(i));
-
-				try {
-					chunks[i] = chunkConstructor.apply(chunkLocation);
-					chunks[i].setTimestamp(timestamps[i]);
-					chunks[i].load(raf);
-				} catch (Exception ex) {
-					chunks[i] = null;
-					LOGGER.warn("failed to load chunk at {}", chunkLocation, ex);
-				}
-			}
-			return offsets;
-		}
-	}
-
-	public int[] loadRaw() throws IOException {
+	public void load(boolean raw) throws IOException {
 		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
 			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
 			loadHeader(buf);
@@ -257,84 +228,26 @@ public abstract class MCAFile<T extends Chunk> {
 				try {
 					chunks[i] = chunkConstructor.apply(chunkLocation);
 					chunks[i].setTimestamp(timestamps[i]);
-					chunks[i].loadRaw(buf);
+					chunks[i].load(buf, raw);
 				} catch (Exception ex) {
 					chunks[i] = null;
 					LOGGER.warn("failed to load chunk at {}", chunkLocation, ex);
 				}
 			}
-			return offsets;
 		}
 	}
 
-	public int[] load(ByteArrayPointer ptr) throws IOException {
-		loadHeader(ptr);
+	public void loadHeader() throws IOException {
+		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
+			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, FileHelper.HEADER_SIZE);
 
-		Point2i origin = location.regionToChunk();
-
-		for (short i = 0; i < 1024; i++) {
-			if (offsets[i] == 0) {
-				chunks[i] = null;
-				continue;
-			}
-			ptr.seek(offsets[i] * 4096L);
-
-			Point2i chunkLocation = origin.add(new Point2i(i));
-
-			try {
-				chunks[i] = chunkConstructor.apply(chunkLocation);
-				chunks[i].setTimestamp(timestamps[i]);
-				chunks[i].load(ptr);
-			} catch (Exception ex) {
-				chunks[i] = null;
-				LOGGER.debug("failed to load chunk at {}", chunkLocation, ex);
-			}
-		}
-		return offsets;
-	}
-
-	public void loadHeader(RandomAccessFile raf) throws IOException {
-		offsets = new int[1024];
-		sectors = new byte[1024];
-
-		raf.seek(0);
-		for (int i = 0; i < offsets.length; i++) {
-			int offset = (raf.read()) << 16;
-			offset |= (raf.read() & 0xFF) << 8;
-			offsets[i] = offset | raf.read() & 0xFF;
-			sectors[i] = raf.readByte();
-		}
-
-		// read timestamps
-		for (int i = 0; i < 1024; i++) {
-			timestamps[i] = raf.readInt();
-		}
-	}
-
-	public void loadHeader(ByteArrayPointer ptr) throws IOException {
-		offsets = new int[1024];
-		sectors = new byte[1024];
-
-		try {
-			ptr.seek(0);
-			for (int i = 0; i < offsets.length; i++) {
-				int offset = (ptr.read()) << 16;
-				offset |= (ptr.read() & 0xFF) << 8;
-				offsets[i] = offset | ptr.read() & 0xFF;
-				sectors[i] = ptr.readByte();
-			}
-
-			// read timestamps
-			timestamps = new int[1024];
-			for (int i = 0; i < 1024; i++) {
-				timestamps[i] = ptr.readInt();
-			}
+			loadHeader(buf);
 		} catch (ArrayIndexOutOfBoundsException ex) {
 			throw new IOException(ex);
 		}
 	}
 
-	public void loadHeader(ByteBuffer buf) throws IOException {
+	private void loadHeader(ByteBuffer buf) throws IOException {
 		offsets = new int[1024];
 		sectors = new byte[1024];
 
@@ -363,7 +276,8 @@ public abstract class MCAFile<T extends Chunk> {
 			return null;
 		}
 
-		try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
+			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
 			// read offset, sector count and timestamp for specific chunk
 
 			Point2i region = FileHelper.parseMCAFileName(file);
@@ -378,53 +292,56 @@ public abstract class MCAFile<T extends Chunk> {
 			int headerOffset = headerIndex * 4;
 
 			// read offset
-			raf.seek(headerOffset);
-			int offset = (raf.read()) << 16;
-			offset |= (raf.read() & 0xFF) << 8;
-			offset = offset | raf.read() & 0xFF;
+			buf.position(headerOffset);
+			int offset = (buf.get()) << 16;
+			offset |= (buf.get() & 0xFF) << 8;
+			offset = offset | buf.get() & 0xFF;
 
 			Point2i absoluteChunkLocation = region.regionToChunk().add(rel);
 
 			// read timestamp
-			raf.seek(headerOffset + 4096L);
-			int timestamp = raf.readInt();
+			buf.position(headerOffset + 4096);
+			int timestamp = buf.getInt();
 
 			// read chunk data
 			T chunkData = chunkConstructor.apply(absoluteChunkLocation);
 			chunkData.setTimestamp(timestamp);
 
 			if (offset > 0) {
-				raf.seek(offset * 4096L);
-				chunkData.load(raf);
+				buf.position(offset * 4096);
+				chunkData.load(buf, false);
 			}
 
 			return chunkData;
 		}
 	}
 
-	public void loadBorderChunks(ByteArrayPointer ptr) throws IOException {
-		loadHeader(ptr);
+	public void loadBorderChunks() throws IOException {
+		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
+			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+			loadHeader(buf);
 
-		// top row / bottom row
-		for (int x = 0; x < 32; x++) {
-			loadChunk(ptr, x);
-			loadChunk(ptr, x + 992);
-		}
+			// top row / bottom row
+			for (int x = 0; x < 32; x++) {
+				loadChunk(buf, x);
+				loadChunk(buf, x + 992);
+			}
 
-		// left row / right row
-		for (int z = 1; z < 31; z++) {
-			loadChunk(ptr, z * 32);
-			loadChunk(ptr, 31 + z * 32);
+			// left row / right row
+			for (int z = 1; z < 31; z++) {
+				loadChunk(buf, z * 32);
+				loadChunk(buf, 31 + z * 32);
+			}
 		}
 	}
 
-	private void loadChunk(ByteArrayPointer ptr, int index) throws IOException {
+	private void loadChunk(ByteBuffer buf, int index) throws IOException {
 		try {
 			if (offsets[index] == 0) {
 				chunks[index] = null;
 				return;
 			}
-			ptr.seek(offsets[index] * 4096L);
+			buf.position(offsets[index] * 4096);
 
 			Point2i origin = location.regionToChunk();
 
@@ -433,7 +350,7 @@ public abstract class MCAFile<T extends Chunk> {
 			try {
 				chunks[index] = chunkConstructor.apply(chunkLocation);
 				chunks[index].setTimestamp(timestamps[index]);
-				chunks[index].load(ptr);
+				chunks[index].load(buf, false);
 			} catch (Exception ex) {
 				chunks[index] = null;
 				LOGGER.warn("failed to load chunk at {}", chunkLocation, ex);
@@ -445,7 +362,7 @@ public abstract class MCAFile<T extends Chunk> {
 
 	public void saveSingleChunk(Point2i location, T chunk) throws IOException {
 		if (file.exists() && file.length() > 0) {
-			load();
+			load(false);
 		} else if (chunk == null || chunk.isEmpty()) {
 			LOGGER.debug("nothing to save and no existing file found for chunk {}", location);
 			return;

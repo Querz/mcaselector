@@ -79,40 +79,31 @@ public class SelectionSummer {
 
 			RegionMCAFile regionMCAFile = null;
 			if (regionFile.exists()) {
-				byte[] regionData = load(regionFile);
-				if (regionData != null) {
-					regionMCAFile = new RegionMCAFile(regionFile);
-					try {
-						regionMCAFile.load(new ByteArrayPointer(regionData));
-					} catch (IOException ex) {
-						throw new RuntimeException(ex);
-					}
+				regionMCAFile = new RegionMCAFile(regionFile);
+				try {
+					regionMCAFile.load(false);
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
 				}
 			}
 
 			PoiMCAFile poiMCAFile = null;
 			if (poiFile.exists()) {
-				byte[] poiData = load(poiFile);
-				if (poiData != null) {
-					poiMCAFile = new PoiMCAFile(poiFile);
-					try {
-						poiMCAFile.load(new ByteArrayPointer(poiData));
-					} catch (IOException ex) {
-						throw new RuntimeException(ex);
-					}
+				poiMCAFile = new PoiMCAFile(poiFile);
+				try {
+					poiMCAFile.load(false);
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
 				}
 			}
 
 			EntitiesMCAFile entitiesMCAFile = null;
 			if (entitiesFile.exists()) {
-				byte[] entitiesData = load(entitiesFile);
-				if (entitiesData != null) {
-					entitiesMCAFile = new EntitiesMCAFile(entitiesFile);
-					try {
-						entitiesMCAFile.load(new ByteArrayPointer(entitiesData));
-					} catch (IOException ex) {
-						throw new RuntimeException(ex);
-					}
+				entitiesMCAFile = new EntitiesMCAFile(entitiesFile);
+				try {
+					entitiesMCAFile.load(false);
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
 				}
 			}
 

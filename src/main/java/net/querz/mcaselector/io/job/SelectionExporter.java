@@ -105,20 +105,9 @@ public final class SelectionExporter {
 				return true;
 			}
 
-			byte[] regionData = loadRegionHeader();
-			byte[] poiData = loadPoiHeader();
-			byte[] entitiesData = loadEntitiesHeader();
-
-			if (regionData == null && poiData == null && entitiesData == null) {
-				LOGGER.warn("failed to load any data from {}", getRegionDirectories().getLocationAsFileName());
-				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return true;
-			}
-
-
 			try {
 				// only load headers, because we don't care for chunk data
-				Region region = Region.loadRegionHeaders(getRegionDirectories(), regionData, poiData, entitiesData);
+				Region region = Region.loadRegionHeaders(getRegionDirectories());
 				region.deleteChunks(chunksToBeExported.flip());
 				MCADeleteSelectionSaveJob job = new MCADeleteSelectionSaveJob(getRegionDirectories(), region, to, progressChannel);
 				job.errorHandler = errorHandler;
