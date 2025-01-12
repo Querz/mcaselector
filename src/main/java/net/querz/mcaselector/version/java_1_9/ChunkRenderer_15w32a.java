@@ -1,101 +1,108 @@
 package net.querz.mcaselector.version.java_1_9;
 
+import net.querz.mcaselector.math.Bits;
 import net.querz.mcaselector.math.MathUtil;
-import net.querz.mcaselector.property.DataProperty;
-import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkRenderer;
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.MCVersionImplementation;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
+import net.querz.nbt.Tag;
 
 @MCVersionImplementation(100)
 public class ChunkRenderer_15w32a implements ChunkRenderer {
 
 	@Override
 	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
-		ListTag sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
-		if (sections == null) {
+		ListTag sections = Helper.tagFromLevelFromRoot(root, "Sections");
+		if (sections == null || sections.getElementType() != Tag.Type.COMPOUND) {
 			return;
 		}
 
-		byte[][] blocksArray = new byte[16][];
-		byte[][] dataArray = new byte[16][];
-		for (CompoundTag s : sections.iterateType(CompoundTag.class)) {
-			if (!s.containsKey("Blocks") || !s.containsKey("Data")) {
-				continue;
-			}
-			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
-			byte[] b = Helper.byteArrayFromCompound(s, "Blocks");
-			byte[] d = Helper.byteArrayFromCompound(s, "Data");
-			if (y >= 0 && y < 16 && b != null && d != null) {
-				blocksArray[y] = b;
-				dataArray[y] = d;
-			}
-		}
+		CompoundTag level = Helper.tagFromCompound(root, "Level");
 
 		height = MathUtil.clamp(height, 0, 255);
+		int scaleBits = Bits.msbPosition(scale);
+		int yMax = 1 + (height >> 4);
 
-		byte[] biomes = Helper.byteArrayFromCompound(Helper.tagFromCompound(root, "Level"), "Biomes");
+		CompoundTag[] indexedSections = new CompoundTag[yMax];
+		sections.iterateType(CompoundTag.class).forEach(s -> {
+			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
+			if (y >= 0 && y < yMax) {
+				indexedSections[y] = s;
+			}
+		});
+		boolean[] indexed = new boolean[yMax];
+		byte[][] indexedBlocks = new byte[yMax][];
+		byte[][] indexedData = new byte[yMax][];
+		byte[] biomes = Helper.byteArrayFromCompound(level, "Biomes");
+		int[] startHeight = new int[yMax];
+		int[] sectionHeight = new int[yMax];
+		byte[] blocks, blockData;
+		int index, block, data, biome;
+		int pixelIndex;
 
-		// loop over x / z
-		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
+		for (int cx = 0; cx < 16; cx += scale) {
 			zLoop:
-			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
-
-				int biome = -1;
-				if (biomes != null && biomes.length != 0) {
-					biome = biomes[getBlockIndex(cx, 0, cz)] & 0xFF;
-				}
-				biome = Math.max(0, biome);
-
+			for (int cz = 0; cz < 16; cz += scale) {
+				pixelIndex = (z + (cz >> scaleBits)) * (512 >> scaleBits) + (x + (cx >> scaleBits));
+				biome = getBiome(cx, cz, biomes);
 				boolean waterDepth = false;
-				// loop over sections
-				for (int i = blocksArray.length - (16 - (height >> 4)); i >= 0; i--) {
-					if (blocksArray[i] == null) {
+				for (int i = height >> 4; i >= 0; i--) {
+					// no section --> nothing to do
+					if (indexedSections[i] == null) {
 						continue;
 					}
 
-					byte[] blocks = blocksArray[i];
-					byte[] data = dataArray[i];
+					// if the section has not been indexed yet, index it now
+					if (!indexed[i]) {
+						CompoundTag section = indexedSections[i];
+						if (section.containsKey("Blocks") && section.containsKey("Data")) {
+							indexedBlocks[i] = Helper.byteArrayFromCompound(section, "Blocks");
+							indexedData[i] = Helper.byteArrayFromCompound(section, "Data");
+						}
 
-					int sectionHeight = i * Tile.CHUNK_SIZE;
+						// if we are in the section containing the highest y we need to render,
+						// we calculate the highest y in the section with absHeight % 16
+						// otherwise we start all the way at the top (15)
+						startHeight[i] = height >> 4 == i ? height & 0xF : 15;
+						// calculate height of section in blocks
+						sectionHeight[i] = i * 16;
 
-					int startHeight;
-					if (height >> 4 == i) {
-						startHeight = Tile.CHUNK_SIZE - (16 - height % 16);
-					} else {
-						startHeight = Tile.CHUNK_SIZE - 1;
+						indexed[i] = true;
 					}
 
-					// loop over y value in section from top to bottom
-					for (int cy = startHeight; cy >= 0; cy--) {
-						int index = getBlockIndex(cx, cy, cz);
-						short block = (short) (blocks[index] & 0xFF);
+					blocks = indexedBlocks[i];
+					if (blocks == null) {
+						continue;
+					}
+					blockData = indexedData[i];
 
-						byte blockData = (byte) (index % 2 == 0 ? data[index / 2] & 0x0F : (data[index / 2] >> 4) & 0x0F);
+					for (int cy = startHeight[i]; cy >= 0; cy--) {
+						index = cy * 256 + cz * 16 + cx;
+						block = blocks[index] & 0xFF;
+						data = ((index & 0x1) == 0 ? blockData[index >> 1] : blockData[index >> 1] >> 4) & 0x0F;
 
 						if (isEmpty(block)) {
 							continue;
 						}
 
-						int regionIndex = (z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale);
 						if (water) {
 							if (!waterDepth) {
-								pixelBuffer[regionIndex] = colorMapping.getRGB((block << 4) + blockData, biome);
-								waterHeights[regionIndex] = (short) (sectionHeight + cy);
+								pixelBuffer[pixelIndex] = colorMapping.getRGB((block << 4) + data, biome); // water color
+								waterHeights[pixelIndex] = (short) (sectionHeight[i] + cy); // height of highest water or terrain block
 							}
 							if (isWater(block)) {
 								waterDepth = true;
 								continue;
 							} else {
-								waterPixels[regionIndex] = colorMapping.getRGB((block << 4) + blockData, biome);
+								waterPixels[pixelIndex] = colorMapping.getRGB((block << 4) + data, biome);
 							}
 						} else {
-							pixelBuffer[regionIndex] = colorMapping.getRGB((block << 4) + blockData, biome);
+							waterPixels[pixelIndex] = colorMapping.getRGB((block << 4) + data, biome);
 						}
-						terrainHeights[regionIndex] = (short) (sectionHeight + cy);
+						terrainHeights[pixelIndex] = (short) (sectionHeight[i] + cy);
 						continue zLoop;
 					}
 				}
@@ -103,129 +110,129 @@ public class ChunkRenderer_15w32a implements ChunkRenderer {
 		}
 	}
 
-	@Override
 	public void drawLayer(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int height) {
-		ListTag sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
+		ListTag sections = Helper.tagFromLevelFromRoot(root, "Sections");
 		if (sections == null) {
 			return;
 		}
 
-		DataProperty<CompoundTag> section = new DataProperty<>();
+		CompoundTag level = Helper.tagFromCompound(root, "Level");
+		height = MathUtil.clamp(height, 0, 255);
+
+		CompoundTag section = null;
 		for (CompoundTag s : sections.iterateType(CompoundTag.class)) {
 			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
 			if (y == height >> 4) {
-				section.set(s);
+				section = s;
 				break;
 			}
 		}
-		if (section.get() == null) {
+		if (section == null) {
 			return;
 		}
 
-		byte[] blocks = Helper.byteArrayFromCompound(section.get(), "Blocks");
-		byte[] data = Helper.byteArrayFromCompound(section.get(), "Data");
-		if (blocks == null || data == null) {
+		byte[] blocks = Helper.byteArrayFromCompound(section, "Blocks");
+		byte[] blockData = Helper.byteArrayFromCompound(section, "Data");
+		if (blocks == null || blockData == null) {
 			return;
 		}
 
-		byte[] biomes = Helper.byteArrayFromCompound(Helper.tagFromCompound(root, "Level"), "Biomes");
+		byte[] biomes = Helper.byteArrayFromCompound(level, "Biomes");
+		int scaleBits = Bits.msbPosition(scale);
+		int cy = height & 0xF;
+		int index, block, data, biome;
+		int pixelIndex;
 
-		height = MathUtil.clamp(height, 0, 255);
-
-		int cy = height % 16;
-
-		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
-			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
-				int index = getBlockIndex(cx, cy, cz);
-				short block = (short) (blocks[index] & 0xFF);
-
+		for (int cx = 0; cx < 16; cx += scale) {
+			for (int cz = 0; cz < 16; cz += scale) {
+				index = cy * 256 + cz * 16 + cx;
+				block = blocks[index] & 0xFF;
 				if (isEmpty(block)) {
 					continue;
 				}
+				data = ((index & 0x1) == 0 ? blockData[index >> 1] : blockData[index >> 1] >> 4) & 0x0F;
 
-				byte blockData = (byte) (index % 2 == 0 ? data[index / 2] & 0x0F : (data[index / 2] >> 4) & 0x0F);
-
-				int biome = -1;
-				if (biomes != null && biomes.length != 0) {
-					biome = biomes[getBlockIndex(cx, 0, cz)] & 0xFF;
-				}
-				biome = Math.max(0, biome);
-
-				int regionIndex = (z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale);
-				pixelBuffer[regionIndex] = colorMapping.getRGB((block << 4) + blockData, biome);
+				pixelIndex = (z + (cz >> scaleBits)) * (512 >> scaleBits) + (x + (cx >> scaleBits));
+				biome = getBiome(cx, cz, biomes);
+				pixelBuffer[pixelIndex] = colorMapping.getRGB((block << 4) + data, biome);
 			}
 		}
 	}
 
-	@Override
 	public void drawCaves(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, short[] terrainHeights, int height) {
-		ListTag sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
-		if (sections == null) {
+		ListTag sections = Helper.tagFromLevelFromRoot(root, "Sections");
+		if (sections == null || sections.getElementType() != Tag.Type.COMPOUND) {
 			return;
 		}
 
-		byte[][] blocksArray = new byte[16][];
-		byte[][] dataArray = new byte[16][];
-		for (CompoundTag s : sections.iterateType(CompoundTag.class)) {
-			if (!s.containsKey("Blocks") || !s.containsKey("Data")) {
-				return;
-			}
-			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
-			byte[] b = Helper.byteArrayFromCompound(s, "Blocks");
-			byte[] d = Helper.byteArrayFromCompound(s, "Data");
-			if (y >= 0 && y < 16 && b != null && d != null) {
-				blocksArray[y] = b;
-				dataArray[y] = d;
-			}
-		}
+		CompoundTag level = Helper.tagFromCompound(root, "Level");
 
 		height = MathUtil.clamp(height, 0, 255);
+		int scaleBits = Bits.msbPosition(scale);
+		int yMax = 1 + (height >> 4);
 
-		byte[] biomes = Helper.byteArrayFromCompound(Helper.tagFromCompound(root, "Level"), "Biomes");
+		CompoundTag[] indexedSections = new CompoundTag[yMax];
+		sections.iterateType(CompoundTag.class).forEach(s -> {
+			int y = Helper.numberFromCompound(s, "Y", -1).intValue();
+			if (y >= 0 && y < yMax) {
+				indexedSections[y] = s;
+			}
+		});
+		boolean[] indexed = new boolean[yMax];
+		byte[][] indexedBlocks = new byte[yMax][];
+		byte[][] indexedData = new byte[yMax][];
+		byte[] biomes = Helper.byteArrayFromCompound(level, "Biomes");
+		int[] startHeight = new int[yMax];
+		int[] sectionHeight = new int[yMax];
+		byte[] blocks, blockData;
+		int index, block, data, biome;
+		int pixelIndex;
 
-		// loop over x / z
-		for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
+		for (int cx = 0; cx < 16; cx += scale) {
 			zLoop:
-			for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
-
+			for (int cz = 0; cz < 16; cz += scale) {
+				pixelIndex = (z + (cz >> scaleBits)) * (512 >> scaleBits) + (x + (cx >> scaleBits));
+				biome = getBiome(cx, cz, biomes);
 				int ignored = 0;
 				boolean doneSkipping = false;
-
-				// loop over sections
-				for (int i = blocksArray.length - (16 - (height >> 4)); i >= 0; i--) {
-					if (blocksArray[i] == null) {
+				for (int i = height >> 4; i >= 0; i--) {
+					// no section --> nothing to do
+					if (indexedSections[i] == null) {
 						continue;
 					}
 
-					byte[] blocks = blocksArray[i];
-					byte[] data = dataArray[i];
+					// if the section has not been indexed yet, index it now
+					if (!indexed[i]) {
+						CompoundTag section = indexedSections[i];
+						if (section.containsKey("Blocks") && section.containsKey("Data")) {
+							indexedBlocks[i] = Helper.byteArrayFromCompound(section, "Blocks");
+							indexedData[i] = Helper.byteArrayFromCompound(section, "Data");
+						}
 
-					int sectionHeight = i * Tile.CHUNK_SIZE;
+						// if we are in the section containing the highest y we need to render,
+						// we calculate the highest y in the section with absHeight % 16
+						// otherwise we start all the way at the top (15)
+						startHeight[i] = height >> 4 == i ? height & 0xF : 15;
+						// calculate height of section in blocks
+						sectionHeight[i] = i * 16;
 
-					int startHeight;
-					if (height >> 4 == i) {
-						startHeight = Tile.CHUNK_SIZE - (16 - height % 16);
-					} else {
-						startHeight = Tile.CHUNK_SIZE - 1;
+						indexed[i] = true;
 					}
 
-					// loop over y value in section from top to bottom
-					for (int cy = startHeight; cy >= 0; cy--) {
-						int index = getBlockIndex(cx, cy, cz);
-						short block = (short) (blocks[index] & 0xFF);
+					blocks = indexedBlocks[i];
+					if (blocks == null) {
+						continue;
+					}
+					blockData = indexedData[i];
 
-						byte blockData = (byte) (index % 2 == 0 ? data[index / 2] & 0x0F : (data[index / 2] >> 4) & 0x0F);
-
+					for (int cy = startHeight[i]; cy >= 0; cy--) {
+						index = cy * 256 + cz * 16 + cx;
+						block = blocks[index] & 0xFF;
+						data = ((index & 0x1) == 0 ? blockData[index >> 1] : blockData[index >> 1] >> 4) & 0x0F;
 						if (!isEmptyOrFoliage(block, colorMapping)) {
 							if (doneSkipping) {
-								int regionIndex = (z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale);
-								int biome = -1;
-								if (biomes != null && biomes.length != 0) {
-									biome = biomes[getBlockIndex(cx, 0, cz)] & 0xFF;
-								}
-								biome = Math.max(0, biome);
-								pixelBuffer[regionIndex] = colorMapping.getRGB((block << 4) + blockData, biome);
-								terrainHeights[regionIndex] = (short) (sectionHeight + cy);
+								pixelBuffer[pixelIndex] = colorMapping.getRGB((block << 4) + data, biome);
+								terrainHeights[pixelIndex] = (short) (sectionHeight[i] + cy);
 								continue zLoop;
 							}
 							ignored++;
@@ -250,7 +257,7 @@ public class ChunkRenderer_15w32a implements ChunkRenderer {
 		return minData;
 	}
 
-	private boolean isWater(short block) {
+	private boolean isWater(int block) {
 		return switch (block) {
 			case 8, 9 -> true;
 			default -> false;
@@ -268,7 +275,10 @@ public class ChunkRenderer_15w32a implements ChunkRenderer {
 		};
 	}
 
-	private int getBlockIndex(int x, int y, int z) {
-		return y * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + z * Tile.CHUNK_SIZE + x;
+	private int getBiome(int x, int z, byte[] biomes) {
+		if (biomes == null || biomes.length != 256) {
+			return -1;
+		}
+		return biomes[z * 16 + x] & 0xFF;
 	}
 }

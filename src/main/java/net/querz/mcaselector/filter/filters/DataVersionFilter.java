@@ -6,7 +6,6 @@ import net.querz.mcaselector.filter.IntFilter;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.Helper;
-import net.querz.nbt.CompoundTag;
 import net.querz.nbt.IntTag;
 
 public class DataVersionFilter extends IntFilter {
@@ -21,11 +20,7 @@ public class DataVersionFilter extends IntFilter {
 
 	@Override
 	protected Integer getNumber(ChunkData data) {
-		CompoundTag root = Helper.getRegion(data);
-		if (root == null) {
-			return null;
-		}
-		IntTag tag = root.getIntTag("DataVersion");
+		IntTag tag = Helper.getDataVersionTag(Helper.getRegion(data));
 		return tag == null ? null : tag.asInt();
 	}
 

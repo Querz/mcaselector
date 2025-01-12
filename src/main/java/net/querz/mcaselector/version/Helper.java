@@ -259,7 +259,37 @@ public final class Helper {
 		if (root == null) {
 			return 100;
 		}
+		if (!root.containsKey("DataVersion") && root.contains("Level", Tag.Type.COMPOUND)) {
+			Integer d = intFromCompound(root.getCompound("Level"), "DataVersion");
+			return d == null ? 100 : d;
+		}
 		return root.getIntOrDefault("DataVersion", 100);
+	}
+
+	public static IntTag getDataVersionTag(CompoundTag root) {
+		if (root == null) {
+			return null;
+		}
+		Tag d;
+		if (!root.containsKey("DataVersion") && root.contains("Level", Tag.Type.COMPOUND)) {
+			d = tagFromCompound(root.getCompound("Level"), "DataVersion");
+		} else {
+			d = root.get("DataVersion");
+		}
+		return d == null || d.getType() != Tag.Type.INT ? null : (IntTag) d;
+	}
+
+	public static void setDataVersion(CompoundTag root, int dataVersion) {
+		if (root == null) {
+			return;
+		}
+		// DataVersion was added on root level in 15w33a, before it was inside the Level tag
+		if (dataVersion < 111) {
+			if (root.contains("Level", Tag.Type.COMPOUND)) {
+				root.getCompound("Level").putInt("DataVersion", dataVersion);
+			}
+		}
+		root.putInt("DataVersion", dataVersion);
 	}
 
 	public static CompoundTag getRegion(ChunkData data) {

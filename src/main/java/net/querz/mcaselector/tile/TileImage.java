@@ -19,6 +19,7 @@ import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.version.ChunkRenderer;
 import net.querz.mcaselector.version.ColorMapping;
+import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.VersionHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -142,7 +143,7 @@ public final class TileImage {
 		if (chunkData.getData() == null) {
 			return;
 		}
-		int dataVersion = chunkData.getData().getIntOrDefault("DataVersion", 0);
+		int dataVersion = Helper.getDataVersion(chunkData.getData());
 		try {
 			if (ConfigProvider.WORLD.getRenderCaves()) {
 				VersionHandler.getImpl(dataVersion, ChunkRenderer.class).drawCaves(

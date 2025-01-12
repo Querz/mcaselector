@@ -204,6 +204,7 @@ public class ChunkRenderer_21w37a implements ChunkRenderer {
 		}
 	}
 
+	@Override
 	public void drawCaves(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, short[] terrainHeights, int height) {
 		ListTag sections = Helper.tagFromCompound(root, "sections");
 		if (sections == null || sections.getElementType() != Tag.Type.COMPOUND) {
@@ -362,7 +363,7 @@ public class ChunkRenderer_21w37a implements ChunkRenderer {
 		};
 	}
 
-	private static int getBiomeIndex(int x, int y, int z, LongBuffer biomes, int bits, int clean, int indexesPerLong) {
+	private int getBiomeIndex(int x, int y, int z, LongBuffer biomes, int bits, int clean, int indexesPerLong) {
 		if (bits == 0) {
 			return 0;
 		}
