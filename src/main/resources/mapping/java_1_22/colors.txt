@@ -355,12 +355,15 @@ cracked_polished_blackstone_bricks;2c252b
 cracked_stone_bricks;767576
 crafter;706263
 crafting_table;77492a
-creaking_heart:active=false,axis=x;493b36
-creaking_heart:active=false,axis=y;493b36
-creaking_heart:active=false,axis=z;493b36
-creaking_heart:active=true,axis=x;99542c
-creaking_heart:active=true,axis=y;99542c
-creaking_heart:active=true,axis=z;99542c
+creaking_heart:axis=x,creaking_heart_state=awake;99542c
+creaking_heart:axis=x,creaking_heart_state=dormant;65402c
+creaking_heart:axis=x,creaking_heart_state=uprooted;493b36
+creaking_heart:axis=y,creaking_heart_state=awake;99542c
+creaking_heart:axis=y,creaking_heart_state=dormant;65402c
+creaking_heart:axis=y,creaking_heart_state=uprooted;493b36
+creaking_heart:axis=z,creaking_heart_state=awake;99542c
+creaking_heart:axis=z,creaking_heart_state=dormant;65402c
+creaking_heart:axis=z,creaking_heart_state=uprooted;493b36
 creeper_head;513e32
 creeper_wall_head;513e32
 crimson_button;653046
@@ -670,6 +673,7 @@ large_fern:half=lower;838383;g
 large_fern:half=upper;7d7d7d;g
 lava;d45a12
 lava_cauldron;49484a
+leaf_litter;7f583c
 lectern;ad8953
 lever;6f5d43
 light:level=0;889185
@@ -1617,6 +1621,7 @@ white_terracotta;d1b2a1
 white_tulip;5da447
 white_wall_banner;a2824e
 white_wool;e9ecec
+wildflowers;edd575
 wither_rose;292c17
 wither_skeleton_skull;513e32
 wither_skeleton_wall_skull;513e32

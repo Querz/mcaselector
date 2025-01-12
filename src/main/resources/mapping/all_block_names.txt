@@ -187,6 +187,7 @@ chiseled_nether_bricks
 chiseled_polished_blackstone
 chiseled_quartz_block
 chiseled_red_sandstone
+chiseled_resin_bricks
 chiseled_sandstone
 chiseled_stone_bricks
 chiseled_tuff
@@ -194,6 +195,7 @@ chiseled_tuff_bricks
 chorus_flower
 chorus_plant
 clay
+closed_eyeblossom
 coal_block
 coal_ore
 coarse_dirt
@@ -480,6 +482,7 @@ large_amethyst_bud
 large_fern
 lava
 lava_cauldron
+leaf_litter
 lectern
 lever
 light
@@ -621,6 +624,7 @@ oak_wood
 observer
 obsidian
 ochre_froglight
+open_eyeblossom
 orange_banner
 orange_bed
 orange_candle
@@ -737,6 +741,7 @@ potted_blue_orchid
 potted_brown_mushroom
 potted_cactus
 potted_cherry_sapling
+potted_closed_eyeblossom
 potted_cornflower
 potted_crimson_fungus
 potted_crimson_roots
@@ -749,6 +754,7 @@ potted_jungle_sapling
 potted_lily_of_the_valley
 potted_mangrove_propagule
 potted_oak_sapling
+potted_open_eyeblossom
 potted_orange_tulip
 potted_oxeye_daisy
 potted_pale_oak_sapling
@@ -836,6 +842,12 @@ redstone_wire
 reinforced_deepslate
 repeater
 repeating_command_block
+resin_block
+resin_brick_slab
+resin_brick_stairs
+resin_brick_wall
+resin_bricks
+resin_clump
 respawn_anchor
 rooted_dirt
 rose_bush
@@ -1066,6 +1078,7 @@ white_terracotta
 white_tulip
 white_wall_banner
 white_wool
+wildflowers
 wither_rose
 wither_skeleton_skull
 wither_skeleton_wall_skull
