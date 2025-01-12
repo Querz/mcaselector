@@ -1,4 +1,4 @@
-package net.querz.mcaselector.version.java_1_22.java_1_21;
+package net.querz.mcaselector.version.java_1_22;
 
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.version.ColorMapping;
@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-@MCVersionImplementation(3940)
+@MCVersionImplementation(4298)
 public class ColorMapping_25w02a implements ColorMapping {
 
 	private static final Logger LOGGER = LogManager.getLogger(ColorMapping_25w02a.class);
