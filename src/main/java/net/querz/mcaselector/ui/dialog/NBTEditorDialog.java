@@ -34,6 +34,7 @@ import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.ui.component.NBTTreeView;
 import net.querz.mcaselector.ui.UIFactory;
+import net.querz.mcaselector.ui.component.PersistentDialogProperties;
 import net.querz.nbt.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,7 +45,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import static net.querz.nbt.Tag.Type.*;
 
-public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
+public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> implements PersistentDialogProperties {
 
 	private static final Logger LOGGER = LogManager.getLogger(NBTEditorDialog.class);
 
@@ -110,6 +111,9 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> {
 		getDialogPane().setContent(editors);
 
 		setResizable(true);
+
+		setOnCloseRequest(e -> initPersistentLocationOnClose(this));
+		initPersistentLocationOnOpen(this);
 
 		Platform.runLater(editors::requestFocus);
 	}

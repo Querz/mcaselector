@@ -36,6 +36,7 @@ import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.ui.UIFactory;
 import net.querz.mcaselector.ui.component.GroovyCodeArea;
+import net.querz.mcaselector.ui.component.PersistentDialogProperties;
 import net.querz.mcaselector.validation.BeforeAfterCallback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,7 +47,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
+public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements PersistentDialogProperties {
 
 	private static final Logger LOGGER = LogManager.getLogger(ChangeNBTDialog.class);
 
@@ -73,6 +74,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 	private final RadioButton force = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_FORCE);
 	private final CheckBox selectionOnly = UIFactory.checkbox(Translation.DIALOG_CHANGE_NBT_SELECTION_ONLY);
 	private static final GroovyCodeArea codeArea = new GroovyCodeArea(true);
+	private static int lastSelectedTab;
 
 	static {
 		codeArea.setText(initScript);
@@ -186,6 +188,14 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> {
 		VBox panelBox = new VBox();
 		panelBox.getChildren().addAll(tabs, new Separator(), selectionBox);
 		getDialogPane().setContent(panelBox);
+
+		setOnCloseRequest(e -> {
+			initPersistentLocationOnClose(this);
+			lastSelectedTab = tabs.getSelectionModel().getSelectedIndex();
+		});
+
+		initPersistentLocationOnOpen(this);
+		Platform.runLater(() -> tabs.getSelectionModel().select(lastSelectedTab));
 	}
 
 	private void readSingleChunkAsync(TileMap tileMap, FieldView fieldView) {

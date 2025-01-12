@@ -84,7 +84,6 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 					}
 				})
 				.subscribe(h -> {
-					System.out.println(h);
 					setStyleSpans(0, h);
 				});
 

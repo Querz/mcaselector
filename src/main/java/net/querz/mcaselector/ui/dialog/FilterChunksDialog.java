@@ -1,20 +1,16 @@
 package net.querz.mcaselector.ui.dialog;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.filter.*;
@@ -22,8 +18,10 @@ import net.querz.mcaselector.exception.ParseException;
 import net.querz.mcaselector.filter.filters.GroupFilter;
 import net.querz.mcaselector.filter.filters.InhabitedTimeFilter;
 import net.querz.mcaselector.filter.filters.ScriptFilter;
+import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.component.GroovyCodeArea;
+import net.querz.mcaselector.ui.component.PersistentDialogProperties;
 import net.querz.mcaselector.ui.component.filter.GroupFilterBox;
 import net.querz.mcaselector.ui.UIFactory;
 import net.querz.mcaselector.validation.BeforeAfterCallback;
@@ -31,7 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 
-public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
+public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> implements PersistentDialogProperties {
 
 	private static final Logger LOGGER = LogManager.getLogger(FilterChunksDialog.class);
 
@@ -72,6 +70,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 	private final CheckBox overwriteSelection = new CheckBox();
 	private final TextField selectionRadius = new TextField();
 	private static final GroovyCodeArea codeArea = new GroovyCodeArea(true);
+	private static int lastSelectedTab;
 
 	static {
 		codeArea.setText(initScript);
@@ -212,6 +211,14 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		VBox panelBox = new VBox();
 		panelBox.getChildren().addAll(tabs, new Separator(), selectionBox);
 		getDialogPane().setContent(panelBox);
+
+		setOnCloseRequest(e -> {
+			initPersistentLocationOnClose(this);
+			lastSelectedTab = tabs.getSelectionModel().getSelectedIndex();
+		});
+
+		initPersistentLocationOnOpen(this);
+		Platform.runLater(() -> tabs.getSelectionModel().select(lastSelectedTab));
 	}
 
 	private StackPane withStackPane(Node n) {
