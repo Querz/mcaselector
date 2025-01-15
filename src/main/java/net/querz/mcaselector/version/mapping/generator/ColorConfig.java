@@ -7,15 +7,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.annotations.SerializedName;
-import net.querz.mcaselector.version.mapping.minecraft.BlockStates;
-import net.querz.mcaselector.version.mapping.minecraft.Blocks;
-import net.querz.mcaselector.version.mapping.color.BlockColor;
-import net.querz.mcaselector.version.mapping.color.ColorMapping;
-import net.querz.mcaselector.version.mapping.color.SingleStateColors;
-import net.querz.mcaselector.version.mapping.color.StateColors;
-import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersion;
-import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersionFile;
-import net.querz.mcaselector.version.mapping.minecraft.VersionManifest;
+import net.querz.mcaselector.version.mapping.color.*;
+import net.querz.mcaselector.version.mapping.minecraft.*;
 import net.querz.mcaselector.version.mapping.util.BitSetAdapter;
 import net.querz.mcaselector.version.mapping.util.Download;
 
@@ -24,24 +17,24 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ColorConfig {
 
 	@SerializedName("states") public BlockStates states;
 	@SerializedName("colors") public ColorMapping colors;
+	@SerializedName("tints") public BiomeColors tints;
 
 	private static final Gson GSON = new GsonBuilder()
 			.registerTypeAdapter(BitSet.class, new BitSetAdapter())
 			.registerTypeHierarchyAdapter(BlockColor.class, new BlockColor.BlockColorAdapter())
 			.registerTypeAdapter(SingleStateColors.class, new SingleStateColors.SingleStateColorsAdapter())
 			.registerTypeAdapter(BlockStates.class, new BlockStates.BlockStatesTypeAdapter())
+			.registerTypeAdapter(BiomeColors.class, new BiomeColors.BiomeColorsTypeAdapter())
 			.registerTypeAdapterFactory(ColorMapping.ColorMappingTypeAdapterFactory.getColorMappingTypeAdapterFactory())
 			.registerTypeAdapterFactory(StateColors.StateColorsTypeAdapterFactory.getStateColorsTypeAdapterFactory())
 			.enableComplexMapKeySerialization()
@@ -55,6 +48,7 @@ public class ColorConfig {
 		ColorConfig tmp = GSON.fromJson(Files.newBufferedReader(path), ColorConfig.class);
 		states = tmp.states;
 		colors = tmp.colors;
+		tints = tmp.tints;
 	}
 
 	public void save(Path path) throws IOException {
@@ -102,9 +96,8 @@ public class ColorConfig {
 		Map<String, String> waterloggedFalse = new HashMap<>();
 		waterloggedFalse.put("waterlogged", "false");
 
-
 		ColorMapping mapping = new ColorMapping();
-
+		BiomeColors tints = new BiomeColors();
 		try (FileSystem fs = FileSystems.newFileSystem(clientJar)) {
 			Path assetBase = fs.getPath("assets/minecraft");
 			Path assetBlockstates = assetBase.resolve("blockstates");
@@ -171,9 +164,36 @@ public class ColorConfig {
 					mapping.addBlockColor(blockName, null, new BlockColor(color, getProperties(blockName)));
 				}
 			}
+
+			// extract biome tints
+			Path biomes = generated.resolve("data/minecraft/worldgen/biome");
+			Path assetGrass = assetBase.resolve("textures/colormap/grass.png");
+			Path assetFoliage = assetBase.resolve("textures/colormap/foliage.png");
+			BufferedImage grassTints = ImageIO.read(Files.newInputStream(assetGrass));
+			BufferedImage foliageTints = ImageIO.read(Files.newInputStream(assetFoliage));
+
+			try (DirectoryStream<Path> ds = Files.newDirectoryStream(biomes)) {
+				for (Path b : ds) {
+					if (!Files.isRegularFile(b)) {
+						continue;
+					}
+					Biome biome = new Biome(b);
+					int grassTint = Objects.requireNonNullElseGet(
+							biome.effects.grassTint(),
+							() -> getColorMapping(biome.temperature, biome.downfall, grassTints));
+					int foliageTint = Objects.requireNonNullElseGet(
+							biome.effects.foliageTint(),
+							() -> getColorMapping(biome.temperature, biome.downfall, foliageTints));
+					String fileName = b.getFileName().toString();
+					tints.addTints(
+							fileName.substring(0, fileName.length() - 5),
+							new BiomeColors.BiomeTints(grassTint, foliageTint, biome.effects.waterTint()));
+				}
+			}
 		}
 		mapping.compress();
 		this.colors = mapping;
+		this.tints = tints;
 	}
 
 	private String trimNS(String s) {
@@ -312,7 +332,7 @@ public class ColorConfig {
 		return t;
 	}
 
-	private static int averageColor(Path img) {
+	private int averageColor(Path img) {
 		try (InputStream inputStream = Files.newInputStream(img)) {
 			BufferedImage image = ImageIO.read(inputStream);
 			long r = 0, g = 0, b = 0;
@@ -336,5 +356,13 @@ public class ColorConfig {
 			// ignore
 		}
 		return 0xffffff;
+	}
+
+	private int getColorMapping(double temperature, double downfall, BufferedImage map) {
+		double adjTemperature = Math.max(0.0, Math.min(1.0, temperature));
+		double adjDownfall = Math.max(0.0, Math.min(1.0, downfall)) * adjTemperature;
+		int pixelX = (int) (255 - adjTemperature * 255);
+		int pixelY = (int) (255 - adjDownfall * 255);
+		return map.getRGB(pixelX, pixelY) & 0xFFFFFF;
 	}
 }

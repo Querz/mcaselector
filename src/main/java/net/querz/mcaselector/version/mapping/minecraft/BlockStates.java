@@ -5,7 +5,6 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.StringTag;
-
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.Collections;

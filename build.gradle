@@ -77,21 +77,26 @@ compileJava {
 	options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
 }
 
-task copyRuntimeLibs(type: Copy) {
+tasks.register('copyRuntimeLibs', Copy) {
 	from configurations.shadow
 	into layout.buildDirectory.dir('libs/lib')
-	exclude {it.file.name.startsWith('javafx')}
+	exclude { it.file.name.startsWith('javafx') }
 }
 
-task minifyCss {
+tasks.register('minifyCss') {
 	doLast {
 		var styleDir = java.nio.file.Path.of("${sourceSets.main.resources.srcDirs[0]}", "style")
 		Files.find(styleDir, Integer.MAX_VALUE, (filePath, fileAttr) -> fileAttr.isRegularFile())
-		.forEach(p -> {
-			minCss(p, java.nio.file.Path.of("${sourceSets.main.output.resourcesDir}", "style", styleDir.relativize(p).toString()))
-		})
+				.forEach(p -> {
+					minCss(p, java.nio.file.Path.of("${sourceSets.main.output.resourcesDir}", "style", styleDir.relativize(p).toString()))
+				})
 	}
 	dependsOn processResources
+}
+
+tasks.register('generator', JavaExec) {
+	mainClass = 'net.querz.mcaselector.version.mapping.generator.Main'
+	classpath = sourceSets.main.runtimeClasspath
 }
 
 jar {
