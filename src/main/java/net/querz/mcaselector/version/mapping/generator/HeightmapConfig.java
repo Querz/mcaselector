@@ -85,7 +85,7 @@ public class HeightmapConfig {
 					int oceanFloor = getHeightmapDataAt(chunk.getData(), x, z, OCEAN_FLOOR);
 					int motionBlocking = getHeightmapDataAt(chunk.getData(), x, z, MOTION_BLOCKING);
 					int motionBlockingNoLeaves = getHeightmapDataAt(chunk.getData(), x, z, MOTION_BLOCKING_NO_LEAVES);
-					String name = trimNS(block.getString("Name"));
+					String name = block.getString("Name");
 					if (worldSurface > 125) {
 						this.worldSurface.add(name);
 					}
@@ -107,10 +107,6 @@ public class HeightmapConfig {
 				this.leaves.add(id);
 			}
 		}
-	}
-
-	private String trimNS(String s) {
-		return s.substring(s.indexOf(':') + 1);
 	}
 
 	private int getHeightmapDataAt(CompoundTag root, int x, int z, String heightmapID) {

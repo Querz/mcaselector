@@ -15,6 +15,10 @@ public class Main {
 		String mcVersion = "1.21.4";
 
 		Path tmp = tmpDir.resolve(mcVersion);
+		Path configs = tmp.resolve("configs");
+		if (!Files.exists(configs)) {
+			Files.createDirectories(configs);
+		}
 		Path mf = tmpDir.resolve("version_manifest.json");
 		if (!Files.exists(mf)) {
 			Download.to("https://launchermeta.mojang.com/mc/game/version_manifest.json", mf);
@@ -22,11 +26,37 @@ public class Main {
 		VersionManifest manifest = VersionManifest.of(mf);
 		MinecraftVersion version = manifest.getVersionByID(mcVersion);
 
+		// ------------------------------------------------
+
 		HeightmapConfig heightmapConfig = new HeightmapConfig();
 		heightmapConfig.generate(version, tmp);
 
-		Path h = tmp.resolve("heightmap_config.json");
+		Path h = configs.resolve("heightmaps.json");
 		heightmapConfig.save(h);
+
+		// ------------------------------------------------
+
+		ColorConfig colorConfig = new ColorConfig();
+		colorConfig.generate(version, tmp);
+
+		Path c = configs.resolve("colors.json");
+		colorConfig.save(c);
+
+		// ------------------------------------------------
+
+		EntityConfig entityConfig = new EntityConfig();
+		entityConfig.generate(version, tmp);
+
+		Path e = configs.resolve("entities.json");
+		entityConfig.save(e);
+
+		// ------------------------------------------------
+
+		StructureConfig structureConfig = new StructureConfig();
+		structureConfig.generate(version, tmp);
+
+		Path s = configs.resolve("structures.json");
+		structureConfig.save(s);
 
 		System.exit(0);
 	}

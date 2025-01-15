@@ -43,11 +43,8 @@ public class ColorConfig {
 
 	public ColorConfig() {}
 
-	public ColorConfig(Path path) throws IOException {
-		ColorConfig tmp = GSON.fromJson(Files.newBufferedReader(path), ColorConfig.class);
-		states = tmp.states;
-		colors = tmp.colors;
-		tints = tmp.tints;
+	public static ColorConfig load(Path path) throws IOException {
+		return GSON.fromJson(Files.newBufferedReader(path), ColorConfig.class);
 	}
 
 	public void save(Path path) throws IOException {
@@ -104,7 +101,7 @@ public class ColorConfig {
 			Path assetTextures = assetBase.resolve("textures");
 
 			for (Map.Entry<String, Blocks.Block> states : blocks.states.entrySet()) {
-				String blockName = trimNS(states.getKey());
+				String blockName = states.getKey();
 
 				// air doesn't have a model
 				if (isAir(blockName)) {
@@ -112,7 +109,7 @@ public class ColorConfig {
 				}
 
 				// load blockstates/<blockName>.json
-				Path assetBlockState = assetBlockstates.resolve(blockName + ".json");
+				Path assetBlockState = assetBlockstates.resolve(trimNS(blockName) + ".json");
 				JsonObject jsonBlockstate = readJSONAsset(assetBlockState);
 
 				// check all variants
@@ -207,9 +204,9 @@ public class ColorConfig {
 
 	private static boolean isAir(String blockName) {
 		return switch (blockName) {
-			case "cave_air",
-				 "void_air",
-				 "air" -> true;
+			case "minecraft:cave_air",
+				 "minecraft:void_air",
+				 "minecraft:air" -> true;
 			default -> false;
 		};
 	}
@@ -224,64 +221,64 @@ public class ColorConfig {
 
 	private static int isTransparent(String blockName) {
 		return switch (blockName) {
-			case "cave_air",
-				 "void_air",
-				 "air",
-				 "barrier",
-				 "light",
-				 "structure_void" -> BlockColor.TRANSPARENT;
+			case "minecraft:cave_air",
+				 "minecraft:void_air",
+				 "minecraft:air",
+				 "minecraft:barrier",
+				 "minecraft:light",
+				 "minecraft:structure_void" -> BlockColor.TRANSPARENT;
 			default -> 0;
 		};
 	}
 
 	private static int hasGrassTint(String blockName) {
 		return switch (blockName) {
-			case "fern",
-				 "grass_block",
-				 "large_fern",
-				 "melon_stem",
-				 "attached_melon_stem",
-				 "pumpkin_stem",
-				 "attached_pumpkin_stem",
-				 "short_grass",
-				 "tall_grass" -> BlockColor.GRASS_TINT;
+			case "minecraft:fern",
+				 "minecraft:grass_block",
+				 "minecraft:large_fern",
+				 "minecraft:melon_stem",
+				 "minecraft:attached_melon_stem",
+				 "minecraft:pumpkin_stem",
+				 "minecraft:attached_pumpkin_stem",
+				 "minecraft:short_grass",
+				 "minecraft:tall_grass" -> BlockColor.GRASS_TINT;
 			default -> 0;
 		};
 	}
 
 	private static int hasFoliageTint(String blockName) {
 		return switch (blockName) {
-			case "acacia_leaves",
-				 "dark_oak_leaves",
-				 "jungle_leaves",
-				 "mangrove_leaves",
-				 "oak_leaves",
-				 "vine" -> BlockColor.FOLIAGE_TINT;
+			case "minecraft:acacia_leaves",
+				 "minecraft:dark_oak_leaves",
+				 "minecraft:jungle_leaves",
+				 "minecraft:mangrove_leaves",
+				 "minecraft:oak_leaves",
+				 "minecraft:vine" -> BlockColor.FOLIAGE_TINT;
 			default -> 0;
 		};
 	}
 
 	private static int isWater(String blockName) {
 		return switch(blockName) {
-			case "water",
-				 "bubble_column" -> BlockColor.WATER;
+			case "minecraft:water",
+				 "minecraft:bubble_column" -> BlockColor.WATER;
 			default -> 0;
 		};
 	}
 
 	private static int isFoliage(String blockName) {
 		return switch(blockName) {
-			case "acacia_leaves",
-				 "azalea_leaves",
-				 "birch_leaves",
-				 "cherry_leaves",
-				 "dark_oak_leaves",
-				 "flowering_azalea_leaves",
-				 "jungle_leaves",
-				 "mangrove_leaves",
-				 "oak_leaves",
-				 "pale_oak_leaves",
-				 "spruce_leaves" -> BlockColor.FOLIAGE;
+			case "minecraft:acacia_leaves",
+				 "minecraft:azalea_leaves",
+				 "minecraft:birch_leaves",
+				 "minecraft:cherry_leaves",
+				 "minecraft:dark_oak_leaves",
+				 "minecraft:flowering_azalea_leaves",
+				 "minecraft:jungle_leaves",
+				 "minecraft:mangrove_leaves",
+				 "minecraft:oak_leaves",
+				 "minecraft:pale_oak_leaves",
+				 "minecraft:spruce_leaves" -> BlockColor.FOLIAGE;
 			default -> 0;
 		};
 	}

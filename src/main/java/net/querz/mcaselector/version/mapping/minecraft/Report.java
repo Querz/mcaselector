@@ -1,4 +1,4 @@
-package net.querz.mcaselector.version.mapping.generator;
+package net.querz.mcaselector.version.mapping.minecraft;
 
 import net.querz.mcaselector.version.mapping.util.Command;
 import java.io.IOException;
