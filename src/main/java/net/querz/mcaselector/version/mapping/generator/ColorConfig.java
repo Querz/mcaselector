@@ -11,7 +11,6 @@ import net.querz.mcaselector.version.mapping.color.*;
 import net.querz.mcaselector.version.mapping.minecraft.*;
 import net.querz.mcaselector.version.mapping.util.BitSetAdapter;
 import net.querz.mcaselector.version.mapping.util.Download;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
