@@ -3,7 +3,7 @@ package net.querz.mcaselector.version.mapping.minecraft;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-
+import net.querz.mcaselector.version.mapping.color.BlockStates;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

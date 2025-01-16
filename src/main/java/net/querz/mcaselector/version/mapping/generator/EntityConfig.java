@@ -2,7 +2,10 @@ package net.querz.mcaselector.version.mapping.generator;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersion;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersionFile;
 import net.querz.mcaselector.version.mapping.minecraft.Registries;
@@ -20,10 +23,15 @@ public class EntityConfig {
 
 	private static final Gson GSON = new GsonBuilder()
 			.setPrettyPrinting()
+			.registerTypeAdapter(EntityConfig.class, new EntityConfigTypeAdapter())
 			.create();
 
 	public EntityConfig() {
 		this.entities = new HashSet<>();
+	}
+
+	public EntityConfig(Set<String> entities) {
+		this.entities = entities;
 	}
 
 	public static EntityConfig load(Path path) throws IOException {
@@ -40,13 +48,11 @@ public class EntityConfig {
 		Path serverJar = tmp.resolve("server.jar");
 		Path generated = tmp.resolve("generated");
 
-		MinecraftVersionFile versionFile;
 		// download version.json
-		if (Files.exists(versionJson)) {
-			versionFile = MinecraftVersionFile.of(versionJson);
-		} else {
-			versionFile = MinecraftVersionFile.download(version, versionJson);
+		if (!Files.exists(versionJson)) {
+			MinecraftVersionFile.download(version, versionJson);
 		}
+		MinecraftVersionFile versionFile = MinecraftVersionFile.load(versionJson);
 
 		// download server jar
 		if (!Files.exists(serverJar)) {
@@ -61,5 +67,28 @@ public class EntityConfig {
 		Path registriesJson = generated.resolve("reports/registries.json");
 		Registries registries = Registries.load(registriesJson);
 		entities.addAll(registries.entityType().entries().keySet());
+	}
+
+	public static class EntityConfigTypeAdapter extends TypeAdapter<EntityConfig> {
+
+		@Override
+		public void write(JsonWriter out, EntityConfig value) throws IOException {
+			out.beginArray();
+			for (String e : value.entities) {
+				out.value(e);
+			}
+			out.endArray();
+		}
+
+		@Override
+		public EntityConfig read(JsonReader in) throws IOException {
+			Set<String> entities = new HashSet<>();
+			in.beginArray();
+			while (in.hasNext()) {
+				entities.add(in.nextString());
+			}
+			in.endArray();
+			return new EntityConfig(entities);
+		}
 	}
 }

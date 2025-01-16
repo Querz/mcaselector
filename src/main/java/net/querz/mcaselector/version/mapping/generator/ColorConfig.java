@@ -58,13 +58,11 @@ public class ColorConfig {
 		Path serverJar = tmp.resolve("server.jar");
 		Path generated = tmp.resolve("generated");
 
-		MinecraftVersionFile versionFile;
 		// download version.json
-		if (Files.exists(versionJson)) {
-			versionFile = MinecraftVersionFile.of(versionJson);
-		} else {
-			versionFile = MinecraftVersionFile.download(version, versionJson);
+		if (!Files.exists(versionJson)) {
+			MinecraftVersionFile.download(version, versionJson);
 		}
+		MinecraftVersionFile versionFile = MinecraftVersionFile.load(versionJson);
 
 		// download server jar
 		if (!Files.exists(serverJar)) {

@@ -23,7 +23,7 @@ public class Main {
 		if (!Files.exists(mf)) {
 			Download.to("https://launchermeta.mojang.com/mc/game/version_manifest.json", mf);
 		}
-		VersionManifest manifest = VersionManifest.of(mf);
+		VersionManifest manifest = VersionManifest.load(mf);
 		MinecraftVersion version = manifest.getVersionByID(mcVersion);
 
 		// ------------------------------------------------

@@ -2,7 +2,10 @@ package net.querz.mcaselector.version.mapping.generator;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersion;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersionFile;
 import net.querz.mcaselector.version.mapping.minecraft.Report;
@@ -20,14 +23,19 @@ public class StructureConfig {
 
 	private static final Gson GSON = new GsonBuilder()
 			.setPrettyPrinting()
+			.registerTypeAdapter(StructureConfig.class, new StructureConfigTypeAdapter())
 			.create();
 
 	public StructureConfig() {
 		structures = new HashSet<>();
 	}
 
-	public static ColorConfig load(Path path) throws IOException {
-		return GSON.fromJson(Files.newBufferedReader(path), ColorConfig.class);
+	public StructureConfig(Set<String> structures) {
+		this.structures = structures;
+	}
+
+	public static StructureConfig load(Path path) throws IOException {
+		return GSON.fromJson(Files.newBufferedReader(path), StructureConfig.class);
 	}
 
 	public void save(Path path) throws IOException {
@@ -40,13 +48,11 @@ public class StructureConfig {
 		Path serverJar = tmp.resolve("server.jar");
 		Path generated = tmp.resolve("generated");
 
-		MinecraftVersionFile versionFile;
 		// download version.json
-		if (Files.exists(versionJson)) {
-			versionFile = MinecraftVersionFile.of(versionJson);
-		} else {
-			versionFile = MinecraftVersionFile.download(version, versionJson);
+		if (!Files.exists(versionJson)) {
+			MinecraftVersionFile.download(version, versionJson);
 		}
+		MinecraftVersionFile versionFile = MinecraftVersionFile.load(versionJson);
 
 		// download server jar
 		if (!Files.exists(serverJar)) {
@@ -68,6 +74,29 @@ public class StructureConfig {
 				String name = fileName.substring(0, fileName.length() - 5);
 				structures.add(name);
 			}
+		}
+	}
+
+	public static class StructureConfigTypeAdapter extends TypeAdapter<StructureConfig> {
+
+		@Override
+		public void write(JsonWriter out, StructureConfig value) throws IOException {
+			out.beginArray();
+			for (String s : value.structures) {
+				out.value(s);
+			}
+			out.endArray();
+		}
+
+		@Override
+		public StructureConfig read(JsonReader in) throws IOException {
+			Set<String> structures = new HashSet<>();
+			in.beginArray();
+			while (in.hasNext()) {
+				structures.add(in.nextString());
+			}
+			in.endArray();
+			return new StructureConfig(structures);
 		}
 	}
 }

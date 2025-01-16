@@ -1,4 +1,4 @@
-package net.querz.mcaselector.version.mapping.minecraft;
+package net.querz.mcaselector.version.mapping.color;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;

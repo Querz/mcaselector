@@ -11,7 +11,7 @@ import java.nio.file.Path;
 public record ServerVersion (
 		@SerializedName("id") String id,
 		@SerializedName("name") String name,
-		@SerializedName("world_version") int worldVersion,
+		@SerializedName("world_version") int worldVersion, // DataVersion
 		@SerializedName("series_id") String seriesId,
 		@SerializedName("protocol_version") int protocolVersion,
 		@SerializedName("build_time") String buildTime,

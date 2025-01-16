@@ -24,8 +24,8 @@ public final class VersionManifest {
 
 	private VersionManifest() {}
 
-	public static VersionManifest of(Path versionManifest) throws IOException {
-		VersionManifest vm = GSON.fromJson(Files.newBufferedReader(versionManifest), VersionManifest.class);
+	public static VersionManifest load(Path path) throws IOException {
+		VersionManifest vm = GSON.fromJson(Files.newBufferedReader(path), VersionManifest.class);
 		vm.versions.forEach(v -> vm.versionMap.put(v.id(), v));
 		return vm;
 	}

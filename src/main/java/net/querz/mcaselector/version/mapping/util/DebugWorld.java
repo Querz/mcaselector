@@ -27,13 +27,11 @@ public final class DebugWorld {
 		Path versionJson = path.resolve("version.json");
 		Path serverJar = path.resolve("server.jar");
 
-		MinecraftVersionFile versionFile;
 		// download version.json
-		if (Files.exists(versionJson)) {
-			versionFile = MinecraftVersionFile.of(versionJson);
-		} else {
-			versionFile = MinecraftVersionFile.download(mcVersion, versionJson);
+		if (!Files.exists(versionJson)) {
+			MinecraftVersionFile.download(mcVersion, versionJson);
 		}
+		MinecraftVersionFile versionFile = MinecraftVersionFile.load(versionJson);
 
 		// download server jar
 		if (!Files.exists(serverJar)) {
