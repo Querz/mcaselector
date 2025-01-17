@@ -3,9 +3,11 @@ package net.querz.mcaselector.version.mapping.color;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
 import java.io.IOException;
 import java.util.BitSet;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
 
 public class SingleStateColors extends BlockColor implements StateColors {
 
@@ -27,6 +29,11 @@ public class SingleStateColors extends BlockColor implements StateColors {
 	public void setColor(BitSet state, BlockColor color) {
 		this.color = color.color;
 		this.properties = color.properties;
+	}
+
+	@Override
+	public Iterator<Map.Entry<BitSet, BlockColor>> iterator() {
+		return Collections.singletonMap((BitSet) null, getColor(null)).entrySet().iterator();
 	}
 
 	public static class SingleStateColorsAdapter extends TypeAdapter<SingleStateColors> {

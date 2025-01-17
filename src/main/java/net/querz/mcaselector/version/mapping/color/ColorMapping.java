@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class ColorMapping {
 
@@ -62,6 +63,55 @@ public class ColorMapping {
 				StateColors compressedColors = blockStateColors.compress();
 				colors.put(entry.getKey(), compressedColors);
 			}
+		}
+	}
+
+	public TintCache createTintCache(BiomeColors tints) {
+		TintCache cache = new TintCache(new HashMap<>());
+		for (Map.Entry<String, StateColors> entry : colors.entrySet()) {
+			for (Map.Entry<BitSet, BlockColor> color : entry.getValue()) {
+				if ((color.getValue().properties & BlockColor.GRASS_TINT) > 0) {
+					applyTints(entry.getKey(), color.getKey(), color.getValue().color, tints, BiomeColors.BiomeTints::grassColor, cache);
+				} else if ((color.getValue().properties & BlockColor.FOLIAGE_TINT) > 0) {
+					applyTints(entry.getKey(), color.getKey(), color.getValue().color, tints, BiomeColors.BiomeTints::foliageColor, cache);
+				} else if ((color.getValue().properties & BlockColor.WATER) > 0) {
+					applyTints(entry.getKey(), color.getKey(), color.getValue().color, tints, BiomeColors.BiomeTints::waterColor, cache);
+				}
+			}
+		}
+		return cache;
+	}
+
+	private void applyTints(String blockName, BitSet blockState, int base, BiomeColors tints, Function<BiomeColors.BiomeTints, Integer> colorProvider, TintCache cache) {
+		Map<String, StateColors> colored = cache.data.computeIfAbsent(blockName, k -> new HashMap<>());
+		for (Map.Entry<String, BiomeColors.BiomeTints> biomeTints : tints.biomes.entrySet()) {
+			int c = applyTint(base, colorProvider.apply(biomeTints.getValue()));
+			if (blockState == null) {
+				colored.put(biomeTints.getKey(), new SingleStateColors(new BlockColor(c)));
+			} else {
+				colored.computeIfAbsent(biomeTints.getKey(), k -> new BlockStateColors()).setColor(blockState, new BlockColor(c));
+			}
+		}
+	}
+
+	private int applyTint(int color, int tint) {
+		int nr = (tint >> 16 & 0xFF) * (color >> 16 & 0xFF) >> 8;
+		int ng = (tint >> 8 & 0xFF) * (color >> 8 & 0xFF) >> 8;
+		int nb = (tint & 0xFF) * (color & 0xFF) >> 8;
+		return color & 0xFF000000 | nr << 16 | ng << 8 | nb;
+	}
+
+	public record TintCache(Map<String, Map<String, StateColors>> data) {
+
+		public BlockColor getColor(String block, String biome, BitSet state) {
+			Map<String, StateColors> a;
+			if ((a = data.get(block)) != null) {
+				StateColors b;
+				if ((b = a.get(biome)) != null) {
+					return b.getColor(state);
+				}
+			}
+			return null;
 		}
 	}
 

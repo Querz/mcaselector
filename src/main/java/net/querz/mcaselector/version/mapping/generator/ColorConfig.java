@@ -9,24 +9,31 @@ import com.google.gson.JsonParser;
 import com.google.gson.annotations.SerializedName;
 import net.querz.mcaselector.version.mapping.color.*;
 import net.querz.mcaselector.version.mapping.minecraft.*;
+import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
 import net.querz.mcaselector.version.mapping.util.BitSetAdapter;
 import net.querz.mcaselector.version.mapping.util.Download;
+import net.querz.nbt.CompoundTag;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.*;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class ColorConfig {
+
+	private static final Logger LOGGER = LogManager.getLogger(ColorConfig.class);
 
 	@SerializedName("states") public BlockStates states;
 	@SerializedName("colors") public ColorMapping colors;
 	@SerializedName("tints") public BiomeColors tints;
+	public transient ColorMapping.TintCache tintCache;
+
+	public static ColorProperties colorProperties;
 
 	private static final Gson GSON = new GsonBuilder()
 			.registerTypeAdapter(BitSet.class, new BitSetAdapter())
@@ -41,15 +48,36 @@ public class ColorConfig {
 			.setPrettyPrinting()
 			.create();
 
+	static {
+		try (BufferedReader bis = new BufferedReader(new InputStreamReader(
+				Objects.requireNonNull(StatusRegistry.class.getClassLoader().getResourceAsStream("mapping/color_properties.json"))))) {
+			colorProperties = GSON.fromJson(bis, ColorProperties.class);
+		} catch (IOException ex) {
+			LOGGER.error("error reading mapping/registry/status.json", ex);
+			colorProperties = null;
+		}
+	}
+
 	public ColorConfig() {}
 
 	public static ColorConfig load(Path path) throws IOException {
-		return GSON.fromJson(Files.newBufferedReader(path), ColorConfig.class);
+		ColorConfig cfg = GSON.fromJson(Files.newBufferedReader(path), ColorConfig.class);
+		cfg.tintCache = cfg.colors.createTintCache(cfg.tints);
+		return cfg;
 	}
 
 	public void save(Path path) throws IOException {
 		String json = GSON.toJson(this);
 		Files.writeString(path, json);
+	}
+
+	public BlockColor getColor(String name, String biome, CompoundTag tag) {
+		BitSet blockState = states.getState(tag);
+		BlockColor blockColor = colors.getBlockColor(name, blockState);
+		if ((blockColor.properties & BlockColor.TINTED) > 0) {
+			return tintCache.getColor(name, biome, blockState);
+		}
+		return blockColor;
 	}
 
 	public void generate(MinecraftVersion version, Path tmp) throws IOException, InterruptedException {
@@ -102,7 +130,7 @@ public class ColorConfig {
 				String blockName = states.getKey();
 
 				// air doesn't have a model
-				if (isAir(blockName)) {
+				if (colorProperties.isAir(blockName)) {
 					continue;
 				}
 
@@ -134,12 +162,12 @@ public class ColorConfig {
 						if (canBeWaterlogged && blockStateBits != null) {
 							BitSet blockStateBitsWT = blockStates.getState(waterloggedTrue);
 							blockStateBitsWT.or(blockStateBits);
-							mapping.addBlockColor(blockName, blockStateBitsWT, new BlockColor(color, getProperties(blockName)));
+							mapping.addBlockColor(blockName, blockStateBitsWT, new BlockColor(color, colorProperties.get(blockName)));
 							BitSet blockStateBitsWF = blockStates.getState(waterloggedFalse);
 							blockStateBitsWF.or(blockStateBits);
-							mapping.addBlockColor(blockName, blockStateBitsWF, new BlockColor(color, getProperties(blockName)));
+							mapping.addBlockColor(blockName, blockStateBitsWF, new BlockColor(color, colorProperties.get(blockName)));
 						} else {
-							mapping.addBlockColor(blockName, blockStateBits, new BlockColor(color, getProperties(blockName)));
+							mapping.addBlockColor(blockName, blockStateBits, new BlockColor(color, colorProperties.get(blockName)));
 						}
 					}
 				} else if ((multipart = jsonBlockstate.getAsJsonArray("multipart")) != null) {
@@ -155,7 +183,7 @@ public class ColorConfig {
 					String topTexture = trimNS(getTopTextureName(textureMapping));
 					Path assetTexture = assetTextures.resolve(topTexture + ".png");
 					int color = averageColor(assetTexture);
-					mapping.addBlockColor(blockName, null, new BlockColor(color, getProperties(blockName)));
+					mapping.addBlockColor(blockName, null, new BlockColor(color, colorProperties.get(blockName)));
 				}
 			}
 
@@ -198,87 +226,6 @@ public class ColorConfig {
 		try (BufferedReader reader = Files.newBufferedReader(path)) {
 			return JsonParser.parseReader(reader).getAsJsonObject();
 		}
-	}
-
-	private static boolean isAir(String blockName) {
-		return switch (blockName) {
-			case "minecraft:cave_air",
-				 "minecraft:void_air",
-				 "minecraft:air" -> true;
-			default -> false;
-		};
-	}
-
-	private static int getProperties(String blockName) {
-		return isTransparent(blockName)
-				| hasGrassTint(blockName)
-				| hasFoliageTint(blockName)
-				| isWater(blockName)
-				| isFoliage(blockName);
-	}
-
-	private static int isTransparent(String blockName) {
-		return switch (blockName) {
-			case "minecraft:cave_air",
-				 "minecraft:void_air",
-				 "minecraft:air",
-				 "minecraft:barrier",
-				 "minecraft:light",
-				 "minecraft:structure_void" -> BlockColor.TRANSPARENT;
-			default -> 0;
-		};
-	}
-
-	private static int hasGrassTint(String blockName) {
-		return switch (blockName) {
-			case "minecraft:fern",
-				 "minecraft:grass_block",
-				 "minecraft:large_fern",
-				 "minecraft:melon_stem",
-				 "minecraft:attached_melon_stem",
-				 "minecraft:pumpkin_stem",
-				 "minecraft:attached_pumpkin_stem",
-				 "minecraft:short_grass",
-				 "minecraft:tall_grass" -> BlockColor.GRASS_TINT;
-			default -> 0;
-		};
-	}
-
-	private static int hasFoliageTint(String blockName) {
-		return switch (blockName) {
-			case "minecraft:acacia_leaves",
-				 "minecraft:dark_oak_leaves",
-				 "minecraft:jungle_leaves",
-				 "minecraft:mangrove_leaves",
-				 "minecraft:oak_leaves",
-				 "minecraft:vine" -> BlockColor.FOLIAGE_TINT;
-			default -> 0;
-		};
-	}
-
-	private static int isWater(String blockName) {
-		return switch(blockName) {
-			case "minecraft:water",
-				 "minecraft:bubble_column" -> BlockColor.WATER;
-			default -> 0;
-		};
-	}
-
-	private static int isFoliage(String blockName) {
-		return switch(blockName) {
-			case "minecraft:acacia_leaves",
-				 "minecraft:azalea_leaves",
-				 "minecraft:birch_leaves",
-				 "minecraft:cherry_leaves",
-				 "minecraft:dark_oak_leaves",
-				 "minecraft:flowering_azalea_leaves",
-				 "minecraft:jungle_leaves",
-				 "minecraft:mangrove_leaves",
-				 "minecraft:oak_leaves",
-				 "minecraft:pale_oak_leaves",
-				 "minecraft:spruce_leaves" -> BlockColor.FOLIAGE;
-			default -> 0;
-		};
 	}
 
 	private Map<String, String> resolveTextureMapping(String model, Path assetBlockmodels) throws IOException {
@@ -358,5 +305,46 @@ public class ColorConfig {
 		int pixelX = (int) (255 - adjTemperature * 255);
 		int pixelY = (int) (255 - adjDownfall * 255);
 		return map.getRGB(pixelX, pixelY) & 0xFFFFFF;
+	}
+
+	public record ColorProperties(
+			@SerializedName("air") Set<String> air,
+			@SerializedName("transparent") Set<String> transparent,
+			@SerializedName("grass_tint") Set<String> grassTint,
+			@SerializedName("foliage_tint") Set<String> foliageTint,
+			@SerializedName("water") Set<String> water,
+			@SerializedName("foliage") Set<String> foliage) {
+
+		public boolean isAir(String blockName) {
+			return air.contains(blockName);
+		}
+
+		public int getTransparent(String blockName) {
+			return transparent.contains(blockName) ? BlockColor.TRANSPARENT : 0;
+		}
+
+		public int getGrassTint(String blockName) {
+			return grassTint.contains(blockName) ? BlockColor.GRASS_TINT : 0;
+		}
+
+		public int getFoliageTint(String blockName) {
+			return foliageTint.contains(blockName) ? BlockColor.FOLIAGE_TINT : 0;
+		}
+
+		public int getWater(String blockName) {
+			return water.contains(blockName) ? BlockColor.WATER : 0;
+		}
+
+		public int getFoliage(String blockName) {
+			return foliage.contains(blockName) ? BlockColor.FOLIAGE : 0;
+		}
+
+		public int get(String blockName) {
+			return getTransparent(blockName)
+					| getGrassTint(blockName)
+					| getFoliageTint(blockName)
+					| getWater(blockName)
+					| getFoliage(blockName);
+		}
 	}
 }

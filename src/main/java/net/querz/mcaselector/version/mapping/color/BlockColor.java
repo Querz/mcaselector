@@ -22,6 +22,8 @@ public class BlockColor {
 	public static final int WATER =        0b1000;
 	public static final int FOLIAGE =      0b10000;
 
+	public static final int TINTED = GRASS_TINT | FOLIAGE_TINT | WATER;
+
 	private BlockColor() {}
 
 	public BlockColor(int color) {

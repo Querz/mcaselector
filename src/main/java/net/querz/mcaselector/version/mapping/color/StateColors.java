@@ -7,11 +7,11 @@ import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
 import java.io.IOException;
 import java.util.BitSet;
+import java.util.Map;
 
-public interface StateColors {
+public interface StateColors extends Iterable<Map.Entry<BitSet, BlockColor>> {
 
 	BlockColor getColor(BitSet state);
 

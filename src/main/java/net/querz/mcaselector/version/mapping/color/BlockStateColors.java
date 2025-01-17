@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class BlockStateColors implements StateColors {
@@ -20,6 +21,10 @@ public class BlockStateColors implements StateColors {
 	public BlockStateColors(BitSet state, BlockColor color) {
 		this.blockStateColors = new HashMap<>();
 		this.blockStateColors.put(state, color);
+	}
+
+	public BlockStateColors() {
+		this.blockStateColors = new HashMap<>();
 	}
 
 	@Override
@@ -52,5 +57,10 @@ public class BlockStateColors implements StateColors {
 			}
 		}
 		return new SingleStateColors(c);
+	}
+
+	@Override
+	public Iterator<Map.Entry<BitSet, BlockColor>> iterator() {
+		return blockStateColors.entrySet().iterator();
 	}
 }
