@@ -31,6 +31,8 @@ YouTube explaining the basics:
 * [How To Clear Unwanted Chunks In Minecraft 1.16 | MCASelector Tutorial](https://www.youtube.com/watch?v=ADDTXGRJo20) by [Muriako](https://www.youtube.com/channel/UCpt-MjKkc5X4W7bUFV3Dwrw)
 * [Preparing Your World for the Nether Update! - The Minecraft Survival Guide](https://www.youtube.com/watch?v=1fiyVvoD9jQ) starting at [2:52](https://www.youtube.com/watch?v=1fiyVvoD9jQ&t=2m52s) by [Pixlriffs](https://www.youtube.com/channel/UCgGjBqZZtAjxfpGSba7d6ww)
 * [How To Reset The End Dimension! - The Minecraft Survival Guide](https://www.youtube.com/watch?v=p-2gFkJl_Lo) starting at [8:45](https://www.youtube.com/watch?v=p-2gFkJl_Lo&t=8m45s) by [Pixlriffs](https://www.youtube.com/channel/UCgGjBqZZtAjxfpGSba7d6ww)
+* [Brand New Version Brand New Excitement!!! 1.18 Map Upgrade Guide | Minecraft Survival School 1.18 B#74](https://youtu.be/HEXbNOzm-U0) starting at [4:09](https://youtu.be/HEXbNOzm-U0?t=249) by [Ali Bey](https://www.youtube.com/channel/UCT5SVxjzqY5Us36PJ-mfzkg)
+* [How to Reset Nether, Overworld and End Chunks!! Minecraft 1.14.1.15 1.16](https://youtu.be/IISUlesuTME) by [Luser](https://www.youtube.com/channel/UCfZ4x5EKbOeiZOHDWwtsPaA)
 
 ---
 ## Supported Versions

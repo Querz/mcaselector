@@ -1,25 +1,25 @@
 status.region;bölge
 status.chunk;chunk
-status.block;konum
-status.selected;seçildi
-status.queue;sıra
+status.block;blok
+status.selected;seçili
+status.queue;kuyruk
 status.total;toplam
 status.overlay;kaplama
 menu.file;Dosya
-menu.view;Görüntü
+menu.view;Görünüm
 menu.selection;Seçim
 menu.tools;Araçlar
-menu.about;Bilgi
+menu.about;Hakkında
 menu.file.open_world;Dünya Aç
-menu.file.open_dimension;Başka bir boyut aç
-menu.file.open_recent_world;Önceki bir dünyayı Aç
-menu.file.open_recent_world.clear;Sıfırla
+menu.file.open_dimension;Boyut Aç
+menu.file.open_recent_world;Son Dünyayı Aç
+menu.file.open_recent_world.clear;Temizle
 menu.file.settings;Ayarlar
-menu.file.render_settings;Render Ayarları
+menu.file.render_settings;İşleme Ayarları
 menu.file.quit;Çıkış
-menu.view.reload;Yeniden Yükle
+menu.view.reload;Yenile
 menu.view.chunk_grid;Chunk Izgarası
-menu.view.region_grid;Region Izgarası
+menu.view.region_grid;Bölge Izgarası
 menu.view.coordinates;Koordinatlar
 menu.view.goto;Git
 menu.view.reset_zoom;Yakınlaştırmayı Sıfırla
@@ -28,133 +28,133 @@ menu.view.clear_cache;Önbelleği Temizle
 menu.view.clear_all_cache;Tüm Önbelleği Temizle
 menu.selection.clear;Temizle
 menu.selection.invert;Ters Çevir
-menu.selection.invert_regions;Seçili bölgeleri ters çevir
-menu.selection.copy_chunks;Kopyala
-menu.selection.paste_chunks;Yapıştır
-menu.selection.export_chunks;Dışa Aktar
-menu.selection.delete_chunks;Seçilen Chunkları Sil
+menu.selection.invert_regions;Seçili Bölgeleri Ters Çevir
+menu.selection.copy_chunks;Chunk'ları Kopyala
+menu.selection.paste_chunks;Chunk'ları Yapıştır
+menu.selection.export_chunks;Seçili Chunk'ları Dışa Aktar
+menu.selection.delete_chunks;Seçili Chunk'ları Sil
 menu.selection.import_selection;Seçimi .csv'den İçe Aktar
-menu.selection.export_selection;Seçimi .csv olarak Dışa Aktar
-menu.selection.export_image;Resim olarak dışa aktar
-menu.selection.clear_cache;Önbelleği temizle
-menu.tools.import_chunks;Chunk'ı İçe Aktar
-menu.tools.filter_chunks;Chunk'ı Filtrele
-menu.tools.change_fields;Alanları değiştir
-menu.tools.edit_nbt;Chunk'ı Düzenle
-menu.tools.swap_chunks;Chunk'ı Değiştir
+menu.selection.export_selection;Seçimi .csv Olarak Dışa Aktar
+menu.selection.export_image;Görüntü Olarak Dışa Aktar
+menu.selection.clear_cache;Önbelleği Temizle
+menu.tools.import_chunks;Chunk'ları İçe Aktar
+menu.tools.filter_chunks;Chunk'ları Filtrele
+menu.tools.change_fields;Alanları Değiştir
+menu.tools.edit_nbt;Chunk Düzenle
+menu.tools.swap_chunks;Chunk'ları Değiştir
 menu.tools.edit_overlays;Kaplamaları Düzenle
 menu.tools.next_overlay;Sonraki Kaplama
 menu.tools.next_overlay_type;Sonraki Kaplama Türü
-menu.tools.sum_selection;Seçim toplamı
+menu.tools.sum_selection;Seçimi Topla
 dialog.select_world.title;Boyut Seç
 dialog.settings.title;Ayarlar
 dialog.settings.global.language;Dil
 dialog.settings.global.language.language;Dil
-dialog.settings.processing.process.process_threads;Process threads
-dialog.settings.processing.process;Process
-dialog.settings.processing.process.write_threads;Write threads
+dialog.settings.processing.process.process_threads;İşlem İş Parçacıkları
+dialog.settings.processing.process;İşlem
+dialog.settings.processing.process.write_threads;Yazma İş Parçacıkları
 dialog.settings.processing.files.max_files;Maksimum Dosya
 dialog.settings.global.selection.region_color;Bölge Rengi
 dialog.settings.global.selection.chunk_color;Chunk Rengi
-dialog.settings.global.selection.pasted_chunks_color;Yapıştırılan Chunk Rengi
+dialog.settings.global.selection.pasted_chunks_color;Yapıştırılan Chunk'ların Rengi
 dialog.settings.rendering.shade.shade;Gölge
 dialog.settings.rendering.shade;Gölge
 dialog.settings.rendering.shade.shade_water;Su Gölgesi
-dialog.settings.rendering.background.show_nonexistent_regions;Var olmayan bölgeleri göster
-dialog.settings.rendering.smooth.smooth_rendering;Pürüzsüz işleme
-dialog.settings.rendering.smooth.smooth_overlays;Pürüzsüz kaplama
-dialog.settings.rendering.background.background_pattern;Arka plan deseni
-dialog.settings.rendering.background;Arka plan
-dialog.settings.global.misc.mc_saves_dir;Varsayılan Dünya Konumu
-dialog.settings.global.misc.print_debug;Hata ayıklama mesajlarını göster
-dialog.settings.global.misc.show_log_file;Log dosyalarını göster
+dialog.settings.rendering.background.show_nonexistent_regions;Var Olmayan Bölgeleri Göster
+dialog.settings.rendering.smooth.smooth_rendering;Yumuşak İşleme
+dialog.settings.rendering.smooth.smooth_overlays;Yumuşak Kaplamalar
+dialog.settings.rendering.background.background_pattern;Arka Plan Deseni
+dialog.settings.rendering.background;Arka Plan
+dialog.settings.global.misc.mc_saves_dir;MC Kayıt Dizini
+dialog.settings.global.misc.print_debug;Hata Ayıklama Mesajlarını Yazdır
+dialog.settings.global.misc.show_log_file;Günlük Dosyasını Göster
 dialog.settings.reset;Sıfırla
-dialog.settings.tab_global;Küresel
-dialog.settings.tab_processing;İşlem
-dialog.settings.tab_rendering;Render
+dialog.settings.tab_global;Genel
+dialog.settings.tab_processing;İşleme
+dialog.settings.tab_rendering;İşleme
 dialog.settings.tab_world;Dünya
-dialog.settings.global.misc;Çeşitli
+dialog.settings.global.misc;Diğer
 dialog.settings.processing.files;Dosyalar
 dialog.settings.rendering.smooth;Yumuşak
 dialog.settings.global.selection;Seçim
 dialog.settings.world.paths;Yollar
-dialog.settings.world.paths.poi;İlgi Konusu
+dialog.settings.world.paths.poi;İlgi Noktaları
 dialog.settings.world.paths.entities;Varlıklar
-dialog.settings.rendering.layers.render_height;Render Yüksekliği
-dialog.settings.rendering.layers.render_layer_only;Yalnızca Katmanı Renderla
+dialog.settings.rendering.layers.render_height;İşleme Yüksekliği
+dialog.settings.rendering.layers.render_layer_only;Sadece Katmanı İşle
 dialog.settings.rendering.layers;Katmanlar
-dialog.settings.rendering.layers.render_caves;Mağaraları Renderla
+dialog.settings.rendering.layers.render_caves;Mağaraları İşle
 dialog.goto.title;Konuma Git
-dialog.confirmation.question;Emin Misin?
-dialog.delete_chunks_confirmation.title;Sil
-dialog.delete_chunks_confirmation.header_short;Bu dünyadan bilinmeyen sayıda chunk'ı silmek üzeresiniz.
+dialog.confirmation.question;Emin misiniz?
+dialog.delete_chunks_confirmation.title;Chunk'ları Sil
+dialog.delete_chunks_confirmation.header_short;Bu dünyadan bilinmeyen sayıda chunk silmek üzeresiniz.
 dialog.delete_chunks_confirmation.header_verbose;Bu dünyadan %d chunk silmek üzeresiniz.
-dialog.image_export_confirmation.title;Resmi Dışa Aktar
-dialog.image_export_confirmation.header_short;Bilinmeyen oranlarda bir görüntü oluşturmak üzeresiniz.
-dialog.image_export_confirmation.header_verbose;%dx%d boyutlarında bir resim oluşturmak üzeresiniz.
-dialog.import_chunks_confirmation.title;Chunkları içe aktar
-dialog.import_chunks_confirmation.header;Bu dünyaya bilinmeyen sayıda chunk'ı içe aktarmak üzeresiniz.
+dialog.image_export_confirmation.title;Görüntü Dışa Aktar
+dialog.image_export_confirmation.header_short;Bilinmeyen boyutlarda bir görüntü oluşturmak üzeresiniz.
+dialog.image_export_confirmation.header_verbose;%dx%d boyutlarında bir görüntü oluşturmak üzeresiniz.
+dialog.import_chunks_confirmation.title;Chunk'ları İçe Aktar
+dialog.import_chunks_confirmation.header;Bu dünyaya bilinmeyen sayıda chunk içe aktarmak üzeresiniz.
 dialog.import_chunks_confirmation.options;Seçenekler
-dialog.import_chunks_confirmation.options.offset;Ofset
-dialog.import_chunks_confirmation.options.overwrite;Mevcut chunkların üzerine yaz.
-dialog.import_chunks_confirmation.options.selection_only;Yalnızca seçime uygula.
-dialog.import_chunks_confirmation.options.y_offset;Y-ofset
+dialog.import_chunks_confirmation.options.offset;Kaydırma
+dialog.import_chunks_confirmation.options.overwrite;Mevcut Chunk'ların Üzerine Yaz
+dialog.import_chunks_confirmation.options.selection_only;Sadece Seçime Uygula
+dialog.import_chunks_confirmation.options.y_offset;Y-Kaydırma
 dialog.import_chunks_confirmation.options.sections;Bölümler
-dialog.import_chunks_confirmation.warning;Uyarı: Chunkları bir ofset ile içe aktarmak, komut bloklarının içeriğini güncellemeyecektir.
-dialog.export_chunks_confirmation.title;Chunkları Dışa Aktar
+dialog.import_chunks_confirmation.warning;Uyarı: Kaydırılmış chunk'ları içe aktarmak, komut bloklarının içeriğini güncellemeyecektir.
+dialog.export_chunks_confirmation.title;Chunk'ları Dışa Aktar
 dialog.export_chunks_confirmation.header_short;Bu dünyadan bilinmeyen sayıda chunk dışa aktarmak üzeresiniz.
 dialog.export_chunks_confirmation.header_verbose;Bu dünyadan %d chunk dışa aktarmak üzeresiniz.
 dialog.import_selection.title;Seçimi .csv'den İçe Aktar
-dialog.import_selection.header;Bu dünyada zaten bir seçim var.\nYeni seçim nasıl içe aktarılmalıdır?
-dialog.import_selection.overwrite;Üzerine yazmak
-dialog.import_selection.merge;Ekle
-dialog.filter_chunks.title;Chunkları Filtrele
-dialog.filter_chunks.filter.add.tooltip;Bunun altına yeni bir koşul ekleyin.
-dialog.filter_chunks.filter.delete.tooltip;Bu koşulu silin.
-dialog.filter_chunks.filter.type.tooltip;Bu durumun türü.
-dialog.filter_chunks.filter.operator.tooltip;Operatör birden çok koşulu birbirine bağlar.
+dialog.import_selection.header;Bu dünyada zaten bir seçim var.\nYeni seçimi nasıl içe aktarmak istersiniz?
+dialog.import_selection.overwrite;Üzerine Yaz
+dialog.import_selection.merge;Birleştir
+dialog.filter_chunks.title;Chunk'ları Filtrele
+dialog.filter_chunks.filter.add.tooltip;Bu koşulun altına yeni bir koşul ekle.
+dialog.filter_chunks.filter.delete.tooltip;Bu koşulu sil.
+dialog.filter_chunks.filter.type.tooltip;Bu koşulun türü.
+dialog.filter_chunks.filter.operator.tooltip;Birden çok koşulu bağlayan operatör.
 dialog.filter_chunks.filter.comparator.tooltip;Karşılaştırıcı.
 dialog.filter_chunks.select;Seç
-dialog.filter_chunks.select.tooltip;Etkilenen chunkların bir seçimini oluşturur.
+dialog.filter_chunks.select.tooltip;Etkilenen chunk'lar için bir seçim oluşturur.
 dialog.filter_chunks.export;Dışa Aktar
-dialog.filter_chunks.export.tooltip;Etkilenen tüm chunkları yeni bir dizine aktarır.
+dialog.filter_chunks.export.tooltip;Etkilenen tüm chunk'ları yeni bir dizine aktarır.
 dialog.filter_chunks.delete;Sil
-dialog.filter_chunks.delete.tooltip;Geçerli dünyadan etkilenen tüm chunkları siler.
-dialog.filter_chunks.selection_only;Yalnızca seçime uygula
-dialog.filter_chunks.overwrite_selection;Seçimin üzerine yaz
-dialog.filter_chunks.selection_radius;Seçim yarıçapı
+dialog.filter_chunks.delete.tooltip;Etkilenen tüm chunk'ları mevcut dünyadan siler.
+dialog.filter_chunks.selection_only;Sadece Seçime Uygula
+dialog.filter_chunks.overwrite_selection;Seçimin Üzerine Yaz
+dialog.filter_chunks.selection_radius;Seçim Yarıçapı
 dialog.filter_chunks.tab_query;Sorgu
-dialog.filter_chunks.tab_script;Senaryo
-dialog.edit_overlays.title;Düzenle
+dialog.filter_chunks.tab_script;Betik
+dialog.edit_overlays.title;Kaplamaları Düzenle
 dialog.edit_overlays.overlay_active.tooltip;Aktif
 dialog.edit_overlays.delete.tooltip;Sil
-dialog.change_nbt.title;NBT'yi değiştir
+dialog.change_nbt.title;NBT Değiştir
 dialog.change_nbt.change;Değiştir
-dialog.change_nbt.change.tooltip;Değeri yalnızca anahtarı varsa değiştirir.
-dialog.change_nbt.force;Kuvvet
-dialog.change_nbt.force.tooltip;Mevcut değilse etiketi oluşturur.
-dialog.change_nbt.selection_only;Yalnızca seçime uygula
-dialog.change_nbt.selection_only.tooltip;Bu filtre yalnızca geçerli seçim için geçerliyse.
-dialog.change_nbt_confirmation.title;NBT'yi değiştir
-dialog.change_nbt_confirmation.header_short;Bu dünyada bilinmeyen sayıda chunk verileri değiştirmek üzeresiniz.
+dialog.change_nbt.change.tooltip;Değeri sadece anahtarı varsa değiştirir.
+dialog.change_nbt.force;Zorla
+dialog.change_nbt.force.tooltip;Etiket yoksa oluşturur.
+dialog.change_nbt.selection_only;Sadece Seçime Uygula
+dialog.change_nbt.selection_only.tooltip;Bu filtre sadece mevcut seçime uygulanmalı mı.
+dialog.change_nbt_confirmation.title;NBT Değiştir
+dialog.change_nbt_confirmation.header_short;Bu dünyada bilinmeyen sayıda chunk'ta veri değiştireceksiniz.
 dialog.change_nbt.tab_query;Sorgu
-dialog.change_nbt.tab_script;Senaryo
-dialog.edit_nbt.title;Chunk'ı Düzenle
-dialog.edit_nbt.placeholder.loading;Yükleniyor...
+dialog.change_nbt.tab_script;Betik
+dialog.edit_nbt.title;Chunk Düzenle
+dialog.edit_nbt.placeholder.loading;yükleniyor...
 dialog.edit_nbt.placeholder.no_chunk_data;chunk verisi bulunamadı
 dialog.edit_nbt.placeholder.no_region_file;bölge dosyası mevcut değil
-dialog.edit_array.index;Dizin
+dialog.edit_array.index;İndeks
 dialog.edit_array.value;Değer
 dialog.about.title;Hakkında
 dialog.about.header;MCA Selector Hakkında
 dialog.about.version;Sürüm:
-dialog.about.version.unknown;Bilinmeyen
-dialog.about.version.check;Kontrol
-dialog.about.version.checking;Kontrol Ediliyor...
+dialog.about.version.unknown;bilinmiyor
+dialog.about.version.check;kontrol et
+dialog.about.version.checking;kontrol ediliyor...
 dialog.about.version.up_to_date;Güncel
 dialog.about.version.error;Hata
 dialog.about.license;Lisans:
-dialog.about.copyright;Telif hakkı:
+dialog.about.copyright;Telif Hakkı:
 dialog.about.source;Kaynak:
 dialog.progress.no_files;dosya yok
 dialog.progress.running;çalışıyor...
@@ -165,22 +165,22 @@ dialog.progress.scanning_files;Dosyalar taranıyor...
 dialog.progress.title.loading_world;Dünya yükleniyor...
 dialog.progress.title.deleting_selection;Seçim siliniyor...
 dialog.progress.title.creating_image;Görüntü oluşturuluyor...
-dialog.progress.title.saving_image;Resim kaydediliyor...
+dialog.progress.title.saving_image;Görüntü kaydediliyor...
 dialog.progress.title.exporting_selection;Seçim dışa aktarılıyor...
-dialog.progress.title.importing_chunks;Parçalar içe aktarılıyor...
-dialog.progress.title.deleting_filtered_chunks;Filtrelenmiş chunklar siliniyor...
-dialog.progress.title.exporting_filtered_chunks;Filtrelenmiş chunklar dışa aktarılıyor...
-dialog.progress.title.selecting_filtered_chunks;Filtrelenmiş chunklar seçiliyor...
+dialog.progress.title.importing_chunks;Chunk'lar içe aktarılıyor...
+dialog.progress.title.deleting_filtered_chunks;Filtrelenmiş chunk'lar siliniyor...
+dialog.progress.title.exporting_filtered_chunks;Filtrelenmiş chunk'lar dışa aktarılıyor...
+dialog.progress.title.selecting_filtered_chunks;Filtrelenmiş chunk'lar seçiliyor...
 dialog.progress.title.changing_nbt_data;NBT verileri değiştiriliyor...
 dialog.progress.title.saving_chunk;Chunk kaydediliyor...
-dialog.progress.title.running_before;"before()" işlemini yürütün...
-dialog.progress.title.running_after;"after()" işlemini yürütün...
-dialog.progress.title.summing;Miktarı sayın...
-dialog.error.button.copy_to_clipboard;Panoya kopyala
+dialog.progress.title.running_before;before() çalıştırılıyor
+dialog.progress.title.running_after;after() çalıştırılıyor
+dialog.progress.title.summing;Toplanıyor...
+dialog.error.button.copy_to_clipboard;Panoya Kopyala
 dialog.error.title;Hata
-dialog.error.header;Bir hata oluştu
+dialog.error.header;Bir Hata Oluştu
 dialog.error.copied_to_clipboard;Panoya kopyalandı!
-dialog.unsaved_selection.title;Kaydedilmemiş seçim
+dialog.unsaved_selection.title;Kaydedilmemiş Seçim
 dialog.unsaved_selection.header;Kaydedilmemiş bir seçim var.
 button.cancel;İptal
 button.ok;Tamam
