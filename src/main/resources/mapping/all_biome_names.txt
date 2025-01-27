@@ -61,6 +61,7 @@ ocean
 old_growth_birch_forest
 old_growth_pine_taiga
 old_growth_spruce_taiga
+pale_garden
 plains
 river
 savanna

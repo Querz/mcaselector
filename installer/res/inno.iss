@@ -20,6 +20,7 @@ WizardStyle=modern
 WizardSmallImageFile=small.bmp
 WizardImageFile=large.bmp
 ExtraDiskSpaceRequired=223010816
+VersionInfoVersion=${applicationVersion}.0
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

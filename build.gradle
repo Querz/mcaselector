@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.github.Querz:NBT:56ac2af621'
+	implementation 'com.github.Querz:NBT:f41d073'
 	implementation 'com.google.code.gson:gson:2.10.1'
 	implementation 'org.xerial:sqlite-jdbc:3.45.2.0'
 	implementation 'it.unimi.dsi:fastutil:8.5.8'
@@ -50,7 +50,7 @@ dependencies {
 	implementation 'org.fxmisc.richtext:richtextfx:0.11.2'
 	implementation 'org.lz4:lz4-java:1.8.0'
   
-	shadow 'com.github.Querz:NBT:56ac2af621'
+	shadow 'com.github.Querz:NBT:f41d073'
 	shadow 'com.google.code.gson:gson:2.10.1'
 	shadow 'org.xerial:sqlite-jdbc:3.45.2.0'
 	shadow 'it.unimi.dsi:fastutil:8.5.8'
@@ -101,7 +101,7 @@ jar {
 shadowJar {
 	minimize {
 		exclude(dependency('org.apache.logging.log4j:log4j-core:.*'))
-		exclude(dependency('org.codehaus.groovy:groovy-jsr223:.*'))
+		exclude(dependency('org.apache.groovy:groovy-jsr223:.*'))
 	}
 	dependencies {
 		exclude(dependency(':javafx.*:.*'))

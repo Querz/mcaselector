@@ -1,4 +1,4 @@
-package net.querz.mcaselector.version.anvil120;
+package net.querz.mcaselector.version.anvil121;
 
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.version.ChunkRelocator;
@@ -9,15 +9,10 @@ import java.util.Map;
 import static net.querz.mcaselector.validation.ValidationHelper.silent;
 import static net.querz.mcaselector.version.anvil118.Anvil118EntityRelocator.applyOffsetToEntity;
 
-public class Anvil120ChunkRelocator implements ChunkRelocator {
+public class Anvil121ChunkRelocator implements ChunkRelocator {
 
 	@Override
 	public boolean relocate(CompoundTag root, Point3i offset) {
-		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
-		if (dataVersion == null) {
-			return false;
-		}
-
 		// adjust or set chunk position
 		root.putInt("xPos", root.getInt("xPos") + offset.blockToChunk().getX());
 		root.putInt("zPos", root.getInt("zPos") + offset.blockToChunk().getZ());
@@ -25,7 +20,7 @@ public class Anvil120ChunkRelocator implements ChunkRelocator {
 		// adjust tile entity positions
 		ListTag tileEntities = Helper.tagFromCompound(root, "block_entities");
 		if (tileEntities != null) {
-			tileEntities.forEach(v -> applyOffsetToTileEntity((CompoundTag) v, offset, dataVersion));
+			tileEntities.forEach(v -> applyOffsetToTileEntity((CompoundTag) v, offset));
 		}
 
 		// adjust tile ticks
@@ -130,7 +125,7 @@ public class Anvil120ChunkRelocator implements ChunkRelocator {
 		Helper.applyIntOffsetIfRootPresent(tick, "x", "y", "z", offset);
 	}
 
-	static void applyOffsetToTileEntity(CompoundTag tileEntity, Point3i offset, int dataVersion) {
+	static void applyOffsetToTileEntity(CompoundTag tileEntity, Point3i offset) {
 		if (tileEntity == null) {
 			return;
 		}
@@ -159,11 +154,11 @@ public class Anvil120ChunkRelocator implements ChunkRelocator {
 				break;
 			case "minecraft:jukebox":
 				CompoundTag recordItem = Helper.tagFromCompound(tileEntity, "RecordItem");
-				applyOffsetToItem(recordItem, offset, dataVersion);
+				applyOffsetToItem(recordItem, offset);
 				break;
 			case "minecraft:lectern": // 1.14
 				CompoundTag book = Helper.tagFromCompound(tileEntity, "Book");
-				applyOffsetToItem(book, offset, dataVersion);
+				applyOffsetToItem(book, offset);
 				break;
 			case "minecraft:mob_spawner":
 				ListTag spawnPotentials = Helper.tagFromCompound(tileEntity, "SpawnPotentials");
@@ -177,63 +172,38 @@ public class Anvil120ChunkRelocator implements ChunkRelocator {
 
 		ListTag items = Helper.tagFromCompound(tileEntity, "Items");
 		if (items != null) {
-			items.forEach(i -> applyOffsetToItem((CompoundTag) i, offset, dataVersion));
+			items.forEach(i -> applyOffsetToItem((CompoundTag) i, offset));
 		}
 	}
 
-	static void applyOffsetToItem(CompoundTag item, Point3i offset, int dataVersion) {
+	static void applyOffsetToItem(CompoundTag item, Point3i offset) {
 		if (item == null) {
 			return;
 		}
 
-		// switch from 'tag' to 'components'
-		if (dataVersion >= 3819) {
-			CompoundTag components = Helper.tagFromCompound(item, "components");
-			if (components == null) {
-				return;
-			}
+		CompoundTag components = Helper.tagFromCompound(item, "components");
+		if (components == null) {
+			return;
+		}
 
-			String id = Helper.stringFromCompound(item, "id", "");
-			switch (id) {
-			case "minecraft:compass":
-				CompoundTag lodestoneTarget = Helper.tagFromCompound(components, "minecraft:lodestone_target");
-				if (lodestoneTarget != null) {
-					IntArrayTag pos = lodestoneTarget.getIntArrayTag("pos");
-					if (pos != null) {
-						Helper.applyOffsetToIntArrayPos(pos, offset);
-					}
+		String id = Helper.stringFromCompound(item, "id", "");
+		switch (id) {
+		case "minecraft:compass":
+			CompoundTag lodestoneTarget = Helper.tagFromCompound(components, "minecraft:lodestone_target");
+			IntArrayTag pos = lodestoneTarget.getIntArrayTag("pos");
+			if (pos != null) {
+				Helper.applyOffsetToIntArrayPos(pos, offset);
+			}
+			break;
+		}
+
+		// recursively update all items in child containers
+		ListTag container = Helper.tagFromCompound(components, "minecraft:container");
+		if (container != null && container.getElementType() == Tag.Type.COMPOUND) {
+			for (CompoundTag i : container.iterateType(CompoundTag.class)) {
+				if (i.contains("item", Tag.Type.COMPOUND)) {
+					applyOffsetToItem(i.getCompoundTag("item"), offset);
 				}
-				break;
-			}
-
-			// recursively update all items in child containers
-			ListTag container = Helper.tagFromCompound(components, "minecraft:container");
-			if (container != null && container.getElementType() == Tag.Type.COMPOUND) {
-				for (CompoundTag i : container.iterateType(CompoundTag.class)) {
-					if (i.contains("item", Tag.Type.COMPOUND)) {
-						applyOffsetToItem(i.getCompoundTag("item"), offset, dataVersion);
-					}
-				}
-			}
-		} else {
-			CompoundTag tag = Helper.tagFromCompound(item, "tag");
-			if (tag == null) {
-				return;
-			}
-
-			String id = Helper.stringFromCompound(item, "id", "");
-			switch (id) {
-			case "minecraft:compass":
-				CompoundTag lodestonePos = Helper.tagFromCompound(tag, "LodestonePos");
-				Helper.applyIntOffsetIfRootPresent(lodestonePos, "X", "Y", "Z", offset);
-				break;
-			}
-
-			// recursively update all items in child containers
-			CompoundTag blockEntityTag = Helper.tagFromCompound(tag, "BlockEntityTag");
-			ListTag items = Helper.tagFromCompound(blockEntityTag, "Items");
-			if (items != null) {
-				items.forEach(i -> applyOffsetToItem((CompoundTag) i, offset, dataVersion));
 			}
 		}
 	}
