@@ -11,16 +11,13 @@ import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.io.File;
-import java.io.IOException;
+
+import java.io.*;
 import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -445,10 +442,9 @@ public final class FileHelper {
 		return null;
 	}
 
-	public static <T> T loadFromResource(String resourceName, ThrowingFunction<Path, T, Throwable> loadFunc) {
-		URL url = FileHelper.class.getClassLoader().getResource(resourceName);
-		try {
-			return loadFunc.apply(Path.of(Objects.requireNonNull(url).toURI()));
+	public static <T> T loadFromResource(String resourceName, ThrowingFunction<BufferedReader, T, Throwable> loadFunc) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(FileHelper.class.getClassLoader().getResourceAsStream(resourceName))))) {
+			return loadFunc.apply(reader);
 		} catch (Throwable e) {
 			LOGGER.fatal("Failed to load resource {}", resourceName, e);
 			throw new RuntimeException(e);

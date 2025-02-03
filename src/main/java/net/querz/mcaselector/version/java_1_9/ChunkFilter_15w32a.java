@@ -20,7 +20,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -973,11 +972,9 @@ public class ChunkFilter_15w32a {
 				.setPrettyPrinting()
 				.create();
 
-		private static final Set<Short> nonWorldSurfaceBlocks = FileHelper.loadFromResource("mapping/java_1_9/heightmaps_legacy.json", p -> {
-			try (BufferedReader reader = Files.newBufferedReader(p)) {
-				return GSON.fromJson(reader, new TypeToken<>() {});
-			}
-		});
+		private static final Set<Short> nonWorldSurfaceBlocks = FileHelper.loadFromResource(
+				"mapping/java_1_9/heightmaps_legacy.json",
+				r -> GSON.fromJson(r, new TypeToken<>() {}));
 
 		@Override
 		public void worldSurface(ChunkData data) {

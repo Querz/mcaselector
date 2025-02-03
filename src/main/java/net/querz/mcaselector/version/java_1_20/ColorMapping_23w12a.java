@@ -11,7 +11,9 @@ import net.querz.nbt.CompoundTag;
 @MCVersionImplementation(3207)
 public class ColorMapping_23w12a implements ColorMapping<CompoundTag, String> {
 
-	private static final ColorConfig cfg = FileHelper.loadFromResource("mapping/java_1_20/colors_23w12a.json", ColorConfig::load);
+	private static final ColorConfig cfg = FileHelper.loadFromResource(
+			"mapping/java_1_20/colors_23w12a.json",
+			ColorConfig::load);
 
 	@Override
 	public int getRGB(CompoundTag o, String biome) {

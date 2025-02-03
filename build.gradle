@@ -11,7 +11,6 @@ plugins {
 group 'net.querz'
 compileJava.options.encoding = 'UTF-8'
 application.mainClass = 'net.querz.mcaselector.Main'
-//configurations.implementation.canBeResolved = true
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_21
@@ -38,7 +37,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.github.Querz:NBT:nbt8-test-SNAPSHOT'
+	implementation 'com.github.Querz:NBT:665355e67f'
 	implementation 'com.google.code.gson:gson:2.10.1'
 	implementation 'org.xerial:sqlite-jdbc:3.45.2.0'
 	implementation 'it.unimi.dsi:fastutil:8.5.8'
@@ -52,7 +51,7 @@ dependencies {
 	implementation 'org.lz4:lz4-java:1.8.0'
 	implementation 'org.atteo.classindex:classindex:3.13'
   
-	shadow 'com.github.Querz:NBT:nbt8-test-SNAPSHOT'
+	shadow 'com.github.Querz:NBT:665355e67f'
 	shadow 'com.google.code.gson:gson:2.10.1'
 	shadow 'org.xerial:sqlite-jdbc:3.45.2.0'
 	shadow 'it.unimi.dsi:fastutil:8.5.8'

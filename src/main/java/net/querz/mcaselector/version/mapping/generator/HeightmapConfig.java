@@ -15,6 +15,8 @@ import net.querz.nbt.ListTag;
 import net.querz.nbt.NBTUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -49,8 +51,12 @@ public class HeightmapConfig {
 
 	public static HeightmapConfig load(Path path) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(path)) {
-			return GSON.fromJson(reader, HeightmapConfig.class);
+			return load(reader);
 		}
+	}
+
+	public static HeightmapConfig load(Reader reader) throws IOException {
+		return GSON.fromJson(reader, HeightmapConfig.class);
 	}
 
 	public void save(Path path) throws IOException {

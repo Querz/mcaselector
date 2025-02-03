@@ -15,8 +15,6 @@ import net.querz.mcaselector.version.MCVersionImplementation;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.Tag;
-import java.io.BufferedReader;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -476,11 +474,9 @@ public class ChunkFilter_17w47a {
 				.setPrettyPrinting()
 				.create();
 
-		private static final Set<String> heightmapData = FileHelper.loadFromResource("mapping/java_1_13/heightmaps_legacy.json", p -> {
-			try (BufferedReader reader = Files.newBufferedReader(p)) {
-				return GSON.fromJson(reader, new TypeToken<>() {});
-			}
-		});
+		private static final Set<String> heightmapData = FileHelper.loadFromResource(
+				"mapping/java_1_13/heightmaps_legacy.json",
+				r -> GSON.fromJson(r, new TypeToken<>() {}));
 
 		@Override
 		public void worldSurface(ChunkData data) {

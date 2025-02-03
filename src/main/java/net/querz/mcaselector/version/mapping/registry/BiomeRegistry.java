@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.querz.mcaselector.io.FileHelper;
-import java.io.BufferedReader;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -18,20 +16,16 @@ public final class BiomeRegistry {
 			.setPrettyPrinting()
 			.create();
 
-	private static final Map<String, Integer> nameMapping = FileHelper.loadFromResource("mapping/registry/biome_name_to_id.json", p -> {
-		try (BufferedReader reader = Files.newBufferedReader(p)) {
-			return GSON.fromJson(reader, new TypeToken<Map<String, Integer>>(){}.getType());
-		}
-	});
+	private static final Map<String, Integer> nameMapping = FileHelper.loadFromResource(
+			"mapping/registry/biome_name_to_id.json",
+			r -> GSON.fromJson(r, new TypeToken<Map<String, Integer>>(){}.getType()));
 	private static final Map<Integer, String> idMapping = new HashMap<>();
 	static {
 		nameMapping.forEach((k, v) -> idMapping.put(v, k));
 	}
-	private static final Set<String> mapping = FileHelper.loadFromResource("mapping/registry/biome.json", p -> {
-		try (BufferedReader reader = Files.newBufferedReader(p)) {
-			return GSON.fromJson(reader, new TypeToken<Set<String>>(){}.getType());
-		}
-	});
+	private static final Set<String> mapping = FileHelper.loadFromResource(
+			"mapping/registry/biome.json",
+			r -> GSON.fromJson(r, new TypeToken<Set<String>>(){}.getType()));
 
 	public static boolean isValidName(String name) {
 		return mapping.contains(name);

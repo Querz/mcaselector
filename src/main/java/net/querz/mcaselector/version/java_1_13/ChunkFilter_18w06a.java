@@ -17,8 +17,6 @@ import net.querz.mcaselector.version.MCVersionImplementation;
 import net.querz.mcaselector.version.mapping.registry.BiomeRegistry;
 import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
 import net.querz.nbt.*;
-import java.io.BufferedReader;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Predicate;
 import static net.querz.mcaselector.validation.ValidationHelper.silent;
@@ -488,11 +486,9 @@ public class ChunkFilter_18w06a {
 		}
 
 		protected void loadCfg() {
-			heightmaps = FileHelper.loadFromResource("mapping/java_1_13/heightmaps_18w06a.json", p -> {
-				try (BufferedReader reader = Files.newBufferedReader(p)) {
-					return GSON.fromJson(reader, new TypeToken<>() {});
-				}
-			});
+			heightmaps = FileHelper.loadFromResource(
+					"mapping/java_1_13/heightmaps_18w06a.json",
+					r -> GSON.fromJson(r, new TypeToken<>() {}));
 		}
 
 		@Override

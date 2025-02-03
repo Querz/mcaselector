@@ -1,39 +1,34 @@
 package net.querz.mcaselector.version.mapping.registry;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import net.querz.mcaselector.io.FileHelper;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public final class StructureRegistry {
 
-	private static final Logger LOGGER = LogManager.getLogger(StructureRegistry.class);
-
 	private StructureRegistry() {}
 
+	private static final Gson GSON = new GsonBuilder()
+			.setPrettyPrinting()
+			.create();
+
 	private static final Set<String> valid = new HashSet<>();
-
 	private static final Map<String, Set<String>> alts = new HashMap<>();
-
 	static {
-		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Objects.requireNonNull(StructureRegistry.class.getClassLoader().getResourceAsStream("mapping/all_structures.txt"))))) {
-			String line;
-			while ((line = bis.readLine()) != null) {
-				valid.add(line);
-				if (!containsUpperCase(line)) {
-					valid.add("minecraft:" + line);
+		FileHelper.loadFromResource("mapping/registry/structures.json", r -> {
+			Set<String> set = GSON.fromJson(r, new TypeToken<>(){});
+			for (String s : set) {
+				valid.add(s);
+				if (!containsUpperCase(s)) {
+					valid.add("minecraft:" + s);
 				}
 			}
-
 			for (String name : valid) {
 				alts.computeIfAbsent(name, k -> new HashSet<>()).add(name);
 				if (containsUpperCase(name)) {
@@ -54,9 +49,8 @@ public final class StructureRegistry {
 					alts.get(name).add("minecraft:" + name);
 				}
 			}
-		} catch (IOException ex) {
-			LOGGER.error("error reading mapping/all_structures.txt", ex);
-		}
+			return null;
+		});
 	}
 
 	private static boolean containsUpperCase(String s) {

@@ -25,7 +25,9 @@ public class ColorConfig {
 	public transient ColorMapping.TintCache tintCache;
 	public transient ColorMapping.LegacyTintCache legacyTintCache;
 
-	public static final ColorProperties colorProperties = FileHelper.loadFromResource("mapping/color_properties.json", ColorProperties::load);
+	public static final ColorProperties colorProperties = FileHelper.loadFromResource(
+			"mapping/color_properties.json",
+			ColorProperties::load);
 
 	private static final Gson GSON = new GsonBuilder()
 			.registerTypeAdapter(BitSet.class, new BitSetAdapter())
@@ -44,19 +46,26 @@ public class ColorConfig {
 
 	public static ColorConfig load(Path path) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(path)) {
-			ColorConfig cfg = GSON.fromJson(reader, ColorConfig.class);
-			cfg.tintCache = cfg.colors.createTintCache(cfg.tints);
-//			System.out.println(GSON.toJson(cfg.tintCache));
-			return cfg;
+			return load(reader);
 		}
+	}
+
+	public static ColorConfig load(Reader reader) {
+		ColorConfig cfg = GSON.fromJson(reader, ColorConfig.class);
+		cfg.tintCache = cfg.colors.createTintCache(cfg.tints);
+		return cfg;
 	}
 
 	public static ColorConfig loadLegacy(Path path) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(path)) {
-			ColorConfig cfg = GSON.fromJson(reader, ColorConfig.class);
-			cfg.legacyTintCache = cfg.colors.createLegacyTintCache(cfg.tints);
-			return cfg;
+			return loadLegacy(reader);
 		}
+	}
+
+	public static ColorConfig loadLegacy(Reader reader) {
+		ColorConfig cfg = GSON.fromJson(reader, ColorConfig.class);
+		cfg.legacyTintCache = cfg.colors.createLegacyTintCache(cfg.tints);
+		return cfg;
 	}
 
 	public void save(Path path) throws IOException {
@@ -342,8 +351,12 @@ public class ColorConfig {
 
 		public static ColorProperties load(Path path) throws IOException {
 			try (BufferedReader reader = Files.newBufferedReader(path)) {
-				return GSON.fromJson(reader, ColorProperties.class);
+				return load(reader);
 			}
+		}
+
+		public static ColorProperties load(Reader reader) throws IOException {
+			return GSON.fromJson(reader, ColorProperties.class);
 		}
 
 		public boolean isAir(String blockName) {

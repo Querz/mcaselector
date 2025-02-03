@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.querz.mcaselector.io.FileHelper;
-import java.io.BufferedReader;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,12 +16,9 @@ public final class StatusRegistry {
 			.setPrettyPrinting()
 			.create();
 
-	private static final Map<String, String> valid = FileHelper.loadFromResource("mapping/registry/status.json", p -> {
+	private static final Map<String, String> valid = FileHelper.loadFromResource("mapping/registry/status.json", r -> {
 		Map<String, String> map = new HashMap<>();
-		List<String> status;
-		try (BufferedReader reader = Files.newBufferedReader(p)) {
-			status = GSON.fromJson(reader, new TypeToken<List<String>>(){}.getType());
-		}
+		List<String> status = GSON.fromJson(r, new TypeToken<List<String>>(){}.getType());
 		for (String s : status) {
 			map.put(s, "minecraft:" + s);
 			map.put("minecraft:" + s, s);
