@@ -17,73 +17,50 @@ import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
 import net.querz.nbt.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class ChunkFilter_15w32a {
 
 	private static final Logger LOGGER = LogManager.getLogger(ChunkFilter_15w32a.class);
 
-	private static final Map<String, BlockData[]> mapping = new HashMap<>();
-
-	static {
-		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Objects.requireNonNull(ChunkFilter_15w32a.class.getClassLoader().getResourceAsStream("mapping/block_name_to_id.txt"))))) {
-			String line;
-			while ((line = bis.readLine()) != null) {
-				line = line.trim();
-				if (line.startsWith("#")) {
-					continue;
-				}
-				String[] elements = line.split(";");
-				if (elements.length != 3 && !line.endsWith(";")) {
-					LOGGER.error("invalid line in block id mapping file: \"{}\"", line);
-					continue;
-				}
-
-				int id;
+	private static final Map<String, BlockData[]> mapping = FileHelper.loadFromResource("mapping/java_1_9/block_name_to_id.csv", r -> {
+		Map<String, BlockData[]> map = new HashMap<>();
+		try (Stream<String> lines = r.lines()) {
+			lines.forEach(line -> {
+				String[] split = line.split(";");
+				int id = Integer.parseInt(split[1]);
+				String[] bytes;
 				Set<Byte> data = new HashSet<>();
-				try {
-					id = Integer.parseInt(elements[1]);
-					String[] stringBytes;
-					if (elements.length == 2 || (stringBytes = elements[2].split(",")).length == 0) {
-						for (int i = 0; i < 16; i++) {
-							data.add((byte) i);
-						}
-					} else {
-						for (String stringByte : stringBytes) {
-							data.add(Byte.parseByte(stringByte));
-						}
+				if (split.length == 2 || (bytes = split[2].split(",")).length == 0) {
+					for (int i = 0; i < 16; i++) {
+						data.add((byte) i);
 					}
-				} catch (NumberFormatException ex) {
-					LOGGER.error("unable to parse block id or data in block id mapping file: \"{}\"", line, ex);
-					continue;
+				} else {
+					for (String b : bytes) {
+						data.add(Byte.parseByte(b));
+					}
 				}
 
-				String[] names = elements[0].split(",");
-				for (String name : names) {
+				for (String name : split[0].split(",")) {
 					String fullName = "minecraft:" + name;
 					BlockData blockData = new BlockData(id, data);
-					BlockData[] array = mapping.get(fullName);
-					if (array != null) {
-						BlockData[] newArray = new BlockData[array.length + 1];
-						System.arraycopy(array, 0, newArray, 0, array.length);
-						newArray[newArray.length - 1] = blockData;
-						array = newArray;
-					} else {
-						array = new BlockData[1];
-						array[0] = blockData;
-					}
-					mapping.put(fullName, array);
+					map.compute(fullName, (k, v) -> {
+						if (v == null) {
+							return new BlockData[] {blockData};
+						} else {
+							BlockData[] newArray = new BlockData[v.length + 1];
+							System.arraycopy(v, 0, newArray, 0, v.length);
+							newArray[newArray.length - 1] = blockData;
+							return newArray;
+						}
+					});
 				}
-			}
-		} catch (IOException ex) {
-			throw new RuntimeException("failed to open mapping/block_name_to_id.txt");
+			});
 		}
-	}
+		return map;
+	});
 
 	private static class BlockData {
 		int id;

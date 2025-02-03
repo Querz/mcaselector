@@ -3,9 +3,9 @@ package net.querz.mcaselector.overlay.overlays;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.overlay.OverlayType;
-import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionHandler;
+import net.querz.mcaselector.version.mapping.registry.BlockRegistry;
 
 public class BlockAmountOverlay extends Overlay {
 
@@ -62,7 +62,7 @@ public class BlockAmountOverlay extends Overlay {
 			return false;
 		}
 		setRawMultiValues(raw);
-		String[] blocks = TextHelper.parseBlockNames(raw);
+		String[] blocks = BlockRegistry.parseBlockNames(raw);
 		if (blocks == null) {
 			setMultiValues(new String[0]);
 			return false;

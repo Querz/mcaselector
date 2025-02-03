@@ -7,20 +7,15 @@ import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionHandler;
+import net.querz.mcaselector.version.mapping.registry.EntityRegistry;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.Tag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,20 +23,7 @@ public class EntityFilter extends TextFilter<List<String>> {
 
 	private static final Logger LOGGER = LogManager.getLogger(EntityFilter.class);
 
-	private static final Set<String> validNames = new HashSet<>();
 	private static final Pattern entityNamePattern = Pattern.compile("^(?<space>[a-z_]*):?(?<id>[a-z_]*)$");
-
-	static {
-		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Objects.requireNonNull(EntityFilter.class.getClassLoader().getResourceAsStream("mapping/all_entity_names.txt"))))) {
-			String line;
-			while ((line = bis.readLine()) != null) {
-				validNames.add("minecraft:" + line);
-			}
-		} catch (IOException ex) {
-			LOGGER.error("error reading mapping/all_entity_names.txt", ex);
-		}
-	}
 
 	public EntityFilter() {
 		this(Operator.AND, Comparator.CONTAINS, null);
@@ -109,12 +91,11 @@ public class EntityFilter extends TextFilter<List<String>> {
 						rawEntityNames[i] = name;
 					}
 				}
-
-				if (!validNames.contains(name)) {
-					if (name.startsWith("'") && name.endsWith("'") && name.length() >= 2 && !name.contains("\"")) {
-						rawEntityNames[i] = name.substring(1, name.length() - 1);
-						continue;
-					}
+				if (name.startsWith("'") && name.endsWith("'") && name.length() >= 2 && !name.contains("\"")) {
+					rawEntityNames[i] = name.substring(1, name.length() - 1);
+					continue;
+				}
+				if (!EntityRegistry.isValidName(name)) {
 					setValue(null);
 					setValid(false);
 					return;

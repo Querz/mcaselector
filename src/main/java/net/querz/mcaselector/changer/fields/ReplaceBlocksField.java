@@ -5,37 +5,14 @@ import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionHandler;
+import net.querz.mcaselector.version.mapping.registry.BlockRegistry;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.io.snbt.ParseException;
 import net.querz.nbt.io.snbt.SNBTParser;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockReplaceData>> {
-
-	private static final Logger LOGGER = LogManager.getLogger(ReplaceBlocksField.class);
-
-	private static final Set<String> validNames = new HashSet<>();
-
-	static {
-		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Objects.requireNonNull(ReplaceBlocksField.class.getClassLoader().getResourceAsStream("mapping/all_block_names.txt"))))) {
-			String line;
-			while ((line = bis.readLine()) != null) {
-				validNames.add("minecraft:" + line);
-			}
-		} catch (IOException ex) {
-			LOGGER.error("error reading mapping/all_block_names.txt", ex);
-		}
-	}
 
 	public ReplaceBlocksField() {
 		super(FieldType.REPLACE_BLOCKS);
@@ -69,7 +46,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 				from = from.substring(1, from.length() - 1);
 			} else if (!from.startsWith("minecraft:")) {
 				from = "minecraft:" + from;
-				if (!validNames.contains(from)) {
+				if (!BlockRegistry.isValidName(from)) {
 					return super.parseNewValue(s);
 				}
 			}
@@ -116,7 +93,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 				if (!toName.startsWith("minecraft:")) {
 					toName = "minecraft:" + toName;
 				}
-				if (!validNames.contains(toName)) {
+				if (!BlockRegistry.isValidName(toName)) {
 					return super.parseNewValue(s);
 				}
 				read += i;

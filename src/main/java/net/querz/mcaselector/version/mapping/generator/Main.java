@@ -1,5 +1,6 @@
 package net.querz.mcaselector.version.mapping.generator;
 
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.version.mapping.color.*;
 import net.querz.mcaselector.version.mapping.minecraft.Blocks;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersion;
@@ -68,6 +69,12 @@ public class Main {
 		EntityConfig entityConfig = new EntityConfig();
 		entityConfig.generate(version, tmp);
 
+		Path ev = configs.resolve("entities_" + mcVersion + ".json");
+		entityConfig.save(ev);
+
+		EntityConfig oldEntityConfig = FileHelper.loadFromResource("mapping/registry/entities.json", EntityConfig::load);
+		entityConfig.merge(oldEntityConfig);
+
 		Path e = configs.resolve("entities.json");
 		entityConfig.save(e);
 
@@ -76,9 +83,28 @@ public class Main {
 		StructureConfig structureConfig = new StructureConfig();
 		structureConfig.generate(version, tmp);
 
+		Path sv = configs.resolve("structures_" + mcVersion + ".json");
+		structureConfig.save(sv);
+
+		StructureConfig oldStructureConfig = FileHelper.loadFromResource("mapping/registry/structures.json", StructureConfig::load);
+		structureConfig.merge(oldStructureConfig);
+
 		Path s = configs.resolve("structures.json");
 		structureConfig.save(s);
 
+		// ------------------------------------------------
+
+		BlockConfig blockConfig = new BlockConfig();
+		blockConfig.generate(version, tmp);
+
+		Path bv = configs.resolve("blocks_" + mcVersion + ".json");
+		blockConfig.save(bv);
+
+		BlockConfig oldBlockConfig = FileHelper.loadFromResource("mapping/registry/blocks.json", BlockConfig::load);
+		blockConfig.merge(oldBlockConfig);
+
+		Path b = configs.resolve("blocks.json");
+		blockConfig.save(b);
 
 		System.exit(0);
 	}

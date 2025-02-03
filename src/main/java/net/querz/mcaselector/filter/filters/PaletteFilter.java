@@ -5,9 +5,9 @@ import net.querz.mcaselector.filter.FilterType;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionHandler;
+import net.querz.mcaselector.version.mapping.registry.BlockRegistry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -73,7 +73,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 
 	@Override
 	public void setFilterValue(String raw) {
-		String[] blockNames = TextHelper.parseBlockNames(raw);
+		String[] blockNames = BlockRegistry.parseBlockNames(raw);
 		if (blockNames == null) {
 			setValid(false);
 			setValue(null);

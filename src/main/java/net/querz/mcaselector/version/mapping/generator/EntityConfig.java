@@ -3,7 +3,6 @@ package net.querz.mcaselector.version.mapping.generator;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersion;
@@ -11,17 +10,18 @@ import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersionFile;
 import net.querz.mcaselector.version.mapping.minecraft.Registries;
 import net.querz.mcaselector.version.mapping.minecraft.Report;
 import net.querz.mcaselector.version.mapping.util.Download;
-
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class EntityConfig {
 
-	@SerializedName("entities") private Set<String> entities;
+	private final Set<String> entities;
 
 	private static final Gson GSON = new GsonBuilder()
 			.setPrettyPrinting()
@@ -38,13 +38,21 @@ public class EntityConfig {
 
 	public static EntityConfig load(Path path) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(path)) {
-			return GSON.fromJson(reader, EntityConfig.class);
+			return load(reader);
 		}
+	}
+
+	public static EntityConfig load(Reader reader) throws IOException {
+		return GSON.fromJson(reader, EntityConfig.class);
 	}
 
 	public void save(Path path) throws IOException {
 		String json = GSON.toJson(this);
 		Files.writeString(path, json);
+	}
+
+	public void merge(EntityConfig other) {
+		entities.addAll(other.entities);
 	}
 
 	public void generate(MinecraftVersion version, Path tmp) throws IOException, InterruptedException {
@@ -70,7 +78,7 @@ public class EntityConfig {
 
 		Path registriesJson = generated.resolve("reports/registries.json");
 		Registries registries = Registries.load(registriesJson);
-		entities.addAll(registries.entityType().entries().keySet());
+		registries.entityType().entries().keySet().forEach(k -> entities.add(k.substring(10)));
 	}
 
 	public static class EntityConfigTypeAdapter extends TypeAdapter<EntityConfig> {
@@ -78,7 +86,8 @@ public class EntityConfig {
 		@Override
 		public void write(JsonWriter out, EntityConfig value) throws IOException {
 			out.beginArray();
-			for (String e : value.entities) {
+			TreeSet<String> sorted = new TreeSet<>(value.entities);
+			for (String e : sorted) {
 				out.value(e);
 			}
 			out.endArray();

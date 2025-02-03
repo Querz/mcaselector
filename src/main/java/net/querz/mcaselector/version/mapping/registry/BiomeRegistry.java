@@ -24,7 +24,7 @@ public final class BiomeRegistry {
 		nameMapping.forEach((k, v) -> idMapping.put(v, k));
 	}
 	private static final Set<String> mapping = FileHelper.loadFromResource(
-			"mapping/registry/biome.json",
+			"mapping/registry/biomes.json",
 			r -> GSON.fromJson(r, new TypeToken<Set<String>>(){}.getType()));
 
 	public static boolean isValidName(String name) {

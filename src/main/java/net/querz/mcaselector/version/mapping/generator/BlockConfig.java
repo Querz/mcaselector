@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import net.querz.mcaselector.version.mapping.minecraft.Blocks;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersion;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersionFile;
 import net.querz.mcaselector.version.mapping.minecraft.Report;
@@ -12,37 +13,37 @@ import net.querz.mcaselector.version.mapping.util.Download;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
-public class StructureConfig {
+public class BlockConfig {
 
-	private final Set<String> structures;
+	private final Set<String> blocks;
 
 	private static final Gson GSON = new GsonBuilder()
 			.setPrettyPrinting()
-			.registerTypeAdapter(StructureConfig.class, new StructureConfigTypeAdapter())
+			.registerTypeAdapter(BlockConfig.class, new BlockConfigTypeAdapter())
 			.create();
 
-	public StructureConfig() {
-		structures = new HashSet<>();
+	public BlockConfig() {
+		blocks = new HashSet<>();
 	}
 
-	public StructureConfig(Set<String> structures) {
-		this.structures = structures;
+	public BlockConfig(Set<String> blocks) {
+		this.blocks = blocks;
 	}
 
-	public static StructureConfig load(Path path) throws IOException {
+	public static BlockConfig load(Path path) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(path)) {
 			return load(reader);
 		}
 	}
 
-	public static StructureConfig load(Reader reader) throws IOException {
-		return GSON.fromJson(reader, StructureConfig.class);
+	public static BlockConfig load(Reader reader) throws IOException {
+		return GSON.fromJson(reader, BlockConfig.class);
 	}
 
 	public void save(Path path) throws IOException {
@@ -50,8 +51,8 @@ public class StructureConfig {
 		Files.writeString(path, json);
 	}
 
-	public void merge(StructureConfig other) {
-		structures.addAll(other.structures);
+	public void merge(BlockConfig other) {
+		blocks.addAll(other.blocks);
 	}
 
 	public void generate(MinecraftVersion version, Path tmp) throws IOException, InterruptedException {
@@ -75,39 +76,34 @@ public class StructureConfig {
 			Report.generate(serverJar, generated);
 		}
 
-		Path structure = generated.resolve("data/minecraft/worldgen/structure");
-		try (DirectoryStream<Path> ds = Files.newDirectoryStream(structure)) {
-			for (Path s : ds) {
-				if (!Files.isRegularFile(s)) {
-					continue;
-				}
-				String fileName = s.getFileName().toString();
-				String name = fileName.substring(0, fileName.length() - 5);
-				structures.add(name);
-			}
-		}
+		// load blocks.json
+		Path blocksJson = generated.resolve("reports/blocks.json");
+		Blocks blocks = Blocks.load(blocksJson);
+
+		blocks.states.keySet().forEach(k -> this.blocks.add(k.substring(10)));
 	}
 
-	public static class StructureConfigTypeAdapter extends TypeAdapter<StructureConfig> {
+	public static class BlockConfigTypeAdapter extends TypeAdapter<BlockConfig> {
 
 		@Override
-		public void write(JsonWriter out, StructureConfig value) throws IOException {
+		public void write(JsonWriter out, BlockConfig value) throws IOException {
 			out.beginArray();
-			for (String s : value.structures) {
-				out.value(s);
+			TreeSet<String> sorted = new TreeSet<>(value.blocks);
+			for (String e : sorted) {
+				out.value(e);
 			}
 			out.endArray();
 		}
 
 		@Override
-		public StructureConfig read(JsonReader in) throws IOException {
-			Set<String> structures = new HashSet<>();
+		public BlockConfig read(JsonReader in) throws IOException {
+			Set<String> blocks = new HashSet<>();
 			in.beginArray();
 			while (in.hasNext()) {
-				structures.add(in.nextString());
+				blocks.add(in.nextString());
 			}
 			in.endArray();
-			return new StructureConfig(structures);
+			return new BlockConfig(blocks);
 		}
 	}
 }
