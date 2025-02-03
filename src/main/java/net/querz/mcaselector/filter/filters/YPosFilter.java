@@ -22,7 +22,7 @@ public class YPosFilter extends IntFilter {
 	@Override
 	protected Integer getNumber(ChunkData data) {
 		IntTag tag = VersionHandler.getImpl(data, ChunkFilter.Pos.class).getYPos(data);
-		return tag.asInt();
+		return tag == null ? null : tag.asInt();
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.io.StringPointer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,51 +32,23 @@ public final class BlockRegistry {
 	}
 
 	public static String[] parseBlockNames(String raw) {
-		StringPointer sp = new StringPointer(raw);
 		List<String> blocks = new ArrayList<>();
-		try {
-			while (sp.hasNext()) {
-				sp.skipWhitespace();
-				String rawName;
-				if (sp.currentChar() == '\'') {
-					rawName = "'" + sp.parseQuotedString('\'') + "'";
+		String[] split = raw.split(",");
+		for (String s : split) {
+			s = s.trim();
+			if (s.length() >= 2 && s.charAt(0) == '\'' && s.charAt(s.length() - 1) == '\'') {
+				blocks.add(s.substring(1, s.length() - 1));
+			} if (valid.containsKey(s)) {
+				if (s.startsWith("minecraft:")) {
+					blocks.add(s);
 				} else {
-					rawName = sp.parseSimpleString(BlockRegistry::isValidBlockChar);
-				}
-
-				String parsedName = parseBlockName(rawName);
-				if (parsedName == null) {
-					return null;
-				}
-				blocks.add(parsedName);
-				sp.skipWhitespace();
-				if (sp.hasNext()) {
-					sp.expectChar(',');
-					sp.skipWhitespace();
-					if (!sp.hasNext()) {
-						return null;
-					}
+					blocks.add(valid.get(s));
 				}
 			}
-		} catch (Exception ex) {
+		}
+		if (blocks.isEmpty()) {
 			return null;
 		}
 		return blocks.toArray(new String[0]);
-	}
-
-	private static boolean isValidBlockChar(char c) {
-		return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'
-				|| c >= '0' && c <= '9'
-				|| c == ':' || c == '_' || c == ' ';
-	}
-
-	public static String parseBlockName(String raw) {
-		raw = raw.replace(" ", "");
-		if (valid.containsKey(raw)) {
-			return raw;
-		} else if (raw.startsWith("'") && raw.endsWith("'")) {
-			return raw.substring(1, raw.length() - 1);
-		}
-		return null;
 	}
 }

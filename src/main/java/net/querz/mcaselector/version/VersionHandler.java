@@ -63,7 +63,7 @@ public final class VersionHandler {
 		if (data == null) {
 			throw new IllegalArgumentException("chunk data is null");
 		}
-		int dataVersion = 100;
+		int dataVersion = 0;
 		if (data.region() != null && data.region().getData() != null) {
 			dataVersion = Helper.getDataVersion(data.region().getData());
 		} else if (data.entities() != null && data.entities().getData() != null) {

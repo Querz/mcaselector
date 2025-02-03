@@ -211,6 +211,9 @@ public abstract class MCAFile<T extends Chunk> {
 
 	public void load(boolean raw) throws IOException {
 		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
+			if (fc.size() < 8196) {
+				return;
+			}
 			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
 			loadHeader(buf);
 

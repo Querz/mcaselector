@@ -154,7 +154,7 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 
 				if (clone.getOperator() == Operator.AND && i != 0) {
 					if (workingGroup.children.size() == 1) {
-						group.addFilter(workingGroup.children.get(0));
+						group.addFilter(workingGroup.children.getFirst());
 					} else {
 						group.addFilter(workingGroup);
 					}
@@ -167,7 +167,7 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 		}
 		if (!workingGroup.isEmpty()) {
 			if (workingGroup.children.size() == 1) {
-				group.addFilter(workingGroup.children.get(0));
+				group.addFilter(workingGroup.children.getFirst());
 			} else {
 				group.addFilter(workingGroup);
 			}

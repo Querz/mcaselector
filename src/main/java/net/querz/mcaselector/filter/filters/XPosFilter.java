@@ -20,7 +20,7 @@ public class XPosFilter extends IntFilter implements RegionMatcher {
 	@Override
 	protected Integer getNumber(ChunkData data) {
 		IntTag tag = VersionHandler.getImpl(data, ChunkFilter.Pos.class).getXPos(data);
-		return tag.asInt();
+		return tag == null ? null : tag.asInt();
 	}
 
 	@Override
