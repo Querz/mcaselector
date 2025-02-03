@@ -5,11 +5,15 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import net.querz.mcaselector.io.mca.RegionChunk;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
+import net.querz.mcaselector.math.Bits;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersion;
 import net.querz.mcaselector.version.mapping.util.DebugWorld;
+import net.querz.mcaselector.version.mapping.util.OmitEmptyCollectionAdapter;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
+import net.querz.nbt.NBTUtil;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,21 +22,25 @@ import java.util.Set;
 
 public class HeightmapConfig {
 
-	@SerializedName("world_surface") private Set<String> worldSurface;
-	@SerializedName("ocean_floor") private Set<String> oceanFloor;
-	@SerializedName("motion_blocking") private Set<String> motionBlocking;
-	@SerializedName("leaves") private Set<String> leaves;
+	@SerializedName("light_blocking") public Set<String> lightBlocking;
+	@SerializedName("world_surface") public Set<String> worldSurface;
+	@SerializedName("ocean_floor") public Set<String> oceanFloor;
+	@SerializedName("motion_blocking") public Set<String> motionBlocking;
+	@SerializedName("leaves") public Set<String> leaves;
 
-	private static final String WORLD_SURFACE = "WORLD_SURFACE";
-	private static final String OCEAN_FLOOR = "OCEAN_FLOOR";
-	private static final String MOTION_BLOCKING = "MOTION_BLOCKING";
-	private static final String MOTION_BLOCKING_NO_LEAVES = "MOTION_BLOCKING_NO_LEAVES";
+	public static final String LIGHT_BLOCKING = "LIGHT_BLOCKING";
+	public static final String WORLD_SURFACE = "WORLD_SURFACE";
+	public static final String OCEAN_FLOOR = "OCEAN_FLOOR";
+	public static final String MOTION_BLOCKING = "MOTION_BLOCKING";
+	public static final String MOTION_BLOCKING_NO_LEAVES = "MOTION_BLOCKING_NO_LEAVES";
 
 	private static final Gson GSON = new GsonBuilder()
 			.setPrettyPrinting()
+			.registerTypeHierarchyAdapter(Set.class, new OmitEmptyCollectionAdapter())
 			.create();
 
 	public HeightmapConfig() {
+		lightBlocking = new HashSet<>();
 		worldSurface = new HashSet<>();
 		oceanFloor = new HashSet<>();
 		motionBlocking = new HashSet<>();
@@ -40,7 +48,9 @@ public class HeightmapConfig {
 	}
 
 	public static HeightmapConfig load(Path path) throws IOException {
-		return GSON.fromJson(Files.newBufferedReader(path), HeightmapConfig.class);
+		try (BufferedReader reader = Files.newBufferedReader(path)) {
+			return GSON.fromJson(reader, HeightmapConfig.class);
+		}
 	}
 
 	public void save(Path path) throws IOException {
@@ -58,11 +68,20 @@ public class HeightmapConfig {
 		RegionMCAFile region = new RegionMCAFile(region_0_0.toFile());
 		region.load(false);
 		Set<String> mbnl = new HashSet<>();
+		loop:
 		for (int i = 0; i < 1024; i++) {
 			RegionChunk chunk = region.getChunk(i);
+			if (chunk == null) {
+				continue;
+			}
 
 			// get section 4
-			ListTag sections = Helper.tagFromCompound(chunk.getData(), "sections");
+			ListTag sections = null;
+			if (chunk.getData().containsKey("Level")) {
+				sections = Helper.tagFromLevelFromRoot(chunk.getData(), "Sections");
+			} else {
+				sections = Helper.tagFromCompound(chunk.getData(), "sections");
+			}
 			if (sections == null) {
 				continue;
 			}
@@ -78,25 +97,38 @@ public class HeightmapConfig {
 				continue;
 			}
 
+			int height = 125;
+
 			for (int x = 1; x < 16; x += 2) {
 				for (int z = 1; z < 16; z += 2) {
 					CompoundTag block = getBlockAt(section, x, 6, z);
-					int worldSurface = getHeightmapDataAt(chunk.getData(), x, z, WORLD_SURFACE);
-					int oceanFloor = getHeightmapDataAt(chunk.getData(), x, z, OCEAN_FLOOR);
-					int motionBlocking = getHeightmapDataAt(chunk.getData(), x, z, MOTION_BLOCKING);
-					int motionBlockingNoLeaves = getHeightmapDataAt(chunk.getData(), x, z, MOTION_BLOCKING_NO_LEAVES);
-					String name = block.getString("Name");
-					if (worldSurface > 125) {
-						this.worldSurface.add(name);
+					if (block == null) {
+						continue loop;
 					}
-					if (oceanFloor > 125) {
-						this.oceanFloor.add(name);
-					}
-					if (motionBlocking > 125) {
-						this.motionBlocking.add(name);
-					}
-					if (motionBlockingNoLeaves > 125) {
-						mbnl.add(name);
+					try {
+						int worldSurface = getHeightmapDataAt(chunk.getData(), x, z, WORLD_SURFACE);
+						int oceanFloor = getHeightmapDataAt(chunk.getData(), x, z, OCEAN_FLOOR);
+						int motionBlocking = getHeightmapDataAt(chunk.getData(), x, z, MOTION_BLOCKING);
+						int motionBlockingNoLeaves = getHeightmapDataAt(chunk.getData(), x, z, MOTION_BLOCKING_NO_LEAVES);
+						String name = block.getString("Name");
+//						if (!"minecraft:air".equals(name)) {
+//							System.out.printf("%s: %d, %d, %d, %d\n", name, worldSurface, oceanFloor, motionBlocking, motionBlockingNoLeaves);
+//						}
+						if (worldSurface > height) {
+							this.worldSurface.add(name);
+						}
+						if (oceanFloor > height) {
+							this.oceanFloor.add(name);
+						}
+						if (motionBlocking > height) {
+							this.motionBlocking.add(name);
+						}
+						if (motionBlockingNoLeaves > height) {
+							mbnl.add(name);
+						}
+					} catch (Exception e) {
+						System.out.println(NBTUtil.toSNBT(section));
+						throw e;
 					}
 				}
 			}
@@ -107,20 +139,60 @@ public class HeightmapConfig {
 				this.leaves.add(id);
 			}
 		}
+
+		assert !this.worldSurface.isEmpty();
+		assert !this.oceanFloor.isEmpty();
+		assert !this.motionBlocking.isEmpty();
+		assert !this.leaves.isEmpty();
 	}
 
 	private int getHeightmapDataAt(CompoundTag root, int x, int z, String heightmapID) {
 		int index = z * 16 + x;
-		CompoundTag heightmaps = root.getCompound("Heightmaps");
+		CompoundTag heightmaps = root.getCompoundTag("Heightmaps");
+		if (heightmaps == null) {
+			heightmaps = Helper.tagFromLevelFromRoot(root, "Heightmaps");
+		}
 		long[] data = heightmaps.getLongArray(heightmapID);
 		int dataIndex = Math.floorDiv(index, 7);
 		int startBit = (index % 7) * 9;
 		return (int) ((data[dataIndex] >> startBit) & 0x1FF);
 	}
 
+	private int getHeightmapDataAtLegacy(CompoundTag root, int x, int z, String heightmapID) {
+		CompoundTag heightmaps = Helper.tagFromLevelFromRoot(root, "Heightmaps");
+		long[] data = heightmaps.getLongArray(heightmapID);
+		int bits = data == null ? 0 : 9;
+		if (bits == 0) {
+			return 0;
+		}
+		int index = z * 16 + x;
+		double blockStatesIndex = index / (256D / data.length);
+		int longIndex = (int) blockStatesIndex;
+		int startBit = (int) ((blockStatesIndex - Math.floor(blockStatesIndex)) * 64D);
+		if (startBit + bits > 64) {
+			long prev = Bits.bitRange(data[longIndex], startBit, 64);
+			long next = Bits.bitRange(data[longIndex + 1], 0, startBit + bits - 64);
+			return (int) ((next << 64 - startBit) + prev);
+		} else {
+			return (int) Bits.bitRange(data[longIndex], startBit, startBit + bits);
+		}
+	}
+
 	private CompoundTag getBlockAt(CompoundTag section, int x, int y, int z) {
 		ListTag palette = Helper.tagFromCompound(Helper.tagFromCompound(section, "block_states"), "palette");
+		if (palette == null) {
+			palette = Helper.tagFromCompound(section, "Palette");
+		}
+		if (palette == null) {
+			return null;
+		}
 		long[] data = Helper.longArrayFromCompound(Helper.tagFromCompound(section, "block_states"), "data");
+		if (data == null) {
+			data = Helper.longArrayFromCompound(section, "BlockStates");
+		}
+		if (data == null) {
+			return null;
+		}
 		int paletteIndex = getPaletteIndex(x & 0xF, y & 0xF, z & 0xF, data);
 		return palette.getCompound(paletteIndex);
 	}
@@ -136,5 +208,23 @@ public class HeightmapConfig {
 		int blockStatesIndex = index / indexesPerLong;
 		int startBit = (index % indexesPerLong) * bits;
 		return (int) (data[blockStatesIndex] >> startBit) & clean;
+	}
+
+	private int getPaletteIndexLegacy(int x, int y, int z, long[] data) {
+		int bits = data == null ? 0 : data.length >> 6;
+		if (bits == 0) {
+			return 0;
+		}
+		int index = y * 256 + z * 16 + x;
+		double blockStatesIndex = index / (4096D / data.length);
+		int longIndex = (int) blockStatesIndex;
+		int startBit = (int) ((blockStatesIndex - Math.floor(blockStatesIndex)) * 64D);
+		if (startBit + bits > 64) {
+			long prev = Bits.bitRange(data[longIndex], startBit, 64);
+			long next = Bits.bitRange(data[longIndex + 1], 0, startBit + bits - 64);
+			return (int) ((next << 64 - startBit) + prev);
+		} else {
+			return (int) Bits.bitRange(data[longIndex], startBit, startBit + bits);
+		}
 	}
 }

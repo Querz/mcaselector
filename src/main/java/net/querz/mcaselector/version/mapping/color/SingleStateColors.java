@@ -21,6 +21,11 @@ public class SingleStateColors extends BlockColor implements StateColors {
 	}
 
 	@Override
+	public BlockColor getDefaultColor() {
+		return this;
+	}
+
+	@Override
 	public boolean hasColor(BitSet state) {
 		return true;
 	}

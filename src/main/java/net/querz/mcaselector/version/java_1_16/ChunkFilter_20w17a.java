@@ -1,11 +1,13 @@
 package net.querz.mcaselector.version.java_1_16;
 
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.math.Bits;
 import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.MCVersionImplementation;
 import net.querz.mcaselector.version.java_1_13.ChunkFilter_17w47a;
 import net.querz.mcaselector.version.java_1_13.ChunkFilter_1_13_PRE3;
+import net.querz.mcaselector.version.mapping.generator.HeightmapConfig;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import java.util.Map;
@@ -62,7 +64,7 @@ public class ChunkFilter_20w17a {
 	}
 
 	@MCVersionImplementation(2529)
-	public static class Heightmap extends ChunkFilter_1_13_PRE3.Heightmap {
+	public static class Heightmap extends ChunkFilter_20w06a.Heightmap {
 
 		@Override
 		protected long[] getHeightMap(CompoundTag root, Predicate<CompoundTag> matcher) {

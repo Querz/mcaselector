@@ -21,7 +21,9 @@
     "minecraft:pumpkin_stem",
     "minecraft:attached_pumpkin_stem",
     "minecraft:short_grass",
-    "minecraft:tall_grass"
+    "minecraft:grass",
+    "minecraft:tall_grass",
+    "minecraft:bush"
   ],
   "foliage_tint": [
     "minecraft:acacia_leaves",
@@ -47,5 +49,13 @@
     "minecraft:oak_leaves",
     "minecraft:pale_oak_leaves",
     "minecraft:spruce_leaves"
-  ]
+  ],
+  "static_tint": {
+    "minecraft:birch_leaves": "80a755",
+    "minecraft:spruce_leaves": "619961",
+    "minecraft:lily_pad": "208030"
+  },
+  "static_color": {
+    "minecraft:redstone_wire": "af1805"
+  }
 }

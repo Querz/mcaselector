@@ -6,7 +6,6 @@ import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -56,6 +55,10 @@ public class ColorMapping {
 		}
 	}
 
+	public void setBlockColor(String name, StateColors color) {
+		colors.put(name, color);
+	}
+
 	public void compress() {
 		for (Map.Entry<String, StateColors> entry : colors.entrySet()) {
 			StateColors stateColors = entry.getValue();
@@ -94,7 +97,30 @@ public class ColorMapping {
 		}
 	}
 
-	private int applyTint(int color, int tint) {
+	public LegacyTintCache createLegacyTintCache(BiomeColors tints) {
+		LegacyTintCache cache = new LegacyTintCache(new HashMap<>());
+		for (Map.Entry<String, StateColors> entry : colors.entrySet()) {
+			BlockColor color = entry.getValue().getDefaultColor();
+			if ((color.properties & BlockColor.GRASS_TINT) > 0) {
+				applyTintsLegacy(entry.getKey(), color.color, tints, BiomeColors.BiomeTints::grassColor, cache);
+			} else if ((color.properties & BlockColor.FOLIAGE_TINT) > 0) {
+				applyTintsLegacy(entry.getKey(),color.color, tints, BiomeColors.BiomeTints::foliageColor, cache);
+			} else if ((color.properties & BlockColor.WATER) > 0) {
+				applyTintsLegacy(entry.getKey(), color.color, tints, BiomeColors.BiomeTints::waterColor, cache);
+			}
+		}
+		return cache;
+	}
+
+	private void applyTintsLegacy(String blockName, int base, BiomeColors tints, Function<BiomeColors.BiomeTints, Integer> colorProvider, LegacyTintCache cache) {
+		int[] colored = cache.data.computeIfAbsent(blockName, k -> new int[256]);
+		for (Map.Entry<String, BiomeColors.BiomeTints> biomeTints : tints.biomes.entrySet()) {
+			int c = applyTint(base, colorProvider.apply(biomeTints.getValue()));
+			colored[Integer.parseInt(biomeTints.getKey())] = c;
+		}
+	}
+
+	public static int applyTint(int color, int tint) {
 		int nr = (tint >> 16 & 0xFF) * (color >> 16 & 0xFF) >> 8;
 		int ng = (tint >> 8 & 0xFF) * (color >> 8 & 0xFF) >> 8;
 		int nb = (tint & 0xFF) * (color & 0xFF) >> 8;
@@ -111,7 +137,18 @@ public class ColorMapping {
 					return b.getColor(state);
 				}
 			}
-			return null;
+			return missing.getColor(null);
+		}
+	}
+
+	public record LegacyTintCache(Map<String, int[]> data) {
+
+		public int getColor(String block, int biome, BitSet state) {
+			int[] a;
+			if ((a = data.get(block)) != null) {
+				return a[biome];
+			}
+			return missing.getColor(null).color;
 		}
 	}
 

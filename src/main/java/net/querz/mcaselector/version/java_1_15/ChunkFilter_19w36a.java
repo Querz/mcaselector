@@ -1,7 +1,6 @@
 package net.querz.mcaselector.version.java_1_15;
 
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
 import net.querz.mcaselector.version.Helper;
@@ -9,6 +8,7 @@ import net.querz.mcaselector.version.MCVersionImplementation;
 import net.querz.mcaselector.version.java_1_13.ChunkFilter_18w06a;
 import net.querz.mcaselector.version.java_1_14.ChunkFilter_19w02a;
 import net.querz.mcaselector.version.java_1_14.ChunkFilter_19w11a;
+import net.querz.mcaselector.version.mapping.registry.BiomeRegistry;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.DoubleTag;
 import net.querz.nbt.IntArrayTag;

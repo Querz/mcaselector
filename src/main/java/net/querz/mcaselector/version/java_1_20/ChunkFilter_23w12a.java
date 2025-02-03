@@ -1,10 +1,13 @@
 package net.querz.mcaselector.version.java_1_20;
 
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.io.registry.StatusRegistry;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.MCVersionImplementation;
+import net.querz.mcaselector.version.java_1_14.ChunkFilter_18w45a;
 import net.querz.mcaselector.version.java_1_18.ChunkFilter_21w43a;
+import net.querz.mcaselector.version.mapping.generator.HeightmapConfig;
+import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
 import net.querz.nbt.*;
 
 public class ChunkFilter_23w12a {
@@ -26,6 +29,15 @@ public class ChunkFilter_23w12a {
 				return false;
 			}
 			return status.getStatusWithNamespace().equals(tag.getValue());
+		}
+	}
+
+	@MCVersionImplementation(3207)
+	public static class Heightmap extends ChunkFilter_18w45a.Heightmap {
+
+		@Override
+		protected void loadCfg() {
+			cfg = FileHelper.loadFromResource("mapping/java_1_20/heightmaps_23w12a.json", HeightmapConfig::load);
 		}
 	}
 }

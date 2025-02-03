@@ -10,6 +10,8 @@ import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersion;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersionFile;
 import net.querz.mcaselector.version.mapping.minecraft.Report;
 import net.querz.mcaselector.version.mapping.util.Download;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -35,7 +37,9 @@ public class StructureConfig {
 	}
 
 	public static StructureConfig load(Path path) throws IOException {
-		return GSON.fromJson(Files.newBufferedReader(path), StructureConfig.class);
+		try (BufferedReader reader = Files.newBufferedReader(path)) {
+			return GSON.fromJson(reader, StructureConfig.class);
+		}
 	}
 
 	public void save(Path path) throws IOException {

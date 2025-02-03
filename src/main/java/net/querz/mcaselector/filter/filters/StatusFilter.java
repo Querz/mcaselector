@@ -5,9 +5,9 @@ import net.querz.mcaselector.filter.FilterType;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.io.registry.StatusRegistry;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionHandler;
+import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
 import net.querz.nbt.StringTag;
 
 public class StatusFilter extends TextFilter<StatusRegistry.StatusIdentifier> {

@@ -33,6 +33,11 @@ public class BlockStateColors implements StateColors {
 	}
 
 	@Override
+	public BlockColor getDefaultColor() {
+		return defaultColor;
+	}
+
+	@Override
 	public boolean hasColor(BitSet state) {
 		return blockStateColors.containsKey(state);
 	}

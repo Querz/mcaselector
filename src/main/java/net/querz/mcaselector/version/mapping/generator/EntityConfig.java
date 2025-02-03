@@ -11,6 +11,8 @@ import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersionFile;
 import net.querz.mcaselector.version.mapping.minecraft.Registries;
 import net.querz.mcaselector.version.mapping.minecraft.Report;
 import net.querz.mcaselector.version.mapping.util.Download;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,7 +37,9 @@ public class EntityConfig {
 	}
 
 	public static EntityConfig load(Path path) throws IOException {
-		return GSON.fromJson(Files.newBufferedReader(path), EntityConfig.class);
+		try (BufferedReader reader = Files.newBufferedReader(path)) {
+			return GSON.fromJson(reader, EntityConfig.class);
+		}
 	}
 
 	public void save(Path path) throws IOException {

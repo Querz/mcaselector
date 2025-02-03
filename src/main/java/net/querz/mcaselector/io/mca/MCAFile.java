@@ -223,7 +223,7 @@ public abstract class MCAFile<T extends Chunk> {
 				}
 				buf.position(offsets[i] * 4096);
 
-				Point2i chunkLocation = origin.add(i);
+				Point2i chunkLocation = origin.add(new Point2i(i));
 
 				try {
 					chunks[i] = chunkConstructor.apply(chunkLocation);

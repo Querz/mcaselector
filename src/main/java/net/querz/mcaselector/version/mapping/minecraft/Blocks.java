@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.querz.mcaselector.version.mapping.color.BlockStates;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,8 +26,12 @@ public class Blocks {
 			.setPrettyPrinting()
 			.create();
 
-	public Blocks(Path path) throws IOException {
-		states = GSON.fromJson(Files.newBufferedReader(path), new TypeToken<Map<String, Block>>(){}.getType());
+	public static Blocks load(Path path) throws IOException {
+		try (BufferedReader reader = Files.newBufferedReader(path)) {
+			Blocks blocks = new Blocks();
+			blocks.states = GSON.fromJson(reader, new TypeToken<Map<String, Block>>(){}.getType());
+			return blocks;
+		}
 	}
 
 	public BlockStates generateBlockStates() {

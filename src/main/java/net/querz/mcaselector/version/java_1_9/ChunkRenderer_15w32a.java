@@ -11,10 +11,10 @@ import net.querz.nbt.ListTag;
 import net.querz.nbt.Tag;
 
 @MCVersionImplementation(100)
-public class ChunkRenderer_15w32a implements ChunkRenderer {
+public class ChunkRenderer_15w32a implements ChunkRenderer<Integer, Integer> {
 
 	@Override
-	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
+	public void drawChunk(CompoundTag root, ColorMapping<Integer, Integer> colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
 		ListTag sections = Helper.tagFromLevelFromRoot(root, "Sections");
 		if (sections == null || sections.getElementType() != Tag.Type.COMPOUND) {
 			return;
@@ -84,7 +84,7 @@ public class ChunkRenderer_15w32a implements ChunkRenderer {
 						block = blocks[index] & 0xFF;
 						data = ((index & 0x1) == 0 ? blockData[index >> 1] : blockData[index >> 1] >> 4) & 0x0F;
 
-						if (isEmpty(block)) {
+						if (colorMapping.isTransparent(block)) {
 							continue;
 						}
 
@@ -93,7 +93,7 @@ public class ChunkRenderer_15w32a implements ChunkRenderer {
 								pixelBuffer[pixelIndex] = colorMapping.getRGB((block << 4) + data, biome); // water color
 								waterHeights[pixelIndex] = (short) (sectionHeight[i] + cy); // height of highest water or terrain block
 							}
-							if (isWater(block)) {
+							if (colorMapping.isWater(block)) {
 								waterDepth = true;
 								continue;
 							} else {
@@ -110,7 +110,7 @@ public class ChunkRenderer_15w32a implements ChunkRenderer {
 		}
 	}
 
-	public void drawLayer(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int height) {
+	public void drawLayer(CompoundTag root, ColorMapping<Integer, Integer> colorMapping, int x, int z, int scale, int[] pixelBuffer, int height) {
 		ListTag sections = Helper.tagFromLevelFromRoot(root, "Sections");
 		if (sections == null) {
 			return;
@@ -147,7 +147,7 @@ public class ChunkRenderer_15w32a implements ChunkRenderer {
 			for (int cz = 0; cz < 16; cz += scale) {
 				index = cy * 256 + cz * 16 + cx;
 				block = blocks[index] & 0xFF;
-				if (isEmpty(block)) {
+				if (colorMapping.isTransparent(block)) {
 					continue;
 				}
 				data = ((index & 0x1) == 0 ? blockData[index >> 1] : blockData[index >> 1] >> 4) & 0x0F;
@@ -159,7 +159,7 @@ public class ChunkRenderer_15w32a implements ChunkRenderer {
 		}
 	}
 
-	public void drawCaves(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, short[] terrainHeights, int height) {
+	public void drawCaves(CompoundTag root, ColorMapping<Integer, Integer> colorMapping, int x, int z, int scale, int[] pixelBuffer, short[] terrainHeights, int height) {
 		ListTag sections = Helper.tagFromLevelFromRoot(root, "Sections");
 		if (sections == null || sections.getElementType() != Tag.Type.COMPOUND) {
 			return;
@@ -229,7 +229,7 @@ public class ChunkRenderer_15w32a implements ChunkRenderer {
 						index = cy * 256 + cz * 16 + cx;
 						block = blocks[index] & 0xFF;
 						data = ((index & 0x1) == 0 ? blockData[index >> 1] : blockData[index >> 1] >> 4) & 0x0F;
-						if (!isEmptyOrFoliage(block, colorMapping)) {
+						if (!colorMapping.isTransparent(block) && !colorMapping.isFoliage(block)) {
 							if (doneSkipping) {
 								pixelBuffer[pixelIndex] = colorMapping.getRGB((block << 4) + data, biome);
 								terrainHeights[pixelIndex] = (short) (sectionHeight[i] + cy);
@@ -257,27 +257,9 @@ public class ChunkRenderer_15w32a implements ChunkRenderer {
 		return minData;
 	}
 
-	private boolean isWater(int block) {
-		return switch (block) {
-			case 8, 9 -> true;
-			default -> false;
-		};
-	}
-
-	private boolean isEmpty(int blockID) {
-		return blockID == 0 || blockID == 166 || blockID == 217;
-	}
-
-	private boolean isEmptyOrFoliage(int blockID, ColorMapping colorMapping) {
-		return switch (blockID) {
-			case 0, 166, 217, 78 -> true;
-			default -> colorMapping.isFoliage(blockID);
-		};
-	}
-
 	private int getBiome(int x, int z, byte[] biomes) {
 		if (biomes == null || biomes.length != 256) {
-			return -1;
+			return 0;
 		}
 		return biomes[z * 16 + x] & 0xFF;
 	}

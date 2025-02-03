@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import net.querz.mcaselector.version.mapping.util.Download;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,9 +26,11 @@ public final class VersionManifest {
 	private VersionManifest() {}
 
 	public static VersionManifest load(Path path) throws IOException {
-		VersionManifest vm = GSON.fromJson(Files.newBufferedReader(path), VersionManifest.class);
-		vm.versions.forEach(v -> vm.versionMap.put(v.id(), v));
-		return vm;
+		try (BufferedReader reader = Files.newBufferedReader(path)) {
+			VersionManifest vm = GSON.fromJson(reader, VersionManifest.class);
+			vm.versions.forEach(v -> vm.versionMap.put(v.id(), v));
+			return vm;
+		}
 	}
 
 	public static void download(Path output) throws IOException {

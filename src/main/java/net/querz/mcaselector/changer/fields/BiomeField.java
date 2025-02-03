@@ -2,10 +2,10 @@ package net.querz.mcaselector.changer.fields;
 
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
-import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionHandler;
+import net.querz.mcaselector.version.mapping.registry.BiomeRegistry;
 
 public class BiomeField extends Field<BiomeRegistry.BiomeIdentifier> {
 

@@ -1,8 +1,10 @@
 package net.querz.mcaselector.version.java_1_9;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.io.registry.BiomeRegistry;
-import net.querz.mcaselector.io.registry.StatusRegistry;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
@@ -10,12 +12,15 @@ import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.MCVersionImplementation;
+import net.querz.mcaselector.version.mapping.registry.BiomeRegistry;
+import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
 import net.querz.nbt.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -964,24 +969,15 @@ public class ChunkFilter_15w32a {
 	@MCVersionImplementation(100)
 	public static class Heightmap implements ChunkFilter.Heightmap {
 
-		private static final Set<Short> nonWorldSurfaceBlocks = new HashSet<>();
+		private static final Gson GSON = new GsonBuilder()
+				.setPrettyPrinting()
+				.create();
 
-		private static final Logger LOGGER = LogManager.getLogger(Heightmap.Data.class);
-
-		static {
-			try (BufferedReader bis = new BufferedReader(new InputStreamReader(Objects.requireNonNull(Data.class.getClassLoader().getResourceAsStream("mapping/java_1_9/heightmap_data.txt"))))) {
-				String line;
-				while ((line = bis.readLine()) != null) {
-					try {
-						nonWorldSurfaceBlocks.add(Short.parseShort(line));
-					} catch (NumberFormatException ex) {
-						LOGGER.error("invalid line in heightmap data file: \"{}\"", line);
-					}
-				}
-			} catch (IOException ex) {
-				throw new RuntimeException("failed to read mapping/java_1_9/heightmap_data.txt");
+		private static final Set<Short> nonWorldSurfaceBlocks = FileHelper.loadFromResource("mapping/java_1_9/heightmaps_legacy.json", p -> {
+			try (BufferedReader reader = Files.newBufferedReader(p)) {
+				return GSON.fromJson(reader, new TypeToken<>() {});
 			}
-		}
+		});
 
 		@Override
 		public void worldSurface(ChunkData data) {

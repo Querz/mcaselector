@@ -10,11 +10,11 @@ import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 
 @MCVersionImplementation(2834)
-public class ChunkRenderer_21w37a implements ChunkRenderer {
+public class ChunkRenderer_21w37a implements ChunkRenderer<CompoundTag, String> {
 
 	@Override
-	public void drawChunk(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
-		ListTag sections = Helper.tagFromCompound(root, "sections");
+	public void drawChunk(CompoundTag root, ColorMapping<CompoundTag, String> colorMapping, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights, boolean water, int height) {
+		ListTag sections = Helper.tagFromLevelFromRoot(root, "Sections");
 		if (sections == null || sections.getElementType() != Tag.Type.COMPOUND) {
 			return;
 		}
@@ -44,8 +44,6 @@ public class ChunkRenderer_21w37a implements ChunkRenderer {
 		int[] biomeIndexesPerLong = new int[sMax];
 		int[] startHeight = new int[sMax];
 		int[] sectionHeight = new int[sMax];
-		int paletteIndex;
-		int biomeIndex;
 		int pixelIndex;
 		String biome;
 
@@ -103,24 +101,22 @@ public class ChunkRenderer_21w37a implements ChunkRenderer {
 					ListTag biomePalette = indexedBiomePalettes[i];
 
 					for (int cy = startHeight[i]; cy >= 0; cy--) {
-						paletteIndex = getPaletteIndex(cx, cy, cz, blockStates, bits[i], cleanBits[i], indexesPerLong[i]);
-						CompoundTag blockData = palette.getCompound(paletteIndex);
-						if (isEmpty(blockData)) {
+						CompoundTag blockData = getBlock(cx, cy, cz, blockStates, bits[i], cleanBits[i], indexesPerLong[i], palette);
+						if (colorMapping.isTransparent(blockData)) {
 							continue;
 						}
 
-						biomeIndex = getBiomeIndex(cx, cy, cz, biomes, biomeBits[i], biomeCleanBits[i], biomeIndexesPerLong[i]);
-						biome = getBiome(biomeIndex, biomePalette);
+						biome = getBiome(cx, cy, cz, biomes, biomeBits[i], biomeCleanBits[i], biomeIndexesPerLong[i], biomePalette);
 
 						if (water) {
 							if (!waterDepth) {
 								pixelBuffer[pixelIndex] = colorMapping.getRGB(blockData, biome); // water color
 								waterHeights[pixelIndex] = (short) (sectionHeight[i] + cy); // height of highest water or terrain block
 							}
-							if (isWater(blockData)) {
+							if (colorMapping.isWater(blockData)) {
 								waterDepth = true;
 								continue;
-							} else if (isWaterlogged(blockData)) {
+							} else if (colorMapping.isWaterlogged(blockData)) {
 								pixelBuffer[pixelIndex] = colorMapping.getRGB(waterDummy, biome); // water color
 								waterPixels[pixelIndex] = colorMapping.getRGB(blockData, biome); // color of waterlogged block
 								waterHeights[pixelIndex] = (short) (sectionHeight[i] + cy);
@@ -130,7 +126,7 @@ public class ChunkRenderer_21w37a implements ChunkRenderer {
 								waterPixels[pixelIndex] = colorMapping.getRGB(blockData, biome); // color of block at bottom of water
 							}
 						} else {
-							waterPixels[pixelIndex] = colorMapping.getRGB(blockData, biome);
+							pixelBuffer[pixelIndex] = colorMapping.getRGB(blockData, biome);
 						}
 						terrainHeights[pixelIndex] = (short) (sectionHeight[i] + cy);
 						continue zLoop;
@@ -141,8 +137,8 @@ public class ChunkRenderer_21w37a implements ChunkRenderer {
 	}
 
 	@Override
-	public void drawLayer(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, int height) {
-		ListTag sections = Helper.tagFromCompound(root, "sections");
+	public void drawLayer(CompoundTag root, ColorMapping<CompoundTag, String> colorMapping, int x, int z, int scale, int[] pixelBuffer, int height) {
+		ListTag sections = Helper.tagFromLevelFromRoot(root, "Sections");
 		if (sections == null) {
 			return;
 		}
@@ -185,28 +181,25 @@ public class ChunkRenderer_21w37a implements ChunkRenderer {
 		int biomeBits = biomeData == null ? 0 : biomeData.length >> 3;
 		int biomeCleanBits = ((2 << (biomeBits - 1)) - 1);
 		int biomeIndexesPerLong = (int) (64D / biomeBits);
-		int biomeIndex;
 		int pixelIndex;
 		String biome;
 
 		for (int cx = 0; cx < 16; cx += scale) {
 			for (int cz = 0; cz < 16; cz += scale) {
-				int paletteIndex = getPaletteIndex(cx, cy, cz, blockStates, bits, clean, indexesPerLong);
-				CompoundTag blockData = palette.getCompound(paletteIndex);
-				if (isEmpty(blockData)) {
+				CompoundTag blockData = getBlock(cx, cy, cz, blockStates, bits, clean, indexesPerLong, palette);
+				if (colorMapping.isTransparent(blockData)) {
 					continue;
 				}
 				pixelIndex = (z + (cz >> scaleBits)) * (512 >> scaleBits) + (x + (cx >> scaleBits));
-				biomeIndex = getBiomeIndex(cx, cy, cz, biomes, biomeBits, biomeCleanBits, biomeIndexesPerLong);
-				biome = getBiome(biomeIndex, biomePalette);
+				biome = getBiome(cx, cy, cz, biomes, biomeBits, biomeCleanBits, biomeIndexesPerLong, biomePalette);
 				pixelBuffer[pixelIndex] = colorMapping.getRGB(blockData, biome);
 			}
 		}
 	}
 
 	@Override
-	public void drawCaves(CompoundTag root, ColorMapping colorMapping, int x, int z, int scale, int[] pixelBuffer, short[] terrainHeights, int height) {
-		ListTag sections = Helper.tagFromCompound(root, "sections");
+	public void drawCaves(CompoundTag root, ColorMapping<CompoundTag, String> colorMapping, int x, int z, int scale, int[] pixelBuffer, short[] terrainHeights, int height) {
+		ListTag sections = Helper.tagFromLevelFromRoot(root, "Sections");
 		if (sections == null || sections.getElementType() != Tag.Type.COMPOUND) {
 			return;
 		}
@@ -236,8 +229,6 @@ public class ChunkRenderer_21w37a implements ChunkRenderer {
 		int[] biomeIndexesPerLong = new int[sMax];
 		int[] startHeight = new int[sMax];
 		int[] sectionHeight = new int[sMax];
-		int paletteIndex;
-		int biomeIndex;
 		int pixelIndex;
 		String biome;
 
@@ -296,13 +287,11 @@ public class ChunkRenderer_21w37a implements ChunkRenderer {
 					ListTag biomePalette = indexedBiomePalettes[i];
 
 					for (int cy = startHeight[i]; cy >= 0; cy--) {
-						paletteIndex = getPaletteIndex(cx, cy, cz, blockStates, bits[i], cleanBits[i], indexesPerLong[i]);
-						CompoundTag blockData = palette.getCompound(paletteIndex);
+						CompoundTag blockData = getBlock(cx, cy, cz, blockStates, bits[i], cleanBits[i], indexesPerLong[i], palette);
 
-						if (!isEmptyOrFoliage(blockData, colorMapping)) {
+						if (!colorMapping.isTransparent(blockData) && !colorMapping.isFoliage(blockData)) {
 							if (doneSkipping) {
-								biomeIndex = getBiomeIndex(cx, cy, cz, biomes, biomeBits[i], biomeCleanBits[i], biomeIndexesPerLong[i]);
-								biome = getBiome(biomeIndex, biomePalette);
+								biome = getBiome(cx, cy, cz, biomes, biomeBits[i], biomeCleanBits[i], biomeIndexesPerLong[i], biomePalette);
 
 								pixelBuffer[pixelIndex] = colorMapping.getRGB(blockData, biome);
 								terrainHeights[pixelIndex] = (short) (sectionHeight[i] + cy);
@@ -320,14 +309,13 @@ public class ChunkRenderer_21w37a implements ChunkRenderer {
 
 	@Override
 	public CompoundTag minimizeChunk(CompoundTag root) {
-		Integer dataVersion = Helper.intFromCompound(root, "DataVersion");
-		if (dataVersion == null) {
-			return root;
-		}
 		CompoundTag minData = new CompoundTag();
 		minData.put("DataVersion", root.get("DataVersion").copy());
-		minData.put("sections", root.get("sections").copy());
-		minData.put("Status", root.get("Status").copy());
+		CompoundTag level = new CompoundTag();
+		minData.put("Level", level);
+		level.put("Biomes", root.getCompound("Level").get("Biomes").copy());
+		level.put("Sections", root.getCompound("Level").get("Sections").copy());
+		level.put("Status", root.getCompound("Level").get("Status").copy());
 		return minData;
 	}
 
@@ -337,56 +325,30 @@ public class ChunkRenderer_21w37a implements ChunkRenderer {
 		waterDummy.putString("Name", "minecraft:water");
 	}
 
-	private boolean isWater(CompoundTag blockData) {
-		return switch (Helper.stringFromCompound(blockData, "Name", "")) {
-			case "minecraft:water", "minecraft:bubble_column" -> true;
-			default -> false;
-		};
-	}
-
-	private boolean isWaterlogged(CompoundTag data) {
-		return data.get("Properties") != null && "true".equals(Helper.stringFromCompound(Helper.tagFromCompound(data, "Properties"), "waterlogged", null));
-	}
-
-	private boolean isEmpty(CompoundTag blockData) {
-		return switch (Helper.stringFromCompound(blockData, "Name", "")) {
-			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void", "minecraft:light" -> blockData.size() == 1;
-			default -> false;
-		};
-	}
-
-	private boolean isEmptyOrFoliage(CompoundTag blockData, ColorMapping colorMapping) {
-		String name;
-		return switch (name = Helper.stringFromCompound(blockData, "Name", "")) {
-			case "minecraft:air", "minecraft:cave_air", "minecraft:barrier", "minecraft:structure_void", "minecraft:light", "minecraft:snow" -> blockData.size() == 1;
-			default -> colorMapping.isFoliage(name);
-		};
-	}
-
-	private int getBiomeIndex(int x, int y, int z, LongBuffer biomes, int bits, int clean, int indexesPerLong) {
+	private String getBiome(int x, int y, int z, LongBuffer biomes, int bits, int clean, int indexesPerLong, ListTag palette) {
+		if (palette == null || palette.isEmpty()) {
+			return "";
+		}
 		if (bits == 0) {
-			return 0;
+			return palette.getString(0);
 		}
 		int index = (y >> 2 & 0xF) * 16 + (z >> 2 & 0xF) * 4 + (x >> 2 & 0xF);
 		int biomeIndex = index / indexesPerLong;
 		int startBit = (index % indexesPerLong) * bits;
-		return (int) (biomes.get(biomeIndex) >> startBit) & clean;
-	}
-
-	private String getBiome(int index, ListTag palette) {
-		if (palette == null || palette.isEmpty() || index >= palette.size()) {
+		int paletteIndex = (int) (biomes.get(biomeIndex) >> startBit) & clean;
+		if (paletteIndex >= palette.size()) {
 			return "";
 		}
-		return palette.getString(index);
+		return palette.getString(paletteIndex);
 	}
 
-	private int getPaletteIndex(int x, int y, int z, LongBuffer blockStates, int bits, int clean, int indexesPerLong) {
+	private CompoundTag getBlock(int x, int y, int z, LongBuffer blockStates, int bits, int clean, int indexesPerLong, ListTag palette) {
 		if (bits == 0) {
-			return 0;
+			return palette.getCompound(0);
 		}
 		int index = y * 256 + z * 16 + x;
 		int blockStatesIndex = index / indexesPerLong;
 		int startBit = (index % indexesPerLong) * bits;
-		return (int) (blockStates.get(blockStatesIndex) >> startBit) & clean;
+		return palette.getCompound((int) (blockStates.get(blockStatesIndex) >> startBit) & clean);
 	}
 }

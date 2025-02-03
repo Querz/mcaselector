@@ -1,5 +1,9 @@
 package net.querz.mcaselector.version.java_1_13;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.math.Bits;
 import net.querz.mcaselector.point.Point2i;
@@ -11,7 +15,10 @@ import net.querz.mcaselector.version.MCVersionImplementation;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.Tag;
+import java.io.BufferedReader;
+import java.nio.file.Files;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class ChunkFilter_17w47a {
 
@@ -459,6 +466,115 @@ public class ChunkFilter_17w47a {
 				}
 			}
 			return true;
+		}
+	}
+
+	@MCVersionImplementation(1451)
+	public static class Heightmap implements ChunkFilter.Heightmap {
+
+		private static final Gson GSON = new GsonBuilder()
+				.setPrettyPrinting()
+				.create();
+
+		private static final Set<String> heightmapData = FileHelper.loadFromResource("mapping/java_1_13/heightmaps_legacy.json", p -> {
+			try (BufferedReader reader = Files.newBufferedReader(p)) {
+				return GSON.fromJson(reader, new TypeToken<>() {});
+			}
+		});
+
+		@Override
+		public void worldSurface(ChunkData data) {
+			setHeightMap(Helper.getRegion(data), getHeightMap(Helper.getRegion(data), b -> {
+				String name = Helper.stringFromCompound(b, "Name");
+				return name == null || !heightmapData.contains(name);
+			}));
+		}
+
+		@Override
+		public void oceanFloor(ChunkData data) {
+			// nothing to do until 1.13
+		}
+
+		@Override
+		public void motionBlocking(ChunkData data) {
+			// nothing to do until 1.13
+		}
+
+		@Override
+		public void motionBlockingNoLeaves(ChunkData data) {
+			// nothing to do until 1.13
+		}
+
+		protected void setHeightMap(CompoundTag data, int[] heightmap) {
+			if (data == null) {
+				return;
+			}
+			CompoundTag level = data.getCompoundTag("Level");
+			if (level == null) {
+				return;
+			}
+			level.putIntArray("HeightMap", heightmap);
+		}
+
+		protected int[] getHeightMap(CompoundTag data, Predicate<CompoundTag> matcher) {
+			ListTag sections = Helper.getSectionsFromLevelFromRoot(data, "Sections");
+			if (sections == null) {
+				return new int[256];
+			}
+
+			ListTag[] palettes = new ListTag[16];
+			long[][] blockStatesArray = new long[16][];
+			sections.forEach(s -> {
+				ListTag p = Helper.tagFromCompound(s, "Palette");
+				long[] b = Helper.longArrayFromCompound(s, "BlockStates");
+				int y = Helper.numberFromCompound(s, "Y", -1).intValue();
+				if (y >= 0 && y <= 15 && p != null && b != null) {
+					palettes[y] = p;
+					blockStatesArray[y] = b;
+				}
+			});
+
+			int[] heightmap = new int[256];
+
+			// loop over x/z
+			for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
+				loop:
+				for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+					for (int i = 15; i >= 0; i--) {
+						ListTag palette = palettes[i];
+						if (palette == null) {
+							continue;
+						}
+						long[] blockStates = blockStatesArray[i];
+						for (int cy = 15; cy >= 0; cy--) {
+							int blockIndex = cy * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + cz * Tile.CHUNK_SIZE + cx;
+							if (matcher.test(getBlockAt(blockIndex, blockStates, palette))) {
+								heightmap[cz * Tile.CHUNK_SIZE + cx] = (short) (i * Tile.CHUNK_SIZE + cy + 1);
+								continue loop;
+							}
+						}
+					}
+				}
+			}
+			return heightmap;
+		}
+
+		protected CompoundTag getBlockAt(int index, long[] blockStates, ListTag palette) {
+			return palette.getCompound(getPaletteIndex(index, blockStates));
+		}
+
+		protected int getPaletteIndex(int blockIndex, long[] blockStates) {
+			int bits = blockStates.length >> 6;
+			double blockStatesIndex = blockIndex / (4096D / blockStates.length);
+			int longIndex = (int) blockStatesIndex;
+			int startBit = (int) ((blockStatesIndex - Math.floor(blockStatesIndex)) * 64D);
+			if (startBit + bits > 64) {
+				long prev = Bits.bitRange(blockStates[longIndex], startBit, 64);
+				long next = Bits.bitRange(blockStates[longIndex + 1], 0, startBit + bits - 64);
+				return (int) ((next << 64 - startBit) + prev);
+			} else {
+				return (int) Bits.bitRange(blockStates[longIndex], startBit, startBit + bits);
+			}
 		}
 	}
 }

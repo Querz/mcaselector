@@ -4,6 +4,8 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import net.querz.mcaselector.config.ConfigProvider;
+import net.querz.mcaselector.exception.ThrowingFunction;
+import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.property.DataProperty;
 import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
@@ -441,5 +443,15 @@ public final class FileHelper {
 		}
 
 		return null;
+	}
+
+	public static <T> T loadFromResource(String resourceName, ThrowingFunction<Path, T, Throwable> loadFunc) {
+		URL url = FileHelper.class.getClassLoader().getResource(resourceName);
+		try {
+			return loadFunc.apply(Path.of(Objects.requireNonNull(url).toURI()));
+		} catch (Throwable e) {
+			LOGGER.fatal("Failed to load resource {}", resourceName, e);
+			throw new RuntimeException(e);
+		}
 	}
 }

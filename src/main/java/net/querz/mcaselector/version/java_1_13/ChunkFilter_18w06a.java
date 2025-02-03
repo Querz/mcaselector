@@ -1,8 +1,11 @@
 package net.querz.mcaselector.version.java_1_13;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.io.registry.BiomeRegistry;
-import net.querz.mcaselector.io.registry.StatusRegistry;
 import net.querz.mcaselector.math.Bits;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
@@ -11,10 +14,11 @@ import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.MCVersionImplementation;
+import net.querz.mcaselector.version.mapping.registry.BiomeRegistry;
+import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
 import net.querz.nbt.*;
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Predicate;
 import static net.querz.mcaselector.validation.ValidationHelper.silent;
@@ -75,166 +79,6 @@ public class ChunkFilter_18w06a {
 				int[] biomes = new int[256];
 				Arrays.fill(biomes, (byte) biome.getID());
 				level.putIntArray("Biomes", biomes);
-			}
-		}
-	}
-
-	@MCVersionImplementation(1466)
-	public static class Heightmap implements ChunkFilter.Heightmap {
-
-		protected static final Set<String> nonLightBlockingBlocks = new HashSet<>();
-
-		static {
-			try (BufferedReader bis = new BufferedReader(new InputStreamReader(Objects.requireNonNull(Data.class.getClassLoader().getResourceAsStream("mapping/java_1_13/heightmap_data.txt"))))) {
-				String line;
-				while ((line = bis.readLine()) != null) {
-					nonLightBlockingBlocks.add("minecraft:" + line);
-				}
-			} catch (IOException ex) {
-				throw new RuntimeException("failed to read mapping/java_1_13/heightmap_data.txt");
-			}
-		}
-
-		@Override
-		public void worldSurface(ChunkData data) {
-			setHeightMap(Helper.getRegion(data), "LIGHT", getHeightMap(Helper.getRegion(data), blockState -> {
-				StringTag name = blockState.getStringTag("Name");
-				if (name == null) {
-					return false;
-				}
-				return !nonLightBlockingBlocks.contains(name.getValue());
-			}));
-		}
-
-		@Override
-		public void oceanFloor(ChunkData data) {
-			setHeightMap(Helper.getRegion(data), "LIQUID", getHeightMap(Helper.getRegion(data), blockState -> {
-				StringTag name = blockState.getStringTag("Name");
-				if (name == null) {
-					return false;
-				}
-				return !isAir(name.getValue()) && !isLiquid(name.getValue()) && !isNonMotionBlocking(name.getValue());
-			}));
-		}
-
-		@Override
-		public void motionBlocking(ChunkData data) {
-			setHeightMap(Helper.getRegion(data), "RAIN", getHeightMap(Helper.getRegion(data), blockState -> {
-				StringTag name = blockState.getStringTag("Name");
-				if (name == null) {
-					return false;
-				}
-				return !isAir(name.getValue()) && !isNonMotionBlocking(name.getValue());
-			}));
-		}
-
-		@Override
-		public void motionBlockingNoLeaves(ChunkData data) {
-			setHeightMap(Helper.getRegion(data), "SOLID", getHeightMap(Helper.getRegion(data), blockState -> {
-				StringTag name = blockState.getStringTag("Name");
-				if (name == null) {
-					return false;
-				}
-				return !isAir(name.getValue()) && !isNonMotionBlocking(name.getValue()) && !isFoliage(name.getValue());
-			}));
-		}
-
-		protected void setHeightMap(CompoundTag root, String name, long[] heightmap) {
-			if (root == null) {
-				return;
-			}
-			CompoundTag level = Helper.levelFromRoot(root);
-			if (level == null) {
-				return;
-			}
-			CompoundTag heightmaps = level.getCompoundOrDefault("Heightmaps", new CompoundTag());
-			heightmaps.putLongArray(name, heightmap);
-			level.put("Heightmaps", heightmaps);
-		}
-
-		protected long[] getHeightMap(CompoundTag root, Predicate<CompoundTag> matcher) {
-			ListTag sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
-			if (sections == null) {
-				return new long[36];
-			}
-
-			ListTag[] palettes = new ListTag[16];
-			long[][] blockStatesArray = new long[16][];
-			sections.forEach(s -> {
-				ListTag p = Helper.tagFromCompound(s, "Palette");
-				long[] b = Helper.longArrayFromCompound(s, "BlockStates");
-				int y = Helper.numberFromCompound(s, "Y", -1).intValue();
-				if (y >= 0 && y <= 15 && p != null && b != null) {
-					palettes[y] = p;
-					blockStatesArray[y] = b;
-				}
-			});
-
-			short[] heightmap = new short[256];
-
-			// loop over x/z
-			for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
-				loop:
-				for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
-					for (int i = 15; i >= 0; i--) {
-						ListTag palette = palettes[i];
-						if (palette == null) {
-							continue;
-						}
-						long[] blockStates = blockStatesArray[i];
-						for (int cy = 15; cy >= 0; cy--) {
-							int blockIndex = cy * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + cz * Tile.CHUNK_SIZE + cx;
-							if (matcher.test(getBlockAt(blockIndex, blockStates, palette))) {
-								heightmap[cz * Tile.CHUNK_SIZE + cx] = (short) (i * Tile.CHUNK_SIZE + cy + 1);
-								continue loop;
-							}
-						}
-					}
-				}
-			}
-			return applyHeightMap(heightmap);
-		}
-
-		protected long[] applyHeightMap(short[] rawHeightmap) {
-			long[] data = new long[36];
-			int offset = 0;
-			int index = 0;
-			for (int i = 0; i < 36; i++) {
-				long l = 0L;
-				for (int j = 0; j < 8 && index < 256; j++, index++) {
-					int shift = 9 * j - offset;
-					if (shift < 0) {
-						l += ((long) rawHeightmap[index] >> -shift);
-					} else {
-						l += ((long) rawHeightmap[index] << shift);
-					}
-				}
-				offset++;
-				if (offset == 9) {
-					offset = 0;
-				} else {
-					index--;
-				}
-				data[i] = l;
-			}
-			return data;
-		}
-
-		protected CompoundTag getBlockAt(int index, long[] blockStates, ListTag palette) {
-			return palette.getCompound(getPaletteIndex(index, blockStates));
-		}
-
-		protected int getPaletteIndex(int blockIndex, long[] blockStates) {
-			int bits = blockStates.length >> 6;
-			double blockStatesIndex = blockIndex / (4096D / blockStates.length);
-			int longIndex = (int) blockStatesIndex;
-			int startBit = (int) ((blockStatesIndex - Math.floor(blockStatesIndex)) * 64D);
-			if (startBit + bits > 64) {
-				long prev = Bits.bitRange(blockStates[longIndex], startBit, 64);
-				long next = Bits.bitRange(blockStates[longIndex + 1], 0, startBit + bits - 64);
-				return (int) ((next << 64 - startBit) + prev);
-			} else {
-				return (int) Bits.bitRange(blockStates[longIndex], startBit, startBit + bits);
 			}
 		}
 	}
@@ -621,6 +465,153 @@ public class ChunkFilter_18w06a {
 							applyOffsetToEntity(entity, offset);
 						}
 					}
+			}
+		}
+	}
+
+	@MCVersionImplementation(1466)
+	public static class Heightmap implements ChunkFilter.Heightmap {
+
+		private static final Gson GSON = new GsonBuilder()
+				.setPrettyPrinting()
+				.create();
+
+		// only "RAIN" and "LIGHT" exist in fully generated chunks, "LIQUID" and "SOLID" seem to only exist in proto chunks
+		private record HeightmapData(
+				@SerializedName("rain") Set<String> rain,
+				@SerializedName("light") Set<String> light) {}
+
+		private HeightmapData heightmaps;
+
+		public Heightmap() {
+			loadCfg();
+		}
+
+		protected void loadCfg() {
+			heightmaps = FileHelper.loadFromResource("mapping/java_1_13/heightmaps_18w06a.json", p -> {
+				try (BufferedReader reader = Files.newBufferedReader(p)) {
+					return GSON.fromJson(reader, new TypeToken<>() {});
+				}
+			});
+		}
+
+		@Override
+		public void worldSurface(ChunkData data) {
+			setHeightMap(Helper.getRegion(data), "LIGHT", getHeightMap(Helper.getRegion(data), b -> {
+				String name = Helper.stringFromCompound(b, "Name");
+				return name != null && heightmaps.light.contains(name);
+			}));
+		}
+
+		@Override
+		public void oceanFloor(ChunkData data) {}
+
+		@Override
+		public void motionBlocking(ChunkData data) {
+			setHeightMap(Helper.getRegion(data), "RAIN", getHeightMap(Helper.getRegion(data), b -> {
+				String name = Helper.stringFromCompound(b, "Name");
+				return name != null && heightmaps.rain.contains(name);
+			}));
+		}
+
+		@Override
+		public void motionBlockingNoLeaves(ChunkData data) {}
+
+		protected void setHeightMap(CompoundTag root, String name, long[] heightmap) {
+			if (root == null) {
+				return;
+			}
+			CompoundTag level = Helper.levelFromRoot(root);
+			if (level == null) {
+				return;
+			}
+			CompoundTag heightmapTag = (CompoundTag) level.computeIfAbsent("Heightmaps", k -> new CompoundTag());
+			heightmapTag.putLongArray(name, heightmap);
+		}
+
+		protected long[] getHeightMap(CompoundTag root, Predicate<CompoundTag> matcher) {
+			ListTag sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
+			if (sections == null) {
+				return new long[36];
+			}
+
+			ListTag[] palettes = new ListTag[16];
+			long[][] blockStatesArray = new long[16][];
+			sections.forEach(s -> {
+				ListTag p = Helper.tagFromCompound(s, "Palette");
+				long[] b = Helper.longArrayFromCompound(s, "BlockStates");
+				int y = Helper.numberFromCompound(s, "Y", -1).intValue();
+				if (y >= 0 && y <= 15 && p != null && b != null) {
+					palettes[y] = p;
+					blockStatesArray[y] = b;
+				}
+			});
+
+			short[] heightmap = new short[256];
+
+			// loop over x/z
+			for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
+				loop:
+				for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+					for (int i = 15; i >= 0; i--) {
+						ListTag palette = palettes[i];
+						if (palette == null) {
+							continue;
+						}
+						long[] blockStates = blockStatesArray[i];
+						for (int cy = 15; cy >= 0; cy--) {
+							int blockIndex = cy * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + cz * Tile.CHUNK_SIZE + cx;
+							if (matcher.test(getBlockAt(blockIndex, blockStates, palette))) {
+								heightmap[cz * Tile.CHUNK_SIZE + cx] = (short) (i * Tile.CHUNK_SIZE + cy + 1);
+								continue loop;
+							}
+						}
+					}
+				}
+			}
+			return applyHeightMap(heightmap);
+		}
+
+		protected long[] applyHeightMap(short[] rawHeightmap) {
+			long[] data = new long[36];
+			int offset = 0;
+			int index = 0;
+			for (int i = 0; i < 36; i++) {
+				long l = 0L;
+				for (int j = 0; j < 8 && index < 256; j++, index++) {
+					int shift = 9 * j - offset;
+					if (shift < 0) {
+						l += ((long) rawHeightmap[index] >> -shift);
+					} else {
+						l += ((long) rawHeightmap[index] << shift);
+					}
+				}
+				offset++;
+				if (offset == 9) {
+					offset = 0;
+				} else {
+					index--;
+				}
+				data[i] = l;
+			}
+			return data;
+		}
+
+		protected CompoundTag getBlockAt(int index, long[] blockStates, ListTag palette) {
+			return palette.getCompound(getPaletteIndex(index, blockStates));
+		}
+
+		protected int getPaletteIndex(int blockIndex, long[] blockStates) {
+			int bits = blockStates.length >> 6;
+			double blockStatesIndex = blockIndex / (4096D / blockStates.length);
+			int longIndex = (int) blockStatesIndex;
+			int startBit = (int) ((blockStatesIndex - Math.floor(blockStatesIndex)) * 64D);
+			if (startBit + bits > 64) {
+				long prev = Bits.bitRange(blockStates[longIndex], startBit, 64);
+				long next = Bits.bitRange(blockStates[longIndex + 1], 0, startBit + bits - 64);
+				return (int) ((next << 64 - startBit) + prev);
+			} else {
+				return (int) Bits.bitRange(blockStates[longIndex], startBit, startBit + bits);
 			}
 		}
 	}

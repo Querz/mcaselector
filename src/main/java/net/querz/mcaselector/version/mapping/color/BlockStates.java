@@ -30,6 +30,9 @@ public class BlockStates {
 	}
 
 	public BitSet getState(CompoundTag properties) {
+		if (properties == null) {
+			return null;
+		}
 		BitSet state = new BitSet(size);
 		properties.forEach((k, v) -> {
 			Map<String, Integer> map;
@@ -76,6 +79,14 @@ public class BlockStates {
 
 	public boolean isWaterlogged(BitSet state) {
 		return state.get(waterlogged);
+	}
+
+	public boolean isWaterlogged(CompoundTag properties) {
+		if (properties == null) {
+			return false;
+		}
+		String w = properties.getStringOrDefault("waterlogged", null);
+		return w != null && w.equals("true");
 	}
 
 	public int size() {

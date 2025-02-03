@@ -1,7 +1,6 @@
 package net.querz.mcaselector.version.java_1_17;
 
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.point.Point2i;
 import net.querz.mcaselector.point.Point3i;
 import net.querz.mcaselector.range.Range;
@@ -11,6 +10,7 @@ import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.MCVersionImplementation;
 import net.querz.mcaselector.version.java_1_15.ChunkFilter_19w36a;
 import net.querz.mcaselector.version.java_1_16.ChunkFilter_20w17a;
+import net.querz.mcaselector.version.mapping.registry.BiomeRegistry;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.IntArrayTag;
 import net.querz.nbt.ListTag;
@@ -118,7 +118,7 @@ public class ChunkFilter_21w06a {
 	}
 
 	@MCVersionImplementation(2694)
-	public static class Heightmap extends ChunkFilter_20w17a.Heightmap {
+	public static class Heightmap extends ChunkFilter_20w45a.Heightmap {
 
 		@Override
 		protected long[] getHeightMap(CompoundTag root, Predicate<CompoundTag> matcher) {

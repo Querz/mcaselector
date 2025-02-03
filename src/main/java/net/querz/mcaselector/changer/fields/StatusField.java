@@ -3,9 +3,9 @@ package net.querz.mcaselector.changer.fields;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.io.registry.StatusRegistry;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionHandler;
+import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
 import net.querz.nbt.StringTag;
 
 public class StatusField extends Field<StatusRegistry.StatusIdentifier> {

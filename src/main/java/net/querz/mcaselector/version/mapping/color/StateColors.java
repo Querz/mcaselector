@@ -15,6 +15,8 @@ public interface StateColors extends Iterable<Map.Entry<BitSet, BlockColor>> {
 
 	BlockColor getColor(BitSet state);
 
+	BlockColor getDefaultColor();
+
 	boolean hasColor(BitSet state);
 
 	void setColor(BitSet state, BlockColor color);

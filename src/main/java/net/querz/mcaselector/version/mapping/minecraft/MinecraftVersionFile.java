@@ -3,6 +3,8 @@ package net.querz.mcaselector.version.mapping.minecraft;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,8 +17,10 @@ public final class MinecraftVersionFile {
 
 	private MinecraftVersionFile() {}
 
-	public static MinecraftVersionFile load(Path minecraftVersionFile) throws IOException {
-		return GSON.fromJson(Files.newBufferedReader(minecraftVersionFile), MinecraftVersionFile.class);
+	public static MinecraftVersionFile load(Path path) throws IOException {
+		try (BufferedReader reader = Files.newBufferedReader(path)) {
+			return GSON.fromJson(reader, MinecraftVersionFile.class);
+		}
 	}
 
 	public static void download(MinecraftVersion minecraftVersion, Path output) throws IOException {

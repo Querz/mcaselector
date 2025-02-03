@@ -1,39 +1,31 @@
 package net.querz.mcaselector.version.mapping.generator;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelReader;
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.version.mapping.color.*;
 import net.querz.mcaselector.version.mapping.minecraft.*;
-import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
 import net.querz.mcaselector.version.mapping.util.BitSetAdapter;
 import net.querz.mcaselector.version.mapping.util.Download;
+import net.querz.mcaselector.version.mapping.util.HexColorAdapter;
 import net.querz.nbt.CompoundTag;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
 public class ColorConfig {
 
-	private static final Logger LOGGER = LogManager.getLogger(ColorConfig.class);
-
 	@SerializedName("states") public BlockStates states;
 	@SerializedName("colors") public ColorMapping colors;
 	@SerializedName("tints") public BiomeColors tints;
 	public transient ColorMapping.TintCache tintCache;
+	public transient ColorMapping.LegacyTintCache legacyTintCache;
 
-	public static ColorProperties colorProperties;
+	public static final ColorProperties colorProperties = FileHelper.loadFromResource("mapping/color_properties.json", ColorProperties::load);
 
 	private static final Gson GSON = new GsonBuilder()
 			.registerTypeAdapter(BitSet.class, new BitSetAdapter())
@@ -48,22 +40,23 @@ public class ColorConfig {
 			.setPrettyPrinting()
 			.create();
 
-	static {
-		try (BufferedReader bis = new BufferedReader(new InputStreamReader(
-				Objects.requireNonNull(StatusRegistry.class.getClassLoader().getResourceAsStream("mapping/color_properties.json"))))) {
-			colorProperties = GSON.fromJson(bis, ColorProperties.class);
-		} catch (IOException ex) {
-			LOGGER.error("error reading mapping/registry/status.json", ex);
-			colorProperties = null;
-		}
-	}
-
 	public ColorConfig() {}
 
 	public static ColorConfig load(Path path) throws IOException {
-		ColorConfig cfg = GSON.fromJson(Files.newBufferedReader(path), ColorConfig.class);
-		cfg.tintCache = cfg.colors.createTintCache(cfg.tints);
-		return cfg;
+		try (BufferedReader reader = Files.newBufferedReader(path)) {
+			ColorConfig cfg = GSON.fromJson(reader, ColorConfig.class);
+			cfg.tintCache = cfg.colors.createTintCache(cfg.tints);
+//			System.out.println(GSON.toJson(cfg.tintCache));
+			return cfg;
+		}
+	}
+
+	public static ColorConfig loadLegacy(Path path) throws IOException {
+		try (BufferedReader reader = Files.newBufferedReader(path)) {
+			ColorConfig cfg = GSON.fromJson(reader, ColorConfig.class);
+			cfg.legacyTintCache = cfg.colors.createLegacyTintCache(cfg.tints);
+			return cfg;
+		}
 	}
 
 	public void save(Path path) throws IOException {
@@ -78,6 +71,15 @@ public class ColorConfig {
 			return tintCache.getColor(name, biome, blockState);
 		}
 		return blockColor;
+	}
+
+	public int getLegacyColor(String name, int biome, CompoundTag tag) {
+		BitSet blockState = states.getState(tag);
+		BlockColor blockColor = colors.getBlockColor(name, blockState);
+		if ((blockColor.properties & BlockColor.TINTED) > 0) {
+			return legacyTintCache.getColor(name, biome, blockState);
+		}
+		return blockColor.color;
 	}
 
 	public void generate(MinecraftVersion version, Path tmp) throws IOException, InterruptedException {
@@ -109,7 +111,7 @@ public class ColorConfig {
 
 		// load blocks.json
 		Path blocksJson = generated.resolve("reports/blocks.json");
-		Blocks blocks = new Blocks(blocksJson);
+		Blocks blocks = Blocks.load(blocksJson);
 		BlockStates blockStates = blocks.generateBlockStates();
 		this.states = blockStates;
 
@@ -131,6 +133,12 @@ public class ColorConfig {
 
 				// air doesn't have a model
 				if (colorProperties.isAir(blockName)) {
+					continue;
+				}
+
+				// apply static color if configured
+				if (colorProperties.staticColor.containsKey(blockName)) {
+					mapping.setBlockColor(blockName, new SingleStateColors(new BlockColor(colorProperties.staticColor.get(blockName), colorProperties.get(blockName))));
 					continue;
 				}
 
@@ -185,6 +193,13 @@ public class ColorConfig {
 					int color = averageColor(assetTexture);
 					mapping.addBlockColor(blockName, null, new BlockColor(color, colorProperties.get(blockName)));
 				}
+
+				// apply static tint if configured
+				if (colorProperties.staticTint.containsKey(blockName)) {
+					BlockColor rawColor = mapping.getBlockColor(blockName, null);
+					BlockColor tinted = new BlockColor(ColorMapping.applyTint(rawColor.color, colorProperties.staticTint.get(blockName)), rawColor.properties);
+					mapping.setBlockColor(blockName, new SingleStateColors(tinted));
+				}
 			}
 
 			// extract biome tints
@@ -199,7 +214,7 @@ public class ColorConfig {
 					if (!Files.isRegularFile(b)) {
 						continue;
 					}
-					Biome biome = new Biome(b);
+					Biome biome = Biome.load(b);
 					int grassTint = Objects.requireNonNullElseGet(
 							biome.effects.grassTint(),
 							() -> getColorMapping(biome.temperature, biome.downfall, grassTints));
@@ -208,7 +223,7 @@ public class ColorConfig {
 							() -> getColorMapping(biome.temperature, biome.downfall, foliageTints));
 					String fileName = b.getFileName().toString();
 					tints.addTints(
-							fileName.substring(0, fileName.length() - 5),
+							"minecraft:" + fileName.substring(0, fileName.length() - 5),
 							new BiomeColors.BiomeTints(grassTint, foliageTint, biome.effects.waterTint()));
 				}
 			}
@@ -274,13 +289,16 @@ public class ColorConfig {
 	}
 
 	private int averageColor(Path img) {
+		// we use javafx Image instead of BufferedImage because BufferedImage#getRGB()
+		// returns wrong color values depending on the color space for some reason.
 		try (InputStream inputStream = Files.newInputStream(img)) {
-			BufferedImage image = ImageIO.read(inputStream);
+			Image image = new Image(inputStream);
+			PixelReader pr = image.getPixelReader();
 			long r = 0, g = 0, b = 0;
 			int c = 0;
 			for (int x = 0; x < image.getWidth(); x++) {
 				for (int y = 0; y < image.getHeight(); y++) {
-					int p = image.getRGB(x, y);
+					int p = pr.getArgb(x, y);
 					if (p >> 24 != 0) {
 						r += p >> 16 & 0xFF;
 						g += p >> 8 & 0xFF;
@@ -292,7 +310,7 @@ public class ColorConfig {
 			int ir = (int) (r / c);
 			int ig = (int) (g / c);
 			int ib = (int) (b / c);
-			return (ir << 16) + (ig << 8) + ib;
+			return (ir << 16) | (ig << 8) | ib;
 		} catch (IOException e) {
 			// ignore
 		}
@@ -313,7 +331,20 @@ public class ColorConfig {
 			@SerializedName("grass_tint") Set<String> grassTint,
 			@SerializedName("foliage_tint") Set<String> foliageTint,
 			@SerializedName("water") Set<String> water,
-			@SerializedName("foliage") Set<String> foliage) {
+			@SerializedName("foliage") Set<String> foliage,
+			@SerializedName("static_tint") Map<String, Integer> staticTint,
+			@SerializedName("static_color") Map<String, Integer> staticColor) {
+
+		private static final Gson GSON = new GsonBuilder()
+				.setPrettyPrinting()
+				.registerTypeAdapter(Integer.class, new HexColorAdapter())
+				.create();
+
+		public static ColorProperties load(Path path) throws IOException {
+			try (BufferedReader reader = Files.newBufferedReader(path)) {
+				return GSON.fromJson(reader, ColorProperties.class);
+			}
+		}
 
 		public boolean isAir(String blockName) {
 			return air.contains(blockName);
@@ -339,12 +370,22 @@ public class ColorConfig {
 			return foliage.contains(blockName) ? BlockColor.FOLIAGE : 0;
 		}
 
+		public int getStaticTint(String blockName) {
+			return staticTint.containsKey(blockName) ? BlockColor.STATIC_TINT : 0;
+		}
+
+		public int getStaticColor(String blockName) {
+			return staticColor.containsKey(blockName) ? BlockColor.STATIC_COLOR : 0;
+		}
+
 		public int get(String blockName) {
 			return getTransparent(blockName)
 					| getGrassTint(blockName)
 					| getFoliageTint(blockName)
 					| getWater(blockName)
-					| getFoliage(blockName);
+					| getFoliage(blockName)
+					| getStaticTint(blockName)
+					| getStaticColor(blockName);
 		}
 	}
 }

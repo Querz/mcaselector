@@ -138,6 +138,7 @@ public final class TileImage {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	private static void drawChunkImage(Chunk chunkData, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights) {
 
 		if (chunkData.getData() == null) {
