@@ -3,40 +3,33 @@ package net.querz.mcaselector.version.mapping.registry;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.querz.mcaselector.io.FileHelper;
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public final class StatusRegistry {
 
-	private static final Logger LOGGER = LogManager.getLogger(StatusRegistry.class);
-
 	private StatusRegistry() {}
-
-	private static final Map<String, String> valid = new HashMap<>();
 
 	private static final Gson GSON = new GsonBuilder()
 			.setPrettyPrinting()
 			.create();
 
-	static {
-		try (BufferedReader bis = new BufferedReader(new InputStreamReader(
-				Objects.requireNonNull(StatusRegistry.class.getClassLoader().getResourceAsStream("mapping/registry/status.json"))))) {
-			List<String> status = GSON.fromJson(bis, new TypeToken<List<String>>(){}.getType());
-			for (String s : status) {
-				valid.put(s, "minecraft:" + s);
-				valid.put("minecraft:" + s, s);
-			}
-		} catch (IOException ex) {
-			LOGGER.error("error reading mapping/registry/status.json", ex);
+	private static final Map<String, String> valid = FileHelper.loadFromResource("mapping/registry/status.json", p -> {
+		Map<String, String> map = new HashMap<>();
+		List<String> status;
+		try (BufferedReader reader = Files.newBufferedReader(p)) {
+			status = GSON.fromJson(reader, new TypeToken<List<String>>(){}.getType());
 		}
-	}
+		for (String s : status) {
+			map.put(s, "minecraft:" + s);
+			map.put("minecraft:" + s, s);
+		}
+		return map;
+	});
 
 	public static boolean isValidName(String name) {
 		return valid.containsKey(name) || name != null && name.startsWith("'") && name.endsWith("'");
