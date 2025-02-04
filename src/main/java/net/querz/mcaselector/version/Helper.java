@@ -1,8 +1,8 @@
 package net.querz.mcaselector.version;
 
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.point.Point3i;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.point.Point3i;
 import net.querz.nbt.*;
 import java.util.Random;
 

@@ -1,6 +1,6 @@
 package net.querz.mcaselector.version.java_1_18;
 
-import net.querz.mcaselector.math.Bits;
+import net.querz.mcaselector.util.math.Bits;
 import net.querz.mcaselector.version.ChunkRenderer;
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.version.Helper;

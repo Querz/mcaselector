@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.ints.IntConsumer;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.shorts.ShortPredicate;
-import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.util.point.Point2i;
 import java.io.Serializable;
 
 public class ChunkSet implements IntIterable, Serializable, Cloneable {

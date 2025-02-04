@@ -1,6 +1,6 @@
 package net.querz.mcaselector.version.java_1_16;
 
-import net.querz.mcaselector.point.Point3i;
+import net.querz.mcaselector.util.point.Point3i;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.MCVersionImplementation;
 import net.querz.mcaselector.version.java_1_15.ChunkFilter_19w36a;

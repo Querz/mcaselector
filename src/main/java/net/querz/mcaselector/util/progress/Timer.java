@@ -1,4 +1,4 @@
-package net.querz.mcaselector.progress;
+package net.querz.mcaselector.util.progress;
 
 public class Timer {
 

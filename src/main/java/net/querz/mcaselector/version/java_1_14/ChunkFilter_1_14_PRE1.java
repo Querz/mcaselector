@@ -1,8 +1,8 @@
 package net.querz.mcaselector.version.java_1_14;
 
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.point.Point3i;
+import net.querz.mcaselector.util.range.Range;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.MCVersionImplementation;
@@ -11,7 +11,7 @@ import net.querz.nbt.ListTag;
 import net.querz.nbt.Tag;
 import java.util.List;
 import java.util.Map;
-import static net.querz.mcaselector.validation.ValidationHelper.silent;
+import static net.querz.mcaselector.util.validation.ValidationHelper.silent;
 
 public class ChunkFilter_1_14_PRE1 {
 

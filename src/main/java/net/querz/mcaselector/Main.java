@@ -7,7 +7,7 @@ import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.validation.ShutdownHooks;
+import net.querz.mcaselector.util.validation.ShutdownHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import javax.swing.*;

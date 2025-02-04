@@ -1,6 +1,6 @@
 package net.querz.mcaselector.logging;
 
-import net.querz.mcaselector.validation.ShutdownHooks;
+import net.querz.mcaselector.util.validation.ShutdownHooks;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Marker;

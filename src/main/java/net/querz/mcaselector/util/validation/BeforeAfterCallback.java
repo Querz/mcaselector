@@ -1,4 +1,4 @@
-package net.querz.mcaselector.validation;
+package net.querz.mcaselector.util.validation;
 
 public interface BeforeAfterCallback {
 

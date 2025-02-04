@@ -15,7 +15,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import net.querz.mcaselector.config.ConfigProvider;
-import net.querz.mcaselector.github.VersionChecker;
+import net.querz.mcaselector.util.github.VersionChecker;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.selection.ClipboardSelection;
 import net.querz.mcaselector.tile.TileMap;

@@ -2,9 +2,9 @@ package net.querz.mcaselector.version.java_1_17;
 
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.point.Point3i;
+import net.querz.mcaselector.util.range.Range;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.MCVersionImplementation;

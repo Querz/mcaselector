@@ -2,7 +2,7 @@ package net.querz.mcaselector.ui.component;
 
 import javafx.application.Platform;
 import javafx.scene.control.Dialog;
-import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.util.point.Point2i;
 import java.util.HashMap;
 import java.util.Map;
 

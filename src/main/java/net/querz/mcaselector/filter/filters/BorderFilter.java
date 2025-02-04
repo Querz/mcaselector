@@ -10,7 +10,7 @@ import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
-import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.StringTag;

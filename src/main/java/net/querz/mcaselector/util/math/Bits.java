@@ -1,4 +1,4 @@
-package net.querz.mcaselector.math;
+package net.querz.mcaselector.util.math;
 
 public final class Bits {
 

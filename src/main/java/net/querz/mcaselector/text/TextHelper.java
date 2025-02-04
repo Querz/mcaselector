@@ -1,13 +1,6 @@
 package net.querz.mcaselector.text;
 
-import net.querz.mcaselector.exception.ParseException;
-import net.querz.mcaselector.filter.filters.PaletteFilter;
-import net.querz.mcaselector.io.StringPointer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import net.querz.mcaselector.util.exception.ParseException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
@@ -19,17 +12,12 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class TextHelper {
-
-	private static final Logger LOGGER = LogManager.getLogger(TextHelper.class);
 
 	private TextHelper() {}
 

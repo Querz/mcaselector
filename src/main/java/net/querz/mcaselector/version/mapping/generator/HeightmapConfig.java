@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import net.querz.mcaselector.io.mca.RegionChunk;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
-import net.querz.mcaselector.math.Bits;
+import net.querz.mcaselector.util.math.Bits;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersion;
 import net.querz.mcaselector.version.mapping.util.DebugWorld;

@@ -5,7 +5,7 @@ import net.querz.mcaselector.config.adapter.FileAdapter;
 import net.querz.mcaselector.config.adapter.WorldDirectoriesAdapter;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.logging.GsonNamingStrategy;
-import net.querz.mcaselector.math.Bits;
+import net.querz.mcaselector.util.math.Bits;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.File;

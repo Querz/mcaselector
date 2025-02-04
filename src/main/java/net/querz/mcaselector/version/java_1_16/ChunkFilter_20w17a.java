@@ -1,13 +1,10 @@
 package net.querz.mcaselector.version.java_1_16;
 
-import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.math.Bits;
+import net.querz.mcaselector.util.math.Bits;
 import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.MCVersionImplementation;
 import net.querz.mcaselector.version.java_1_13.ChunkFilter_17w47a;
-import net.querz.mcaselector.version.java_1_13.ChunkFilter_1_13_PRE3;
-import net.querz.mcaselector.version.mapping.generator.HeightmapConfig;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import java.util.Map;

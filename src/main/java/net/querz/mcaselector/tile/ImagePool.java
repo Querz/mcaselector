@@ -12,7 +12,7 @@ import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.io.db.CacheDBController;
 import net.querz.mcaselector.io.job.CachedImageLoadJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
-import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.ui.dialog.ErrorDialog;

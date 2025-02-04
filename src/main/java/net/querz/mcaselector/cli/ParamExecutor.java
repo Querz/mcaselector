@@ -12,11 +12,11 @@ import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.job.*;
 import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.overlay.OverlayParser;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.point.Point3i;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.point.Point3i;
 import net.querz.mcaselector.property.DataProperty;
-import net.querz.mcaselector.range.Range;
-import net.querz.mcaselector.range.RangeParser;
+import net.querz.mcaselector.util.range.Range;
+import net.querz.mcaselector.util.range.RangeParser;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.selection.SelectionData;
 import net.querz.mcaselector.tile.OverlayPool;
@@ -281,7 +281,7 @@ public final class ParamExecutor {
 				this.args = altList.toArray(new String[0]);
 				LOGGER.warn("preprocessed args with custom command parser, original args: {}", Arrays.toString(args));
 				return;
-			} catch (net.querz.mcaselector.exception.ParseException e) {
+			} catch (net.querz.mcaselector.util.exception.ParseException e) {
 				throw new RuntimeException(e);
 			}
 		}

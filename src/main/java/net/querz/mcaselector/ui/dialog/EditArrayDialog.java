@@ -22,7 +22,7 @@ import javafx.util.converter.ByteStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.LongStringConverter;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.math.Bits;
+import net.querz.mcaselector.util.math.Bits;
 import net.querz.mcaselector.text.Translation;
 import java.lang.reflect.Array;
 import java.util.ArrayList;

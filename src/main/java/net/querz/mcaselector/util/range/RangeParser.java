@@ -1,4 +1,4 @@
-package net.querz.mcaselector.range;
+package net.querz.mcaselector.util.range;
 
 import java.util.ArrayList;
 import java.util.Collections;

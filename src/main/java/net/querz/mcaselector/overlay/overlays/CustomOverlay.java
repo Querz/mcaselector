@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.querz.mcaselector.config.adapter.OverlayAdapter;
-import net.querz.mcaselector.exception.ParseException;
+import net.querz.mcaselector.util.exception.ParseException;
 import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.overlay.AmountParser;

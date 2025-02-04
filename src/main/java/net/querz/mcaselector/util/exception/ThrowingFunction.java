@@ -1,4 +1,4 @@
-package net.querz.mcaselector.exception;
+package net.querz.mcaselector.util.exception;
 
 @FunctionalInterface
 public interface ThrowingFunction <T, R, E extends Throwable> {

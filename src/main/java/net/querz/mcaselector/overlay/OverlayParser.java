@@ -1,6 +1,6 @@
 package net.querz.mcaselector.overlay;
 
-import net.querz.mcaselector.exception.ParseException;
+import net.querz.mcaselector.util.exception.ParseException;
 
 public class OverlayParser {
 

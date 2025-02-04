@@ -1,9 +1,9 @@
 package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.point.Point3i;
+import net.querz.mcaselector.util.range.Range;
 import net.querz.mcaselector.selection.ChunkSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,6 +1,6 @@
 package net.querz.mcaselector.io;
 
-import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.util.point.Point2i;
 import java.io.File;
 
 public class RegionDirectories implements Cloneable {

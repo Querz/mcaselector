@@ -2,7 +2,7 @@ package net.querz.mcaselector.config;
 
 import com.google.gson.Gson;
 import net.querz.mcaselector.logging.Logging;
-import net.querz.mcaselector.math.Bits;
+import net.querz.mcaselector.util.math.Bits;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.File;

@@ -1,7 +1,7 @@
-package net.querz.mcaselector.github;
+package net.querz.mcaselector.util.github;
 
 import com.google.gson.Gson;
-import net.querz.mcaselector.validation.ValidationHelper;
+import net.querz.mcaselector.util.validation.ValidationHelper;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
