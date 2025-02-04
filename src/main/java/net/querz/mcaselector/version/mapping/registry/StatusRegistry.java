@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.querz.mcaselector.io.FileHelper;
+
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +32,7 @@ public final class StatusRegistry {
 		return valid.containsKey(name) || name != null && name.startsWith("'") && name.endsWith("'");
 	}
 
-	public static class StatusIdentifier {
+	public static class StatusIdentifier implements Serializable {
 		String name;
 		String nameWithNamespace;
 		boolean custom = false;

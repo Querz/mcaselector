@@ -106,73 +106,27 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 	}
 
 	public boolean appliesToRegion(Point2i region) {
-		GroupFilter gf = resolveNegations();
-
-		// if we have anything else than xPos and zPos filters, we apply to this region
 		boolean currentResult = true;
-		for (int i = 0; i < gf.children.size(); i++) {
-			Filter<?> child = gf.children.get(i);
-			if (child instanceof GroupFilter && ((GroupFilter) child).appliesToRegion(region)) {
-				currentResult = true;
-			} else if (child instanceof RegionMatcher regionMatcher) {
-				if ((child.getOperator() == Operator.AND || i == 0) && currentResult) {
-					currentResult = regionMatcher.matchesRegion(region);
-				} else if (child.getOperator() == Operator.OR) {
-					// don't check other conditions if everything before OR is already true
-					if (currentResult) {
-						return true;
-					}
-					// otherwise, reset currentResult
-					currentResult = regionMatcher.matchesRegion(region);
-				}
-			} else {
-				return true;
-			}
-		}
-
-		return currentResult;
-	}
-
-	private GroupFilter resolveNegations() {
-		return resolveNegations(negated);
-	}
-
-	private GroupFilter resolveNegations(boolean negated) {
-		GroupFilter group = new GroupFilter();
-		GroupFilter workingGroup = new GroupFilter();
 		for (int i = 0; i < children.size(); i++) {
-			Filter<?> child = children.get(i);
-			if (child instanceof GroupFilter) {
-				group.addFilter(((GroupFilter) child).resolveNegations(negated));
-				continue;
-			}
-
-			if (negated) {
-				Filter<?> clone = child.clone();
-				clone.setOperator(Operator.negate(child.getOperator()));
-				clone.setComparator(Comparator.negate(child.getComparator()));
-
-				if (clone.getOperator() == Operator.AND && i != 0) {
-					if (workingGroup.children.size() == 1) {
-						group.addFilter(workingGroup.children.getFirst());
-					} else {
-						group.addFilter(workingGroup);
-					}
-					workingGroup = new GroupFilter();
+			if ((children.get(i).getOperator() == Operator.AND || i == 0) && currentResult) {
+				if (children.get(i) instanceof RegionMatcher regionMatcher) {
+					currentResult = regionMatcher.matchesRegion(region);
+				} else {
+					currentResult = true;
 				}
-				workingGroup.addFilter(clone);
-			} else {
-				group.addFilter(child.clone());
+			} else if (children.get(i).getOperator() == Operator.OR) {
+				if (currentResult) {
+					return !negated;
+				}
+
+				if (children.get(i) instanceof RegionMatcher regionMatcher) {
+					currentResult = regionMatcher.matchesRegion(region);
+				} else {
+					currentResult = true;
+				}
 			}
 		}
-		if (!workingGroup.isEmpty()) {
-			if (workingGroup.children.size() == 1) {
-				group.addFilter(workingGroup.children.getFirst());
-			} else {
-				group.addFilter(workingGroup);
-			}
-		}
-		return group;
+		return negated != currentResult;
 	}
 
 	@Override

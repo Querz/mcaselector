@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.querz.mcaselector.io.FileHelper;
+
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +45,7 @@ public final class BiomeRegistry {
 		return nameMapping.getOrDefault(name, null);
 	}
 
-	public static class BiomeIdentifier {
+	public static class BiomeIdentifier implements Serializable {
 
 		Integer id;
 		String name;

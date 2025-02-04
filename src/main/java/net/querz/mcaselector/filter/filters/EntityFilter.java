@@ -11,8 +11,6 @@ import net.querz.mcaselector.version.mapping.registry.EntityRegistry;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.Tag;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,8 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EntityFilter extends TextFilter<List<String>> {
-
-	private static final Logger LOGGER = LogManager.getLogger(EntityFilter.class);
 
 	private static final Pattern entityNamePattern = Pattern.compile("^(?<space>[a-z_]*):?(?<id>[a-z_]*)$");
 
