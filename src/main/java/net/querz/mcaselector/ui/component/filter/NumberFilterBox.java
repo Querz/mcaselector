@@ -9,6 +9,7 @@ import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.filter.NumberFilter;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.UIFactory;
+import java.util.Objects;
 
 public class NumberFilterBox extends FilterBox {
 
@@ -16,7 +17,7 @@ public class NumberFilterBox extends FilterBox {
 	private final ComboBox<Comparator> comparator = new ComboBox<>();
 
 	private static final PseudoClass invalid = PseudoClass.getPseudoClass("invalid");
-	private static final String stylesheet = NumberFilterBox.class.getClassLoader().getResource("style/component/number-filter-box.css").toExternalForm();
+	private static final String stylesheet = Objects.requireNonNull(NumberFilterBox.class.getClassLoader().getResource("style/component/number-filter-box.css")).toExternalForm();
 
 	public NumberFilterBox(FilterBox parent, NumberFilter<?> filter, boolean root) {
 		super(parent, filter, root);

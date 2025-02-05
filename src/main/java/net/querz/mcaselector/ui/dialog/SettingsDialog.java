@@ -16,7 +16,7 @@ import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.config.GlobalConfig;
 import net.querz.mcaselector.config.WorldConfig;
 import net.querz.mcaselector.io.WorldDirectories;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.component.BorderedTitledPane;
 import net.querz.mcaselector.ui.component.FileTextField;
@@ -373,7 +373,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			return null;
 		});
 
-		getDialogPane().getStylesheets().add(SettingsDialog.class.getClassLoader().getResource("style/component/settings-dialog.css").toExternalForm());
+		getDialogPane().getStylesheets().add(Objects.requireNonNull(SettingsDialog.class.getClassLoader().getResource("style/component/settings-dialog.css")).toExternalForm());
 	}
 
 	private <T extends Node> T withAlignment(T node) {
@@ -410,7 +410,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			max = min;
 		}
 		Slider slider = new Slider(min, max, init);
-		int majorTicks = Math.max((int) Math.ceil(max - min) / 5, 1);
+		int majorTicks = Math.max((max - min) / 5, 1);
 		slider.setMajorTickUnit(majorTicks);
 		slider.setMinorTickCount(majorTicks - 1);
 		slider.setBlockIncrement(steps);

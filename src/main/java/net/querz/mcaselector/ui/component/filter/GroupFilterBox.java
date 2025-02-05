@@ -5,13 +5,14 @@ import net.querz.mcaselector.filter.*;
 import net.querz.mcaselector.filter.filters.GroupFilter;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.UIFactory;
+import java.util.Objects;
 
 public class GroupFilterBox extends FilterBox {
 
 	// has a listview in the bottom part of the border pane
 	protected VBox filters = new VBox();
 
-	private static final String stylesheet = GroupFilterBox.class.getClassLoader().getResource("style/component/group-filter-box.css").toExternalForm();
+	private static final String stylesheet = Objects.requireNonNull(GroupFilterBox.class.getClassLoader().getResource("style/component/group-filter-box.css")).toExternalForm();
 
 	public GroupFilterBox(FilterBox parent, GroupFilter filter, boolean root) {
 		super(parent, filter, root);

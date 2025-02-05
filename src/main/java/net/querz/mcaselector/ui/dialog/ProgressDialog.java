@@ -13,6 +13,8 @@ import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.ui.UIFactory;
+
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class ProgressDialog extends Stage {
@@ -47,7 +49,7 @@ public class ProgressDialog extends Stage {
 		scene.setFill(Color.TRANSPARENT);
 
 		scene.getStylesheets().addAll(primaryStage.getScene().getStylesheets());
-		scene.getStylesheets().add(ProgressDialog.class.getClassLoader().getResource("style/component/progress-dialog.css").toExternalForm());
+		scene.getStylesheets().add(Objects.requireNonNull(ProgressDialog.class.getClassLoader().getResource("style/component/progress-dialog.css")).toExternalForm());
 
 		setScene(scene);
 	}

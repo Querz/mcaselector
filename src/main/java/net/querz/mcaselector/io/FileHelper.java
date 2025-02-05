@@ -6,11 +6,10 @@ import javafx.stage.Stage;
 import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.util.exception.ThrowingFunction;
 import net.querz.mcaselector.util.point.Point2i;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.io.*;
 import java.net.JarURLConnection;
 import java.net.URI;
@@ -304,7 +303,7 @@ public final class FileHelper {
 
 		// detect custom dimensions
 		File[] customDimensions = dir.listFiles((d, name) -> !name.equals("DIM-1") && !name.equals("DIM1") && name.matches("^DIM-?\\d+$"));
-		if (customDimensions != null && customDimensions.length > 0) {
+		if (customDimensions != null) {
 			for (File customDimension : customDimensions) {
 				if (isValidDimension(customDimension)) {
 					result.add(customDimension);
@@ -366,7 +365,7 @@ public final class FileHelper {
 	}
 
 	public static WorldDirectories testWorldDirectoriesValid(List<File> files, Stage primaryStage) {
-		if (files.size() == 0) {
+		if (files.isEmpty()) {
 			return null;
 		}
 
@@ -418,13 +417,13 @@ public final class FileHelper {
 		if (files.size() != 1) {
 			return null;
 		}
-		File file = files.get(0);
+		File file = files.getFirst();
 		if (file.isFile()) {
 			file = file.getParentFile();
 		}
 		List<File> dimensionDirs = detectDimensionDirectories(file);
 		if (dimensionDirs.size() == 1) {
-			return detectWorldDirectories(dimensionDirs.get(0));
+			return detectWorldDirectories(dimensionDirs.getFirst());
 		} else if (dimensionDirs.size() > 1) {
 			if (primaryStage != null) {
 				Optional<File> result = new SelectWorldDialog(dimensionDirs, primaryStage).showAndWait();

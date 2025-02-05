@@ -15,6 +15,7 @@ import net.querz.mcaselector.text.Translation;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.util.Objects;
 
 public class ErrorDialog extends Alert {
 
@@ -31,11 +32,11 @@ public class ErrorDialog extends Alert {
 	public ErrorDialog(Stage primaryStage, Exception ex) {
 		super(AlertType.ERROR, null, ButtonType.CLOSE);
 		init(primaryStage);
-		getDialogPane().getStylesheets().add(ErrorDialog.class.getClassLoader().getResource("style/component/error-dialog.css").toExternalForm());
+		getDialogPane().getStylesheets().add(Objects.requireNonNull(ErrorDialog.class.getClassLoader().getResource("style/component/error-dialog.css")).toExternalForm());
 
 		String errorMessage = TextHelper.getStacktraceAsString(ex);
 		ButtonType copyToClipboard = new ButtonType(Translation.DIALOG_ERROR_BUTTON_COPY_TO_CLIPBOARD.toString(), ButtonBar.ButtonData.BACK_PREVIOUS);
-		getDialogPane().getButtonTypes().add(0, copyToClipboard);
+		getDialogPane().getButtonTypes().addFirst(copyToClipboard);
 
 		TextArea errorText = new TextArea();
 		errorText.setEditable(false);

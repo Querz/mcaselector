@@ -1,7 +1,6 @@
 package net.querz.mcaselector.version.mapping.color;
 
 import com.google.gson.annotations.SerializedName;
-
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Iterator;

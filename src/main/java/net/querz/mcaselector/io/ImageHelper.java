@@ -9,7 +9,6 @@ import net.querz.mcaselector.util.progress.Timer;
 import net.querz.mcaselector.tile.Tile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.geom.AffineTransform;

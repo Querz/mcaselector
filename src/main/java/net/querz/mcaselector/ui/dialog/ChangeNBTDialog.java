@@ -30,7 +30,7 @@ import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.RegionChunk;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.util.point.Point2i;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tile.TileMap;
@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements PersistentDialogProperties {
 
@@ -116,7 +117,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 
 		// apply same stylesheets to this dialog
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
-		getDialogPane().getStylesheets().add(ChangeNBTDialog.class.getClassLoader().getResource("style/component/change-nbt-dialog.css").toExternalForm());
+		getDialogPane().getStylesheets().add(Objects.requireNonNull(ChangeNBTDialog.class.getClassLoader().getResource("style/component/change-nbt-dialog.css")).toExternalForm());
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
@@ -295,7 +296,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 					first = false;
 				}
 			}
-			if (sb.length() > 0) {
+			if (!sb.isEmpty()) {
 				if (result) {
 					LOGGER.debug(sb);
 				}

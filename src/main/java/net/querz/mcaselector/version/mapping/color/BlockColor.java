@@ -4,7 +4,6 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-
 import java.io.IOException;
 import java.util.Objects;
 
@@ -16,12 +15,12 @@ public class BlockColor {
 
 	public int properties;
 
-	public static final int TRANSPARENT =  0b1;
-	public static final int GRASS_TINT =   0b10;
-	public static final int FOLIAGE_TINT = 0b100;
-	public static final int WATER =        0b1000;
-	public static final int FOLIAGE =      0b10000;
-	public static final int STATIC_TINT =  0b100000;
+	public static final int TRANSPARENT =  0b0000001;
+	public static final int GRASS_TINT =   0b0000010;
+	public static final int FOLIAGE_TINT = 0b0000100;
+	public static final int WATER =        0b0001000;
+	public static final int FOLIAGE =      0b0010000;
+	public static final int STATIC_TINT =  0b0100000;
 	public static final int STATIC_COLOR = 0b1000000;
 
 	public static final int TINTED = GRASS_TINT | FOLIAGE_TINT | WATER;

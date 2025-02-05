@@ -380,7 +380,7 @@ public class EditArrayDialog<T> extends Dialog<EditArrayDialog.Result> {
 				int bits = this.bits.getValue().bits;
 				double blockStatesIndex = index / ((double) bitValues.length / l.length);
 				int longIndex = (int) blockStatesIndex;
-				int startBit = (int) ((blockStatesIndex - Math.floor(longIndex)) * 64D);
+				int startBit = (int) ((blockStatesIndex - (double) longIndex) * 64D);
 				if (startBit + bits > 64) {
 					l[longIndex] = Bits.setBits(value.shortValue(), l[longIndex], startBit, 64);
 					l[longIndex + 1] = Bits.setBits(value.shortValue() >> (64 - startBit), l[longIndex + 1], 0, startBit + bits - 64);

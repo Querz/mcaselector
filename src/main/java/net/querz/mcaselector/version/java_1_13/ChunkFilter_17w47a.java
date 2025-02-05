@@ -189,9 +189,9 @@ public class ChunkFilter_17w47a {
 		}
 
 		protected Point3i indexToLocation(int i) {
-			int x = i % 16;
-			int z = (i - x) / 16 % 16;
-			int y = (i - z * 16 - x) / 256;
+			int x = i & 0xF;
+			int z = (i - x) >> 4 & 0xF;
+			int y = (i - z * 16 - x) >> 8;
 			return new Point3i(x, y, z);
 		}
 

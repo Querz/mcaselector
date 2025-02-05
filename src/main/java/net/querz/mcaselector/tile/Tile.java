@@ -6,7 +6,6 @@ import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.io.ImageHelper;
-
 import java.io.File;
 
 public class Tile {

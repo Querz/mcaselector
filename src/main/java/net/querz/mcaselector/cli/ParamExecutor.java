@@ -14,7 +14,7 @@ import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.overlay.OverlayParser;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.point.Point3i;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.util.range.Range;
 import net.querz.mcaselector.util.range.RangeParser;
 import net.querz.mcaselector.selection.Selection;

@@ -14,7 +14,7 @@ import net.querz.mcaselector.io.mca.EntitiesMCAFile;
 import net.querz.mcaselector.io.mca.PoiMCAFile;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.util.point.Point2i;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.overlay.Overlay;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

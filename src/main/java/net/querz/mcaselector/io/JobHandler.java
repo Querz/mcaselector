@@ -5,7 +5,7 @@ import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.ProcessDataJob;
 import net.querz.mcaselector.io.job.SaveDataJob;
 import net.querz.mcaselector.util.progress.Timer;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.util.validation.ShutdownHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

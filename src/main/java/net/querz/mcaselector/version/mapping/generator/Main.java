@@ -1,17 +1,11 @@
 package net.querz.mcaselector.version.mapping.generator;
 
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.version.mapping.color.*;
-import net.querz.mcaselector.version.mapping.minecraft.Blocks;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersion;
 import net.querz.mcaselector.version.mapping.minecraft.VersionManifest;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
 
 public class Main {
 
@@ -107,62 +101,5 @@ public class Main {
 		blockConfig.save(b);
 
 		System.exit(0);
-	}
-
-	private static void convert(MinecraftVersion version, Path tmp, Path configs, Path colorsTxt, Path biomeTxt) throws IOException {
-		ColorConfig cfg = new ColorConfig();
-
-		Blocks blocks = Blocks.load(tmp.resolve("blocks.json"));
-		cfg.states = blocks.generateBlockStates();
-
-		Map<String, String> waterloggedTrue = new HashMap<>();
-		waterloggedTrue.put("waterlogged", "true");
-		Map<String, String> waterloggedFalse = new HashMap<>();
-		waterloggedFalse.put("waterlogged", "false");
-
-		cfg.colors = new ColorMapping();
-		try (Stream<String> lines = Files.lines(colorsTxt)) {
-			lines.forEach(line -> {
-				String[] split = line.split(";");
-				String name = split[0];
-				String properties = "";
-				int oldColor = Integer.parseInt(split[1], 16);
-				if (name.contains(":")) {
-					String[] data = name.split(":");
-					name = data[0];
-					properties = data[1];
-				}
-				name = "minecraft:" + name;
-
-				BitSet blockState = cfg.states.getState(properties);
-
-				boolean canBeWaterlogged = blocks.states.get(name).properties().containsKey("waterlogged");
-				if (canBeWaterlogged && blockState != null) {
-					BitSet blockStateWT = cfg.states.getState(waterloggedTrue);
-					blockStateWT.or(blockState);
-					cfg.colors.addBlockColor(name, blockStateWT, new BlockColor(oldColor, ColorConfig.colorProperties.get(name)));
-					BitSet blockStateWF = cfg.states.getState(waterloggedFalse);
-					blockStateWF.or(blockState);
-					cfg.colors.addBlockColor(name, blockStateWF, new BlockColor(oldColor, ColorConfig.colorProperties.get(name)));
-				} else {
-					cfg.colors.addBlockColor(name, blockState, new BlockColor(oldColor, ColorConfig.colorProperties.get(name)));
-				}
-			});
-		}
-
-		cfg.tints = new BiomeColors();
-		try (Stream<String> lines = Files.lines(biomeTxt)) {
-			lines.forEach(line -> {
-				String[] split = line.split(";");
-//				String name = "minecraft:" + split[0];
-				String name = split[0];
-				int grass = Integer.parseInt(split[1], 16);
-				int foliage = Integer.parseInt(split[2], 16);
-				int water = Integer.parseInt(split[3], 16);
-				cfg.tints.addTints(name, new BiomeColors.BiomeTints(grass, foliage, water));
-			});
-		}
-
-		cfg.save(configs.resolve("colors.json"));
 	}
 }

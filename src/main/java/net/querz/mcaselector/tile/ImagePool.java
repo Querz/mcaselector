@@ -250,8 +250,7 @@ public final class ImagePool {
 			task.setMax(files.length);
 		}
 
-		ForkJoinPool threadPool = new ForkJoinPool(ConfigProvider.GLOBAL.getProcessThreads());
-		try {
+		try (ForkJoinPool threadPool = new ForkJoinPool(ConfigProvider.GLOBAL.getProcessThreads()))  {
 			List<Point2i> points = threadPool.submit(() -> Arrays.stream(files).parallel()
 					.filter(file -> file.length() > FileHelper.HEADER_SIZE) // only files that have more data than just the header
 					.map(file -> {
@@ -271,8 +270,6 @@ public final class ImagePool {
 				task.done(null);
 			}
 			new ErrorDialog(tileMap.getWindow().getPrimaryStage(), e);
-		} finally {
-			threadPool.shutdown();
 		}
 	}
 

@@ -29,6 +29,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class OptionBar extends BorderPane {
 	/*
@@ -99,7 +100,7 @@ public class OptionBar extends BorderPane {
 		getStyleClass().add("option-bar-box");
 		menuBar.getStyleClass().add("option-bar");
 
-		getStylesheets().add(OptionBar.class.getClassLoader().getResource("style/component/option-bar.css").toExternalForm());
+		getStylesheets().add(Objects.requireNonNull(OptionBar.class.getClassLoader().getResource("style/component/option-bar.css")).toExternalForm());
 
 		tileMap.setOnUpdate(this::onUpdate);
 

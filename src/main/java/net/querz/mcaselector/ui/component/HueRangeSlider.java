@@ -9,6 +9,7 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import net.querz.mcaselector.io.ImageHelper;
+import java.util.Objects;
 
 public class HueRangeSlider extends RangeSlider {
 
@@ -17,7 +18,7 @@ public class HueRangeSlider extends RangeSlider {
 
 	public HueRangeSlider(float minHue, float maxHue, float low, float high, int width) {
 		super(minHue, maxHue, minHue, maxHue);
-		getStylesheets().add(HueRangeSlider.class.getClassLoader().getResource("style/component/hue-range-slider.css").toExternalForm());
+		getStylesheets().add(Objects.requireNonNull(HueRangeSlider.class.getClassLoader().getResource("style/component/hue-range-slider.css")).toExternalForm());
 		this.width = width;
 
 		if (low > high) {

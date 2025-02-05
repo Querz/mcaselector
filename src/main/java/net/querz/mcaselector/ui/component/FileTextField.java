@@ -9,10 +9,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.ui.DialogHelper;
-
 import java.io.File;
+import java.util.Objects;
 
 public class FileTextField extends HBox {
 
@@ -23,7 +23,7 @@ public class FileTextField extends HBox {
 
 	public FileTextField() {
 		getStyleClass().add("file-text-field");
-		getStylesheets().add(FileTextField.class.getClassLoader().getResource("style/component/file-text-field.css").toExternalForm());
+		getStylesheets().add(Objects.requireNonNull(FileTextField.class.getClassLoader().getResource("style/component/file-text-field.css")).toExternalForm());
 
 
 		HBox.setHgrow(textField, Priority.ALWAYS);

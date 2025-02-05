@@ -2,7 +2,6 @@ package net.querz.mcaselector.ui.component;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -19,18 +18,13 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.ui.dialog.EditArrayDialog;
 import net.querz.nbt.*;
 import static net.querz.nbt.Tag.Type.*;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -65,7 +59,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		getStyleClass().add("nbt-tree-view");
 		setEditable(true);
 		setCellFactory(tv -> new KeyValueTreeCell());
-		getStylesheets().add(NBTTreeView.class.getClassLoader().getResource("style/component/nbt-tree-view.css").toExternalForm());
+		getStylesheets().add(Objects.requireNonNull(NBTTreeView.class.getClassLoader().getResource("style/component/nbt-tree-view.css")).toExternalForm());
 	}
 
 	public void setOnSelectionChanged(BiConsumer<TreeItem<NamedTag>, TreeItem<NamedTag>> c) {
@@ -244,11 +238,12 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 	}
 
 	private static NBTTreeItem toTreeItem(int index, String name, Tag tag, Tag parent) {
+		NBTTreeItem item;
 		switch (tag.getType()) {
 			case END:
 				return null;
 			case LIST:
-				NBTTreeItem item = new NBTTreeItem(new NamedTag(index, name, tag, parent));
+				item = new NBTTreeItem(new NamedTag(index, name, tag, parent));
 				ListTag list = (ListTag) tag;
 				for (int i = 0; i < list.size(); i++) {
 					item.getChildren().add(toTreeItem(i, null, list.get(i), tag));
@@ -410,7 +405,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		return listTag.getElementType() == null || listTag.getElementType() == item.getValue().tag.getType();
 	}
 
-	class KeyValueTreeCell extends TreeCell<NamedTag> {
+	public class KeyValueTreeCell extends TreeCell<NamedTag> {
 		private HBox box;
 		private TextField key;
 		private TextField value;
@@ -782,7 +777,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				}
 				edit.setOnAction(e -> {
 					@SuppressWarnings("rawtypes")
-					Optional<EditArrayDialog.Result> result = new EditArrayDialog<>(tagToArray(getItem().tag), stage).showAndWait();
+					Optional<EditArrayDialog.Result> result = new EditArrayDialog<>(Objects.requireNonNull(tagToArray(getItem().tag)), stage).showAndWait();
 					result.ifPresent(r -> setArrayValue(getItem().tag, r.getArray()));
 				});
 
@@ -857,7 +852,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			super.cancelEdit();
 			setText(tagToString(getItem()));
 			if (!box.getChildren().isEmpty()) {
-				setGraphic(box.getChildren().get(0));
+				setGraphic(box.getChildren().getFirst());
 			}
 		}
 
@@ -905,7 +900,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		private boolean isLastItem(NamedTag tag) {
 			if (tag.parent instanceof CompoundTag || tag.parent instanceof ListTag) {
 				ObservableList<TreeItem<NamedTag>> childrenItems = getTreeItem().getParent().getChildren();
-				return childrenItems.get(childrenItems.size() - 1).getValue() == tag;
+				return childrenItems.getLast().getValue() == tag;
 			}
 			return false;
 		}

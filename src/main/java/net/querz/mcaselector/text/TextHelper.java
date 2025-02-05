@@ -40,7 +40,7 @@ public final class TextHelper {
 		for (Map.Entry<Pattern, Long> entry : DURATION_REGEXP.entrySet()) {
 			Matcher m = entry.getKey().matcher(d);
 			if (m.find()) {
-				duration += Long.parseLong(m.group("data")) * entry.getValue();
+				duration += (int) (Long.parseLong(m.group("data")) * entry.getValue());
 				result = true;
 
 				elements.add(d.substring(m.start(), m.end()));
@@ -55,7 +55,7 @@ public final class TextHelper {
 			remains = remains.replaceFirst(element, "");
 		}
 		remains = remains.trim();
-		if (remains.length() > 0) {
+		if (!remains.isEmpty()) {
 			throw new IllegalArgumentException("invalid element in duration string: " + remains);
 		}
 

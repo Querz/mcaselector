@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.filter.*;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.util.point.Point2i;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.CompoundTag;

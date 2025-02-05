@@ -20,7 +20,7 @@ import net.querz.mcaselector.selection.ClipboardSelection;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.selection.SelectionData;
 import net.querz.mcaselector.tile.TileMap;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.dialog.*;
@@ -604,7 +604,7 @@ public class DialogHelper {
 
 			// if there is only one dimension, open it instantly
 			if (dimensions.size() == 1) {
-				setWorld(FileHelper.detectWorldDirectories(dimensions.get(0)), dimensions, tileMap, primaryStage);
+				setWorld(FileHelper.detectWorldDirectories(dimensions.getFirst()), dimensions, tileMap, primaryStage);
 				return;
 			}
 			// show world selection dialog

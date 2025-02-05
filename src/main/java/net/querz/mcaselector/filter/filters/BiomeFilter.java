@@ -6,7 +6,6 @@ import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionHandler;
 import net.querz.mcaselector.version.mapping.registry.BiomeRegistry;
-
 import java.util.*;
 
 public class BiomeFilter extends TextFilter<List<BiomeRegistry.BiomeIdentifier>> {

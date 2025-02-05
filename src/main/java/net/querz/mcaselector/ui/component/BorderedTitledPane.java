@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import net.querz.mcaselector.text.Translation;
+import java.util.Objects;
 
 public class BorderedTitledPane extends StackPane {
 
@@ -22,6 +23,6 @@ public class BorderedTitledPane extends StackPane {
 		getStyleClass().add("bordered-titled-border");
 		getChildren().addAll(title, contentPane);
 
-		getStylesheets().add(BorderedTitledPane.class.getClassLoader().getResource("style/component/bordered-titled-pane.css").toExternalForm());
+		getStylesheets().add(Objects.requireNonNull(BorderedTitledPane.class.getClassLoader().getResource("style/component/bordered-titled-pane.css")).toExternalForm());
 	}
 }

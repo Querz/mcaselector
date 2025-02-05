@@ -10,7 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.point.Point3i;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.util.range.Range;
 import net.querz.mcaselector.util.range.RangeParser;
 import net.querz.mcaselector.text.Translation;
@@ -18,6 +18,7 @@ import net.querz.mcaselector.ui.component.BorderedTitledPane;
 import net.querz.mcaselector.ui.component.LocationInput;
 import net.querz.mcaselector.ui.UIFactory;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -146,7 +147,7 @@ public class ImportConfirmationDialog extends ConfirmationDialog {
 			}
 		}
 
-		getDialogPane().getStylesheets().add(ImportConfirmationDialog.class.getClassLoader().getResource("style/component/import-chunks-confirmation-dialog.css").toExternalForm());
+		getDialogPane().getStylesheets().add(Objects.requireNonNull(ImportConfirmationDialog.class.getClassLoader().getResource("style/component/import-chunks-confirmation-dialog.css")).toExternalForm());
 	}
 
 	public static class ChunkImportConfirmationData {

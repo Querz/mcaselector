@@ -3,7 +3,6 @@ package net.querz.mcaselector.version.mapping.minecraft;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,7 +21,7 @@ public record ServerVersion (
 		@SerializedName("stable") boolean stable,
 		@SerializedName("use_editor") boolean useEditor) {
 
-	private static Gson GSON = new GsonBuilder()
+	private static final Gson GSON = new GsonBuilder()
 			.setPrettyPrinting()
 			.create();
 

@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import net.querz.mcaselector.io.mca.RegionChunk;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
-import net.querz.mcaselector.util.math.Bits;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersion;
 import net.querz.mcaselector.version.mapping.util.DebugWorld;
@@ -81,12 +80,7 @@ public class HeightmapConfig {
 			}
 
 			// get section 4
-			ListTag sections = null;
-			if (chunk.getData().containsKey("Level")) {
-				sections = Helper.tagFromLevelFromRoot(chunk.getData(), "Sections");
-			} else {
-				sections = Helper.tagFromCompound(chunk.getData(), "sections");
-			}
+			ListTag sections = Helper.tagFromCompound(chunk.getData(), "sections");
 			if (sections == null) {
 				continue;
 			}
@@ -116,9 +110,6 @@ public class HeightmapConfig {
 						int motionBlocking = getHeightmapDataAt(chunk.getData(), x, z, MOTION_BLOCKING);
 						int motionBlockingNoLeaves = getHeightmapDataAt(chunk.getData(), x, z, MOTION_BLOCKING_NO_LEAVES);
 						String name = block.getString("Name");
-//						if (!"minecraft:air".equals(name)) {
-//							System.out.printf("%s: %d, %d, %d, %d\n", name, worldSurface, oceanFloor, motionBlocking, motionBlockingNoLeaves);
-//						}
 						if (worldSurface > height) {
 							this.worldSurface.add(name);
 						}
@@ -154,47 +145,18 @@ public class HeightmapConfig {
 	private int getHeightmapDataAt(CompoundTag root, int x, int z, String heightmapID) {
 		int index = z * 16 + x;
 		CompoundTag heightmaps = root.getCompoundTag("Heightmaps");
-		if (heightmaps == null) {
-			heightmaps = Helper.tagFromLevelFromRoot(root, "Heightmaps");
-		}
 		long[] data = heightmaps.getLongArray(heightmapID);
 		int dataIndex = Math.floorDiv(index, 7);
 		int startBit = (index % 7) * 9;
 		return (int) ((data[dataIndex] >> startBit) & 0x1FF);
 	}
 
-	private int getHeightmapDataAtLegacy(CompoundTag root, int x, int z, String heightmapID) {
-		CompoundTag heightmaps = Helper.tagFromLevelFromRoot(root, "Heightmaps");
-		long[] data = heightmaps.getLongArray(heightmapID);
-		int bits = data == null ? 0 : 9;
-		if (bits == 0) {
-			return 0;
-		}
-		int index = z * 16 + x;
-		double blockStatesIndex = index / (256D / data.length);
-		int longIndex = (int) blockStatesIndex;
-		int startBit = (int) ((blockStatesIndex - Math.floor(blockStatesIndex)) * 64D);
-		if (startBit + bits > 64) {
-			long prev = Bits.bitRange(data[longIndex], startBit, 64);
-			long next = Bits.bitRange(data[longIndex + 1], 0, startBit + bits - 64);
-			return (int) ((next << 64 - startBit) + prev);
-		} else {
-			return (int) Bits.bitRange(data[longIndex], startBit, startBit + bits);
-		}
-	}
-
 	private CompoundTag getBlockAt(CompoundTag section, int x, int y, int z) {
 		ListTag palette = Helper.tagFromCompound(Helper.tagFromCompound(section, "block_states"), "palette");
-		if (palette == null) {
-			palette = Helper.tagFromCompound(section, "Palette");
-		}
 		if (palette == null) {
 			return null;
 		}
 		long[] data = Helper.longArrayFromCompound(Helper.tagFromCompound(section, "block_states"), "data");
-		if (data == null) {
-			data = Helper.longArrayFromCompound(section, "BlockStates");
-		}
 		if (data == null) {
 			return null;
 		}
@@ -213,23 +175,5 @@ public class HeightmapConfig {
 		int blockStatesIndex = index / indexesPerLong;
 		int startBit = (index % indexesPerLong) * bits;
 		return (int) (data[blockStatesIndex] >> startBit) & clean;
-	}
-
-	private int getPaletteIndexLegacy(int x, int y, int z, long[] data) {
-		int bits = data == null ? 0 : data.length >> 6;
-		if (bits == 0) {
-			return 0;
-		}
-		int index = y * 256 + z * 16 + x;
-		double blockStatesIndex = index / (4096D / data.length);
-		int longIndex = (int) blockStatesIndex;
-		int startBit = (int) ((blockStatesIndex - Math.floor(blockStatesIndex)) * 64D);
-		if (startBit + bits > 64) {
-			long prev = Bits.bitRange(data[longIndex], startBit, 64);
-			long next = Bits.bitRange(data[longIndex + 1], 0, startBit + bits - 64);
-			return (int) ((next << 64 - startBit) + prev);
-		} else {
-			return (int) Bits.bitRange(data[longIndex], startBit, startBit + bits);
-		}
 	}
 }

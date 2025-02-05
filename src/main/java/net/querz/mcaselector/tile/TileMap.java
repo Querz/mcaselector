@@ -20,7 +20,7 @@ import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.selection.SelectionData;
@@ -71,7 +71,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private Long2IntOpenHashMap tilePriorities = new Long2IntOpenHashMap();
 
 	private int selectedChunks = 0;
-	private Point2f mouseHoverLocation = null;
 	private Point2i hoveredBlock = null;
 
 	private boolean showChunkGrid = true;
@@ -474,7 +473,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private void zoomFactor(double factor, Point2f center) {
 		float oldScale = scale;
-		scale /= factor;
+		scale /= (float) factor;
 		updateScale(oldScale, center);
 	}
 
@@ -495,13 +494,11 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private void onMouseMoved(MouseEvent event) {
 		hoveredBlock = getMouseBlock(event.getX(), event.getY());
-		mouseHoverLocation = new Point2f(event.getX(), event.getY());
 		runHoverListeners();
 	}
 
 	private void onMouseExited() {
 		hoveredBlock = null;
-		mouseHoverLocation = null;
 		runHoverListeners();
 	}
 

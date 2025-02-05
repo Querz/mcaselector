@@ -19,6 +19,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.io.FileHelper;
 
+import java.util.Objects;
+
 public class NumberDialog extends Stage {
 
 	private static final Image clipboardIcon = FileHelper.getIconFromResources("img/clipboard");
@@ -58,7 +60,7 @@ public class NumberDialog extends Stage {
 		pane.getStylesheets().addAll(primaryStage.getScene().getStylesheets());
 
 		Scene scene = new Scene(pane);
-		scene.getStylesheets().add(NumberDialog.class.getClassLoader().getResource("style/component/number-dialog.css").toExternalForm());
+		scene.getStylesheets().add(Objects.requireNonNull(NumberDialog.class.getClassLoader().getResource("style/component/number-dialog.css")).toExternalForm());
 		setScene(scene);
 
 		Platform.runLater(numberLabel::requestFocus);

@@ -27,7 +27,7 @@ import net.querz.mcaselector.io.mca.RegionChunk;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.progress.Timer;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
@@ -41,6 +41,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import static net.querz.nbt.Tag.Type.*;
@@ -62,7 +63,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> implements P
 		setResultConverter(p -> p == ButtonType.APPLY ? new Result(regionData, poiData, entitiesData) : null);
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
 		getDialogPane().getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
-		getDialogPane().getScene().getStylesheets().add(NBTEditorDialog.class.getClassLoader().getResource("style/component/nbt-editor-dialog.css").toExternalForm());
+		getDialogPane().getScene().getStylesheets().add(Objects.requireNonNull(NBTEditorDialog.class.getClassLoader().getResource("style/component/nbt-editor-dialog.css")).toExternalForm());
 		getDialogPane().getButtonTypes().addAll(ButtonType.APPLY, ButtonType.CANCEL);
 		getDialogPane().lookupButton(ButtonType.APPLY).setDisable(true);
 

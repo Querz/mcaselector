@@ -28,6 +28,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 
+import java.util.Objects;
+
 public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> implements PersistentDialogProperties {
 
 	private static final Logger LOGGER = LogManager.getLogger(FilterChunksDialog.class);
@@ -105,7 +107,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> implem
 
 		// apply same stylesheets to this dialog
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
-		getDialogPane().getStylesheets().add(FilterChunksDialog.class.getClassLoader().getResource("style/component/filter-chunks-dialog.css").toExternalForm());
+		getDialogPane().getStylesheets().add(Objects.requireNonNull(FilterChunksDialog.class.getClassLoader().getResource("style/component/filter-chunks-dialog.css")).toExternalForm());
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 

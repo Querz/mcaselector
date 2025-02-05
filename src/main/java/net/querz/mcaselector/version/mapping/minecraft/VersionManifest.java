@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import net.querz.mcaselector.version.mapping.util.Download;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;

@@ -17,7 +17,7 @@ import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.point.Point3i;
 import net.querz.mcaselector.util.progress.Progress;
 import net.querz.mcaselector.util.progress.Timer;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.util.range.Range;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;

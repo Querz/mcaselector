@@ -12,15 +12,11 @@ public class NumberTextField extends TextField {
 
 	private EventHandler<? super ScrollEvent> onScroll;
 
-	private final int min, max;
-
 	public NumberTextField(int min, int max) {
-		this.min = min;
-		this.max = max;
 		textProperty().addListener((v, o, n) -> {
 			if (!n.matches("-?\\d*")) {
 				setText(n.replaceAll("[^\\-\\d]", ""));
-			} else if ("".equals(n)) {
+			} else if (n.isEmpty()) {
 				valueProperty.set(0);
 			} else {
 				try {

@@ -15,6 +15,7 @@ import java.io.Closeable;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -105,7 +106,7 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 					.subscribe(error::set);
 		}
 
-		getStylesheets().add(GroovyCodeArea.class.getClassLoader().getResource("style/component/groovy-code-area.css").toExternalForm());
+		getStylesheets().add(Objects.requireNonNull(GroovyCodeArea.class.getClassLoader().getResource("style/component/groovy-code-area.css")).toExternalForm());
 	}
 
 	private Task<String> evalAsync() {
