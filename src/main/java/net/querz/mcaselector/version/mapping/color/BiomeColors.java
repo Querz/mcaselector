@@ -6,6 +6,7 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class BiomeColors {
 
@@ -34,7 +35,8 @@ public class BiomeColors {
 		@Override
 		public void write(JsonWriter out, BiomeColors value) throws IOException {
 			out.beginObject();
-			for (Map.Entry<String, BiomeTints> entry : value.biomes.entrySet()) {
+			TreeMap<String, BiomeTints> biomes = new TreeMap<>(value.biomes);
+			for (Map.Entry<String, BiomeTints> entry : biomes.entrySet()) {
 				out.name(entry.getKey());
 				out.beginArray();
 				out.value(String.format("%06x", entry.getValue().grassColor()));

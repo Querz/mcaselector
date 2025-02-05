@@ -7,9 +7,7 @@ import javafx.scene.image.PixelReader;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.version.mapping.color.*;
 import net.querz.mcaselector.version.mapping.minecraft.*;
-import net.querz.mcaselector.version.mapping.util.BitSetAdapter;
-import net.querz.mcaselector.version.mapping.util.Download;
-import net.querz.mcaselector.version.mapping.util.HexColorAdapter;
+import net.querz.mcaselector.version.mapping.util.*;
 import net.querz.nbt.CompoundTag;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -37,6 +35,7 @@ public class ColorConfig {
 			.registerTypeAdapter(BiomeColors.class, new BiomeColors.BiomeColorsTypeAdapter())
 			.registerTypeAdapterFactory(ColorMapping.ColorMappingTypeAdapterFactory.getColorMappingTypeAdapterFactory())
 			.registerTypeAdapterFactory(StateColors.StateColorsTypeAdapterFactory.getStateColorsTypeAdapterFactory())
+			.registerTypeHierarchyAdapter(Set.class, new CollectionAdapter())
 			.enableComplexMapKeySerialization()
 			.disableHtmlEscaping()
 			.setPrettyPrinting()

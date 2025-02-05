@@ -100,6 +100,22 @@ public class Main {
 		Path b = configs.resolve("blocks.json");
 		blockConfig.save(b);
 
+		// ------------------------------------------------
+
+		BiomeConfig biomeConfig = new BiomeConfig();
+		biomeConfig.generate(version, tmp);
+
+		Path pv = configs.resolve("biomes_" + mcVersion + ".json");
+		biomeConfig.save(pv);
+
+		BiomeConfig oldBiomeConfig = FileHelper.loadFromResource("mapping/registry/biomes.json", BiomeConfig::load);
+		biomeConfig.merge(oldBiomeConfig);
+
+		Path p = configs.resolve("biomes.json");
+		biomeConfig.save(p);
+
+		// ------------------------------------------------
+
 		System.exit(0);
 	}
 }

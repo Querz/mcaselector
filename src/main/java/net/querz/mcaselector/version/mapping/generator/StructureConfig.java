@@ -2,12 +2,11 @@ package net.querz.mcaselector.version.mapping.generator;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import com.google.gson.reflect.TypeToken;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersion;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersionFile;
 import net.querz.mcaselector.version.mapping.minecraft.Report;
+import net.querz.mcaselector.version.mapping.util.CollectionAdapter;
 import net.querz.mcaselector.version.mapping.util.Download;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,7 +23,7 @@ public class StructureConfig {
 
 	private static final Gson GSON = new GsonBuilder()
 			.setPrettyPrinting()
-			.registerTypeAdapter(StructureConfig.class, new StructureConfigTypeAdapter())
+			.registerTypeHierarchyAdapter(Set.class, new CollectionAdapter())
 			.create();
 
 	public StructureConfig() {
@@ -42,11 +41,11 @@ public class StructureConfig {
 	}
 
 	public static StructureConfig load(Reader reader) throws IOException {
-		return GSON.fromJson(reader, StructureConfig.class);
+		return new StructureConfig(GSON.fromJson(reader, new TypeToken<>() {}));
 	}
 
 	public void save(Path path) throws IOException {
-		String json = GSON.toJson(this);
+		String json = GSON.toJson(structures);
 		Files.writeString(path, json);
 	}
 
@@ -85,29 +84,6 @@ public class StructureConfig {
 				String name = fileName.substring(0, fileName.length() - 5);
 				structures.add(name);
 			}
-		}
-	}
-
-	public static class StructureConfigTypeAdapter extends TypeAdapter<StructureConfig> {
-
-		@Override
-		public void write(JsonWriter out, StructureConfig value) throws IOException {
-			out.beginArray();
-			for (String s : value.structures) {
-				out.value(s);
-			}
-			out.endArray();
-		}
-
-		@Override
-		public StructureConfig read(JsonReader in) throws IOException {
-			Set<String> structures = new HashSet<>();
-			in.beginArray();
-			while (in.hasNext()) {
-				structures.add(in.nextString());
-			}
-			in.endArray();
-			return new StructureConfig(structures);
 		}
 	}
 }

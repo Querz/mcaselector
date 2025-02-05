@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Function;
 
 public class ColorMapping {
@@ -185,7 +186,8 @@ public class ColorMapping {
 			@Override
 			public void write(JsonWriter out, ColorMapping value) throws IOException {
 				out.beginObject();
-				for (Map.Entry<String, StateColors> entry : value.colors.entrySet()) {
+				TreeMap<String, StateColors> colors = new TreeMap<>(value.colors);
+				for (Map.Entry<String, StateColors> entry : colors.entrySet()) {
 					out.name(entry.getKey());
 					gson.toJson(entry.getValue(), entry.getValue().getClass(), out);
 				}

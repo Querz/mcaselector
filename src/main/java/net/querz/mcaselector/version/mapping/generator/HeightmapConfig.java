@@ -8,7 +8,7 @@ import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersion;
 import net.querz.mcaselector.version.mapping.util.DebugWorld;
-import net.querz.mcaselector.version.mapping.util.OmitEmptyCollectionAdapter;
+import net.querz.mcaselector.version.mapping.util.CollectionAdapter;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.NBTUtil;
@@ -36,7 +36,7 @@ public class HeightmapConfig {
 
 	private static final Gson GSON = new GsonBuilder()
 			.setPrettyPrinting()
-			.registerTypeHierarchyAdapter(Set.class, new OmitEmptyCollectionAdapter())
+			.registerTypeHierarchyAdapter(Set.class, new CollectionAdapter())
 			.create();
 
 	public HeightmapConfig() {

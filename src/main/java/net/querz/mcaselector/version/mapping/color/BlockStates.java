@@ -6,10 +6,7 @@ import com.google.gson.stream.JsonWriter;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.StringTag;
 import java.io.IOException;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class BlockStates {
 
@@ -98,7 +95,9 @@ public class BlockStates {
 		@Override
 		public void write(JsonWriter out, BlockStates value) throws IOException {
 			out.beginObject();
-			for (Map.Entry<String, Map<String, Integer>> entry : value.states.entrySet()) {
+			TreeMap<String, TreeMap<String, Integer>> states = new TreeMap<>();
+			value.states.forEach((k, v) -> states.put(k, new TreeMap<>(v)));
+			for (Map.Entry<String, TreeMap<String, Integer>> entry : states.entrySet()) {
 				out.name(entry.getKey());
 				out.beginObject();
 				for (Map.Entry<String, Integer> stateEntry : entry.getValue().entrySet()) {
