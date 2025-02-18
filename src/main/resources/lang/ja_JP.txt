@@ -182,5 +182,7 @@ dialog.error.header;エラーが発生しました
 dialog.error.copied_to_clipboard;コピーしました
 dialog.unsaved_selection.title;保存されていない選択
 dialog.unsaved_selection.header;保存されていない選択があります。
+dialog.request_number.title.array_length;配列の長さ
+dialog.request_number.title.enter_number;価値
 button.cancel;キャンセル
 button.ok;OK

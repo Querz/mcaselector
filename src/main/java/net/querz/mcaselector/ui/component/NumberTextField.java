@@ -1,18 +1,18 @@
 package net.querz.mcaselector.ui.component;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.event.EventHandler;
 import javafx.scene.control.TextField;
 import javafx.scene.input.ScrollEvent;
 
 public class NumberTextField extends TextField {
 
-	private final IntegerProperty valueProperty = new SimpleIntegerProperty();
+	private final LongProperty valueProperty = new SimpleLongProperty();
 
 	private EventHandler<? super ScrollEvent> onScroll;
 
-	public NumberTextField(int min, int max) {
+	public NumberTextField(long min, long max) {
 		textProperty().addListener((v, o, n) -> {
 			if (!n.matches("-?\\d*")) {
 				setText(n.replaceAll("[^\\-\\d]", ""));
@@ -20,7 +20,7 @@ public class NumberTextField extends TextField {
 				valueProperty.set(0);
 			} else {
 				try {
-					int value = Integer.parseInt(n);
+					long value = Integer.parseInt(n);
 					if (value < min) {
 						value = min;
 					} else if (value > max) {
@@ -56,17 +56,17 @@ public class NumberTextField extends TextField {
 		onScroll = value;
 	}
 
-	private int incrementAndGet(int inc) {
-		int newValue = valueProperty.get() + inc;
+	private long incrementAndGet(long inc) {
+		long newValue = valueProperty.get() + inc;
 		valueProperty.set(newValue);
 		return newValue;
 	}
 
-	public IntegerProperty valueProperty() {
+	public LongProperty valueProperty() {
 		return valueProperty;
 	}
 
-	public int getValue() {
+	public long getValue() {
 		return valueProperty.get();
 	}
 }

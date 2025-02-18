@@ -182,5 +182,7 @@ dialog.error.header;Er is een fout opgetreden
 dialog.error.copied_to_clipboard;Gekopieerd naar het klembord!
 dialog.unsaved_selection.title;Niet-opgeslagen selectie
 dialog.unsaved_selection.header;Er is een niet-opgeslagen selectie.
+dialog.request_number.title.array_length;Lengte van de array
+dialog.request_number.title.enter_number;Waarde
 button.cancel;Annuleren
 button.ok;OK

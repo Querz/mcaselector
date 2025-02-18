@@ -182,5 +182,7 @@ dialog.error.header;Hiba történt
 dialog.error.copied_to_clipboard;Vágólapra másolva!
 dialog.unsaved_selection.title;Nem mentett kijelölés
 dialog.unsaved_selection.header;Van egy nem mentett kijelölés.
+dialog.request_number.title.array_length;A tömb hossza
+dialog.request_number.title.enter_number;Érték
 button.cancel;Visszavonás
 button.ok;OK

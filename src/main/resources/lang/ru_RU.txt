@@ -182,5 +182,7 @@ dialog.error.header;Произошла ошибка
 dialog.error.copied_to_clipboard;Скопировано в буфер обмена!
 dialog.unsaved_selection.title;Несохраненный выбор
 dialog.unsaved_selection.header;Есть несохраненный выбор.
+dialog.request_number.title.array_length;Длина массива
+dialog.request_number.title.enter_number;Ценить
 button.cancel;Отменить
 button.ok;OK

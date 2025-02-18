@@ -182,5 +182,7 @@ dialog.error.header;Wystąpił błąd
 dialog.error.copied_to_clipboard;Skopiowane do schowka!
 dialog.unsaved_selection.title;Niezapisany wybór
 dialog.unsaved_selection.header;Istnieje niezapisany wybór.
+dialog.request_number.title.array_length;Długość tablicy
+dialog.request_number.title.enter_number;Wartość
 button.cancel;Anuluj
 button.ok;OK

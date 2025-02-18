@@ -182,5 +182,7 @@ dialog.error.header;Vyskytla se chyba
 dialog.error.copied_to_clipboard;Zkopírováno do schránky!
 dialog.unsaved_selection.title;Neuložený výběr
 dialog.unsaved_selection.header;Existuje neuložený výběr.
+dialog.request_number.title.array_length;Délka pole
+dialog.request_number.title.enter_number;Hodnota
 button.cancel;Zrušit
 button.ok;OK

@@ -182,5 +182,7 @@ dialog.error.header;發生錯誤
 dialog.error.copied_to_clipboard;已複製到剪貼簿！
 dialog.unsaved_selection.title;未儲存的更改
 dialog.unsaved_selection.header;您有未儲存的更改。
+dialog.request_number.title.array_length;數組的長度
+dialog.request_number.title.enter_number;價值
 button.cancel;取消
 button.ok;確定

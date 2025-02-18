@@ -182,5 +182,7 @@ dialog.error.header;Сталася помика
 dialog.error.copied_to_clipboard;Скопійовано до буферу обміну!
 dialog.unsaved_selection.title;Не збережене виділення
 dialog.unsaved_selection.header;Це не збережене виділення.
+dialog.request_number.title.array_length;Довжина масиву
+dialog.request_number.title.enter_number;Значення
 button.cancel;Скасувати
 button.ok;OK

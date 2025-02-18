@@ -182,5 +182,7 @@ dialog.error.header;Bir hata oluştu
 dialog.error.copied_to_clipboard;Panoya kopyalandı!
 dialog.unsaved_selection.title;Kaydedilmemiş seçim
 dialog.unsaved_selection.header;Kaydedilmemiş bir seçim var.
+dialog.request_number.title.array_length;Dizinin uzunluğu
+dialog.request_number.title.enter_number;Değer
 button.cancel;İptal
 button.ok;Tamam

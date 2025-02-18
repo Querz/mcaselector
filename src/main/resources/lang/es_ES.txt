@@ -182,5 +182,7 @@ dialog.error.header;Ocurrió un error
 dialog.error.copied_to_clipboard;¡Copiado al portapapeles!
 dialog.unsaved_selection.title;Selección no guardada
 dialog.unsaved_selection.header;Hay una selección sin guardar.
+dialog.request_number.title.array_length;Longitud de la matriz
+dialog.request_number.title.enter_number;Valor
 button.cancel;Cancelar
 button.ok;OK

@@ -182,5 +182,7 @@ dialog.error.header;Fehler
 dialog.error.copied_to_clipboard;In die Zwischenablage kopiert!
 dialog.unsaved_selection.title;Ungespeicherte Selektion
 dialog.unsaved_selection.header;Es gibt eine ungespeicherte Selektion.
+dialog.request_number.title.array_length;Länge des Arrays
+dialog.request_number.title.enter_number;Wert eingeben
 button.cancel;Abbrechen
 button.ok;OK

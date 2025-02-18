@@ -182,5 +182,7 @@ dialog.error.header;Si è verificato un errore
 dialog.error.copied_to_clipboard;Copiato negli appunti!
 dialog.unsaved_selection.title;Selezione non salvata
 dialog.unsaved_selection.header;È presente una selezione non salvata.
+dialog.request_number.title.array_length;Lunghezza della matrice
+dialog.request_number.title.enter_number;Valore
 button.cancel;Annulla
 button.ok;Va bene

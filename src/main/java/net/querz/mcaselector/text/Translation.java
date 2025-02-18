@@ -201,6 +201,8 @@ public enum Translation {
 	DIALOG_ERROR_COPIED_TO_CLIPBOARD("dialog.error.copied_to_clipboard"),
 	DIALOG_UNSAVED_SELECTION_TITLE("dialog.unsaved_selection.title"),
 	DIALOG_UNSAVED_SELECTION_HEADER("dialog.unsaved_selection.header"),
+	DIALOG_REQUEST_NUMBER_TITLE_ARRAY_LENGTH("dialog.request_number.title.array_length"),
+	DIALOG_REQUEST_NUMBER_TITLE_ENTER_NUMBER("dialog.request_number.title.enter_number"),
 	BUTTON_CANCEL("button.cancel"),
 	BUTTON_OK("button.ok");
 

@@ -182,5 +182,7 @@ dialog.error.header;Ett fel uppstod
 dialog.error.copied_to_clipboard;Kopieras till urklipp!
 dialog.unsaved_selection.title;Osparat val
 dialog.unsaved_selection.header;Det finns ett osparat val.
+dialog.request_number.title.array_length;Längden på arrayen
+dialog.request_number.title.enter_number;Värde
 button.cancel;Avbryt
 button.ok;OK

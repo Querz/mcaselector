@@ -8,6 +8,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -143,7 +144,8 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> implements P
 	}
 
 	private <T extends Chunk> Tab createEditorTab(String title, Stage primaryStage, MCAFile<T> mcaFile, Consumer<CompoundTag> consumer) {
-		NBTTreeView nbtTreeView = new NBTTreeView(primaryStage);
+		NBTTreeView nbtTreeView = new NBTTreeView();
+		nbtTreeView.setArrayEditor(a -> new EditArrayDialog(a, primaryStage).showAndWait());
 
 		ImageView deleteIcon = new ImageView(FileHelper.getIconFromResources("img/delete"));
 		Label delete = new Label("", deleteIcon);
@@ -176,17 +178,17 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> implements P
 			if (nbtTreeView.getSelectionModel().getSelectedItem().getParent() == null) {
 				consumer.accept(null);
 			}
-			nbtTreeView.deleteItem(nbtTreeView.getSelectionModel().getSelectedItem());
+			nbtTreeView.deleteSelectedItem();
 		});
-		nbtTreeView.setOnSelectionChanged((o, n) -> {
-			delete.setDisable(n == null);
-			enableAddTagLabels(nbtTreeView.getPossibleChildTagTypes(n), addTagLabels);
+		nbtTreeView.setOnSelectionChanged(b -> {
+			delete.setDisable(b);
+			enableAddTagLabels(nbtTreeView.getPossibleChildTagTypesFromSelected(), addTagLabels);
 		});
 
 		BorderPane treeViewHolder = new BorderPane();
 		treeViewHolder.getStyleClass().add("nbt-tree-view-holder");
 		treeViewHolder.setCenter(treeViewPlaceHolder);
-		initAddTagLabels(nbtTreeView, addTagLabels, treeViewHolder, consumer);
+		initAddTagLabels(nbtTreeView, primaryStage, addTagLabels, treeViewHolder, consumer);
 
 		HBox options = new HBox();
 		options.getStyleClass().add("nbt-editor-options");
@@ -216,25 +218,34 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> implements P
 		}
 	}
 
-	private void initAddTagLabels(NBTTreeView nbtTreeView, Map<Tag.Type, Label> addTagLabels, BorderPane treeViewHolder, Consumer<CompoundTag> consumer) {
-		addTagLabels.put(BYTE, iconLabel("img/nbt/byte", () -> ByteTag.valueOf((byte) 0), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(SHORT, iconLabel("img/nbt/short", () -> ShortTag.valueOf((short) 0), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(INT, iconLabel("img/nbt/int", () -> IntTag.valueOf(0), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(LONG, iconLabel("img/nbt/long", () -> LongTag.valueOf(0), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(FLOAT, iconLabel("img/nbt/float", () -> FloatTag.valueOf(0), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(DOUBLE, iconLabel("img/nbt/double", () -> DoubleTag.valueOf(0), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(STRING, iconLabel("img/nbt/string", () -> StringTag.valueOf(""), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(LIST, iconLabel("img/nbt/list", ListTag::new, nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(COMPOUND, iconLabel("img/nbt/compound", CompoundTag::new, nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(BYTE_ARRAY, iconLabel("img/nbt/byte_array", () -> new ByteArrayTag(new byte[0]), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(INT_ARRAY, iconLabel("img/nbt/int_array", () -> new IntArrayTag(new int[0]), nbtTreeView, treeViewHolder, consumer));
-		addTagLabels.put(LONG_ARRAY, iconLabel("img/nbt/long_array", () -> new LongArrayTag(new long[0]), nbtTreeView, treeViewHolder, consumer));
+	private void initAddTagLabels(NBTTreeView nbtTreeView, Stage primaryStage, Map<Tag.Type, Label> addTagLabels, BorderPane treeViewHolder, Consumer<CompoundTag> consumer) {
+		addTagLabels.put(BYTE, iconLabel(NBTTreeView.NBTTreeCell.getIcon(BYTE), () -> ByteTag.valueOf((byte) 0), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(SHORT, iconLabel(NBTTreeView.NBTTreeCell.getIcon(SHORT), () -> ShortTag.valueOf((short) 0), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(INT, iconLabel(NBTTreeView.NBTTreeCell.getIcon(INT), () -> IntTag.valueOf(0), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(LONG, iconLabel(NBTTreeView.NBTTreeCell.getIcon(LONG), () -> LongTag.valueOf(0), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(FLOAT, iconLabel(NBTTreeView.NBTTreeCell.getIcon(FLOAT), () -> FloatTag.valueOf(0), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(DOUBLE, iconLabel(NBTTreeView.NBTTreeCell.getIcon(DOUBLE), () -> DoubleTag.valueOf(0), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(STRING, iconLabel(NBTTreeView.NBTTreeCell.getIcon(STRING), () -> StringTag.valueOf(""), nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(LIST, iconLabel(NBTTreeView.NBTTreeCell.getIcon(LIST), ListTag::new, nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(COMPOUND, iconLabel(NBTTreeView.NBTTreeCell.getIcon(COMPOUND), CompoundTag::new, nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(BYTE_ARRAY, iconLabel(NBTTreeView.NBTTreeCell.getIcon(BYTE_ARRAY), () -> {
+			Long l = new RequestNumberDialog(primaryStage, Translation.DIALOG_REQUEST_NUMBER_TITLE_ARRAY_LENGTH, 0, Integer.MAX_VALUE).showAndWait().orElse(null);
+			return l == null ? null : new ByteArrayTag(new byte[l.intValue()]);
+		}, nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(INT_ARRAY, iconLabel(NBTTreeView.NBTTreeCell.getIcon(INT_ARRAY), () -> {
+			Long l = new RequestNumberDialog(primaryStage, Translation.DIALOG_REQUEST_NUMBER_TITLE_ARRAY_LENGTH, 0, Integer.MAX_VALUE).showAndWait().orElse(null);
+			return l == null ? null : new IntArrayTag(new int[l.intValue()]);
+		}, nbtTreeView, treeViewHolder, consumer));
+		addTagLabels.put(LONG_ARRAY, iconLabel(NBTTreeView.NBTTreeCell.getIcon(LONG_ARRAY), () -> {
+			Long l = new RequestNumberDialog(primaryStage, Translation.DIALOG_REQUEST_NUMBER_TITLE_ARRAY_LENGTH, 0, Integer.MAX_VALUE).showAndWait().orElse(null);
+			return l == null ? null : new LongArrayTag(new long[l.intValue()]);
+		}, nbtTreeView, treeViewHolder, consumer));
 		// disable all add tag labels
 		enableAddTagLabels(null, addTagLabels);
 	}
 
-	private Label iconLabel(String img, Supplier<Tag> tagSupplier, NBTTreeView nbtTreeView, BorderPane treeViewHolder, Consumer<CompoundTag> consumer) {
-		ImageView icon = new ImageView(FileHelper.getIconFromResources(img));
+	private Label iconLabel(Image img, Supplier<Tag> tagSupplier, NBTTreeView nbtTreeView, BorderPane treeViewHolder, Consumer<CompoundTag> consumer) {
+		ImageView icon = new ImageView(img);
 		Label label = new Label("", icon);
 		icon.setPreserveRatio(true);
 		label.setOnMouseEntered(e -> icon.setFitWidth(18));
@@ -243,9 +254,14 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> implements P
 		label.setOnMouseClicked(e -> {
 			treeViewHolder.setCenter(nbtTreeView);
 			Tag newTag = tagSupplier.get();
-			if (nbtTreeView.addItem(nbtTreeView.getSelectionModel().getSelectedItem(), "Unknown", newTag)) {
+			if (newTag == null) {
+				return;
+			}
+			if (nbtTreeView.addItemAtSelected("Unknown", newTag)) {
 				// if we created a root tag, it is always a compound tag
-				consumer.accept((CompoundTag) newTag);
+				if (nbtTreeView.getRoot().getValue().getRef() == newTag) {
+					consumer.accept((CompoundTag) newTag);
+				}
 			}
 		});
 		return label;
@@ -265,7 +281,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> implements P
 					}
 					consumer.accept(chunkData.getData());
 					Platform.runLater(() -> {
-						treeView.setRoot(chunkData.getData());
+						treeView.load(chunkData.getData());
 						treeViewHolder.setCenter(treeView);
 						treeView.getRoot().setExpanded(true);
 						getDialogPane().lookupButton(ButtonType.APPLY).setDisable(false);

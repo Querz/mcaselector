@@ -182,5 +182,7 @@ dialog.error.header;Une erreur s'est produite
 dialog.error.copied_to_clipboard;Copié dans le presse-papier!
 dialog.unsaved_selection.title;Sélection non enregistrée
 dialog.unsaved_selection.header;Il y a une sélection non enregistrée.
+dialog.request_number.title.array_length;Longueur du tableau
+dialog.request_number.title.enter_number;Valeur
 button.cancel;Annuler
 button.ok;OK

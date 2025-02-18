@@ -6,86 +6,70 @@
     -color-table-row-selected: #636769;
 }
 
-.array-editor-table-view {
+.edit-array-table-view {
     -fx-background-color: -color-table-background;
 }
 
-.array-editor-table-view .column-header, .array-editor-table-view .column-header .filler, .array-editor-table-view .column-header-background .filler {
+.edit-array-table-view .column-header, .edit-array-table-view .column-header .filler, .edit-array-table-view .column-header-background .filler {
     -fx-background-color: -color-table-background;
     -fx-border-width: 0 0 1 0;
     -fx-border-color: -color-table-line;
 }
 
-.array-editor-table-view .table-cell {
+.edit-array-table-view .table-cell {
     -fx-text-fill: -color-text-light;
 }
 
-.array-editor-table-view .table-row-cell:even {
+.edit-array-table-view .table-row-cell:even {
     -fx-background-color: -color-field-cell-even;
 }
 
-.array-editor-table-view .table-row-cell:odd {
+.edit-array-table-view .table-row-cell:odd {
     -fx-background-color: -color-field-cell-odd;
 }
 
-.array-editor-table-view .table-row-cell {
+.edit-array-table-view .table-row-cell {
     -fx-table-cell-border-color: -color-table-line;
 }
 
-.array-editor-table-view .table-row-cell:selected {
+.edit-array-table-view .table-row-cell:selected {
     -fx-background-color: -color-table-row-selected;
 }
 
-.array-editor-table-view .text-field-table-cell {
+.edit-array-table-view .text-field-table-cell {
     -fx-padding: 1 0 0 4;
     -fx-alignment: center-left;
 }
 
-.array-editor-table-view .text-field-table-cell .text-field {
+.edit-array-table-view .text-field-table-cell .text-field {
     -fx-padding: 0 0 0 -2;
 }
 
-.array-editor-options {
+.edit-array-options {
     -fx-spacing: 3px;
     -fx-padding: 5 0 0 0;
 }
 
-.array-editor-add-tag-label {
-    -fx-padding: 3 2 3 2;
-}
-
-.array-editor-add-tag-label:hover {
-    -fx-padding: 2 1 2 1;
-}
-
-.array-editor-delete-tag-label {
-    -fx-padding: 3 0 0 2;
-}
-
-.array-editor-delete-tag-label-enabled:hover {
-    -fx-padding: 2 -1 -1 1;
-}
-
-.array-editor-options .separator {
+.edit-array-options .separator {
     -fx-orientation: vertical;
     -fx-padding: 2 10 2 10;
     -fx-background-color: transparent;
 }
 
-.array-editor-options .separator *.line {
+.edit-array-options .separator *.line {
     -fx-border-width: 0;
     -fx-width: 2;
     -fx-background-color: -color-menu-separator;
 }
 
-.array-editor-options .combo-box {
+.edit-array-options .combo-box {
     -fx-pref-width: 50;
 }
 
-.array-editor-options .overlap-label {
+.edit-array-options .overlap-label {
     -fx-padding: 2 0 0 0;
 }
 
-.array-editor-options .check-box {
+.edit-array-options .check-box {
     -fx-padding: -1 0 0 -1;
 }

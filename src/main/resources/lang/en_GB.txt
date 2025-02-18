@@ -182,5 +182,7 @@ dialog.error.header;An Error occurred
 dialog.error.copied_to_clipboard;Copied to clipboard!
 dialog.unsaved_selection.title;Unsaved selection
 dialog.unsaved_selection.header;There is an unsaved selection.
+dialog.request_number.title.array_length;Array length
+dialog.request_number.title.enter_number;Enter number
 button.cancel;Cancel
 button.ok;OK

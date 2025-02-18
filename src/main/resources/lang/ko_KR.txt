@@ -182,5 +182,7 @@ dialog.error.header;오류가 발생하였습니다.
 dialog.error.copied_to_clipboard;클립보드에 복사되었습니다!
 dialog.unsaved_selection.title;저장되지 않은 선택
 dialog.unsaved_selection.header;저장되지 않은 선택 항목이 있습니다.
+dialog.request_number.title.array_length;배열의 길이
+dialog.request_number.title.enter_number;값
 button.cancel;취소
 button.ok;확인
