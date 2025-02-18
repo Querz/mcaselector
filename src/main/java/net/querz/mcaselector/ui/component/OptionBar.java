@@ -15,6 +15,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import net.querz.mcaselector.config.ConfigProvider;
+import net.querz.mcaselector.ui.dialog.ConfirmationDialog;
 import net.querz.mcaselector.util.github.VersionChecker;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.selection.ClipboardSelection;
@@ -30,6 +31,7 @@ import java.awt.datatransfer.Transferable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 public class OptionBar extends BorderPane {
 	/*
@@ -316,7 +318,15 @@ public class OptionBar extends BorderPane {
 				if (currentWorld == null || !v.recentWorld().equals(currentWorld.getParentFile())) {
 					MenuItem openRecentItem = new MenuItem(v.toString());
 					openRecentItem.setMnemonicParsing(false);
-					openRecentItem.setOnAction(e -> DialogHelper.setWorld(FileHelper.detectWorldDirectories(v.recentWorld()), v.dimensionDirectories(), tileMap, primaryStage));
+					openRecentItem.setOnAction(e -> {
+						if (tileMap.hasUnsavedSelection()) {
+							Optional<ButtonType> result = new ConfirmationDialog(primaryStage, Translation.DIALOG_UNSAVED_SELECTION_TITLE, Translation.DIALOG_UNSAVED_SELECTION_HEADER, "unsaved-changes").showAndWait();
+							if (result.isPresent() && result.get() == ButtonType.CANCEL) {
+								return;
+							}
+						}
+						DialogHelper.setWorld(FileHelper.detectWorldDirectories(v.recentWorld()), v.dimensionDirectories(), tileMap, primaryStage);
+					});
 					openRecent.getItems().add(openRecentItem);
 				}
 			});
