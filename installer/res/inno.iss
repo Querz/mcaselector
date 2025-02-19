@@ -46,7 +46,7 @@ Source: "lib\\*"; DestDir: "{app}\\lib"; Flags: ignoreversion
 
 [InstallDelete]
 Type: filesandordirs; Name: "{app}\\jre"
-Type: filesandordies; Name: "{app}\\lib"
+Type: filesandordirs; Name: "{app}\\lib"
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\\jre"
