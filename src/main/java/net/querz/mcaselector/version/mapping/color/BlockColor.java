@@ -15,15 +15,16 @@ public class BlockColor {
 
 	public int properties;
 
-	public static final int TRANSPARENT =  0b0000001;
-	public static final int GRASS_TINT =   0b0000010;
-	public static final int FOLIAGE_TINT = 0b0000100;
-	public static final int WATER =        0b0001000;
-	public static final int FOLIAGE =      0b0010000;
-	public static final int STATIC_TINT =  0b0100000;
-	public static final int STATIC_COLOR = 0b1000000;
+	public static final int TRANSPARENT =      0b00000001;
+	public static final int GRASS_TINT =       0b00000010;
+	public static final int FOLIAGE_TINT =     0b00000100;
+	public static final int WATER =            0b00001000;
+	public static final int FOLIAGE =          0b00010000;
+	public static final int STATIC_TINT =      0b00100000;
+	public static final int STATIC_COLOR =     0b01000000;
+	public static final int DRY_FOLIAGE_TINT = 0b10000000;
 
-	public static final int TINTED = GRASS_TINT | FOLIAGE_TINT | WATER;
+	public static final int TINTED = GRASS_TINT | FOLIAGE_TINT | WATER | DRY_FOLIAGE_TINT;
 
 	private BlockColor() {}
 
@@ -50,12 +51,15 @@ public class BlockColor {
 
 	@Override
 	public String toString() {
-		return String.format("{%06x, %s, %s, %s, %s, %s}", color,
+		return String.format("{%06x, %s, %s, %s, %s, %s, %s, %s, %s}", color,
 				properties & TRANSPARENT,
 				properties & GRASS_TINT,
 				properties & FOLIAGE_TINT,
 				properties & WATER,
-				properties & FOLIAGE);
+				properties & FOLIAGE,
+				properties & STATIC_TINT,
+				properties & STATIC_COLOR,
+				properties & DRY_FOLIAGE_TINT);
 	}
 
 	public static class BlockColorAdapter extends TypeAdapter<BlockColor> {

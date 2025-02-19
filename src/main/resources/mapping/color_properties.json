@@ -33,6 +33,9 @@
     "minecraft:oak_leaves",
     "minecraft:vine"
   ],
+  "dry_foliage_tint": [
+    "minecraft:leaf_litter"
+  ],
   "water": [
     "minecraft:water",
     "minecraft:bubble_column"

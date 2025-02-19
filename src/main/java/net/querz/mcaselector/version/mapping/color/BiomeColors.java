@@ -2,6 +2,7 @@ package net.querz.mcaselector.version.mapping.color;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -28,7 +29,7 @@ public class BiomeColors {
 		return biomes.get(id);
 	}
 
-	public record BiomeTints (int grassColor, int foliageColor, int waterColor) {}
+	public record BiomeTints (int grassColor, int foliageColor, int waterColor, int dryFoliageColor) {}
 
 	public static class BiomeColorsTypeAdapter extends TypeAdapter<BiomeColors> {
 
@@ -42,6 +43,7 @@ public class BiomeColors {
 				out.value(String.format("%06x", entry.getValue().grassColor()));
 				out.value(String.format("%06x", entry.getValue().foliageColor()));
 				out.value(String.format("%06x", entry.getValue().waterColor()));
+				out.value(String.format("%06x", entry.getValue().dryFoliageColor()));
 				out.endArray();
 			}
 			out.endObject();
@@ -57,7 +59,11 @@ public class BiomeColors {
 				int grassColor = Integer.parseInt(in.nextString(), 16);
 				int foliageColor = Integer.parseInt(in.nextString(), 16);
 				int waterColor = Integer.parseInt(in.nextString(), 16);
-				biomes.put(name, new BiomeTints(grassColor, foliageColor, waterColor));
+				int dryFoliageColor = 0;
+				if (in.peek() == JsonToken.STRING) {
+					dryFoliageColor = Integer.parseInt(in.nextString(), 16);
+				}
+				biomes.put(name, new BiomeTints(grassColor, foliageColor, waterColor, dryFoliageColor));
 				in.endArray();
 			}
 			in.endObject();

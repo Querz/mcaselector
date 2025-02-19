@@ -27,6 +27,7 @@ public class Biome {
 	public record Effects (
 			@SerializedName("grass_color") Integer grassTint,
 			@SerializedName("foliage_color") Integer foliageTint,
-			@SerializedName("water_color") Integer waterTint
+			@SerializedName("water_color") Integer waterTint,
+			@SerializedName("dry_foliage_color") Integer dryFoliageTint
 	) {}
 }

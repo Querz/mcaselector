@@ -1598,7 +1598,10 @@
     },
     "minecraft:lava": "d45a12",
     "minecraft:lava_cauldron": "49484a",
-    "minecraft:leaf_litter": "7f583c",
+    "minecraft:leaf_litter": {
+      "color": "aaaaaa",
+      "properties": 128
+    },
     "minecraft:lectern": "ad8953",
     "minecraft:lever": "7f7f7f",
     "minecraft:light": {
@@ -3174,327 +3177,392 @@
     "minecraft:badlands": [
       "90814d",
       "9e814d",
-      "3f76e4"
+      "3f76e4",
+      "a38046"
     ],
     "minecraft:bamboo_jungle": [
       "59c93c",
       "30bb0b",
-      "3f76e4"
+      "3f76e4",
+      "a36346"
     ],
     "minecraft:basalt_deltas": [
       "bfb755",
       "aea42a",
-      "3f76e4"
+      "3f76e4",
+      "a38046"
     ],
     "minecraft:beach": [
       "91bd59",
       "77ab2f",
-      "3f76e4"
+      "3f76e4",
+      "a37546"
     ],
     "minecraft:birch_forest": [
       "88bb67",
       "6ba941",
-      "3f76e4"
+      "3f76e4",
+      "a37246"
     ],
     "minecraft:cherry_grove": [
       "b6db61",
       "b6db61",
-      "5db7ef"
+      "5db7ef",
+      "a17148"
     ],
     "minecraft:cold_ocean": [
       "8eb971",
       "71a74d",
-      "3d57d6"
+      "3d57d6",
+      "a17448"
     ],
     "minecraft:crimson_forest": [
       "bfb755",
       "aea42a",
-      "3f76e4"
+      "3f76e4",
+      "a38046"
     ],
     "minecraft:dark_forest": [
       "79c05a",
       "59ae30",
-      "3f76e4"
+      "3f76e4",
+      "7b5334"
     ],
     "minecraft:deep_cold_ocean": [
       "8eb971",
       "71a74d",
-      "3d57d6"
+      "3d57d6",
+      "a17448"
     ],
     "minecraft:deep_dark": [
       "91bd59",
       "77ab2f",
-      "3f76e4"
+      "3f76e4",
+      "a37546"
     ],
     "minecraft:deep_frozen_ocean": [
       "8eb971",
       "71a74d",
-      "3938c9"
+      "3938c9",
+      "a17448"
     ],
     "minecraft:deep_lukewarm_ocean": [
       "8eb971",
       "71a74d",
-      "45adf2"
+      "45adf2",
+      "a17448"
     ],
     "minecraft:deep_ocean": [
       "8eb971",
       "71a74d",
-      "3f76e4"
+      "3f76e4",
+      "a17448"
     ],
     "minecraft:desert": [
       "bfb755",
       "aea42a",
-      "3f76e4"
+      "3f76e4",
+      "a38046"
     ],
     "minecraft:dripstone_caves": [
       "91bd59",
       "77ab2f",
-      "3f76e4"
+      "3f76e4",
+      "a37546"
     ],
     "minecraft:end_barrens": [
       "8eb971",
       "71a74d",
-      "3f76e4"
+      "3f76e4",
+      "a17448"
     ],
     "minecraft:end_highlands": [
       "8eb971",
       "71a74d",
-      "3f76e4"
+      "3f76e4",
+      "a17448"
     ],
     "minecraft:end_midlands": [
       "8eb971",
       "71a74d",
-      "3f76e4"
+      "3f76e4",
+      "a17448"
     ],
     "minecraft:eroded_badlands": [
       "90814d",
       "9e814d",
-      "3f76e4"
+      "3f76e4",
+      "a38046"
     ],
     "minecraft:flower_forest": [
       "79c05a",
       "59ae30",
-      "3f76e4"
+      "3f76e4",
+      "a36d46"
     ],
     "minecraft:forest": [
       "79c05a",
       "59ae30",
-      "3f76e4"
+      "3f76e4",
+      "a36d46"
     ],
     "minecraft:frozen_ocean": [
       "80b497",
       "60a17b",
-      "3938c9"
+      "3938c9",
+      "8f7a5a"
     ],
     "minecraft:frozen_peaks": [
       "80b497",
       "60a17b",
-      "3f76e4"
+      "3f76e4",
+      "8f7a5a"
     ],
     "minecraft:frozen_river": [
       "80b497",
       "60a17b",
-      "3938c9"
+      "3938c9",
+      "8f7a5a"
     ],
     "minecraft:grove": [
       "80b497",
       "60a17b",
-      "3f76e4"
+      "3f76e4",
+      "8f7a5a"
     ],
     "minecraft:ice_spikes": [
       "80b497",
       "60a17b",
-      "3f76e4"
+      "3f76e4",
+      "8f7a5a"
     ],
     "minecraft:jagged_peaks": [
       "80b497",
       "60a17b",
-      "3f76e4"
+      "3f76e4",
+      "8f7a5a"
     ],
     "minecraft:jungle": [
       "59c93c",
       "30bb0b",
-      "3f76e4"
+      "3f76e4",
+      "a36346"
     ],
     "minecraft:lukewarm_ocean": [
       "8eb971",
       "71a74d",
-      "45adf2"
+      "45adf2",
+      "a17448"
     ],
     "minecraft:lush_caves": [
       "8eb971",
       "71a74d",
-      "3f76e4"
+      "3f76e4",
+      "a17448"
     ],
     "minecraft:mangrove_swamp": [
       "6ac44e",
       "8db127",
-      "3a7a6a"
+      "3a7a6a",
+      "7b5334"
     ],
     "minecraft:meadow": [
       "83bb6d",
       "64a948",
-      "0e4ecf"
+      "0e4ecf",
+      "a17148"
     ],
     "minecraft:mushroom_fields": [
       "55c93f",
       "2bbb0f",
-      "3f76e4"
+      "3f76e4",
+      "a36246"
     ],
     "minecraft:nether_wastes": [
       "bfb755",
       "aea42a",
-      "3f76e4"
+      "3f76e4",
+      "a38046"
     ],
     "minecraft:ocean": [
       "8eb971",
       "71a74d",
-      "3f76e4"
+      "3f76e4",
+      "a17448"
     ],
     "minecraft:old_growth_birch_forest": [
       "88bb67",
       "6ba941",
-      "3f76e4"
+      "3f76e4",
+      "a37246"
     ],
     "minecraft:old_growth_pine_taiga": [
       "86b87f",
       "68a55f",
-      "3f76e4"
+      "3f76e4",
+      "9c754d"
     ],
     "minecraft:old_growth_spruce_taiga": [
       "86b783",
       "68a464",
-      "3f76e4"
+      "3f76e4",
+      "9a764f"
     ],
     "minecraft:pale_garden": [
       "778272",
       "878d76",
-      "76889d"
+      "76889d",
+      "a0a69c"
     ],
     "minecraft:plains": [
       "91bd59",
       "77ab2f",
-      "3f76e4"
+      "3f76e4",
+      "a37546"
     ],
     "minecraft:river": [
       "8eb971",
       "71a74d",
-      "3f76e4"
+      "3f76e4",
+      "a17448"
     ],
     "minecraft:savanna": [
       "bfb755",
       "aea42a",
-      "3f76e4"
+      "3f76e4",
+      "a38046"
     ],
     "minecraft:savanna_plateau": [
       "bfb755",
       "aea42a",
-      "3f76e4"
+      "3f76e4",
+      "a38046"
     ],
     "minecraft:small_end_islands": [
       "8eb971",
       "71a74d",
-      "3f76e4"
+      "3f76e4",
+      "a17448"
     ],
     "minecraft:snowy_beach": [
       "83b593",
       "64a278",
-      "3d57d6"
+      "3d57d6",
+      "917958"
     ],
     "minecraft:snowy_plains": [
       "80b497",
       "60a17b",
-      "3f76e4"
+      "3f76e4",
+      "8f7a5a"
     ],
     "minecraft:snowy_slopes": [
       "80b497",
       "60a17b",
-      "3f76e4"
+      "3f76e4",
+      "8f7a5a"
     ],
     "minecraft:snowy_taiga": [
       "80b497",
       "60a17b",
-      "3d57d6"
+      "3d57d6",
+      "8f7a5a"
     ],
     "minecraft:soul_sand_valley": [
       "bfb755",
       "aea42a",
-      "3f76e4"
+      "3f76e4",
+      "a38046"
     ],
     "minecraft:sparse_jungle": [
       "64c73f",
       "3eb80f",
-      "3f76e4"
+      "3f76e4",
+      "a36646"
     ],
     "minecraft:stony_peaks": [
       "9abe4b",
       "82ac1e",
-      "3f76e4"
+      "3f76e4",
+      "a37946"
     ],
     "minecraft:stony_shore": [
       "8ab689",
       "6da36b",
-      "3f76e4"
+      "3f76e4",
+      "967753"
     ],
     "minecraft:sunflower_plains": [
       "91bd59",
       "77ab2f",
-      "3f76e4"
+      "3f76e4",
+      "a37546"
     ],
     "minecraft:swamp": [
       "6ac44e",
       "6a7039",
-      "617b64"
+      "617b64",
+      "7b5334"
     ],
     "minecraft:taiga": [
       "86b783",
       "68a464",
-      "3f76e4"
+      "3f76e4",
+      "9a764f"
     ],
     "minecraft:the_end": [
       "8eb971",
       "71a74d",
-      "3f76e4"
+      "3f76e4",
+      "a17448"
     ],
     "minecraft:the_void": [
       "8eb971",
       "71a74d",
-      "3f76e4"
+      "3f76e4",
+      "a17448"
     ],
     "minecraft:warm_ocean": [
       "8eb971",
       "71a74d",
-      "43d5ee"
+      "43d5ee",
+      "a17448"
     ],
     "minecraft:warped_forest": [
       "bfb755",
       "aea42a",
-      "3f76e4"
+      "3f76e4",
+      "a38046"
     ],
     "minecraft:windswept_forest": [
       "8ab689",
       "6da36b",
-      "3f76e4"
+      "3f76e4",
+      "967753"
     ],
     "minecraft:windswept_gravelly_hills": [
       "8ab689",
       "6da36b",
-      "3f76e4"
+      "3f76e4",
+      "967753"
     ],
     "minecraft:windswept_hills": [
       "8ab689",
       "6da36b",
-      "3f76e4"
+      "3f76e4",
+      "967753"
     ],
     "minecraft:windswept_savanna": [
       "bfb755",
       "aea42a",
-      "3f76e4"
+      "3f76e4",
+      "a38046"
     ],
     "minecraft:wooded_badlands": [
       "90814d",
       "9e814d",
-      "3f76e4"
+      "3f76e4",
+      "a38046"
     ]
   }
 }

@@ -214,8 +214,10 @@ public class ColorConfig {
 			Path biomes = generated.resolve("data/minecraft/worldgen/biome");
 			Path assetGrass = assetBase.resolve("textures/colormap/grass.png");
 			Path assetFoliage = assetBase.resolve("textures/colormap/foliage.png");
+			Path assetDryFoliage = assetBase.resolve("textures/colormap/dry_foliage.png");
 			BufferedImage grassTints = ImageIO.read(Files.newInputStream(assetGrass));
 			BufferedImage foliageTints = ImageIO.read(Files.newInputStream(assetFoliage));
+			BufferedImage dryFoliageTints = ImageIO.read(Files.newInputStream(assetDryFoliage));
 
 			try (DirectoryStream<Path> ds = Files.newDirectoryStream(biomes)) {
 				for (Path b : ds) {
@@ -229,10 +231,13 @@ public class ColorConfig {
 					int foliageTint = Objects.requireNonNullElseGet(
 							biome.effects.foliageTint(),
 							() -> getColorMapping(biome.temperature, biome.downfall, foliageTints));
+					int dryFoliageTint = Objects.requireNonNullElseGet(
+							biome.effects.dryFoliageTint(),
+							() -> getColorMapping(biome.temperature, biome.downfall, dryFoliageTints));
 					String fileName = b.getFileName().toString();
 					tints.addTints(
 							"minecraft:" + fileName.substring(0, fileName.length() - 5),
-							new BiomeColors.BiomeTints(grassTint, foliageTint, biome.effects.waterTint()));
+							new BiomeColors.BiomeTints(grassTint, foliageTint, biome.effects.waterTint(), dryFoliageTint));
 				}
 			}
 		}
@@ -338,6 +343,7 @@ public class ColorConfig {
 			@SerializedName("transparent") Set<String> transparent,
 			@SerializedName("grass_tint") Set<String> grassTint,
 			@SerializedName("foliage_tint") Set<String> foliageTint,
+			@SerializedName("dry_foliage_tint") Set<String> dryFoliageTint,
 			@SerializedName("water") Set<String> water,
 			@SerializedName("foliage") Set<String> foliage,
 			@SerializedName("static_tint") Map<String, Integer> staticTint,
@@ -390,6 +396,10 @@ public class ColorConfig {
 			return staticColor.containsKey(blockName) ? BlockColor.STATIC_COLOR : 0;
 		}
 
+		public int getDryFoliageTint(String blockName) {
+			return dryFoliageTint.contains(blockName) ? BlockColor.DRY_FOLIAGE_TINT : 0;
+		}
+
 		public int get(String blockName) {
 			return getTransparent(blockName)
 					| getGrassTint(blockName)
@@ -397,7 +407,8 @@ public class ColorConfig {
 					| getWater(blockName)
 					| getFoliage(blockName)
 					| getStaticTint(blockName)
-					| getStaticColor(blockName);
+					| getStaticColor(blockName)
+					| getDryFoliageTint(blockName);
 		}
 	}
 }

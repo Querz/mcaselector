@@ -80,6 +80,8 @@ public class ColorMapping {
 					applyTints(entry.getKey(), color.getKey(), color.getValue().color, tints, BiomeColors.BiomeTints::foliageColor, cache);
 				} else if ((color.getValue().properties & BlockColor.WATER) > 0) {
 					applyTints(entry.getKey(), color.getKey(), color.getValue().color, tints, BiomeColors.BiomeTints::waterColor, cache);
+				} else if ((color.getValue().properties & BlockColor.DRY_FOLIAGE_TINT) > 0) {
+					applyTints(entry.getKey(), color.getKey(), color.getValue().color, tints, BiomeColors.BiomeTints::dryFoliageColor, cache);
 				}
 			}
 		}
@@ -108,6 +110,8 @@ public class ColorMapping {
 				applyTintsLegacy(entry.getKey(),color.color, tints, BiomeColors.BiomeTints::foliageColor, cache);
 			} else if ((color.properties & BlockColor.WATER) > 0) {
 				applyTintsLegacy(entry.getKey(), color.color, tints, BiomeColors.BiomeTints::waterColor, cache);
+			} else if ((color.properties & BlockColor.DRY_FOLIAGE_TINT) > 0) {
+				applyTintsLegacy(entry.getKey(), color.color, tints, BiomeColors.BiomeTints::dryFoliageColor, cache);
 			}
 		}
 		return cache;
