@@ -1,6 +1,7 @@
 package net.querz.mcaselector.version.mapping.generator;
 
 import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersion;
 import net.querz.mcaselector.version.mapping.minecraft.VersionManifest;
 import java.io.IOException;
@@ -19,6 +20,9 @@ public class Main {
 		String mcVersion = args[0];
 
 		Path tmp = tmpDir.resolve(mcVersion);
+		Path log = tmp.resolve("logs_mcaselector");
+		Logging.setLogDir(log.toFile());
+		Logging.updateThreadContext();
 		Path mf = tmpDir.resolve("version_manifest.json");
 		if (!Files.exists(mf)) {
 			VersionManifest.download(mf);
