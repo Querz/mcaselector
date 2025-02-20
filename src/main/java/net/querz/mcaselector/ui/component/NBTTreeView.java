@@ -734,7 +734,9 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			boolean flag = true;
 			if (!getItem().isRoot() && getItem().parent.getType() == LIST) {
 				flag = false;
-				if (event.getY() > getHeight() * 0.75) {
+				if (((ListTag) getItem().parent).getElementType() != dragItem.getValue().ref.getType()) {
+					flag = true;
+				} else if (event.getY() > getHeight() * 0.75) {
 					dragHighlight((NBTTreeItem) getTreeItem(), 1);
 					dropTarget = (NBTTreeItem) getTreeItem().getParent();
 					dropTargetIndex = getItem().index + 1;
