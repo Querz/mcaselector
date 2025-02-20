@@ -13,7 +13,7 @@ public final class VersionHandler {
 
 	private static final Map<Class<?>, TreeMap<Integer, Object>> implementations = new HashMap<>();
 
-	static {
+	public static void init() {
 		// initialize all implementations
 		for (Class<?> clazz : ClassIndex.getAnnotated(MCVersionImplementation.class)) {
 			Class<?> interfaceClass = null;
