@@ -876,7 +876,7 @@ public final class ParamExecutor {
 			try {
 				Overlay overlay = new OverlayParser(type, min, max, additionalData, minHue, maxHue).parse();
 				overlayPool = new OverlayPool(null);
-				overlayPool.switchTo(new File(ConfigProvider.WORLD.getCacheDir(), "cache.db").toString(), List.of(overlay));
+				overlayPool.switchTo(new File(ConfigProvider.WORLD.getCacheDir(), "cache").toString());
 				overlayPool.setParser(overlay);
 			} catch (Exception ex) {
 				throw new ParseException(ex.getMessage());

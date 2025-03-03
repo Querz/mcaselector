@@ -127,7 +127,7 @@ public final class CacheHelper {
 
 		File cacheVersionFile = new File(ConfigProvider.WORLD.getCacheDir(), "version");
 		String version = null;
-		if(cacheVersionFile.exists()) {
+		if (cacheVersionFile.exists()) {
 			version = readVersionFromFile(cacheVersionFile);
 		} else {
 			LOGGER.warn("no cache found for this world");

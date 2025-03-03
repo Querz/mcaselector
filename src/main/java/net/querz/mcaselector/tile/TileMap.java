@@ -709,13 +709,13 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	public void clear() {
-		clear(null);
+		clear(null, true);
 	}
 
-	public void clear(ProgressTask loadWorldTask) {
+	public void clear(ProgressTask loadWorldTask, boolean initCache) {
 		tiles.clear();
 		imgPool.clear(loadWorldTask);
-		overlayPool.clear();
+		overlayPool.clear(initCache);
 
 		pastedChunks = null;
 		pastedWorld = null;

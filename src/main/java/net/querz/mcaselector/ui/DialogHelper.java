@@ -623,12 +623,12 @@ public class DialogHelper {
 			CacheHelper.validateCacheVersion(tileMap);
 			RegionImageGenerator.invalidateCachedMCAFiles();
 			tileMap.getWindow().getOptionBar().setRenderHeight(ConfigProvider.WORLD.getRenderHeight());
-			tileMap.clear(task);
+			tileMap.clear(task, false);
+			tileMap.getOverlayPool().switchTo(new File(ConfigProvider.WORLD.getCacheDir(), "cache").toString());
 			tileMap.clearSelection();
 			tileMap.draw();
 			tileMap.disable(false);
 			tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap, primaryStage);
-			tileMap.getOverlayPool().switchTo(new File(ConfigProvider.WORLD.getCacheDir(), "cache.db").toString(), tileMap.getOverlays());
 			task.done(Translation.DIALOG_PROGRESS_DONE.toString());
 			Platform.runLater(() -> tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent()));
 		});

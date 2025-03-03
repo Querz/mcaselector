@@ -39,7 +39,6 @@ repositories {
 dependencies {
 	implementation 'com.github.Querz:NBT:665355e67f'
 	implementation 'com.google.code.gson:gson:2.10.1'
-	implementation 'org.xerial:sqlite-jdbc:3.45.2.0'
 	implementation 'it.unimi.dsi:fastutil:8.5.8'
 	implementation 'org.apache.logging.log4j:log4j-api:2.24.3'
 	implementation 'org.apache.logging.log4j:log4j-core:2.24.3'
@@ -50,10 +49,10 @@ dependencies {
 	implementation 'org.fxmisc.richtext:richtextfx:0.11.2'
 	implementation 'org.lz4:lz4-java:1.8.0'
 	implementation 'org.atteo.classindex:classindex:3.13'
+	implementation 'org.iq80.leveldb:leveldb:0.12'
   
 	shadow 'com.github.Querz:NBT:665355e67f'
 	shadow 'com.google.code.gson:gson:2.10.1'
-	shadow 'org.xerial:sqlite-jdbc:3.45.2.0'
 	shadow 'it.unimi.dsi:fastutil:8.5.8'
 	shadow 'org.apache.logging.log4j:log4j-api:2.24.3'
 	shadow 'org.apache.logging.log4j:log4j-core:2.24.3'
@@ -64,6 +63,7 @@ dependencies {
 	shadow 'org.fxmisc.richtext:richtextfx:0.11.2'
 	shadow 'org.lz4:lz4-java:1.8.0'
 	shadow 'org.atteo.classindex:classindex:3.13'
+	shadow 'org.iq80.leveldb:leveldb:0.12'
 
 	annotationProcessor('org.atteo.classindex:classindex:3.13')
 	annotationProcessor('org.apache.logging.log4j:log4j-core:2.24.3')

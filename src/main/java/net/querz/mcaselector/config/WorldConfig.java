@@ -38,6 +38,7 @@ public class WorldConfig extends Config {
 	private transient WorldDirectories worldDirs = null;
 	private transient UUID worldUUID = null;
 	private transient File cacheDir = null;
+	private transient File cacheDBDir = null;
 	private transient List<File> dimensionDirectories = null;
 	private transient File[] zoomLevelCacheDirs = null;
 
@@ -61,7 +62,7 @@ public class WorldConfig extends Config {
 	public void setWorldDirs(WorldDirectories worldDirs) {
 		this.worldDirs = worldDirs;
 		this.worldUUID = UUID.nameUUIDFromBytes(worldDirs.getRegion().getAbsolutePath().getBytes());
-		this.cacheDir = new File(BASE_CACHE_DIR, worldUUID.toString().replace("-", ""));
+		setCacheDir(BASE_CACHE_DIR);
 		this.regionDir = worldDirs.getRegion();
 		this.zoomLevelCacheDirs = new File[Bits.lsbPosition(MAX_ZOOM_LEVEL) + 1];
 		for (int i = MAX_ZOOM_LEVEL; i > 0; i >>= 1) {
@@ -81,6 +82,10 @@ public class WorldConfig extends Config {
 		return cacheDir;
 	}
 
+	public File getCacheDBDir() {
+		return cacheDBDir;
+	}
+
 	public File getCacheDir(int zoomLevel) {
 		return zoomLevelCacheDirs[Bits.lsbPosition(zoomLevel)];
 	}
@@ -91,6 +96,7 @@ public class WorldConfig extends Config {
 
 	public void setCacheDir(File cacheDir) {
 		this.cacheDir = new File(cacheDir, worldUUID.toString().replace("-", ""));
+		this.cacheDBDir = new File(cacheDir, "cache");
 	}
 
 	public List<File> getDimensionDirectories() {
@@ -192,7 +198,7 @@ public class WorldConfig extends Config {
 		cfg.regionDir = worldDirectories.getRegion();
 		cfg.worldDirs = worldDirectories;
 		cfg.dimensionDirectories = dimensionDirectories;
-		cfg.cacheDir = cacheDir;
+		cfg.setCacheDir(cacheDir);
 		cfg.zoomLevelCacheDirs = new File[Bits.lsbPosition(MAX_ZOOM_LEVEL) + 1];
 		for (int i = MAX_ZOOM_LEVEL; i > 0; i >>= 1) {
 			cfg.zoomLevelCacheDirs[Bits.lsbPosition(i)] = new File(cacheDir, "" + i);
