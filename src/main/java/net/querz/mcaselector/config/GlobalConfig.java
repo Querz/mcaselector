@@ -24,6 +24,7 @@ public class GlobalConfig extends Config {
 		builder.registerTypeAdapter(Color.class, new ColorAdapter());
 		builder.registerTypeAdapter(File.class, new FileAdapter(BASE_DIR.getAbsolutePath()));
 		builder.registerTypeAdapter(Locale.class, new LocaleAdapter());
+		builder.setPrettyPrinting();
 		gsonInstance = builder.create();
 	}
 

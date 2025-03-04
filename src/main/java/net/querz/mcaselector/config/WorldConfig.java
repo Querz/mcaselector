@@ -19,6 +19,7 @@ public class WorldConfig extends Config {
 
 	static {
 		GsonBuilder builder = new GsonBuilder();
+		builder.setPrettyPrinting();
 		gsonInstance = builder.create();
 	}
 
@@ -198,10 +199,10 @@ public class WorldConfig extends Config {
 		cfg.regionDir = worldDirectories.getRegion();
 		cfg.worldDirs = worldDirectories;
 		cfg.dimensionDirectories = dimensionDirectories;
-		cfg.setCacheDir(cacheDir);
+		cfg.setCacheDir(BASE_CACHE_DIR);
 		cfg.zoomLevelCacheDirs = new File[Bits.lsbPosition(MAX_ZOOM_LEVEL) + 1];
 		for (int i = MAX_ZOOM_LEVEL; i > 0; i >>= 1) {
-			cfg.zoomLevelCacheDirs[Bits.lsbPosition(i)] = new File(cacheDir, "" + i);
+			cfg.zoomLevelCacheDirs[Bits.lsbPosition(i)] = new File(cfg.cacheDir, "" + i);
 		}
 
 		return cfg;
