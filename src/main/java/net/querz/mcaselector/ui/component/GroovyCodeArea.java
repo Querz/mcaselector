@@ -35,6 +35,12 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 		return error;
 	}
 
+	private Runnable changeListener;
+
+	public void setChangeListener(Runnable listener) {
+		this.changeListener = listener;
+	}
+
 	private static final String[] KEYWORDS = new String[] {
 			"abstract", "as", "assert", "boolean", "break", "byte",
 			"case", "catch", "char", "class", "const",
@@ -97,6 +103,9 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 					.awaitLatest(multiPlainChanges())
 					.filterMap(t -> {
 						if (t.isSuccess()) {
+							if (changeListener != null) {
+								changeListener.run();
+							}
 							return Optional.of(t.get());
 						} else {
 							t.getFailure().printStackTrace();
@@ -161,7 +170,7 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 		Matcher matcher = PATTERN.matcher(text);
 		int lastKwEnd = 0;
 		StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-		while(matcher.find()) {
+		while (matcher.find()) {
 			String match; // we need this to get the actual length of the match, excluding any trailing characters
 			String styleClass =
 					(match = matcher.group("KEYWORD")) != null ? "keyword" :
@@ -183,7 +192,8 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 	}
 
 	public void setText(String text) {
-		replaceText(0, 0, text);
+		replaceText(0, getLength(), text);
+		setStyleSpans(0, computeHighlighting(text));
 	}
 
 	@Override

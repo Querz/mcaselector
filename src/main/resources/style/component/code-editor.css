@@ -1,0 +1,32 @@
+.code-editor-script-box {
+    -fx-border-color: -color-scroll-pane-border;
+}
+
+.script-pane {
+    -fx-effect: innershadow(gaussian, -color-scroll-pane-shadow, 4, 0, 0, 0);
+}
+
+.file-name-label {
+    -fx-text-fill: -color-button-disabled-text !important;
+    -fx-padding: 0 5 0 0;
+    -fx-alignment: center-right;
+}
+
+.script-error-label * {
+    -fx-font-family: "Noto Sans Mono";
+    -fx-min-height: 50;
+}
+
+.script-error-label {
+    -fx-text-fill: -color-error-text !important;
+    -fx-background-color: inherit;
+}
+
+.menu-bar {
+    -fx-padding: 0 0 0 1;
+    -fx-alignment: center-left;
+}
+
+.menu .separator {
+    -fx-padding: 0;
+}

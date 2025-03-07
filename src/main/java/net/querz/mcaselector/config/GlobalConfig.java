@@ -50,6 +50,8 @@ public class GlobalConfig extends Config {
 	private String mcSavesDir = DEFAULT_MC_SAVES_DIR;
 	private boolean debug = DEFAULT_DEBUG;
 	private TreeMap<Long, RecentWorld> recentWorlds = new TreeMap<>();
+	private RecentFiles recentFilterScripts = new RecentFiles();
+	private RecentFiles recentChangeScripts = new RecentFiles();
 
 	public Locale getLocale() {
 		return locale;
@@ -144,11 +146,27 @@ public class GlobalConfig extends Config {
 		}
 
 		// if it doesn't exist, we need to make sure that we delete the oldest entry if there are already 10 entries
-		if (recentWorlds.size() >= 16) {
+		if (recentWorlds.size() >= MAX_RECENT_FILES) {
 			recentWorlds.remove(recentWorlds.firstKey());
 		}
 
 		recentWorlds.put(System.currentTimeMillis(), new RecentWorld(world, dimensionDirectories));
+	}
+
+	public RecentFiles getRecentFilterScripts() {
+		return recentFilterScripts;
+	}
+
+	public void addRecentFilterScript(File file) {
+		recentFilterScripts.addRecentFile(file);
+	}
+
+	public RecentFiles getRecentChangeScripts() {
+		return recentChangeScripts;
+	}
+
+	public void addRecentChangeScript(File file) {
+		recentChangeScripts.addRecentFile(file);
 	}
 
 	@Override

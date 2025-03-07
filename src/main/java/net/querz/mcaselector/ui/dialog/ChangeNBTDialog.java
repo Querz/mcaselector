@@ -16,8 +16,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -25,22 +23,22 @@ import net.querz.mcaselector.changer.ChangeParser;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.changer.fields.ScriptField;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.RegionChunk;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
+import net.querz.mcaselector.ui.component.CodeEditor;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.ui.UIFactory;
-import net.querz.mcaselector.ui.component.GroovyCodeArea;
 import net.querz.mcaselector.ui.component.PersistentDialogProperties;
 import net.querz.mcaselector.util.validation.BeforeAfterCallback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.fxmisc.flowless.VirtualizedScrollPane;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -74,12 +72,8 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 	private final RadioButton change = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_CHANGE);
 	private final RadioButton force = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_FORCE);
 	private final CheckBox selectionOnly = UIFactory.checkbox(Translation.DIALOG_CHANGE_NBT_SELECTION_ONLY);
-	private static final GroovyCodeArea codeArea = new GroovyCodeArea(true);
+	private static final CodeEditor codeEditor = new CodeEditor(initScript);
 	private static int lastSelectedTab;
-
-	static {
-		codeArea.setText(initScript);
-	}
 
 	public ChangeNBTDialog(TileMap tileMap, Stage primaryStage) {
 		titleProperty().bind(Translation.DIALOG_CHANGE_NBT_TITLE.getProperty());
@@ -107,7 +101,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 				return new Result(fields, force.isSelected(), selectionOnly.isSelected(), null);
 			} else {
 				ScriptField scriptField = new ScriptField();
-				scriptField.parseNewValue(codeArea.getText());
+				scriptField.parseNewValue(codeEditor.getText());
 				if (!scriptField.needsChange()) {
 					return null;
 				}
@@ -118,6 +112,10 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 		// apply same stylesheets to this dialog
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
 		getDialogPane().getStylesheets().add(Objects.requireNonNull(ChangeNBTDialog.class.getClassLoader().getResource("style/component/change-nbt-dialog.css")).toExternalForm());
+		// owner of code editor needs to be set after applying style sheets to this dialog
+		// because code editor inherits style sheets from this dialog
+		codeEditor.setOwner(getDialogPane().getScene().getWindow());
+		codeEditor.setRecentFiles(ConfigProvider.GLOBAL.getRecentChangeScripts());
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
@@ -171,18 +169,10 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 		VBox mainBox = new VBox();
 		mainBox.getChildren().addAll(scrollPane, new Separator(), changeQuery);
 
-		VBox scriptBox = new VBox();
-		StackPane scriptPane = new StackPane(new VirtualizedScrollPane<>(codeArea));
-		Label errorLabel = new Label();
-		errorLabel.getStyleClass().add("script-error-label");
-		errorLabel.textProperty().bind(codeArea.errorProperty());
-		VBox.setVgrow(scriptPane, Priority.ALWAYS);
-		scriptBox.getChildren().addAll(scriptPane, errorLabel);
-
 		Tab mainTab = UIFactory.tab(Translation.DIALOG_CHANGE_NBT_TAB_QUERY);
 		mainTab.setContent(mainBox);
 		Tab scriptTab = UIFactory.tab(Translation.DIALOG_CHANGE_NBT_TAB_SCRIPT);
-		scriptTab.setContent(scriptBox);
+		scriptTab.setContent(codeEditor);
 
 		tabs.getTabs().addAll(mainTab, scriptTab);
 

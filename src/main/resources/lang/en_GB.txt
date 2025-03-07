@@ -10,6 +10,12 @@ menu.view;View
 menu.selection;Selection
 menu.tools;Tools
 menu.about;About
+menu.file.new;New
+menu.file.open;Open
+menu.file.open_recent;Open recent
+menu.file.open_recent.clear;Clear
+menu.file.save;Save
+menu.file.save_as;Save as...
 menu.file.open_world;Open World
 menu.file.open_dimension;Open Dimension
 menu.file.open_recent_world;Open recent World
@@ -182,6 +188,8 @@ dialog.error.header;An Error occurred
 dialog.error.copied_to_clipboard;Copied to clipboard!
 dialog.unsaved_selection.title;Unsaved selection
 dialog.unsaved_selection.header;There is an unsaved selection.
+dialog.unsaved_script.title;Unsaved script
+dialog.unsaved_script.header;There is an unsaved script.
 dialog.request_number.title.array_length;Array length
 dialog.request_number.title.enter_number;Enter number
 button.cancel;Cancel

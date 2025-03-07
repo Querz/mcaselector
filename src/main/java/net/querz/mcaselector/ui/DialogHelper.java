@@ -707,7 +707,7 @@ public class DialogHelper {
 		return directoryChooser;
 	}
 
-	private static FileChooser createFileChooser(String initialDirectory, FileChooser.ExtensionFilter filter) {
+	public static FileChooser createFileChooser(String initialDirectory, FileChooser.ExtensionFilter filter) {
 		FileChooser fileChooser = new FileChooser();
 		if (filter != null) {
 			fileChooser.getExtensionFilters().add(filter);
