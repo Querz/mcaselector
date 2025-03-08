@@ -10,6 +10,12 @@ menu.view;Visão
 menu.selection;Seleção
 menu.tools;Ferramentas
 menu.about;Sobre
+menu.file.new;Novo
+menu.file.open;Abrir
+menu.file.open_recent;Abrir recente
+menu.file.open_recent.clear;Limpar
+menu.file.save;Salvar
+menu.file.save_as;Salvar como...
 menu.file.open_world;Abrir mundo
 menu.file.open_dimension;Abra outra dimensão
 menu.file.open_recent_world;Abra mundo anterior
@@ -182,6 +188,8 @@ dialog.error.header;Um erro ocorreu
 dialog.error.copied_to_clipboard;Copiado para a área de transferência!
 dialog.unsaved_selection.title;Seleção não salva
 dialog.unsaved_selection.header;Há uma seleção não salva.
+dialog.unsaved_script.title;Script não salvo
+dialog.unsaved_script.header;Há um script não salvo.
 dialog.request_number.title.array_length;Comprimento da matriz
 dialog.request_number.title.enter_number;Valor
 button.cancel;Cancelar

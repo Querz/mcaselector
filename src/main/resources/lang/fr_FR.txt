@@ -10,6 +10,12 @@ menu.view;Vue
 menu.selection;Sélection
 menu.tools;Outils
 menu.about;À propos
+menu.file.new;Nouveau
+menu.file.open;Ouvrir
+menu.file.open_recent;Ouvrir récent
+menu.file.open_recent.clear;Effacer
+menu.file.save;Enregistrer
+menu.file.save_as;Enregistrer sous...
 menu.file.open_world;Ouvrir un monde
 menu.file.open_dimension;Ouvrir une autre dimension
 menu.file.open_recent_world;Ouvrir un monde précédent
@@ -182,6 +188,8 @@ dialog.error.header;Une erreur s'est produite
 dialog.error.copied_to_clipboard;Copié dans le presse-papier!
 dialog.unsaved_selection.title;Sélection non enregistrée
 dialog.unsaved_selection.header;Il y a une sélection non enregistrée.
+dialog.unsaved_script.title;Script non enregistré
+dialog.unsaved_script.header;Il y a un script non enregistré.
 dialog.request_number.title.array_length;Longueur du tableau
 dialog.request_number.title.enter_number;Valeur
 button.cancel;Annuler

@@ -10,6 +10,12 @@ menu.view;表示
 menu.selection;選択
 menu.tools;ツール
 menu.about;詳細
+menu.file.new;新規
+menu.file.open;開く
+menu.file.open_recent;最近開いたファイル
+menu.file.open_recent.clear;クリア
+menu.file.save;保存
+menu.file.save_as;名前を付けて保存...
 menu.file.open_world;ワールドを開く
 menu.file.open_dimension;別の次元を開く
 menu.file.open_recent_world;前の世界を開く
@@ -182,6 +188,8 @@ dialog.error.header;エラーが発生しました
 dialog.error.copied_to_clipboard;コピーしました
 dialog.unsaved_selection.title;保存されていない選択
 dialog.unsaved_selection.header;保存されていない選択があります。
+dialog.unsaved_script.title;保存されていないスクリプト
+dialog.unsaved_script.header;保存されていないスクリプトがあります。
 dialog.request_number.title.array_length;配列の長さ
 dialog.request_number.title.enter_number;価値
 button.cancel;キャンセル

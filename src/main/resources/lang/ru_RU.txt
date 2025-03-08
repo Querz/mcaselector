@@ -10,6 +10,12 @@ menu.view;Вид
 menu.selection;Выбор
 menu.tools;Инструменты
 menu.about;О программе
+menu.file.new;Новый
+menu.file.open;Открыть
+menu.file.open_recent;Открыть недавние
+menu.file.open_recent.clear;Очистить
+menu.file.save;Сохранить
+menu.file.save_as;Сохранить как...
 menu.file.open_world;Открой мир
 menu.file.open_dimension;Откройте другое измерение
 menu.file.open_recent_world;Откройте предыдущий мир
@@ -182,6 +188,8 @@ dialog.error.header;Произошла ошибка
 dialog.error.copied_to_clipboard;Скопировано в буфер обмена!
 dialog.unsaved_selection.title;Несохраненный выбор
 dialog.unsaved_selection.header;Есть несохраненный выбор.
+dialog.unsaved_script.title;Несохраненный скрипт
+dialog.unsaved_script.header;Есть несохраненный скрипт.
 dialog.request_number.title.array_length;Длина массива
 dialog.request_number.title.enter_number;Ценить
 button.cancel;Отменить

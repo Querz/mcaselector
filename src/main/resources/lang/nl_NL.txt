@@ -10,6 +10,12 @@ menu.view;Beeld
 menu.selection;Selectie
 menu.tools;Gereedschap
 menu.about;Over
+menu.file.new;Nieuw
+menu.file.open;Open
+menu.file.open_recent;Open recent
+menu.file.open_recent.clear;Verwijderen
+menu.file.save;Opslaan
+menu.file.save_as;Opslaan als...
 menu.file.open_world;Open een wereld
 menu.file.open_dimension;Een andere dimensie openen
 menu.file.open_recent_world;Een vorige wereld openen
@@ -182,6 +188,8 @@ dialog.error.header;Er is een fout opgetreden
 dialog.error.copied_to_clipboard;Gekopieerd naar het klembord!
 dialog.unsaved_selection.title;Niet-opgeslagen selectie
 dialog.unsaved_selection.header;Er is een niet-opgeslagen selectie.
+dialog.unsaved_script.title;Niet-opgeslagen script
+dialog.unsaved_script.header;Er is een niet-opgeslagen script.
 dialog.request_number.title.array_length;Lengte van de array
 dialog.request_number.title.enter_number;Waarde
 button.cancel;Annuleren

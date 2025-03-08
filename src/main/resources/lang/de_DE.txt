@@ -10,6 +10,12 @@ menu.view;Ansicht
 menu.selection;Selektion
 menu.tools;Werkzeuge
 menu.about;Info
+menu.file.new;Neu
+menu.file.open;Öffnen
+menu.file.open_recent;Vorherige Datei öffnen
+menu.file.open_recent.clear;Zurücksetzen
+menu.file.save;Speichern
+menu.file.save_as;Speichern unter...
 menu.file.open_world;Welt öffnen
 menu.file.open_dimension;Dimension öffnen
 menu.file.open_recent_world;Vorherige Welt öffnen
@@ -182,6 +188,8 @@ dialog.error.header;Fehler
 dialog.error.copied_to_clipboard;In die Zwischenablage kopiert!
 dialog.unsaved_selection.title;Ungespeicherte Selektion
 dialog.unsaved_selection.header;Es gibt eine ungespeicherte Selektion.
+dialog.unsaved_script.title;Ungespeichertes Skript
+dialog.unsaved_script.header;Ein Skript ist nicht gespeichert.
 dialog.request_number.title.array_length;Länge des Arrays
 dialog.request_number.title.enter_number;Wert eingeben
 button.cancel;Abbrechen

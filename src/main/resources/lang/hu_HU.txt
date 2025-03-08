@@ -10,6 +10,12 @@ menu.view;Nézet
 menu.selection;Kijelölés
 menu.tools;Eszközök
 menu.about;Rólunk
+menu.file.new;Új
+menu.file.open;Megnyitás
+menu.file.open_recent;Legutóbbi megnyitások
+menu.file.open_recent.clear;Törlés
+menu.file.save;Mentés
+menu.file.save_as;Mentés másként...
 menu.file.open_world;Világ Megnyitása
 menu.file.open_dimension;Dimenzió Megnyitása
 menu.file.open_recent_world;Legutóbbi Világ megynitása
@@ -182,6 +188,8 @@ dialog.error.header;Hiba történt
 dialog.error.copied_to_clipboard;Vágólapra másolva!
 dialog.unsaved_selection.title;Nem mentett kijelölés
 dialog.unsaved_selection.header;Van egy nem mentett kijelölés.
+dialog.unsaved_script.title;Mentetlen szkript
+dialog.unsaved_script.header;Van egy mentetlen szkript.
 dialog.request_number.title.array_length;A tömb hossza
 dialog.request_number.title.enter_number;Érték
 button.cancel;Visszavonás
