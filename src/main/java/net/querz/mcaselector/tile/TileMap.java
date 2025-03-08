@@ -539,6 +539,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	private void onMousePressed(MouseEvent event) {
+		requestFocus();
 		if (!disabled) {
 			firstMouseLocation = new Point2f(event.getX(), event.getY());
 			firstPastedChunksOffset = pastedChunksOffset;
