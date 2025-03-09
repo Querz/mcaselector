@@ -66,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;Колір вставлен
 dialog.settings.rendering.shade.shade;Відтінок
 dialog.settings.rendering.shade;Відтінок
 dialog.settings.rendering.shade.shade_water;Відтінок води
+dialog.settings.rendering.shade.shade_altitude;Висота рельєфу
 dialog.settings.rendering.background.show_nonexistent_regions;Показувати неіснуючі регіони
 dialog.settings.rendering.smooth.smooth_rendering;Гладка відмальовка
 dialog.settings.rendering.smooth.smooth_overlays;Гладке накладання

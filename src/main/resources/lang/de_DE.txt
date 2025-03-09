@@ -66,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;Farbe eingefügter Chunks
 dialog.settings.rendering.shade.shade;Schatten
 dialog.settings.rendering.shade;Schatten
 dialog.settings.rendering.shade.shade_water;Wassertiefe
+dialog.settings.rendering.shade.shade_altitude;Geländehöhe
 dialog.settings.rendering.background.show_nonexistent_regions;Nicht vorhandene Regionen anzeigen
 dialog.settings.rendering.smooth.smooth_rendering;Glatt rendern
 dialog.settings.rendering.smooth.smooth_overlays;Glatte Overlays

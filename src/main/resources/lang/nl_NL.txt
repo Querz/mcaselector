@@ -65,7 +65,8 @@ dialog.settings.global.selection.chunk_color;Chunk kleur
 dialog.settings.global.selection.pasted_chunks_color;Geplakte brokken kleur
 dialog.settings.rendering.shade.shade;Schaduw
 dialog.settings.rendering.shade;Schaduw
-dialog.settings.rendering.shade.shade_water;schaduw water
+dialog.settings.rendering.shade.shade_water;Schaduw water
+dialog.settings.rendering.shade.shade_altitude;Terreinhoogte
 dialog.settings.rendering.background.show_nonexistent_regions;Niet-bestaande regio's weergeven
 dialog.settings.rendering.smooth.smooth_rendering;Vloeiende weergave
 dialog.settings.rendering.smooth.smooth_overlays;Vloeiende overlays

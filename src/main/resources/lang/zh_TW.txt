@@ -66,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;貼上的區塊顏色
 dialog.settings.rendering.shade.shade;陰影
 dialog.settings.rendering.shade;陰影
 dialog.settings.rendering.shade.shade_water;遮蔭水
+dialog.settings.rendering.shade.shade_altitude;地形高度
 dialog.settings.rendering.background.show_nonexistent_regions;顯示不存在的區域
 dialog.settings.rendering.smooth.smooth_rendering;平滑渲染
 dialog.settings.rendering.smooth.smooth_overlays;平滑疊加

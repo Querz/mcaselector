@@ -50,6 +50,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private final Button pasteChunksColorPreview = new Button();
 	private final CheckBox shadeCheckBox = new CheckBox();
 	private final CheckBox shadeWaterCheckBox = new CheckBox();
+	private final CheckBox shadeAltitudeCheckBox = new CheckBox();
 	private final CheckBox showNonexistentRegionsCheckBox = new CheckBox();
 	private final CheckBox smoothRendering = new CheckBox();
 	private final CheckBox smoothOverlays = new CheckBox();
@@ -86,6 +87,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			pasteChunksColorPreview.setBackground(new Background(new BackgroundFill(GlobalConfig.DEFAULT_PASTE_CHUNKS_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
 			shadeCheckBox.setSelected(WorldConfig.DEFAULT_SHADE);
 			shadeWaterCheckBox.setSelected(WorldConfig.DEFAULT_SHADE_WATER);
+			shadeAltitudeCheckBox.setSelected(WorldConfig.DEFAULT_SHADE_ALTITUDE);
 			showNonexistentRegionsCheckBox.setSelected(WorldConfig.DEFAULT_SHOW_NONEXISTENT_REGIONS);
 			smoothRendering.setSelected(WorldConfig.DEFAULT_SMOOTH_RENDERING);
 			smoothOverlays.setSelected(WorldConfig.DEFAULT_SMOOTH_OVERLAYS);
@@ -127,6 +129,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		pasteChunksColorPreview.setBackground(new Background(new BackgroundFill(pasteChunksColor, CornerRadii.EMPTY, Insets.EMPTY)));
 		shadeCheckBox.setSelected(ConfigProvider.WORLD.getShade());
 		shadeWaterCheckBox.setSelected(ConfigProvider.WORLD.getShadeWater());
+		shadeAltitudeCheckBox.setSelected(ConfigProvider.WORLD.getShadeAltitude());
 		showNonexistentRegionsCheckBox.setSelected(ConfigProvider.WORLD.getShowNonexistentRegions());
 		smoothRendering.setSelected(ConfigProvider.WORLD.getSmoothRendering());
 		smoothOverlays.setSelected(ConfigProvider.WORLD.getSmoothOverlays());
@@ -181,8 +184,12 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			});
 		});
 
-		shadeCheckBox.setOnAction(e -> shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected()));
+		shadeCheckBox.setOnAction(e -> {
+			shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected());
+			shadeAltitudeCheckBox.setDisable(!shadeCheckBox.isSelected());
+		});
 		shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected() || caves.isSelected() || layerOnly.isSelected());
+		shadeAltitudeCheckBox.setDisable(!shadeCheckBox.isSelected() || caves.isSelected() || layerOnly.isSelected());
 		shadeCheckBox.setDisable(caves.isSelected() || layerOnly.isSelected());
 
 		layerOnly.setOnAction(e -> caves.setDisable(layerOnly.isSelected()));
@@ -191,12 +198,14 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		caves.setOnAction(e -> {
 			layerOnly.setDisable(caves.isSelected());
 			shadeCheckBox.setDisable(caves.isSelected());
-			shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected() || caves.isSelected());
+			shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected() || caves.isSelected() || layerOnly.isSelected());
+			shadeAltitudeCheckBox.setDisable(!shadeCheckBox.isSelected() || caves.isSelected() || layerOnly.isSelected());
 		});
 		layerOnly.setOnAction(e -> {
 			caves.setDisable(layerOnly.isSelected());
 			shadeCheckBox.setDisable(layerOnly.isSelected());
-			shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected() || layerOnly.isSelected());
+			shadeWaterCheckBox.setDisable(!shadeCheckBox.isSelected() || caves.isSelected() || layerOnly.isSelected());
+			shadeAltitudeCheckBox.setDisable(!shadeCheckBox.isSelected() || caves.isSelected() || layerOnly.isSelected());
 		});
 
 		HBox debugBox = new HBox();
@@ -278,6 +287,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		GridPane shadingGrid = createGrid();
 		addPairToGrid(shadingGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_SHADE_SHADE), shadeCheckBox);
 		addPairToGrid(shadingGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_SHADE_SHADE_WATER), shadeWaterCheckBox);
+		addPairToGrid(shadingGrid, 2, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_SHADE_SHADE_ALTITUDE), shadeAltitudeCheckBox);
 		BorderedTitledPane shade = new BorderedTitledPane(Translation.DIALOG_SETTINGS_RENDERING_SHADE, shadingGrid);
 
 		GridPane smoothGrid = createGrid();
@@ -358,6 +368,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 					pasteChunksColor,
 					shadeCheckBox.isSelected(),
 					shadeWaterCheckBox.isSelected(),
+					shadeAltitudeCheckBox.isSelected(),
 					showNonexistentRegionsCheckBox.isSelected(),
 					smoothRendering.isSelected(),
 					smoothOverlays.isSelected(),
@@ -421,8 +432,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		public final int processThreads, writeThreads, maxLoadedFiles;
 		public final Color regionColor, chunkColor, pasteColor;
-		public final boolean shadeWater;
-		public final boolean shade;
+		public final boolean shade, shadeWater, shadeAltitude;
 		public final boolean showNonexistentRegions;
 		public final boolean smoothRendering, smoothOverlays;
 		public final TileMapBox.TileMapBoxBackground tileMapBackground;
@@ -435,9 +445,9 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		public Result(Locale locale, int processThreads, int writeThreads, int maxLoadedFiles,
 		              Color regionColor, Color chunkColor, Color pasteColor, boolean shade, boolean shadeWater,
-		              boolean showNonexistentRegions, boolean smoothRendering, boolean smoothOverlays,
-		              TileMapBox.TileMapBoxBackground tileMapBackground, File mcSavesDir, boolean debug, int height,
-		              boolean layerOnly, boolean caves, File poi, File entities) {
+		              boolean shadeAltitude, boolean showNonexistentRegions, boolean smoothRendering,
+					  boolean smoothOverlays, TileMapBox.TileMapBoxBackground tileMapBackground, File mcSavesDir,
+					  boolean debug, int height, boolean layerOnly, boolean caves, File poi, File entities) {
 
 			this.locale = locale;
 			this.processThreads = processThreads;
@@ -448,6 +458,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			this.pasteColor = pasteColor;
 			this.shade = shade;
 			this.shadeWater = shadeWater;
+			this.shadeAltitude = shadeAltitude;
 			this.showNonexistentRegions = showNonexistentRegions;
 			this.smoothRendering = smoothRendering;
 			this.smoothOverlays = smoothOverlays;

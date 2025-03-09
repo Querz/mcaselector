@@ -66,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;Color de trozos pegados
 dialog.settings.rendering.shade.shade;Sombra
 dialog.settings.rendering.shade;Sombra
 dialog.settings.rendering.shade.shade_water;Agua de sombra
+dialog.settings.rendering.shade.shade_altitude;Altura del terreno
 dialog.settings.rendering.background.show_nonexistent_regions;Mostrar regiones inexistentes
 dialog.settings.rendering.smooth.smooth_rendering;Renderizado suave
 dialog.settings.rendering.smooth.smooth_overlays;Superposiciones suaves

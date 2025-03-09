@@ -85,6 +85,7 @@ public enum Translation {
 	DIALOG_SETTINGS_RENDERING_SHADE_SHADE("dialog.settings.rendering.shade.shade"),
 	DIALOG_SETTINGS_RENDERING_SHADE("dialog.settings.rendering.shade"),
 	DIALOG_SETTINGS_RENDERING_SHADE_SHADE_WATER("dialog.settings.rendering.shade.shade_water"),
+	DIALOG_SETTINGS_RENDERING_SHADE_SHADE_ALTITUDE("dialog.settings.rendering.shade.shade_altitude"),
 	DIALOG_SETTINGS_RENDERING_BACKGROUND_SHOW_NONEXISTENT_REGIONS("dialog.settings.rendering.background.show_nonexistent_regions"),
 	DIALOG_SETTINGS_RENDERING_SMOOTH_SMOOTH_RENDERING("dialog.settings.rendering.smooth.smooth_rendering"),
 	DIALOG_SETTINGS_RENDERING_SMOOTH_SMOOTH_OVERLAYS("dialog.settings.rendering.smooth.smooth_overlays"),

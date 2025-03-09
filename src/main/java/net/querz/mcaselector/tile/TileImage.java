@@ -197,7 +197,7 @@ public final class TileImage {
 		int index = 0;
 		for (int z = 0; z < size; z++) {
 			for (int x = 0; x < size; x++, index++) {
-				int altitudeShade = MathUtil.clamp(16 * terrainHeights[index] / 64, -50, 50);
+				int altitudeShade = MathUtil.clamp(terrainHeights[index] / 4, -50, 50);
 				pixelBuffer[index] = Color.shade(pixelBuffer[index], altitudeShade * 4);
 			}
 		}
@@ -209,6 +209,7 @@ public final class TileImage {
 		}
 
 		int size = Tile.SIZE / scale;
+		float altitudeShadeMultiplier = ConfigProvider.WORLD.getShadeAltitude() ? 12f / 256f : 0f;
 
 		int index = 0;
 		for (int z = 0; z < size; z++) {
@@ -240,24 +241,15 @@ public final class TileImage {
 					}
 
 					float shade = xShade + zShade;
-					if (shade < -8) {
-						shade = -8;
-					}
-					if (shade > 8) {
-						shade = 8;
-					}
+					shade = MathUtil.clamp(shade, -8f, 8f);
 
-					int altitudeShade = 16 * (waterHeights[index] - 64) / 255;
-					if (altitudeShade < -4) {
-						altitudeShade = -4;
-					}
-					if (altitudeShade > 24) {
-						altitudeShade = 24;
-					}
+					// subtract 64 from height so altitude shade is 0 at sea level
+					float altitudeShade = (waterHeights[index] - 64f) * altitudeShadeMultiplier;
+					altitudeShade = MathUtil.clamp(altitudeShade, -4f, 12f);
 
 					shade += altitudeShade;
 
-					pixelBuffer[index] = Color.shade(pixelBuffer[index], (int) (shade * 8));
+					pixelBuffer[index] = Color.shade(pixelBuffer[index], (int) (shade * 8f));
 				}
 			}
 		}

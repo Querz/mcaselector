@@ -66,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;Wklejony kolor kawałków
 dialog.settings.rendering.shade.shade;Cień
 dialog.settings.rendering.shade;Cień
 dialog.settings.rendering.shade.shade_water;Cień wody
+dialog.settings.rendering.shade.shade_altitude;Wysokość terenu
 dialog.settings.rendering.background.show_nonexistent_regions;Pokaż nieistniejące regiony
 dialog.settings.rendering.smooth.smooth_rendering;Płynne renderowanie
 dialog.settings.rendering.smooth.smooth_overlays;Gładkie nakładki

@@ -66,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;붙여넣은 청크 색상
 dialog.settings.rendering.shade.shade;평면
 dialog.settings.rendering.shade;평면으로 보기
 dialog.settings.rendering.shade.shade_water;물만 평면으로 보기
+dialog.settings.rendering.shade.shade_altitude;지형 높이
 dialog.settings.rendering.background.show_nonexistent_regions;존재하지 않는 영역 표시
 dialog.settings.rendering.smooth.smooth_rendering;부드러운 렌더링
 dialog.settings.rendering.smooth.smooth_overlays;부드러운 오버레이

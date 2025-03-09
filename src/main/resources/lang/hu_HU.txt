@@ -66,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;Beillesztett chunkok színe
 dialog.settings.rendering.shade.shade;Árnyalás
 dialog.settings.rendering.shade;Árnyalás
 dialog.settings.rendering.shade.shade_water;Víz árnyalása
+dialog.settings.rendering.shade.shade_altitude;Földrajzi magasság
 dialog.settings.rendering.background.show_nonexistent_regions;Nem létező régiók mutatása
 dialog.settings.rendering.smooth.smooth_rendering;Simított renderelés
 dialog.settings.rendering.smooth.smooth_overlays;Simított overlay

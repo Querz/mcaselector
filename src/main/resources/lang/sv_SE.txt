@@ -66,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;Inklistringsfärg
 dialog.settings.rendering.shade.shade;Skugga
 dialog.settings.rendering.shade;Skugga
 dialog.settings.rendering.shade.shade_water;Skugga vatten
+dialog.settings.rendering.shade.shade_altitude;Terränghöjd
 dialog.settings.rendering.background.show_nonexistent_regions;Visa ogenererade regioner
 dialog.settings.rendering.smooth.smooth_rendering;Jämn återgivning
 dialog.settings.rendering.smooth.smooth_overlays;Jämna överlägg

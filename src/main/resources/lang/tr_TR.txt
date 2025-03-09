@@ -11,7 +11,6 @@ menu.selection;Seçim
 menu.tools;Araçlar
 menu.about;Bilgi
 menu.file.new;Yeni
-menu.file.new;Yeni
 menu.file.open;Aç
 menu.file.open_recent;Son açılanlar
 menu.file.open_recent.clear;Temizle
@@ -67,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;Yapıştırılan Chunk Reng
 dialog.settings.rendering.shade.shade;Gölge
 dialog.settings.rendering.shade;Gölge
 dialog.settings.rendering.shade.shade_water;Su Gölgesi
+dialog.settings.rendering.shade.shade_altitude;Arazi yüksekliği
 dialog.settings.rendering.background.show_nonexistent_regions;Var olmayan bölgeleri göster
 dialog.settings.rendering.smooth.smooth_rendering;Pürüzsüz işleme
 dialog.settings.rendering.smooth.smooth_overlays;Pürüzsüz kaplama

@@ -66,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;Barva vkládaných chunků
 dialog.settings.rendering.shade.shade;Odstín
 dialog.settings.rendering.shade;Odstín
 dialog.settings.rendering.shade.shade_water;Stínovat vodu
+dialog.settings.rendering.shade.shade_altitude;Výška terénu
 dialog.settings.rendering.background.show_nonexistent_regions;Zobrazit neexistující oblasti
 dialog.settings.rendering.smooth.smooth_rendering;Plynulé vykreslování
 dialog.settings.rendering.smooth.smooth_overlays;Hladké překrytí

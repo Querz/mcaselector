@@ -66,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;Pasted chunks color
 dialog.settings.rendering.shade.shade;Shade
 dialog.settings.rendering.shade;Shade
 dialog.settings.rendering.shade.shade_water;Shade water
+dialog.settings.rendering.shade.shade_altitude;Shade altitude
 dialog.settings.rendering.background.show_nonexistent_regions;Show nonexistent regions
 dialog.settings.rendering.smooth.smooth_rendering;Smooth rendering
 dialog.settings.rendering.smooth.smooth_overlays;Smooth overlays

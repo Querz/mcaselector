@@ -66,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;Couleur des morceaux collé
 dialog.settings.rendering.shade.shade;Ombre
 dialog.settings.rendering.shade;Ombre
 dialog.settings.rendering.shade.shade_water;Ombrer l'eau
+dialog.settings.rendering.shade.shade_altitude;Hauteur du terrain
 dialog.settings.rendering.background.show_nonexistent_regions;Afficher les régions inexistantes
 dialog.settings.rendering.smooth.smooth_rendering;Rendu fluide
 dialog.settings.rendering.smooth.smooth_overlays;Superpositions lisses

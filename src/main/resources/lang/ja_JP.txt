@@ -66,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;ペーストするチャン
 dialog.settings.rendering.shade.shade;影/透過
 dialog.settings.rendering.shade;影/透過
 dialog.settings.rendering.shade.shade_water;水の透過
+dialog.settings.rendering.shade.shade_altitude;地形の高さ
 dialog.settings.rendering.background.show_nonexistent_regions;存在しないリージョンを表示する
 dialog.settings.rendering.smooth.smooth_rendering;滑らかなレンダリング
 dialog.settings.rendering.smooth.smooth_overlays;滑らかなオーバーレイ

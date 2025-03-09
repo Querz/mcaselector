@@ -6,6 +6,10 @@ public final class MathUtil {
 		return Math.max(min, Math.min(max, a));
 	}
 
+	public static float clamp(float a, float min, float max) {
+		return Math.max(min, Math.min(max, a));
+	}
+
 	public static int clamp(int a, int min, int max) {
 		return Math.max(min, Math.min(max, a));
 	}

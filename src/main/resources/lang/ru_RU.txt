@@ -66,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;Цвет вставленн
 dialog.settings.rendering.shade.shade;Оттенок
 dialog.settings.rendering.shade;Оттенок
 dialog.settings.rendering.shade.shade_water;Тень воды
+dialog.settings.rendering.shade.shade_altitude;Высота местности
 dialog.settings.rendering.background.show_nonexistent_regions;Показать несуществующие регионы
 dialog.settings.rendering.smooth.smooth_rendering;Плавный рендеринг
 dialog.settings.rendering.smooth.smooth_overlays;Гладкие накладки
