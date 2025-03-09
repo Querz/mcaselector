@@ -536,7 +536,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 		@Override
 		public void commitEdit(NamedTag tag) {
-			if (name != null && name.getText() != null && !name.getText().isEmpty()) {
+			if (name != null && name.getText() != null) {
 				CompoundTag parent = (CompoundTag) tag.parent;
 				if (parent.containsKey(name.getText()) && !name.getText().equals(tag.name)) {
 					// don't commit if the new name already exists in this compound tag
