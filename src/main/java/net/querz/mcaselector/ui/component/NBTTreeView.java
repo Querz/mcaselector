@@ -89,17 +89,17 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		// if this is a list, we add the tag at the last index
 		if (target.getValue().ref.getType() == LIST) {
 			ListTag list = ((ListTag) target.getValue().ref);
-			if (list.getElementType() != null && list.getElementType() != tag.getType()) {
-				((ListTag) target.getValue().ref).add(tag);
-				target.getChildren().addLast(newItem = toTreeItem(list.size() - 1, null, tag, list));
+			if (list.getElementType() == null || list.getElementType() == tag.getType()) {
+				list.addLast(tag);
 				target.setExpanded(true);
+				target.getChildren().addLast(newItem = toTreeItem(list.size() - 1, null, tag, list));
 			}
 		} else if (target.getValue().ref.getType() == COMPOUND) {
 			newItem = toTreeItem(0, null, tag, target.getValue().ref);
 			newItem.getValue().nextPossibleName((CompoundTag) target.getValue().ref, name);
 			((CompoundTag) target.getValue().ref).put(newItem.getValue().name, tag);
-			target.getChildren().add(newItem);
 			target.setExpanded(true);
+			target.getChildren().add(newItem);
 
 			// if the parent is a list, we add the tag after the selected tag
 		} else if (target.getValue().parent.getType() == LIST) {
@@ -119,9 +119,22 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			return false;
 		}
 
-		layout();
+		requestFocus();
+		layout(); // refresh layout so we can select and scroll to the new item
 		getSelectionModel().select(newItem);
-		edit(newItem);
+		scrollTo(getSelectionModel().getSelectedIndex());
+		layout(); // refresh layout again because of a bug in javafx where switching to edit mode might sometimes not work (?)
+		if (	// adding an item to a selected list: only start edit on non-containers
+				target.getValue().ref.getType() == LIST && !newItem.getValue().isContainerType()
+				// adding an item to a selected compound: start edit in all cases
+			 || target.getValue().ref.getType() == COMPOUND
+				// adding an item to a parent compound: start edit in all cases
+			 || !target.getValue().isContainerType() && target.getValue().parent != null && (target.getValue().parent.getType() == COMPOUND
+				// adding an item to a parent list: only start edit on non-containers
+			 || target.getValue().parent.getType() == LIST && !newItem.getValue().isContainerType())) {
+
+			edit(newItem);
+		}
 		return true;
 	}
 
