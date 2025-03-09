@@ -281,7 +281,7 @@ public final class ChunkImporter {
 			Timer t = new Timer();
 			try {
 				// load target region
-				Region targetRegion = Region.loadRegion(getRegionDirectories());
+				Region targetRegion = Region.loadOrCreateEmptyRegion(getRegionDirectories());
 
 				ChunkSet targetChunks = null;
 				if (targetSelection != null) {
