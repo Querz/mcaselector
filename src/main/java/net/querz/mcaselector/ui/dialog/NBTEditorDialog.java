@@ -257,7 +257,7 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> implements P
 			if (newTag == null) {
 				return;
 			}
-			if (nbtTreeView.addItemAtSelected("Unknown", newTag)) {
+			if (nbtTreeView.addItemAtSelected("Unknown", newTag, true)) {
 				// if we created a root tag, it is always a compound tag
 				if (nbtTreeView.getRoot().getValue().getRef() == newTag) {
 					consumer.accept((CompoundTag) newTag);

@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -29,6 +30,8 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 	private static final String dropHighlightCssClass = "drop-highlight";
 	private NBTTreeItem dropTarget = null;
 	private int dropTargetIndex = 0;
+	private Tag copyItem;
+	private String copyName;
 	private Function<Object, Optional<EditArrayResult>> arrayEditor = null;
 
 	public NBTTreeView() {
@@ -36,6 +39,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		getStylesheets().add(Objects.requireNonNull(NBTTreeView.class.getClassLoader().getResource("style/component/nbt-tree-view.css")).toExternalForm());
 		setCellFactory(tv -> new NBTTreeCell());
 		setEditable(true);
+		setOnKeyPressed(this::onKeyPressed);
 	}
 
 	public void load(CompoundTag root) {
@@ -68,7 +72,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		}
 	}
 
-	public boolean addItemAtSelected(String name, Tag tag) {
+	public boolean addItemAtSelected(String name, Tag tag, boolean forceEdit) {
 		if (tag.getType() == END) {
 			return false;
 		}
@@ -88,7 +92,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		NBTTreeItem newItem = null;
 		// if this is a list, we add the tag at the last index
 		if (target.getValue().ref.getType() == LIST) {
-			ListTag list = ((ListTag) target.getValue().ref);
+			ListTag list = (ListTag) target.getValue().ref;
 			if (list.getElementType() == null || list.getElementType() == tag.getType()) {
 				list.addLast(tag);
 				target.setExpanded(true);
@@ -103,11 +107,13 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 			// if the parent is a list, we add the tag after the selected tag
 		} else if (target.getValue().parent.getType() == LIST) {
-			ListTag list = ((ListTag) target.getValue().parent);
-			int index = list.indexOf(target.getValue().ref);
-			list.add(index + 1, tag);
-			target.getParent().getChildren().add(index + 1, newItem = toTreeItem(index + 1, null, tag, list));
-			((NBTTreeItem) target.getParent()).updateIndexes();
+			ListTag list = (ListTag) target.getValue().parent;
+			if (list.getElementType() == null || list.getElementType() == tag.getType()) {
+				int index = list.indexOf(target.getValue().ref) + 1;
+				list.add(index, tag);
+				target.getParent().getChildren().add(index, newItem = toTreeItem(index, null, tag, list));
+				((NBTTreeItem) target.getParent()).updateIndexes();
+			}
 		} else if (target.getValue().parent.getType() == COMPOUND) {
 			newItem = toTreeItem(0, null, tag, target.getValue().parent);
 			newItem.getValue().nextPossibleName((CompoundTag) target.getValue().parent, name);
@@ -122,18 +128,25 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		requestFocus();
 		layout(); // refresh layout so we can select and scroll to the new item
 		getSelectionModel().select(newItem);
-		scrollTo(getSelectionModel().getSelectedIndex());
+		// only scroll if the item is not visible on screen
+		if (!((NBTTreeItem) getSelectionModel().getSelectedItem()).isVisibleOnScreen()) {
+			scrollTo(getSelectionModel().getSelectedIndex());
+		}
 		layout(); // refresh layout again because of a bug in javafx where switching to edit mode might sometimes not work (?)
-		if (	// adding an item to a selected list: only start edit on non-containers
-				target.getValue().ref.getType() == LIST && !newItem.getValue().isContainerType()
-				// adding an item to a selected compound: start edit in all cases
-			 || target.getValue().ref.getType() == COMPOUND
-				// adding an item to a parent compound: start edit in all cases
-			 || !target.getValue().isContainerType() && target.getValue().parent != null && (target.getValue().parent.getType() == COMPOUND
-				// adding an item to a parent list: only start edit on non-containers
-			 || target.getValue().parent.getType() == LIST && !newItem.getValue().isContainerType())) {
 
-			edit(newItem);
+		if (    // adding an item to a selected list: only start edit on non-containers
+				target.getValue().ref.getType() == LIST && !newItem.getValue().isContainerType()
+						// adding an item to a selected compound: start edit in all cases
+						|| target.getValue().ref.getType() == COMPOUND
+						// adding an item to a parent compound: start edit in all cases
+						|| !target.getValue().isContainerType() && target.getValue().parent != null && (target.getValue().parent.getType() == COMPOUND
+						// adding an item to a parent list: only start edit on non-containers
+						|| target.getValue().parent.getType() == LIST && !newItem.getValue().isContainerType())) {
+
+			// only edit if we force it or if the name changed
+			if (forceEdit || newItem.getValue().name != null && !name.equals(newItem.getValue().name)) {
+				edit(newItem);
+			}
 		}
 		return true;
 	}
@@ -187,6 +200,40 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			return item;
 		default:
 			return new NBTTreeItem(new NamedTag(index, name, ref, parent));
+		}
+	}
+
+	private void onKeyPressed(KeyEvent e) {
+		switch (e.getCode()) {
+		case C:
+			if (e.isShortcutDown()) {
+				copySelectedItem();
+			}
+			break;
+		case V:
+			if (!e.isShortcutDown()) {
+				break;
+			}
+		case INSERT:
+			if (copyItem != null) {
+				addItemAtSelected(copyName == null ? "Unknown" : copyName, copyItem, false);
+			}
+			break;
+		case X:
+			if (e.isShortcutDown()) {
+				copySelectedItem();
+			}
+		case DELETE:
+			deleteSelectedItem();
+			break;
+		}
+	}
+
+	private void copySelectedItem() {
+		NBTTreeItem item = (NBTTreeItem) getSelectionModel().getSelectedItem();
+		if (item != null) {
+			copyItem = item.getValue().ref.copy();
+			copyName = item.getValue().name;
 		}
 	}
 
@@ -427,6 +474,16 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				NBTTreeView.this.getSelectionModel().select(source);
 				Platform.runLater(() -> NBTTreeView.this.edit(source));
 			}
+		}
+
+		public boolean isVisibleOnScreen() {
+			Set<Node> treeCells = NBTTreeView.this.lookupAll(".tree-cell");
+			for (Node treeCell : treeCells) {
+				if (((NBTTreeCell) treeCell).getTreeItem() == this) {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 
