@@ -362,10 +362,14 @@ public class OptionBar extends BorderPane {
 	}
 
 	private boolean hasValidClipboardContent(TileMap tileMap) {
-		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		Transferable content = clipboard.getContents(tileMap);
-		DataFlavor[] flavors = content.getTransferDataFlavors();
-		return flavors.length == 1 && flavors[0].equals(ClipboardSelection.SELECTION_DATA_FLAVOR);
+		try {
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			Transferable content = clipboard.getContents(tileMap);
+			DataFlavor[] flavors = content.getTransferDataFlavors();
+			return flavors.length == 1 && flavors[0].equals(ClipboardSelection.SELECTION_DATA_FLAVOR);
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	public void setRenderHeight(int height) {
