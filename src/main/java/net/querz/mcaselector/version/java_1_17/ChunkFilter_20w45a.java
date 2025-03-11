@@ -14,6 +14,7 @@ import net.querz.mcaselector.version.java_1_16.ChunkFilter_20w17a;
 import net.querz.mcaselector.version.mapping.generator.HeightmapConfig;
 import net.querz.nbt.*;
 import java.util.List;
+import static net.querz.mcaselector.util.validation.ValidationHelper.*;
 
 public class ChunkFilter_20w45a {
 
@@ -96,7 +97,7 @@ public class ChunkFilter_20w45a {
 			// adjust entity positions
 			ListTag entities = Helper.tagFromCompound(root, "Entities");
 			if (entities != null) {
-				entities.forEach(v -> applyOffsetToEntity((CompoundTag) v, offset));
+				entities.forEach(v -> catchAndLog(() -> applyOffsetToEntity((CompoundTag) v, offset)));
 			}
 
 			return true;
@@ -119,7 +120,9 @@ public class ChunkFilter_20w45a {
 			Helper.applyIntOffsetIfRootPresent(leash, "X", "Y", "Z", offset);
 
 			// projectiles
-			Helper.applyIntOffsetIfRootPresent(entity, "xTile", "yTile", "zTile", offset);
+			if (attempt(() -> Helper.applyIntOffsetIfRootPresent(entity, "xTile", "yTile", "zTile", offset))) {
+				attempt(() -> Helper.applyShortOffsetIfRootPresent(entity, "xTile", "yTile", "zTile", offset));
+			}
 
 			// entities that have a sleeping place
 			Helper.applyIntOffsetIfRootPresent(entity, "SleepingX", "SleepingY", "SleepingZ", offset);
@@ -235,41 +238,41 @@ public class ChunkFilter_20w45a {
 			// adjust tile entity positions
 			ListTag tileEntities = Helper.tagFromCompound(level, "TileEntities");
 			if (tileEntities != null) {
-				tileEntities.forEach(v -> applyOffsetToTileEntity((CompoundTag) v, offset));
+				tileEntities.forEach(v -> catchAndLog(() -> applyOffsetToTileEntity((CompoundTag) v, offset)));
 			}
 
 			// adjust tile ticks
 			ListTag tileTicks = Helper.tagFromCompound(level, "TileTicks");
 			if (tileTicks != null) {
-				tileTicks.forEach(v -> applyOffsetToTick((CompoundTag) v, offset));
+				tileTicks.forEach(v -> catchAndLog(() -> applyOffsetToTick((CompoundTag) v, offset)));
 			}
 
 			// adjust liquid ticks
 			ListTag liquidTicks = Helper.tagFromCompound(level, "LiquidTicks");
 			if (liquidTicks != null) {
-				liquidTicks.forEach(v -> applyOffsetToTick((CompoundTag) v, offset));
+				liquidTicks.forEach(v -> catchAndLog(() -> applyOffsetToTick((CompoundTag) v, offset)));
 			}
 
 			// adjust structures
 			CompoundTag structures = Helper.tagFromCompound(level, "Structures");
 			if (structures != null) {
-				applyOffsetToStructures(structures, offset);
+				catchAndLog(() -> applyOffsetToStructures(structures, offset));
 			}
 
 			// Biomes
-			applyOffsetToBiomes(Helper.tagFromCompound(level, "Biomes"), offset.blockToSection());
+			catchAndLog(() -> applyOffsetToBiomes(Helper.tagFromCompound(level, "Biomes"), offset.blockToSection()));
 
 			// Lights
-			Helper.applyOffsetToListOfShortTagLists(level, "Lights", offset.blockToSection());
+			catchAndLog(() -> Helper.applyOffsetToListOfShortTagLists(level, "Lights", offset.blockToSection()));
 
 			// LiquidsToBeTicked
-			Helper.applyOffsetToListOfShortTagLists(level, "LiquidsToBeTicked", offset.blockToSection());
+			catchAndLog(() -> Helper.applyOffsetToListOfShortTagLists(level, "LiquidsToBeTicked", offset.blockToSection()));
 
 			// ToBeTicked
-			Helper.applyOffsetToListOfShortTagLists(level, "ToBeTicked", offset.blockToSection());
+			catchAndLog(() -> Helper.applyOffsetToListOfShortTagLists(level, "ToBeTicked", offset.blockToSection()));
 
 			// PostProcessing
-			Helper.applyOffsetToListOfShortTagLists(level, "PostProcessing", offset.blockToSection());
+			catchAndLog(() -> Helper.applyOffsetToListOfShortTagLists(level, "PostProcessing", offset.blockToSection()));
 
 			// adjust sections vertically
 			ListTag sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");

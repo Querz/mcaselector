@@ -93,6 +93,14 @@ public final class Helper {
 		return null;
 	}
 
+	public static int intFromCompound(Tag compound, String key, int def) {
+		IntTag tag = tagFromCompound(compound, key, null);
+		if (tag != null) {
+			return tag.asInt();
+		}
+		return def;
+	}
+
 	public static Long longFromCompound(Tag compound, String key) {
 		LongTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
@@ -155,6 +163,21 @@ public final class Helper {
 			return tag.getValue();
 		}
 		return def;
+	}
+
+	public static void applyShortOffsetIfRootPresent(CompoundTag root, String xKey, String yKey, String zKey, Point3i offset) {
+		if (root != null) {
+			applyShortIfPresent(root, xKey, offset.getX());
+			applyShortIfPresent(root, yKey, offset.getY());
+			applyShortIfPresent(root, zKey, offset.getZ());
+		}
+	}
+
+	public static void applyShortIfPresent(CompoundTag root, String key, int offset) {
+		Short value;
+		if ((value = shortFromCompound(root, key)) != null) {
+			root.putShort(key, (short) (value + offset));
+		}
 	}
 
 	public static void applyIntOffsetIfRootPresent(CompoundTag root, String xKey, String yKey, String zKey, Point3i offset) {

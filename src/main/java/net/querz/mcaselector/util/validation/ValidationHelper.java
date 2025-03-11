@@ -35,4 +35,33 @@ public class ValidationHelper {
 			return null;
 		}
 	}
+
+	public static boolean catchClassCastException(Runnable r) {
+		try {
+			r.run();
+			return true;
+		} catch (ClassCastException ex) {
+			LOGGER.warn("validation error", ex);
+			return false;
+		}
+	}
+
+	public static boolean attempt(Runnable r) {
+		try {
+			r.run();
+			return true;
+		} catch (Exception ex) {
+			return false;
+		}
+	}
+
+	public static boolean catchAndLog(Runnable r) {
+		try {
+			r.run();
+			return true;
+		} catch (Exception ex) {
+			LOGGER.warn("validation error", ex);
+			return false;
+		}
+	}
 }

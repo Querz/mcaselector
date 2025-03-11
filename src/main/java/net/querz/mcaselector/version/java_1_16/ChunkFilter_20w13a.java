@@ -8,6 +8,8 @@ import net.querz.nbt.CompoundTag;
 import net.querz.nbt.DoubleTag;
 import net.querz.nbt.ListTag;
 
+import static net.querz.mcaselector.util.validation.ValidationHelper.attempt;
+
 public class ChunkFilter_20w13a {
 
 	@MCVersionImplementation(2520)
@@ -31,7 +33,9 @@ public class ChunkFilter_20w13a {
 			Helper.applyIntOffsetIfRootPresent(leash, "X", "Y", "Z", offset);
 
 			// projectiles
-			Helper.applyIntOffsetIfRootPresent(entity, "xTile", "yTile", "zTile", offset);
+			if (attempt(() -> Helper.applyIntOffsetIfRootPresent(entity, "xTile", "yTile", "zTile", offset))) {
+				attempt(() -> Helper.applyShortOffsetIfRootPresent(entity, "xTile", "yTile", "zTile", offset));
+			}
 
 			// entities that have a sleeping place
 			Helper.applyIntOffsetIfRootPresent(entity, "SleepingX", "SleepingY", "SleepingZ", offset);

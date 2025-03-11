@@ -19,7 +19,7 @@ import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
 import net.querz.nbt.*;
 import java.util.*;
 import java.util.function.Predicate;
-import static net.querz.mcaselector.util.validation.ValidationHelper.silent;
+import static net.querz.mcaselector.util.validation.ValidationHelper.*;
 
 public class ChunkFilter_18w06a {
 
@@ -252,35 +252,35 @@ public class ChunkFilter_18w06a {
 			// adjust entity positions
 			ListTag entities = Helper.tagFromCompound(level, "Entities");
 			if (entities != null) {
-				entities.forEach(v -> applyOffsetToEntity((CompoundTag) v, offset));
+				entities.forEach(v -> catchAndLog(() -> applyOffsetToEntity((CompoundTag) v, offset)));
 			}
 
 			// adjust tile entity positions
 			ListTag tileEntities = Helper.tagFromCompound(level, "TileEntities");
 			if (tileEntities != null) {
-				tileEntities.forEach(v -> applyOffsetToTileEntity((CompoundTag) v, offset));
+				tileEntities.forEach(v -> catchAndLog(() -> applyOffsetToTileEntity((CompoundTag) v, offset)));
 			}
 
 			// adjust tile ticks
 			ListTag tileTicks = Helper.tagFromCompound(level, "TileTicks");
 			if (tileTicks != null) {
-				tileTicks.forEach(v -> applyOffsetToTick((CompoundTag) v, offset));
+				tileTicks.forEach(v -> catchAndLog(() -> applyOffsetToTick((CompoundTag) v, offset)));
 			}
 
 			// adjust structures
 			CompoundTag structures = Helper.tagFromCompound(level, "Structures");
 			if (structures != null) {
-				applyOffsetToStructures(structures, offset);
+				catchAndLog(() -> applyOffsetToStructures(structures, offset));
 			}
 
 			// Lights
-			Helper.applyOffsetToListOfShortTagLists(level, "Lights", offset.blockToSection());
+			catchAndLog(() -> Helper.applyOffsetToListOfShortTagLists(level, "Lights", offset.blockToSection()));
 
 			// ToBeTicked
-			Helper.applyOffsetToListOfShortTagLists(level, "ToBeTicked", offset.blockToSection());
+			catchAndLog(() -> Helper.applyOffsetToListOfShortTagLists(level, "ToBeTicked", offset.blockToSection()));
 
 			// PostProcessing
-			Helper.applyOffsetToListOfShortTagLists(level, "PostProcessing", offset.blockToSection());
+			catchAndLog(() -> Helper.applyOffsetToListOfShortTagLists(level, "PostProcessing", offset.blockToSection()));
 
 			// adjust sections vertically
 			ListTag sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
@@ -314,7 +314,9 @@ public class ChunkFilter_18w06a {
 			Helper.applyIntOffsetIfRootPresent(leash, "X", "Y", "Z", offset);
 
 			// projectiles
-			Helper.applyIntOffsetIfRootPresent(entity, "xTile", "yTile", "zTile", offset);
+			if (attempt(() -> Helper.applyIntOffsetIfRootPresent(entity, "xTile", "yTile", "zTile", offset))) {
+				attempt(() -> Helper.applyShortOffsetIfRootPresent(entity, "xTile", "yTile", "zTile", offset));
+			}
 
 			// entities that have a sleeping place
 			Helper.applyIntOffsetIfRootPresent(entity, "SleepingX", "SleepingY", "SleepingZ", offset);

@@ -17,6 +17,8 @@ import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
 import net.querz.nbt.*;
 import java.util.*;
 import java.util.function.Predicate;
+
+import static net.querz.mcaselector.util.validation.ValidationHelper.catchAndLog;
 import static net.querz.mcaselector.util.validation.ValidationHelper.silent;
 
 public class ChunkFilter_21w43a {
@@ -542,28 +544,28 @@ public class ChunkFilter_21w43a {
 			// adjust tile entity positions
 			ListTag tileEntities = Helper.tagFromCompound(root, "block_entities");
 			if (tileEntities != null) {
-				tileEntities.forEach(v -> applyOffsetToTileEntity((CompoundTag) v, offset));
+				tileEntities.forEach(v -> catchAndLog(() -> applyOffsetToTileEntity((CompoundTag) v, offset)));
 			}
 
 			// adjust tile ticks
 			ListTag tileTicks = Helper.tagFromCompound(root, "block_ticks");
 			if (tileTicks != null) {
-				tileTicks.forEach(v -> applyOffsetToTick((CompoundTag) v, offset));
+				tileTicks.forEach(v -> catchAndLog(() -> applyOffsetToTick((CompoundTag) v, offset)));
 			}
 
 			// adjust liquid ticks
 			ListTag liquidTicks = Helper.tagFromCompound(root, "fluid_ticks");
 			if (liquidTicks != null) {
-				liquidTicks.forEach(v -> applyOffsetToTick((CompoundTag) v, offset));
+				liquidTicks.forEach(v -> catchAndLog(() -> applyOffsetToTick((CompoundTag) v, offset)));
 			}
 
 			// adjust structures
 			CompoundTag structures = Helper.tagFromCompound(root, "structures");
 			if (structures != null) {
-				applyOffsetToStructures(structures, offset);
+				catchAndLog(() -> applyOffsetToStructures(structures, offset));
 			}
 
-			Helper.applyOffsetToListOfShortTagLists(root, "PostProcessing", offset.blockToSection());
+			catchAndLog(() -> Helper.applyOffsetToListOfShortTagLists(root, "PostProcessing", offset.blockToSection()));
 
 			// adjust sections vertically
 			ListTag sections = Helper.tagFromCompound(root, "sections");

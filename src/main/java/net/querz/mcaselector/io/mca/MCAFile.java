@@ -422,7 +422,13 @@ public abstract class MCAFile<T extends Chunk> {
 				Point2i destChunk = destination.location.regionToChunk().add(destX, destZ);
 
 				if (targetChunks == null || targetChunks.get(destIndex)) {
-					if (!sourceChunk.relocate(offset.sectionToBlock())) {
+					try {
+						if (!sourceChunk.relocate(offset.sectionToBlock())) {
+							continue;
+						}
+					} catch (Exception ex) {
+						Point2i srcChunk = location.regionToChunk().add(x, z);
+						LOGGER.warn("failed to relocate chunk {} to {}", srcChunk, destChunk, ex);
 						continue;
 					}
 

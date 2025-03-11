@@ -19,6 +19,8 @@ import net.querz.nbt.*;
 import java.util.*;
 import java.util.function.Predicate;
 
+import static net.querz.mcaselector.util.validation.ValidationHelper.attempt;
+
 public class ChunkFilter_21w37a {
 
 	@MCVersionImplementation(2834)
@@ -558,7 +560,9 @@ public class ChunkFilter_21w37a {
 			Helper.applyIntOffsetIfRootPresent(leash, "X", "Y", "Z", offset);
 
 			// projectiles
-			Helper.applyIntOffsetIfRootPresent(entity, "xTile", "yTile", "zTile", offset);
+			if (attempt(() -> Helper.applyIntOffsetIfRootPresent(entity, "xTile", "yTile", "zTile", offset))) {
+				attempt(() -> Helper.applyShortOffsetIfRootPresent(entity, "xTile", "yTile", "zTile", offset));
+			}
 
 			// entities that have a sleeping place
 			Helper.applyIntOffsetIfRootPresent(entity, "SleepingX", "SleepingY", "SleepingZ", offset);
