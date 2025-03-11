@@ -1133,7 +1133,10 @@
       },
       "default": "83a193"
     },
-    "minecraft:grass": "919191",
+    "minecraft:grass": {
+      "color": "919191",
+      "properties": 2
+    },
     "minecraft:gray_candle": {
       "states": {
         "AgAAAAAAAAAAACAAAAAQ": "505e60",
