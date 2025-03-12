@@ -171,7 +171,7 @@ public class ChunkFilter_19w36a {
 			}
 
 			// Biomes
-			catchAndLog(() -> applyOffsetToBiomes(Helper.tagFromCompound(level, "Biomes"), offset.blockToSection()));
+			catchAndLog(() -> applyOffsetToBiomes(Helper.tagFromCompound(level, "Biomes"), offset.blockToSection(), 16));
 
 			// Lights
 			catchAndLog(() -> Helper.applyOffsetToListOfShortTagLists(level, "Lights", offset.blockToSection()));
@@ -200,7 +200,7 @@ public class ChunkFilter_19w36a {
 			return true;
 		}
 
-		protected void applyOffsetToBiomes(IntArrayTag biomes, Point3i offset) {
+		protected void applyOffsetToBiomes(IntArrayTag biomes, Point3i offset, int numSections) {
 			if (biomes == null || biomes.getValue() == null || biomes.getValue().length != 1024) {
 				return;
 			}

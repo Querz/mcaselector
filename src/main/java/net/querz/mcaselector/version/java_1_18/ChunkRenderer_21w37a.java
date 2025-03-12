@@ -19,16 +19,17 @@ public class ChunkRenderer_21w37a implements ChunkRenderer<CompoundTag, String> 
 			return;
 		}
 
+		int yMin = Helper.intFromCompound(Helper.levelFromRoot(root), "yPos", -4);
 		int scaleBits = Bits.msbPosition(scale);
-		int absHeight = height + 64;
+		int absHeight = height - yMin * 16;
 		int yMax = 1 + (height >> 4);
-		int sMax = yMax + 4;
+		int sMax = yMax - yMin;
 
 		CompoundTag[] indexedSections = new CompoundTag[sMax];
 		sections.iterateType(CompoundTag.class).forEach(s -> {
-			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
-			if (y >= -4 && y < yMax) {
-				indexedSections[y + 4] = s;
+			int y = Helper.numberFromCompound(s, "Y", yMin - 1).intValue();
+			if (y >= yMin && y < yMax) {
+				indexedSections[y - yMin] = s;
 			}
 		});
 		boolean[] indexed = new boolean[sMax];
@@ -87,7 +88,7 @@ public class ChunkRenderer_21w37a implements ChunkRenderer<CompoundTag, String> 
 						// otherwise we start all the way at the top (15)
 						startHeight[i] = absHeight >> 4 == i ? absHeight & 0xF : 15;
 						// calculate height of section in blocks
-						sectionHeight[i] = (i - 4) * 16;
+						sectionHeight[i] = (i + yMin) * 16;
 
 						indexed[i] = true;
 					}
@@ -143,9 +144,11 @@ public class ChunkRenderer_21w37a implements ChunkRenderer<CompoundTag, String> 
 			return;
 		}
 
+		int yMin = Helper.intFromCompound(root, "yPos", -4);
+
 		CompoundTag section = null;
 		for (CompoundTag s : sections.iterateType(CompoundTag.class)) {
-			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
+			int y = Helper.numberFromCompound(s, "Y", yMin - 1).intValue();
 			if (y == height >> 4) {
 				section = s;
 				break;
@@ -173,7 +176,7 @@ public class ChunkRenderer_21w37a implements ChunkRenderer<CompoundTag, String> 
 		}
 
 		int scaleBits = Bits.msbPosition(scale);
-		int absHeight = height + 64;
+		int absHeight = height - yMin * 16;
 		int cy = absHeight & 0xF;
 		int bits = data == null ? 0 : data.length >> 9;
 		int clean = ((2 << (bits - 1)) - 1);
@@ -204,16 +207,17 @@ public class ChunkRenderer_21w37a implements ChunkRenderer<CompoundTag, String> 
 			return;
 		}
 
+		int yMin = Helper.intFromCompound(root, "yPos", -4);
 		int scaleBits = Bits.msbPosition(scale);
-		int absHeight = height + 64;
+		int absHeight = height - yMin * 16;
 		int yMax = 1 + (height >> 4);
-		int sMax = yMax + 4;
+		int sMax = yMax - yMin;
 
 		CompoundTag[] indexedSections = new CompoundTag[sMax];
 		sections.iterateType(CompoundTag.class).forEach(s -> {
-			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
-			if (y >= -4 && y < yMax) {
-				indexedSections[y + 4] = s;
+			int y = Helper.numberFromCompound(s, "Y", yMin - 1).intValue();
+			if (y >= yMin && y < yMax) {
+				indexedSections[y - yMin] = s;
 			}
 		});
 		boolean[] indexed = new boolean[sMax];
@@ -273,7 +277,7 @@ public class ChunkRenderer_21w37a implements ChunkRenderer<CompoundTag, String> 
 						// otherwise we start all the way at the top (15)
 						startHeight[i] = absHeight >> 4 == i ? absHeight & 0xF : 15;
 						// calculate height of section in blocks
-						sectionHeight[i] = (i - 4) * 16;
+						sectionHeight[i] = (i + yMin) * 16;
 
 						indexed[i] = true;
 					}

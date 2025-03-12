@@ -5,11 +5,9 @@ import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.point.Point3i;
 import net.querz.mcaselector.util.range.Range;
-import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.MCVersionImplementation;
-import net.querz.mcaselector.version.java_1_16.ChunkFilter_20w17a;
 import net.querz.mcaselector.version.java_1_17.ChunkFilter_20w45a;
 import net.querz.mcaselector.version.java_1_17.ChunkFilter_21w06a;
 import net.querz.mcaselector.version.java_1_9.ChunkFilter_15w32a;
@@ -24,7 +22,7 @@ import static net.querz.mcaselector.util.validation.ValidationHelper.attempt;
 public class ChunkFilter_21w37a {
 
 	@MCVersionImplementation(2834)
-	public static class Blocks extends ChunkFilter_20w17a.Blocks {
+	public static class Blocks extends ChunkFilter_21w06a.Blocks {
 
 		@Override
 		public boolean matchBlockNames(ChunkData data, Collection<String> names) {
@@ -89,18 +87,19 @@ public class ChunkFilter_21w37a {
 			}
 			pos = pos.chunkToBlock();
 
-			int yMax = Helper.findHighestSection(sections, -4);
+			int yMin = Helper.intFromCompound(level, "yPos", -4);
+			int yMax = Helper.findHighestSection(sections, yMin);
 
 			// handle the special case when someone wants to replace air with something else
 			if (replace.containsKey("minecraft:air")) {
 				Map<Integer, CompoundTag> sectionMap = new HashMap<>();
-				List<Integer> heights = new ArrayList<>(yMax + 5);
+				List<Integer> heights = new ArrayList<>(yMax - yMin + 1);
 				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 					sectionMap.put(section.getInt("Y"), section);
 					heights.add(section.getInt("Y"));
 				}
 
-				for (int y = -4; y <= yMax; y++) {
+				for (int y = yMin; y <= yMax; y++) {
 					if (!sectionMap.containsKey(y)) {
 						sectionMap.put(y, completeSection(new CompoundTag(), y));
 						heights.add(y);
@@ -139,8 +138,8 @@ public class ChunkFilter_21w37a {
 					blockStates = new long[256];
 				}
 
-				int y = Helper.numberFromCompound(section, "Y", -5).intValue();
-				if (y < -4 || y > yMax) {
+				int y = Helper.numberFromCompound(section, "Y", yMin - 1).intValue();
+				if (y < yMin || y > yMax) {
 					continue;
 				}
 
@@ -287,9 +286,9 @@ public class ChunkFilter_21w37a {
 
 			int totalHeight = 0;
 
-			for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
+			for (int cx = 0; cx < 16; cx++) {
 				zLoop:
-				for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+				for (int cz = 0; cz < 16; cz++) {
 					for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 						ListTag palette = Helper.tagFromCompound(Helper.tagFromCompound(section, "block_states"), "palette");
 						long[] blockStates = Helper.longArrayFromCompound(Helper.tagFromCompound(section, "block_states"), "data");
@@ -302,8 +301,8 @@ public class ChunkFilter_21w37a {
 							continue;
 						}
 
-						for (int cy = Tile.CHUNK_SIZE - 1; cy >= 0; cy--) {
-							int index = cy * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + cz * Tile.CHUNK_SIZE + cx;
+						for (int cy = 15; cy >= 0; cy--) {
+							int index = cy * 256 + cz * 16 + cx;
 							CompoundTag block = getBlockAt(index, blockStates, palette);
 							if (!isEmpty(block)) {
 								totalHeight += height.intValue() * 16 + cy;
@@ -313,12 +312,12 @@ public class ChunkFilter_21w37a {
 					}
 				}
 			}
-			return totalHeight / (Tile.CHUNK_SIZE * Tile.CHUNK_SIZE);
+			return totalHeight / 256;
 		}
 	}
 
 	@MCVersionImplementation(2834)
-	public static class Heightmap extends ChunkFilter_20w17a.Heightmap {
+	public static class Heightmap extends ChunkFilter_21w06a.Heightmap {
 
 		@Override
 		protected void loadCfg() {
@@ -332,41 +331,46 @@ public class ChunkFilter_21w37a {
 				return new long[37];
 			}
 
-			ListTag[] palettes = new ListTag[24];
-			long[][] blockStatesArray = new long[24][];
+			int yMin = Helper.intFromCompound(Helper.levelFromRoot(root), "yPos", -4);
+			int yMax = Helper.findHighestSection(Helper.tagFromLevelFromRoot(root, "Sections"), yMin);
+
+			ListTag[] palettes = new ListTag[yMax - yMin];
+			long[][] blockStatesArray = new long[yMax - yMin][];
 			sections.forEach(s -> {
 				ListTag p = Helper.tagFromCompound(s, "palette");
 				long[] b = Helper.longArrayFromCompound(s, "block_states");
-				int y = Helper.numberFromCompound(s, "Y", -5).intValue();
-				if (y >= -4 && y < 20 && p != null && b != null) {
-					palettes[y + 4] = p;
-					blockStatesArray[y + 4] = b;
+				int y = Helper.numberFromCompound(s, "Y", yMin - 1).intValue();
+				if (y >= yMin && y <= yMax && p != null && b != null) {
+					palettes[y - yMin] = p;
+					blockStatesArray[y - yMin] = b;
 				}
 			});
 
 			short[] heightmap = new short[256];
 
 			// loop over x/z
-			for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
+			for (int cx = 0; cx < 16; cx++) {
 				loop:
-				for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
-					for (int i = 23; i >= 0; i--) {
+				for (int cz = 0; cz < 16; cz++) {
+					for (int i = palettes.length - 1; i >= 0; i--) {
 						ListTag palette = palettes[i];
 						if (palette == null) {
 							continue;
 						}
 						long[] blockStates = blockStatesArray[i];
 						for (int cy = 15; cy >= 0; cy--) {
-							int blockIndex = cy * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + cz * Tile.CHUNK_SIZE + cx;
+							int blockIndex = cy * 256 + cz * 16 + cx;
 							if (matcher.test(getBlockAt(blockIndex, blockStates, palette))) {
-								heightmap[cz * Tile.CHUNK_SIZE + cx] = (short) (i * Tile.CHUNK_SIZE + cy + 1);
+								heightmap[cz * 16 + cx] = (short) (i * 16 + cy + 1);
 								continue loop;
 							}
 						}
 					}
 				}
 			}
-			return applyHeightMap(heightmap);
+
+			int bits = 32 - Integer.numberOfLeadingZeros((yMax - yMin) * 16);
+			return applyHeightMap(heightmap, bits);
 		}
 	}
 

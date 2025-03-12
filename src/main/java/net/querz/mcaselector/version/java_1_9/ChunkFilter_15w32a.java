@@ -8,8 +8,6 @@ import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.point.Point3i;
 import net.querz.mcaselector.util.range.Range;
-import net.querz.mcaselector.tile.Tile;
-import net.querz.mcaselector.util.validation.ValidationHelper;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.MCVersionImplementation;
@@ -378,9 +376,9 @@ public class ChunkFilter_15w32a {
 
 			int totalHeight = 0;
 
-			for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
+			for (int cx = 0; cx < 16; cx++) {
 				zLoop:
-				for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+				for (int cz = 0; cz < 16; cz++) {
 					for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 						byte[] blocks = Helper.byteArrayFromCompound(section, "Blocks");
 						if (blocks == null) {
@@ -392,8 +390,8 @@ public class ChunkFilter_15w32a {
 							continue;
 						}
 
-						for (int cy = Tile.CHUNK_SIZE - 1; cy >= 0; cy--) {
-							int index = cy * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + cz * Tile.CHUNK_SIZE + cx;
+						for (int cy = 16 - 1; cy >= 0; cy--) {
+							int index = cy * 256 + cz * 16 + cx;
 							if (!isEmpty(blocks[index])) {
 								totalHeight += height.intValue() * 16 + cy;
 								continue zLoop;
@@ -402,7 +400,7 @@ public class ChunkFilter_15w32a {
 					}
 				}
 			}
-			return totalHeight / (Tile.CHUNK_SIZE * Tile.CHUNK_SIZE);
+			return totalHeight / 256;
 		}
 
 		private int filterSections(Tag sectionA, Tag sectionB) {
@@ -1009,19 +1007,19 @@ public class ChunkFilter_15w32a {
 			int[] heightmap = new int[256];
 
 			// loop over x/z
-			for (int cx = 0; cx < Tile.CHUNK_SIZE; cx++) {
+			for (int cx = 0; cx < 16; cx++) {
 				loop:
-				for (int cz = 0; cz < Tile.CHUNK_SIZE; cz++) {
+				for (int cz = 0; cz < 16; cz++) {
 					for (int i = 15; i >= 0; i--) {
 						byte[] blocks = blocksArray[i];
 						if (blocks == null) {
 							continue;
 						}
 						for (int cy = 15; cy >= 0; cy--) {
-							int index = cy * Tile.CHUNK_SIZE * Tile.CHUNK_SIZE + cz * Tile.CHUNK_SIZE + cx;
+							int index = cy * 256 + cz * 16 + cx;
 							short block = (short) (blocks[index] & 0xFF);
 							if (matcher.test(block)) {
-								heightmap[cz * Tile.CHUNK_SIZE + cx] = i * Tile.CHUNK_SIZE + cy + 1;
+								heightmap[cz * 16 + cx] = i * 16 + cy + 1;
 								continue loop;
 							}
 						}

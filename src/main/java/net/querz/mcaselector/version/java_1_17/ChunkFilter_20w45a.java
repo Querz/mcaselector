@@ -260,7 +260,7 @@ public class ChunkFilter_20w45a {
 			}
 
 			// Biomes
-			catchAndLog(() -> applyOffsetToBiomes(Helper.tagFromCompound(level, "Biomes"), offset.blockToSection()));
+			catchAndLog(() -> applyOffsetToBiomes(Helper.tagFromCompound(level, "Biomes"), offset.blockToSection(), 16));
 
 			// Lights
 			catchAndLog(() -> Helper.applyOffsetToListOfShortTagLists(level, "Lights", offset.blockToSection()));

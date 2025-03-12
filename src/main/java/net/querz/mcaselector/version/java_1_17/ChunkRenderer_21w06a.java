@@ -24,16 +24,17 @@ public class ChunkRenderer_21w06a implements ChunkRenderer<CompoundTag, Integer>
 
 		CompoundTag level = Helper.tagFromCompound(root, "Level");
 
+		int yMin = Helper.intFromCompound(Helper.levelFromRoot(root), "yPos", -4);
 		int scaleBits = Bits.msbPosition(scale);
-		int absHeight = height + 64;
+		int absHeight = height - yMin * 16;
 		int yMax = 1 + (height >> 4);
-		int sMax = yMax + 4;
+		int sMax = yMax - yMin;
 
 		CompoundTag[] indexedSections = new CompoundTag[sMax];
 		sections.iterateType(CompoundTag.class).forEach(s -> {
-			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
-			if (y >= -4 && y < yMax) {
-				indexedSections[y + 4] = s;
+			int y = Helper.numberFromCompound(s, "Y", yMin - 1).intValue();
+			if (y >= yMin && y < yMax) {
+				indexedSections[y - yMin] = s;
 			}
 		});
 		boolean[] indexed = new boolean[sMax];
@@ -83,7 +84,7 @@ public class ChunkRenderer_21w06a implements ChunkRenderer<CompoundTag, Integer>
 						// otherwise we start all the way at the top (15)
 						startHeight[i] = absHeight >> 4 == i ? absHeight & 0xF : 15;
 						// calculate height of section in blocks
-						sectionHeight[i] = (i - 4) * 16;
+						sectionHeight[i] = (i + yMin) * 16;
 
 						indexed[i] = true;
 					}
@@ -100,7 +101,7 @@ public class ChunkRenderer_21w06a implements ChunkRenderer<CompoundTag, Integer>
 							continue;
 						}
 
-						biome = getBiome(cx, cy + sectionHeight[i], cz, biomes);
+						biome = getBiome(cx, cy + sectionHeight[i], cz, biomes, yMin);
 
 						if (water) {
 							if (!waterDepth) {
@@ -138,10 +139,11 @@ public class ChunkRenderer_21w06a implements ChunkRenderer<CompoundTag, Integer>
 		}
 
 		CompoundTag level = Helper.tagFromCompound(root, "Level");
+		int yMin = Helper.intFromCompound(level, "yPos", -4);
 
 		CompoundTag section = null;
 		for (CompoundTag s : sections.iterateType(CompoundTag.class)) {
-			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
+			int y = Helper.numberFromCompound(s, "Y", yMin - 1).intValue();
 			if (y == height >> 4) {
 				section = s;
 				break;
@@ -168,7 +170,7 @@ public class ChunkRenderer_21w06a implements ChunkRenderer<CompoundTag, Integer>
 		}
 
 		int scaleBits = Bits.msbPosition(scale);
-		int absHeight = height + 64;
+		int absHeight = height - yMin * 16;
 		int cy = absHeight & 0xF;
 		int bits = data == null ? 0 : data.length >> 9;
 		int clean = ((2 << (bits - 1)) - 1);
@@ -183,7 +185,7 @@ public class ChunkRenderer_21w06a implements ChunkRenderer<CompoundTag, Integer>
 					continue;
 				}
 				pixelIndex = (z + (cz >> scaleBits)) * (512 >> scaleBits) + (x + (cx >> scaleBits));
-				biome = getBiome(cx, absHeight, cz, biomes);
+				biome = getBiome(cx, absHeight, cz, biomes, yMin);
 				pixelBuffer[pixelIndex] = colorMapping.getRGB(blockData, biome);
 			}
 		}
@@ -197,17 +199,17 @@ public class ChunkRenderer_21w06a implements ChunkRenderer<CompoundTag, Integer>
 		}
 
 		CompoundTag level = Helper.tagFromCompound(root, "Level");
-
+		int yMin = Helper.intFromCompound(level, "yPos", -4);
 		int scaleBits = Bits.msbPosition(scale);
-		int absHeight = height + 64;
+		int absHeight = height - yMin * 16;
 		int yMax = 1 + (height >> 4);
-		int sMax = yMax + 4;
+		int sMax = yMax - yMin;
 
 		CompoundTag[] indexedSections = new CompoundTag[sMax];
 		sections.iterateType(CompoundTag.class).forEach(s -> {
-			int y = Helper.numberFromCompound(s, "Y", -5).intValue();
-			if (y >= -4 && y < yMax) {
-				indexedSections[y + 4] = s;
+			int y = Helper.numberFromCompound(s, "Y", yMin - 1).intValue();
+			if (y >= yMin && y < yMax) {
+				indexedSections[y - yMin] = s;
 			}
 		});
 		boolean[] indexed = new boolean[sMax];
@@ -258,7 +260,7 @@ public class ChunkRenderer_21w06a implements ChunkRenderer<CompoundTag, Integer>
 						// otherwise we start all the way at the top (15)
 						startHeight[i] = absHeight >> 4 == i ? absHeight & 0xF : 15;
 						// calculate height of section in blocks
-						sectionHeight[i] = (i - 4) * 16;
+						sectionHeight[i] = (i + yMin) * 16;
 
 						indexed[i] = true;
 					}
@@ -274,7 +276,7 @@ public class ChunkRenderer_21w06a implements ChunkRenderer<CompoundTag, Integer>
 
 						if (!colorMapping.isTransparent(blockData) && !colorMapping.isFoliage(blockData)) {
 							if (doneSkipping) {
-								biome = getBiome(cx, cy + sectionHeight[i], cz, biomes);
+								biome = getBiome(cx, cy + sectionHeight[i], cz, biomes, yMin);
 
 								pixelBuffer[pixelIndex] = colorMapping.getRGB(blockData, biome);
 								terrainHeights[pixelIndex] = (short) (sectionHeight[i] + cy);
@@ -308,12 +310,12 @@ public class ChunkRenderer_21w06a implements ChunkRenderer<CompoundTag, Integer>
 		waterDummy.putString("Name", "minecraft:water");
 	}
 
-	private int getBiome(int x, int y, int z, IntBuffer biomes) {
+	private int getBiome(int x, int y, int z, IntBuffer biomes, int yMin) {
 		if (biomes == null) {
 			return 0;
 		}
-		int b = biomes.get((y + 64 >> 2 << 4) + (z >> 2 << 2) + (x >> 2));
-		if (b < 0 || b > 255) {
+		int b = biomes.get((y - yMin * 16 >> 2 << 4) + (z >> 2 << 2) + (x >> 2));
+		if (b < 0 || b >= 255) {
 			return 0;
 		}
 		return b;

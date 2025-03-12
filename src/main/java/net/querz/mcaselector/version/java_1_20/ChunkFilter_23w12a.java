@@ -4,8 +4,8 @@ import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.MCVersionImplementation;
-import net.querz.mcaselector.version.java_1_14.ChunkFilter_18w45a;
 import net.querz.mcaselector.version.java_1_18.ChunkFilter_21w43a;
+import net.querz.mcaselector.version.java_1_19.ChunkFilter_22w11a;
 import net.querz.mcaselector.version.mapping.generator.HeightmapConfig;
 import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
 import net.querz.nbt.*;
@@ -33,7 +33,7 @@ public class ChunkFilter_23w12a {
 	}
 
 	@MCVersionImplementation(3207)
-	public static class Heightmap extends ChunkFilter_18w45a.Heightmap {
+	public static class Heightmap extends ChunkFilter_22w11a.Heightmap {
 
 		@Override
 		protected void loadCfg() {
