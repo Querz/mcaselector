@@ -2859,14 +2859,14 @@
     "minecraft:terracotta": "985e43",
     "minecraft:test_block": {
       "states": {
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA=": "bf6966",
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ": "5891d4",
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA": "4f76c3",
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ==": "3c923b"
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA=": "7d70aa",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ": "8fafd5",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA": "be9e78",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ==": "83bf75"
       },
-      "default": "bf6966"
+      "default": "7d70aa"
     },
-    "minecraft:test_instance_block": "898391",
+    "minecraft:test_instance_block": "7f7877",
     "minecraft:tinted_glass": "2b262c",
     "minecraft:tnt": "8e3e35",
     "minecraft:torch": "8a713f",
