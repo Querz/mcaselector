@@ -52,6 +52,8 @@ public class GlobalConfig extends Config {
 	private TreeMap<Long, RecentWorld> recentWorlds = new TreeMap<>();
 	private RecentFiles recentFilterScripts = new RecentFiles();
 	private RecentFiles recentChangeScripts = new RecentFiles();
+	private TempScript filterScript = new TempScript(null, false, "");
+	private TempScript changeScript = new TempScript(null, false, "");
 
 	public Locale getLocale() {
 		return locale;
@@ -169,6 +171,22 @@ public class GlobalConfig extends Config {
 		recentChangeScripts.addRecentFile(file);
 	}
 
+	public TempScript getFilterScript() {
+		return filterScript;
+	}
+
+	public void setFilterScript(TempScript filterScript) {
+		this.filterScript = filterScript;
+	}
+
+	public TempScript getChangeScript() {
+		return changeScript;
+	}
+
+	public void setChangeScript(TempScript changeScript) {
+		this.changeScript = changeScript;
+	}
+
 	@Override
 	public void save() {
 		save(gsonInstance, BASE_CONFIG_FILE);
@@ -219,4 +237,6 @@ public class GlobalConfig extends Config {
 			return name;
 		}
 	}
+
+	public record TempScript(File file, boolean saved, String text) {}
 }

@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import net.querz.mcaselector.config.Config;
+import net.querz.mcaselector.config.GlobalConfig;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.DialogHelper;
@@ -213,6 +214,21 @@ public class CodeEditor extends StackPane {
 			recentFilesMenu.getItems().add(clear);
 		}
 		recentFilesMenu.setDisable(recentFilesMenu.getItems().size() <= 2);
+	}
+
+	public void setSource(GlobalConfig.TempScript tempScript) {
+		if (tempScript.text() == null || tempScript.text().isEmpty()) {
+			return;
+		}
+		boolean exists = tempScript.file() == null || tempScript.file().exists();
+		sourceFile = exists ? tempScript.file() : null;
+		codeArea.setText(tempScript.text());
+		this.saved = exists && tempScript.saved();
+		updateFileNameLabel();
+	}
+
+	public GlobalConfig.TempScript getSource() {
+		return new GlobalConfig.TempScript(sourceFile, saved, getText());
 	}
 
 	public String getText() {

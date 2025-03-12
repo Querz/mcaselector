@@ -83,6 +83,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> implem
 		getDialogPane().getStyleClass().add("filter-dialog-pane");
 
 		setResultConverter(p -> {
+			ConfigProvider.GLOBAL.setFilterScript(codeEditor.getSource());
 			if (p != ButtonType.OK) {
 				return null;
 			}
@@ -106,6 +107,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> implem
 		// because code editor inherits style sheets from this dialog
 		codeEditor.setOwner(getDialogPane().getScene().getWindow());
 		codeEditor.setRecentFiles(ConfigProvider.GLOBAL.getRecentFilterScripts());
+		codeEditor.setSource(ConfigProvider.GLOBAL.getFilterScript());
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 

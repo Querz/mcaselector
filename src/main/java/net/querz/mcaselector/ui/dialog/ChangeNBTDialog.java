@@ -4,17 +4,7 @@ import javafx.application.Platform;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Separator;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -85,6 +75,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 		getDialogPane().getStyleClass().add("change-nbt-dialog-pane");
 
 		setResultConverter(p -> {
+			ConfigProvider.GLOBAL.setChangeScript(codeEditor.getSource());
 			if (p != ButtonType.OK) {
 				return null;
 			}
@@ -110,12 +101,13 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 		});
 
 		// apply same stylesheets to this dialog
-		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
-		getDialogPane().getStylesheets().add(Objects.requireNonNull(ChangeNBTDialog.class.getClassLoader().getResource("style/component/change-nbt-dialog.css")).toExternalForm());
+		getDialogPane().getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+		getDialogPane().getScene().getStylesheets().add(Objects.requireNonNull(ChangeNBTDialog.class.getClassLoader().getResource("style/component/change-nbt-dialog.css")).toExternalForm());
 		// owner of code editor needs to be set after applying style sheets to this dialog
 		// because code editor inherits style sheets from this dialog
 		codeEditor.setOwner(getDialogPane().getScene().getWindow());
 		codeEditor.setRecentFiles(ConfigProvider.GLOBAL.getRecentChangeScripts());
+		codeEditor.setSource(ConfigProvider.GLOBAL.getChangeScript());
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
