@@ -6,6 +6,7 @@ import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.CompressionType;
 
 public class CompressionField extends Field<CompressionType> {
+
     public CompressionField() {
         super(FieldType.COMPRESSION);
     }
