@@ -109,7 +109,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		} else if (target.getValue().parent.getType() == LIST) {
 			ListTag list = (ListTag) target.getValue().parent;
 			if (list.getElementType() == null || list.getElementType() == tag.getType()) {
-				int index = list.indexOf(target.getValue().ref) + 1;
+				int index = target.getValue().index + 1;
 				list.add(index, tag);
 				target.getParent().getChildren().add(index, newItem = toTreeItem(index, null, tag, list));
 				((NBTTreeItem) target.getParent()).updateIndexes();
@@ -593,7 +593,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
 		@Override
 		public void commitEdit(NamedTag tag) {
-			if (name != null && name.getText() != null) {
+			if (getItem().parent.getType() == COMPOUND && name != null && name.getText() != null) {
 				CompoundTag parent = (CompoundTag) tag.parent;
 				if (parent.containsKey(name.getText()) && !name.getText().equals(tag.name)) {
 					// don't commit if the new name already exists in this compound tag
@@ -696,7 +696,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				name = new TextField();
 				name.getStyleClass().add(nameFieldCssClass);
 				HBox.setHgrow(name, Priority.ALWAYS);
-				name.setOnKeyReleased(this::onKeyReleased);
+				name.setOnKeyPressed(this::onKeyPressed);
 			}
 			name.setText(getItem().name);
 			return name;
@@ -707,7 +707,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				value = new TextField();
 				value.getStyleClass().add(valueFieldCssClass);
 				HBox.setHgrow(value, Priority.ALWAYS);
-				value.setOnKeyReleased(this::onKeyReleased);
+				value.setOnKeyPressed(this::onKeyPressed);
 			}
 			value.setText(getItem().valueToString());
 			return value;
@@ -728,10 +728,12 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		}
 
 		// event handler to commit an edit when pressing ENTER
-		private void onKeyReleased(KeyEvent event) {
-			if (event.getCode() == KeyCode.ENTER) {
+		private void onKeyPressed(KeyEvent event) {
+			if (event.getCode() == KeyCode.ENTER && isEditing()) {
 				commitEdit(getItem());
 				updateItem(getItem(), false);
+				// prevent parent from handling this event, otherwise it immediately switches to edit mode again
+				event.consume();
 			}
 		}
 
