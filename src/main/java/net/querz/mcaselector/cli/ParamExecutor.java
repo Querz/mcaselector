@@ -409,7 +409,7 @@ public final class ParamExecutor {
 		ConfigProvider.GLOBAL = new GlobalConfig();
 		ConfigProvider.GLOBAL.setDebug(line.hasOption("debug"));
 		ConfigProvider.GLOBAL.setProcessThreads(parseInt("process-threads", GlobalConfig.DEFAULT_PROCESS_THREADS, 1, 128));
-		ConfigProvider.GLOBAL.setProcessThreads(parseInt("write-threads", GlobalConfig.DEFAULT_WRITE_THREADS, 1, 128));
+		ConfigProvider.GLOBAL.setWriteThreads(parseInt("write-threads", GlobalConfig.DEFAULT_WRITE_THREADS, 1, 128));
 	}
 
 	private void printError(String msg, Object... params) {
