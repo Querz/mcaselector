@@ -8,7 +8,7 @@ VS_VERSION_INFO VERSIONINFO
         {
             VALUE "FileDescription",    "MCA Selector\0"
             VALUE "FileVersion",        "2.4.2.0\0"
-            VALUE "LegalCopyright",     "© 2018-2025 Querz\0"
+            VALUE "LegalCopyright",     "© 2018 - 2025 Querz\0"
             VALUE "OriginalFilename",   "MCA Selector.exe\0"
             VALUE "ProductName",        "MCA Selector\0"
             VALUE "ProductVersion",     "2.4.2\0"

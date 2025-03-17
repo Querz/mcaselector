@@ -7,6 +7,7 @@ AppPublisher=${applicationAuthor}
 AppPublisherURL=${applicationUrl}
 AppSupportURL=${applicationUrl}
 AppUpdatesURL=${applicationUrl}
+AppCopyright=${applicationCopyright}
 DefaultDirName={autopf}\\${applicationName}
 DisableProgramGroupPage=yes
 LicenseFile=LICENSE

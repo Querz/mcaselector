@@ -13,6 +13,7 @@ projectName='mcaselector'
 applicationName=$(ReadGradleProperty 'application.name')
 applicationURL=$(ReadGradleProperty 'application.url')
 applicationAuthor=$(ReadGradleProperty 'application.author')
+applicationCopyright=$(ReadGradleProperty 'application.copyright')
 applicationVersion=$(ReadGradleProperty 'version')
 
 # pads a string up to the given length
@@ -84,6 +85,7 @@ Installer() {
   sed -i "s/\${applicationName}/$applicationName/g" "$innoSetupDir/inno.iss"
   sed -i "s/\${applicationUrl}/${applicationURL////\\/}/g" "$innoSetupDir/inno.iss"
   sed -i "s/\${applicationAuthor}/$applicationAuthor/g" "$innoSetupDir/inno.iss"
+  sed -i "s/\${applicationCopyright}/$applicationCopyright/g" "$innoSetupDir/inno.iss"
   sed -i "s/\${applicationVersion}/$applicationVersion/g" "$innoSetupDir/inno.iss"
   sed -i "s/\${applicationJar}/$projectName.jar/g" "$innoSetupDir/inno.iss"
 }
