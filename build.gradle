@@ -4,7 +4,7 @@ plugins {
 	id 'eclipse'
 	id 'idea'
 	id 'org.openjfx.javafxplugin' version '0.1.0'
-	id 'com.gradleup.shadow' version '8.3.6'
+	id 'com.gradleup.shadow' version '9.0.0-beta11'
 	id 'com.github.ben-manes.versions' version '0.52.0'
 }
 
