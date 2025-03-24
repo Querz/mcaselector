@@ -3,9 +3,9 @@ package net.querz.mcaselector.changer.fields;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.io.registry.StatusRegistry;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
+import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
 import net.querz.nbt.StringTag;
 
 public class StatusField extends Field<StatusRegistry.StatusIdentifier> {
@@ -16,8 +16,8 @@ public class StatusField extends Field<StatusRegistry.StatusIdentifier> {
 
 	@Override
 	public StatusRegistry.StatusIdentifier getOldValue(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		StringTag status = chunkFilter.getStatus(data.region().getData());
+		ChunkFilter.Status filter = VersionHandler.getImpl(data, ChunkFilter.Status.class);
+		StringTag status = filter.getStatus(data);
 		return status == null ? null : new StatusRegistry.StatusIdentifier(status.getValue(), true);
 	}
 
@@ -32,17 +32,16 @@ public class StatusField extends Field<StatusRegistry.StatusIdentifier> {
 
 	@Override
 	public void change(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		StringTag tag = chunkFilter.getStatus(data.region().getData());
+		ChunkFilter.Status filter = VersionHandler.getImpl(data, ChunkFilter.Status.class);
+		StringTag tag = filter.getStatus(data);
 		if (tag != null) {
-			chunkFilter.setStatus(data.region().getData(), getNewValue());
+			filter.setStatus(data, getNewValue());
 		}
 	}
 
 	@Override
 	public void force(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		chunkFilter.setStatus(data.region().getData(), getNewValue());
+		VersionHandler.getImpl(data, ChunkFilter.Status.class).setStatus(data, getNewValue());
 	}
 
 	@Override

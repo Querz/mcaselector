@@ -11,8 +11,8 @@ public class TimestampField extends Field<Integer> {
 	}
 
 	@Override
-	public Integer getOldValue(ChunkData root) {
-		return root.region().getTimestamp();
+	public Integer getOldValue(ChunkData data) {
+		return data.region().getTimestamp();
 	}
 
 	@Override
@@ -26,20 +26,20 @@ public class TimestampField extends Field<Integer> {
 	}
 
 	@Override
-	public void change(ChunkData root) {
-		if (root.region() != null) {
-			root.region().setTimestamp(getNewValue());
+	public void change(ChunkData data) {
+		if (data.region() != null) {
+			data.region().setTimestamp(getNewValue());
 		}
-		if (root.poi() != null) {
-			root.poi().setTimestamp(getNewValue());
+		if (data.poi() != null) {
+			data.poi().setTimestamp(getNewValue());
 		}
-		if (root.entities() != null) {
-			root.entities().setTimestamp(getNewValue());
+		if (data.entities() != null) {
+			data.entities().setTimestamp(getNewValue());
 		}
 	}
 
 	@Override
-	public void force(ChunkData root) {
-		change(root);
+	public void force(ChunkData data) {
+		change(data);
 	}
 }

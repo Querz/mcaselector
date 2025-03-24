@@ -11,13 +11,13 @@ import javafx.scene.layout.*;
 import javafx.util.Duration;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.JobHandler;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.overlay.Overlay;
-import net.querz.mcaselector.validation.ShutdownHooks;
-
+import net.querz.mcaselector.util.validation.ShutdownHooks;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +41,7 @@ public class StatusBar extends StackPane {
 
 	public StatusBar(TileMap tileMap) {
 		getStyleClass().add("status-bar");
-		getStylesheets().add(StatusBar.class.getClassLoader().getResource("style/component/status-bar.css").toExternalForm());
+		getStylesheets().add(Objects.requireNonNull(StatusBar.class.getClassLoader().getResource("style/component/status-bar.css")).toExternalForm());
 		grid.getStyleClass().add("status-bar-grid");
 
 		tileMap.setOnUpdate(this::update);

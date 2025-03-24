@@ -4,19 +4,18 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import net.querz.mcaselector.config.ConfigProvider;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.exception.ThrowingFunction;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.JarURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -209,7 +208,12 @@ public final class FileHelper {
 		if (!classPath.startsWith("jar")) {
 			throw new IOException("application not running in jar file");
 		}
-		URL url = new URL(classPath);
+		URL url;
+		try {
+			url = new URI(classPath).toURL();
+		} catch (URISyntaxException e) {
+			throw new IOException(e);
+		}
 		JarURLConnection jarConnection = (JarURLConnection) url.openConnection();
 		Manifest manifest = jarConnection.getManifest();
 		return manifest.getMainAttributes();
@@ -299,7 +303,7 @@ public final class FileHelper {
 
 		// detect custom dimensions
 		File[] customDimensions = dir.listFiles((d, name) -> !name.equals("DIM-1") && !name.equals("DIM1") && name.matches("^DIM-?\\d+$"));
-		if (customDimensions != null && customDimensions.length > 0) {
+		if (customDimensions != null) {
 			for (File customDimension : customDimensions) {
 				if (isValidDimension(customDimension)) {
 					result.add(customDimension);
@@ -361,7 +365,7 @@ public final class FileHelper {
 	}
 
 	public static WorldDirectories testWorldDirectoriesValid(List<File> files, Stage primaryStage) {
-		if (files.size() == 0) {
+		if (files.isEmpty()) {
 			return null;
 		}
 
@@ -413,13 +417,13 @@ public final class FileHelper {
 		if (files.size() != 1) {
 			return null;
 		}
-		File file = files.get(0);
+		File file = files.getFirst();
 		if (file.isFile()) {
 			file = file.getParentFile();
 		}
 		List<File> dimensionDirs = detectDimensionDirectories(file);
 		if (dimensionDirs.size() == 1) {
-			return detectWorldDirectories(dimensionDirs.get(0));
+			return detectWorldDirectories(dimensionDirs.getFirst());
 		} else if (dimensionDirs.size() > 1) {
 			if (primaryStage != null) {
 				Optional<File> result = new SelectWorldDialog(dimensionDirs, primaryStage).showAndWait();
@@ -434,5 +438,14 @@ public final class FileHelper {
 		}
 
 		return null;
+	}
+
+	public static <T> T loadFromResource(String resourceName, ThrowingFunction<BufferedReader, T, Throwable> loadFunc) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(FileHelper.class.getClassLoader().getResourceAsStream(resourceName))))) {
+			return loadFunc.apply(reader);
+		} catch (Throwable e) {
+			LOGGER.fatal("Failed to load resource {}", resourceName, e);
+			throw new RuntimeException(e);
+		}
 	}
 }

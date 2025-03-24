@@ -1,12 +1,11 @@
 package net.querz.mcaselector.io.mca;
 
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.point.Point3i;
+import net.querz.mcaselector.util.range.Range;
 import net.querz.mcaselector.selection.ChunkSet;
-import net.querz.mcaselector.version.ChunkMerger;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.CompoundTag;
 import java.io.File;
 import java.util.List;
@@ -19,8 +18,7 @@ public class PoiMCAFile extends MCAFile<PoiChunk> implements Cloneable {
 	}
 
 	static PoiChunk newEmptyChunk(Point2i absoluteLocation, int dataVersion) {
-		ChunkMerger chunkMerger = VersionController.getPoiMerger(dataVersion);
-		CompoundTag root = chunkMerger.newEmptyChunk(absoluteLocation, dataVersion);
+		CompoundTag root = VersionHandler.getImpl(dataVersion, ChunkFilter.MergePOI.class).newEmptyChunk(absoluteLocation, dataVersion);
 		PoiChunk chunk = new PoiChunk(absoluteLocation);
 		chunk.data = root;
 		chunk.compressionType = CompressionType.ZLIB;

@@ -8,22 +8,20 @@ import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.NamedThreadFactory;
-import net.querz.mcaselector.io.db.CacheDBController;
+import net.querz.mcaselector.io.db.CacheHandler;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.mca.EntitiesMCAFile;
 import net.querz.mcaselector.io.mca.PoiMCAFile;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.overlay.Overlay;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.iq80.leveldb.DBException;
 import java.awt.*;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -51,7 +49,6 @@ public class OverlayPool {
 			new LinkedBlockingQueue<>(),
 			new NamedThreadFactory("overlayValuePool"));
 
-	private final CacheDBController dataCache = CacheDBController.getInstance();
 	private Overlay parser;
 
 	private Point2i hoveredRegion;
@@ -68,13 +65,8 @@ public class OverlayPool {
 	public void setParser(Overlay overlay) {
 		this.parser = overlay;
 		if (overlay != null && overlay.isValid() && overlay.isActive()) {
-			try {
-				dataCache.initTables(Collections.singletonList(overlay));
-				hoveredRegion = null;
-				hoveredRegionData = null;
-			} catch (SQLException ex) {
-				LOGGER.warn("failed to create table for overlay {}", overlay, ex);
-			}
+			hoveredRegion = null;
+			hoveredRegionData = null;
 		}
 	}
 
@@ -100,7 +92,7 @@ public class OverlayPool {
 		overlayCacheLoaders.execute(() -> {
 			int[] data = null;
 			try {
-				data = dataCache.getData(parserClone, tile.location);
+				data = CacheHandler.getData(parserClone, tile.location);
 			} catch (Exception ex) {
 				LOGGER.warn("failed to load cached overlay data for region {}", tile.location, ex);
 			}
@@ -137,7 +129,7 @@ public class OverlayPool {
 
 	public Image getImage(Point2i location, RegionMCAFile region, PoiMCAFile poi, EntitiesMCAFile entities) {
 		try {
-			int[] data = dataCache.getData(parser, location);
+			int[] data = CacheHandler.getData(parser, location);
 			if (data != null) {
 				return parseColorGrades(data, parser.min(), parser.max(), parser.getMinHue(), parser.getMaxHue());
 			}
@@ -191,28 +183,28 @@ public class OverlayPool {
 
 	public void push(Point2i location, int[] data) {
 		try {
-			dataCache.setData(tileMap.getOverlay(), location, data);
+			CacheHandler.setData(tileMap.getOverlay(), location, data);
 		} catch (Exception ex) {
 			LOGGER.warn("failed to cache data for region {}", location, ex);
 		}
 	}
 
-	public void switchTo(String dbPath, List<Overlay> overlays) {
+	public void switchTo(String dbPath) {
 		try {
-			dataCache.switchTo(dbPath, overlays);
+			CacheHandler.switchTo(dbPath);
 			hoveredRegion = null;
 			hoveredRegionData = null;
-		} catch (SQLException ex) {
+		} catch (IOException ex) {
 			LOGGER.warn("failed to switch cache db", ex);
 		}
 	}
 
-	public void clear() {
+	public void clear(boolean initCache) {
 		try {
-			dataCache.clear(tileMap.getOverlays());
+			CacheHandler.clear(ConfigProvider.WORLD.getCacheDBDir(), initCache);
 			hoveredRegion = null;
 			hoveredRegionData = null;
-		} catch (Exception ex) {
+		} catch (IOException ex) {
 			LOGGER.warn("failed to clear data cache", ex);
 		}
 		noData.clear();
@@ -220,13 +212,13 @@ public class OverlayPool {
 
 	public void discardData(Point2i region) {
 		try {
-			dataCache.deleteData(region);
+			CacheHandler.deleteData(region);
 			if (region.equals(hoveredRegion)) {
 				hoveredRegion = null;
 				hoveredRegionData = null;
 			}
 			LOGGER.debug("removed data for {} from data pool", region);
-		} catch (SQLException ex) {
+		} catch (IOException ex) {
 			LOGGER.warn("failed to remove data from cache", ex);
 		}
 		noData.remove(region);
@@ -248,7 +240,7 @@ public class OverlayPool {
 			overlayValueLoader.getQueue().clear(); // no need to load anything else
 			overlayValueLoader.execute(() -> {
 				try {
-					int[] regionData = dataCache.getData(parser, region);
+					int[] regionData = CacheHandler.getData(parser, region);
 					hoveredRegion = region;
 					hoveredRegionData = regionData;
 					if (regionData == null) {
@@ -256,7 +248,7 @@ public class OverlayPool {
 						return;
 					}
 					Platform.runLater(() -> callback.accept(regionData[normalizedChunk.getZ() * 32 + normalizedChunk.getX()]));
-				} catch (IOException | SQLException ex) {
+				} catch (IOException | DBException ex) {
 					LOGGER.warn("failed to load data for overlay value", ex);
 					Platform.runLater(() -> callback.accept(null));
 				}

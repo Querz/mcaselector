@@ -20,6 +20,6 @@ public class LocaleAdapter extends TypeAdapter<Locale> {
 			return null;
 		}
 		String[] split = in.nextString().split("_");
-		return new Locale(split[0], split[1]);
+		return Locale.of(split[0], split[1]);
 	}
 }

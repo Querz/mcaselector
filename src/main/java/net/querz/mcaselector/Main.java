@@ -7,10 +7,11 @@ import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.validation.ShutdownHooks;
+import net.querz.mcaselector.util.validation.ShutdownHooks;
+import net.querz.mcaselector.version.VersionHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import javax.swing.*;
+import javax.swing.JOptionPane;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -36,6 +37,7 @@ public class Main {
 			System.exit(0);
 		}
 
+		VersionHandler.init();
 		ConfigProvider.loadGlobalConfig();
 		ConfigProvider.loadOverlayConfig();
 		ShutdownHooks.addShutdownHook(ConfigProvider::saveAll);

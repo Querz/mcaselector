@@ -3,9 +3,9 @@ package net.querz.mcaselector.changer.fields;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.io.registry.StructureRegistry;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
+import net.querz.mcaselector.version.mapping.registry.StructureRegistry;
 import net.querz.nbt.CompoundTag;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ public class DeleteStructureField extends Field<List<String>> {
 			}
 			return super.parseNewValue(s);
 		}
-		if (value.size() == 0) {
+		if (value.isEmpty()) {
 			return super.parseNewValue(s);
 		}
 		setNewValue(value);
@@ -52,13 +52,17 @@ public class DeleteStructureField extends Field<List<String>> {
 
 	@Override
 	public void change(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		CompoundTag references = chunkFilter.getStructureReferences(data.region().getData());
-		CompoundTag starts = chunkFilter.getStructureStarts(data.region().getData());
+		ChunkFilter.Structures structures = VersionHandler.getImpl(data, ChunkFilter.Structures.class);
+		CompoundTag references = structures.getStructureReferences(data);
+		CompoundTag starts = structures.getStructureStarts(data);
 		for (String structure : getNewValue()) {
 			for (String alt : StructureRegistry.getAlts(structure)) {
-				references.remove(alt);
-				starts.remove(alt);
+				if (references != null) {
+					references.remove(alt);
+				}
+				if (starts != null) {
+					starts.remove(alt);
+				}
 			}
 		}
 	}

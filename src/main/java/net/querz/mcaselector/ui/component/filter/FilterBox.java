@@ -21,8 +21,6 @@ import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.UIFactory;
-import net.querz.mcaselector.ui.component.FileTextField;
-
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -62,7 +60,7 @@ public abstract class FilterBox extends BorderPane {
 		USE_DRAGVIEW_OFFSET = osName.contains("windows");
 	}
 
-	private static final String stylesheet = FilterBox.class.getClassLoader().getResource("style/component/filter-box.css").toExternalForm();
+	private static final String stylesheet = Objects.requireNonNull(FilterBox.class.getClassLoader().getResource("style/component/filter-box.css")).toExternalForm();
 
 	public FilterBox(FilterBox parent, Filter<?> filter, boolean root) {
 		this.parent = parent;
@@ -151,7 +149,7 @@ public abstract class FilterBox extends BorderPane {
 				if (this instanceof GroupFilterBox) {
 					lastFocusedGroupFilterBox = (GroupFilterBox) this;
 					lastFocusedGroupFilterBox.setInsertCssClass("filter-drop-target", null);
-					double dropCheckHeight = ((GroupFilterBox) this).filters.getChildren().size() == 0 ? 12 : 18;
+					double dropCheckHeight = ((GroupFilterBox) this).filters.getChildren().isEmpty() ? 12 : 18;
 					if (e.getY() < dropCheckHeight) {
 						currentDragDropTargetDirection = -1;
 						setInsertCssClass("filter-drop-target", "before");
@@ -236,7 +234,7 @@ public abstract class FilterBox extends BorderPane {
 					((GroupFilter) currentDragDropTarget.filter).addFilter(dragDropFilter);
 
 					// make first operator in target group invisible
-					((FilterBox) ((GroupFilterBox) currentDragDropTarget).filters.getChildren().get(0)).operator.setVisible(false);
+					((FilterBox) ((GroupFilterBox) currentDragDropTarget).filters.getChildren().getFirst()).operator.setVisible(false);
 
 				} else {
 					int targetIndex = ((GroupFilterBox) currentDragDropTarget.parent).filters.getChildren().indexOf(currentDragDropTarget);
@@ -251,12 +249,12 @@ public abstract class FilterBox extends BorderPane {
 					((GroupFilter) currentDragDropTarget.filter.getParent()).getFilterValue().add(targetIndex, dragDropFilter);
 
 					// make first operator in target group invisible
-					((FilterBox) ((GroupFilterBox) currentDragDropTarget.parent).filters.getChildren().get(0)).operator.setVisible(false);
+					((FilterBox) ((GroupFilterBox) currentDragDropTarget.parent).filters.getChildren().getFirst()).operator.setVisible(false);
 				}
 
 				// make first operator on source group invisible
-				if (oldParentBox.filters.getChildren().size() > 0) {
-					((FilterBox) oldParentBox.filters.getChildren().get(0)).operator.setVisible(false);
+				if (!oldParentBox.filters.getChildren().isEmpty()) {
+					((FilterBox) oldParentBox.filters.getChildren().getFirst()).operator.setVisible(false);
 				}
 
 				// update external stuff
@@ -327,7 +325,7 @@ public abstract class FilterBox extends BorderPane {
 					parent.type.getItems().addAll(FilterType.values());
 					parent.type.getSelectionModel().select(parent.filter.getType());
 				}
-				((FilterBox) ((GroupFilterBox) parent).filters.getChildren().get(0)).operator.setVisible(false);
+				((FilterBox) ((GroupFilterBox) parent).filters.getChildren().getFirst()).operator.setVisible(false);
 			}
 		}
 
@@ -385,7 +383,7 @@ public abstract class FilterBox extends BorderPane {
 		this.filter = filter;
 		operator.getSelectionModel().select(filter.getOperator());
 
-		if (filter.getParent() == null || ((GroupFilter) filter.getParent()).getFilterValue().get(0) == filter) {
+		if (filter.getParent() == null || ((GroupFilter) filter.getParent()).getFilterValue().getFirst() == filter) {
 			operator.setVisible(false);
 		}
 	}

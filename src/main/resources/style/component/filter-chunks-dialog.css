@@ -17,12 +17,3 @@
 .filter-dialog-pane {
     -fx-pref-height: 500px;
 }
-
-.script-error-label * {
-    -fx-font-family: "Noto Sans Mono";
-    -fx-min-height: 50;
-}
-
-.script-error-label {
-    -fx-text-fill: -color-error-text !important;
-}

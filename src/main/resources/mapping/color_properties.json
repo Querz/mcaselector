@@ -1,0 +1,64 @@
+{
+  "air": [
+    "minecraft:cave_air",
+    "minecraft:void_air",
+    "minecraft:air"
+  ],
+  "transparent": [
+    "minecraft:cave_air",
+    "minecraft:void_air",
+    "minecraft:air",
+    "minecraft:barrier",
+    "minecraft:light",
+    "minecraft:structure_void"
+  ],
+  "grass_tint": [
+    "minecraft:fern",
+    "minecraft:grass_block",
+    "minecraft:large_fern",
+    "minecraft:melon_stem",
+    "minecraft:attached_melon_stem",
+    "minecraft:pumpkin_stem",
+    "minecraft:attached_pumpkin_stem",
+    "minecraft:short_grass",
+    "minecraft:grass",
+    "minecraft:tall_grass",
+    "minecraft:bush"
+  ],
+  "foliage_tint": [
+    "minecraft:acacia_leaves",
+    "minecraft:dark_oak_leaves",
+    "minecraft:jungle_leaves",
+    "minecraft:mangrove_leaves",
+    "minecraft:oak_leaves",
+    "minecraft:vine"
+  ],
+  "dry_foliage_tint": [
+    "minecraft:leaf_litter"
+  ],
+  "water": [
+    "minecraft:water",
+    "minecraft:bubble_column"
+  ],
+  "foliage": [
+    "minecraft:acacia_leaves",
+    "minecraft:azalea_leaves",
+    "minecraft:birch_leaves",
+    "minecraft:cherry_leaves",
+    "minecraft:dark_oak_leaves",
+    "minecraft:flowering_azalea_leaves",
+    "minecraft:jungle_leaves",
+    "minecraft:mangrove_leaves",
+    "minecraft:oak_leaves",
+    "minecraft:pale_oak_leaves",
+    "minecraft:spruce_leaves"
+  ],
+  "static_tint": {
+    "minecraft:birch_leaves": "80a755",
+    "minecraft:spruce_leaves": "619961",
+    "minecraft:lily_pad": "208030"
+  },
+  "static_color": {
+    "minecraft:redstone_wire": "af1805"
+  }
+}

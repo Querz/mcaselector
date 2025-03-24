@@ -1,13 +1,6 @@
 package net.querz.mcaselector.text;
 
-import net.querz.mcaselector.exception.ParseException;
-import net.querz.mcaselector.filter.filters.PaletteFilter;
-import net.querz.mcaselector.io.StringPointer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import net.querz.mcaselector.util.exception.ParseException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
@@ -19,17 +12,12 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class TextHelper {
-
-	private static final Logger LOGGER = LogManager.getLogger(TextHelper.class);
 
 	private TextHelper() {}
 
@@ -44,73 +32,6 @@ public final class TextHelper {
 		DURATION_REGEXP.put(Pattern.compile("(?<data>\\d+)\\W*(?:seconds?|secs?|s)"), 1L);
 	}
 
-	private static final Set<String> validBLockNames = new HashSet<>();
-
-	static {
-		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Objects.requireNonNull(PaletteFilter.class.getClassLoader().getResourceAsStream("mapping/all_block_names.txt"))))) {
-			String line;
-			while ((line = bis.readLine()) != null) {
-				validBLockNames.add(line);
-			}
-		} catch (IOException ex) {
-			LOGGER.error("error reading mapping/all_block_names.txt", ex);
-		}
-	}
-
-	public static String[] parseBlockNames(String raw) {
-		StringPointer sp = new StringPointer(raw);
-		List<String> blocks = new ArrayList<>();
-		try {
-			while (sp.hasNext()) {
-				sp.skipWhitespace();
-				String rawName;
-				if (sp.currentChar() == '\'') {
-					rawName = "'" + sp.parseQuotedString('\'') + "'";
-				} else {
-					rawName = sp.parseSimpleString(TextHelper::isValidBlockChar);
-				}
-
-				String parsedName = parseBlockName(rawName);
-				if (parsedName == null) {
-					return null;
-				}
-				blocks.add(parsedName);
-				sp.skipWhitespace();
-				if (sp.hasNext()) {
-					sp.expectChar(',');
-					sp.skipWhitespace();
-					if (!sp.hasNext()) {
-						return null;
-					}
-				}
-			}
-		} catch (Exception ex) {
-			return null;
-		}
-		return blocks.toArray(new String[0]);
-	}
-
-	private static boolean isValidBlockChar(char c) {
-		return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'
-				|| c >= '0' && c <= '9'
-				|| c == ':' || c == '_' || c == ' ';
-	}
-
-	public static String parseBlockName(String raw) {
-		raw = raw.replace(" ", "");
-		if (raw.startsWith("minecraft:")) {
-			if (validBLockNames.contains(raw.substring(10))) {
-				return raw;
-			}
-		} else if (validBLockNames.contains(raw)) {
-			return "minecraft:" + raw;
-		} else if (raw.startsWith("'") && raw.endsWith("'")) {
-			return raw.substring(1, raw.length() - 1);
-		}
-		return null;
-	}
-
 	// parses a duration string and returns the duration in seconds
 	public static long parseDuration(String d) {
 		boolean result = false;
@@ -119,7 +40,7 @@ public final class TextHelper {
 		for (Map.Entry<Pattern, Long> entry : DURATION_REGEXP.entrySet()) {
 			Matcher m = entry.getKey().matcher(d);
 			if (m.find()) {
-				duration += Long.parseLong(m.group("data")) * entry.getValue();
+				duration += (int) (Long.parseLong(m.group("data")) * entry.getValue());
 				result = true;
 
 				elements.add(d.substring(m.start(), m.end()));
@@ -134,7 +55,7 @@ public final class TextHelper {
 			remains = remains.replaceFirst(element, "");
 		}
 		remains = remains.trim();
-		if (remains.length() > 0) {
+		if (!remains.isEmpty()) {
 			throw new IllegalArgumentException("invalid element in duration string: " + remains);
 		}
 

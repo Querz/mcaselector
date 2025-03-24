@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.component.TransparentStage;
 import net.querz.mcaselector.ui.UIFactory;
+import java.util.Objects;
 import java.util.Optional;
 
 public class ColorPicker extends TransparentStage {
@@ -78,7 +79,7 @@ public class ColorPicker extends TransparentStage {
 
 		setContent(borderPane);
 
-		getScene().getStylesheets().add(ColorPicker.class.getClassLoader().getResource("style/component/color-picker.css").toExternalForm());
+		getScene().getStylesheets().add(Objects.requireNonNull(ColorPicker.class.getClassLoader().getResource("style/component/color-picker.css")).toExternalForm());
 	}
 
 	public Optional<Color> showColorPicker() {

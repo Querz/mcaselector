@@ -2,9 +2,10 @@ package net.querz.mcaselector.changer.fields;
 
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
-import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionHandler;
+import net.querz.mcaselector.version.mapping.registry.BiomeRegistry;
 
 public class BiomeField extends Field<BiomeRegistry.BiomeIdentifier> {
 
@@ -57,11 +58,11 @@ public class BiomeField extends Field<BiomeRegistry.BiomeIdentifier> {
 
 	@Override
 	public void change(ChunkData data) {
-		VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0)).changeBiome(data.region().getData(), getNewValue());
+		VersionHandler.getImpl(data, ChunkFilter.Biomes.class).changeBiome(data, getNewValue());
 	}
 
 	@Override
 	public void force(ChunkData data) {
-		VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0)).forceBiome(data.region().getData(), getNewValue());
+		VersionHandler.getImpl(data, ChunkFilter.Biomes.class).forceBiome(data, getNewValue());
 	}
 }

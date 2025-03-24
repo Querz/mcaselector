@@ -20,7 +20,7 @@ import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.selection.SelectionData;
@@ -28,9 +28,9 @@ import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.ui.DialogHelper;
 import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.ui.Window;
-import net.querz.mcaselector.point.Point2f;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.util.point.Point2f;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.progress.Timer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.awt.datatransfer.Clipboard;
@@ -71,7 +71,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private Long2IntOpenHashMap tilePriorities = new Long2IntOpenHashMap();
 
 	private int selectedChunks = 0;
-	private Point2f mouseHoverLocation = null;
 	private Point2i hoveredBlock = null;
 
 	private boolean showChunkGrid = true;
@@ -474,7 +473,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private void zoomFactor(double factor, Point2f center) {
 		float oldScale = scale;
-		scale /= factor;
+		scale /= (float) factor;
 		updateScale(oldScale, center);
 	}
 
@@ -495,13 +494,11 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private void onMouseMoved(MouseEvent event) {
 		hoveredBlock = getMouseBlock(event.getX(), event.getY());
-		mouseHoverLocation = new Point2f(event.getX(), event.getY());
 		runHoverListeners();
 	}
 
 	private void onMouseExited() {
 		hoveredBlock = null;
-		mouseHoverLocation = null;
 		runHoverListeners();
 	}
 
@@ -542,6 +539,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	private void onMousePressed(MouseEvent event) {
+		requestFocus();
 		if (!disabled) {
 			firstMouseLocation = new Point2f(event.getX(), event.getY());
 			firstPastedChunksOffset = pastedChunksOffset;
@@ -712,13 +710,13 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	public void clear() {
-		clear(null);
+		clear(null, true);
 	}
 
-	public void clear(ProgressTask loadWorldTask) {
+	public void clear(ProgressTask loadWorldTask, boolean initCache) {
 		tiles.clear();
 		imgPool.clear(loadWorldTask);
-		overlayPool.clear();
+		overlayPool.clear(initCache);
 
 		pastedChunks = null;
 		pastedWorld = null;

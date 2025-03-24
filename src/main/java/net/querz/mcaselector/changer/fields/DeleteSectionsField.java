@@ -3,12 +3,9 @@ package net.querz.mcaselector.changer.fields;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.range.Range;
-import net.querz.mcaselector.range.RangeParser;
-import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.EntityFilter;
-import net.querz.mcaselector.version.HeightmapCalculator;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.util.range.Range;
+import net.querz.mcaselector.util.range.RangeParser;
+import net.querz.mcaselector.version.*;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -30,7 +27,7 @@ public class DeleteSectionsField extends Field<List<Range>> {
 		}
 
 		setNewValue(RangeParser.parseRanges(s, ","));
-		if (getNewValue() != null && getNewValue().size() != 0) {
+		if (getNewValue() != null && !getNewValue().isEmpty()) {
 			return true;
 		}
 		return super.parseNewValue(s);
@@ -38,23 +35,13 @@ public class DeleteSectionsField extends Field<List<Range>> {
 
 	@Override
 	public void change(ChunkData data) {
-		if (data.region() != null && data.region().getData() != null) {
-			int dataVersion = data.region().getData().getIntOrDefault("DataVersion", 0);
-			ChunkFilter chunkFilter = VersionController.getChunkFilter(dataVersion);
-			chunkFilter.deleteSections(data.region().getData(), getNewValue());
-
-			// fix heightmaps
-			HeightmapCalculator heightmapCalculator = VersionController.getHeightmapCalculator(dataVersion);
-			heightmapCalculator.worldSurface(data.region().getData());
-			heightmapCalculator.oceanFloor(data.region().getData());
-			heightmapCalculator.motionBlocking(data.region().getData());
-			heightmapCalculator.motionBlockingNoLeaves(data.region().getData());
-		}
-		// delete entities and poi as well
-		if (data.entities() != null && data.entities().getData() != null) {
-			EntityFilter entityFilter = VersionController.getEntityFilter(data.entities().getData().getIntOrDefault("DataVersion", 0));
-			entityFilter.deleteEntities(data, getNewValue());
-		}
+		VersionHandler.getImpl(data, ChunkFilter.Sections.class).deleteSections(data, getNewValue());
+		VersionHandler.getImpl(data, ChunkFilter.Entities.class).deleteEntities(data, getNewValue());
+		ChunkFilter.Heightmap heightmap = VersionHandler.getImpl(data, ChunkFilter.Heightmap.class);
+		heightmap.worldSurface(data);
+		heightmap.oceanFloor(data);
+		heightmap.motionBlocking(data);
+		heightmap.motionBlockingNoLeaves(data);
 	}
 
 	@Override

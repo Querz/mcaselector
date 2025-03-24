@@ -16,10 +16,15 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.github.VersionChecker;
+import net.querz.mcaselector.util.github.VersionChecker;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.UIFactory;
+
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class AboutDialog extends Alert {
@@ -31,7 +36,7 @@ public class AboutDialog extends Alert {
 	public AboutDialog(Stage primaryStage) {
 		super(AlertType.INFORMATION, null, ButtonType.OK);
 		initStyle(StageStyle.UTILITY);
-		getDialogPane().getStylesheets().add(AboutDialog.class.getClassLoader().getResource("style/component/about-dialog.css").toExternalForm());
+		getDialogPane().getStylesheets().add(Objects.requireNonNull(AboutDialog.class.getClassLoader().getResource("style/component/about-dialog.css")).toExternalForm());
 		getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
 		getDialogPane().getStyleClass().add("about-dialog-pane");
 		titleProperty().bind(Translation.DIALOG_ABOUT_TITLE.getProperty());
@@ -56,13 +61,20 @@ public class AboutDialog extends Alert {
 				e -> handleCheckUpdate(finalApplicationVersion,
 						b -> versionLabel.getChildren().set(versionLabel.getChildren().size() - 1, b)));
 
+		String copyright = "\u00A9 Querz";
+		try {
+			copyright = FileHelper.getManifestAttributes().getValue("Copyright");
+		} catch (IOException ex) {
+			// ignore
+		}
+
 		versionLabel.getChildren().add(checkForUpdates);
 		versionLabel.getChildren().add(persistentVersionCheckResult);
 		grid.add(versionLabel, 1, 0);
 		grid.add(UIFactory.label(Translation.DIALOG_ABOUT_LICENSE), 0, 1);
 		grid.add(new Label("MIT"), 1, 1);
 		grid.add(UIFactory.label(Translation.DIALOG_ABOUT_COPYRIGHT), 0, 2);
-		grid.add(new Label("\u00A9 2018 - 2024 Querz"), 1, 2);
+		grid.add(new Label(copyright), 1, 2);
 		grid.add(UIFactory.label(Translation.DIALOG_ABOUT_SOURCE), 0, 3);
 		ImageView imgView = new ImageView(githubMark);
 		imgView.setScaleX(0.5);

@@ -6,7 +6,7 @@ import net.querz.mcaselector.filter.FilterType;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.ByteTag;
 
 public class LightPopulatedFilter extends ByteFilter {
@@ -31,11 +31,7 @@ public class LightPopulatedFilter extends ByteFilter {
 
 	@Override
 	protected Byte getNumber(ChunkData data) {
-		if (data.region() == null || data.region().getData() == null) {
-			return 0;
-		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		ByteTag tag = chunkFilter.getLightPopulated(data.region().getData());
+		ByteTag tag = VersionHandler.getImpl(data, ChunkFilter.LightPopulated.class).getLightPopulated(data);
 		return tag == null ? 0 : tag.asByte();
 	}
 

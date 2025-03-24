@@ -39,32 +39,32 @@ public abstract class IntFilter extends NumberFilter<Integer> {
 
 	@Override
 	protected boolean isEqual(Integer a, Integer b) {
-		return a.intValue() == b.intValue();
+		return a != null && b != null && a.intValue() == b.intValue();
 	}
 
 	@Override
 	protected boolean isNotEqual(Integer a, Integer b) {
-		return a.intValue() != b.intValue();
+		return a != null && b != null && a.intValue() != b.intValue();
 	}
 
 	@Override
 	protected boolean isLargerThan(Integer a, Integer b) {
-		return a > b;
+		return a != null && b != null && a > b;
 	}
 
 	@Override
 	protected boolean isSmallerThan(Integer a, Integer b) {
-		return a < b;
+		return a != null && b != null && a < b;
 	}
 
 	@Override
 	protected boolean isLargerEqual(Integer a, Integer b) {
-		return a >= b;
+		return a != null && b != null && a >= b;
 	}
 
 	@Override
 	protected boolean isSmallerEqual(Integer a, Integer b) {
-		return a <= b;
+		return a != null && b != null && a <= b;
 	}
 
 	@Override

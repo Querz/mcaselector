@@ -11,6 +11,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.util.Objects;
+
 public class TransparentStage extends Stage {
 
 	private final StackPane content;
@@ -65,7 +67,7 @@ public class TransparentStage extends Stage {
 		scene.setFill(Color.TRANSPARENT);
 		scene.getStylesheets().addAll(parent.getScene().getStylesheets());
 		setScene(scene);
-		scene.getStylesheets().add(TransparentStage.class.getClassLoader().getResource("style/component/transparent-stage.css").toExternalForm());
+		scene.getStylesheets().add(Objects.requireNonNull(TransparentStage.class.getClassLoader().getResource("style/component/transparent-stage.css")).toExternalForm());
 	}
 
 	public void setContent(Node node) {

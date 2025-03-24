@@ -5,8 +5,8 @@ import net.querz.mcaselector.filter.FilterType;
 import net.querz.mcaselector.filter.IntFilter;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.version.EntityFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.ListTag;
 
 public class EntityAmountFilter extends IntFilter {
@@ -21,20 +21,8 @@ public class EntityAmountFilter extends IntFilter {
 
 	@Override
 	protected Integer getNumber(ChunkData data) {
-		int dataVersion;
-		if (data.region() != null && data.region().getData() != null) {
-			dataVersion = data.region().getData().getIntOrDefault("DataVersion", 0);
-		} else if (data.entities() != null && data.entities().getData() != null) {
-			dataVersion = data.entities().getData().getIntOrDefault("DataVersion", 0);
-		} else {
-			return 0;
-		}
-		EntityFilter entityFilter = VersionController.getEntityFilter(dataVersion);
-		ListTag entities = entityFilter.getEntities(data);
-		if (entities == null) {
-			return 0;
-		}
-		return entities.size();
+		ListTag entities = VersionHandler.getImpl(data, ChunkFilter.Entities.class).getEntities(data);
+		return entities == null ? 0 : entities.size();
 	}
 
 	@Override

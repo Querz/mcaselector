@@ -15,6 +15,7 @@ import java.io.Closeable;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,6 +33,12 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 
 	public ObservableValue<String> errorProperty() {
 		return error;
+	}
+
+	private Runnable changeListener;
+
+	public void setChangeListener(Runnable listener) {
+		this.changeListener = listener;
 	}
 
 	private static final String[] KEYWORDS = new String[] {
@@ -84,7 +91,6 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 					}
 				})
 				.subscribe(h -> {
-					System.out.println(h);
 					setStyleSpans(0, h);
 				});
 
@@ -97,6 +103,9 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 					.awaitLatest(multiPlainChanges())
 					.filterMap(t -> {
 						if (t.isSuccess()) {
+							if (changeListener != null) {
+								changeListener.run();
+							}
 							return Optional.of(t.get());
 						} else {
 							t.getFailure().printStackTrace();
@@ -106,7 +115,7 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 					.subscribe(error::set);
 		}
 
-		getStylesheets().add(GroovyCodeArea.class.getClassLoader().getResource("style/component/groovy-code-area.css").toExternalForm());
+		getStylesheets().add(Objects.requireNonNull(GroovyCodeArea.class.getClassLoader().getResource("style/component/groovy-code-area.css")).toExternalForm());
 	}
 
 	private Task<String> evalAsync() {
@@ -161,7 +170,7 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 		Matcher matcher = PATTERN.matcher(text);
 		int lastKwEnd = 0;
 		StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-		while(matcher.find()) {
+		while (matcher.find()) {
 			String match; // we need this to get the actual length of the match, excluding any trailing characters
 			String styleClass =
 					(match = matcher.group("KEYWORD")) != null ? "keyword" :
@@ -183,7 +192,8 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 	}
 
 	public void setText(String text) {
-		replaceText(0, 0, text);
+		replaceText(0, getLength(), text);
+		setStyleSpans(0, computeHighlighting(text));
 	}
 
 	@Override

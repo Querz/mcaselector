@@ -4,7 +4,6 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.querz.mcaselector.io.WorldDirectories;
-
 import java.io.IOException;
 
 public class WorldDirectoriesAdapter extends TypeAdapter<WorldDirectories> {

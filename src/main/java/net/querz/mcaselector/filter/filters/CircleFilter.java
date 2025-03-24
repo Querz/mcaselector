@@ -2,10 +2,10 @@ package net.querz.mcaselector.filter.filters;
 
 import net.querz.mcaselector.filter.*;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.IntTag;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -86,9 +86,9 @@ public class CircleFilter extends TextFilter<List<CircleFilter.CircleFilterDefin
 			return false;
 		}
 
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		IntTag xPos = chunkFilter.getXPos(data.region().getData());
-		IntTag zPos = chunkFilter.getZPos(data.region().getData());
+		ChunkFilter.Pos pos = VersionHandler.getImpl(data, ChunkFilter.Pos.class);
+		IntTag xPos = pos.getXPos(data);
+		IntTag zPos = pos.getZPos(data);
 		if (xPos == null || zPos == null) {
 			return false;
 		}

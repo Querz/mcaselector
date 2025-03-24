@@ -5,7 +5,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import net.querz.mcaselector.point.Point2f;
+import net.querz.mcaselector.util.point.Point2f;
 
 public class RangeSlider extends Pane {
 

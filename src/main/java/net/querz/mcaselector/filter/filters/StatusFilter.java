@@ -5,9 +5,9 @@ import net.querz.mcaselector.filter.FilterType;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.io.registry.StatusRegistry;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
+import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
 import net.querz.nbt.StringTag;
 
 public class StatusFilter extends TextFilter<StatusRegistry.StatusIdentifier> {
@@ -46,11 +46,7 @@ public class StatusFilter extends TextFilter<StatusRegistry.StatusIdentifier> {
 	}
 
 	public boolean isEqual(StatusRegistry.StatusIdentifier value, ChunkData data) {
-		if (data.region() == null || data.region().getData() == null) {
-			return false;
-		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		StringTag tag = chunkFilter.getStatus(data.region().getData());
+		StringTag tag = VersionHandler.getImpl(data, ChunkFilter.Status.class).getStatus(data);
 		return tag != null && value.equals(tag.getValue());
 	}
 

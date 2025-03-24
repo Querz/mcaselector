@@ -1,13 +1,12 @@
 package net.querz.mcaselector.io.job;
 
-import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.EntitiesMCAFile;
 import net.querz.mcaselector.io.mca.PoiMCAFile;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.progress.Timer;
 import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.overlay.Overlay;
 import org.apache.logging.log4j.LogManager;
@@ -89,16 +88,12 @@ public class ParseDataJob extends ProcessDataJob {
 		if (region != null) {
 			regionMCAFile = region;
 		} else if (getRegionDirectories().getRegion() != null && getRegionDirectories().getRegion().exists() && getRegionDirectories().getRegion().length() > 0) {
-			byte[] regionData = loadRegion();
 			regionMCAFile = new RegionMCAFile(getRegionDirectories().getRegion());
-			if (regionData != null) {
-				// load EntitiesMCAFile
-				ByteArrayPointer ptr = new ByteArrayPointer(regionData);
-				try {
-					regionMCAFile.load(ptr);
-				} catch (IOException ex) {
-					LOGGER.warn("failed to read mca file header from {}", getRegionDirectories().getRegion());
-				}
+			// load RegionMCAFile
+			try {
+				regionMCAFile.load(false);
+			} catch (IOException ex) {
+				LOGGER.warn("failed to read mca file header from {}", getRegionDirectories().getRegion());
 			}
 		}
 
@@ -106,16 +101,12 @@ public class ParseDataJob extends ProcessDataJob {
 		if (entities != null) {
 			entitiesMCAFile = entities;
 		} else if (getRegionDirectories().getEntities() != null && getRegionDirectories().getEntities().exists() && getRegionDirectories().getEntities().length() > 0) {
-			byte[] entitiesData = loadEntities();
 			entitiesMCAFile = new EntitiesMCAFile(getRegionDirectories().getEntities());
-			if (entitiesData != null) {
-				// load EntitiesMCAFile
-				ByteArrayPointer ptr = new ByteArrayPointer(entitiesData);
-				try {
-					entitiesMCAFile.load(ptr);
-				} catch (IOException ex) {
-					LOGGER.warn("failed to read mca file header from {}", getRegionDirectories().getEntities());
-				}
+			// load EntitiesMCAFile
+			try {
+				entitiesMCAFile.load(false);
+			} catch (IOException ex) {
+				LOGGER.warn("failed to read mca file header from {}", getRegionDirectories().getEntities());
 			}
 		}
 
@@ -123,16 +114,12 @@ public class ParseDataJob extends ProcessDataJob {
 		if (poi != null) {
 			poiMCAFile = poi;
 		} else if (getRegionDirectories().getPoi() != null && getRegionDirectories().getPoi().exists() && getRegionDirectories().getPoi().length() > 0) {
-			byte[] poiData = loadPoi();
 			poiMCAFile = new PoiMCAFile(getRegionDirectories().getPoi());
-			if (poiData != null) {
-				// load PoiMCAFile
-				ByteArrayPointer ptr = new ByteArrayPointer(poiData);
-				try {
-					poiMCAFile.load(ptr);
-				} catch (IOException ex) {
-					LOGGER.warn("failed to read mca file header from {}", getRegionDirectories().getPoi());
-				}
+			// load PoiMCAFile
+			try {
+				poiMCAFile.load(false);
+			} catch (IOException ex) {
+				LOGGER.warn("failed to read mca file header from {}", getRegionDirectories().getPoi());
 			}
 		}
 

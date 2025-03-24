@@ -5,7 +5,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.WorldDirectories;
-import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.util.point.Point2i;
 import java.io.*;
 import java.util.Iterator;
 
@@ -242,7 +242,7 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 					selection.put(region, chunks);
 				} else {
 					chunks.clear(chunk);
-					if (chunks.size() == 0) {
+					if (chunks.isEmpty()) {
 						selection.remove(region);
 					}
 				}
@@ -390,7 +390,7 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 					selection.put(region, chunks);
 				} else {
 					chunks.clear(chunk.asChunkIndex());
-					if (chunks.size() == 0) {
+					if (chunks.isEmpty()) {
 						selection.remove(region);
 					}
 				}
@@ -446,7 +446,7 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 				long r = entry.getLongKey();
 				if (selection.containsKey(r)) {
 					ChunkSet result = subtract(selection.get(r), entry.getValue());
-					if (result.size() == 0) {
+					if (result.isEmpty()) {
 						selection.remove(r);
 					} else {
 						selection.put(r, result);
@@ -460,7 +460,7 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 				long r = entry.getLongKey();
 				if (selection.containsKey(r)) {
 					ChunkSet result;
-					if ((result = subtract(cloneValue(entry.getValue()), selection.get(r))).size() == 0) {
+					if ((result = subtract(cloneValue(entry.getValue()), selection.get(r))).isEmpty()) {
 						selection.remove(r);
 					} else {
 						selection.put(r, result);
@@ -491,7 +491,7 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 					// region exists in other selection so we need to union them
 					ChunkSet union = union(entry.getValue(), other.selection.get(r));
 					// and put it in this selection
-					if (union != null && union.size() == 0) {
+					if (union != null && union.isEmpty()) {
 						// the union is completely selected, so we remove this region to fully mark it
 						selection.remove(r);
 					} else {

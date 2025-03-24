@@ -10,6 +10,12 @@ menu.view;Vista
 menu.selection;Selección
 menu.tools;Herramientas
 menu.about;Acerca de
+menu.file.new;Nuevo
+menu.file.open;Abrir
+menu.file.open_recent;Abrir reciente
+menu.file.open_recent.clear;Borrar
+menu.file.save;Guardar
+menu.file.save_as;Guardar como...
 menu.file.open_world;Abrir un mundo
 menu.file.open_dimension;Abre otra dimensión
 menu.file.open_recent_world;Abrir mundo anterior
@@ -60,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;Color de trozos pegados
 dialog.settings.rendering.shade.shade;Sombra
 dialog.settings.rendering.shade;Sombra
 dialog.settings.rendering.shade.shade_water;Agua de sombra
+dialog.settings.rendering.shade.shade_altitude;Altura del terreno
 dialog.settings.rendering.background.show_nonexistent_regions;Mostrar regiones inexistentes
 dialog.settings.rendering.smooth.smooth_rendering;Renderizado suave
 dialog.settings.rendering.smooth.smooth_overlays;Superposiciones suaves
@@ -182,5 +189,9 @@ dialog.error.header;Ocurrió un error
 dialog.error.copied_to_clipboard;¡Copiado al portapapeles!
 dialog.unsaved_selection.title;Selección no guardada
 dialog.unsaved_selection.header;Hay una selección sin guardar.
+dialog.unsaved_script.title;Script no guardado
+dialog.unsaved_script.header;Hay un script no guardado.
+dialog.request_number.title.array_length;Longitud de la matriz
+dialog.request_number.title.enter_number;Valor
 button.cancel;Cancelar
 button.ok;OK

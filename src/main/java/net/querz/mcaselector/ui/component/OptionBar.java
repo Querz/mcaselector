@@ -15,7 +15,8 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import net.querz.mcaselector.config.ConfigProvider;
-import net.querz.mcaselector.github.VersionChecker;
+import net.querz.mcaselector.ui.dialog.ConfirmationDialog;
+import net.querz.mcaselector.util.github.VersionChecker;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.selection.ClipboardSelection;
 import net.querz.mcaselector.tile.TileMap;
@@ -29,6 +30,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
 
 public class OptionBar extends BorderPane {
 	/*
@@ -99,7 +102,7 @@ public class OptionBar extends BorderPane {
 		getStyleClass().add("option-bar-box");
 		menuBar.getStyleClass().add("option-bar");
 
-		getStylesheets().add(OptionBar.class.getClassLoader().getResource("style/component/option-bar.css").toExternalForm());
+		getStylesheets().add(Objects.requireNonNull(OptionBar.class.getClassLoader().getResource("style/component/option-bar.css")).toExternalForm());
 
 		tileMap.setOnUpdate(this::onUpdate);
 
@@ -274,7 +277,7 @@ public class OptionBar extends BorderPane {
 		previousSelectedChunks = selectedChunks;
 		previousInvertedSelection = invertedSelection;
 		nextOverlay.setDisable(tileMap.getOverlay() == null);
-		sumSelection.setDisable(tileMap.getOverlay() == null || tileMap.getSelectedChunks() == 0);
+		sumSelection.setDisable(tileMap.getOverlay() == null || tileMap.getSelectedChunks() == 0 && !invertedSelection);
 	}
 
 	public void setWorldDependentMenuItemsEnabled(boolean enabled, TileMap tileMap, Stage primaryStage) {
@@ -306,16 +309,24 @@ public class OptionBar extends BorderPane {
 			});
 		}
 
-		openDimension.setDisable(!enabled || openDimension.getItems().size() == 0);
+		openDimension.setDisable(!enabled || openDimension.getItems().isEmpty());
 
-		if (ConfigProvider.GLOBAL.getRecentWorlds().size() > 0) {
+		if (!ConfigProvider.GLOBAL.getRecentWorlds().isEmpty()) {
 			openRecent.getItems().clear();
 			File currentWorld = ConfigProvider.WORLD.getRegionDir();
 			ConfigProvider.GLOBAL.getRecentWorlds().descendingMap().forEach((k, v) -> {
 				if (currentWorld == null || !v.recentWorld().equals(currentWorld.getParentFile())) {
 					MenuItem openRecentItem = new MenuItem(v.toString());
 					openRecentItem.setMnemonicParsing(false);
-					openRecentItem.setOnAction(e -> DialogHelper.setWorld(FileHelper.detectWorldDirectories(v.recentWorld()), v.dimensionDirectories(), tileMap, primaryStage));
+					openRecentItem.setOnAction(e -> {
+						if (tileMap.hasUnsavedSelection()) {
+							Optional<ButtonType> result = new ConfirmationDialog(primaryStage, Translation.DIALOG_UNSAVED_SELECTION_TITLE, Translation.DIALOG_UNSAVED_SELECTION_HEADER, "unsaved-changes").showAndWait();
+							if (result.isPresent() && result.get() == ButtonType.CANCEL) {
+								return;
+							}
+						}
+						DialogHelper.setWorld(FileHelper.detectWorldDirectories(v.recentWorld()), v.dimensionDirectories(), tileMap, primaryStage);
+					});
 					openRecent.getItems().add(openRecentItem);
 				}
 			});
@@ -347,14 +358,18 @@ public class OptionBar extends BorderPane {
 		swapChunks.setDisable(selected != 2 || inverted);
 		copy.setDisable(selected == 0 && !inverted);
 		invertRegions.setDisable(selected == 0 || inverted);
-		sumSelection.setDisable((tileMap.getOverlay() == null || selected == 0));
+		sumSelection.setDisable(tileMap.getOverlay() == null || selected == 0 && !inverted);
 	}
 
 	private boolean hasValidClipboardContent(TileMap tileMap) {
-		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		Transferable content = clipboard.getContents(tileMap);
-		DataFlavor[] flavors = content.getTransferDataFlavors();
-		return flavors.length == 1 && flavors[0].equals(ClipboardSelection.SELECTION_DATA_FLAVOR);
+		try {
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			Transferable content = clipboard.getContents(tileMap);
+			DataFlavor[] flavors = content.getTransferDataFlavors();
+			return flavors.length == 1 && flavors[0].equals(ClipboardSelection.SELECTION_DATA_FLAVOR);
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	public void setRenderHeight(int height) {

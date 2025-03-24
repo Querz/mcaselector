@@ -60,7 +60,7 @@ public class Translations {
 			if (matcher.matches()) {
 				String language = matcher.group("language");
 				String country = matcher.group("country");
-				locale = new Locale(language, country);
+				locale = Locale.of(language, country);
 			} else {
 				throw new ParseException("invalid locale " + l);
 			}

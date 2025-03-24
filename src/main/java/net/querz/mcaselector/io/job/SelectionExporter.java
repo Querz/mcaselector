@@ -8,8 +8,8 @@ import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.progress.Progress;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.progress.Progress;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.*;
@@ -105,20 +105,9 @@ public final class SelectionExporter {
 				return true;
 			}
 
-			byte[] regionData = loadRegionHeader();
-			byte[] poiData = loadPoiHeader();
-			byte[] entitiesData = loadEntitiesHeader();
-
-			if (regionData == null && poiData == null && entitiesData == null) {
-				LOGGER.warn("failed to load any data from {}", getRegionDirectories().getLocationAsFileName());
-				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return true;
-			}
-
-
 			try {
 				// only load headers, because we don't care for chunk data
-				Region region = Region.loadRegionHeaders(getRegionDirectories(), regionData, poiData, entitiesData);
+				Region region = Region.loadRegionHeaders(getRegionDirectories());
 				region.deleteChunks(chunksToBeExported.flip());
 				MCADeleteSelectionSaveJob job = new MCADeleteSelectionSaveJob(getRegionDirectories(), region, to, progressChannel);
 				job.errorHandler = errorHandler;

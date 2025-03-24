@@ -3,7 +3,7 @@ package net.querz.mcaselector.cli;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
-import net.querz.mcaselector.progress.Progress;
+import net.querz.mcaselector.util.progress.Progress;
 
 public class CLIProgress implements Progress {
 

@@ -2,659 +2,893 @@ package net.querz.mcaselector.ui.component;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.stage.Stage;
-import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.ui.dialog.EditArrayDialog;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import net.querz.nbt.*;
-import static net.querz.nbt.Tag.Type.*;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.BiConsumer;
+import java.io.*;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import static net.querz.nbt.Tag.Type.*;
 
 public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 
-	private static final Map<Tag.Type, Image> icons = new HashMap<>();
-	private BiConsumer<TreeItem<NamedTag>, TreeItem<NamedTag>> selectionChangedAction;
-	private static final DataFormat CLIPBOARD_DATAFORMAT = new DataFormat("nbt-editor-item");
-	private TreeItem<NamedTag> dragboardContent = null;
-	private TreeItem<NamedTag> dropTarget = null;
-	private KeyValueTreeCell dropTargetCell = null;
-	private int dropIndex = 0;
-	private Stage stage;
+	private ScrollBar verticalScrollBar = null;
+	private NBTTreeItem dragItem; // reference keeping track of which item is being dragged
+	private Rectangle dropHighlight = null;
+	private static final String dropHighlightCssClass = "drop-highlight";
+	private NBTTreeItem dropTarget = null;
+	private int dropTargetIndex = 0;
+	private Tag copyItem;
+	private String copyName;
+	private Function<Object, Optional<EditArrayResult>> arrayEditor = null;
 
-	private static final boolean USE_DRAGVIEW_OFFSET;
-
-	static {
-		String osName = System.getProperty("os.name").toLowerCase();
-		USE_DRAGVIEW_OFFSET = osName.contains("windows");
-	}
-
-	static {
-		initIcons();
-	}
-
-	public NBTTreeView(Stage stage) {
-		init(stage);
-	}
-
-	private void init(Stage stage) {
-		this.stage = stage;
+	public NBTTreeView() {
 		getStyleClass().add("nbt-tree-view");
+		getStylesheets().add(Objects.requireNonNull(NBTTreeView.class.getClassLoader().getResource("style/component/nbt-tree-view.css")).toExternalForm());
+		setCellFactory(tv -> new NBTTreeCell());
 		setEditable(true);
-		setCellFactory(tv -> new KeyValueTreeCell());
-		getStylesheets().add(NBTTreeView.class.getClassLoader().getResource("style/component/nbt-tree-view.css").toExternalForm());
+		setOnKeyPressed(this::onKeyPressed);
 	}
 
-	public void setOnSelectionChanged(BiConsumer<TreeItem<NamedTag>, TreeItem<NamedTag>> c) {
-		selectionChangedAction = c;
-		getSelectionModel().selectedItemProperty().addListener((i, o, n) -> c.accept(o, n));
+	public void load(CompoundTag root) {
+		super.setRoot(toTreeItem(0, null, root, null));
+		getRoot().setExpanded(true);
 	}
 
-	public void deleteItem(TreeItem<NamedTag> item) {
-		if (item.getValue().parent != null) {
-			// named tag is in compound tag, indexed tag is in list tag
-			if (item.getValue().parent instanceof CompoundTag comp) {
-				comp.remove(item.getValue().name);
-				item.getParent().getChildren().remove(item);
-			} else if (item.getValue().parent instanceof ListTag list) {
-				for (int index = 0; index < list.size(); index++) {
-					if (list.get(index) == item.getValue().tag) {
-						list.remove(index);
-						break;
-					}
-				}
-				item.getParent().getChildren().remove(item);
-			}
+	public void setArrayEditor(Function<Object, Optional<EditArrayResult>> arrayEditor) {
+		this.arrayEditor = arrayEditor;
+	}
+
+	public void setOnSelectionChanged(Consumer<Boolean> onSelectionChanged) {
+		getSelectionModel().selectedItemProperty().addListener((i, o, n) -> onSelectionChanged.accept(n == null));
+	}
+
+	public void deleteSelectedItem() {
+		NBTTreeItem selectedItem = (NBTTreeItem) getSelectionModel().getSelectedItem();
+		if (selectedItem.getParent() == null) {
+			setRoot(null);
 		} else {
-			setRoot((TreeItem<NamedTag>) null);
+			NBTTreeItem oldParent = (NBTTreeItem) selectedItem.getParent();
+			if (selectedItem.getValue().parent.getType() == COMPOUND) {
+				((CompoundTag) selectedItem.getValue().parent).remove(selectedItem.getValue().name);
+				oldParent.getChildren().remove(selectedItem);
+			} else if (selectedItem.getValue().parent.getType() == LIST) {
+				((ListTag) selectedItem.getValue().parent).remove(selectedItem.getValue().index);
+				oldParent.getChildren().remove(selectedItem.getValue().index);
+				oldParent.updateIndexes();
+			}
 		}
 	}
 
-	/**
-	 * adds a new tag after the target tag.
-	 * if the target is not a list or a compound and the parent is a list, it adds the tag on the same level after the target.
-	 * if the target is not a list or a compound and the parent is a compound, it adds the tag on the same level.
-	 * if the target is a list, it appends the tag as a child at the end of the list.
-	 * if the target is a compound, it adds the tag with a generic name.
-	 */
-	public boolean addItem(TreeItem<NamedTag> target, String name, Tag tag) {
-		if (getRoot() == null && tag instanceof CompoundTag) {
-			setRoot((CompoundTag) tag);
-			layout();
-			getSelectionModel().select(0);
-			return true;
+	public boolean addItemAtSelected(String name, Tag tag, boolean forceEdit) {
+		if (tag.getType() == END) {
+			return false;
 		}
 
-		TreeItem<NamedTag> newItem = null;
-		if (target.getValue().tag instanceof ListTag list) {
-			list.add(tag);
-			target.getChildren().add(newItem = toTreeItem(list.size() - 1, null, tag, list));
-			target.setExpanded(true);
-		} else if (target.getValue().tag instanceof CompoundTag comp) {
-			name = findNextPossibleName(comp, name);
-			comp.put(name, tag);
-			target.getChildren().add(newItem = toTreeItem(0, name, tag, comp));
-			target.setExpanded(true);
-		} else if (target.getValue().parent instanceof ListTag list) {
-			int index;
-			for (index = 0; index < list.size(); index++) {
-				if (list.get(index) == target.getValue().tag) {
-					break;
-				}
+		// if there is no root, we only allow adding a compound tag
+		if (getRoot() == null) {
+			if (tag.getType() == COMPOUND) {
+				load((CompoundTag) tag);
+				layout();
+				getSelectionModel().select(0);
+				return true;
 			}
-			list.add(index + 1, tag);
-			target.getParent().getChildren().add(index + 1, newItem = toTreeItem(index + 1, null, tag, list));
-		} else if (target.getValue().parent instanceof CompoundTag comp) {
-			name = findNextPossibleName(comp, name);
-			comp.put(name, tag);
-			target.getParent().getChildren().add(newItem = toTreeItem(0, name, tag, comp));
+			return false;
 		}
 
-		layout();
+		NBTTreeItem target = (NBTTreeItem) getSelectionModel().getSelectedItem();
+		NBTTreeItem newItem = null;
+		// if this is a list, we add the tag at the last index
+		if (target.getValue().ref.getType() == LIST) {
+			ListTag list = (ListTag) target.getValue().ref;
+			if (list.getElementType() == null || list.getElementType() == tag.getType()) {
+				list.addLast(tag);
+				target.setExpanded(true);
+				target.getChildren().addLast(newItem = toTreeItem(list.size() - 1, null, tag, list));
+			}
+		} else if (target.getValue().ref.getType() == COMPOUND) {
+			newItem = toTreeItem(0, null, tag, target.getValue().ref);
+			newItem.getValue().nextPossibleName((CompoundTag) target.getValue().ref, name);
+			((CompoundTag) target.getValue().ref).put(newItem.getValue().name, tag);
+			target.setExpanded(true);
+			target.getChildren().add(newItem);
+
+			// if the parent is a list, we add the tag after the selected tag
+		} else if (target.getValue().parent.getType() == LIST) {
+			ListTag list = (ListTag) target.getValue().parent;
+			if (list.getElementType() == null || list.getElementType() == tag.getType()) {
+				int index = target.getValue().index + 1;
+				list.add(index, tag);
+				target.getParent().getChildren().add(index, newItem = toTreeItem(index, null, tag, list));
+				((NBTTreeItem) target.getParent()).updateIndexes();
+			}
+		} else if (target.getValue().parent.getType() == COMPOUND) {
+			newItem = toTreeItem(0, null, tag, target.getValue().parent);
+			newItem.getValue().nextPossibleName((CompoundTag) target.getValue().parent, name);
+			((CompoundTag) target.getValue().parent).put(newItem.getValue().name, tag);
+			target.getParent().getChildren().add(newItem);
+		}
+
+		if (newItem == null) {
+			return false;
+		}
+
+		requestFocus();
+		layout(); // refresh layout so we can select and scroll to the new item
 		getSelectionModel().select(newItem);
-
-		// we don't want to edit this item when the parent is a list tag and it is a list or comp
-		if (target.getValue().tag.getType() != LIST && target.getValue().parent != null && target.getValue().parent.getType() != LIST || tag.getType() != LIST && tag.getType() != COMPOUND) {
-			edit(newItem);
+		// only scroll if the item is not visible on screen
+		if (!((NBTTreeItem) getSelectionModel().getSelectedItem()).isVisibleOnScreen()) {
+			scrollTo(getSelectionModel().getSelectedIndex());
 		}
+		layout(); // refresh layout again because of a bug in javafx where switching to edit mode might sometimes not work (?)
 
-		if (selectionChangedAction != null) {
-			selectionChangedAction.accept(getSelectionModel().getSelectedItem(), getSelectionModel().getSelectedItem());
-		}
+		if (    // adding an item to a selected list: only start edit on non-containers
+				target.getValue().ref.getType() == LIST && !newItem.getValue().isContainerType()
+						// adding an item to a selected compound: start edit in all cases
+						|| target.getValue().ref.getType() == COMPOUND
+						// adding an item to a parent compound: start edit in all cases
+						|| !target.getValue().isContainerType() && target.getValue().parent != null && (target.getValue().parent.getType() == COMPOUND
+						// adding an item to a parent list: only start edit on non-containers
+						|| target.getValue().parent.getType() == LIST && !newItem.getValue().isContainerType())) {
 
-		return false;
-	}
-
-	private static String findNextPossibleName(CompoundTag comp, String name) {
-		// if name already exists as a key, add a number to it
-		if (comp.containsKey(name)) {
-			int num = 1;
-			String numName;
-			while (comp.containsKey(numName = name + num)){
-				num++;
+			// only edit if we force it or if the name changed
+			if (forceEdit || newItem.getValue().name != null && !name.equals(newItem.getValue().name)) {
+				edit(newItem);
 			}
-			return numName;
 		}
-		return name;
+		return true;
 	}
 
-	public Tag.Type[] getPossibleChildTagTypes(TreeItem<NamedTag> target) {
+	public Tag.Type[] getPossibleChildTagTypesFromSelected() {
+		NBTTreeItem target = (NBTTreeItem) getSelectionModel().getSelectedItem();
 		if (target == null) {
 			if (getRoot() == null) {
-				// when there is no root, we give the option to create a root compound tag
 				return new Tag.Type[]{COMPOUND};
 			}
-			return null;
+			return new Tag.Type[0];
 		}
-		if (target.getValue().tag instanceof ListTag) {
-			// when this is a list tag, we have limited possibilities
-			if (((ListTag) target.getValue().tag).getElementType() != null) {
-				return new Tag.Type[]{((ListTag) target.getValue().tag).getElementType()};
+
+		// if this is a non-empty list tag, we return its element type
+		if (target.getValue().ref.getType() == LIST) {
+			Tag.Type elementType = ((ListTag) target.getValue().ref).getElementType();
+			if (elementType != null) {
+				return new Tag.Type[]{elementType};
 			}
 		}
-		// if the tag is a value tag, we lookup the parent
-		if (!(target.getValue().tag instanceof ListTag) && !(target.getValue().tag instanceof CompoundTag)) {
-			if (target.getParent().getValue().tag instanceof ListTag) {
-				// when parent is a list tag, we have limited possibilities
-				if (((ListTag) target.getParent().getValue().tag).getElementType() != null) {
-					return new Tag.Type[]{((ListTag) target.getParent().getValue().tag).getElementType()};
-				}
+
+		// if this is a primitive tag, but the parent is a list we return its element type
+		if (!target.getValue().isContainerType() && target.getValue().parent.getType() == LIST) {
+			Tag.Type elementType = ((ListTag) target.getValue().parent).getElementType();
+			if (elementType != null) {
+				return new Tag.Type[]{elementType};
 			}
 		}
+
+		// otherwise we return all possibilities
 		return new Tag.Type[]{BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BYTE_ARRAY, STRING, LIST, COMPOUND, INT_ARRAY, LONG_ARRAY};
 	}
 
-	private static String tagToString(NamedTag tag) {
-		return switch (tag.tag.getType()) {
-			case BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, STRING -> (tag.name == null ? "" : tag.name + ": ") + tagValueToString(tag.tag);
-			case LIST, BYTE_ARRAY, INT_ARRAY, LONG_ARRAY -> (tag.name == null ? "(" : tag.name + " (") + ((CollectionTag<?>) tag.tag).size() + ")";
-			case COMPOUND -> (tag.name == null ? "(" : tag.name + " (") + ((CompoundTag) tag.tag).size() + ")";
-			default -> null;
-		};
-	}
-
-	private static String tagValueToString(Tag tag) {
-		return switch (tag.getType()) {
-			case BYTE, SHORT, INT, LONG, FLOAT, DOUBLE -> ((NumberTag) tag).asNumber().toString();
-			case STRING -> ((StringTag) tag).getValue();
-			default -> null;
-		};
-	}
-
-	private void updateValue(Tag parent, NamedTag tag, String value) {
-		Consumer<Tag> setter = newTag -> {
-			switch (parent.getType()) {
-				case LIST -> ((ListTag) parent).set(tag.index, newTag);
-				case COMPOUND -> ((CompoundTag) parent).put(tag.name, newTag);
+	private NBTTreeItem toTreeItem(int index, String name, Tag ref, Tag parent) {
+		NBTTreeItem item;
+		switch (ref.getType()) {
+		case END:
+			throw new IllegalArgumentException("NBTTreeItem does not support END tag");
+		case LIST:
+			item = new NBTTreeItem(new NamedTag(index, name, ref, parent));
+			ListTag list = (ListTag) ref;
+			for (int i = 0; i < list.size(); i++) {
+				item.getChildren().add(toTreeItem(i, null, list.get(i), ref));
 			}
-			tag.tag = newTag;
-		};
-
-		switch (tag.tag.getType()) {
-			case BYTE -> setter.accept(ByteTag.valueOf(Byte.parseByte(value)));
-			case SHORT -> setter.accept(ShortTag.valueOf(Short.parseShort(value)));
-			case INT -> setter.accept(IntTag.valueOf(Integer.parseInt(value)));
-			case LONG -> setter.accept(LongTag.valueOf(Long.parseLong(value)));
-			case FLOAT -> setter.accept(FloatTag.valueOf(Float.parseFloat(value)));
-			case DOUBLE -> setter.accept(DoubleTag.valueOf(Double.parseDouble(value)));
-			case STRING -> setter.accept(StringTag.valueOf(value));
+			return item;
+		case COMPOUND:
+			item = new NBTTreeItem(new NamedTag(index, name, ref, parent));
+			for (Map.Entry<String, Tag> child : (CompoundTag) ref) {
+				item.getChildren().add(toTreeItem(0, child.getKey(), child.getValue(), ref));
+			}
+			return item;
+		default:
+			return new NBTTreeItem(new NamedTag(index, name, ref, parent));
 		}
 	}
 
-	private static void initIcons() {
-		icons.put(BYTE, FileHelper.getIconFromResources("img/nbt/byte"));
-		icons.put(SHORT, FileHelper.getIconFromResources("img/nbt/short"));
-		icons.put(INT, FileHelper.getIconFromResources("img/nbt/int"));
-		icons.put(LONG, FileHelper.getIconFromResources("img/nbt/long"));
-		icons.put(FLOAT, FileHelper.getIconFromResources("img/nbt/float"));
-		icons.put(DOUBLE, FileHelper.getIconFromResources("img/nbt/double"));
-		icons.put(STRING, FileHelper.getIconFromResources("img/nbt/string"));
-		icons.put(LIST, FileHelper.getIconFromResources("img/nbt/list"));
-		icons.put(COMPOUND, FileHelper.getIconFromResources("img/nbt/compound"));
-		icons.put(BYTE_ARRAY, FileHelper.getIconFromResources("img/nbt/byte_array"));
-		icons.put(INT_ARRAY, FileHelper.getIconFromResources("img/nbt/int_array"));
-		icons.put(LONG_ARRAY, FileHelper.getIconFromResources("img/nbt/long_array"));
+	private void onKeyPressed(KeyEvent e) {
+		switch (e.getCode()) {
+		case C:
+			if (e.isShortcutDown()) {
+				copySelectedItem();
+			}
+			break;
+		case V:
+			if (!e.isShortcutDown()) {
+				break;
+			}
+		case INSERT:
+			if (copyItem != null) {
+				addItemAtSelected(copyName == null ? "Unknown" : copyName, copyItem, false);
+			}
+			break;
+		case X:
+			if (e.isShortcutDown()) {
+				copySelectedItem();
+			}
+		case DELETE:
+			deleteSelectedItem();
+			break;
+		}
 	}
 
-	public void setRoot(CompoundTag root) {
-		super.setRoot(toTreeItem(0, null, root, null));
-	}
-
-	private static NBTTreeItem toTreeItem(int index, String name, Tag tag, Tag parent) {
-		switch (tag.getType()) {
-			case END:
-				return null;
-			case LIST:
-				NBTTreeItem item = new NBTTreeItem(new NamedTag(index, name, tag, parent));
-				ListTag list = (ListTag) tag;
-				for (int i = 0; i < list.size(); i++) {
-					item.getChildren().add(toTreeItem(i, null, list.get(i), tag));
-				}
-				return item;
-			case COMPOUND:
-				item = new NBTTreeItem(new NamedTag(index, name, tag, parent));
-				for (Map.Entry<String, Tag> child : (CompoundTag) tag) {
-					item.getChildren().add(toTreeItem(0, child.getKey(), child.getValue(), tag));
-				}
-				return item;
-			default:
-				return new NBTTreeItem(new NamedTag(index, name, tag, parent));
+	private void copySelectedItem() {
+		NBTTreeItem item = (NBTTreeItem) getSelectionModel().getSelectedItem();
+		if (item != null) {
+			copyItem = item.getValue().ref.copy();
+			copyName = item.getValue().name;
 		}
 	}
 
 	public static class NamedTag implements Serializable {
-		int index;
-		String name;
-		Tag tag;
-		Tag parent;
 
-		public NamedTag(int index, String name, Tag tag, Tag parent) {
+		private int index;
+		private String name;
+		private Tag ref;
+		private Tag parent;
+
+		public NamedTag(int index, String name, Tag ref, Tag parent) {
 			this.index = index;
 			this.name = name;
-			this.tag = tag;
+			this.ref = ref;
 			this.parent = parent;
+		}
+
+		public Tag getRef() {
+			return ref;
+		}
+
+		public boolean updateValue(String raw) {
+			try {
+				Consumer<Tag> c = t -> {
+					switch (parent.getType()) {
+					case COMPOUND -> ((CompoundTag) parent).put(name, t);
+					case LIST -> ((ListTag) parent).set(index, t);
+					}
+					ref = t;
+				};
+				switch (ref.getType()) {
+				case BYTE -> c.accept(ByteTag.valueOf(Byte.parseByte(raw)));
+				case SHORT -> c.accept(ShortTag.valueOf(Short.parseShort(raw)));
+				case INT -> c.accept(IntTag.valueOf(Integer.parseInt(raw)));
+				case LONG -> c.accept(LongTag.valueOf(Long.parseLong(raw)));
+				case FLOAT -> c.accept(FloatTag.valueOf(Float.parseFloat(raw)));
+				case DOUBLE -> c.accept(DoubleTag.valueOf(Double.parseDouble(raw)));
+				case STRING -> c.accept(StringTag.valueOf(raw));
+				}
+			} catch (Exception e) {
+				return false;
+			}
+			return true;
+		}
+
+		public boolean isRoot() {
+			return parent == null;
+		}
+
+		public boolean isArrayType() {
+			return ref.getType() == BYTE_ARRAY || ref.getType() == INT_ARRAY || ref.getType() == LONG_ARRAY;
+		}
+
+		public boolean isContainerType() {
+			return ref.getType() == COMPOUND || ref.getType() == LIST;
+		}
+
+		public boolean isEmptyContainerType() {
+			return ref.getType() == COMPOUND && ((CompoundTag) ref).isEmpty() || ref.getType() == LIST && ((ListTag) ref).isEmpty();
+		}
+
+		public boolean isNonEmptyContainerType() {
+			return ref.getType() == COMPOUND && !((CompoundTag) ref).isEmpty() || ref.getType() == LIST && !((ListTag) ref).isEmpty();
+		}
+
+		public boolean isNumericType() {
+			return ref.getType().isNumber;
+		}
+
+		public String getLabelString() {
+			return switch (ref.getType()) {
+				case BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, STRING ->
+						(name == null ? "" : name + ": ") + valueToString();
+				case LIST, BYTE_ARRAY, INT_ARRAY, LONG_ARRAY ->
+						(name == null ? "(" : name + " (") + ((CollectionTag<?>) ref).size() + ")";
+				case COMPOUND ->
+						(name == null ? "(" : name + " (") + ((CompoundTag) ref).size() + ")";
+				default -> null;
+			};
+		}
+
+		public String valueToString() {
+			return switch (ref.getType()) {
+				case BYTE, SHORT, INT, LONG, FLOAT, DOUBLE -> ((NumberTag) ref).asNumber().toString();
+				case STRING -> ((StringTag) ref).getValue();
+				default -> null;
+			};
+		}
+
+		public boolean nextPossibleName(CompoundTag target, String name) {
+			if (target.containsKey(name)) {
+				int num = 1;
+				String numName;
+				while (target.containsKey(numName = name + num)) {
+					num++;
+				}
+				this.name = numName;
+				return true;
+			} else {
+				this.name = name;
+				return false;
+			}
+		}
+
+		public Object getArray() {
+			return switch (ref.getType()) {
+				case BYTE_ARRAY -> ((ByteArrayTag) ref).getValue();
+				case INT_ARRAY -> ((IntArrayTag) ref).getValue();
+				case LONG_ARRAY -> ((LongArrayTag) ref).getValue();
+				default -> throw new IllegalStateException("not an array tag: " + ref.getType());
+			};
+		}
+
+		public void setArray(Object array) {
+			switch (ref.getType()) {
+			case BYTE_ARRAY -> ((ByteArrayTag) ref).setValue((byte[]) array);
+			case INT_ARRAY -> ((IntArrayTag) ref).setValue((int[]) array);
+			case LONG_ARRAY -> ((LongArrayTag) ref).setValue((long[]) array);
+			default -> throw new IllegalArgumentException("incompatible array types: " + ref.getType() + " and " + array.getClass());
+			}
 		}
 
 		@Override
 		public String toString() {
-			return "i=" + index + ", n=" + name + ", t=" + tag.getType() + ", p=" + (parent == null ? "-" : parent.getType()) + ", v=" + NBTUtil.toSNBT(tag);
+			return String.format("index=%d, name=%s, ref=%s, parent=%s",
+					index, name, ref.getType(), parent == null ? null : parent.getType());
 		}
 	}
 
-	public static class NBTTreeItem extends TreeItem<NamedTag> {
+	class NBTTreeItem extends TreeItem<NamedTag> {
+
+		private static final DataFormat clipboardDataformat = new DataFormat("nbt-tree-item");
 
 		public NBTTreeItem(NamedTag tag) {
 			super(tag);
 		}
 
-		// removes the item from its previous parent and adds it to this one
-		void moveHere(int index, NBTTreeItem item, TreeView<NamedTag> treeView) {
-			// do not move if this is a list tag and the types do not match
-			if (getValue().tag instanceof ListTag list) {
-				if (list.getElementType() != item.getValue().tag.getType()) {
-					return;
-				}
+		// override isLeaf to make the disclosure node visible on every item
+		@Override
+		public boolean isLeaf() {
+			return false;
+		}
+
+		public boolean isLast() {
+			if (getParent() == null) {
+				return true;
 			}
+			ObservableList<TreeItem<NamedTag>> items = getParent().getChildren();
+			return this == getParent().getChildren().get(items.size() - 1);
+		}
 
-			NBTTreeItem oldParent = (NBTTreeItem) item.getParent();
+		// get the amount of expanded items and all its expanded child items recursively
+		public int countExpandedItems() {
+			if (!isExpanded()) {
+				return 1;
+			}
+			int count = 1;
+			for (TreeItem<NamedTag> child : getChildren()) {
+				count += ((NBTTreeItem) child).countExpandedItems();
+			}
+			return count;
+		}
 
-			// do not move if this is item's parent and this are a compound tag identical
-			if (oldParent == this && oldParent.getValue().tag instanceof CompoundTag) {
+		// counts all items and the child items of expanded items above this item until reaching parent
+		public int getIndexInExpandedHierarchy(NBTTreeItem parent) {
+			int count = 0;
+			TreeItem<NamedTag> current = this;
+			while (current != null && current != parent) {
+				for (int i = current.getParent().getChildren().indexOf(current); i >= 0; i--) {
+					TreeItem<NamedTag> sibling = current.getParent().getChildren().get(i);
+					count += ((NBTTreeItem) sibling).countExpandedItems();
+				}
+				current = current.getParent();
+			}
+			return count;
+		}
+
+		public void updateIndexes() {
+			if (getValue().ref.getType() != LIST) {
 				return;
 			}
+			int i = 0;
+			for (TreeItem<NamedTag> child : getChildren()) {
+				child.getValue().index = i++;
+			}
+		}
 
-			boolean startEdit = false;
+		public void moveHere(NBTTreeItem source, int dropTargetIndex) {
+			NBTTreeItem oldParent = (NBTTreeItem) source.getParent();
+			int oldIndex = source.getParent().getChildren().indexOf(source);
+			source.getParent().getChildren().remove(oldIndex);
+			String oldName = source.getValue().name;
+
+			// when removing an item from a list, we need to update all indexes of its children
+			oldParent.updateIndexes();
+
+			// when moving an item down in the order of a list, we need to adjust the target index
+			if (oldParent == this && oldIndex < dropTargetIndex) {
+				dropTargetIndex--;
+			}
+
+			getChildren().add(dropTargetIndex >= 0 ? dropTargetIndex : getChildren().size(), source);
 
 			// set name in NamedTag
-			if (getValue().tag instanceof ListTag) {
-				item.getValue().name = null;
-			} else if (getValue().tag instanceof CompoundTag comp) {
-				if (item.getValue().parent.getType() != COMPOUND) {
-					item.getValue().name = findNextPossibleName(comp, "Unknown");
-					startEdit = true;
-				}
+			boolean startEdit = false;
+			if (getValue().ref.getType() == LIST) {
+				source.getValue().name = null;
+			} else if (getValue().ref.getType() == COMPOUND && source.getValue().name == null) {
+				source.getValue().nextPossibleName((CompoundTag) getValue().ref, "Unknown");
+				startEdit = true;
+			} else {
+				startEdit = source.getValue().nextPossibleName((CompoundTag) getValue().ref, source.getValue().name);
 			}
 
-			// remove item from its parent, but remember its index
-			int oldIndex;
-			for (oldIndex = 0; oldIndex < item.getParent().getChildren().size(); oldIndex++) {
-				TreeItem<NamedTag> sourceChild = item.getParent().getChildren().get(oldIndex);
-				if (sourceChild == item) {
-					sourceChild.getParent().getChildren().remove(oldIndex);
-					break;
-				}
-			}
-
-			// if its parent is this item, we need to adjust the index if it is > i
-			if (oldParent == this && oldIndex < index) {
-				index--;
-			}
-
-			// add source item to this item
-			getChildren().add(index, item);
-
-			// now we adjust the backing nbt data
-
-			// remove Tag from source nbt data
-			if (item.getValue().parent instanceof ListTag sourceList) {
-				for (int i = 0; i < sourceList.size(); i++) {
-					if (sourceList.get(i) == item.getValue().tag) {
-						sourceList.remove(i);
-						break;
-					}
-				}
-			} else if (item.getValue().parent instanceof CompoundTag comp) {
-				String toRemove = null;
-				for (Map.Entry<String, Tag> sourceChild : comp) {
-					if (sourceChild.getValue() == item.getValue().tag) {
-						toRemove = sourceChild.getKey();
-						break;
-					}
-				}
-				comp.remove(toRemove);
+			// remove tag in source nbt data
+			if (source.getValue().parent.getType() == LIST) {
+				((ListTag) source.getValue().parent).remove(source.getValue().ref);
+			} else if (source.getValue().parent.getType() == COMPOUND) {
+				((CompoundTag) source.getValue().parent).remove(oldName);
 			}
 
 			// set new parent in NamedTag
-			item.getValue().parent = getValue().tag;
+			source.getValue().parent = getValue().ref;
 
 			// add tag to target nbt
-			if (getValue().tag instanceof ListTag list) {
-				list.add(index, item.getValue().tag);
-			} else if (getValue().tag instanceof CompoundTag comp) {
-				comp.put(item.getValue().name, item.getValue().tag);
+			if (getValue().ref.getType() == LIST) {
+				((ListTag) getValue().ref).add(dropTargetIndex, source.getValue().ref);
+				updateIndexes();
+			} else if (getValue().ref.getType() == COMPOUND) {
+				((CompoundTag) getValue().ref).put(source.getValue().name, source.getValue().ref);
+				source.getValue().index = 0;
 			}
 
+			// if we had to add or change the name, we start edit mode
 			if (startEdit) {
-				treeView.layout();
-				treeView.scrollTo(treeView.getRow(item));
-				treeView.getSelectionModel().select(item);
-				Platform.runLater(() -> treeView.edit(item));
+				NBTTreeView.this.layout();
+				NBTTreeView.this.scrollTo(NBTTreeView.this.getRow(source));
+				NBTTreeView.this.getSelectionModel().select(source);
+				Platform.runLater(() -> NBTTreeView.this.edit(source));
 			}
 		}
-	}
 
-	public KeyValueTreeCell getTreeCell(TreeItem<NamedTag> treeItem) {
-		return recursiveFindCellByItem(treeItem, this);
-	}
-
-	private KeyValueTreeCell recursiveFindCellByItem(TreeItem<?> treeItem, Node node) {
-		if (node.getStyleClass().contains("key-value-tree-cell")
-				&& KeyValueTreeCell.class.isAssignableFrom(node.getClass())
-				&& ((KeyValueTreeCell) node).getTreeItem() == treeItem) {
-			return (KeyValueTreeCell) node;
-		}
-
-		if (!Parent.class.isAssignableFrom(node.getClass())) {
-			return null;
-		}
-
-		List<Node> nodes = ((Parent) node).getChildrenUnmodifiable();
-		if (nodes == null) {
-			return null;
-		}
-
-		for (Node n : nodes) {
-			KeyValueTreeCell cell = recursiveFindCellByItem(treeItem, n);
-			if (cell != null) {
-				return cell;
+		public boolean isVisibleOnScreen() {
+			Set<Node> treeCells = NBTTreeView.this.lookupAll(".tree-cell");
+			for (Node treeCell : treeCells) {
+				if (((NBTTreeCell) treeCell).getTreeItem() == this) {
+					return true;
+				}
 			}
+			return false;
 		}
-		return null;
 	}
 
-	private boolean matchListType(TreeItem<NamedTag> list, TreeItem<NamedTag> item) {
-		ListTag listTag = (ListTag) list.getValue().tag;
-		return listTag.getElementType() == null || listTag.getElementType() == item.getValue().tag.getType();
-	}
+	public class NBTTreeCell extends TreeCell<NamedTag> {
 
-	class KeyValueTreeCell extends TreeCell<NamedTag> {
 		private HBox box;
-		private TextField key;
+		private TextField name;
 		private TextField value;
-		private Button edit;
+		private Button edit; // for array types, show edit button instead of value text field that opens array editor
 
-		KeyValueTreeCell() {
-			getStyleClass().add("key-value-tree-cell");
+		private static final boolean noDragviewOffset = System.getProperty("os.name").toLowerCase().contains("win");
+		private static final String nameFieldCssClass = "name-text-field";
+		private static final String valueFieldCssClass = "value-text-field";
+		private static final String editButtonCssClass = "edit-button";
+		private static final String expandDisclosureNodeCssClass = "expand"; // the lines making up the + / - sign of the disclosure node
+		private static final String expandSquareDisclosureNodeCssClass = "expand-square"; // the square around the + / - sign of the disclosure node
+		private static final Image[] icons = new Image[13];
+		static {
+			ClassLoader cl = NBTTreeCell.class.getClassLoader();
+			Function<String, Image> f = s -> new Image(Objects.requireNonNull(cl.getResourceAsStream(s)));
+			icons[BYTE.id] = f.apply("img/nbt/byte.png");
+			icons[SHORT.id] = f.apply("img/nbt/short.png");
+			icons[INT.id] = f.apply("img/nbt/int.png");
+			icons[LONG.id] = f.apply("img/nbt/long.png");
+			icons[FLOAT.id] = f.apply("img/nbt/float.png");
+			icons[DOUBLE.id] = f.apply("img/nbt/double.png");
+			icons[STRING.id] = f.apply("img/nbt/string.png");
+			icons[LIST.id] = f.apply("img/nbt/list.png");
+			icons[COMPOUND.id] = f.apply("img/nbt/compound.png");
+			icons[BYTE_ARRAY.id] = f.apply("img/nbt/byte_array.png");
+			icons[INT_ARRAY.id] = f.apply("img/nbt/int_array.png");
+			icons[LONG_ARRAY.id] = f.apply("img/nbt/long_array.png");
+		}
+
+		public NBTTreeCell() {
+			getStyleClass().add("nbt-tree-cell");
 			setOnDragDetected(this::onDragDetected);
 			setOnDragOver(this::onDragOver);
+			setOnDragEntered(this::onDragOver);
 			setOnDragDropped(this::onDragDropped);
+			setOnDragExited(this::onDragExited);
 			setOnDragDone(this::onDragDone);
-			setOnDragExited(e -> setOnDragExited());
 		}
 
-		private void onDragDetected(MouseEvent e) {
-			if (getTreeItem() == getTreeView().getRoot()) {
+		public static Image getIcon(Tag.Type type) {
+			return icons[type.id];
+		}
+
+		@Override
+		public void startEdit() {
+			if (!isEditable() || !getTreeView().isEditable()) {
 				return;
 			}
-			Dragboard db = startDragAndDrop(TransferMode.MOVE);
-			WritableImage wi = new WritableImage((int) getWidth(), (int) getHeight());
-			Image dbImg = snapshot(null, wi);
-			db.setDragView(dbImg);
-			if (USE_DRAGVIEW_OFFSET) {
-				db.setDragViewOffsetX(getWidth() / 2);
-				db.setDragViewOffsetY(getHeight() / 2);
+			super.startEdit();
+			if (!isEditing()) {
+				return;
 			}
-			ClipboardContent cbc = new ClipboardContent();
-			cbc.put(CLIPBOARD_DATAFORMAT, true);
-			db.setContent(cbc);
-			dragboardContent = getTreeItem();
-			e.consume();
-		}
 
-		private void onDragOver(DragEvent e) {
-			if (e.getDragboard().hasContent(CLIPBOARD_DATAFORMAT)) {
-				e.acceptTransferModes(TransferMode.MOVE);
+			if (box == null) {
+				box = new HBox();
+				box.setAlignment(Pos.CENTER_LEFT);
+			}
 
-				clearMarkings();
+			TextField focus = null;
 
-				// if there is no tree item or if we try to insert the item as a child of itself, stop here
-				if (getTreeItem() == null || isInHierarchy(dragboardContent)) {
-					e.consume();
+			if (getItem().parent.getType() == COMPOUND) {
+				if (getItem().isArrayType()) {
+					// array inside compound: [name, edit]
+					box.getChildren().setAll(getGraphic(), focus = nameField(), editButton());
+				} else if (getItem().isContainerType()) {
+					// container inside compound: [name]
+					box.getChildren().setAll(getGraphic(), focus = nameField());
+				} else {
+					// everything else inside compound: [name, value]
+					box.getChildren().setAll(getGraphic(), focus = nameField(), valueField());
+				}
+			} else if (getItem().parent.getType() == LIST) {
+				if (getItem().isArrayType()) {
+					// array inside list: [edit]
+					box.getChildren().setAll(getGraphic(), editButton());
+				} else if (!getItem().isContainerType()) {
+					// everything that's not a container: [value]
+					box.getChildren().setAll(getGraphic(), focus = valueField());
+				} else {
+					// container inside list: nothing to edit
 					return;
 				}
-
-				// if target is a list or a comp
-				NBTTreeItem item = (NBTTreeItem) getTreeItem();
-				// move into list
-				if (item.getValue().tag instanceof ListTag) {
-					// insert before
-					if (e.getY() < getHeight() / 4) {
-						// if parent is comp, mark comp or top of tree view
-						if (item.getParent().getValue().tag instanceof CompoundTag) {
-							// if parent is equal to the dragged item's parent
-							if (item.getParent() != dragboardContent.getParent()) {
-								KeyValueTreeCell cell = getTreeCell(item.getParent());
-								if (cell == null) {
-									// mark top of tree view
-									dropTarget = item.getParent();
-									setInsertParentCss(true);
-								} else {
-									// mark comp item
-									cell.setInsertCssClass("drop-target", "into");
-									dropTarget = item.getParent();
-									setDropTargetCell(cell);
-								}
-							}
-						} else if (matchListType(item.getParent(), dragboardContent)) {
-							// if parent is list, get index and mark top of this cell
-							setInsertCssClass("drop-target", "before");
-							dropIndex = findDropIndex(item.getParent().getValue().tag, dragboardContent.getValue().tag);
-							dropTarget = item.getParent();
-						}
-					} else if (e.getY() < getHeight() - getHeight() / 4) {
-						// check if we can insert this tag into this list
-						if (matchListType(item, dragboardContent)) {
-							dropTarget = item;
-							setInsertCssClass("drop-target", "into");
-							dropIndex = ((ListTag) item.getValue().tag).size();
-						}
-					} else {
-						// insert after or at beginning of list
-						// insert at index 0 of list
-						if (item.isExpanded()) {
-							if (matchListType(item, dragboardContent)) {
-								// insert into this list
-								dropTarget = item;
-								dropIndex = 0;
-								setInsertCssClass("drop-target", "after");
-							}
-						} else {
-							// insert after this list in parent
-							// if parent is comp, mark comp or top of tree view
-							if (item.getParent().getValue().tag instanceof CompoundTag) {
-								// if parent is equal to the dragged item's parent
-								if (item.getParent() != dragboardContent.getParent()) {
-									KeyValueTreeCell cell = getTreeCell(item.getParent());
-									if (cell == null) {
-										// mark top of tree view
-										dropTarget = item.getParent();
-										setInsertParentCss(true);
-									} else {
-										// mark comp item
-										cell.setInsertCssClass("drop-target", "into");
-										dropTarget = item.getParent();
-										setDropTargetCell(cell);
-									}
-								}
-							} else if (matchListType(item.getParent(), dragboardContent)) {
-								// if parent is list, get index and mark bottom of this cell
-								setInsertCssClass("drop-target", "after");
-								dropIndex = findDropIndex(item.getParent().getValue().tag, dragboardContent.getValue().tag) + 1;
-								dropTarget = item.getParent();
-							}
-						}
-					}
-				} else if (item.getValue().tag instanceof CompoundTag) {
-					// if this tag is a comp
-					// if target is the root tag
-					if (item.getParent() == null) {
-						if (item != dragboardContent.getParent()) {
-							setInsertCssClass("drop-target", "into");
-							setDropTargetCell(this);
-							dropTarget = item;
-						}
-					} else {
-						// insert before
-						if (e.getY() < getHeight() / 4) {
-							// if parent is comp, mark comp or top of tree view
-							if (item.getParent().getValue().tag instanceof CompoundTag) {
-								// if parent is equal to the dragged item's parent
-								if (item.getParent() != dragboardContent.getParent()) {
-									KeyValueTreeCell cell = getTreeCell(item.getParent());
-									if (cell == null) {
-										// mark top of tree view
-										dropTarget = item.getParent();
-										setInsertParentCss(true);
-									} else {
-										// mark comp item
-										cell.setInsertCssClass("drop-target", "into");
-										setDropTargetCell(cell);
-										dropTarget = item.getParent();
-									}
-								}
-							} else if (matchListType(item.getParent(), dragboardContent)) {
-								// if parent is list, get index and mark top of this cell
-								setInsertCssClass("drop-target", "before");
-								dropIndex = findDropIndex(item.getParent().getValue().tag, dragboardContent.getValue().tag);
-								dropTarget = item.getParent();
-							}
-						} else if (e.getY() < getHeight() - getHeight() / 4) {
-							// insert into
-							// if parent is equal to the dragged item's parent
-							if (item != dragboardContent.getParent()) {
-								dropTarget = item;
-								setInsertCssClass("drop-target", "into");
-								setDropTargetCell(this);
-							}
-						} else {
-							// insert after
-							// if parent is equal to the dragged item's parent
-							if (item != dragboardContent.getParent()) {
-								// if parent is a comp
-								if (item.getParent().getValue().tag instanceof CompoundTag) {
-									// if parent is equal to the dragged item's parent
-									if (item.getParent() != dragboardContent.getParent()) {
-										KeyValueTreeCell cell = getTreeCell(item.getParent());
-										if (cell == null) {
-											// mark top of tree view
-											dropTarget = item.getParent();
-											setInsertParentCss(true);
-										} else {
-											// mark comp item
-											cell.setInsertCssClass("drop-target", "into");
-											dropTarget = item.getParent();
-											setDropTargetCell(cell);
-										}
-									}
-								} else if (matchListType(item.getParent(), dragboardContent)) {
-									// if parent is list, get index and mark bottom of this cell
-									setInsertCssClass("drop-target", "after");
-									dropIndex = findDropIndex(item.getParent().getValue().tag, dragboardContent.getValue().tag) + 1;
-									dropTarget = item.getParent();
-								}
-							}
-						}
-					}
-				} else {
-					// if target is neither a list nor a comp
-					// insert before
-					if (e.getY() < getHeight() / 2) {
-						// if parent is a list
-						if (item.getParent().getValue().tag instanceof CompoundTag) {
-							// if parent is equal to the dragged item's parent
-							if (item.getParent() != dragboardContent.getParent()) {
-								KeyValueTreeCell cell = getTreeCell(item.getParent());
-								if (cell == null) {
-									// mark top of tree view
-									dropTarget = item.getParent();
-									setInsertParentCss(true);
-								} else {
-									// mark comp item
-									cell.setInsertCssClass("drop-target", "into");
-									dropTarget = item.getParent();
-									setDropTargetCell(cell);
-								}
-							}
-						} else if (matchListType(item.getParent(), dragboardContent)){
-							// if parent is a list, get index and mark top of cell
-							setInsertCssClass("drop-target", "before");
-							dropIndex = findDropIndex(item.getParent().getValue().tag, dragboardContent.getValue().tag);
-							dropTarget = item.getParent();
-						}
-					} else {
-						// insert after
-						// if parent is a list
-						if (item.getParent().getValue().tag instanceof CompoundTag) {
-							// if parent is equal to the dragged item's parent
-							if (item.getParent() != dragboardContent.getParent()) {
-								KeyValueTreeCell cell = getTreeCell(item.getParent());
-								if (cell == null) {
-									// mark top of treeview
-									dropTarget = item.getParent();
-									setInsertParentCss(true);
-								} else {
-									// mark comp item
-									cell.setInsertCssClass("drop-target", "into");
-									dropTarget = item.getParent();
-									setDropTargetCell(cell);
-								}
-							}
-						} else if (matchListType(item.getParent(), dragboardContent)){
-							// if parent is a list, get index and mark bottom of cell
-							setInsertCssClass("drop-target", "after");
-							dropIndex = findDropIndex(item.getParent().getValue().tag, dragboardContent.getValue().tag) + 1;
-							dropTarget = item.getParent();
-						}
-					}
-				}
 			}
-			e.consume();
+
+			setGraphic(box);
+			setText(null);
+			if (focus != null) {
+				focus.requestFocus();
+				focus.selectAll();
+			}
 		}
 
-		private boolean isInHierarchy(TreeItem<NamedTag> source) {
+		// overriding cancelEdit to recreate the previous state of the cell allows us to cancel with ESC
+		@Override
+		public void cancelEdit() {
+			super.cancelEdit();
+			setText(getItem().getLabelString());
+			if (!box.getChildren().isEmpty()) {
+				setGraphic(box.getChildren().getFirst());
+			}
+		}
+
+		@Override
+		public void commitEdit(NamedTag tag) {
+			if (getItem().parent.getType() == COMPOUND && name != null && name.getText() != null) {
+				CompoundTag parent = (CompoundTag) tag.parent;
+				if (parent.containsKey(name.getText()) && !name.getText().equals(tag.name)) {
+					// don't commit if the new name already exists in this compound tag
+					return;
+				}
+				parent.remove(tag.name);
+				parent.put(name.getText(), tag.ref);
+				tag.name = name.getText();
+			}
+			if (value != null && value.getText() != null && !tag.updateValue(value.getText())) {
+				value.setText(tag.valueToString());
+			}
+			super.commitEdit(tag);
+		}
+
+		@Override
+		public void updateItem(NamedTag tag, boolean empty) {
+			super.updateItem(tag, empty);
+			setDisclosureNode(null);
+			if (empty) {
+				setText(null);
+				setGraphic(null);
+				return;
+			}
+			ImageView icon = new ImageView(icons[tag.ref.getType().id]);
+			setGraphic(icon);
+			setText(tag.getLabelString());
+
+			StackPane s = new StackPane();
+
+			Region r = new Region();
+			r.setPrefSize(11, 11);
+			setMaxSize(11, 11);
+
+			// add the box to every disclosure node for consistent paddings
+			s.getChildren().add(r);
+
+			if (tag.isNonEmptyContainerType()) {
+				// make box around + / - sign visible with whatever css is defined for .expand-square
+				r.getStyleClass().add(expandSquareDisclosureNodeCssClass);
+
+				s.getChildren().addAll(
+						horizontal(2, 5, 7, expandDisclosureNodeCssClass), // horizontal line of + or - sign
+						horizontal(11, 5, 3) // stubby line to right
+				);
+				if (!getTreeItem().isExpanded()) {
+					// vertical line of + sign
+					s.getChildren().add(vertical(5, 2, 7, expandDisclosureNodeCssClass));
+
+					// only show connecting bottom line if this node is not expanded
+					if (!((NBTTreeItem) getTreeItem()).isLast()) {
+						// connecting line to bottom
+						s.getChildren().add(vertical(5, 11, 10));
+					}
+				}
+				if (getTreeItem().getParent() != null) {
+					// connecting line to top
+					s.getChildren().add(vertical(5, -9, 10));
+				}
+			} else {
+				// connecting line to right
+				s.getChildren().add(horizontal(5, 5, 8));
+
+				if (((NBTTreeItem) getTreeItem()).isLast()) {
+					// connecting line to top
+					s.getChildren().add(vertical(5, -9, 15));
+				} else {
+					s.getChildren().addAll(
+							vertical(5, -9, 15), // vertical line connecting top to middle
+							vertical(5, 5, 16) // vertical line connecting middle to bottom
+					);
+				}
+			}
+
+			s.setAlignment(Pos.TOP_LEFT);
+			StackPane disclosureNode = new StackPane(s);
+			disclosureNode.getStyleClass().add("tree-disclosure-node");
+			setDisclosureNode(disclosureNode);
+			setEditable(!tag.isRoot());
+		}
+
+		private Line horizontal(double tX, double tY, double length, String... id) {
+			Line l = new Line(0, 0, length - 1, 0);
+			l.setTranslateX(tX);
+			l.setTranslateY(tY);
+			l.getStyleClass().addAll(id);
+			return l;
+		}
+
+		private Line vertical(double tX, double tY, double length, String... id) {
+			Line l = new Line(0, 0, 0, length - 1);
+			l.setTranslateX(tX);
+			l.setTranslateY(tY);
+			l.getStyleClass().addAll(id);
+			return l;
+		}
+
+		private TextField nameField() {
+			if (name == null) {
+				name = new TextField();
+				name.getStyleClass().add(nameFieldCssClass);
+				HBox.setHgrow(name, Priority.ALWAYS);
+				name.setOnKeyPressed(this::onKeyPressed);
+			}
+			name.setText(getItem().name);
+			return name;
+		}
+
+		private TextField valueField() {
+			if (value == null) {
+				value = new TextField();
+				value.getStyleClass().add(valueFieldCssClass);
+				HBox.setHgrow(value, Priority.ALWAYS);
+				value.setOnKeyPressed(this::onKeyPressed);
+			}
+			value.setText(getItem().valueToString());
+			return value;
+		}
+
+		private Button editButton() {
+			if (edit == null) {
+				edit = new Button("edit");
+				edit.getStyleClass().add(editButtonCssClass);
+			}
+			edit.setOnAction(e -> {
+				if (arrayEditor != null) {
+					Optional<EditArrayResult> result = arrayEditor.apply(getItem().getArray());
+					result.ifPresent(r -> getItem().setArray(r.data));
+				}
+			});
+			return edit;
+		}
+
+		// event handler to commit an edit when pressing ENTER
+		private void onKeyPressed(KeyEvent event) {
+			if (event.getCode() == KeyCode.ENTER && isEditing()) {
+				commitEdit(getItem());
+				updateItem(getItem(), false);
+				// prevent parent from handling this event, otherwise it immediately switches to edit mode again
+				event.consume();
+			}
+		}
+
+		private void onDragDetected(MouseEvent event) {
+			// can't drag the root node or if the item is null
+			if (getItem() == null || getItem().isRoot()) {
+				return;
+			}
+
+			Dragboard dragboard = startDragAndDrop(TransferMode.MOVE);
+			WritableImage writableImage = new WritableImage((int) getWidth(), (int) getHeight());
+			Image image = snapshot(null, writableImage);
+			dragboard.setDragView(image);
+			double dX = (noDragviewOffset ? 0 : -getWidth() * 0.5) + event.getX();
+			double dY = (noDragviewOffset ? 0 : -getHeight() * 0.5) + event.getY();
+			dragboard.setDragViewOffsetX(Math.max(0, Math.min(getWidth(), dX))); // clamp offset to be within the image
+			dragboard.setDragViewOffsetY(Math.max(0, Math.min(getHeight(), dY)));
+			ClipboardContent clipboardContent = new ClipboardContent();
+			clipboardContent.put(NBTTreeItem.clipboardDataformat, true);
+			dragboard.setContent(clipboardContent);
+			dragItem = (NBTTreeItem) getTreeItem(); // keep track of dragged item separately
+			event.consume();
+		}
+
+		private void onDragOver(DragEvent event) {
+			if (!event.getDragboard().hasContent(NBTTreeItem.clipboardDataformat)) {
+				event.consume();
+				return;
+			}
+			event.acceptTransferModes(TransferMode.MOVE);
+
+			// check if we need to scroll up or down
+			// calculate whether we're in an area at the top or at the bottom of the treeview using
+			// the coordinates of the mouse and the treeview on screen
+			double minScreenY = getTreeView().localToScreen(getTreeView().getBoundsInLocal()).getMinY();
+			boolean scrollUp = event.getScreenY() < minScreenY + 30;
+			boolean scrollDown = event.getScreenY() > minScreenY + getTreeView().getHeight() - 30;
+			if (scrollUp || scrollDown) {
+				if (verticalScrollBar == null) {
+					verticalScrollBar = (ScrollBar) getTreeView().lookup(".scroll-bar:vertical");
+				}
+				double offset = scrollUp ? -0.02 : 0.02;
+				// use Math.min so we don't overshoot, or it will flicker up and down rapidly when scrolling past the bottom
+				verticalScrollBar.setValue(Math.min(verticalScrollBar.getValue() + offset, verticalScrollBar.getMax()));
+			}
+
+			clearDropTarget();
+
+			// ignore if there's no tree item or if we try to drop an item into itself or one of its children
+			if (getTreeItem() == null || isInHierarchy(dragItem) || getItem().ref == dragItem.getValue().parent) {
+				event.consume();
+				return;
+			}
+
+			// ignore if this item is inside a compound tag and we try to drop it into itself
+			if (!getItem().isRoot() && !getItem().isContainerType()
+					&& getItem().parent.getType() == COMPOUND && getItem().parent == dragItem.getValue().parent) {
+				event.consume();
+				return;
+			}
+
+			// ignore if we try to drop into a list tag that has the wrong type, except if it's an empty list
+			if (getItem().ref.getType() == LIST && ((ListTag) getItem().ref).getElementType() != null
+					&& ((ListTag) getItem().ref).getElementType() != dragItem.getValue().ref.getType()) {
+				event.consume();
+				return;
+			}
+
+			// when the parent item of the hovered item is a list, we do special highlighting to insert at specific index
+			boolean flag = true;
+			if (!getItem().isRoot() && getItem().parent.getType() == LIST) {
+				flag = false;
+				if (((ListTag) getItem().parent).getElementType() != dragItem.getValue().ref.getType()) {
+					flag = true;
+				} else if (event.getY() > getHeight() * 0.75) {
+					dragHighlight((NBTTreeItem) getTreeItem(), 1);
+					dropTarget = (NBTTreeItem) getTreeItem().getParent();
+					dropTargetIndex = getItem().index + 1;
+				} else if (event.getY() < getHeight() * 0.25) {
+					dragHighlight((NBTTreeItem) getTreeItem(), -1);
+					dropTarget = (NBTTreeItem) getTreeItem().getParent();
+					dropTargetIndex = getItem().index;
+				} else {
+					flag = true;
+				}
+			}
+
+			// when hovering over a compound or list tag we highlight everything
+			if (flag && getItem().isContainerType()) {
+				dragHighlight((NBTTreeItem) getTreeItem(), 0);
+				dropTarget = (NBTTreeItem) getTreeItem();
+				if (getItem().ref.getType() == LIST) {
+					dropTargetIndex = ((ListTag) getItem().ref).size();
+				}
+
+				// when hovering over a primitive tag inside a compound tag we highlight the parent and its expanded children
+			} else if (getItem().parent.getType() == COMPOUND && !getItem().isContainerType()) {
+				dragHighlight((NBTTreeItem) getTreeItem().getParent(), 0);
+				dropTarget = (NBTTreeItem) getTreeItem().getParent();
+			}
+		}
+
+		private void onDragDropped(DragEvent event) {
+			Dragboard dragboard = event.getDragboard();
+			if (!dragboard.hasContent(NBTTreeItem.clipboardDataformat)) {
+				event.consume();
+				return;
+			}
+
+			// no valid target
+			if (dropTarget == null) {
+				event.consume();
+				return;
+			}
+
+			dropTarget.moveHere(dragItem, dropTargetIndex);
+			clearDropTarget();
+		}
+
+		private void onDragExited(DragEvent event) {
+			clearDropTarget();
+		}
+
+		private void onDragDone(DragEvent event) {
+			if (event.getDragboard().hasContent(NBTTreeItem.clipboardDataformat)) {
+				dragItem = null;
+				clearDropTarget();
+			}
+		}
+
+		private void clearDropTarget() {
+			if (dropHighlight != null) {
+				((Group) getParent()).getChildren().remove(dropHighlight);
+			}
+			dropTarget = null;
+			dropTargetIndex = -1;
+		}
+
+		private void dragHighlight(NBTTreeItem item, int offset) {
+			double yLoc = getLayoutY();
+			if (offset > 0) {
+				yLoc += getHeight() * 0.5;
+			} else if (offset < 0) {
+				yLoc -= getHeight() * 0.5;
+			} else {
+				yLoc -= ((NBTTreeItem) getTreeItem()).getIndexInExpandedHierarchy(item) * getHeight();
+			}
+			double height = item.countExpandedItems() * getHeight();
+			dropHighlight = new Rectangle(getLayoutX(), yLoc, getWidth(), height);
+			dropHighlight.getStyleClass().add(dropHighlightCssClass);
+			((Group) getParent()).getChildren().addFirst(dropHighlight);
+		}
+
+		// checks if source is a parent of this tree item
+		private boolean isInHierarchy(NBTTreeItem source) {
 			TreeItem<NamedTag> current = getTreeItem();
 			while (current != null) {
 				if (source == current) {
@@ -664,268 +898,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 			}
 			return false;
 		}
-
-		private void clearMarkings() {
-			setInsertParentCss(false);
-			setInsertCssClass("drop-target", null);
-			setDropTargetCell(null);
-			dropTarget = null;
-		}
-
-		private void setOnDragExited() {
-			clearMarkings();
-		}
-
-		private void setDropTargetCell(KeyValueTreeCell cell) {
-			if (dropTargetCell != null && dropTargetCell != cell) {
-				dropTargetCell.setInsertCssClass("drop-target", null);
-			}
-			dropTargetCell = cell;
-		}
-
-		private void setInsertCssClass(String prefix, String name) {
-			String c = prefix + "-" + name;
-			for (int i = 0; i < getStyleClass().size(); i++) {
-				if (getStyleClass().get(i).startsWith(prefix)) {
-					if (name == null) {
-						getStyleClass().remove(i);
-					} else if (!getStyleClass().get(i).equals(c)) {
-						getStyleClass().set(i, c);
-					}
-					setInsertParentCss(false);
-					return;
-				}
-			}
-			getStyleClass().add(c);
-			setInsertParentCss(false);
-		}
-
-		private int findDropIndex(Tag target, Tag tag) {
-			if (target instanceof ListTag list) {
-				for (int index = 0; index < list.size(); index++) {
-					if (list.get(index) == tag) {
-						return index;
-					}
-				}
-			}
-			return 0;
-		}
-
-		private void onDragDropped(DragEvent e) {
-			Dragboard db = e.getDragboard();
-			if (db.hasContent(CLIPBOARD_DATAFORMAT)) {
-				// this tree cell receives a foreign drop
-				// get content and insert into this tag, before this tag or after this tag
-				// and remove dropped tag from old location
-
-				// we also don't want to do anything if the tag is dropped onto itself or if the target is invalid
-				if (getTreeItem() != null && dragboardContent != getTreeItem() && dropTarget != null) {
-					((NBTTreeItem) dropTarget).moveHere(dropIndex, (NBTTreeItem) dragboardContent, getTreeView());
-				}
-				dragboardContent = null;
-			}
-		}
-
-		private void onDragDone(DragEvent e) {
-			Dragboard db = e.getDragboard();
-			if (db.hasContent(CLIPBOARD_DATAFORMAT)) {
-				dragboardContent = null;
-			}
-
-			if (dropTargetCell != null) {
-				dropTargetCell.setInsertCssClass("drop-target", null);
-			}
-			setInsertParentCss(false);
-		}
-
-		private static Object tagToArray(Tag tag) {
-			return switch (tag.getType()) {
-				case BYTE_ARRAY -> ((ByteArrayTag) tag).getValue();
-				case INT_ARRAY -> ((IntArrayTag) tag).getValue();
-				case LONG_ARRAY -> ((LongArrayTag) tag).getValue();
-				default -> null;
-			};
-		}
-
-		private static void setArrayValue(Tag tag, Object array) {
-			switch (tag.getType()) {
-				case BYTE_ARRAY -> ((ByteArrayTag) tag).setValue((byte[]) array);
-				case INT_ARRAY -> ((IntArrayTag) tag).setValue((int[]) array);
-				case LONG_ARRAY -> ((LongArrayTag) tag).setValue((long[]) array);
-			}
-		}
-
-		@Override
-		public void startEdit() {
-			if (!isEditable() || !getTreeView().isEditable()) {
-				return;
-			}
-			super.startEdit();
-			if (isEditing()) {
-				if (key == null) {
-					key = new TextField();
-					key.getStyleClass().add("key-value-tree-cell-key");
-					key.setOnKeyReleased(this::onKeyReleased);
-				}
-				key.setText(getItem().name);
-
-				if (value == null) {
-					value = new TextField();
-					value.getStyleClass().add("key-value-tree-cell-value");
-					value.setOnKeyReleased(this::onKeyReleased);
-				}
-				value.setText(tagValueToString(getItem().tag));
-
-				if (edit == null) {
-					edit = new Button("edit");
-					edit.getStyleClass().add("key-value-tree-cell-edit");
-				}
-				edit.setOnAction(e -> {
-					@SuppressWarnings("rawtypes")
-					Optional<EditArrayDialog.Result> result = new EditArrayDialog<>(tagToArray(getItem().tag), stage).showAndWait();
-					result.ifPresent(r -> setArrayValue(getItem().tag, r.getArray()));
-				});
-
-				if (box == null) {
-					box = new HBox();
-					box.setAlignment(Pos.CENTER_LEFT);
-				}
-
-				TextField focus = null;
-
-				if (getItem().parent != null) {
-					if (getItem().parent instanceof CompoundTag) {
-						if (getItem().tag.getType() == BYTE_ARRAY || getItem().tag.getType() == INT_ARRAY || getItem().tag.getType() == LONG_ARRAY) {
-							// array inside compound: name + edit
-							box.getChildren().setAll(getGraphic(), focus = key, edit);
-						} else if (getItem().tag instanceof CompoundTag || getItem().tag instanceof ListTag) {
-							// container inside compound: name
-							box.getChildren().setAll(getGraphic(), focus = key);
-						} else {
-							// rest inside compound: name + value
-							box.getChildren().setAll(getGraphic(), focus = key, value);
-						}
-					} else if (getItem().parent instanceof ListTag) {
-						if (getItem().tag.getType() == BYTE_ARRAY || getItem().tag.getType() == INT_ARRAY || getItem().tag.getType() == LONG_ARRAY) {
-							// array inside list: edit
-							box.getChildren().setAll(getGraphic(), edit);
-						} else if (getItem().tag instanceof CompoundTag || getItem().tag instanceof ListTag) {
-							// container inside list: not editable
-							return;
-						} else {
-							// rest inside list: value
-							box.getChildren().setAll(getGraphic(), focus = value);
-						}
-					}
-				}
-
-				setGraphic(box);
-				setText(null);
-
-				if (focus != null) {
-					focus.requestFocus();
-					focus.selectAll();
-				}
-			}
-		}
-
-		@Override
-		public void commitEdit(NamedTag tag) {
-			if (key.getText() != null && !key.getText().isEmpty()) {
-				CompoundTag parent = (CompoundTag) tag.parent;
-				if (parent.containsKey(key.getText()) && !key.getText().equals(tag.name)) {
-					// do not commit if the key changed and the key already exists
-					return;
-				}
-				parent.remove(tag.name);
-				parent.put(key.getText(), tag.tag);
-				tag.name = key.getText();
-			}
-			if (value.getText() != null) {
-				try {
-					updateValue(tag.parent, tag, value.getText());
-				} catch (Exception ex) {
-					// reset text in text field
-					value.setText(tagValueToString(tag.tag));
-				}
-			}
-			super.commitEdit(tag);
-		}
-
-		@Override
-		public void cancelEdit() {
-			super.cancelEdit();
-			setText(tagToString(getItem()));
-			if (!box.getChildren().isEmpty()) {
-				setGraphic(box.getChildren().get(0));
-			}
-		}
-
-		@Override
-		public void updateItem(NamedTag tag, boolean empty) {
-			super.updateItem(tag, empty);
-			if (empty) {
-				setText(null);
-				setGraphic(null);
-			} else {
-				ImageView icon = new ImageView(icons.get(tag.tag.getType()));
-				String lineChar;
-				if (tag.parent == null) {
-					 lineChar = "╶";
-				} else if (getTreeItem().isExpanded() || isLastItem(tag)) {
-					lineChar = "└";
-				} else {
-					lineChar = "├";
-				}
-				Label lc = new Label(lineChar);
-				lc.getStyleClass().add("line-char");
-				StackPane sp;
-				if (tag.tag.getType() == LIST && !((ListTag) tag.tag).isEmpty() || tag.tag.getType() == COMPOUND && !((CompoundTag) tag.tag).isEmpty()) {
-					String expand;
-					if (getTreeItem().isExpanded()) {
-						expand = "-";
-					} else {
-						expand = "+";
-					}
-					Label cellExpand = new Label(expand);
-					cellExpand.getStyleClass().add("cell-expand");
-					sp = new StackPane(lc, cellExpand);
-					sp.getStyleClass().add("line-node");
-				} else {
-					sp = new StackPane(lc);
-				}
-				HBox graphic = new HBox(sp, icon);
-				graphic.getStyleClass().add("cell-graphic");
-				setGraphic(graphic);
-				setText(tagToString(tag));
-				setEditable(tag.parent != null);
-			}
-		}
-
-		private boolean isLastItem(NamedTag tag) {
-			if (tag.parent instanceof CompoundTag || tag.parent instanceof ListTag) {
-				ObservableList<TreeItem<NamedTag>> childrenItems = getTreeItem().getParent().getChildren();
-				return childrenItems.get(childrenItems.size() - 1).getValue() == tag;
-			}
-			return false;
-		}
-
-		private void onKeyReleased(KeyEvent event) {
-			if (event.getCode() == KeyCode.ENTER) {
-				commitEdit(getItem());
-				updateItem(getItem(), false);
-			}
-		}
 	}
 
-	private void setInsertParentCss(boolean enabled) {
-		if (enabled) {
-			if (getStyleClass().contains("nbt-tree-view-drop-parent")) {
-				return;
-			}
-			getStyleClass().add("nbt-tree-view-drop-parent");
-		} else {
-			getStyleClass().remove("nbt-tree-view-drop-parent");
-		}
-	}
+	public record EditArrayResult(Object data) {}
 }

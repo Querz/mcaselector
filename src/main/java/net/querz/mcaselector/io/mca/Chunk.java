@@ -3,22 +3,22 @@ package net.querz.mcaselector.io.mca;
 import net.jpountz.lz4.LZ4BlockInputStream;
 import net.jpountz.lz4.LZ4BlockOutputStream;
 import net.querz.io.ExposedByteArrayOutputStream;
-import net.querz.mcaselector.io.ByteArrayPointer;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.io.ByteBufferBackedInputStream;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.point.Point3i;
+import net.querz.mcaselector.util.range.Range;
 import net.querz.nbt.NBTUtil;
 import net.querz.nbt.Tag;
 import net.querz.nbt.io.NBTReader;
 import net.querz.nbt.io.NBTWriter;
 import net.querz.nbt.CompoundTag;
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.function.Function;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 public abstract class Chunk {
@@ -32,46 +32,22 @@ public abstract class Chunk {
 		this.absoluteLocation = absoluteLocation;
 	}
 
-	public void load(ByteArrayPointer ptr) throws IOException {
-		int length = ptr.readInt();
-		compressionType = CompressionType.fromByte(ptr.readByte());
+	public void load(ByteBuffer buf, boolean raw) throws IOException {
+		int length = buf.getInt();
+		compressionType = CompressionType.fromByte(buf.get());
 
 		DataInputStream nbtIn = switch (compressionType) {
-			case GZIP -> new DataInputStream(new BufferedInputStream(new GZIPInputStream(ptr, length)));
-			case ZLIB -> new DataInputStream(new BufferedInputStream(new InflaterInputStream(ptr, new Inflater(), length)));
-			case LZ4 -> new DataInputStream(new BufferedInputStream(new LZ4BlockInputStream(ptr)));
-			case NONE, UNCOMPRESSED -> new DataInputStream(ptr);
-			case GZIP_EXT -> new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(getMCCFile()))));
-			case ZLIB_EXT -> new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(getMCCFile()))));
-			case LZ4_EXT -> new DataInputStream(new BufferedInputStream(new LZ4BlockInputStream(new FileInputStream(getMCCFile()))));
-			case NONE_EXT, UNCOMPRESSED_EXT -> new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile())));
+			case GZIP -> new DataInputStream(new GZIPInputStream(new ByteBufferBackedInputStream(buf)));
+			case ZLIB -> new DataInputStream(new InflaterInputStream(new ByteBufferBackedInputStream(buf)));
+			case LZ4 -> new DataInputStream(new LZ4BlockInputStream(new ByteBufferBackedInputStream(buf)));
+			case NONE, UNCOMPRESSED -> new DataInputStream(new ByteBufferBackedInputStream(buf));
+			case GZIP_EXT -> new DataInputStream(new GZIPInputStream(new FileInputStream(getMCCFile()), 4096 * length));
+			case ZLIB_EXT -> new DataInputStream(new InflaterInputStream(new FileInputStream(getMCCFile())));
+			case LZ4_EXT -> new DataInputStream(new LZ4BlockInputStream(new FileInputStream(getMCCFile())));
+			case NONE_EXT, UNCOMPRESSED_EXT -> new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile()), 4096 * length));
 		};
 
-		Tag tag = new NBTReader().read(nbtIn);
-
-		if (tag instanceof CompoundTag) {
-			data = (CompoundTag) tag;
-		} else {
-			throw new IOException("unexpected chunk data tag type " + tag.getType() + ", expected " + Tag.Type.COMPOUND);
-		}
-	}
-
-	public void load(RandomAccessFile raf) throws IOException {
-		int length = raf.readInt();
-		compressionType = CompressionType.fromByte(raf.readByte());
-
-		DataInputStream nbtIn = switch (compressionType) {
-			case GZIP -> new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(raf.getFD()))));
-			case ZLIB -> new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(raf.getFD()))));
-			case LZ4 -> new DataInputStream(new BufferedInputStream(new LZ4BlockInputStream(new FileInputStream(raf.getFD()))));
-			case NONE, UNCOMPRESSED -> new DataInputStream(new BufferedInputStream(new FileInputStream(raf.getFD()), length - 1));
-			case GZIP_EXT -> new DataInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(getMCCFile()))));
-			case ZLIB_EXT -> new DataInputStream(new BufferedInputStream(new InflaterInputStream(new FileInputStream(getMCCFile()))));
-			case LZ4_EXT -> new DataInputStream(new BufferedInputStream(new LZ4BlockInputStream(new FileInputStream(getMCCFile()))));
-			case NONE_EXT, UNCOMPRESSED_EXT -> new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile())));
-		};
-
-		Tag tag = new NBTReader().read(nbtIn);
+		Tag tag = new NBTReader().rawArrays(raw).read(nbtIn);
 
 		if (tag instanceof CompoundTag) {
 			data = (CompoundTag) tag;

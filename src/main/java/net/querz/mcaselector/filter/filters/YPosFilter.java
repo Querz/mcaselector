@@ -6,7 +6,7 @@ import net.querz.mcaselector.filter.IntFilter;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.IntTag;
 
 public class YPosFilter extends IntFilter {
@@ -21,12 +21,8 @@ public class YPosFilter extends IntFilter {
 
 	@Override
 	protected Integer getNumber(ChunkData data) {
-		if (data.region() == null || data.region().getData() == null) {
-			return null;
-		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		IntTag tag = chunkFilter.getYPos(data.region().getData());
-		return tag.asInt();
+		IntTag tag = VersionHandler.getImpl(data, ChunkFilter.Pos.class).getYPos(data);
+		return tag == null ? null : tag.asInt();
 	}
 
 	@Override

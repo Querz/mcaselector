@@ -10,6 +10,12 @@ menu.view;Visa
 menu.selection;Markering
 menu.tools;Verktyg
 menu.about;Om
+menu.file.new;Ny
+menu.file.open;Öppna
+menu.file.open_recent;Öppna senaste
+menu.file.open_recent.clear;Rensa
+menu.file.save;Spara
+menu.file.save_as;Spara som...
 menu.file.open_world;Öppna en värld
 menu.file.open_dimension;Öppna en annan dimension
 menu.file.open_recent_world;Öppna en tidigare värld
@@ -60,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;Inklistringsfärg
 dialog.settings.rendering.shade.shade;Skugga
 dialog.settings.rendering.shade;Skugga
 dialog.settings.rendering.shade.shade_water;Skugga vatten
+dialog.settings.rendering.shade.shade_altitude;Terränghöjd
 dialog.settings.rendering.background.show_nonexistent_regions;Visa ogenererade regioner
 dialog.settings.rendering.smooth.smooth_rendering;Jämn återgivning
 dialog.settings.rendering.smooth.smooth_overlays;Jämna överlägg
@@ -182,5 +189,9 @@ dialog.error.header;Ett fel uppstod
 dialog.error.copied_to_clipboard;Kopieras till urklipp!
 dialog.unsaved_selection.title;Osparat val
 dialog.unsaved_selection.header;Det finns ett osparat val.
+dialog.unsaved_script.title;Ej sparat skript
+dialog.unsaved_script.header;Det finns ett ej sparat skript.
+dialog.request_number.title.array_length;Längden på arrayen
+dialog.request_number.title.enter_number;Värde
 button.cancel;Avbryt
 button.ok;OK

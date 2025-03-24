@@ -1,4 +1,4 @@
-<Configuration status="WARN" packages="net.querz.mcaselector.logging">
+<Configuration status="WARN">
 	<ExceptionBurstFilter duration="20000"/>
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT">

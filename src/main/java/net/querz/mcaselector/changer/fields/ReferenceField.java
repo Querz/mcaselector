@@ -4,8 +4,9 @@ import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.CompoundTag;
+import net.querz.nbt.IntTag;
 import net.querz.nbt.LongArrayTag;
 import net.querz.nbt.Tag;
 import java.util.Map;
@@ -38,10 +39,17 @@ public class ReferenceField extends Field<Boolean> {
 
 		// attempt to fix chunk coordinates of structure references
 
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		CompoundTag references = chunkFilter.getStructureReferences(data.region().getData());
-		int xPos = chunkFilter.getXPos(data.region().getData()).asInt();
-		int zPos = chunkFilter.getZPos(data.region().getData()).asInt();
+		ChunkFilter.Structures filter = VersionHandler.getImpl(data, ChunkFilter.Structures.class);
+		CompoundTag references = filter.getStructureReferences(data);
+		if (references == null) {
+			return;
+		}
+		ChunkFilter.Pos pos = VersionHandler.getImpl(data, ChunkFilter.Pos.class);
+		IntTag xPos = pos.getXPos(data);
+		IntTag zPos = pos.getZPos(data);
+		if (xPos == null || zPos == null) {
+			return;
+		}
 		for (Map.Entry<String, Tag> entry : references) {
 			if (entry.getValue() instanceof LongArrayTag) {
 				long[] structureReferences = ((LongArrayTag) entry.getValue()).getValue();
@@ -49,8 +57,8 @@ public class ReferenceField extends Field<Boolean> {
 				for (int i = 0; i < structureReferences.length; i++) {
 					int x = (int) (structureReferences[i]);
 					int z = (int) (structureReferences[i] >> 32);
-					if (Math.abs(x - xPos) > 8 || Math.abs(z - zPos) > 8) {
-						structureReferences[i] = ((long) zPos & 0xFFFFFFFFL) << 32 | (long) xPos & 0xFFFFFFFFL;
+					if (Math.abs(x - xPos.asInt()) > 8 || Math.abs(z - zPos.asInt()) > 8) {
+						structureReferences[i] = (zPos.asLong() & 0xFFFFFFFFL) << 32 | xPos.asLong() & 0xFFFFFFFFL;
 					}
 				}
 			}

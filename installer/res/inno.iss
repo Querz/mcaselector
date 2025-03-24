@@ -7,6 +7,7 @@ AppPublisher=${applicationAuthor}
 AppPublisherURL=${applicationUrl}
 AppSupportURL=${applicationUrl}
 AppUpdatesURL=${applicationUrl}
+AppCopyright=${applicationCopyright}
 DefaultDirName={autopf}\\${applicationName}
 DisableProgramGroupPage=yes
 LicenseFile=LICENSE
@@ -46,6 +47,7 @@ Source: "lib\\*"; DestDir: "{app}\\lib"; Flags: ignoreversion
 
 [InstallDelete]
 Type: filesandordirs; Name: "{app}\\jre"
+Type: filesandordirs; Name: "{app}\\lib"
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\\jre"

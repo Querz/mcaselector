@@ -2,7 +2,7 @@ package net.querz.mcaselector.selection;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.querz.mcaselector.io.WorldDirectories;
-import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.util.point.Point2i;
 import java.io.Serializable;
 
 // SelectionData is used to transfer selection and world data for the copy-/paste function

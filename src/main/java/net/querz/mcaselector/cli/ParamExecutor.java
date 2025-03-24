@@ -2,21 +2,25 @@ package net.querz.mcaselector.cli;
 
 import net.querz.mcaselector.changer.ChangeParser;
 import net.querz.mcaselector.changer.Field;
+import net.querz.mcaselector.changer.FieldType;
+import net.querz.mcaselector.changer.fields.ScriptField;
 import net.querz.mcaselector.config.Config;
 import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.config.GlobalConfig;
 import net.querz.mcaselector.config.WorldConfig;
 import net.querz.mcaselector.filter.FilterParser;
+import net.querz.mcaselector.filter.FilterType;
 import net.querz.mcaselector.filter.filters.GroupFilter;
+import net.querz.mcaselector.filter.filters.ScriptFilter;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.job.*;
 import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.overlay.OverlayParser;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.property.DataProperty;
-import net.querz.mcaselector.range.Range;
-import net.querz.mcaselector.range.RangeParser;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.point.Point3i;
+import net.querz.mcaselector.util.property.DataProperty;
+import net.querz.mcaselector.util.range.Range;
+import net.querz.mcaselector.util.range.RangeParser;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.selection.SelectionData;
 import net.querz.mcaselector.tile.OverlayPool;
@@ -25,6 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -71,6 +76,11 @@ public final class ParamExecutor {
 			.desc("The query to run")
 			.hasArg()
 			.build());
+		options.addOption(Option.builder()
+				.longOpt("script")
+				.desc("The script to run")
+				.hasArg()
+				.build());
 		options.addOption(Option.builder("s")
 			.longOpt("selection")
 			.desc("The selection to be applied to the target world")
@@ -137,6 +147,11 @@ public final class ParamExecutor {
 			.desc("Enable or disable shading of water in image mode")
 			.hasArg()
 			.build());
+		options.addOption(Option.builder()
+				.longOpt("render-height-shade")
+				.desc("Enable or disable shading of terrain height in image mode")
+				.hasArg()
+				.build());
 		options.addOption(Option.builder()
 			.longOpt("overlay-type")
 			.desc("The type of overlay to be rendered in image mode")
@@ -281,7 +296,7 @@ public final class ParamExecutor {
 				this.args = altList.toArray(new String[0]);
 				LOGGER.warn("preprocessed args with custom command parser, original args: {}", Arrays.toString(args));
 				return;
-			} catch (net.querz.mcaselector.exception.ParseException e) {
+			} catch (net.querz.mcaselector.util.exception.ParseException e) {
 				throw new RuntimeException(e);
 			}
 		}
@@ -364,12 +379,12 @@ public final class ParamExecutor {
 
 	private void printHelp() {
 		String[] helpOrder = new String[]{
-			"help", "version", "mode", "output", "query", "selection", "source-selection", "radius", "x-offset",
+			"help", "version", "mode", "output", "query", "script", "selection", "source-selection", "radius", "x-offset",
 			"y-offset", "z-offset", "overwrite", "force", "sections", "render-height", "render-caves", "render-layer-only",
-			"render-shade", "render-water-shade", "overlay-type", "overlay-min-value", "overlay-max-value",
-			"overlay-data", "overlay-min-hue", "overlay-max-hue", "fields", "zoom-level", "world", "region", "poi", "entities",
-			"source-world", "source-region", "source-poi", "source-entities", "output-world", "output-region",
-			"output-poi", "output-entities", "debug", "process-threads", "write-threads"
+			"render-shade", "render-water-shade", "render-height-shade", "overlay-type", "overlay-min-value",
+			"overlay-max-value", "overlay-data", "overlay-min-hue", "overlay-max-hue", "fields", "zoom-level", "world",
+			"region", "poi", "entities", "source-world", "source-region", "source-poi", "source-entities", "output-world",
+			"output-region", "output-poi", "output-entities", "debug", "process-threads", "write-threads"
 		};
 		Map<String, Integer> helpOptionOrderLookup = new HashMap<>();
 		for (int i = 0; i < helpOrder.length; i++) {
@@ -394,7 +409,7 @@ public final class ParamExecutor {
 		ConfigProvider.GLOBAL = new GlobalConfig();
 		ConfigProvider.GLOBAL.setDebug(line.hasOption("debug"));
 		ConfigProvider.GLOBAL.setProcessThreads(parseInt("process-threads", GlobalConfig.DEFAULT_PROCESS_THREADS, 1, 128));
-		ConfigProvider.GLOBAL.setProcessThreads(parseInt("write-threads", GlobalConfig.DEFAULT_WRITE_THREADS, 1, 128));
+		ConfigProvider.GLOBAL.setWriteThreads(parseInt("write-threads", GlobalConfig.DEFAULT_WRITE_THREADS, 1, 128));
 	}
 
 	private void printError(String msg, Object... params) {
@@ -596,17 +611,53 @@ public final class ParamExecutor {
 	}
 
 	private GroupFilter parseQuery(boolean mandatory) throws ParseException {
-		if (!line.hasOption("query")) {
+		if (!line.hasOption("query") && !line.hasOption("script")) {
 			if (mandatory) {
-				throw new ParseException("missing mandatory query parameter");
+				throw new ParseException("missing mandatory query or script parameter");
 			}
 			return null;
 		}
 		String query = line.getOptionValue("query");
-		try {
-			return new FilterParser(query).parse();
-		} catch (Exception ex) {
-			throw new ParseException(String.format("failed to parse query: %s", ex.getMessage()));
+		if (query == null) {
+			String script = line.getOptionValue("script");
+			File scriptFile = new File(script);
+			if (!scriptFile.getName().endsWith(".groovy")) {
+				throw new ParseException("script file not a .groovy file");
+			}
+			if (!scriptFile.exists()) {
+				throw new ParseException(String.format("script file %s does not exist", script));
+			}
+			try {
+				String scriptString = Files.readString(scriptFile.toPath());
+				ScriptFilter sf = new ScriptFilter();
+				sf.setFilterValue(scriptString);
+				if (!sf.isValid()) {
+					throw new ParseException("failed to eval script");
+				}
+				GroupFilter gf = new GroupFilter();
+				gf.addFilter(sf);
+				return gf;
+			} catch (IOException ex) {
+				throw new ParseException(String.format("failed to read script file: %s", ex.getMessage()));
+			}
+		} else {
+			try {
+				return new FilterParser(query).parse();
+			} catch (Exception ex) {
+				throw new ParseException(String.format("failed to parse query: %s", ex.getMessage()));
+			}
+		}
+	}
+
+	private void runBefore(GroupFilter filter) {
+		if (filter != null && filter.getFilterValue().size() == 1 && filter.getFilterValue().getFirst().getType() == FilterType.SCRIPT) {
+			((ScriptFilter) filter.getFilterValue().getFirst()).before();
+		}
+	}
+
+	private void runAfter(GroupFilter filter) {
+		if (filter != null && filter.getFilterValue().size() == 1 && filter.getFilterValue().getFirst().getType() == FilterType.SCRIPT) {
+			((ScriptFilter) filter.getFilterValue().getFirst()).after();
 		}
 	}
 
@@ -649,16 +700,50 @@ public final class ParamExecutor {
 	}
 
 	private List<Field<?>> parseFields(boolean mandatory) throws ParseException {
-		if (!line.hasOption("fields")) {
+		if (!line.hasOption("fields") && !line.hasOption("script")) {
 			if (mandatory) {
-				throw new ParseException("missing mandatory fields parameter");
+				throw new ParseException("missing mandatory fields or script parameter");
 			}
 			return null;
 		}
-		try {
-			return new ChangeParser(line.getOptionValue("fields")).parse();
-		} catch (Exception ex) {
-			throw new ParseException(ex.getMessage());
+
+		if (line.getOptionValue("fields") == null) {
+			String script = line.getOptionValue("script");
+			File scriptFile = new File(script);
+			if (!scriptFile.getName().endsWith(".groovy")) {
+				throw new ParseException("script file not a .groovy file");
+			}
+			if (!scriptFile.exists()) {
+				throw new ParseException(String.format("script file %s does not exist", script));
+			}
+			try {
+				String scriptString = Files.readString(scriptFile.toPath());
+				ScriptField sf = new ScriptField();
+				if (!sf.parseNewValue(scriptString)) {
+					throw new ParseException("failed to eval script");
+				}
+				return List.of(sf);
+			} catch (IOException ex) {
+				throw new ParseException(String.format("failed to read script file: %s", ex.getMessage()));
+			}
+		} else {
+			try {
+				return new ChangeParser(line.getOptionValue("fields")).parse();
+			} catch (Exception ex) {
+				throw new ParseException(ex.getMessage());
+			}
+		}
+	}
+
+	private void runBefore(List<Field<?>> fields) {
+		if (fields != null && fields.size() == 1 && fields.getFirst().getType() == FieldType.SCRIPT) {
+			((ScriptField) fields.getFirst()).before();
+		}
+	}
+
+	private void runAfter(List<Field<?>> fields) {
+		if (fields != null && fields.size() == 1 && fields.getFirst().getType() == FieldType.SCRIPT) {
+			((ScriptField) fields.getFirst()).after();
 		}
 	}
 
@@ -704,8 +789,10 @@ public final class ParamExecutor {
 		CLIProgress progress = new CLIProgress("selecting chunks");
 		progress.onDone(() -> {
 			handleException(() -> saveSelection(selection, output));
+			runAfter(query);
 			future.run();
 		});
+		runBefore(query);
 		ChunkFilterSelector.selectFilter(query, selectionData, radius, selection::merge, progress, true);
 	}
 
@@ -717,13 +804,17 @@ public final class ParamExecutor {
 		Selection selection = loadSelection(false, false);
 
 		CLIProgress progress = new CLIProgress("exporting chunks");
-		progress.onDone(future);
+		progress.onDone(() -> {
+			runAfter(query);
+			future.run();
+		});
 		if (query != null) {
+			runBefore(query);
 			ChunkFilterExporter.exportFilter(query, selection, output, progress, true);
 		} else if (selection != null) {
 			SelectionExporter.exportSelection(selection, output, progress);
 		} else {
-			throw new ParseException("missing --query and/or --selection parameter");
+			throw new ParseException("missing --query, --script and/or --selection parameter");
 		}
 	}
 
@@ -767,9 +858,13 @@ public final class ParamExecutor {
 		Selection selection = loadSelection(false, false);
 
 		CLIProgress progress = new CLIProgress("deleting chunks");
-		progress.onDone(future);
+		progress.onDone(() -> {
+			runAfter(query);
+			future.run();
+		});
 
 		if (query != null) {
+			runBefore(query);
 			ChunkFilterDeleter.deleteFilter(query, selection, progress, true);
 		} else if (selection != null) {
 			SelectionDeleter.deleteSelection(selection, progress);
@@ -786,8 +881,12 @@ public final class ParamExecutor {
 		List<Field<?>> fields = parseFields(true);
 
 		CLIProgress progress = new CLIProgress("changing fields");
-		progress.onDone(future);
+		progress.onDone(() -> {
+			runAfter(fields);
+			future.run();
+		});
 
+		runBefore(fields);
 		FieldChanger.changeNBTFields(fields, force, selection, progress, true);
 	}
 
@@ -831,17 +930,19 @@ public final class ParamExecutor {
 		boolean renderCaves = line.hasOption("render-caves");
 		boolean renderLayerOnly = line.hasOption("render-layer-only");
 
-		if ((renderCaves || renderLayerOnly) && (line.hasOption("render-shade") || line.hasOption("render-water-shade"))) {
-			throw new ParseException("render-shade or render-water-shade cannot be used with render-caves or render-layer-only");
+		if ((renderCaves || renderLayerOnly) && (line.hasOption("render-shade") || line.hasOption("render-water-shade") || line.hasOption("render-height-shade"))) {
+			throw new ParseException("render-shade or render-water-shade cannot be used with render-caves, render-layer-only or render-height-shade");
 		}
 		boolean renderShade = parseBoolean("render-shade", false, !renderCaves && !renderLayerOnly);
 		boolean renderWaterShade = parseBoolean("render-water-shade", false, !renderCaves && !renderLayerOnly);
+		boolean renderHeightShade = parseBoolean("render-height-shade", false, true);
 
 		ConfigProvider.WORLD.setRenderHeight(renderHeight);
 		ConfigProvider.WORLD.setRenderCaves(renderCaves);
 		ConfigProvider.WORLD.setRenderLayerOnly(renderLayerOnly);
 		ConfigProvider.WORLD.setShade(renderShade);
 		ConfigProvider.WORLD.setShadeWater(renderWaterShade);
+		ConfigProvider.WORLD.setShadeAltitude(renderHeightShade);
 
 		CLIJFX.launch();
 
@@ -876,7 +977,7 @@ public final class ParamExecutor {
 			try {
 				Overlay overlay = new OverlayParser(type, min, max, additionalData, minHue, maxHue).parse();
 				overlayPool = new OverlayPool(null);
-				overlayPool.switchTo(new File(ConfigProvider.WORLD.getCacheDir(), "cache.db").toString(), List.of(overlay));
+				overlayPool.switchTo(new File(ConfigProvider.WORLD.getCacheDir(), "cache").toString());
 				overlayPool.setParser(overlay);
 			} catch (Exception ex) {
 				throw new ParseException(ex.getMessage());

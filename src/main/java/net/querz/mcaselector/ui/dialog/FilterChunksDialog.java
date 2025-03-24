@@ -1,37 +1,34 @@
 package net.querz.mcaselector.ui.dialog;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.filter.*;
-import net.querz.mcaselector.exception.ParseException;
+import net.querz.mcaselector.ui.component.CodeEditor;
+import net.querz.mcaselector.util.exception.ParseException;
 import net.querz.mcaselector.filter.filters.GroupFilter;
 import net.querz.mcaselector.filter.filters.InhabitedTimeFilter;
 import net.querz.mcaselector.filter.filters.ScriptFilter;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.ui.component.GroovyCodeArea;
+import net.querz.mcaselector.ui.component.PersistentDialogProperties;
 import net.querz.mcaselector.ui.component.filter.GroupFilterBox;
 import net.querz.mcaselector.ui.UIFactory;
-import net.querz.mcaselector.validation.BeforeAfterCallback;
+import net.querz.mcaselector.util.validation.BeforeAfterCallback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.fxmisc.flowless.VirtualizedScrollPane;
+import java.util.Objects;
 
-public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
+public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> implements PersistentDialogProperties {
 
 	private static final Logger LOGGER = LogManager.getLogger(FilterChunksDialog.class);
 
@@ -71,11 +68,8 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 	private final CheckBox selectionOnly = new CheckBox();
 	private final CheckBox overwriteSelection = new CheckBox();
 	private final TextField selectionRadius = new TextField();
-	private static final GroovyCodeArea codeArea = new GroovyCodeArea(true);
-
-	static {
-		codeArea.setText(initScript);
-	}
+	private static final CodeEditor codeEditor = new CodeEditor(initScript);
+	private static int lastSelectedTab;
 
 	private static int radius;
 	private static boolean applyToSelectionOnly;
@@ -89,6 +83,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		getDialogPane().getStyleClass().add("filter-dialog-pane");
 
 		setResultConverter(p -> {
+			ConfigProvider.GLOBAL.setFilterScript(codeEditor.getSource());
 			if (p != ButtonType.OK) {
 				return null;
 			}
@@ -99,15 +94,20 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 			} else {
 				filter = new GroupFilter();
 				scriptFilter = new ScriptFilter();
-				scriptFilter.setFilterValue(codeArea.getText());
+				scriptFilter.setFilterValue(codeEditor.getText());
 				filter.addFilter(scriptFilter);
 			}
 			return new Result(filter, getHandleType(), applyToSelectionOnly, applyOverwriteSelection, radius, scriptFilter);
 		});
 
 		// apply same stylesheets to this dialog
-		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
-		getDialogPane().getStylesheets().add(FilterChunksDialog.class.getClassLoader().getResource("style/component/filter-chunks-dialog.css").toExternalForm());
+		getDialogPane().getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+		getDialogPane().getScene().getStylesheets().add(Objects.requireNonNull(FilterChunksDialog.class.getClassLoader().getResource("style/component/filter-chunks-dialog.css")).toExternalForm());
+		// owner of code editor needs to be set after applying style sheets to this dialog
+		// because code editor inherits style sheets from this dialog
+		codeEditor.setOwner(getDialogPane().getScene().getWindow());
+		codeEditor.setRecentFiles(ConfigProvider.GLOBAL.getRecentFilterScripts());
+		codeEditor.setSource(ConfigProvider.GLOBAL.getFilterScript());
 
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
@@ -194,24 +194,24 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> {
 		VBox mainBox = new VBox();
 		mainBox.getChildren().addAll(scrollPane, new Separator(), filterQuery);
 
-		VBox scriptBox = new VBox();
-		StackPane scriptPane = new StackPane(new VirtualizedScrollPane<>(codeArea));
-		Label errorLabel = new Label();
-		errorLabel.getStyleClass().add("script-error-label");
-		errorLabel.textProperty().bind(codeArea.errorProperty());
-		VBox.setVgrow(scriptPane, Priority.ALWAYS);
-		scriptBox.getChildren().addAll(scriptPane, errorLabel);
-
 		Tab mainTab = UIFactory.tab(Translation.DIALOG_FILTER_CHUNKS_TAB_QUERY);
 		mainTab.setContent(mainBox);
 		Tab scriptTab = UIFactory.tab(Translation.DIALOG_FILTER_CHUNKS_TAB_SCRIPT);
-		scriptTab.setContent(scriptBox);
+		scriptTab.setContent(codeEditor);
 
 		tabs.getTabs().addAll(mainTab, scriptTab);
 
 		VBox panelBox = new VBox();
 		panelBox.getChildren().addAll(tabs, new Separator(), selectionBox);
 		getDialogPane().setContent(panelBox);
+
+		setOnCloseRequest(e -> {
+			initPersistentLocationOnClose(this);
+			lastSelectedTab = tabs.getSelectionModel().getSelectedIndex();
+		});
+
+		initPersistentLocationOnOpen(this);
+		Platform.runLater(() -> tabs.getSelectionModel().select(lastSelectedTab));
 	}
 
 	private StackPane withStackPane(Node n) {

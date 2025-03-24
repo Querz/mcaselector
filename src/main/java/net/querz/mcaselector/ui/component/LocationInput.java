@@ -2,7 +2,8 @@ package net.querz.mcaselector.ui.component;
 
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.util.point.Point2i;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class LocationInput extends HBox {
@@ -18,7 +19,7 @@ public class LocationInput extends HBox {
 	public LocationInput(boolean emptyIsZero) {
 		getStyleClass().add("location-input");
 
-		getStylesheets().add(LocationInput.class.getClassLoader().getResource("style/component/location-input.css").toExternalForm());
+		getStylesheets().add(Objects.requireNonNull(LocationInput.class.getClassLoader().getResource("style/component/location-input.css")).toExternalForm());
 
 		this.emptyIsZero = emptyIsZero;
 

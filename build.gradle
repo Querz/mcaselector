@@ -3,15 +3,14 @@ plugins {
 	id 'application'
 	id 'eclipse'
 	id 'idea'
-	id 'org.openjfx.javafxplugin' version '0.0.12'
-	id 'io.github.goooler.shadow' version '8.1.7'
-	id 'com.github.ben-manes.versions' version '0.42.0'
+	id 'org.openjfx.javafxplugin' version '0.1.0'
+	id 'com.gradleup.shadow' version '8.3.6'
+	id 'com.github.ben-manes.versions' version '0.52.0'
 }
 
 group 'net.querz'
 compileJava.options.encoding = 'UTF-8'
 application.mainClass = 'net.querz.mcaselector.Main'
-//configurations.implementation.canBeResolved = true
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_21
@@ -38,49 +37,65 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.github.Querz:NBT:f41d073'
-	implementation 'com.google.code.gson:gson:2.10.1'
-	implementation 'org.xerial:sqlite-jdbc:3.45.2.0'
-	implementation 'it.unimi.dsi:fastutil:8.5.8'
-	implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
-	implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
-	implementation 'commons-cli:commons-cli:1.5.0'
+	implementation 'com.github.Querz:NBT:6bc3de6961'
+	implementation 'com.google.code.gson:gson:2.12.1'
+	implementation 'it.unimi.dsi:fastutil:8.5.15'
+	implementation 'org.apache.logging.log4j:log4j-api:2.24.3'
+	implementation 'org.apache.logging.log4j:log4j-core:2.24.3'
+	implementation 'org.slf4j:slf4j-simple:2.0.16'
+	implementation 'commons-cli:commons-cli:1.9.0'
 	implementation 'me.tongfei:progressbar:0.10.1'
-	implementation 'org.apache.groovy:groovy-jsr223:4.0.21'
-	implementation 'org.fxmisc.richtext:richtextfx:0.11.2'
+	implementation 'org.apache.groovy:groovy-jsr223:4.0.26'
+	implementation 'org.fxmisc.richtext:richtextfx:0.11.4'
 	implementation 'org.lz4:lz4-java:1.8.0'
+	implementation 'org.atteo.classindex:classindex:3.13'
+	implementation 'org.iq80.leveldb:leveldb:0.12'
   
-	shadow 'com.github.Querz:NBT:f41d073'
-	shadow 'com.google.code.gson:gson:2.10.1'
-	shadow 'org.xerial:sqlite-jdbc:3.45.2.0'
-	shadow 'it.unimi.dsi:fastutil:8.5.8'
-	shadow 'org.apache.logging.log4j:log4j-api:2.17.2'
-	shadow 'org.apache.logging.log4j:log4j-core:2.17.2'
-	shadow 'commons-cli:commons-cli:1.5.0'
+	shadow 'com.github.Querz:NBT:6bc3de6961'
+	shadow 'com.google.code.gson:gson:2.12.1'
+	shadow 'it.unimi.dsi:fastutil:8.5.15'
+	shadow 'org.apache.logging.log4j:log4j-api:2.24.3'
+	shadow 'org.apache.logging.log4j:log4j-core:2.24.3'
+	shadow 'org.slf4j:slf4j-simple:2.0.16'
+	shadow 'commons-cli:commons-cli:1.9.0'
 	shadow 'me.tongfei:progressbar:0.10.1'
-	shadow 'org.apache.groovy:groovy-jsr223:4.0.21'
-	shadow 'org.fxmisc.richtext:richtextfx:0.11.2'
+	shadow 'org.apache.groovy:groovy-jsr223:4.0.26'
+	shadow 'org.fxmisc.richtext:richtextfx:0.11.4'
 	shadow 'org.lz4:lz4-java:1.8.0'
+	shadow 'org.atteo.classindex:classindex:3.13'
+    shadow 'org.iq80.leveldb:leveldb:0.12'
+
+	annotationProcessor('org.atteo.classindex:classindex:3.13')
+	annotationProcessor('org.apache.logging.log4j:log4j-core:2.24.3')
 
 	testImplementation 'junit:junit:4.13.2'
-	testImplementation 'commons-io:commons-io:2.11.0'
+	testImplementation 'commons-io:commons-io:2.18.0'
 }
 
-task copyRuntimeLibs(type: Copy) {
+compileJava {
+	options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
+}
+
+tasks.register('copyRuntimeLibs', Copy) {
 	from configurations.shadow
 	into layout.buildDirectory.dir('libs/lib')
-	exclude {it.file.name.startsWith('javafx')}
+	exclude { it.file.name.startsWith('javafx') }
 }
 
-task minifyCss {
+tasks.register('minifyCss') {
 	doLast {
 		var styleDir = java.nio.file.Path.of("${sourceSets.main.resources.srcDirs[0]}", "style")
 		Files.find(styleDir, Integer.MAX_VALUE, (filePath, fileAttr) -> fileAttr.isRegularFile())
-		.forEach(p -> {
-			minCss(p, java.nio.file.Path.of("${sourceSets.main.output.resourcesDir}", "style", styleDir.relativize(p).toString()))
-		})
+				.forEach(p -> {
+					minCss(p, java.nio.file.Path.of("${sourceSets.main.output.resourcesDir}", "style", styleDir.relativize(p).toString()))
+				})
 	}
 	dependsOn processResources
+}
+
+tasks.register('generator', JavaExec) {
+	mainClass = 'net.querz.mcaselector.version.mapping.generator.Main'
+	classpath = sourceSets.main.runtimeClasspath
 }
 
 jar {
@@ -88,6 +103,7 @@ jar {
 	manifest.attributes (
 		'Main-Class': application.mainClass,
 		'Application-Version': project.version,
+		'Copyright': project.findProperty('application.copyright'),
 		'Class-Path': configurations.shadow.files.stream()
 				.filter($it -> !$it.name.startsWith('javafx')).collect{"lib/$it.name"}.join(' ')
 	)

@@ -10,6 +10,12 @@ menu.view;Перегляд
 menu.selection;Виділення
 menu.tools;Інструменти
 menu.about;Про
+menu.file.new;Новий
+menu.file.open;Відкрити
+menu.file.open_recent;Відкрити нещодавно
+menu.file.open_recent.clear;Очистити
+menu.file.save;Зберегти
+menu.file.save_as;Зберегти як...
 menu.file.open_world;Відкрити світ
 menu.file.open_dimension;Відкрити вимір
 menu.file.open_recent_world;Відкрити останній світ
@@ -60,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;Колір вставлен
 dialog.settings.rendering.shade.shade;Відтінок
 dialog.settings.rendering.shade;Відтінок
 dialog.settings.rendering.shade.shade_water;Відтінок води
+dialog.settings.rendering.shade.shade_altitude;Висота рельєфу
 dialog.settings.rendering.background.show_nonexistent_regions;Показувати неіснуючі регіони
 dialog.settings.rendering.smooth.smooth_rendering;Гладка відмальовка
 dialog.settings.rendering.smooth.smooth_overlays;Гладке накладання
@@ -182,5 +189,9 @@ dialog.error.header;Сталася помика
 dialog.error.copied_to_clipboard;Скопійовано до буферу обміну!
 dialog.unsaved_selection.title;Не збережене виділення
 dialog.unsaved_selection.header;Це не збережене виділення.
+dialog.unsaved_script.title;Незбережений скрипт
+dialog.unsaved_script.header;Є незбережений скрипт.
+dialog.request_number.title.array_length;Довжина масиву
+dialog.request_number.title.enter_number;Значення
 button.cancel;Скасувати
 button.ok;OK

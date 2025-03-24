@@ -62,9 +62,9 @@ public class Window extends Application {
 
 		Scene scene = new Scene(pane, width, height);
 
-		Font.loadFont(Window.class.getClassLoader().getResource("font/NotoSans-Regular.ttf").toExternalForm(), 10);
-		Font.loadFont(Window.class.getClassLoader().getResource("font/NotoSansMono-Regular.ttf").toExternalForm(), 10);
-		Font.loadFont(Window.class.getClassLoader().getResource("font/NotoSansMono-Bold.ttf").toExternalForm(), 10);
+		Font.loadFont(Objects.requireNonNull(Window.class.getClassLoader().getResource("font/NotoSans-Regular.ttf")).toExternalForm(), 10);
+		Font.loadFont(Objects.requireNonNull(Window.class.getClassLoader().getResource("font/NotoSansMono-Regular.ttf")).toExternalForm(), 10);
+		Font.loadFont(Objects.requireNonNull(Window.class.getClassLoader().getResource("font/NotoSansMono-Bold.ttf")).toExternalForm(), 10);
 
 
 		URL cssRes = Window.class.getClassLoader().getResource("style/base.css");

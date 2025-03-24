@@ -20,11 +20,11 @@ import net.querz.mcaselector.selection.ClipboardSelection;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.selection.SelectionData;
 import net.querz.mcaselector.tile.TileMap;
-import net.querz.mcaselector.property.DataProperty;
-import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.util.property.DataProperty;
+import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.dialog.*;
-import net.querz.mcaselector.validation.BeforeAfterCallback;
+import net.querz.mcaselector.util.validation.BeforeAfterCallback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import javax.imageio.ImageIO;
@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static net.querz.mcaselector.ui.dialog.ImportConfirmationDialog.ChunkImportConfirmationData;
@@ -344,13 +343,15 @@ public class DialogHelper {
 				tileMap.getWindow().getTileMapBox().setBackground(r.tileMapBackground.getBackground());
 
 				if (r.height != ConfigProvider.WORLD.getRenderHeight() || r.layerOnly != ConfigProvider.WORLD.getRenderLayerOnly()
-					|| r.shade != ConfigProvider.WORLD.getShade() || r.shadeWater != ConfigProvider.WORLD.getShadeWater() || r.caves != ConfigProvider.WORLD.getRenderCaves()) {
+					|| r.shade != ConfigProvider.WORLD.getShade() || r.shadeWater != ConfigProvider.WORLD.getShadeWater()
+					|| r.shadeAltitude != ConfigProvider.WORLD.getShadeAltitude() || r.caves != ConfigProvider.WORLD.getRenderCaves()) {
 					ConfigProvider.WORLD.setRenderHeight(r.height);
 					ConfigProvider.WORLD.setRenderLayerOnly(r.layerOnly);
 					ConfigProvider.WORLD.setRenderCaves(r.caves);
 					tileMap.getWindow().getOptionBar().setRenderHeight(r.height);
 					ConfigProvider.WORLD.setShade(r.shade);
 					ConfigProvider.WORLD.setShadeWater(r.shadeWater);
+					ConfigProvider.WORLD.setShadeAltitude(r.shadeAltitude);
 					// only clear the cache if the actual image rendering changed
 					CacheHelper.clearAllCache(tileMap);
 				}
@@ -605,7 +606,7 @@ public class DialogHelper {
 
 			// if there is only one dimension, open it instantly
 			if (dimensions.size() == 1) {
-				setWorld(FileHelper.detectWorldDirectories(dimensions.get(0)), dimensions, tileMap, primaryStage);
+				setWorld(FileHelper.detectWorldDirectories(dimensions.getFirst()), dimensions, tileMap, primaryStage);
 				return;
 			}
 			// show world selection dialog
@@ -624,12 +625,12 @@ public class DialogHelper {
 			CacheHelper.validateCacheVersion(tileMap);
 			RegionImageGenerator.invalidateCachedMCAFiles();
 			tileMap.getWindow().getOptionBar().setRenderHeight(ConfigProvider.WORLD.getRenderHeight());
-			tileMap.clear(task);
+			tileMap.clear(task, false);
+			tileMap.getOverlayPool().switchTo(new File(ConfigProvider.WORLD.getCacheDir(), "cache").toString());
 			tileMap.clearSelection();
 			tileMap.draw();
 			tileMap.disable(false);
 			tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap, primaryStage);
-			tileMap.getOverlayPool().switchTo(new File(ConfigProvider.WORLD.getCacheDir(), "cache.db").toString(), tileMap.getOverlays());
 			task.done(Translation.DIALOG_PROGRESS_DONE.toString());
 			Platform.runLater(() -> tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent()));
 		});
@@ -692,7 +693,7 @@ public class DialogHelper {
 		}
 		DataProperty<AtomicLong> sum = new DataProperty<>();
 		CancellableProgressDialog cpd = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SUMMING, primaryStage);
-		cpd.showProgressBar(t -> sum.set(SelectionSummer.sumSelection(tileMap.getSelectedChunks(), tileMap.getSelection(), tileMap.getOverlay(), t)));
+		cpd.showProgressBar(t -> sum.set(SelectionSummer.sumSelection(tileMap.getSelection(), tileMap.getOverlay(), t)));
 		if (!cpd.cancelled()) {
 			String s = tileMap.getOverlay().getShortMultiValues();
 			String title = tileMap.getOverlay().getType() + (s == null ? "" : "(" + s + ")");
@@ -708,7 +709,7 @@ public class DialogHelper {
 		return directoryChooser;
 	}
 
-	private static FileChooser createFileChooser(String initialDirectory, FileChooser.ExtensionFilter filter) {
+	public static FileChooser createFileChooser(String initialDirectory, FileChooser.ExtensionFilter filter) {
 		FileChooser fileChooser = new FileChooser();
 		if (filter != null) {
 			fileChooser.getExtensionFilters().add(filter);

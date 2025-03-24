@@ -24,6 +24,7 @@ public class GlobalConfig extends Config {
 		builder.registerTypeAdapter(Color.class, new ColorAdapter());
 		builder.registerTypeAdapter(File.class, new FileAdapter(BASE_DIR.getAbsolutePath()));
 		builder.registerTypeAdapter(Locale.class, new LocaleAdapter());
+		builder.setPrettyPrinting();
 		gsonInstance = builder.create();
 	}
 
@@ -34,7 +35,7 @@ public class GlobalConfig extends Config {
 	public static final Locale DEFAULT_LOCALE = Locale.UK;
 	public static final int DEFAULT_PROCESS_THREADS = Math.min(Math.max(Runtime.getRuntime().availableProcessors() - 2, 1), 4);
 	public static final int DEFAULT_WRITE_THREADS = Math.min(Math.max(Runtime.getRuntime().availableProcessors(), 1), 4);
-	public static final int DEFAULT_MAX_LOADED_FILES = (int) Math.min(Math.max(Math.ceil(Runtime.getRuntime().maxMemory() / 1_000_000_000D) * 2, 1), 16);
+	public static final int DEFAULT_MAX_LOADED_FILES = 1;
 	public static final boolean DEFAULT_DEBUG = false;
 	public static final String DEFAULT_MC_SAVES_DIR = FileHelper.getMCSavesDir();
 
@@ -49,6 +50,10 @@ public class GlobalConfig extends Config {
 	private String mcSavesDir = DEFAULT_MC_SAVES_DIR;
 	private boolean debug = DEFAULT_DEBUG;
 	private TreeMap<Long, RecentWorld> recentWorlds = new TreeMap<>();
+	private RecentFiles recentFilterScripts = new RecentFiles();
+	private RecentFiles recentChangeScripts = new RecentFiles();
+	private TempScript filterScript = new TempScript(null, false, "");
+	private TempScript changeScript = new TempScript(null, false, "");
 
 	public Locale getLocale() {
 		return locale;
@@ -143,11 +148,43 @@ public class GlobalConfig extends Config {
 		}
 
 		// if it doesn't exist, we need to make sure that we delete the oldest entry if there are already 10 entries
-		if (recentWorlds.size() >= 16) {
+		if (recentWorlds.size() >= MAX_RECENT_FILES) {
 			recentWorlds.remove(recentWorlds.firstKey());
 		}
 
 		recentWorlds.put(System.currentTimeMillis(), new RecentWorld(world, dimensionDirectories));
+	}
+
+	public RecentFiles getRecentFilterScripts() {
+		return recentFilterScripts;
+	}
+
+	public void addRecentFilterScript(File file) {
+		recentFilterScripts.addRecentFile(file);
+	}
+
+	public RecentFiles getRecentChangeScripts() {
+		return recentChangeScripts;
+	}
+
+	public void addRecentChangeScript(File file) {
+		recentChangeScripts.addRecentFile(file);
+	}
+
+	public TempScript getFilterScript() {
+		return filterScript;
+	}
+
+	public void setFilterScript(TempScript filterScript) {
+		this.filterScript = filterScript;
+	}
+
+	public TempScript getChangeScript() {
+		return changeScript;
+	}
+
+	public void setChangeScript(TempScript changeScript) {
+		this.changeScript = changeScript;
 	}
 
 	@Override
@@ -200,4 +237,6 @@ public class GlobalConfig extends Config {
 			return name;
 		}
 	}
+
+	public record TempScript(File file, boolean saved, String text) {}
 }

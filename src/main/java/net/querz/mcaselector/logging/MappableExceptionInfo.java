@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class MappableExceptionInfo {
 
-	private Class<? extends Throwable> clazz;
+	private final Class<? extends Throwable> clazz;
 
 	private final int line;
 	private final String file;
@@ -81,10 +81,9 @@ public class MappableExceptionInfo {
 
 	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof MappableExceptionInfo)) {
+		if (!(other instanceof MappableExceptionInfo ex)) {
 			return false;
 		}
-		MappableExceptionInfo ex = (MappableExceptionInfo) other;
 		return clazz == ex.clazz && line == ex.line && (file == null && ex.file == null || file != null && file.equals(ex.file));
 	}
 }

@@ -38,3 +38,8 @@ else
 fi
 
 sed -i -E 's/"[0-9]+\.[0-9]+(\.[0-9]+)?\\0"/"'$applicationVersion'\\0"/g' 'installer/res/resource.rc'
+
+# update copyright year
+sed -i -E "s/© *2018 *- *[0-9]{4}/© 2018 - $(date +%Y)/g" 'installer/res/resource.rc'
+sed -i -E "s/© *2018 *- *[0-9]{4}/© 2018 - $(date +%Y)/g" 'gradle.properties'
+sed -i -E "s/Copyright *\(c\) *2018 *- *[0-9]{4}/Copyright (c) 2018 - $(date +%Y)/g" 'LICENSE'

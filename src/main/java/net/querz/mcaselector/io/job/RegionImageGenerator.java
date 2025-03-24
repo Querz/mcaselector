@@ -9,9 +9,9 @@ import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.tile.TileImage;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.progress.Progress;
-import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.progress.Progress;
+import net.querz.mcaselector.util.progress.Timer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import javax.imageio.ImageIO;
@@ -153,31 +153,24 @@ public final class RegionImageGenerator {
 		@Override
 		public boolean execute() {
 			RegionMCAFile cachedRegion = getCachedRegionMCAFile(tile.getLocation());
-			byte[] data = null;
-			if (cachedRegion == null) {
-				data = load(tile.getMCAFile());
-			}
-			if (data == null && cachedRegion == null) {
-				callback.accept(null, uniqueID);
-				if (progressChannel != null) {
-					progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
-				}
-				return true;
-			}
 
 			LOGGER.debug("generating image for {}", tile.getMCAFile().getAbsolutePath());
 
 			File file = tile.getMCAFile();
-			ByteArrayPointer ptr = new ByteArrayPointer(data);
 			boolean isCached = false;
 			if (cachedRegion == null) {
 				cachedRegion = new RegionMCAFile(file);
 				try {
 					Timer t = new Timer();
-					cachedRegion.load(ptr);
+					cachedRegion.load(true);
 					LOGGER.debug("took {} to read mca file {}", t, cachedRegion.getFile().getName());
 				} catch (IOException ex) {
 					LOGGER.warn("failed to load mca file {}", cachedRegion.getFile().getName());
+					callback.accept(null, uniqueID);
+					if (progressChannel != null) {
+						progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
+					}
+					return true;
 				}
 			} else {
 				isCached = true;

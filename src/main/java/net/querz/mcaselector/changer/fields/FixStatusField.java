@@ -3,9 +3,9 @@ package net.querz.mcaselector.changer.fields;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.io.registry.StatusRegistry;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
+import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.StringTag;
 
@@ -34,16 +34,17 @@ public class FixStatusField extends Field<Boolean> {
 
 	@Override
 	public void change(ChunkData data) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		StringTag status = chunkFilter.getStatus(data.region().getData());
+		ChunkFilter.Status statusFilter = VersionHandler.getImpl(data, ChunkFilter.Status.class);
+		StringTag status = statusFilter.getStatus(data);
+		ChunkFilter.Sections sectionFilter = VersionHandler.getImpl(data, ChunkFilter.Sections.class);
 
 		if (empty.equals(status.getValue())) {
-			ListTag sections = chunkFilter.getSections(data.region().getData());
+			ListTag sections = sectionFilter.getSections(data);
 			if (sections == null) {
 				return;
 			}
-			if (sections.size() > 0) {
-				chunkFilter.setStatus(data.region().getData(), full);
+			if (!sections.isEmpty()) {
+				statusFilter.setStatus(data, full);
 			}
 		}
 	}

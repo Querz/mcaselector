@@ -10,14 +10,17 @@ import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
-import net.querz.mcaselector.math.MathUtil;
-import net.querz.mcaselector.point.Point2f;
-import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.util.math.MathUtil;
+import net.querz.mcaselector.util.point.Point2f;
+import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.ImageHelper;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.ChunkRenderer;
+import net.querz.mcaselector.version.ColorMapping;
+import net.querz.mcaselector.version.Helper;
+import net.querz.mcaselector.version.VersionHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -135,34 +138,35 @@ public final class TileImage {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	private static void drawChunkImage(Chunk chunkData, int x, int z, int scale, int[] pixelBuffer, int[] waterPixels, short[] terrainHeights, short[] waterHeights) {
 
 		if (chunkData.getData() == null) {
 			return;
 		}
-		int dataVersion = chunkData.getData().getIntOrDefault("DataVersion", 0);
+		int dataVersion = Helper.getDataVersion(chunkData.getData());
 		try {
 			if (ConfigProvider.WORLD.getRenderCaves()) {
-				VersionController.getChunkRenderer(dataVersion).drawCaves(
+				VersionHandler.getImpl(dataVersion, ChunkRenderer.class).drawCaves(
 						chunkData.getData(),
-						VersionController.getColorMapping(dataVersion),
+						VersionHandler.getImpl(dataVersion, ColorMapping.class),
 						x, z, scale,
 						pixelBuffer,
 						terrainHeights,
 						ConfigProvider.WORLD.getRenderHeight()
 				);
 			} else if (ConfigProvider.WORLD.getRenderLayerOnly()) {
-				VersionController.getChunkRenderer(dataVersion).drawLayer(
+				VersionHandler.getImpl(dataVersion, ChunkRenderer.class).drawLayer(
 						chunkData.getData(),
-						VersionController.getColorMapping(dataVersion),
+						VersionHandler.getImpl(dataVersion, ColorMapping.class),
 						x, z, scale,
 						pixelBuffer,
 						ConfigProvider.WORLD.getRenderHeight()
 				);
 			} else {
-				VersionController.getChunkRenderer(dataVersion).drawChunk(
+				VersionHandler.getImpl(dataVersion, ChunkRenderer.class).drawChunk(
 						chunkData.getData(),
-						VersionController.getColorMapping(dataVersion),
+						VersionHandler.getImpl(dataVersion, ColorMapping.class),
 						x, z, scale,
 						pixelBuffer,
 						waterPixels,
@@ -193,7 +197,7 @@ public final class TileImage {
 		int index = 0;
 		for (int z = 0; z < size; z++) {
 			for (int x = 0; x < size; x++, index++) {
-				int altitudeShade = MathUtil.clamp(16 * terrainHeights[index] / 64, -50, 50);
+				int altitudeShade = MathUtil.clamp(terrainHeights[index] / 4, -50, 50);
 				pixelBuffer[index] = Color.shade(pixelBuffer[index], altitudeShade * 4);
 			}
 		}
@@ -205,6 +209,7 @@ public final class TileImage {
 		}
 
 		int size = Tile.SIZE / scale;
+		float altitudeShadeMultiplier = ConfigProvider.WORLD.getShadeAltitude() ? 12f / 256f : 0f;
 
 		int index = 0;
 		for (int z = 0; z < size; z++) {
@@ -236,24 +241,15 @@ public final class TileImage {
 					}
 
 					float shade = xShade + zShade;
-					if (shade < -8) {
-						shade = -8;
-					}
-					if (shade > 8) {
-						shade = 8;
-					}
+					shade = MathUtil.clamp(shade, -8f, 8f);
 
-					int altitudeShade = 16 * (waterHeights[index] - 64) / 255;
-					if (altitudeShade < -4) {
-						altitudeShade = -4;
-					}
-					if (altitudeShade > 24) {
-						altitudeShade = 24;
-					}
+					// subtract 64 from height so altitude shade is 0 at sea level
+					float altitudeShade = (waterHeights[index] - 64f) * altitudeShadeMultiplier;
+					altitudeShade = MathUtil.clamp(altitudeShade, -4f, 12f);
 
 					shade += altitudeShade;
 
-					pixelBuffer[index] = Color.shade(pixelBuffer[index], (int) (shade * 8));
+					pixelBuffer[index] = Color.shade(pixelBuffer[index], (int) (shade * 8f));
 				}
 			}
 		}

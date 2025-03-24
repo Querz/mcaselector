@@ -4,39 +4,15 @@ import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.HeightmapCalculator;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
+import net.querz.mcaselector.version.mapping.registry.BlockRegistry;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.io.snbt.ParseException;
 import net.querz.nbt.io.snbt.SNBTParser;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockReplaceData>> {
-
-	private static final Logger LOGGER = LogManager.getLogger(ReplaceBlocksField.class);
-
-	private static final Set<String> validNames = new HashSet<>();
-
-	static {
-		try (BufferedReader bis = new BufferedReader(
-				new InputStreamReader(Objects.requireNonNull(ReplaceBlocksField.class.getClassLoader().getResourceAsStream("mapping/all_block_names.txt"))))) {
-			String line;
-			while ((line = bis.readLine()) != null) {
-				validNames.add("minecraft:" + line);
-			}
-		} catch (IOException ex) {
-			LOGGER.error("error reading mapping/all_block_names.txt", ex);
-		}
-	}
 
 	public ReplaceBlocksField() {
 		super(FieldType.REPLACE_BLOCKS);
@@ -59,7 +35,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 
 		String trimmed = s.trim();
 
-		while (trimmed.length() > 0) {
+		while (!trimmed.isEmpty()) {
 			String[] fromTo = trimmed.split("=", 2);
 			if (fromTo.length != 2) {
 				return super.parseNewValue(s);
@@ -70,7 +46,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 				from = from.substring(1, from.length() - 1);
 			} else if (!from.startsWith("minecraft:")) {
 				from = "minecraft:" + from;
-				if (!validNames.contains(from)) {
+				if (!BlockRegistry.isValidName(from)) {
 					return super.parseNewValue(s);
 				}
 			}
@@ -117,7 +93,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 				if (!toName.startsWith("minecraft:")) {
 					toName = "minecraft:" + toName;
 				}
-				if (!validNames.contains(toName)) {
+				if (!BlockRegistry.isValidName(toName)) {
 					return super.parseNewValue(s);
 				}
 				read += i;
@@ -128,7 +104,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 			CompoundTag toTile = null;
 			if (to.startsWith(";")) {
 				to = to.substring(1).trim();
-				if (to.length() == 0) {
+				if (to.isEmpty()) {
 					return super.parseNewValue(s);
 				}
 				try {
@@ -159,7 +135,7 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 
 			if (to.startsWith(",")) {
 				trimmed = to.substring(1).trim();
-			} else if (to.length() != 0) {
+			} else if (!to.isEmpty()) {
 				return super.parseNewValue(s);
 			} else {
 				break;
@@ -181,15 +157,12 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 
 	@Override
 	public void change(ChunkData data) {
-		int dataVersion = data.region().getData().getIntOrDefault("DataVersion", 0);
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(dataVersion);
-		chunkFilter.replaceBlocks(data.region().getData(), getNewValue());
-
-		HeightmapCalculator heightmapCalculator = VersionController.getHeightmapCalculator(dataVersion);
-		heightmapCalculator.worldSurface(data.region().getData());
-		heightmapCalculator.oceanFloor(data.region().getData());
-		heightmapCalculator.motionBlocking(data.region().getData());
-		heightmapCalculator.motionBlockingNoLeaves(data.region().getData());
+		VersionHandler.getImpl(data, ChunkFilter.Blocks.class).replaceBlocks(data, getNewValue());
+		ChunkFilter.Heightmap heightmap = VersionHandler.getImpl(data, ChunkFilter.Heightmap.class);
+		heightmap.worldSurface(data);
+		heightmap.oceanFloor(data);
+		heightmap.motionBlocking(data);
+		heightmap.motionBlockingNoLeaves(data);
 	}
 
 	@Override

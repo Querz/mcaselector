@@ -1,13 +1,13 @@
 package net.querz.mcaselector.io.mca;
 
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.point.Point3i;
+import net.querz.mcaselector.util.range.Range;
 import net.querz.mcaselector.selection.ChunkSet;
-import net.querz.mcaselector.version.ChunkMerger;
+import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.ChunkRenderer;
-import net.querz.mcaselector.version.HeightmapCalculator;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.Helper;
+import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.CompoundTag;
 import java.io.File;
 import java.util.List;
@@ -24,8 +24,7 @@ public class RegionMCAFile extends MCAFile<RegionChunk> implements Cloneable {
 	}
 
 	static RegionChunk newEmptyChunk(Point2i absoluteLocation, int dataVersion) {
-		ChunkMerger chunkMerger = VersionController.getChunkMerger(dataVersion);
-		CompoundTag root = chunkMerger.newEmptyChunk(absoluteLocation, dataVersion);
+		CompoundTag root = VersionHandler.getImpl(dataVersion, ChunkFilter.Merge.class).newEmptyChunk(absoluteLocation, dataVersion);
 		RegionChunk chunk = new RegionChunk(absoluteLocation);
 		chunk.data = root;
 		chunk.compressionType = CompressionType.ZLIB;
@@ -65,11 +64,12 @@ public class RegionMCAFile extends MCAFile<RegionChunk> implements Cloneable {
 						continue;
 					}
 
-					HeightmapCalculator heightmapCalculator = VersionController.getHeightmapCalculator(destinationChunk.getData().getIntOrDefault("DataVersion", 0));
-					heightmapCalculator.worldSurface(destinationChunk.getData());
-					heightmapCalculator.oceanFloor(destinationChunk.getData());
-					heightmapCalculator.motionBlocking(destinationChunk.getData());
-					heightmapCalculator.motionBlockingNoLeaves(destinationChunk.getData());
+					ChunkData data = new ChunkData(destinationChunk, null, null, false);
+					ChunkFilter.Heightmap heightmap = VersionHandler.getImpl(data, ChunkFilter.Heightmap.class);
+					heightmap.worldSurface(data);
+					heightmap.oceanFloor(data);
+					heightmap.motionBlocking(data);
+					heightmap.motionBlockingNoLeaves(data);
 				}
 			}
 		}
@@ -87,9 +87,7 @@ public class RegionMCAFile extends MCAFile<RegionChunk> implements Cloneable {
 			}
 
 			try {
-				ChunkRenderer chunkRenderer = VersionController.getChunkRenderer(chunk.data.getIntOrDefault("DataVersion", 0));
-				CompoundTag minData = chunkRenderer.minimizeChunk(chunk.data);
-
+				CompoundTag minData = VersionHandler.getImpl(Helper.getDataVersion(chunk.data), ChunkRenderer.class).minimizeChunk(chunk.data);
 				RegionChunk minChunk = new RegionChunk(chunk.absoluteLocation.clone());
 				minChunk.data = minData;
 

@@ -7,20 +7,16 @@ import net.querz.mcaselector.filter.Comparator;
 import net.querz.mcaselector.filter.FilterType;
 import net.querz.mcaselector.filter.IntFilter;
 import net.querz.mcaselector.filter.Operator;
-import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
-import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.StringTag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 
 public class BorderFilter extends IntFilter {
 
@@ -46,8 +42,8 @@ public class BorderFilter extends IntFilter {
 			return 9;
 		}
 
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		StringTag tag = chunkFilter.getStatus(data.region().getData());
+		ChunkFilter.Status filter = VersionHandler.getImpl(data, ChunkFilter.Status.class);
+		StringTag tag = filter.getStatus(data);
 		if (tag == null || !tag.getValue().equals("full")) {
 			return 9;
 		}
@@ -202,10 +198,8 @@ public class BorderFilter extends IntFilter {
 				push(key, null);
 				return null;
 			}
-			byte[] data = new byte[(int) regionMCAFile.getFile().length()];
-			try (InputStream is = Files.newInputStream(regionMCAFile.getFile().toPath(), StandardOpenOption.READ)) {
-				is.read(data);
-				regionMCAFile.loadBorderChunks(new ByteArrayPointer(data));
+			try {
+				regionMCAFile.loadBorderChunks();
 			} catch (IOException ex) {
 				LOGGER.warn("failed to read data from {}", regionMCAFile.getFile(), ex);
 				push(key, null);

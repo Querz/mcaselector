@@ -10,6 +10,12 @@ menu.view;Görüntü
 menu.selection;Seçim
 menu.tools;Araçlar
 menu.about;Bilgi
+menu.file.new;Yeni
+menu.file.open;Aç
+menu.file.open_recent;Son açılanlar
+menu.file.open_recent.clear;Temizle
+menu.file.save;Kaydet
+menu.file.save_as;Farklı kaydet...
 menu.file.open_world;Dünya Aç
 menu.file.open_dimension;Başka bir boyut aç
 menu.file.open_recent_world;Önceki bir dünyayı Aç
@@ -60,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;Yapıştırılan Chunk Reng
 dialog.settings.rendering.shade.shade;Gölge
 dialog.settings.rendering.shade;Gölge
 dialog.settings.rendering.shade.shade_water;Su Gölgesi
+dialog.settings.rendering.shade.shade_altitude;Arazi yüksekliği
 dialog.settings.rendering.background.show_nonexistent_regions;Var olmayan bölgeleri göster
 dialog.settings.rendering.smooth.smooth_rendering;Pürüzsüz işleme
 dialog.settings.rendering.smooth.smooth_overlays;Pürüzsüz kaplama
@@ -182,5 +189,9 @@ dialog.error.header;Bir hata oluştu
 dialog.error.copied_to_clipboard;Panoya kopyalandı!
 dialog.unsaved_selection.title;Kaydedilmemiş seçim
 dialog.unsaved_selection.header;Kaydedilmemiş bir seçim var.
+dialog.unsaved_script.title;Kaydedilmemiş script
+dialog.unsaved_script.header;Kaydedilmemiş bir script var.
+dialog.request_number.title.array_length;Dizinin uzunluğu
+dialog.request_number.title.enter_number;Değer
 button.cancel;İptal
 button.ok;Tamam

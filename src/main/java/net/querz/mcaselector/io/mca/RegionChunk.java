@@ -1,12 +1,12 @@
 package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.range.Range;
-import net.querz.mcaselector.version.ChunkMerger;
-import net.querz.mcaselector.version.ChunkRelocator;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.point.Point3i;
+import net.querz.mcaselector.util.range.Range;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.Helper;
+import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.CompoundTag;
 import java.io.File;
 import java.util.List;
@@ -19,14 +19,12 @@ public class RegionChunk extends Chunk implements Cloneable {
 
 	@Override
 	public boolean relocate(Point3i offset) {
-		ChunkRelocator relocator = VersionController.getChunkRelocator(data.getIntOrDefault("DataVersion", 0));
-		return relocator.relocate(data, offset);
+		return VersionHandler.getImpl(Helper.getDataVersion(data), ChunkFilter.Relocate.class).relocate(data, offset);
 	}
 
 	@Override
 	public void merge(CompoundTag destination, List<Range> ranges, int yOffset) {
-		ChunkMerger merger = VersionController.getChunkMerger(data.getIntOrDefault("DataVersion", 0));
-		merger.mergeChunks(data, destination, ranges, yOffset);
+		VersionHandler.getImpl(Helper.getDataVersion(data), ChunkFilter.Merge.class).mergeChunks(data, destination, ranges, yOffset);
 	}
 
 	@Override

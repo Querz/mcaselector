@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.FileHelper;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.overlay.overlays.InhabitedTimeOverlay;
@@ -25,6 +25,7 @@ import net.querz.mcaselector.ui.component.OverlayBox;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
@@ -63,7 +64,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		getDialogPane().getStyleClass().add("overlay-dialog-pane");
 		setResultConverter(p -> p == ButtonType.OK ? new Result(overlays) : null);
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
-		getDialogPane().getStylesheets().add(OverlayEditorDialog.class.getClassLoader().getResource("style/component/overlay-editor-dialog.css").toExternalForm());
+		getDialogPane().getStylesheets().add(Objects.requireNonNull(OverlayEditorDialog.class.getClassLoader().getResource("style/component/overlay-editor-dialog.css")).toExternalForm());
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, e -> {
 			tileMap.setOverlays(overlays);

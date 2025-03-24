@@ -3,7 +3,7 @@ package net.querz.mcaselector.filter.filters;
 import net.querz.mcaselector.filter.Comparator;
 import net.querz.mcaselector.filter.FilterType;
 import net.querz.mcaselector.filter.Operator;
-import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.util.point.Point2i;
 import net.querz.nbt.*;
 import java.io.File;
 import java.util.regex.Pattern;

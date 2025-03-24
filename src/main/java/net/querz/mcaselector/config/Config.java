@@ -2,12 +2,14 @@ package net.querz.mcaselector.config;
 
 import com.google.gson.Gson;
 import net.querz.mcaselector.logging.Logging;
-import net.querz.mcaselector.math.Bits;
+import net.querz.mcaselector.util.math.Bits;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Map;
+import java.util.TreeMap;
 
 public abstract class Config {
 
@@ -121,6 +123,7 @@ public abstract class Config {
 	public static final int MIN_ZOOM_LEVEL = Bits.getMsb((int) MIN_SCALE);
 	public static final int MAX_ZOOM_LEVEL = Bits.getMsb((int) MAX_SCALE);
 	public static final double IMAGE_POOL_SIZE = 2.5;
+	public static final int MAX_RECENT_FILES = 16;
 
 	private static final Logger LOGGER = LogManager.getLogger(Config.class);
 
@@ -145,5 +148,25 @@ public abstract class Config {
 			LOGGER.warn("error reading config file " + file, ex);
 		}
 		return null;
+	}
+
+	public static class RecentFiles extends TreeMap<Long, File> {
+
+		public void addRecentFile(File file) {
+			if (file == null) {
+				return;
+			}
+			for (Map.Entry<Long, File> entry : entrySet()) {
+				if (entry.getValue().equals(file)) {
+					remove(entry.getKey());
+					put(System.currentTimeMillis(), file);
+					return;
+				}
+			}
+			if (size() >= MAX_RECENT_FILES) {
+				remove(firstKey());
+			}
+			put(System.currentTimeMillis(), file);
+		}
 	}
 }

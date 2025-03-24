@@ -5,7 +5,7 @@ import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.overlay.OverlayType;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.LongTag;
 
 public class InhabitedTimeOverlay extends Overlay {
@@ -20,9 +20,8 @@ public class InhabitedTimeOverlay extends Overlay {
 	}
 
 	@Override
-	public int parseValue(ChunkData chunkData) {
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.region().getData().getIntOrDefault("DataVersion", 0));
-		LongTag tag = chunkFilter.getInhabitedTime(chunkData.region().getData());
+	public int parseValue(ChunkData data) {
+		LongTag tag = VersionHandler.getImpl(data, ChunkFilter.InhabitedTime.class).getInhabitedTime(data);
 		return tag == null ? 0 : tag.asInt();
 	}
 

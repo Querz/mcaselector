@@ -3,7 +3,8 @@ package net.querz.mcaselector.changer.fields;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.validation.ValidationHelper;
+import net.querz.mcaselector.version.Helper;
+import net.querz.nbt.CompoundTag;
 import net.querz.nbt.IntTag;
 
 public class DataVersionField extends Field<Integer> {
@@ -14,7 +15,8 @@ public class DataVersionField extends Field<Integer> {
 
 	@Override
 	public Integer getOldValue(ChunkData data) {
-		return ValidationHelper.withDefault(() -> data.region().getData().getInt("DataVersion"), null);
+		IntTag tag = Helper.getDataVersionTag(Helper.getRegion(data));
+		return tag == null ? null : tag.asInt();
 	}
 
 	@Override
@@ -32,36 +34,28 @@ public class DataVersionField extends Field<Integer> {
 
 	@Override
 	public void change(ChunkData data) {
-		IntTag tag = data.region().getData().getIntTag("DataVersion");
-		if (tag != null) {
-			data.region().getData().putInt("DataVersion", getNewValue());
+		CompoundTag root;
+		if ((root = Helper.getRegion(data)) != null && Helper.getDataVersionTag(root) != null) {
+			Helper.setDataVersion(root, getNewValue());
 		}
-
-		if (data.poi() != null) {
-			tag = data.poi().getData().getIntTag("DataVersion");
-			if (tag != null) {
-				data.region().getData().putInt("DataVersion", getNewValue());
-			}
+		if ((root = Helper.getPOI(data)) != null && Helper.getDataVersionTag(root) != null) {
+			Helper.setDataVersion(root, getNewValue());
 		}
-
-		if (data.entities() != null) {
-			tag = data.entities().getData().getIntTag("DataVersion");
-			if (tag != null) {
-				data.region().getData().putInt("DataVersion", getNewValue());
-			}
+		if ((root = Helper.getEntities(data)) != null && Helper.getDataVersionTag(root) != null) {
+			Helper.setDataVersion(root, getNewValue());
 		}
 	}
 
 	@Override
 	public void force(ChunkData data) {
-		data.region().getData().putInt("DataVersion", getNewValue());
-
-		if (data.poi() != null) {
-			data.poi().getData().putInt("DataVersion", getNewValue());
+		if (data.region() != null) {
+			Helper.setDataVersion(data.region().getData(), getNewValue());
 		}
-
+		if (data.poi() != null) {
+			Helper.setDataVersion(data.poi().getData(), getNewValue());
+		}
 		if (data.entities() != null) {
-			data.entities().getData().putInt("DataVersion", getNewValue());
+			Helper.setDataVersion(data.entities().getData(), getNewValue());
 		}
 	}
 }

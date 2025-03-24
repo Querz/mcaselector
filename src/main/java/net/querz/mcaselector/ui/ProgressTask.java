@@ -4,7 +4,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
-import net.querz.mcaselector.progress.Progress;
+import net.querz.mcaselector.util.progress.Progress;
 import net.querz.mcaselector.text.Translation;
 import java.util.concurrent.atomic.AtomicInteger;
 

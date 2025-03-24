@@ -1,8 +1,7 @@
 package net.querz.mcaselector.tile;
 
 import javafx.scene.input.KeyCode;
-import net.querz.mcaselector.validation.ShutdownHooks;
-
+import net.querz.mcaselector.util.validation.ShutdownHooks;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;

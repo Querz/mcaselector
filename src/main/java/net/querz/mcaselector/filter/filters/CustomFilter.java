@@ -9,7 +9,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-
 public class CustomFilter extends TextFilter<String> {
 
 	private static final Logger LOGGER = LogManager.getLogger(CustomFilter.class);

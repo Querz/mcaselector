@@ -2,9 +2,10 @@ package net.querz.mcaselector.filter.filters;
 
 import net.querz.mcaselector.filter.*;
 import net.querz.mcaselector.filter.Comparator;
-import net.querz.mcaselector.io.registry.BiomeRegistry;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionHandler;
+import net.querz.mcaselector.version.mapping.registry.BiomeRegistry;
 import java.util.*;
 
 public class BiomeFilter extends TextFilter<List<BiomeRegistry.BiomeIdentifier>> {
@@ -25,6 +26,7 @@ public class BiomeFilter extends TextFilter<List<BiomeRegistry.BiomeIdentifier>>
 				}
 				sb.append(value.get(i));
 			}
+			setRawValue(sb.toString());
 		}
 	}
 
@@ -35,11 +37,7 @@ public class BiomeFilter extends TextFilter<List<BiomeRegistry.BiomeIdentifier>>
 
 	@Override
 	public boolean contains(List<BiomeRegistry.BiomeIdentifier> value, ChunkData data) {
-		if (data.region() == null) {
-			return false;
-		}
-		return VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0))
-				.matchBiomes(data.region().getData(), value);
+		return VersionHandler.getImpl(data, ChunkFilter.Biomes.class).matchBiomes(data, value);
 	}
 
 	@Override
@@ -49,11 +47,7 @@ public class BiomeFilter extends TextFilter<List<BiomeRegistry.BiomeIdentifier>>
 
 	@Override
 	public boolean intersects(List<BiomeRegistry.BiomeIdentifier> value, ChunkData data) {
-		if (data.region() == null) {
-			return false;
-		}
-		return VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0))
-				.matchAnyBiome(data.region().getData(), value);
+		return VersionHandler.getImpl(data, ChunkFilter.Biomes.class).matchAnyBiome(data, value);
 	}
 
 	@Override

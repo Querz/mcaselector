@@ -32,7 +32,7 @@ public class CustomField extends Field<String> {
 	}
 
 	@Override
-	public String getOldValue(ChunkData root) {
+	public String getOldValue(ChunkData data) {
 		return null;
 	}
 
@@ -49,12 +49,12 @@ public class CustomField extends Field<String> {
 	}
 
 	@Override
-	public void change(ChunkData root) {
+	public void change(ChunkData data) {
 		// this needs to be thread safe because all threads use the same ScriptEngine
 		synchronized (lock) {
-			engine.put("region", root.region() != null && root.region().getData() != null ? root.region().getData() : null);
-			engine.put("poi", root.poi() != null && root.poi().getData() != null ? root.poi().getData() : null);
-			engine.put("entities", root.entities() != null && root.entities().getData() != null ? root.entities().getData() : null);
+			engine.put("region", data.region() != null && data.region().getData() != null ? data.region().getData() : null);
+			engine.put("poi", data.poi() != null && data.poi().getData() != null ? data.poi().getData() : null);
+			engine.put("entities", data.entities() != null && data.entities().getData() != null ? data.entities().getData() : null);
 
 			try {
 				((Invocable) engine).invokeFunction("apply");
@@ -65,7 +65,7 @@ public class CustomField extends Field<String> {
 	}
 
 	@Override
-	public void force(ChunkData root) {
-		change(root);
+	public void force(ChunkData data) {
+		change(data);
 	}
 }

@@ -5,8 +5,9 @@ import net.querz.mcaselector.filter.FilterType;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.text.TextHelper;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionHandler;
+import net.querz.mcaselector.version.mapping.registry.BlockRegistry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,11 +50,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean contains(List<String> value, ChunkData data) {
-		if (data.region() == null || data.region().getData() == null) {
-			return false;
-		}
-		return VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0))
-				.matchBlockNames(data.region().getData(), value);
+		return VersionHandler.getImpl(data, ChunkFilter.Blocks.class).matchBlockNames(data, value);
 	}
 
 	@Override
@@ -63,19 +60,11 @@ public class PaletteFilter extends TextFilter<List<String>> {
 
 	@Override
 	public boolean intersects(List<String> value, ChunkData data) {
-		if (data.region() == null || data.region().getData() == null) {
-			return false;
-		}
-		return VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0))
-				.matchAnyBlockName(data.region().getData(), value);
+		return VersionHandler.getImpl(data, ChunkFilter.Blocks.class).matchAnyBlockName(data, value);
 	}
 
 	public boolean equals(List<String> value, ChunkData data) {
-		if (data.region() == null || data.region().getData() == null) {
-			return false;
-		}
-		return VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0))
-			.paletteEquals(data.region().getData(), value);
+		return VersionHandler.getImpl(data, ChunkFilter.Palette.class).paletteEquals(data, value);
 	}
 
 	public boolean notEquals(List<String> values, ChunkData data) {
@@ -84,7 +73,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 
 	@Override
 	public void setFilterValue(String raw) {
-		String[] blockNames = TextHelper.parseBlockNames(raw);
+		String[] blockNames = BlockRegistry.parseBlockNames(raw);
 		if (blockNames == null) {
 			setValid(false);
 			setValue(null);

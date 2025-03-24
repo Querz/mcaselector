@@ -1,6 +1,6 @@
 package net.querz.mcaselector.cli;
 
-import net.querz.mcaselector.exception.ParseException;
+import net.querz.mcaselector.util.exception.ParseException;
 import net.querz.mcaselector.io.StringPointer;
 import java.util.ArrayList;
 import java.util.List;

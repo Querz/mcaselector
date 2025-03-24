@@ -1,11 +1,12 @@
 package net.querz.mcaselector.io.job;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.mca.*;
 import net.querz.mcaselector.overlay.Overlay;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.progress.Progress;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.progress.Progress;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.tile.Tile;
@@ -22,15 +23,17 @@ public class SelectionSummer {
 
 	private SelectionSummer() {}
 
-	public static AtomicLong sumSelection(int selected, Selection data, Overlay overlay, Progress progressChannel) {
+	public static AtomicLong sumSelection(Selection data, Overlay overlay, Progress progressChannel) {
 		AtomicLong answer = new AtomicLong();
 		answer.set(0);
 
 		JobHandler.clearQueues();
 
-		progressChannel.setMax(selected);
-		progressChannel.updateProgress("0", 0);
+		data = data.getTrueSelection(ConfigProvider.WORLD.getWorldDirs());
 
+		progressChannel.setMax(data.count());
+		progressChannel.updateProgress("0", 0);
+		
 		LOGGER.debug("creating counting jobs: {}", data);
 
 		Consumer<Throwable> errorHandler = t -> {
@@ -76,40 +79,31 @@ public class SelectionSummer {
 
 			RegionMCAFile regionMCAFile = null;
 			if (regionFile.exists()) {
-				byte[] regionData = load(regionFile);
-				if (regionData != null) {
-					regionMCAFile = new RegionMCAFile(regionFile);
-					try {
-						regionMCAFile.load(new ByteArrayPointer(regionData));
-					} catch (IOException ex) {
-						throw new RuntimeException(ex);
-					}
+				regionMCAFile = new RegionMCAFile(regionFile);
+				try {
+					regionMCAFile.load(false);
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
 				}
 			}
 
 			PoiMCAFile poiMCAFile = null;
 			if (poiFile.exists()) {
-				byte[] poiData = load(poiFile);
-				if (poiData != null) {
-					poiMCAFile = new PoiMCAFile(poiFile);
-					try {
-						poiMCAFile.load(new ByteArrayPointer(poiData));
-					} catch (IOException ex) {
-						throw new RuntimeException(ex);
-					}
+				poiMCAFile = new PoiMCAFile(poiFile);
+				try {
+					poiMCAFile.load(false);
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
 				}
 			}
 
 			EntitiesMCAFile entitiesMCAFile = null;
 			if (entitiesFile.exists()) {
-				byte[] entitiesData = load(entitiesFile);
-				if (entitiesData != null) {
-					entitiesMCAFile = new EntitiesMCAFile(entitiesFile);
-					try {
-						entitiesMCAFile.load(new ByteArrayPointer(entitiesData));
-					} catch (IOException ex) {
-						throw new RuntimeException(ex);
-					}
+				entitiesMCAFile = new EntitiesMCAFile(entitiesFile);
+				try {
+					entitiesMCAFile.load(false);
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
 				}
 			}
 

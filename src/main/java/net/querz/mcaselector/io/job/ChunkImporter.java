@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.querz.mcaselector.config.ConfigProvider;
-import net.querz.mcaselector.io.ByteArrayPointer;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
@@ -14,12 +13,12 @@ import net.querz.mcaselector.io.mca.EntitiesMCAFile;
 import net.querz.mcaselector.io.mca.PoiMCAFile;
 import net.querz.mcaselector.io.mca.Region;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.point.Point3i;
-import net.querz.mcaselector.progress.Progress;
-import net.querz.mcaselector.progress.Timer;
-import net.querz.mcaselector.property.DataProperty;
-import net.querz.mcaselector.range.Range;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.point.Point3i;
+import net.querz.mcaselector.util.progress.Progress;
+import net.querz.mcaselector.util.progress.Timer;
+import net.querz.mcaselector.util.property.DataProperty;
+import net.querz.mcaselector.util.range.Range;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
@@ -28,9 +27,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 public final class ChunkImporter {
@@ -226,9 +223,9 @@ public final class ChunkImporter {
 			// ---------------------------------------------------------------------------------------------------------
 
 			// LOAD SOURCE DATA
-			Map<Point2i, byte[]> sourceDataMappingRegion = new HashMap<>();
-			Map<Point2i, byte[]> sourceDataMappingPoi = new HashMap<>();
-			Map<Point2i, byte[]> sourceDataMappingEntities = new HashMap<>();
+			Set<Point2i> sourceDataMappingRegion = new HashSet<>();
+			Set<Point2i> sourceDataMappingPoi = new HashSet<>();
+			Set<Point2i> sourceDataMappingEntities = new HashSet<>();
 
 			for (long source : sourceRegions) {
 				Point2i s = new Point2i(source);
@@ -240,7 +237,6 @@ public final class ChunkImporter {
 				}
 
 				File sourceFile;
-				byte[] sourceData;
 
 				// region
 				if (sourceDirs.getRegion() != null) {
@@ -249,12 +245,7 @@ public final class ChunkImporter {
 					sourceFile = new File(this.sourceDirs.getRegion(), FileHelper.createMCAFileName(s));
 				}
 				if (sourceFile.exists()) {
-					sourceData = load(sourceFile);
-					if (sourceData == null) {
-						LOGGER.warn("failed to load source mca file {}", sourceFile);
-					} else {
-						sourceDataMappingRegion.put(s, sourceData);
-					}
+					sourceDataMappingRegion.add(s);
 				}
 
 				// poi
@@ -264,12 +255,7 @@ public final class ChunkImporter {
 					sourceFile = new File(this.sourceDirs.getPoi(), FileHelper.createMCAFileName(s));
 				}
 				if (sourceFile.exists()) {
-					sourceData = load(sourceFile);
-					if (sourceData == null) {
-						LOGGER.warn("failed to load source mca file {}", sourceFile);
-					} else {
-						sourceDataMappingPoi.put(s, sourceData);
-					}
+					sourceDataMappingPoi.add(s);
 				}
 
 				// entities
@@ -279,12 +265,7 @@ public final class ChunkImporter {
 					sourceFile = new File(this.sourceDirs.getEntities(), FileHelper.createMCAFileName(s));
 				}
 				if (sourceFile.exists()) {
-					sourceData = load(sourceFile);
-					if (sourceData == null) {
-						LOGGER.warn("failed to load source mca file {}", sourceFile);
-					} else {
-						sourceDataMappingEntities.put(s, sourceData);
-					}
+					sourceDataMappingEntities.add(s);
 				}
 			}
 
@@ -292,59 +273,26 @@ public final class ChunkImporter {
 
 			// check if we need to do anything
 			if (sourceDataMappingRegion.isEmpty() && sourceDataMappingPoi.isEmpty() && sourceDataMappingEntities.isEmpty()) {
-				LOGGER.warn("did not load any source mca files to merge into {}", getRegionDirectories().getLocationAsFileName());
+				LOGGER.warn("no source mca files to merge into {}", getRegionDirectories().getLocationAsFileName());
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
 				return true;
-			}
-
-			// ---------------------------------------------------------------------------------------------------------
-
-			// LOAD DESTINATION DATA
-			byte[] destDataRegion = null;
-			if (getRegionDirectories().getRegion().exists() && getRegionDirectories().getRegion().length() > 0) {
-				destDataRegion = load(getRegionDirectories().getRegion());
-				if (destDataRegion == null) {
-					LOGGER.warn("failed to load destination mca file {}", getRegionDirectories().getRegion());
-					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-					return true;
-				}
-			}
-
-			byte[] destDataPoi = null;
-			if (getRegionDirectories().getPoi().exists() && getRegionDirectories().getPoi().length() > 0) {
-				destDataPoi = load(getRegionDirectories().getPoi());
-				if (destDataPoi == null) {
-					LOGGER.warn("failed to load destination mca file {}", getRegionDirectories().getPoi());
-					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-					return true;
-				}
-			}
-
-			byte[] destDataEntities = null;
-			if (getRegionDirectories().getEntities().exists() && getRegionDirectories().getEntities().length() > 0) {
-				destDataEntities = load(getRegionDirectories().getEntities());
-				if (destDataEntities == null) {
-					LOGGER.warn("failed to load destination mca file {}", getRegionDirectories().getEntities());
-					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-					return true;
-				}
 			}
 
 			Timer t = new Timer();
 			try {
 				// load target region
-				Region targetRegion = Region.loadRegion(getRegionDirectories(), destDataRegion, destDataPoi, destDataEntities);
+				Region targetRegion = Region.loadOrCreateEmptyRegion(getRegionDirectories());
 
 				ChunkSet targetChunks = null;
 				if (targetSelection != null) {
 					targetChunks = targetSelection.getSelectedChunks(target);
 				}
 
-				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMappingRegion.entrySet()) {
-					RegionMCAFile source = new RegionMCAFile(new File(sourceDirs.getRegion(), FileHelper.createMCAFileName(sourceData.getKey())));
-					source.load(new ByteArrayPointer(sourceData.getValue()));
+				for (Point2i sourceData : sourceDataMappingRegion) {
+					RegionMCAFile source = new RegionMCAFile(new File(sourceDirs.getRegion(), FileHelper.createMCAFileName(sourceData)));
+					source.load(false);
 
-					LOGGER.debug("merging region chunks from {} into {}", sourceData.getKey(), target);
+					LOGGER.debug("merging region chunks from {} into {}", sourceData, target);
 
 					if (targetRegion.getRegion() == null) {
 						targetRegion.setRegion(new RegionMCAFile(getRegionDirectories().getRegion()));
@@ -352,17 +300,17 @@ public final class ChunkImporter {
 
 					ChunkSet sourceChunks = null;
 					if (sourceSelection != null) {
-						sourceChunks = sourceSelection.getSelectedChunks(sourceData.getKey());
+						sourceChunks = sourceSelection.getSelectedChunks(sourceData);
 					}
 
 					source.mergeChunksInto(targetRegion.getRegion(), offset, overwrite, sourceChunks, targetChunks, ranges);
 				}
 
-				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMappingPoi.entrySet()) {
-					PoiMCAFile source = new PoiMCAFile(new File(sourceDirs.getPoi(), FileHelper.createMCAFileName(sourceData.getKey())));
-					source.load(new ByteArrayPointer(sourceData.getValue()));
+				for (Point2i sourceData : sourceDataMappingPoi) {
+					PoiMCAFile source = new PoiMCAFile(new File(sourceDirs.getPoi(), FileHelper.createMCAFileName(sourceData)));
+					source.load(false);
 
-					LOGGER.debug("merging poi chunks from {} into {}", sourceData.getKey(), target);
+					LOGGER.debug("merging poi chunks from {} into {}", sourceData, target);
 
 					if (targetRegion.getPoi() == null) {
 						targetRegion.setPoi(new PoiMCAFile(getRegionDirectories().getPoi()));
@@ -370,17 +318,17 @@ public final class ChunkImporter {
 
 					ChunkSet sourceChunks = null;
 					if (sourceSelection != null) {
-						sourceChunks = sourceSelection.getSelectedChunks(sourceData.getKey());
+						sourceChunks = sourceSelection.getSelectedChunks(sourceData);
 					}
 
 					source.mergeChunksInto(targetRegion.getPoi(), offset, overwrite, sourceChunks, targetChunks, ranges);
 				}
 
-				for (Map.Entry<Point2i, byte[]> sourceData : sourceDataMappingEntities.entrySet()) {
-					EntitiesMCAFile source = new EntitiesMCAFile(new File(sourceDirs.getEntities(), FileHelper.createMCAFileName(sourceData.getKey())));
-					source.load(new ByteArrayPointer(sourceData.getValue()));
+				for (Point2i sourceData : sourceDataMappingEntities) {
+					EntitiesMCAFile source = new EntitiesMCAFile(new File(sourceDirs.getEntities(), FileHelper.createMCAFileName(sourceData)));
+					source.load(false);
 
-					LOGGER.debug("merging entities chunks from {} into {}", sourceData.getKey(), target);
+					LOGGER.debug("merging entities chunks from {} into {}", sourceData, target);
 
 					if (targetRegion.getEntities() == null) {
 						targetRegion.setEntities(new EntitiesMCAFile(getRegionDirectories().getEntities()));
@@ -388,7 +336,7 @@ public final class ChunkImporter {
 
 					ChunkSet sourceChunks = null;
 					if (sourceSelection != null) {
-						sourceChunks = sourceSelection.getSelectedChunks(sourceData.getKey());
+						sourceChunks = sourceSelection.getSelectedChunks(sourceData);
 					}
 
 					source.mergeChunksInto(targetRegion.getEntities(), offset, overwrite, sourceChunks, targetChunks, ranges);

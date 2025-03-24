@@ -3,10 +3,10 @@ package net.querz.mcaselector.filter.filters;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.querz.mcaselector.filter.*;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.IntTag;
 import net.querz.nbt.ListTag;
@@ -107,9 +107,9 @@ public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.Player
 			}
 		}
 
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(data.region().getData().getIntOrDefault("DataVersion", 0));
-		IntTag xPos = chunkFilter.getXPos(data.region().getData());
-		IntTag zPos = chunkFilter.getZPos(data.region().getData());
+		ChunkFilter.Pos pos = VersionHandler.getImpl(data, ChunkFilter.Pos.class);
+		IntTag xPos = pos.getXPos(data);
+		IntTag zPos = pos.getZPos(data);
 		if (xPos == null || zPos == null) {
 			return false;
 		}

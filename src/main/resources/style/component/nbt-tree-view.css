@@ -1,81 +1,45 @@
 * {
     -color-tree-view-background: #46494b;
-    -color-tree-cell-selected: #3c3f41;
+    -color-tree-cell-selected: rgba(45, 48, 49, 0.5);
     -color-tree-cell-line-color: #636769;
     -color-treeview-cell-insert: #636769;
 }
 
 .nbt-tree-view {
     -fx-background-color: -color-tree-view-background;
-    -fx-padding: 0;
-    -fx-min-width: 400px;
-    -fx-min-height: 500px;
 }
 
-.key-value-tree-cell {
+.nbt-tree-cell {
     -fx-background-color: transparent;
     -fx-text-fill: -color-text-light;
-    -fx-translate-x: -20;
 }
 
-.line-char {
-    -fx-text-fill: -color-tree-cell-line-color !important;
-    -fx-scale-y: 1.6;
-    -fx-scale-x: 1.6;
-}
-
-.cell-expand {
-    -fx-background-color: -color-tree-view-background;
-    -fx-border-color: -color-tree-cell-line-color;
-    -fx-border-width: 1;
-    -fx-min-width: 11;
-    -fx-min-height: 11;
-    -fx-max-height: 11;
-    -fx-max-width: 11;
-    -fx-padding: -7 0 0 0;
-    -fx-translate-x: 4;
-    -fx-alignment: center;
-}
-
-.cell-graphic {
-    -fx-spacing: 8;
-    -fx-alignment: center-left;
-}
-
-.line-node {
-    -fx-alignment: center;
-}
-
-.key-value-tree-cell > .tree-disclosure-node > .arrow {
-    -fx-background-color: rgba(0, 0, 0, 0); /*make invisible to keep functionality*/
-    -fx-translate-x: 20; /*move right to overlap with line*/
-}
-
-.key-value-tree-cell:selected {
+.nbt-tree-cell:selected {
     -fx-background-color: -color-tree-cell-selected;
 }
 
-.key-value-tree-cell .text-field {
+.nbt-tree-cell .expand-square {
+    -fx-border-color: -color-tree-cell-line-color;
+    -fx-border-width: 1.5;
+}
+
+.nbt-tree-cell Line {
+    -fx-stroke: -color-tree-cell-line-color;
+    -fx-stroke-width: 1.5;
+}
+
+.nbt-tree-cell .expand {
+    -fx-stroke: -color-text-light;
+    -fx-stroke-width: 1;
+}
+
+.nbt-tree-cell .text-field, .nbt-tree-cell .button {
     -fx-padding: 0 0 0 2;
+    -fx-min-height: 21;
+    -fx-pref-height: 21;
+    -fx-max-height: 21;
 }
 
-.key-value-tree-cell .key-value-tree-cell-value {
-    -fx-pref-width: 80px;
-    -fx-max-width: 80px;
-}
-
-.drop-target-before {
-    -fx-background-color: linear-gradient(from 0% 100% to 0% 0%, -color-tree-view-background, -color-tree-view-background 70%, -color-treeview-cell-insert 90%, -color-treeview-cell-insert);
-}
-
-.drop-target-into {
-    -fx-background-color: linear-gradient(from 0% 100% to 0% 0%, -color-tree-view-background, -color-tree-view-background 20%, -color-treeview-cell-insert 40%, -color-treeview-cell-insert 60%, -color-tree-view-background 80%, -color-tree-view-background);
-}
-
-.drop-target-after {
-    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, -color-tree-view-background, -color-tree-view-background 70%, -color-treeview-cell-insert 90%, -color-treeview-cell-insert);
-}
-
-.nbt-tree-view-drop-parent {
-    -fx-background-color: linear-gradient(from 0% 100% to 0% 0%, -color-tree-view-background, -color-tree-view-background 95%, -color-treeview-cell-insert);
+.nbt-tree-view .drop-highlight {
+    -fx-fill: rgba(100, 100, 100, 1);
 }

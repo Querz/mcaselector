@@ -10,6 +10,12 @@ menu.view;보기
 menu.selection;선택
 menu.tools;도구
 menu.about;이 프로그램에 대해
+menu.file.new;새로 만들기
+menu.file.open;열기
+menu.file.open_recent;최근 열기
+menu.file.open_recent.clear;지우기
+menu.file.save;저장
+menu.file.save_as;다른 이름으로 저장...
 menu.file.open_world;월드 열기
 menu.file.open_dimension;다른 차원 열기
 menu.file.open_recent_world;이전 세계를 엽니다
@@ -60,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;붙여넣은 청크 색상
 dialog.settings.rendering.shade.shade;평면
 dialog.settings.rendering.shade;평면으로 보기
 dialog.settings.rendering.shade.shade_water;물만 평면으로 보기
+dialog.settings.rendering.shade.shade_altitude;지형 높이
 dialog.settings.rendering.background.show_nonexistent_regions;존재하지 않는 영역 표시
 dialog.settings.rendering.smooth.smooth_rendering;부드러운 렌더링
 dialog.settings.rendering.smooth.smooth_overlays;부드러운 오버레이
@@ -182,5 +189,9 @@ dialog.error.header;오류가 발생하였습니다.
 dialog.error.copied_to_clipboard;클립보드에 복사되었습니다!
 dialog.unsaved_selection.title;저장되지 않은 선택
 dialog.unsaved_selection.header;저장되지 않은 선택 항목이 있습니다.
+dialog.unsaved_script.title;저장되지 않은 스크립트
+dialog.unsaved_script.header;저장되지 않은 스크립트가 있습니다.
+dialog.request_number.title.array_length;배열의 길이
+dialog.request_number.title.enter_number;값
 button.cancel;취소
 button.ok;확인

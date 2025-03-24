@@ -9,21 +9,21 @@ import net.querz.mcaselector.config.Config;
 import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
-import net.querz.mcaselector.io.db.CacheDBController;
+import net.querz.mcaselector.io.db.CacheHandler;
 import net.querz.mcaselector.io.job.CachedImageLoadJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
-import net.querz.mcaselector.point.Point2i;
+import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.ProgressTask;
 import net.querz.mcaselector.ui.dialog.ErrorDialog;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.iq80.leveldb.DBException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -39,8 +39,6 @@ public final class ImagePool {
 	private final LongSet regions = new LongOpenHashSet(2048);
 	private final TileMap tileMap;
 	private final double poolSize;
-
-	private final CacheDBController cache = CacheDBController.getInstance();
 
 	// poolSize is a percentage indicating the amount of images cached in relation to the visible region
 	public ImagePool(TileMap tileMap, double poolSize) {
@@ -163,21 +161,21 @@ public final class ImagePool {
 			push(zoomLevel, tile.location, img);
 			tileMap.draw();
 			try {
-				cache.setFileTime(tile.location, readLastModifiedDate(tile.location));
-			} catch (SQLException e) {
-				e.printStackTrace();
+				CacheHandler.setFileTime(tile.location, readLastModifiedDate(tile.location));
+			} catch (DBException e) {
+				LOGGER.error("failed to cache last modified date for {}", tile.location, e);
 			}
 		}, zoomLevel, null, true, () -> tileMap.getTilePriority(tile.getLocation()));
 	}
 
 	public boolean isImageOutdated(Point2i region) {
 		try {
-			long time = cache.getFileTime(region);
+			long time = CacheHandler.getFileTime(region);
 			if (time == -1) {
 				return false;
 			}
 			return time != readLastModifiedDate(region);
-		} catch (SQLException e) {
+		} catch (DBException e) {
 			return false;
 		}
 	}
@@ -191,7 +189,7 @@ public final class ImagePool {
 			BasicFileAttributes bfa = Files.readAttributes(path, BasicFileAttributes.class);
 			return bfa.lastModifiedTime().toMillis();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.warn("failed to read last modified date for {}", region, e);
 		}
 		return 0;
 	}
@@ -250,8 +248,7 @@ public final class ImagePool {
 			task.setMax(files.length);
 		}
 
-		ForkJoinPool threadPool = new ForkJoinPool(ConfigProvider.GLOBAL.getProcessThreads());
-		try {
+		try (ForkJoinPool threadPool = new ForkJoinPool(ConfigProvider.GLOBAL.getProcessThreads()))  {
 			List<Point2i> points = threadPool.submit(() -> Arrays.stream(files).parallel()
 					.filter(file -> file.length() > FileHelper.HEADER_SIZE) // only files that have more data than just the header
 					.map(file -> {
@@ -271,8 +268,6 @@ public final class ImagePool {
 				task.done(null);
 			}
 			new ErrorDialog(tileMap.getWindow().getPrimaryStage(), e);
-		} finally {
-			threadPool.shutdown();
 		}
 	}
 
@@ -282,12 +277,13 @@ public final class ImagePool {
 				scale.getValue().remove(region.asLong());
 			}
 		}
-		if (!cache.isInitialized())
+		if (!CacheHandler.isInitialized()) {
 			return;
+		}
 		try {
-			cache.deleteData(region);
-		} catch (SQLException e) {
-			e.printStackTrace();
+			CacheHandler.deleteData(region);
+		} catch (IOException e) {
+			LOGGER.error("failed to delete cache for {}", region, e);
 		}
 		LOGGER.debug("removed images for {} from image pool", region);
 	}

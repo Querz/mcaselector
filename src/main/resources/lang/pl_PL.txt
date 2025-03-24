@@ -10,6 +10,12 @@ menu.view;Widok
 menu.selection;Zaznaczenie
 menu.tools;Narzędzia
 menu.about;O programie...
+menu.file.new;Nowy
+menu.file.open;Otwórz
+menu.file.open_recent;Otwórz ostatnie
+menu.file.open_recent.clear;Wyczyść
+menu.file.save;Zapisz
+menu.file.save_as;Zapisz jako...
 menu.file.open_world;Otwórz świat...
 menu.file.open_dimension;Otwórz inny wymiar
 menu.file.open_recent_world;Otworzyć poprzedni świat
@@ -60,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;Wklejony kolor kawałków
 dialog.settings.rendering.shade.shade;Cień
 dialog.settings.rendering.shade;Cień
 dialog.settings.rendering.shade.shade_water;Cień wody
+dialog.settings.rendering.shade.shade_altitude;Wysokość terenu
 dialog.settings.rendering.background.show_nonexistent_regions;Pokaż nieistniejące regiony
 dialog.settings.rendering.smooth.smooth_rendering;Płynne renderowanie
 dialog.settings.rendering.smooth.smooth_overlays;Gładkie nakładki
@@ -182,5 +189,9 @@ dialog.error.header;Wystąpił błąd
 dialog.error.copied_to_clipboard;Skopiowane do schowka!
 dialog.unsaved_selection.title;Niezapisany wybór
 dialog.unsaved_selection.header;Istnieje niezapisany wybór.
+dialog.unsaved_script.title;Niezapisany skrypt
+dialog.unsaved_script.header;Istnieje niezapisany skrypt.
+dialog.request_number.title.array_length;Długość tablicy
+dialog.request_number.title.enter_number;Wartość
 button.cancel;Anuluj
 button.ok;OK

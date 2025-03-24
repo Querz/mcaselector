@@ -22,12 +22,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
-import net.querz.mcaselector.property.DataProperty;
+import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.overlay.OverlayType;
 import net.querz.mcaselector.ui.UIFactory;
-
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -57,7 +57,7 @@ public class OverlayBox extends BorderPane {
 	private final Label delete = new Label("", new ImageView(deleteIcon));
 
 	public OverlayBox(Overlay value) {
-		getStylesheets().add(OverlayBox.class.getClassLoader().getResource("style/component/overlay-box.css").toExternalForm());
+		getStylesheets().add(Objects.requireNonNull(OverlayBox.class.getClassLoader().getResource("style/component/overlay-box.css")).toExternalForm());
 
 		valueProperty = new DataProperty<>(value);
 

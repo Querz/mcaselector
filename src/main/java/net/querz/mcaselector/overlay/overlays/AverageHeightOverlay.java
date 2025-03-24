@@ -4,7 +4,7 @@ import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.overlay.OverlayType;
 import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.VersionController;
+import net.querz.mcaselector.version.VersionHandler;
 
 public class AverageHeightOverlay extends Overlay {
 
@@ -16,12 +16,8 @@ public class AverageHeightOverlay extends Overlay {
 	}
 
 	@Override
-	public int parseValue(ChunkData chunkData) {
-		if (chunkData.region() == null || chunkData.region().getData() == null) {
-			return 0;
-		}
-		ChunkFilter chunkFilter = VersionController.getChunkFilter(chunkData.region().getData().getIntOrDefault("DataVersion", 0));
-		return chunkFilter.getAverageHeight(chunkData.region().getData());
+	public int parseValue(ChunkData data) {
+		return VersionHandler.getImpl(data, ChunkFilter.Blocks.class).getAverageHeight(data);
 	}
 
 	@Override

@@ -6,9 +6,9 @@ import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.io.mca.Region;
-import net.querz.mcaselector.point.Point2i;
-import net.querz.mcaselector.progress.Progress;
-import net.querz.mcaselector.progress.Timer;
+import net.querz.mcaselector.util.point.Point2i;
+import net.querz.mcaselector.util.progress.Progress;
+import net.querz.mcaselector.util.progress.Timer;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.text.Translation;
 import org.apache.logging.log4j.LogManager;
@@ -84,20 +84,9 @@ public final class ChunkFilterExporter {
 
 			RegionDirectories to = new RegionDirectories(getRegionDirectories().getLocation(), toRegion, toPoi, toEntities);
 
-			byte[] regionData = loadRegion();
-			byte[] poiData = loadPoi();
-			byte[] entitiesData = loadEntities();
-
-			if (regionData == null && poiData == null && entitiesData == null) {
-				LOGGER.warn("failed to load any data from {}", getRegionDirectories().getLocationAsFileName());
-				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				return true;
-			}
-
-
 			// load MCAFile
 			try {
-				Region region = Region.loadRegion(getRegionDirectories(), regionData, poiData, entitiesData);
+				Region region = Region.loadRegion(getRegionDirectories());
 
 				region.keepChunks(filter, selection);
 

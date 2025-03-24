@@ -10,6 +10,12 @@ menu.view;视图
 menu.selection;选择
 menu.tools;工具
 menu.about;关于
+menu.file.new;新建
+menu.file.open;打开
+menu.file.open_recent;打开最近的
+menu.file.open_recent.clear;清除
+menu.file.save;保存
+menu.file.save_as;另存为...
 menu.file.open_world;打开世界
 menu.file.open_dimension;打开另一个维度
 menu.file.open_recent_world;打开一个以前的世界
@@ -60,6 +66,7 @@ dialog.settings.global.selection.pasted_chunks_color;粘贴的区块颜色
 dialog.settings.rendering.shade.shade;阴影
 dialog.settings.rendering.shade;阴影
 dialog.settings.rendering.shade.shade_water;水体阴影
+dialog.settings.rendering.shade.shade_altitude;地形高度
 dialog.settings.rendering.background.show_nonexistent_regions;显示不存在的区域
 dialog.settings.rendering.smooth.smooth_rendering;平滑渲染
 dialog.settings.rendering.smooth.smooth_overlays;平滑叠加
@@ -182,5 +189,9 @@ dialog.error.header;发生错误
 dialog.error.copied_to_clipboard;复制到剪贴板!
 dialog.unsaved_selection.title;未保存的选择
 dialog.unsaved_selection.header;有一个未保存的选择。
+dialog.unsaved_script.title;未保存的脚本
+dialog.unsaved_script.header;有一个未保存的脚本。
+dialog.request_number.title.array_length;数组的长度
+dialog.request_number.title.enter_number;价值
 button.cancel;取消
 button.ok;OK
