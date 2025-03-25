@@ -499,6 +499,23 @@ public class ChunkFilter_21w43a {
 	}
 
 	@MCVersionImplementation(2844)
+	public static class InhabitedTime implements ChunkFilter.InhabitedTime {
+
+		@Override
+		public LongTag getInhabitedTime(ChunkData data) {
+			return Helper.tagFromCompound(Helper.getRegion(data), "InhabitedTime");
+		}
+
+		@Override
+		public void setInhabitedTime(ChunkData data, long inhabitedTime) {
+			CompoundTag root = Helper.getRegion(data);
+			if (root != null) {
+				root.putLong("InhabitedTime", inhabitedTime);
+			}
+		}
+	}
+
+	@MCVersionImplementation(2844)
 	public static class Relocate extends ChunkFilter_21w06a.Relocate {
 
 		@Override
