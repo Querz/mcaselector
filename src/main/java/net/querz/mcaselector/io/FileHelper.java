@@ -301,12 +301,20 @@ public final class FileHelper {
 			result.add(end);
 		}
 
-		// detect custom dimensions
-		File[] customDimensions = dir.listFiles((d, name) -> !name.equals("DIM-1") && !name.equals("DIM1") && name.matches("^DIM-?\\d+$"));
+		// detect custom dimensions in root dir with format "DIM-<ID>"
+		File[] customDimensions = dir.listFiles((d, name) -> !name.equals("DIM-1") && !name.equals("DIM1") && name.matches("^DIM-?\\d+$") && isValidDimension(d));
 		if (customDimensions != null) {
-			for (File customDimension : customDimensions) {
-				if (isValidDimension(customDimension)) {
-					result.add(customDimension);
+			result.addAll(Arrays.asList(customDimensions));
+		}
+
+		// detect dimensions in "dimensions" folder
+		File dimensions = new File(dir, "dimensions");
+		File[] namespaces = dimensions.listFiles((d, name) -> d.isDirectory());
+		if (namespaces != null) {
+			for (File namespace : namespaces) {
+				customDimensions = namespace.listFiles((d, name) -> isValidDimension(d));
+				if (customDimensions != null) {
+					result.addAll(Arrays.asList(customDimensions));
 				}
 			}
 		}
