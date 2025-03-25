@@ -118,6 +118,7 @@ shadowJar {
 	minimize {
 		exclude(dependency('org.apache.logging.log4j:log4j-core:.*'))
 		exclude(dependency('org.apache.groovy:groovy-jsr223:.*'))
+		exclude(dependency('org.lz4:lz4-java:.*'))
 	}
 	dependencies {
 		exclude(dependency(':javafx.*:.*'))
