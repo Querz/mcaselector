@@ -100,7 +100,7 @@ public class ChunkRenderer_15w32a implements ChunkRenderer<Integer, Integer> {
 								waterPixels[pixelIndex] = colorMapping.getRGB((block << 4) + data, biome);
 							}
 						} else {
-							waterPixels[pixelIndex] = colorMapping.getRGB((block << 4) + data, biome);
+							pixelBuffer[pixelIndex] = colorMapping.getRGB((block << 4) + data, biome);
 						}
 						terrainHeights[pixelIndex] = (short) (sectionHeight[i] + cy);
 						continue zLoop;
