@@ -120,7 +120,7 @@ public class ChunkRenderer_20w17a implements ChunkRenderer<CompoundTag, Integer>
 								waterPixels[pixelIndex] = colorMapping.getRGB(blockData, biome); // color of block at bottom of water
 							}
 						} else {
-							waterPixels[pixelIndex] = colorMapping.getRGB(blockData, biome);
+							pixelBuffer[pixelIndex] = colorMapping.getRGB(blockData, biome);
 						}
 						terrainHeights[pixelIndex] = (short) (sectionHeight[i] + cy);
 						continue zLoop;
