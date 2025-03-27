@@ -309,17 +309,30 @@ public final class FileHelper {
 
 		// detect dimensions in "dimensions" folder
 		File dimensions = new File(dir, "dimensions");
-		File[] namespaces = dimensions.listFiles((d, name) -> d.isDirectory());
-		if (namespaces != null) {
-			for (File namespace : namespaces) {
-				customDimensions = namespace.listFiles((d, name) -> isValidDimension(d));
-				if (customDimensions != null) {
-					result.addAll(Arrays.asList(customDimensions));
-				}
-			}
+		List<File> datapackDimensions = new ArrayList<>();
+		detectDatapackDimensions(dimensions, 0, datapackDimensions);
+		result.addAll(datapackDimensions);
+		return result;
+	}
+
+	private static final int datapackDimensionsMaxDepth = 4;
+
+	private static void detectDatapackDimensions(File dir, int depth, List<File> detected) {
+		if (depth >= datapackDimensionsMaxDepth) {
+			return;
+		}
+		File[] subDirs = dir.listFiles((d, name) -> d.isDirectory());
+		if (subDirs == null) {
+			return;
 		}
 
-		return result;
+		for (File subDir : subDirs) {
+			if (isValidDimension(subDir)) {
+				detected.add(subDir);
+			} else {
+				detectDatapackDimensions(subDir, depth + 1, detected);
+			}
+		}
 	}
 
 	public static boolean isValidDimension(File dir) {
