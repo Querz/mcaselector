@@ -248,7 +248,7 @@ public class ChunkFilter_21w37a {
 			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				ListTag palette = Helper.tagFromCompound(Helper.tagFromCompound(section, "block_states"), "palette");
 				long[] blockStates = Helper.longArrayFromCompound(Helper.tagFromCompound(section, "block_states"), "data");
-				if (palette == null) {
+				if (palette == null || blockStates == null) {
 					continue;
 				}
 
@@ -292,7 +292,7 @@ public class ChunkFilter_21w37a {
 					for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 						ListTag palette = Helper.tagFromCompound(Helper.tagFromCompound(section, "block_states"), "palette");
 						long[] blockStates = Helper.longArrayFromCompound(Helper.tagFromCompound(section, "block_states"), "data");
-						if (palette == null) {
+						if (palette == null || blockStates == null) {
 							continue;
 						}
 
