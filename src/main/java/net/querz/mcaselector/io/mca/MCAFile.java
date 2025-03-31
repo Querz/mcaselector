@@ -214,7 +214,9 @@ public abstract class MCAFile<T extends Chunk> {
 			if (fc.size() < 8196) {
 				return;
 			}
-			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+//			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+			ByteBuffer buf = ByteBuffer.allocate((int) fc.size());
+			fc.read(buf);
 			loadHeader(buf);
 
 			Point2i origin = location.regionToChunk();
@@ -241,9 +243,23 @@ public abstract class MCAFile<T extends Chunk> {
 	}
 
 	public void loadHeader() throws IOException {
-		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
-			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, FileHelper.HEADER_SIZE);
+		// use HeapByteBuffer here because MappedByteBuffer may not immediately close when calling FileChannel#close(),
+		// causing it to keep a lock on the file, which can cause an exception later when we try to delete or overwrite it.
+		// TODO: once `foreign` is out of preview, swap it for the following code:
+		//
+		//		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ);
+		//				Arena arena = Arena.ofShared()) {
+		//
+		//			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, FileHelper.HEADER_SIZE, arena).asByteBuffer();
+		//
+		//			loadHeader(buf);
+		//		} catch (ArrayIndexOutOfBoundsException ex) {
+		//			throw new IOException(ex);
+		//		}
 
+		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
+			ByteBuffer buf = ByteBuffer.allocate(FileHelper.HEADER_SIZE);
+			fc.read(buf);
 			loadHeader(buf);
 		} catch (ArrayIndexOutOfBoundsException ex) {
 			throw new IOException(ex);
@@ -280,9 +296,11 @@ public abstract class MCAFile<T extends Chunk> {
 		}
 
 		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
-			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-			// read offset, sector count and timestamp for specific chunk
+//			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+			ByteBuffer buf = ByteBuffer.allocate((int) fc.size());
+			fc.read(buf);
 
+			// read offset, sector count and timestamp for specific chunk
 			Point2i region = FileHelper.parseMCAFileName(file);
 			if (region == null) {
 				throw new IOException("invalid region file name " + file);
@@ -321,7 +339,10 @@ public abstract class MCAFile<T extends Chunk> {
 
 	public void loadBorderChunks() throws IOException {
 		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
-			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+//			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+			ByteBuffer buf = ByteBuffer.allocate((int) fc.size());
+			fc.read(buf);
+
 			loadHeader(buf);
 
 			// top row / bottom row
