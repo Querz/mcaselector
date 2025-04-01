@@ -76,7 +76,8 @@ public class ColorConfig {
 		BitSet blockState = states.getState(tag);
 		BlockColor blockColor = colors.getBlockColor(name, blockState);
 		if ((blockColor.properties & BlockColor.TINTED) > 0) {
-			return tintCache.getColor(name, biome, blockState);
+			BlockColor tinted = tintCache.getColor(name, biome, blockState);
+			return tinted == null ? tintCache.getColor(name, "minecraft:plains", null) : tinted;
 		}
 		return blockColor;
 	}

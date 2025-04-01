@@ -142,7 +142,7 @@ public class ColorMapping {
 					return b.getColor(state);
 				}
 			}
-			return missing.getColor(null);
+			return null;
 		}
 	}
 
