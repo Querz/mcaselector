@@ -29,4 +29,14 @@ public class GroovyScriptEngine {
 		Object result = ((Invocable) engine).invokeFunction(function, args);
 		return result instanceof Boolean && (boolean) result;
 	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T invoke(String function, Object... args) throws ScriptException, NoSuchMethodException {
+		Object result = ((Invocable) engine).invokeFunction(function, args);
+		try {
+			return (T) result;
+		} catch (Throwable ex) {
+			return null;
+		}
+	}
 }

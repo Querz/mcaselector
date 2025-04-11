@@ -58,7 +58,7 @@ public class ScriptFilter extends TextFilter<String> {
 		try {
 			return engine.test("filter", data);
 		} catch (ScriptException | NoSuchMethodException ex) {
-			LOGGER.warn("failed to invoke filter function in custom script", ex);
+			LOGGER.warn("failed to invoke filter function in custom filter script", ex);
 		}
 		return false;
 	}

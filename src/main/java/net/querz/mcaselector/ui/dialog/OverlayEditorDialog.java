@@ -3,10 +3,13 @@ package net.querz.mcaselector.ui.dialog;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Priority;
@@ -16,6 +19,10 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.overlay.OverlayType;
+import net.querz.mcaselector.overlay.overlays.ScriptOverlay;
+import net.querz.mcaselector.ui.UIFactory;
+import net.querz.mcaselector.ui.component.CodeEditor;
 import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tile.TileMap;
@@ -33,6 +40,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
 	private final List<Overlay> overlays;
 
+	private final TabPane tabs = new TabPane();
 	private final ScrollPane overlaysScrollPane = new ScrollPane();
 	private final VBox overlaysList = new VBox();
 	private final Label add = new Label("", new ImageView(addIcon));
@@ -40,6 +48,16 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 	private final TileMap tileMap;
 
 	private final DataProperty<Boolean> closedWithOK = new DataProperty<>(false);
+
+	private static final String initScript = """
+			import net.querz.mcaselector.io.mca.ChunkData;
+			import net.querz.nbt.*;
+			
+			int get(ChunkData data) {
+			\t
+			}""";
+
+	private static final CodeEditor codeEditor = new CodeEditor(initScript);
 
 	private final ChangeListener<Overlay> tileMapSelectedOverlayChange = (v, o, n) -> {
 		if (o != n) {
@@ -58,13 +76,26 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		Overlay originalOverlay = tileMap.getOverlay() != null ? tileMap.getOverlay().clone() : null;
 		List<Overlay> originalOverlays = tileMap.getOverlays();
 
+		setResultConverter(p -> p == ButtonType.OK ? new Result(overlays) : null);
+
 		titleProperty().bind(Translation.DIALOG_EDIT_OVERLAYS_TITLE.getProperty());
 		initModality(Modality.NONE);
 		initStyle(StageStyle.UTILITY);
 		getDialogPane().getStyleClass().add("overlay-dialog-pane");
-		setResultConverter(p -> p == ButtonType.OK ? new Result(overlays) : null);
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
 		getDialogPane().getStylesheets().add(Objects.requireNonNull(OverlayEditorDialog.class.getClassLoader().getResource("style/component/overlay-editor-dialog.css")).toExternalForm());
+
+		codeEditor.setOwner(getDialogPane().getScene().getWindow());
+		codeEditor.setRecentFiles(ConfigProvider.GLOBAL.getRecentOverlayScripts());
+		codeEditor.setSource(ConfigProvider.GLOBAL.getOverlayScript());
+		codeEditor.setOnSave(f -> {
+			for (Overlay overlay : overlays) {
+				if (overlay.getType() == OverlayType.SCRIPT) {
+					overlay.setRawMultiValues(f.toString());
+				}
+			}
+		});
+
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, e -> {
 			tileMap.setOverlays(overlays);
@@ -108,12 +139,31 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 			tileMap.draw();
 		});
 
-		VBox content = new VBox();
-		content.getStyleClass().add("overlay-list");
-		content.getChildren().addAll(overlaysScrollPane, add);
+		Button createScriptOverlay = UIFactory.button(Translation.DIALOG_EDIT_OVERLAYS_CREATE_OVERLAY);
+		createScriptOverlay.setOnAction(e -> {
+			codeEditor.save();
+			ScriptOverlay overlay = new ScriptOverlay();
+			overlay.setRawMultiValues(codeEditor.getSource());
+			overlays.add(overlay);
+		});
+
+		VBox presets = new VBox();
+		presets.getStyleClass().add("overlay-list");
+		presets.getChildren().addAll(overlaysScrollPane, add);
 		VBox.setVgrow(overlaysScrollPane, Priority.ALWAYS);
 
-		getDialogPane().setContent(content);
+		VBox script = new VBox();
+		script.getChildren().add(codeEditor);
+
+		Tab presetsTab = UIFactory.tab(Translation.DIALOG_EDIT_OVERLAYS_TAB_PRESETS);
+		presetsTab.setContent(presets);
+		Tab scriptTab = UIFactory.tab(Translation.DIALOG_EDIT_OVERLAYS_TAB_SCRIPT);
+		scriptTab.setContent(codeEditor);
+
+		tabs.getTabs().addAll(presetsTab, scriptTab);
+
+
+		getDialogPane().setContent(tabs);
 
 		getDialogPane().setOnKeyPressed(e -> {
 			switch (e.getCode()) {

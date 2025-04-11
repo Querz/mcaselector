@@ -51,7 +51,7 @@ public final class ImageHelper {
 	}
 
 	public static Image renderGradient(int width, float min, float max, float low, float high, boolean inverted) {
-		WritableImage image = new WritableImage(width, 50);
+		WritableImage image = new WritableImage(width, 1);
 		PixelWriter pixelWriter = image.getPixelWriter();
 		for (int i = 0; i < width; i++) {
 			float hue = (max - min) * ((float) i / width) + min;
@@ -65,9 +65,7 @@ public final class ImageHelper {
 				hue = max - hue + min;
 			}
 
-			for (int j = 0; j < 50; j++) {
-				pixelWriter.setArgb(i, j, Color.HSBtoRGB(hue, saturation, brightness));
-			}
+			pixelWriter.setArgb(i, 0, Color.HSBtoRGB(hue, saturation, brightness));
 		}
 		return image;
 	}

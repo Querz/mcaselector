@@ -51,7 +51,7 @@ public class OverlayBox extends BorderPane {
 	private final ComboBox<OverlayType> type = new ComboBox<>();
 	private final TextField minimum = new TextField();
 	private final TextField maximum = new TextField();
-	private final TextField additionalData = new TextField();
+	protected final TextField additionalData = new TextField();
 	private final Label gradient = new Label("");
 	private final CheckBox active = new CheckBox();
 	private final Label delete = new Label("", new ImageView(deleteIcon));

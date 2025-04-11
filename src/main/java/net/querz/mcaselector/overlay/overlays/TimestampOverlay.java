@@ -27,10 +27,12 @@ public class TimestampOverlay extends Overlay {
 		return "Timestamp";
 	}
 
+	@Override
 	public String minString() {
 		return minTimestamp == null ? super.minString() : minTimestamp;
 	}
 
+	@Override
 	public String maxString() {
 		return minTimestamp == null ? super.maxString() : maxTimestamp;
 	}

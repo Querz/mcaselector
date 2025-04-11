@@ -26,6 +26,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class CodeEditor extends StackPane {
 
@@ -33,8 +34,10 @@ public class CodeEditor extends StackPane {
 
 	private final GroovyCodeArea codeArea = new GroovyCodeArea(true);
 	private final Menu recentFilesMenu;
+	private final MenuItem saveMenu = UIFactory.menuItem(Translation.MENU_FILE_SAVE);
 	private final DataProperty<Boolean> initTextEval = new DataProperty<>(true);
 	private boolean saved = true;
+	private Consumer<File> onSave;
 	private File sourceFile;
 	private Window owner;
 	private Config.RecentFiles recentFiles;
@@ -92,7 +95,6 @@ public class CodeEditor extends StackPane {
 			}
 		});
 
-		MenuItem saveMenu = UIFactory.menuItem(Translation.MENU_FILE_SAVE);
 		saveMenu.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCodeCombination.SHORTCUT_DOWN));
 		saveMenu.setOnAction(e -> {
 			if (sourceFile != null) {
@@ -168,6 +170,9 @@ public class CodeEditor extends StackPane {
 				recentFiles.addRecentFile(file);
 				setRecentFiles(recentFiles);
 			}
+			if (onSave != null) {
+				onSave.accept(file);
+			}
 		} catch (IOException ex) {
 			new ErrorDialog(owner, ex);
 		}
@@ -181,6 +186,18 @@ public class CodeEditor extends StackPane {
 		} else {
 			fileNameLabel.setText("* " + sourceFile.getName());
 		}
+	}
+
+	public boolean isSaved() {
+		return saved;
+	}
+
+	public void save() {
+		saveMenu.fire();
+	}
+
+	public void setOnSave(Consumer<File> onSave) {
+		this.onSave = onSave;
 	}
 
 	public void setOwner(Window owner) {
