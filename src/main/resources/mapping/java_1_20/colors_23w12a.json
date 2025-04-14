@@ -1098,6 +1098,10 @@
     "minecraft:waxed_copper_block": "c06b4f",
     "minecraft:waxed_oxidized_cut_copper": "4f997e",
     "minecraft:dead_brain_coral_block": "7c7572",
+    "minecraft:grass": {
+      "color": "939393",
+      "properties": 2
+    },
     "minecraft:grass_block": {
       "color": "939393",
       "properties": 2
