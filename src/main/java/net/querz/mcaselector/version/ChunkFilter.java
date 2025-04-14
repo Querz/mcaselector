@@ -80,15 +80,15 @@ public interface ChunkFilter {
 	interface Relocate {
 		boolean relocate(CompoundTag root, Point3i offset);
 
-		default boolean applyOffsetToSection(CompoundTag section, Point3i offset, int minY, int maxY) {
+		default boolean applyOffsetToSection(CompoundTag section, Point3i offset, Range sectionRange) {
 			NumberTag value;
 			if ((value = Helper.tagFromCompound(section, "Y")) != null) {
-				if (value.asByte() > maxY || value.asByte() < minY) {
+				if (!sectionRange.contains(value.asInt())) {
 					return false;
 				}
 
-				int y = value.asByte() + offset.getY();
-				if (y > maxY || y < minY) {
+				int y = value.asInt() + offset.getY();
+				if (!sectionRange.contains(y)) {
 					return false;
 				}
 				section.putByte("Y", (byte) y);
@@ -111,7 +111,7 @@ public interface ChunkFilter {
 			for (Tag dest : destination) {
 				int y = ySupplier.apply(dest);
 				for (Range range : ranges) {
-					if (!range.contains(y)) {
+					if (!range.contains(y + yOffset)) {
 						result.add(dest);
 					}
 				}

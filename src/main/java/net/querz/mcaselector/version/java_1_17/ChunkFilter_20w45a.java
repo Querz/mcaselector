@@ -279,7 +279,7 @@ public class ChunkFilter_20w45a {
 			if (sections != null) {
 				ListTag newSections = new ListTag();
 				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
-					if (applyOffsetToSection(section, offset.blockToSection(), 0, 15)) {
+					if (applyOffsetToSection(section, offset.blockToSection(), new Range(0, 15))) {
 						newSections.add(section);
 					}
 				}
