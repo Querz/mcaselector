@@ -84,19 +84,18 @@ public class ChunkFilter_21w43a {
 			}
 			pos = pos.chunkToBlock();
 
-			int yMin = Helper.intFromCompound(Helper.getRegion(data), "yPos", -4);
-			int yMax = Helper.findHighestSection(sections, yMin);
+			Range sectionRange = Helper.findSectionRange(Helper.getRegion(data), sections);
 
 			// handle the special case when someone wants to replace air with something else
 			if (replace.containsKey("minecraft:air")) {
 				Map<Integer, CompoundTag> sectionMap = new HashMap<>();
-				List<Integer> heights = new ArrayList<>(yMax - yMin);
+				List<Integer> heights = new ArrayList<>(sectionRange.num());
 				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 					sectionMap.put(section.getInt("Y"), section);
 					heights.add(section.getInt("Y"));
 				}
 
-				for (int y = yMin; y <= yMax; y++) {
+				for (int y = sectionRange.getFrom(); y <= sectionRange.getTo(); y++) {
 					if (!sectionMap.containsKey(y)) {
 						sectionMap.put(y, completeSection(new CompoundTag(), y));
 						heights.add(y);
@@ -135,8 +134,8 @@ public class ChunkFilter_21w43a {
 					blockStates = new long[256];
 				}
 
-				int y = Helper.numberFromCompound(section, "Y", -5).intValue();
-				if (y < yMin || y > yMax) {
+				int y = Helper.numberFromCompound(section, "Y", sectionRange.getFrom() - 1).intValue();
+				if (!sectionRange.contains(y)) {
 					continue;
 				}
 
@@ -287,18 +286,17 @@ public class ChunkFilter_21w43a {
 				return new long[37];
 			}
 
-			int yMin = Helper.intFromCompound(root, "yPos", -4);
-			int yMax = Helper.findHighestSection(sections, yMin);
+			Range sectionRange = Helper.findSectionRange(root, sections);
 
-			ListTag[] palettes = new ListTag[yMax - yMin];
-			long[][] blockStatesArray = new long[yMax - yMin][];
+			ListTag[] palettes = new ListTag[sectionRange.num()];
+			long[][] blockStatesArray = new long[sectionRange.num()][];
 			sections.forEach(s -> {
-				ListTag p = Helper.tagFromCompound(s, "palette");
-				long[] b = Helper.longArrayFromCompound(s, "block_states");
-				int y = Helper.numberFromCompound(s, "Y", yMin - 1).intValue();
-				if (y >= yMin && y <= yMax && p != null && b != null) {
-					palettes[y - yMin] = p;
-					blockStatesArray[y - yMin] = b;
+				ListTag p = Helper.tagFromCompound(Helper.tagFromCompound(s, "block_states"), "palette");
+				long[] b = Helper.longArrayFromCompound(Helper.tagFromCompound(s, "block_states"), "data");
+				int y = Helper.numberFromCompound(s, "Y", sectionRange.getFrom() - 1).intValue();
+				if (sectionRange.contains(y) && p != null && b != null) {
+					palettes[y - sectionRange.getFrom()] = p;
+					blockStatesArray[y - sectionRange.getFrom()] = b;
 				}
 			});
 
@@ -308,7 +306,7 @@ public class ChunkFilter_21w43a {
 			for (int cx = 0; cx < 16; cx++) {
 				loop:
 				for (int cz = 0; cz < 16; cz++) {
-					for (int i = yMax - yMin; i >= 0; i--) {
+					for (int i = sectionRange.num() - 1; i >= 0; i--) {
 						ListTag palette = palettes[i];
 						if (palette == null) {
 							continue;
@@ -325,7 +323,7 @@ public class ChunkFilter_21w43a {
 				}
 			}
 
-			int bits = 32 - Integer.numberOfLeadingZeros((yMax - yMin) * 16);
+			int bits = 32 - Integer.numberOfLeadingZeros(sectionRange.num() * 16);
 			return applyHeightMap(heightmap, bits);
 		}
 	}
@@ -554,10 +552,9 @@ public class ChunkFilter_21w43a {
 			ListTag sections = Helper.tagFromCompound(root, "sections");
 			if (sections != null) {
 				ListTag newSections = new ListTag();
-				int yMin = Helper.intFromCompound(root, "yPos", -4);
-				int yMax = Helper.findHighestSection(sections, yMin);
+				Range sectionRange = Helper.findSectionRange(root, sections);
 				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
-					if (applyOffsetToSection(section, offset.blockToSection(), yMin, yMax)) {
+					if (applyOffsetToSection(section, offset.blockToSection(), sectionRange)) {
 						newSections.add(section);
 					}
 				}

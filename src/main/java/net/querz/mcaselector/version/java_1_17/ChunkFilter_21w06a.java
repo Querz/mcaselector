@@ -27,13 +27,13 @@ public class ChunkFilter_21w06a {
 		@Override
 		public void forceBiome(ChunkData data, BiomeRegistry.BiomeIdentifier biome) {
 			CompoundTag level = Helper.levelFromRoot(Helper.getRegion(data));
-			int yMin = Helper.intFromCompound(level, "yPos", -4);
-			int yMax = Helper.findHighestSection(Helper.tagFromCompound(level, "Sections"), yMin);
-			if (level != null) {
-				int[] biomes = new int[(yMax - yMin) * 64];
-				Arrays.fill(biomes, (byte) biome.getID());
-				level.putIntArray("Biomes", biomes);
+			Range sectionRange = Helper.findSectionRange(level, Helper.tagFromCompound(level, "Sections"));
+			if (sectionRange == null) {
+				return;
 			}
+			int[] biomes = new int[sectionRange.num() * 64];
+			Arrays.fill(biomes, (byte) biome.getID());
+			level.putIntArray("Biomes", biomes);
 		}
 	}
 
@@ -44,13 +44,16 @@ public class ChunkFilter_21w06a {
 		protected void mergeBiomes(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset) {
 			IntArrayTag sourceBiomes = Helper.tagFromLevelFromRoot(source, "Biomes");
 			IntArrayTag destinationBiomes = Helper.tagFromLevelFromRoot(destination, "Biomes");
+			CompoundTag destLevel = Helper.levelFromRoot(destination);
 
-			int yMin = Helper.intFromCompound(Helper.levelFromRoot(destination), "yPos", -4);
-			int yMax = Helper.findHighestSection(Helper.tagFromLevelFromRoot(destination, "Sections"), yMin);
+			Range sectionRange = Helper.findSectionRange(destLevel, Helper.tagFromCompound(destLevel, "Sections"));
+			if (sectionRange == null) {
+				return;
+			}
 
 			if (destinationBiomes == null) {
 				// if there is no destination, we will let minecraft set the biome
-				destinationBiomes = new IntArrayTag(new int[(yMax - yMin) * 64]);
+				destinationBiomes = new IntArrayTag(new int[sectionRange.num() * 64]);
 				Arrays.fill(destinationBiomes.getValue(), -1);
 			}
 
@@ -58,60 +61,60 @@ public class ChunkFilter_21w06a {
 				// if there is no source biome, we set the biome to -1
 				// merge biomes
 				for (Range range : ranges) {
-					int m = Math.min(range.getTo() + yOffset, yMax - yMin -1);
-					for (int i = Math.max(range.getFrom() + yOffset, yMin); i <= m; i++) {
-						setSectionBiomes(-1, destinationBiomes.getValue(), i, yMin, yMax);
+					int m = Math.min(range.getTo() + yOffset, sectionRange.num() - 1);
+					for (int i = Math.max(range.getFrom() + yOffset, range.getFrom()); i <= m; i++) {
+						setSectionBiomes(-1, destinationBiomes.getValue(), i, sectionRange);
 					}
 				}
 			} else {
 				for (Range range : ranges) {
-					int m = Math.min(range.getTo() - yOffset, yMax - yMin -1);
-					for (int i = Math.max(range.getFrom() - yOffset, yMin); i <= m; i++) {
-						copySectionBiomes(sourceBiomes.getValue(), destinationBiomes.getValue(), i, yMin, yMax);
+					int m = Math.min(range.getTo() - yOffset, sectionRange.num() - 1);
+					for (int i = Math.max(range.getFrom() - yOffset, sectionRange.getFrom()); i <= m; i++) {
+						copySectionBiomes(sourceBiomes.getValue(), destinationBiomes.getValue(), i, sectionRange);
 					}
 				}
 			}
 		}
 
-		protected void copySectionBiomes(int[] sourceBiomes, int[] destinationBiomes, int sectionY, int yMin, int yMax) {
+		protected void copySectionBiomes(int[] sourceBiomes, int[] destinationBiomes, int sectionY, Range sectionRange) {
 			for (int y = 0; y < 4; y++) {
 				int biomeY = sectionY * 4 + y;
 				for (int x = 0; x < 4; x++) {
 					for (int z = 0; z < 4; z++) {
-						setBiomeAt(destinationBiomes, x, biomeY, z, getBiomeAt(sourceBiomes, x, biomeY, z, yMin, yMax), yMin, yMax);
+						setBiomeAt(destinationBiomes, x, biomeY, z, getBiomeAt(sourceBiomes, x, biomeY, z, sectionRange), sectionRange);
 					}
 				}
 			}
 		}
 
-		protected void setSectionBiomes(int biome, int[] destinationBiomes, int sectionY, int yMin, int yMax) {
+		protected void setSectionBiomes(int biome, int[] destinationBiomes, int sectionY, Range sectionRange) {
 			for (int y = 0; y < 4; y++) {
 				int biomeY = sectionY * 4 + y;
 				for (int x = 0; x < 4; x++) {
 					for (int z = 0; z < 4; z++) {
-						setBiomeAt(destinationBiomes, x, biomeY, z, biome, yMin, yMax);
+						setBiomeAt(destinationBiomes, x, biomeY, z, biome, sectionRange);
 					}
 				}
 			}
 		}
 
-		protected int getBiomeAt(int[] biomes, int biomeX, int biomeY, int biomeZ, int yMin, int yMax) {
-			if (biomes == null || biomes.length != (yMax - yMin) * 64) {
+		protected int getBiomeAt(int[] biomes, int biomeX, int biomeY, int biomeZ, Range sectionRange) {
+			if (biomes == null || biomes.length != sectionRange.num() * 64) {
 				return -1;
 			}
-			return biomes[getBiomeIndex(biomeX, biomeY, biomeZ, yMin, yMax)];
+			return biomes[getBiomeIndex(biomeX, biomeY, biomeZ, sectionRange)];
 		}
 
-		protected void setBiomeAt(int[] biomes, int biomeX, int biomeY, int biomeZ, int biomeID, int yMin, int yMax) {
-			if (biomes == null || biomes.length != (yMax - yMin) * 64) {
-				biomes = new int[(yMax - yMin) * 64];
+		protected void setBiomeAt(int[] biomes, int biomeX, int biomeY, int biomeZ, int biomeID, Range sectionRange) {
+			if (biomes == null || biomes.length != sectionRange.num() * 64) {
+				biomes = new int[sectionRange.num() * 64];
 				Arrays.fill(biomes, -1);
 			}
-			biomes[getBiomeIndex(biomeX, biomeY, biomeZ, yMin, yMax)] = biomeID;
+			biomes[getBiomeIndex(biomeX, biomeY, biomeZ, sectionRange)] = biomeID;
 		}
 
-		protected int getBiomeIndex(int x, int y, int z, int yMin, int yMax) {
-			return (y - yMin) * (yMax - yMin) + z * 4 + x;
+		protected int getBiomeIndex(int x, int y, int z, Range sectionRange) {
+			return (y - sectionRange.getFrom() + 1) * sectionRange.num() + z * 4 + x;
 		}
 	}
 
@@ -169,17 +172,16 @@ public class ChunkFilter_21w06a {
 			ListTag sections = Helper.getSectionsFromLevelFromRoot(root, "Sections");
 			if (sections != null) {
 				ListTag newSections = new ListTag();
-				int yMin = Helper.intFromCompound(level, "yPos", -4);
-				int yMax = Helper.findHighestSection(sections, yMin);
+				Range sectionRange = Helper.findSectionRange(level, sections);
 				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
-					if (applyOffsetToSection(section, offset.blockToSection(), yMin, yMax)) {
+					if (applyOffsetToSection(section, offset.blockToSection(), sectionRange)) {
 						newSections.add(section);
 					}
 				}
 				level.put("Sections", newSections);
 
 				// Biomes
-				catchAndLog(() -> applyOffsetToBiomes(Helper.tagFromCompound(level, "Biomes"), offset.blockToSection(), yMax - yMin));
+				catchAndLog(() -> applyOffsetToBiomes(Helper.tagFromCompound(level, "Biomes"), offset.blockToSection(), sectionRange.num()));
 			}
 
 			return true;
@@ -221,18 +223,17 @@ public class ChunkFilter_21w06a {
 				return new long[37];
 			}
 
-			int yMin = Helper.intFromCompound(Helper.levelFromRoot(root), "yPos", -4);
-			int yMax = Helper.findHighestSection(Helper.tagFromLevelFromRoot(root, "Sections"), yMin);
+			Range sectionRange = Helper.findSectionRange(Helper.levelFromRoot(root), sections);
 
-			ListTag[] palettes = new ListTag[yMax - yMin];
-			long[][] blockStatesArray = new long[yMax - yMin][];
+			ListTag[] palettes = new ListTag[sectionRange.num()];
+			long[][] blockStatesArray = new long[sectionRange.num()][];
 			sections.forEach(s -> {
 				ListTag p = Helper.tagFromCompound(s, "Palette");
 				long[] b = Helper.longArrayFromCompound(s, "BlockStates");
-				int y = Helper.numberFromCompound(s, "Y", yMin - 1).intValue();
-				if (y >= yMin && y <= yMax && p != null && b != null) {
-					palettes[y - yMin] = p;
-					blockStatesArray[y - yMin] = b;
+				int y = Helper.numberFromCompound(s, "Y", sectionRange.getFrom() - 1).intValue();
+				if (sectionRange.contains(y) && p != null && b != null) {
+					palettes[y - sectionRange.getFrom()] = p;
+					blockStatesArray[y - sectionRange.getFrom()] = b;
 				}
 			});
 
@@ -259,7 +260,7 @@ public class ChunkFilter_21w06a {
 				}
 			}
 
-			int bits = 32 - Integer.numberOfLeadingZeros((yMax - yMin) * 16);
+			int bits = 32 - Integer.numberOfLeadingZeros(sectionRange.num() * 16);
 			return applyHeightMap(heightmap, bits);
 		}
 
@@ -294,19 +295,18 @@ public class ChunkFilter_21w06a {
 			}
 			pos = pos.chunkToBlock();
 
-			int yMin = Helper.intFromCompound(level, "yPos", -4);
-			int yMax = Helper.findHighestSection(sections, yMin);
+			Range sectionRange = Helper.findSectionRange(level, sections);
 
 			// handle the special case when someone wants to replace air with something else
 			if (replace.containsKey("minecraft:air")) {
 				Map<Integer, CompoundTag> sectionMap = new HashMap<>();
-				List<Integer> heights = new ArrayList<>(yMax - yMin + 1);
+				List<Integer> heights = new ArrayList<>(sectionRange.num());
 				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 					sectionMap.put(section.getInt("Y"), section);
 					heights.add(section.getInt("Y"));
 				}
 
-				for (int y = yMin; y <= yMax; y++) {
+				for (int y = sectionRange.getFrom(); y <= sectionRange.getTo(); y++) {
 					if (!sectionMap.containsKey(y)) {
 						sectionMap.put(y, createEmptySection(y));
 						heights.add(y);
@@ -342,8 +342,8 @@ public class ChunkFilter_21w06a {
 					continue;
 				}
 
-				int y = Helper.numberFromCompound(section, "Y", -1).intValue();
-				if (y < yMin || y > yMax) {
+				int y = Helper.numberFromCompound(section, "Y", sectionRange.getFrom() - 1).intValue();
+				if (!sectionRange.contains(y)) {
 					continue;
 				}
 

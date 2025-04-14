@@ -3,10 +3,13 @@ package net.querz.mcaselector.version;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.point.Point3i;
+import net.querz.mcaselector.util.range.Range;
 import net.querz.nbt.*;
 import java.util.Random;
 
 public final class Helper {
+
+	private static final Range maxRange = new Range(-127, 126);
 
 	private static final Random random = new Random();
 
@@ -265,6 +268,32 @@ public final class Helper {
 				}
 			}
 		}
+	}
+
+	public static Range findSectionRange(CompoundTag root, ListTag sections) {
+		if (sections == null) {
+			return null;
+		}
+		int max = Integer.MIN_VALUE;
+		int min = Integer.MAX_VALUE;
+		int current;
+		for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+			// ignore empty section
+			if (section.size() == 1 || !section.containsKey("Y")) {
+				continue;
+			}
+			current = section.getInt("Y");
+			if (current > max) {
+				max = current;
+			}
+			if (current < min) {
+				min = current;
+			}
+		}
+		if (root.containsNumber("yPos")) {
+			min = root.getInt("yPos");
+		}
+		return new Range(min, max).limit(maxRange);
 	}
 
 	public static int findHighestSection(ListTag sections, int lowest) {

@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 
 public class Range {
 
+	// from and to are both inclusive
 	private int from;
 	private int to;
 
@@ -26,6 +27,21 @@ public class Range {
 
 	public void setTo(int to) {
 		this.to = to;
+	}
+
+	public int num() {
+		return to - from + 1;
+	}
+
+	public Range limit(Range range) {
+		if (from > to) {
+			from = range.from;
+			to = range.to;
+		} else {
+			from = Math.max(from, range.from);
+			to = Math.min(to, range.to);
+		}
+		return this;
 	}
 
 	public boolean contains(int value) {
