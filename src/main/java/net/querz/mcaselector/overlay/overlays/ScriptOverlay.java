@@ -30,9 +30,6 @@ public class ScriptOverlay extends AmountOverlay {
 			Integer res = engine.invoke("get", data);
 			return res == null ? 0 : res;
 		} catch (ScriptException | NoSuchMethodException ex) {
-			// TODO: remove
-			ex.printStackTrace();
-			System.out.println(getRawMultiValues());
 			LOGGER.warn("failed to invoke get function in custom overlay script", ex);
 		}
 		return 0;
