@@ -10,6 +10,7 @@
   "full",
   "fullchunk",
   "heightmaps",
+  "initialize_light",
   "light",
   "lighted",
   "liquid_carved",
