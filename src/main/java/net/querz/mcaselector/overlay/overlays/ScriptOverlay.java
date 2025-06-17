@@ -20,16 +20,19 @@ public class ScriptOverlay extends AmountOverlay {
 	private final GroovyScriptEngine engine = new GroovyScriptEngine();
 
 	public ScriptOverlay() {
-		super(OverlayType.DATA_VERSION);
+		super(OverlayType.SCRIPT);
+		setMultiValues(empty);
 	}
 
 	@Override
 	public int parseValue(ChunkData data) {
 		try {
-			return engine.invoke("get", data);
+			Integer res = engine.invoke("get", data);
+			return res == null ? 0 : res;
 		} catch (ScriptException | NoSuchMethodException ex) {
 			// TODO: remove
 			ex.printStackTrace();
+			System.out.println(getRawMultiValues());
 			LOGGER.warn("failed to invoke get function in custom overlay script", ex);
 		}
 		return 0;
@@ -47,12 +50,11 @@ public class ScriptOverlay extends AmountOverlay {
 			return false;
 		}
 
-		String code;
 		try {
-			code = Files.readString(Path.of(raw));
+			String code = Files.readString(Path.of(raw));
 			engine.eval(code);
-			setMultiValues(new String[]{code});
-			setRawMultiValues(code);
+			setMultiValues(new String[]{raw});
+			setRawMultiValues(raw);
 			return true;
 		} catch (IllegalArgumentException | IOException | ScriptException e) {
 			setMultiValues(empty);

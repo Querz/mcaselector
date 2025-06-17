@@ -135,6 +135,9 @@ dialog.filter_chunks.tab_script;Senaryo
 dialog.edit_overlays.title;Düzenle
 dialog.edit_overlays.overlay_active.tooltip;Aktif
 dialog.edit_overlays.delete.tooltip;Sil
+dialog.edit_overlays.tab_presets;Yer İmleri
+dialog.edit_overlays.tab_script;Betik
+dialog.edit_overlays.create_overlay;Kaplama Oluştur
 dialog.change_nbt.title;NBT'yi değiştir
 dialog.change_nbt.change;Değiştir
 dialog.change_nbt.change.tooltip;Değeri yalnızca anahtarı varsa değiştirir.

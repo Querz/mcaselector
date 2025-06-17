@@ -1,5 +1,6 @@
 package net.querz.mcaselector.ui.dialog;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -23,6 +24,7 @@ import net.querz.mcaselector.overlay.OverlayType;
 import net.querz.mcaselector.overlay.overlays.ScriptOverlay;
 import net.querz.mcaselector.ui.UIFactory;
 import net.querz.mcaselector.ui.component.CodeEditor;
+import net.querz.mcaselector.ui.component.PersistentDialogProperties;
 import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.tile.TileMap;
@@ -34,7 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
+public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> implements PersistentDialogProperties {
 
 	private static final Image addIcon = FileHelper.getIconFromResources("img/add");
 
@@ -58,6 +60,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 			}""";
 
 	private static final CodeEditor codeEditor = new CodeEditor(initScript);
+	private static int lastSelectedTab;
 
 	private final ChangeListener<Overlay> tileMapSelectedOverlayChange = (v, o, n) -> {
 		if (o != n) {
@@ -89,9 +92,10 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		codeEditor.setRecentFiles(ConfigProvider.GLOBAL.getRecentOverlayScripts());
 		codeEditor.setSource(ConfigProvider.GLOBAL.getOverlayScript());
 		codeEditor.setOnSave(f -> {
+			String path = f.toString();
 			for (Overlay overlay : overlays) {
-				if (overlay.getType() == OverlayType.SCRIPT) {
-					overlay.setRawMultiValues(f.toString());
+				if (overlay.getType() == OverlayType.SCRIPT && path.equals(overlay.getRawMultiValues())) {
+					overlay.setMultiValuesString(path);
 				}
 			}
 		});
@@ -103,6 +107,8 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 			tileMap.getWindow().getOptionBar().setEditOverlaysEnabled(true);
 			tileMap.getWindow().untrackDialog(this);
 			closedWithOK.set(true);
+			initPersistentLocationOnClose(this);
+			lastSelectedTab = tabs.getSelectionModel().getSelectedIndex();
 		});
 		setOnCloseRequest(e -> {
 			tileMap.overlayParserProperty().removeListener(tileMapSelectedOverlayChange);
@@ -112,6 +118,8 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 				tileMap.draw();
 				tileMap.getWindow().getOptionBar().setEditOverlaysEnabled(true);
 				tileMap.getWindow().untrackDialog(this);
+				initPersistentLocationOnClose(this);
+				lastSelectedTab = tabs.getSelectionModel().getSelectedIndex();
 			}
 		});
 
@@ -141,10 +149,15 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
 		Button createScriptOverlay = UIFactory.button(Translation.DIALOG_EDIT_OVERLAYS_CREATE_OVERLAY);
 		createScriptOverlay.setOnAction(e -> {
-			codeEditor.save();
-			ScriptOverlay overlay = new ScriptOverlay();
-			overlay.setRawMultiValues(codeEditor.getSource());
-			overlays.add(overlay);
+			if (codeEditor.save(false)) {
+				ScriptOverlay overlay = new ScriptOverlay();
+				overlay.setRawMultiValues(codeEditor.getSource().file().toString());
+				overlays.add(overlay);
+				add(overlay);
+				tileMap.setOverlays(overlays);
+				tileMap.setOverlay(overlay);
+				tileMap.draw();
+			}
 		});
 
 		VBox presets = new VBox();
@@ -153,15 +166,15 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 		VBox.setVgrow(overlaysScrollPane, Priority.ALWAYS);
 
 		VBox script = new VBox();
-		script.getChildren().add(codeEditor);
+		VBox.setVgrow(codeEditor, Priority.ALWAYS);
+		script.getChildren().addAll(codeEditor, createScriptOverlay);
 
 		Tab presetsTab = UIFactory.tab(Translation.DIALOG_EDIT_OVERLAYS_TAB_PRESETS);
 		presetsTab.setContent(presets);
 		Tab scriptTab = UIFactory.tab(Translation.DIALOG_EDIT_OVERLAYS_TAB_SCRIPT);
-		scriptTab.setContent(codeEditor);
+		scriptTab.setContent(script);
 
 		tabs.getTabs().addAll(presetsTab, scriptTab);
-
 
 		getDialogPane().setContent(tabs);
 
@@ -178,6 +191,9 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> {
 
 		tileMap.getWindow().getOptionBar().setEditOverlaysEnabled(false);
 		tileMap.getWindow().trackDialog(this);
+
+		initPersistentLocationOnOpen(this);
+		Platform.runLater(() -> tabs.getSelectionModel().select(lastSelectedTab));
 	}
 
 	private void onTypeChange(Overlay oldValue, Overlay newValue) {

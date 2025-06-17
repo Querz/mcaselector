@@ -135,6 +135,9 @@ dialog.filter_chunks.tab_script;Сценарій
 dialog.edit_overlays.title;Редагувати накладання
 dialog.edit_overlays.overlay_active.tooltip;Активний
 dialog.edit_overlays.delete.tooltip;Видалити
+dialog.edit_overlays.tab_presets;Накладки
+dialog.edit_overlays.tab_script;Скрипт
+dialog.edit_overlays.create_overlay;Створити накладку
 dialog.change_nbt.title;Змінити NBT
 dialog.change_nbt.change;Змінити
 dialog.change_nbt.change.tooltip;Змінити значення якщо його ключ існує

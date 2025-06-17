@@ -135,6 +135,9 @@ dialog.filter_chunks.tab_script;Script
 dialog.edit_overlays.title;Overlayek szerkesztése
 dialog.edit_overlays.overlay_active.tooltip;Aktív
 dialog.edit_overlays.delete.tooltip;Törlés
+dialog.edit_overlays.tab_presets;Sablonok
+dialog.edit_overlays.tab_script;Szkript
+dialog.edit_overlays.create_overlay;Szegély létrehozása
 dialog.change_nbt.title;NBT Változtatása
 dialog.change_nbt.change;Változtatás
 dialog.change_nbt.change.tooltip;Megváltoztatja az értéket, ha az adott kulcs létezik.

@@ -135,6 +135,9 @@ dialog.filter_chunks.tab_script;脚本
 dialog.edit_overlays.title;编辑叠加层
 dialog.edit_overlays.overlay_active.tooltip;激活的
 dialog.edit_overlays.delete.tooltip;删除
+dialog.edit_overlays.tab_presets;覆盖
+dialog.edit_overlays.tab_script;脚本
+dialog.edit_overlays.create_overlay;创建覆盖
 dialog.change_nbt.title;更改NBT
 dialog.change_nbt.change;更改
 dialog.change_nbt.change.tooltip;仅当其键存在时更改值.

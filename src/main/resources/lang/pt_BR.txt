@@ -135,6 +135,9 @@ dialog.filter_chunks.tab_script;Script
 dialog.edit_overlays.title;Editar sobreposições
 dialog.edit_overlays.overlay_active.tooltip;Ativo
 dialog.edit_overlays.delete.tooltip;Excluir
+dialog.edit_overlays.tab_presets;Sobreposições
+dialog.edit_overlays.tab_script;Script
+dialog.edit_overlays.create_overlay;Criar Sobreposição
 dialog.change_nbt.title;Alterar NBT
 dialog.change_nbt.change;Alterar
 dialog.change_nbt.change.tooltip;Altera o valor apenas se sua chave existir.

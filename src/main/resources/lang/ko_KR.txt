@@ -135,6 +135,9 @@ dialog.filter_chunks.tab_script;스크립트
 dialog.edit_overlays.title;오버레이 수정
 dialog.edit_overlays.overlay_active.tooltip;활성화
 dialog.edit_overlays.delete.tooltip;삭제하기
+dialog.edit_overlays.tab_presets;오버레이
+dialog.edit_overlays.tab_script;스크립트
+dialog.edit_overlays.create_overlay;오버레이 생성
 dialog.change_nbt.title;NBT 변경하기
 dialog.change_nbt.change;변경하기
 dialog.change_nbt.change.tooltip;Key가 있는 경우에만 Value를 변경합니다.
