@@ -135,6 +135,9 @@ dialog.filter_chunks.tab_script;Script
 dialog.edit_overlays.title;Overlays editieren
 dialog.edit_overlays.overlay_active.tooltip;Aktiv
 dialog.edit_overlays.delete.tooltip;Löschen
+dialog.edit_overlays.tab_presets;Overlays
+dialog.edit_overlays.tab_script;Skript
+dialog.edit_overlays.create_overlay;Overlay erstellen
 dialog.change_nbt.title;NBT ändern
 dialog.change_nbt.change;Ändern
 dialog.change_nbt.change.tooltip;Ändert den Wert nur, wenn er existiert.

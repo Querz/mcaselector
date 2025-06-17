@@ -135,6 +135,9 @@ dialog.filter_chunks.tab_script;脚本
 dialog.edit_overlays.title;オーバレイ
 dialog.edit_overlays.overlay_active.tooltip;有効化
 dialog.edit_overlays.delete.tooltip;削除
+dialog.edit_overlays.tab_presets;オーバーレイ
+dialog.edit_overlays.tab_script;スクリプト
+dialog.edit_overlays.create_overlay;オーバーレイを作成
 dialog.change_nbt.title;NBTを変更
 dialog.change_nbt.change;変更
 dialog.change_nbt.change.tooltip;キーが存在する場合にのみ値を変更します

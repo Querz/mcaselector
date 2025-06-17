@@ -52,8 +52,10 @@ public class GlobalConfig extends Config {
 	private TreeMap<Long, RecentWorld> recentWorlds = new TreeMap<>();
 	private RecentFiles recentFilterScripts = new RecentFiles();
 	private RecentFiles recentChangeScripts = new RecentFiles();
+	private RecentFiles recentOverlayScripts = new RecentFiles();
 	private TempScript filterScript = new TempScript(null, false, "");
 	private TempScript changeScript = new TempScript(null, false, "");
+	private TempScript overlayScript = new TempScript(null, false, "");
 
 	public Locale getLocale() {
 		return locale;
@@ -171,6 +173,14 @@ public class GlobalConfig extends Config {
 		recentChangeScripts.addRecentFile(file);
 	}
 
+	public RecentFiles getRecentOverlayScripts() {
+		return recentOverlayScripts;
+	}
+
+	public void addRecentOverlayScript(File file) {
+		recentOverlayScripts.addRecentFile(file);
+	}
+
 	public TempScript getFilterScript() {
 		return filterScript;
 	}
@@ -185,6 +195,14 @@ public class GlobalConfig extends Config {
 
 	public void setChangeScript(TempScript changeScript) {
 		this.changeScript = changeScript;
+	}
+
+	public TempScript getOverlayScript() {
+		return overlayScript;
+	}
+
+	public void setOverlayScript(TempScript overlayScript) {
+		this.overlayScript = overlayScript;
 	}
 
 	@Override

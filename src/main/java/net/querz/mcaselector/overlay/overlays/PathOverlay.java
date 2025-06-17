@@ -7,7 +7,7 @@ import net.querz.mcaselector.config.adapter.OverlayAdapter;
 import net.querz.mcaselector.util.exception.ParseException;
 import net.querz.mcaselector.io.mca.Chunk;
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.overlay.AmountParser;
+import net.querz.mcaselector.overlay.AmountOverlay;
 import net.querz.mcaselector.overlay.OverlayType;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.nbt.CollectionTag;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CustomOverlay extends AmountParser {
+public class PathOverlay extends AmountOverlay {
 
 	private final List<Node> path = new ArrayList<>();
 	private String root;
@@ -28,8 +28,8 @@ public class CustomOverlay extends AmountParser {
 
 	private final Pattern indexPattern = Pattern.compile("^\\[(?<index>\\d+)]$");
 
-	public CustomOverlay() {
-		super(OverlayType.CUSTOM);
+	public PathOverlay() {
+		super(OverlayType.PATH);
 		setMultiValues(new String[0]);
 	}
 

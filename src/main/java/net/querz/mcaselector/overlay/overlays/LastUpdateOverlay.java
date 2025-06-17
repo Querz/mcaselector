@@ -30,10 +30,12 @@ public class LastUpdateOverlay extends Overlay {
 		return "LastUpdate";
 	}
 
+	@Override
 	public String minString() {
 		return minDuration == null ? super.minString() : minDuration;
 	}
 
+	@Override
 	public String maxString() {
 		return maxDuration == null ? super.maxString() : maxDuration;
 	}

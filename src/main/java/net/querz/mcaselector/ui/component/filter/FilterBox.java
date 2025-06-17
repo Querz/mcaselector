@@ -95,7 +95,7 @@ public abstract class FilterBox extends BorderPane {
 		filterOperators.getStyleClass().add("filter-operators-grid");
 		
 		type.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_TYPE_TOOLTIP));
-		type.getItems().addAll(FilterType.queuables());
+		type.getItems().addAll(FilterType.queryable());
 		type.getSelectionModel().select(filter.getType());
 		type.setOnAction(e -> update(type.getSelectionModel().getSelectedItem()));
 		type.getStyleClass().add("filter-type-combo-box");

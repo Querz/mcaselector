@@ -26,6 +26,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class CodeEditor extends StackPane {
 
@@ -35,6 +36,7 @@ public class CodeEditor extends StackPane {
 	private final Menu recentFilesMenu;
 	private final DataProperty<Boolean> initTextEval = new DataProperty<>(true);
 	private boolean saved = true;
+	private Consumer<File> onSave;
 	private File sourceFile;
 	private Window owner;
 	private Config.RecentFiles recentFiles;
@@ -84,23 +86,11 @@ public class CodeEditor extends StackPane {
 
 		MenuItem saveAsMenu = UIFactory.menuItem(Translation.MENU_FILE_SAVE_AS);
 		saveAsMenu.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCodeCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
-		saveAsMenu.setOnAction(e -> {
-			File file = DialogHelper.createFileChooser(FileHelper.getLastOpenedDirectory("code_editor", null),
-					new FileChooser.ExtensionFilter("*.groovy Files", "*.groovy")).showSaveDialog(owner);
-			if (file != null) {
-				save(file);
-			}
-		});
+		saveAsMenu.setOnAction(e -> save(true));
 
 		MenuItem saveMenu = UIFactory.menuItem(Translation.MENU_FILE_SAVE);
 		saveMenu.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCodeCombination.SHORTCUT_DOWN));
-		saveMenu.setOnAction(e -> {
-			if (sourceFile != null) {
-				save(sourceFile);
-			} else {
-				saveAsMenu.fire();
-			}
-		});
+		saveMenu.setOnAction(e -> save(false));
 
 		recentFilesMenu = UIFactory.menu(Translation.MENU_FILE_OPEN_RECENT);
 
@@ -157,7 +147,7 @@ public class CodeEditor extends StackPane {
 		}
 	}
 
-	private void save(File file) {
+	private boolean save(File file) {
 		try {
 			Files.writeString(file.toPath(), codeArea.getText(), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
 			FileHelper.setLastOpenedDirectory("code_editor", file.getParent());
@@ -168,9 +158,35 @@ public class CodeEditor extends StackPane {
 				recentFiles.addRecentFile(file);
 				setRecentFiles(recentFiles);
 			}
+			if (onSave != null) {
+				onSave.accept(file);
+			}
+			return true;
 		} catch (IOException ex) {
 			new ErrorDialog(owner, ex);
+			return false;
 		}
+	}
+
+	public boolean save(boolean newSave) {
+		if (newSave || sourceFile == null) {
+			File file = DialogHelper.createFileChooser(FileHelper.getLastOpenedDirectory("code_editor", null),
+					new FileChooser.ExtensionFilter("*.groovy Files", "*.groovy")).showSaveDialog(owner);
+			if (file != null) {
+				return save(file);
+			}
+			return false;
+		} else {
+			return save(sourceFile);
+		}
+	}
+
+	public boolean isSaved() {
+		return saved;
+	}
+
+	public void setOnSave(Consumer<File> onSave) {
+		this.onSave = onSave;
 	}
 
 	private void updateFileNameLabel() {

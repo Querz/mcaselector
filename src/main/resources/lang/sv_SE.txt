@@ -135,6 +135,9 @@ dialog.filter_chunks.tab_script;Script
 dialog.edit_overlays.title;Redigera överlägg
 dialog.edit_overlays.overlay_active.tooltip;Aktiva
 dialog.edit_overlays.delete.tooltip;Radera
+dialog.edit_overlays.tab_presets;Överlagor
+dialog.edit_overlays.tab_script;Script
+dialog.edit_overlays.create_overlay;Skapa Överlagra
 dialog.change_nbt.title;Ändra NBT
 dialog.change_nbt.change;Ändra
 dialog.change_nbt.change.tooltip;Ändrar endast värdet om dess nyckel finns.

@@ -135,6 +135,9 @@ dialog.filter_chunks.tab_script;腳本
 dialog.edit_overlays.title;編輯疊加
 dialog.edit_overlays.overlay_active.tooltip;已啟用
 dialog.edit_overlays.delete.tooltip;刪除
+dialog.edit_overlays.tab_presets;圖層預設
+dialog.edit_overlays.tab_script;腳本
+dialog.edit_overlays.create_overlay;建立圖層
 dialog.change_nbt.title;變更 NBT
 dialog.change_nbt.change;變更
 dialog.change_nbt.change.tooltip;僅當其鍵存在時變更其值。

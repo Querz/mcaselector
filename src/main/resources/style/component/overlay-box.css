@@ -2,6 +2,7 @@
     -color-overlay-box-invalid-background: #9e494a;
     -color-overlay-box-invalid-shadow: #ff4000;
     -color-overlay-box-control-hover-background: #494d50;
+    -color-flip-label-hover-background: #494d50;
 }
 
 .overlay-input-grid {
@@ -36,7 +37,7 @@
 }
 
 .overlay-box .control-label:hover {
-    -fx-background-color: -color-overlay-box-control-hover-background
+    -fx-background-color: -color-overlay-box-control-hover-background;
 }
 
 .gradient-label {
@@ -48,5 +49,5 @@
 }
 
 .flip-label:hover {
-    -fx-background-color: -color-flip-label-hover-background
+    -fx-background-color: -color-flip-label-hover-background;
 }

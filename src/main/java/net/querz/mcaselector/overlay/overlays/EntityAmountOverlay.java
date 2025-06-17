@@ -1,16 +1,16 @@
 package net.querz.mcaselector.overlay.overlays;
 
 import net.querz.mcaselector.io.mca.ChunkData;
-import net.querz.mcaselector.overlay.AmountParser;
+import net.querz.mcaselector.overlay.AmountOverlay;
 import net.querz.mcaselector.overlay.OverlayType;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.ListTag;
 
-public class EntityAmountOverlay extends AmountParser {
+public class EntityAmountOverlay extends AmountOverlay {
 
 	public EntityAmountOverlay() {
-		super(OverlayType.ENTITY_AMOUNT);
+		super(OverlayType.ENTITY_AMOUNT, 0, Integer.MAX_VALUE);
 	}
 
 	@Override

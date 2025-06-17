@@ -135,6 +135,9 @@ dialog.filter_chunks.tab_script;Skript
 dialog.edit_overlays.title;Upravit překryvy
 dialog.edit_overlays.overlay_active.tooltip;Aktivní
 dialog.edit_overlays.delete.tooltip;Vymazat
+dialog.edit_overlays.tab_presets;Předvolby
+dialog.edit_overlays.tab_script;Skript
+dialog.edit_overlays.create_overlay;Vytvořit překryv
 dialog.change_nbt.title;Změnit NBT
 dialog.change_nbt.change;změnit
 dialog.change_nbt.change.tooltip;Změní hodnotu pouze pokud klíč existuje.
