@@ -1,4 +1,4 @@
-status.region;область
+status.region;регион
 status.chunk;чанк
 status.block;блок
 status.selected;выбрано
@@ -7,7 +7,7 @@ status.total;всего
 status.overlay;наложение
 menu.file;Файл
 menu.view;Вид
-menu.selection;Выбор
+menu.selection;Выделение
 menu.tools;Инструменты
 menu.about;О программе
 menu.file.new;Новый
@@ -16,23 +16,23 @@ menu.file.open_recent;Открыть недавние
 menu.file.open_recent.clear;Очистить
 menu.file.save;Сохранить
 menu.file.save_as;Сохранить как...
-menu.file.open_world;Открой мир
-menu.file.open_dimension;Откройте другое измерение
-menu.file.open_recent_world;Откройте предыдущий мир
-menu.file.open_recent_world.clear;Сбросить
+menu.file.open_world;Открыть мир
+menu.file.open_dimension;Открыть измерение
+menu.file.open_recent_world;Открыть недавний мир
+menu.file.open_recent_world.clear;Очистить
 menu.file.settings;Настройки
-menu.file.render_settings;Настройки рендеринга
+menu.file.render_settings;Настройки отрисовки
 menu.file.quit;Выход
 menu.view.reload;Перезагрузить
 menu.view.chunk_grid;Сетка чанков
-menu.view.region_grid;Сетка областей
+menu.view.region_grid;Сетка регионов
 menu.view.coordinates;Координаты
-menu.view.goto;Перейти по координатам
+menu.view.goto;Перейти
 menu.view.reset_zoom;Сбросить масштаб
 menu.view.save_screenshot;Сохранить снимок экрана
-menu.view.clear_cache;Отчистить кэш
-menu.view.clear_all_cache;Отчистить весь кэш
-menu.selection.clear;Сбросить
+menu.view.clear_cache;Очистить кэш
+menu.view.clear_all_cache;Очистить весь кэш
+menu.selection.clear;Очистить
 menu.selection.invert;Инвертировать
 menu.selection.invert_regions;Инвертировать выбранные регионы
 menu.selection.copy_chunks;Копировать чанки
@@ -41,160 +41,160 @@ menu.selection.export_chunks;Экспортировать выбранные ч�
 menu.selection.delete_chunks;Удалить выбранные чанки
 menu.selection.import_selection;Импортировать выделение из .csv
 menu.selection.export_selection;Экспортировать выделение как .csv
-menu.selection.export_image;Экспорт как изображение
-menu.selection.clear_cache;Отчистить кэш
+menu.selection.export_image;Экспортировать как изображение
+menu.selection.clear_cache;Очистить кэш
 menu.tools.import_chunks;Импортировать чанки
-menu.tools.filter_chunks;Отфильтровать чанки
-menu.tools.change_fields;Изменить параметры
+menu.tools.filter_chunks;Фильтровать чанки
+menu.tools.change_fields;Изменить поля
 menu.tools.edit_nbt;Редактировать чанк
-menu.tools.swap_chunks;Поменять чанки
+menu.tools.swap_chunks;Сменить чанки
 menu.tools.edit_overlays;Редактировать наложения
-menu.tools.next_overlay;Следующий оверлей
-menu.tools.next_overlay_type;Тип наложения
-menu.tools.sum_selection;Сумма выбора
-dialog.select_world.title;Выберите размер
+menu.tools.next_overlay;Следующее наложение
+menu.tools.next_overlay_type;Следующий тип наложения
+menu.tools.sum_selection;Суммировать выделение
+dialog.select_world.title;Выбрать измерение
 dialog.settings.title;Настройки
 dialog.settings.global.language;Язык
 dialog.settings.global.language.language;Язык
-dialog.settings.processing.process.process_threads;Технологические потоки
+dialog.settings.processing.process.process_threads;Потоки обработки
 dialog.settings.processing.process;Процесс
-dialog.settings.processing.process.write_threads;Писать темы
-dialog.settings.processing.files.max_files;Макс файлов
+dialog.settings.processing.process.write_threads;Потоки записи
+dialog.settings.processing.files.max_files;Максимум файлов
 dialog.settings.global.selection.region_color;Цвет региона
 dialog.settings.global.selection.chunk_color;Цвет чанка
-dialog.settings.global.selection.pasted_chunks_color;Цвет вставленных кусков
-dialog.settings.rendering.shade.shade;Оттенок
-dialog.settings.rendering.shade;Оттенок
-dialog.settings.rendering.shade.shade_water;Тень воды
-dialog.settings.rendering.shade.shade_altitude;Высота местности
-dialog.settings.rendering.background.show_nonexistent_regions;Показать несуществующие регионы
-dialog.settings.rendering.smooth.smooth_rendering;Плавный рендеринг
-dialog.settings.rendering.smooth.smooth_overlays;Гладкие накладки
+dialog.settings.global.selection.pasted_chunks_color;Цвет вставленных чанков
+dialog.settings.rendering.shade.shade;Тени
+dialog.settings.rendering.shade;Тени
+dialog.settings.rendering.shade.shade_water;Тени воды
+dialog.settings.rendering.shade.shade_altitude;Тени высоты
+dialog.settings.rendering.background.show_nonexistent_regions;Показывать несуществующие регионы
+dialog.settings.rendering.smooth.smooth_rendering;Сглаживание отрисовки
+dialog.settings.rendering.smooth.smooth_overlays;Сглаживание наложений
 dialog.settings.rendering.background.background_pattern;Фоновый узор
 dialog.settings.rendering.background;Фон
-dialog.settings.global.misc.mc_saves_dir;MC сохраняет реж
-dialog.settings.global.misc.print_debug;Распечатать отладочные сообщения
+dialog.settings.global.misc.mc_saves_dir;Каталог миров MC
+dialog.settings.global.misc.print_debug;Выводить отладочные сообщения
 dialog.settings.global.misc.show_log_file;Показать файл журнала
 dialog.settings.reset;Сбросить
-dialog.settings.tab_global;Глобальный
+dialog.settings.tab_global;Общие
 dialog.settings.tab_processing;Обработка
-dialog.settings.tab_rendering;Рендеринг
+dialog.settings.tab_rendering;Отрисовка
 dialog.settings.tab_world;Мир
-dialog.settings.global.misc;Разное
+dialog.settings.global.misc;Прочее
 dialog.settings.processing.files;Файлы
-dialog.settings.rendering.smooth;Гладкий; плавный
-dialog.settings.global.selection;Выбор
+dialog.settings.rendering.smooth;Сглаживание
+dialog.settings.global.selection;Выделение
 dialog.settings.world.paths;Пути
-dialog.settings.world.paths.poi;POI
+dialog.settings.world.paths.poi;Структуры
 dialog.settings.world.paths.entities;Сущности
-dialog.settings.rendering.layers.render_height;Высота рендеринга
-dialog.settings.rendering.layers.render_layer_only;Только слой рендеринга
+dialog.settings.rendering.layers.render_height;Высота отрисовки
+dialog.settings.rendering.layers.render_layer_only;Только слой отрисовки
 dialog.settings.rendering.layers;Слои
-dialog.settings.rendering.layers.render_caves;Рендеринг пещер
-dialog.goto.title;Перейти по координатам
+dialog.settings.rendering.layers.render_caves;Отрисовка пещер
+dialog.goto.title;Переход к местоположению
 dialog.confirmation.question;Вы уверены?
-dialog.delete_chunks_confirmation.title;Удалить чанки
-dialog.delete_chunks_confirmation.header_short;Вы удаляете неизвестное число чанков из этого мира.
-dialog.delete_chunks_confirmation.header_verbose;Вы удаляете %d чанков из этого мира.
+dialog.delete_chunks_confirmation.title;Удаление чанков
+dialog.delete_chunks_confirmation.header_short;Вы собираетесь удалить неизвестное количество чанков из этого мира.
+dialog.delete_chunks_confirmation.header_verbose;Вы собираетесь удалить %d чанков из этого мира.
 dialog.image_export_confirmation.title;Экспорт изображения
-dialog.image_export_confirmation.header_short;Вы собираетесь создать изображение неизвестных пропорций.
-dialog.image_export_confirmation.header_verbose;Вы собираетесь создать изображение с размерами %dx%d.
+dialog.image_export_confirmation.header_short;Вы собираетесь создать изображение неизвестного размера.
+dialog.image_export_confirmation.header_verbose;Вы собираетесь создать изображение размером %d×%d.
 dialog.import_chunks_confirmation.title;Импорт чанков
-dialog.import_chunks_confirmation.header;Вы импортируете неизвестное число чанков в этот мир.
+dialog.import_chunks_confirmation.header;Вы собираетесь импортировать неизвестное количество чанков в этот мир.
 dialog.import_chunks_confirmation.options;Опции
 dialog.import_chunks_confirmation.options.offset;Смещение
-dialog.import_chunks_confirmation.options.overwrite;Заменить существующие чанки
-dialog.import_chunks_confirmation.options.selection_only;Применить только к выбранным
+dialog.import_chunks_confirmation.options.overwrite;Перезаписать существующие чанки
+dialog.import_chunks_confirmation.options.selection_only;Применить только к выделению
 dialog.import_chunks_confirmation.options.y_offset;Смещение по Y
-dialog.import_chunks_confirmation.options.sections;разделы
-dialog.import_chunks_confirmation.warning;Внимание: Импорт чанков со смещением не обновит содержимое командных блоков.
+dialog.import_chunks_confirmation.options.sections;Секции
+dialog.import_chunks_confirmation.warning;Предупреждение: импорт чанков со смещением не обновит содержимое командных блоков.
 dialog.export_chunks_confirmation.title;Экспорт чанков
-dialog.export_chunks_confirmation.header_short;Вы экспортируете неизвестное число чанков из этого мира.
-dialog.export_chunks_confirmation.header_verbose;Вы экспортируете %d чанков из этого мира.
-dialog.import_selection.title;Импортировать выделение из .csv
-dialog.import_selection.header;В этом мире уже есть выбор.\nКак импортировать новый выбор?
-dialog.import_selection.overwrite;Перезаписывать
-dialog.import_selection.merge;Добавить
-dialog.filter_chunks.title;Фильтровать чанки
-dialog.filter_chunks.filter.add.tooltip;Добавьте новое условие ниже этого
-dialog.filter_chunks.filter.delete.tooltip;Удалить условие
-dialog.filter_chunks.filter.type.tooltip;Тип условия
-dialog.filter_chunks.filter.operator.tooltip;Оператор для связи нескольких условий
-dialog.filter_chunks.filter.comparator.tooltip;Компаратор
+dialog.export_chunks_confirmation.header_short;Вы собираетесь экспортировать неизвестное количество чанков из этого мира.
+dialog.export_chunks_confirmation.header_verbose;Вы собираетесь экспортировать %d чанков из этого мира.
+dialog.import_selection.title;Импорт выделения из .csv
+dialog.import_selection.header;В этом мире уже есть выделение.\nКак вы хотите импортировать новое выделение?
+dialog.import_selection.overwrite;Перезаписать
+dialog.import_selection.merge;Объединить
+dialog.filter_chunks.title;Фильтрация чанков
+dialog.filter_chunks.filter.add.tooltip;Добавить новое условие под этим.
+dialog.filter_chunks.filter.delete.tooltip;Удалить это условие.
+dialog.filter_chunks.filter.type.tooltip;Тип этого условия.
+dialog.filter_chunks.filter.operator.tooltip;Оператор для связи нескольких условий.
+dialog.filter_chunks.filter.comparator.tooltip;Компаратор.
 dialog.filter_chunks.select;Выбрать
-dialog.filter_chunks.select.tooltip;Создает набор подверженных чанков
-dialog.filter_chunks.export;Экспорт
-dialog.filter_chunks.export.tooltip;Экспортирует все подверженные чанки в новый каталог
+dialog.filter_chunks.select.tooltip;Создаёт выделение из затронутых чанков.
+dialog.filter_chunks.export;Экспортировать
+dialog.filter_chunks.export.tooltip;Экспортирует все затронутые чанки в новую директорию.
 dialog.filter_chunks.delete;Удалить
-dialog.filter_chunks.delete.tooltip;Удаляет все подверженные чанки из этого мира.
-dialog.filter_chunks.selection_only;Применить только к выбранным
-dialog.filter_chunks.overwrite_selection;Перезаписать выбор
-dialog.filter_chunks.selection_radius;Радиус выбора
+dialog.filter_chunks.delete.tooltip;Удаляет все затронутые чанки из текущего мира.
+dialog.filter_chunks.selection_only;Применить только к выделению
+dialog.filter_chunks.overwrite_selection;Перезаписать выделение
+dialog.filter_chunks.selection_radius;Радиус выделения
 dialog.filter_chunks.tab_query;Запрос
 dialog.filter_chunks.tab_script;Скрипт
-dialog.edit_overlays.title;Редактировать наложения
-dialog.edit_overlays.overlay_active.tooltip;Активный
+dialog.edit_overlays.title;Редактирование наложений
+dialog.edit_overlays.overlay_active.tooltip;Активно
 dialog.edit_overlays.delete.tooltip;Удалить
-dialog.edit_overlays.tab_presets;Окна
+dialog.edit_overlays.tab_presets;Наложения
 dialog.edit_overlays.tab_script;Скрипт
-dialog.edit_overlays.create_overlay;Создать оверлей
-dialog.change_nbt.title;Изменить NBT
+dialog.edit_overlays.create_overlay;Создать наложение
+dialog.change_nbt.title;Изменение NBT
 dialog.change_nbt.change;Изменить
-dialog.change_nbt.change.tooltip;Изменяет значение только при наличии ключа
-dialog.change_nbt.force;Сила
-dialog.change_nbt.force.tooltip;Создает тег при его отсутствии
-dialog.change_nbt.selection_only;Применить только к выбранным
-dialog.change_nbt.selection_only.tooltip;Если этот фильтр должен применяться только к выбранным
-dialog.change_nbt_confirmation.title;Изменить NBT
-dialog.change_nbt_confirmation.header_short;Вы изменяете параметры у неизвестного числа чанков в этом мире.
+dialog.change_nbt.change.tooltip;Изменяет значение только если ключ существует.
+dialog.change_nbt.force;Принудительно
+dialog.change_nbt.force.tooltip;Создаёт тег если он не существует.
+dialog.change_nbt.selection_only;Применить только к выделению
+dialog.change_nbt.selection_only.tooltip;Если фильтр должен применяться только к текущему выделению.
+dialog.change_nbt_confirmation.title;Изменение NBT
+dialog.change_nbt_confirmation.header_short;Вы собираетесь изменить данные в неизвестном количестве чанков этого мира.
 dialog.change_nbt.tab_query;Запрос
 dialog.change_nbt.tab_script;Скрипт
-dialog.edit_nbt.title;Редактировать чанк
+dialog.edit_nbt.title;Редактирование чанка
 dialog.edit_nbt.placeholder.loading;загрузка...
-dialog.edit_nbt.placeholder.no_chunk_data;не найдено информации чанка
-dialog.edit_nbt.placeholder.no_region_file;файл области не существует
+dialog.edit_nbt.placeholder.no_chunk_data;данные чанка не найдены
+dialog.edit_nbt.placeholder.no_region_file;файл региона не существует
 dialog.edit_array.index;Индекс
 dialog.edit_array.value;Значение
 dialog.about.title;О программе
-dialog.about.header;О MCA Selector
+dialog.about.header;О программе MCA Selector
 dialog.about.version;Версия:
 dialog.about.version.unknown;неизвестно
 dialog.about.version.check;проверить
 dialog.about.version.checking;проверка...
-dialog.about.version.up_to_date;Последняя версия
+dialog.about.version.up_to_date;Актуальна
 dialog.about.version.error;Ошибка
 dialog.about.license;Лицензия:
 dialog.about.copyright;Авторские права:
-dialog.about.source;Источник:
+dialog.about.source;Исходный код:
 dialog.progress.no_files;нет файлов
 dialog.progress.running;выполнение...
 dialog.progress.cancelling;отмена...
-dialog.progress.collecting_data;сбор информации...
-dialog.progress.done;выполнено.
+dialog.progress.collecting_data;сбор данных...
+dialog.progress.done;готово.
 dialog.progress.scanning_files;Сканирование файлов...
 dialog.progress.title.loading_world;Загрузка мира...
-dialog.progress.title.deleting_selection;Удаление выбора...
+dialog.progress.title.deleting_selection;Удаление выделения...
 dialog.progress.title.creating_image;Создание изображения...
 dialog.progress.title.saving_image;Сохранение изображения...
-dialog.progress.title.exporting_selection;Экспорт выбора...
+dialog.progress.title.exporting_selection;Экспорт выделения...
 dialog.progress.title.importing_chunks;Импорт чанков...
-dialog.progress.title.deleting_filtered_chunks;Удаление указаных чанков...
-dialog.progress.title.exporting_filtered_chunks;Экспорт указанных чанков...
-dialog.progress.title.selecting_filtered_chunks;Выбор указанных чанков...
-dialog.progress.title.changing_nbt_data;изменение NBT параметров...
-dialog.progress.title.saving_chunk;Сохранение фрагмента в файл...
-dialog.progress.title.running_before;Выполнить "before()"...
-dialog.progress.title.running_after;Выполнить "after()"...
-dialog.progress.title.summing;Посчитайте сумму...
-dialog.error.button.copy_to_clipboard;Скопировать в буфер обмена
+dialog.progress.title.deleting_filtered_chunks;Удаление отфильтрованных чанков...
+dialog.progress.title.exporting_filtered_chunks;Экспорт отфильтрованных чанков...
+dialog.progress.title.selecting_filtered_chunks;Выбор отфильтрованных чанков...
+dialog.progress.title.changing_nbt_data;Изменение данных NBT...
+dialog.progress.title.saving_chunk;Сохранение чанка...
+dialog.progress.title.running_before;Выполнение before()
+dialog.progress.title.running_after;Выполнение after()
+dialog.progress.title.summing;Суммирование...
+dialog.error.button.copy_to_clipboard;Копировать в буфер обмена
 dialog.error.title;Ошибка
 dialog.error.header;Произошла ошибка
 dialog.error.copied_to_clipboard;Скопировано в буфер обмена!
-dialog.unsaved_selection.title;Несохраненный выбор
-dialog.unsaved_selection.header;Есть несохраненный выбор.
-dialog.unsaved_script.title;Несохраненный скрипт
-dialog.unsaved_script.header;Есть несохраненный скрипт.
+dialog.unsaved_selection.title;Несохранённое выделение
+dialog.unsaved_selection.header;Имеется несохранённое выделение.
+dialog.unsaved_script.title;Несохранённый скрипт
+dialog.unsaved_script.header;Имеется несохранённый скрипт.
 dialog.request_number.title.array_length;Длина массива
-dialog.request_number.title.enter_number;Ценить
-button.cancel;Отменить
-button.ok;OK
+dialog.request_number.title.enter_number;Введите число
+button.cancel;Отмена
+button.ok;ОК
