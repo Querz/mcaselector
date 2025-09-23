@@ -6,6 +6,7 @@ plugins {
 	id 'org.openjfx.javafxplugin' version '0.1.0'
 	id 'com.gradleup.shadow' version '9.0.0-beta11'
 	id 'com.github.ben-manes.versions' version '0.52.0'
+	id "io.github.jwharm.flatpak-gradle-generator" version "1.5.0"
 }
 
 group 'net.querz'
@@ -34,6 +35,7 @@ repositories {
 	maven {
 		url 'https://plugins.gradle.org/m2/'
 	}
+	maven { url "./offline-repository" }
 }
 
 dependencies {
@@ -96,6 +98,11 @@ tasks.register('minifyCss') {
 tasks.register('generator', JavaExec) {
 	mainClass = 'net.querz.mcaselector.version.mapping.generator.Main'
 	classpath = sourceSets.main.runtimeClasspath
+}
+
+tasks.flatpakGradleGenerator {
+  outputFile = file("flatpak-sources.json")
+  downloadDirectory = "./offline-repository"
 }
 
 jar {
