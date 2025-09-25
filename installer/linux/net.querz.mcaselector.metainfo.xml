@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>net.querz.mcaselector</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>MCA Selector</name>
+  <summary>Manage Minecraft chunks</summary>
+  <description>
+    <p>MCA Selector is an external tool for Minecraft Java Edition that lets you visualize, select, export, or delete world chunks and region files.</p>
+    <p>Common uses: trim large worlds, remove corrupted chunks, and export/import regions.</p>
+    <p>Key features:</p>
+    <ul>
+      <li>Top-down map view — visual overview of regions and chunks for quick navigation and selection.</li>
+      <li>Customizable overlays — display per-chunk values as color gradients with configurable min/max to visualize world data.</li>
+      <li>Dimension switching — open/edit Overworld, Nether, and End (DIM-1/DIM1) region folders.</li>
+      <li>Select/edit chunks individually or in groups</li>
+      <li>Powerful chained filters — select chunks/regions by data version, last updated time, player inhabited time, coordinates, modification date and more (even scripting custom filters); multiple conditions can be combined for precise queries.</li>
+      <li>Chunk Editor — view and edit the full NBT structure of a chunk, including POI and entity data; supports rename, add, delete, and drag‑and‑drop moves.</li>
+      <li>Easy chunk import/export — copy chunks from one world to another.</li>
+      <li>NBT Changer — modify specific NBT values directly in world files.</li>
+      <li>Chunk regeneration (delete to let Minecraft regenerate with new terrain)</li>
+    </ul>
+    <p>Note that you should always back up your world before editing it with MCA Selector.</p>
+  </description>
+  <launchable type="desktop-id">net.querz.mcaselector.desktop</launchable>
+  <developer id="net.querz">
+    <name>Querz</name>
+  </developer>
+  <content_rating type="oars-1.1" />
+  <url type="homepage">https://github.com/Querz/mcaselector</url>
+  <url type="bugtracker">https://github.com/Querz/mcaselector/issues</url>
+  <url type="help">https://github.com/Querz/mcaselector/wiki</url>
+  <url type="translate">https://github.com/Querz/mcaselector/wiki/Translation</url>
+  <url type="vcs-browser">https://github.com/Querz/mcaselector</url>
+  <url type="contribute">https://github.com/Querz/mcaselector/wiki/Contributing</url>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/wiki/Querz/mcaselector/images/Navigation/overview_zoomed_out.png</image>
+      <caption>World overview</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/wiki/Querz/mcaselector/images/Navigation/overview_nether_layers.png</image>
+      <caption>Nether overview</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/wiki/Querz/mcaselector/images/Selections/selections.png</image>
+      <caption>Selecting chunks</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/Querz/mcaselector/wiki/images/Chunk-Filter/filter_chunks.png</image>
+      <caption>Chunk filters</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/Querz/mcaselector/wiki/images/Overlays/overlays.png</image>
+      <caption>Overlays</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/Querz/mcaselector/wiki/images/Chunk-Editor/edit_chunk.png</image>
+      <caption>Chunk editor</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/Querz/mcaselector/wiki/images/Chunk-Import/import_chunks.png</image>
+      <caption>Chunk import</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/Querz/mcaselector/wiki/images/NBT-Changer/change_nbt.png</image>
+      <caption>NBT changer</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="2.5.3" date="2025-06-18">
+      <url>https://github.com/Querz/mcaselector/releases/tag/2.5.3</url>
+    </release>
+  </releases>
+</component>
