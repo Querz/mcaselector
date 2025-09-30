@@ -18,7 +18,7 @@ import net.querz.mcaselector.ui.UIFactory;
 import net.querz.mcaselector.ui.dialog.ConfirmationDialog;
 import net.querz.mcaselector.ui.dialog.ErrorDialog;
 import net.querz.mcaselector.util.property.DataProperty;
-import org.fxmisc.flowless.VirtualizedScrollPane;
+// avoid directly depending on VirtualizedScrollPane here; GroovyCodeArea provides its own Node
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,7 +32,7 @@ public class CodeEditor extends StackPane {
 
 	private static final String newFileName = "script.groovy";
 
-	private final GroovyCodeArea codeArea = new GroovyCodeArea(true);
+    private final IScriptArea codeArea;
 	private final Menu recentFilesMenu;
 	private final DataProperty<Boolean> initTextEval = new DataProperty<>(true);
 	private boolean saved = true;
@@ -43,21 +43,30 @@ public class CodeEditor extends StackPane {
 
 	Label fileNameLabel = new Label("* " + newFileName);
 
-	public CodeEditor(String initText) {
-		codeArea.setChangeListener(() -> {
-			if (!initTextEval.get()) {
-				saved = false;
-				updateFileNameLabel();
-			} else {
-				initTextEval.set(false);
-			}
-		});
-		codeArea.setText(initText);
+    public CodeEditor(String initText) {
+        IScriptArea area;
+        try {
+            area = new GroovyCodeArea(true);
+        } catch (Throwable t) {
+            // RichTextFX is incompatible with current JavaFX; fallback to a plain TextArea-based implementation
+            area = new FallbackScriptArea();
+        }
+        this.codeArea = area;
+
+        codeArea.setChangeListener(() -> {
+            if (!initTextEval.get()) {
+                saved = false;
+                updateFileNameLabel();
+            } else {
+                initTextEval.set(false);
+            }
+        });
+        codeArea.setText(initText);
 
 		getStylesheets().add(Objects.requireNonNull(CodeEditor.class.getClassLoader().getResource("style/component/code-editor.css")).toExternalForm());
 
 		getStyleClass().add("code-editor-script-box");
-		StackPane scriptPane = new StackPane(new VirtualizedScrollPane<>(codeArea));
+        StackPane scriptPane = new StackPane(codeArea.getNode());
 		scriptPane.getStyleClass().add("script-pane");
 		Label errorLabel = new Label();
 		errorLabel.getStyleClass().add("script-error-label");

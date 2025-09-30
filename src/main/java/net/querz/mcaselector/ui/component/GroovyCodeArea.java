@@ -4,12 +4,14 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
+import javafx.scene.Node;
 import net.querz.mcaselector.io.GroovyScriptEngine;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.reactfx.Subscription;
+import org.fxmisc.flowless.VirtualizedScrollPane;
 import javax.script.ScriptException;
 import java.io.Closeable;
 import java.time.Duration;
@@ -22,7 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GroovyCodeArea extends CodeArea implements Closeable {
+public class GroovyCodeArea extends CodeArea implements Closeable, IScriptArea {
 
 	private final ExecutorService executor;
 	private final Subscription highlightSubscription;
@@ -195,6 +197,16 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 		replaceText(0, getLength(), text);
 		setStyleSpans(0, computeHighlighting(text));
 	}
+
+    @Override
+    public String getText() {
+        return super.getText();
+    }
+
+    @Override
+    public Node getNode() {
+        return new VirtualizedScrollPane<>(this);
+    }
 
 	@Override
 	public void close() {
