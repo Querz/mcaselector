@@ -14,7 +14,6 @@ import net.querz.mcaselector.util.progress.Progress;
 import net.querz.mcaselector.util.progress.Timer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;

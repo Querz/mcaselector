@@ -20,11 +20,8 @@ import net.querz.mcaselector.util.github.VersionChecker;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.UIFactory;
 
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public class AboutDialog extends Alert {

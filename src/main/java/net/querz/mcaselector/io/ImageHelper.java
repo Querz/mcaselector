@@ -9,7 +9,6 @@ import net.querz.mcaselector.util.progress.Timer;
 import net.querz.mcaselector.tile.Tile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import javax.imageio.ImageIO;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.ImageLineInt;
