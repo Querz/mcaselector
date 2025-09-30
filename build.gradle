@@ -39,6 +39,7 @@ repositories {
 dependencies {
 	implementation 'com.github.Querz:NBT:6bc3de6961'
 	implementation 'com.google.code.gson:gson:2.12.1'
+	implementation 'com.google.guava:guava:33.4.8-jre'
 	implementation 'it.unimi.dsi:fastutil:8.5.15'
 	implementation 'org.apache.logging.log4j:log4j-api:2.24.3'
 	implementation 'org.apache.logging.log4j:log4j-core:2.24.3'
@@ -54,6 +55,7 @@ dependencies {
   
 	shadow 'com.github.Querz:NBT:6bc3de6961'
 	shadow 'com.google.code.gson:gson:2.12.1'
+	shadow 'com.google.guava:guava:33.4.8-jre'
 	shadow 'it.unimi.dsi:fastutil:8.5.15'
 	shadow 'org.apache.logging.log4j:log4j-api:2.24.3'
 	shadow 'org.apache.logging.log4j:log4j-core:2.24.3'
@@ -131,6 +133,24 @@ shadowJar {
 }
 
 assemble.dependsOn shadowJar
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+// Gradle Versions Plugin configuration: reject unstable candidates
+def isNonStable = { String version ->
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { version.toUpperCase().contains(it) }
+    def regex = /^[0-9,.v-]+(-r)?$/
+    return !stableKeyword && !(version ==~ regex)
+}
+
+tasks.named("dependencyUpdates").configure {
+    checkConstraints = true
+    gradleReleaseChannel = 'current'
+    rejectVersionIf {
+        isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
+    }
+    outputFormatter = 'plain'
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
