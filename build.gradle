@@ -8,7 +8,7 @@ plugins {
 	id 'com.github.ben-manes.versions' version '0.53.0'
 }
 
-group 'net.querz'
+group = 'net.querz'
 compileJava.options.encoding = 'UTF-8'
 application.mainClass = 'net.querz.mcaselector.Main'
 
@@ -27,13 +27,13 @@ idea {
 }
 
 repositories {
-	mavenCentral()
-	maven {
-		url 'https://jitpack.io/'
-	}
-	maven {
-		url 'https://plugins.gradle.org/m2/'
-	}
+    mavenCentral()
+    maven {
+        url = 'https://jitpack.io/'
+    }
+    maven {
+        url = 'https://plugins.gradle.org/m2/'
+    }
 }
 
 dependencies {
