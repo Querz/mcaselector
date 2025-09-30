@@ -165,6 +165,8 @@ public class CircleFilter extends TextFilter<List<CircleFilter.CircleFilterDefin
 					return false;
 				}
 			}
+		default:
+			break;
 		}
 		return true;
 	}

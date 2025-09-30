@@ -7,20 +7,14 @@ import net.querz.mcaselector.util.range.Range;
 import net.querz.mcaselector.selection.ChunkSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
+ import java.io.File;
+ import java.io.IOException;
+ import java.io.RandomAccessFile;
+ import java.nio.ByteBuffer;
+ import java.nio.channels.FileChannel;
+ import java.nio.file.Files;
+ import java.nio.file.StandardCopyOption;
+ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -180,12 +174,10 @@ public abstract class MCAFile<T extends Chunk> {
 				source.seek(offsets[i] * 4096L);
 				rafTmp.seek(globalOffset * 4096L);
 
-				DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(source.getFD()), sectors * 4096));
-				DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(rafTmp.getFD()), sectors * 4096));
-
+				// copy chunk data directly using RandomAccessFile to avoid resource leaks
 				byte[] data = new byte[sectors * 4096];
-				dis.read(data);
-				dos.write(data);
+				source.readFully(data);
+				rafTmp.write(data);
 				offsets[i] = globalOffset; // always keep MCAFile information up to date
 				globalOffset += sectors;
 			}
@@ -243,22 +235,35 @@ public abstract class MCAFile<T extends Chunk> {
 	}
 
 	public void loadHeader() throws IOException {
-		// use HeapByteBuffer here because MappedByteBuffer may not immediately close when calling FileChannel#close(),
-		// causing it to keep a lock on the file, which can cause an exception later when we try to delete or overwrite it.
-		// TODO: once `foreign` is out of preview, swap it for the following code:
-		//
-		//		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ);
-		//				Arena arena = Arena.ofShared()) {
-		//
-		//			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, FileHelper.HEADER_SIZE, arena).asByteBuffer();
-		//
-		//			loadHeader(buf);
-		//		} catch (ArrayIndexOutOfBoundsException ex) {
-		//			throw new IOException(ex);
-		//		}
-
+		// Prefer Java 21 Foreign Memory API (preview) to avoid lingering file locks from MappedByteBuffer,
+		// but fall back to HeapByteBuffer when the API or preview flags are not available.
 		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
-			ByteBuffer buf = ByteBuffer.allocate(FileHelper.HEADER_SIZE);
+			try {
+				Class<?> arenaClass = Class.forName("java.lang.foreign.Arena");
+				Class<?> segmentClass = Class.forName("java.lang.foreign.MemorySegment");
+				Object arena = arenaClass.getMethod("ofShared").invoke(null);
+				try {
+					java.lang.reflect.Method map = FileChannel.class.getMethod(
+						"map",
+						FileChannel.MapMode.class,
+						long.class,
+						long.class,
+						arenaClass
+					);
+					Object segment = map.invoke(fc, FileChannel.MapMode.READ_ONLY, 0L, (long) FileHelper.HEADER_SIZE, arena);
+					java.nio.ByteBuffer buf = (java.nio.ByteBuffer) segmentClass.getMethod("asByteBuffer").invoke(segment);
+					loadHeader(buf);
+				} finally {
+					try {
+						arenaClass.getMethod("close").invoke(arena);
+					} catch (Exception ignore) { /* ignore */ }
+				}
+				return; // foreign path succeeded
+			} catch (ReflectiveOperationException ex) {
+				// Foreign API not available or preview not enabled; fall back to heap buffer
+			}
+
+			java.nio.ByteBuffer buf = java.nio.ByteBuffer.allocate(FileHelper.HEADER_SIZE);
 			fc.read(buf);
 			loadHeader(buf);
 		} catch (ArrayIndexOutOfBoundsException ex) {

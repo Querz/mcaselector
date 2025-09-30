@@ -182,6 +182,7 @@ public class OverlayEditorDialog extends Dialog<OverlayEditorDialog.Result> impl
 			switch (e.getCode()) {
 				case O -> tileMap.nextOverlay();
 				case N -> tileMap.nextOverlayType();
+				default -> {}
 			}
 		});
 

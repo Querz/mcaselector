@@ -226,6 +226,8 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		case DELETE:
 			deleteSelectedItem();
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -261,6 +263,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 					switch (parent.getType()) {
 					case COMPOUND -> ((CompoundTag) parent).put(name, t);
 					case LIST -> ((ListTag) parent).set(index, t);
+					default -> {}
 					}
 					ref = t;
 				};
@@ -272,6 +275,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				case FLOAT -> c.accept(FloatTag.valueOf(Float.parseFloat(raw)));
 				case DOUBLE -> c.accept(DoubleTag.valueOf(Double.parseDouble(raw)));
 				case STRING -> c.accept(StringTag.valueOf(raw));
+				default -> throw new IllegalStateException("unsupported tag type for inline edit: " + ref.getType());
 				}
 			} catch (Exception e) {
 				return false;

@@ -10,6 +10,8 @@ import net.querz.mcaselector.util.validation.ShutdownHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
@@ -27,6 +29,10 @@ public final class JobHandler {
 	private static final AtomicInteger allTasks = new AtomicInteger(0);
 
 	private static final AtomicInteger runningTasks = new AtomicInteger(0);
+
+	// Signals when all tasks have drained to zero; used for blocking flush
+	private static final ReentrantLock allTasksLock = new ReentrantLock();
+	private static final Condition noTasksCondition = allTasksLock.newCondition();
 
 	private static boolean trimSaveData = true;
 
@@ -94,8 +100,9 @@ public final class JobHandler {
 
 		LOGGER.debug("created data save ThreadPoolExecutor with {} threads", ConfigProvider.GLOBAL.getWriteThreads());
 
-        int pt = Math.max(1, ConfigProvider.GLOBAL.getProcessThreads());
-        int parseThreads = Math.max(1, Math.min(pt / 2, Runtime.getRuntime().availableProcessors()));
+        // Increase parser concurrency: favor near-CPU parallelism while respecting config
+        int cpu = Math.max(2, Runtime.getRuntime().availableProcessors());
+        int parseThreads = Math.max(1, Math.min(ConfigProvider.GLOBAL.getProcessThreads(), cpu - 1));
 
         parseExecutor = new ThreadPoolExecutor(
             parseThreads, parseThreads,
@@ -198,14 +205,17 @@ public final class JobHandler {
 		Timer t = new Timer();
 		clearQueues();
 		flushExecutor();
-		clearQueues();
-		flushExecutor();
 		LOGGER.debug("took {} to cancel and flush all executors", t);
 	}
 
 	private static void flushExecutor() {
-		while (allTasks.get() > 0) {
-			Thread.onSpinWait();
+		allTasksLock.lock();
+		try {
+			while (allTasks.get() > 0) {
+				noTasksCondition.awaitUninterruptibly();
+			}
+		} finally {
+			allTasksLock.unlock();
 		}
 	}
 
@@ -235,7 +245,15 @@ public final class JobHandler {
 			} finally {
 				synchronized (lock) {
 					if (!done) {
-						allTasks.decrementAndGet();
+						int remaining = allTasks.decrementAndGet();
+						if (remaining == 0) {
+							allTasksLock.lock();
+							try {
+								noTasksCondition.signalAll();
+							} finally {
+								allTasksLock.unlock();
+							}
+						}
 					}
 					done = true;
 				}
@@ -248,7 +266,15 @@ public final class JobHandler {
 			} finally {
 				synchronized (lock) {
 					if (!done) {
-						allTasks.decrementAndGet();
+						int remaining = allTasks.decrementAndGet();
+						if (remaining == 0) {
+							allTasksLock.lock();
+							try {
+								noTasksCondition.signalAll();
+							} finally {
+								allTasksLock.unlock();
+							}
+						}
 					}
 					done = true;
 				}

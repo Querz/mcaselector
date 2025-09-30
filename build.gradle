@@ -50,6 +50,7 @@ dependencies {
 	implementation 'org.lz4:lz4-java:1.8.0'
 	implementation 'org.atteo.classindex:classindex:3.13'
 	implementation 'org.iq80.leveldb:leveldb:0.12'
+    implementation 'ar.com.hjg:pngj:2.1.0'
   
 	shadow 'com.github.Querz:NBT:6bc3de6961'
 	shadow 'com.google.code.gson:gson:2.12.1'
@@ -62,8 +63,9 @@ dependencies {
 	shadow 'org.apache.groovy:groovy-jsr223:4.0.26'
 	shadow 'org.fxmisc.richtext:richtextfx:0.11.4'
 	shadow 'org.lz4:lz4-java:1.8.0'
-	shadow 'org.atteo.classindex:classindex:3.13'
+    shadow 'org.atteo.classindex:classindex:3.13'
     shadow 'org.iq80.leveldb:leveldb:0.12'
+    shadow 'ar.com.hjg:pngj:2.1.0'
 
 	annotationProcessor('org.atteo.classindex:classindex:3.13')
 	annotationProcessor('org.apache.logging.log4j:log4j-core:2.24.3')
