@@ -108,6 +108,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private ScheduledExecutorService drawService;
 	private final AtomicBoolean drawRequested = new AtomicBoolean(false);
+	private final AtomicBoolean updateRequested = new AtomicBoolean(false);
 
 	private boolean unsavedSelection = false;
 
@@ -137,7 +138,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		keyActivator.registerAction(KeyCode.LEFT, c -> offset = offset.sub((c.contains(KeyCode.SHIFT) ? 10 : 5) * scale, 0));
 		keyActivator.registerAction(KeyCode.DOWN, c -> offset = offset.add(0, (c.contains(KeyCode.SHIFT) ? 10 : 5) * scale));
 		keyActivator.registerAction(KeyCode.RIGHT, c -> offset = offset.add((c.contains(KeyCode.SHIFT) ? 10 : 5) * scale, 0));
-		keyActivator.registerGlobalAction(this::draw);
+        keyActivator.registerGlobalAction(() -> { requestUpdate(); draw(); });
 		this.setOnKeyPressed(this::onKeyPressed);
 		this.setOnKeyReleased(this::onKeyReleased);
 		this.setOnKeyTyped(this::onKeyTyped);
@@ -171,6 +172,11 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		updateService.scheduleAtFixedRate(() -> {
 			try {
 				if (ConfigProvider.WORLD.getRegionDir() == null) {
+					return;
+				}
+
+				// gate heavy update work unless explicitly requested
+				if (!updateRequested.getAndSet(false)) {
 					return;
 				}
 
@@ -226,6 +232,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				Long2IntOpenHashMap newTilePriorities = new Long2IntOpenHashMap(tilePriorities.size());
 
 				DataProperty<Integer> priority = new DataProperty<>(1);
+				int limit = computeUpdateRegionLimit();
 
 				runOnVisibleRegions(region -> {
 					Tile tile = tiles.get(region.asLong());
@@ -263,7 +270,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 					if (overlayParser.get() != null && !tile.isOverlayLoaded()) {
 						overlayPool.requestImage(tile, overlayParser.get());
 					}
-				}, new Point2f(), () -> scale, Integer.MAX_VALUE);
+				}, new Point2f(), () -> scale, limit);
 
 				tilePriorities = newTilePriorities;
 
@@ -273,6 +280,16 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				LOGGER.warn("failed to update", ex);
 			}
 		}, 500, 500, TimeUnit.MILLISECONDS);
+	}
+
+	private int computeUpdateRegionLimit() {
+		int visible = getVisibleTiles();
+		if (visible <= 0) {
+			return Integer.MAX_VALUE;
+		}
+		int base = 128;
+		int scaled = Math.max(base, visible * 2);
+		return Math.min(scaled, 1024);
 	}
 
 	private void initDrawService() {
@@ -307,28 +324,29 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		return tilePriorities.getOrDefault(region.asLong(), 9_999_999);
 	}
 
-	private void updateScale(float oldScale, Point2f center) {
-		scale = scale < Config.MAX_SCALE ? Math.max(scale, Config.MIN_SCALE) : Config.MAX_SCALE;
-		if (oldScale != scale) {
-			// calculate the difference between the old max and the new max point
-			Point2f diff = offset.add(center.getX() * oldScale, center.getY() * oldScale)
-					.sub(offset.add(center.getX() * scale, center.getY() * scale));
+    private void updateScale(float oldScale, Point2f center) {
+        scale = scale < Config.MAX_SCALE ? Math.max(scale, Config.MIN_SCALE) : Config.MAX_SCALE;
+        if (oldScale != scale) {
+            // calculate the difference between the old max and the new max point
+            Point2f diff = offset.add(center.getX() * oldScale, center.getY() * oldScale)
+                    .sub(offset.add(center.getX() * scale, center.getY() * scale));
 
-			offset = offset.add(diff);
+            offset = offset.add(diff);
 
-			if (Tile.getZoomLevel(oldScale) != Tile.getZoomLevel(scale)) {
-				LOGGER.debug("zoom level changed from {} to {}", Tile.getZoomLevel(oldScale), Tile.getZoomLevel(scale));
-				unloadTiles(false, false);
-				// clear generator queue as well
-				JobHandler.clearQueues();
+            if (Tile.getZoomLevel(oldScale) != Tile.getZoomLevel(scale)) {
+                LOGGER.debug("zoom level changed from {} to {}", Tile.getZoomLevel(oldScale), Tile.getZoomLevel(scale));
+                unloadTiles(false, false);
+                // clear generator queue as well
+                JobHandler.clearQueues();
 
-				if (pastedChunksCache != null) {
-					pastedChunksCache.clear();
-				}
-			}
-			draw();
-		}
-	}
+                if (pastedChunksCache != null) {
+                    pastedChunksCache.clear();
+                }
+            }
+            requestUpdate();
+            draw();
+        }
+    }
 
 	public void nextOverlay() {
 		if (disabled || overlayParser.get() == null) {
@@ -349,6 +367,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 		setOverlay(parser);
 		JobHandler.cancelParserQueue();
+		requestUpdate();
 		draw();
 	}
 
@@ -371,6 +390,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 		setOverlay(parser);
 		JobHandler.cancelParserQueue();
+		requestUpdate();
 		draw();
 	}
 
@@ -379,6 +399,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			this.overlays = Collections.singletonList(null);
 			setOverlay(null);
 			JobHandler.cancelParserQueue();
+			requestUpdate();
 			return;
 		}
 		this.overlays = new ArrayList<>(overlays.size() + 1);
@@ -387,6 +408,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		this.overlays.add(null);
 		setOverlay(null);
 		JobHandler.cancelParserQueue();
+		requestUpdate();
 	}
 
 	public void setOverlay(Overlay overlay) {
@@ -396,6 +418,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		this.overlayParser.set(overlay);
 		this.overlayPool.setParser(overlay);
 		clearOverlay();
+		requestUpdate();
 	}
 
 	public void clearOverlay() {
@@ -515,6 +538,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 			} else {
 				offset = offset.sub(new Point2f(event.getDeltaX(), event.getDeltaY()).mul(scale));
+				requestUpdate();
 				draw();
 			}
 		} else {
@@ -536,6 +560,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private void onZoom(ZoomEvent event) {
 		zoomFactor(event.getZoomFactor(), new Point2f(event.getX(), event.getY()));
+		requestUpdate();
 	}
 
 	private void onMousePressed(MouseEvent event) {
@@ -622,6 +647,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		drawRequested.set(true);
 	}
 
+	public void requestUpdate() {
+		updateRequested.set(true);
+	}
+
 	public void disable(boolean disabled) {
 		this.disabled = disabled;
 	}
@@ -673,15 +702,17 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		draw();
 	}
 
-	public void setShowNonexistentRegions(boolean showNonexistentRegions) {
-		this.showNonexistentRegions = showNonexistentRegions;
-		draw();
-	}
+    public void setShowNonexistentRegions(boolean showNonexistentRegions) {
+        this.showNonexistentRegions = showNonexistentRegions;
+        requestUpdate();
+        draw();
+    }
 
-	public void goTo(int x, int z) {
-		offset = new Point2f(x - getWidth() * scale / 2, z - getHeight() * scale / 2);
-		draw();
-	}
+    public void goTo(int x, int z) {
+        offset = new Point2f(x - getWidth() * scale / 2, z - getHeight() * scale / 2);
+        requestUpdate();
+        draw();
+    }
 
 	public int getSelectedChunks() {
 		return selectedChunks;
@@ -701,9 +732,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		return regions;
 	}
 
-	public int getVisibleTiles() {
-		return 0;
-	}
+    public int getVisibleTiles() {
+        return getVisibleRegions().size();
+    }
 
 	public int getLoadedTiles() {
 		return tiles.size();
