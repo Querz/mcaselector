@@ -94,12 +94,15 @@ public final class JobHandler {
 
 		LOGGER.debug("created data save ThreadPoolExecutor with {} threads", ConfigProvider.GLOBAL.getWriteThreads());
 
-		parseExecutor = new ThreadPoolExecutor(
-			1, 1,
-			0L, TimeUnit.MILLISECONDS,
-			new DynamicPriorityBlockingQueue<>(),
-			new NamedThreadFactory("parsePool"));
-		LOGGER.debug("created data parser ThreadPoolExecutor with {} threads", 1);
+        int pt = Math.max(1, ConfigProvider.GLOBAL.getProcessThreads());
+        int parseThreads = Math.max(1, Math.min(pt / 2, Runtime.getRuntime().availableProcessors()));
+
+        parseExecutor = new ThreadPoolExecutor(
+            parseThreads, parseThreads,
+            0L, TimeUnit.MILLISECONDS,
+            new DynamicPriorityBlockingQueue<>(),
+            new NamedThreadFactory("parsePool"));
+        LOGGER.debug("created data parser ThreadPoolExecutor with {} threads", parseThreads);
 	}
 
 	public static void addJob(ProcessDataJob job) {

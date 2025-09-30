@@ -35,12 +35,8 @@ public class OverlayPool {
 	private final TileMap tileMap;
 	private final Set<Point2i> noData = new HashSet<>();
 
-	// used to load and render data asynchronously from db
-	private final ThreadPoolExecutor overlayCacheLoaders = new ThreadPoolExecutor(
-			4, 4,
-			0L, TimeUnit.MILLISECONDS,
-			new LinkedBlockingQueue<>(),
-			new NamedThreadFactory("overlayCachePool"));
+    // used to load and render data asynchronously from db
+    private final ThreadPoolExecutor overlayCacheLoaders;
 
 	// used to load region data from db asynchronously to be displayed in the status bar
 	private final ThreadPoolExecutor overlayValueLoader = new ThreadPoolExecutor(
@@ -54,9 +50,16 @@ public class OverlayPool {
 	private Point2i hoveredRegion;
 	private int[] hoveredRegionData;
 
-	public OverlayPool(TileMap tileMap) {
-		this.tileMap = tileMap;
-	}
+    public OverlayPool(TileMap tileMap) {
+        this.tileMap = tileMap;
+        int pt = Math.max(1, net.querz.mcaselector.config.ConfigProvider.GLOBAL.getProcessThreads());
+        int overlayThreads = Math.max(1, Math.min(4, pt));
+        overlayCacheLoaders = new ThreadPoolExecutor(
+                overlayThreads, overlayThreads,
+                0L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<>(),
+                new NamedThreadFactory("overlayCachePool"));
+    }
 
 	public Overlay getParser() {
 		return parser;
