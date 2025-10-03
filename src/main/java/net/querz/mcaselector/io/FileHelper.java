@@ -469,4 +469,12 @@ public final class FileHelper {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public static void copyFromResource(String resourceName, Path target) {
+        try (InputStream in = FileHelper.class.getClassLoader().getResourceAsStream(resourceName)) {
+            Files.copy(Objects.requireNonNull(in), target, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

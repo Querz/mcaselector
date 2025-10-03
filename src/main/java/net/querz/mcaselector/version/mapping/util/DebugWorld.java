@@ -1,5 +1,6 @@
 package net.querz.mcaselector.version.mapping.util;
 
+import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersion;
 import net.querz.mcaselector.version.mapping.minecraft.MinecraftVersionFile;
 import net.querz.mcaselector.version.mapping.minecraft.ServerVersion;
@@ -65,6 +66,14 @@ public final class DebugWorld {
 			eula = eula.replace("eula=false", "eula=true");
 			Files.writeString(eulaTxt, eula);
 		}
+
+		// copy chunk.dat to forceload debug world to world/data/chunk.dat
+		Path worldDataDir = path.resolve("world/data");
+		if (!Files.exists(worldDataDir)) {
+			Files.createDirectories(worldDataDir);
+		}
+		Path chunksDat = worldDataDir.resolve("chunks.dat");
+		FileHelper.copyFromResource("mapping/generator/chunks.dat", chunksDat);
 
 		// start server and immediately stop, the spawn point + spawnChunkRadius set in level.dat
 		// will cause the entire r.0.0.mca to generate
