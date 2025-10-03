@@ -14,7 +14,6 @@ import net.querz.mcaselector.util.progress.Progress;
 import net.querz.mcaselector.util.progress.Timer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -260,17 +259,44 @@ public final class RegionImageGenerator {
 			Timer t = new Timer();
 
 			// save image to cache
-			try {
-				BufferedImage img = SwingFXUtils.fromFXImage(getData(), null);
-				File cacheFile = FileHelper.createPNGFilePath(ConfigProvider.WORLD.getCacheDir(zoomLevel), tile.getLocation());
-				if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
-					LOGGER.warn("failed to create cache directory for {}", cacheFile.getAbsolutePath());
-				}
-				LOGGER.debug("writing cache file {}", cacheFile.getAbsolutePath());
-				ImageIO.write(img, "png", cacheFile);
-			} catch (IOException ex) {
-				LOGGER.warn("failed to save images to cache for {}", tile.getLocation(), ex);
-			}
+            try {
+                BufferedImage img = SwingFXUtils.fromFXImage(getData(), null);
+                File cacheFile = FileHelper.createPNGFilePath(ConfigProvider.WORLD.getCacheDir(zoomLevel), tile.getLocation());
+                if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
+                    LOGGER.warn("failed to create cache directory for {}", cacheFile.getAbsolutePath());
+                }
+                LOGGER.debug("writing cache file {}", cacheFile.getAbsolutePath());
+                // Write PNG using pngj for improved throughput
+                int width = img.getWidth();
+                int height = img.getHeight();
+                int[] row = new int[width];
+                ar.com.hjg.pngj.ImageInfo info = new ar.com.hjg.pngj.ImageInfo(width, height, 8, true);
+                try (java.io.FileOutputStream fos = new java.io.FileOutputStream(cacheFile)) {
+                    ar.com.hjg.pngj.PngWriter writer = new ar.com.hjg.pngj.PngWriter(fos, info);
+                    writer.setCompLevel(1);
+                    for (int y = 0; y < height; y++) {
+                        row = img.getRGB(0, y, width, 1, row, 0, width);
+                        ar.com.hjg.pngj.ImageLineInt line = new ar.com.hjg.pngj.ImageLineInt(info);
+                        int[] scanline = line.getScanline();
+                        for (int x = 0; x < width; x++) {
+                            int argb = row[x];
+                            int r = (argb >> 16) & 0xFF;
+                            int g = (argb >> 8) & 0xFF;
+                            int b = (argb) & 0xFF;
+                            int a = (argb >>> 24) & 0xFF;
+                            int idx = x * 4;
+                            scanline[idx] = r;
+                            scanline[idx + 1] = g;
+                            scanline[idx + 2] = b;
+                            scanline[idx + 3] = a;
+                        }
+                        writer.writeRow(line);
+                    }
+                    writer.end();
+                }
+            } catch (IOException ex) {
+                LOGGER.warn("failed to save images to cache for {}", tile.getLocation(), ex);
+            }
 
 			if (progressChannel != null) {
 				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));

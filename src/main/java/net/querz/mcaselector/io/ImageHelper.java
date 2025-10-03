@@ -9,12 +9,15 @@ import net.querz.mcaselector.util.progress.Timer;
 import net.querz.mcaselector.tile.Tile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import javax.imageio.ImageIO;
+import ar.com.hjg.pngj.ImageInfo;
+import ar.com.hjg.pngj.PngWriter;
+import ar.com.hjg.pngj.ImageLineInt;
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public final class ImageHelper {
@@ -116,26 +119,42 @@ public final class ImageHelper {
 		return empty;
 	}
 
-	public static void saveImageData(int[] data, int width, int height, File file, Progress progressChannel) throws IOException {
-		progressChannel.setMax(height + 1); // +1 for the writing of the file
-		progressChannel.updateProgress("", 0);
+    public static void saveImageData(int[] data, int width, int height, File file, Progress progressChannel) throws IOException {
+        progressChannel.setMax(height + 1); // +1 for the writing of the file
+        progressChannel.updateProgress("", 0);
 
-		Timer t = new Timer();
+        Timer t = new Timer();
 
-		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        // Write PNG using pngj with low compression for speed
+        ImageInfo info = new ImageInfo(width, height, 8, true);
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            PngWriter writer = new PngWriter(fos, info);
+            writer.setCompLevel(1);
+            for (int y = 0; y < height && !progressChannel.taskCancelled(); y++) {
+                int start = y * width;
+                ImageLineInt line = new ImageLineInt(info);
+                int[] scanline = line.getScanline();
+                for (int x = 0; x < width; x++) {
+                    int argb = data[start + x];
+                    int r = (argb >> 16) & 0xFF;
+                    int g = (argb >> 8) & 0xFF;
+                    int b = (argb) & 0xFF;
+                    int a = (argb >>> 24) & 0xFF;
+                    int idx = x * 4;
+                    scanline[idx] = r;
+                    scanline[idx + 1] = g;
+                    scanline[idx + 2] = b;
+                    scanline[idx + 3] = a;
+                }
+                writer.writeRow(line);
+                progressChannel.incrementProgress("");
+            }
+            writer.end();
+        }
 
-		for (int y = 0; y < height && !progressChannel.taskCancelled(); y++) {
-			int start = y * width;
-			for (int x = 0; x < width; x++) {
-				img.setRGB(x, y, data[start + x]);
-			}
-			progressChannel.incrementProgress("");
-		}
+        progressChannel.incrementProgress("");
 
-		ImageIO.write(img, "png", file);
-		progressChannel.incrementProgress("");
-
-		progressChannel.done("done");
-		LOGGER.debug("took {} to save image {}", t, file);
-	}
+        progressChannel.done("done");
+        LOGGER.debug("took {} to save image {}", t, file);
+    }
 }

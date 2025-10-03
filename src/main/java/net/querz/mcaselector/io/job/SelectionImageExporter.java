@@ -79,10 +79,10 @@ public final class SelectionImageExporter {
 			File cacheImage = FileHelper.createPNGFilePath(ConfigProvider.WORLD.getCacheDir(), 1, getRegionDirectories().getLocation());
 			File regionFile = FileHelper.createRegionMCAFilePath(getRegionDirectories().getLocation());
 			RegionMCAFile mcaFile = null;
-			if (cacheImage.exists()) {
-				// load cached image
-				image = new Image(cacheImage.toURI().toString(), false);
-			} else if (regionFile.exists()) {
+            if (cacheImage.exists()) {
+                // load cached image asynchronously to keep UI responsive
+                image = new Image(cacheImage.toURI().toString(), true);
+            } else if (regionFile.exists()) {
 				// generate image from region file
 				mcaFile = new RegionMCAFile(regionFile);
 				try {

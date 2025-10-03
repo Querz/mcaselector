@@ -24,3 +24,5 @@ export/
 /test
 .DS_Store
 /tmp
+bin/
+notes

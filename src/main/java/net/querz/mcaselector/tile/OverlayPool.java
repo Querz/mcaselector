@@ -22,6 +22,10 @@ import org.iq80.leveldb.DBException;
 import java.awt.*;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.AbstractMap;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -35,12 +39,8 @@ public class OverlayPool {
 	private final TileMap tileMap;
 	private final Set<Point2i> noData = new HashSet<>();
 
-	// used to load and render data asynchronously from db
-	private final ThreadPoolExecutor overlayCacheLoaders = new ThreadPoolExecutor(
-			4, 4,
-			0L, TimeUnit.MILLISECONDS,
-			new LinkedBlockingQueue<>(),
-			new NamedThreadFactory("overlayCachePool"));
+    // used to load and render data asynchronously from db
+    private final ThreadPoolExecutor overlayCacheLoaders;
 
 	// used to load region data from db asynchronously to be displayed in the status bar
 	private final ThreadPoolExecutor overlayValueLoader = new ThreadPoolExecutor(
@@ -49,14 +49,29 @@ public class OverlayPool {
 			new LinkedBlockingQueue<>(),
 			new NamedThreadFactory("overlayValuePool"));
 
-	private Overlay parser;
+    private Overlay parser;
 
-	private Point2i hoveredRegion;
-	private int[] hoveredRegionData;
+    private Point2i hoveredRegion;
+    private int[] hoveredRegionData;
 
-	public OverlayPool(TileMap tileMap) {
-		this.tileMap = tileMap;
-	}
+    // Buffer for batching overlay writes to LevelDB
+    private final Object batchLock = new Object();
+    private final ArrayList<Map.Entry<Point2i, int[]>> batchBuffer = new ArrayList<>();
+    private static final int BATCH_SIZE = 8;
+
+    public OverlayPool(TileMap tileMap) {
+        this.tileMap = tileMap;
+        int pt = Math.max(1, net.querz.mcaselector.config.ConfigProvider.GLOBAL.getProcessThreads());
+        int overlayThreads = Math.max(1, Math.min(4, pt));
+        // Use virtual threads for I/O-bound overlay cache loads and add bounded queue for backpressure
+        int queueCapacity = 1024;
+        overlayCacheLoaders = new ThreadPoolExecutor(
+                overlayThreads, overlayThreads,
+                0L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<>(queueCapacity),
+                Thread.ofVirtual().factory(),
+                new ThreadPoolExecutor.DiscardOldestPolicy());
+    }
 
 	public Overlay getParser() {
 		return parser;
@@ -181,13 +196,24 @@ public class OverlayPool {
 		return Color.HSBtoRGB(hue, 1, 1);
 	}
 
-	public void push(Point2i location, int[] data) {
-		try {
-			CacheHandler.setData(tileMap.getOverlay(), location, data);
-		} catch (Exception ex) {
-			LOGGER.warn("failed to cache data for region {}", location, ex);
-		}
-	}
+    public void push(Point2i location, int[] data) {
+        try {
+            // batch small groups of writes to improve throughput
+            synchronized (batchLock) {
+                batchBuffer.add(new AbstractMap.SimpleEntry<>(location, data));
+                if (batchBuffer.size() >= BATCH_SIZE) {
+                    Map<Point2i, int[]> batch = new HashMap<>();
+                    for (Map.Entry<Point2i, int[]> e : batchBuffer) {
+                        batch.put(e.getKey(), e.getValue());
+                    }
+                    batchBuffer.clear();
+                    CacheHandler.setDataBatch(tileMap.getOverlay(), batch);
+                }
+            }
+        } catch (Exception ex) {
+            LOGGER.warn("failed to cache data for region {}", location, ex);
+        }
+    }
 
 	public void switchTo(String dbPath) {
 		try {

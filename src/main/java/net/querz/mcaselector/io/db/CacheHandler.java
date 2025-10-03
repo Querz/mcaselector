@@ -6,6 +6,7 @@ import net.querz.mcaselector.util.validation.ShutdownHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iq80.leveldb.*;
+import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -26,6 +27,10 @@ public final class CacheHandler {
 
 	static {
 		options.createIfMissing(true);
+		// Tune LevelDB options for better throughput on overlay cache
+		options.writeBufferSize(16 * 1024 * 1024); // 16MB
+		options.blockSize(4 * 1024);               // 4KB blocks
+		options.compressionType(CompressionType.SNAPPY);
 	}
 
 	private static DB db;
@@ -85,6 +90,20 @@ public final class CacheHandler {
 		byte[] key = key(region.getX(), region.getZ(), id);
 		byte[] rawValue = cacheValue(data);
 		db.put(key, rawValue);
+	}
+
+	public static void setDataBatch(Overlay parser, Map<Point2i, int[]> regionData) throws DBException, IOException {
+		try (WriteBatch batch = db.createWriteBatch()) {
+			for (Map.Entry<Point2i, int[]> e : regionData.entrySet()) {
+				Point2i region = e.getKey();
+				int[] data = e.getValue();
+				UUID id = UUID.nameUUIDFromBytes((parser.name() + parser.getMultiValuesID()).getBytes());
+				byte[] key = key(region.getX(), region.getZ(), id);
+				byte[] rawValue = cacheValue(data);
+				batch.put(key, rawValue);
+			}
+			db.write(batch);
+		}
 	}
 
 	public static void deleteData(Overlay parser, Point2i region) throws DBException {
