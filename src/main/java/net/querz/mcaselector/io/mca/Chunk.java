@@ -7,6 +7,7 @@ import net.querz.mcaselector.io.ByteBufferBackedInputStream;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.point.Point3i;
 import net.querz.mcaselector.util.range.Range;
+import net.querz.nbt.IntTag;
 import net.querz.nbt.NBTUtil;
 import net.querz.nbt.Tag;
 import net.querz.nbt.io.NBTReader;
@@ -36,44 +37,45 @@ public abstract class Chunk {
 		int length = buf.getInt();
 		compressionType = CompressionType.fromByte(buf.get());
 
-		DataInputStream nbtIn = switch (compressionType) {
-			case GZIP -> new DataInputStream(new GZIPInputStream(new ByteBufferBackedInputStream(buf)));
-			case ZLIB -> new DataInputStream(new InflaterInputStream(new ByteBufferBackedInputStream(buf)));
-			case LZ4 -> new DataInputStream(new LZ4BlockInputStream(new ByteBufferBackedInputStream(buf)));
-			case NONE, UNCOMPRESSED -> new DataInputStream(new ByteBufferBackedInputStream(buf));
-			case GZIP_EXT -> new DataInputStream(new GZIPInputStream(new FileInputStream(getMCCFile()), 4096 * length));
-			case ZLIB_EXT -> new DataInputStream(new InflaterInputStream(new FileInputStream(getMCCFile())));
-			case LZ4_EXT -> new DataInputStream(new LZ4BlockInputStream(new FileInputStream(getMCCFile())));
-			case NONE_EXT, UNCOMPRESSED_EXT -> new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile()), 4096 * length));
-		};
+		try (DataInputStream nbtIn = switch (compressionType) {
+				case GZIP -> new DataInputStream(new GZIPInputStream(new ByteBufferBackedInputStream(buf)));
+				case ZLIB -> new DataInputStream(new InflaterInputStream(new ByteBufferBackedInputStream(buf)));
+				case LZ4 -> new DataInputStream(new LZ4BlockInputStream(new ByteBufferBackedInputStream(buf)));
+				case NONE, UNCOMPRESSED -> new DataInputStream(new ByteBufferBackedInputStream(buf));
+				case GZIP_EXT -> new DataInputStream(new GZIPInputStream(new FileInputStream(getMCCFile()), 4096 * length));
+				case ZLIB_EXT -> new DataInputStream(new InflaterInputStream(new FileInputStream(getMCCFile())));
+				case LZ4_EXT -> new DataInputStream(new LZ4BlockInputStream(new FileInputStream(getMCCFile())));
+				case NONE_EXT, UNCOMPRESSED_EXT -> new DataInputStream(new BufferedInputStream(new FileInputStream(getMCCFile()), 4096 * length));
+			}) {
 
-		Tag tag = new NBTReader().rawArrays(raw).read(nbtIn);
+			Tag tag = new NBTReader().rawArrays(raw).read(nbtIn);
 
-		if (tag instanceof CompoundTag) {
-			data = (CompoundTag) tag;
-		} else {
-			throw new IOException("unexpected chunk data tag type " + tag.getType() + ", expected " + Tag.Type.COMPOUND);
+			if (tag instanceof CompoundTag) {
+				data = (CompoundTag) tag;
+			} else {
+				throw new IOException("unexpected chunk data tag type " + tag.getType() + ", expected " + Tag.Type.COMPOUND);
+			}
 		}
 	}
 
 	public int save(RandomAccessFile raf) throws IOException {
-		ExposedByteArrayOutputStream baos = null;
+		ExposedByteArrayOutputStream baos;
 
-		DataOutputStream nbtOut = switch (compressionType) {
-			case GZIP, GZIP_EXT -> new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(baos = new ExposedByteArrayOutputStream())));
-			case ZLIB, ZLIB_EXT -> new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(baos = new ExposedByteArrayOutputStream())));
-			case LZ4, LZ4_EXT -> new DataOutputStream(new BufferedOutputStream(new LZ4BlockOutputStream(baos = new ExposedByteArrayOutputStream())));
-			case NONE, NONE_EXT, UNCOMPRESSED, UNCOMPRESSED_EXT -> new DataOutputStream(new BufferedOutputStream(baos = new ExposedByteArrayOutputStream()));
-		};
+		try (DataOutputStream nbtOut = switch (compressionType) {
+				case GZIP, GZIP_EXT -> new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(baos = new ExposedByteArrayOutputStream())));
+				case ZLIB, ZLIB_EXT -> new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(baos = new ExposedByteArrayOutputStream())));
+				case LZ4, LZ4_EXT -> new DataOutputStream(new BufferedOutputStream(new LZ4BlockOutputStream(baos = new ExposedByteArrayOutputStream())));
+				case NONE, NONE_EXT, UNCOMPRESSED, UNCOMPRESSED_EXT -> new DataOutputStream(new BufferedOutputStream(baos = new ExposedByteArrayOutputStream()));
+			}) {
 
-		new NBTWriter().write(nbtOut, data);
-		nbtOut.close();
+			new NBTWriter().write(nbtOut, data);
+		}
 
 		// save mcc file if chunk doesn't fit in mca file
 		if (baos.size() > 1048576) {
 			// if the chunk's version is below 2203, we throw an exception instead
-			int dataVersion = data.getInt("DataVersion");
-			if (dataVersion < 2203) {
+			IntTag dataVersion = data.getIntTag("DataVersion");
+			if (dataVersion == null || dataVersion.asInt() < 2203) {
 				throw new RuntimeException("chunk at " + absoluteLocation + " is oversized and can't be saved when DataVersion is below 2203");
 			}
 
