@@ -231,7 +231,6 @@ public abstract class MCAFile<T extends Chunk> {
 			Point2i origin = location.regionToChunk();
 
 			loadBuffer(fc, (int) fc.size(), buf -> {
-				System.out.println(buf.getClass().getName());
 				loadHeader(buf);
 				for (short i = 0; i < 1024; i++) {
 					if (offsets[i] == 0) {
