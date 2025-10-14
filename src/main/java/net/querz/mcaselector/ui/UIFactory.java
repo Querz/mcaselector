@@ -157,11 +157,13 @@ public final class UIFactory {
 
 		hyperlink.setOnAction(e -> {
 			if (Desktop.isDesktopSupported()) {
-				try {
-					Desktop.getDesktop().open(file);
-				} catch (IOException ex) {
-					LOGGER.warn("cannot open file or directory", ex);
-				}
+				new Thread(() -> {
+					try {
+						Desktop.getDesktop().open(file);
+					} catch (IOException ex) {
+						LOGGER.warn("cannot open file or directory", ex);
+					}
+				}).start();
 			}
 		});
 		return hyperlink;
