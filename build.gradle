@@ -4,11 +4,11 @@ plugins {
 	id 'eclipse'
 	id 'idea'
 	id 'org.openjfx.javafxplugin' version '0.1.0'
-	id 'com.gradleup.shadow' version '9.0.0-beta11'
+	id 'com.gradleup.shadow' version '9.2.2'
 	id 'com.github.ben-manes.versions' version '0.52.0'
 }
 
-group 'net.querz'
+group = 'net.querz'
 compileJava.options.encoding = 'UTF-8'
 application.mainClass = 'net.querz.mcaselector.Main'
 
@@ -29,10 +29,10 @@ idea {
 repositories {
 	mavenCentral()
 	maven {
-		url 'https://jitpack.io/'
+		url = 'https://jitpack.io/'
 	}
 	maven {
-		url 'https://plugins.gradle.org/m2/'
+		url = 'https://plugins.gradle.org/m2/'
 	}
 }
 
