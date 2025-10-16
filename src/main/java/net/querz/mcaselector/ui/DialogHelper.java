@@ -571,13 +571,13 @@ public class DialogHelper {
 		if (tempFiles != null) {
 			for (RegionDirectories tempFile : tempFiles.values()) {
 				if (!tempFile.getRegion().delete()) {
-					LOGGER.warn("failed to delete temp file {}", tempFile.getRegion());
+					LOGGER.warn("failed to delete temp region file {}", tempFile.getRegion());
 				}
 				if (!tempFile.getPoi().delete()) {
-					LOGGER.warn("failed to delete temp file {}", tempFile.getPoi());
+					LOGGER.warn("failed to delete temp poi file {}", tempFile.getPoi());
 				}
 				if (!tempFile.getEntities().delete()) {
-					LOGGER.warn("failed to delete temp file {}", tempFile.getEntities());
+					LOGGER.warn("failed to delete temp entities file {}", tempFile.getEntities());
 				}
 			}
 		}
