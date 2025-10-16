@@ -242,7 +242,6 @@ public class DialogHelper {
 				CacheHelper.clearSelectionCache(tileMap);
 				tileMap.clear();
 				tileMap.clearSelection();
-				tileMap.draw();
 			}
 		});
 	}
@@ -628,8 +627,8 @@ public class DialogHelper {
 			tileMap.clear(task, false);
 			tileMap.getOverlayPool().switchTo(new File(ConfigProvider.WORLD.getCacheDir(), "cache").toString());
 			tileMap.clearSelection();
-			tileMap.draw();
 			tileMap.disable(false);
+			tileMap.update();
 			tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap, primaryStage);
 			task.done(Translation.DIALOG_PROGRESS_DONE.toString());
 			Platform.runLater(() -> tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent()));

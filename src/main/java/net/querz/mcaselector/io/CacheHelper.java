@@ -53,7 +53,7 @@ public final class CacheHelper {
 		updateVersionFile();
 		ConfigProvider.WORLD.save();
 		tileMap.clear();
-		tileMap.draw();
+		tileMap.update();
 	}
 
 	// asynchronously cancels all jobs and marks all Tiles as "not loaded"
@@ -68,7 +68,7 @@ public final class CacheHelper {
 			ConfigProvider.WORLD.save();
 
 			tileMap.markAllTilesAsObsolete();
-			tileMap.draw();
+			tileMap.update();
 			callback.run();
 		});
 		clear.start();
@@ -88,7 +88,7 @@ public final class CacheHelper {
 			}
 		}
 		RegionImageGenerator.invalidateCachedMCAFiles();
-		tileMap.draw();
+		tileMap.update();
 	}
 
 	public static void clearSelectionCache(TileMap tileMap) {
@@ -108,7 +108,7 @@ public final class CacheHelper {
 			tileMap.getOverlayPool().discardData(region);
 		}
 		RegionImageGenerator.invalidateCachedMCAFiles();
-		tileMap.draw();
+		tileMap.update();
 	}
 
 	public static void validateCacheVersion(TileMap tileMap) {
