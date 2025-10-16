@@ -54,7 +54,10 @@ public abstract class MCAFile<T extends Chunk> {
 			memorySegmentAsByteBufferMethod = memorySegmentClass.getMethod("asByteBuffer");
 			arenaCloseMethod = arenaClass.getMethod("close");
 			useForeignAPI = true;
-		} catch (ReflectiveOperationException e) { /* ignore */ }
+			LOGGER.info("successfully initialized foreign API");
+		} catch (ReflectiveOperationException e) {
+			LOGGER.info("failed to initialize foreign API, falling back to HeapByteBuffer");
+		}
 	}
 
 	// file name must have well formed mca file format (r.<x>.<z>.mca)
