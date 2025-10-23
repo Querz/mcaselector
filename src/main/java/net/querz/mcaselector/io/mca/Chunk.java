@@ -71,8 +71,10 @@ public abstract class Chunk {
 			new NBTWriter().write(nbtOut, data);
 		}
 
-		// save mcc file if chunk doesn't fit in mca file
-		if (baos.size() > 1048576) {
+		// if the return value (baos.size() + 5) would result in a sector count > 255 we write the data to a .mcc file
+		// to avoid a byte overflow in the .mca file header
+		// 4096 * 255 - 5
+		if (baos.size() > 1044475) {
 			// if the chunk's version is below 2203, we throw an exception instead
 			IntTag dataVersion = data.getIntTag("DataVersion");
 			if (dataVersion == null || dataVersion.asInt() < 2203) {
