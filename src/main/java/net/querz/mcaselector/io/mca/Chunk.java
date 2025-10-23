@@ -62,10 +62,10 @@ public abstract class Chunk {
 		ExposedByteArrayOutputStream baos;
 
 		try (DataOutputStream nbtOut = switch (compressionType) {
-				case GZIP, GZIP_EXT -> new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(baos = new ExposedByteArrayOutputStream())));
-				case ZLIB, ZLIB_EXT -> new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(baos = new ExposedByteArrayOutputStream())));
-				case LZ4, LZ4_EXT -> new DataOutputStream(new BufferedOutputStream(new LZ4BlockOutputStream(baos = new ExposedByteArrayOutputStream())));
-				case NONE, NONE_EXT, UNCOMPRESSED, UNCOMPRESSED_EXT -> new DataOutputStream(new BufferedOutputStream(baos = new ExposedByteArrayOutputStream()));
+				case GZIP, GZIP_EXT -> new DataOutputStream(new GZIPOutputStream(baos = new ExposedByteArrayOutputStream(8192)));
+				case ZLIB, ZLIB_EXT -> new DataOutputStream(new DeflaterOutputStream(baos = new ExposedByteArrayOutputStream(8192)));
+				case LZ4, LZ4_EXT -> new DataOutputStream(new LZ4BlockOutputStream(baos = new ExposedByteArrayOutputStream(8192)));
+				case NONE, NONE_EXT, UNCOMPRESSED, UNCOMPRESSED_EXT -> new DataOutputStream(baos = new ExposedByteArrayOutputStream(8192));
 			}) {
 
 			new NBTWriter().write(nbtOut, data);
