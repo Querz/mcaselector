@@ -2,24 +2,34 @@
 	-fx-min-width: 350px;
 }
 
-.about-dialog-pane .about-dialog-grid-pane .label {
+.about-dialog-grid-pane .label {
 	-fx-label-padding: 8 15 8 0;
 }
 
-.about-dialog-pane .about-dialog-grid-pane .hyperlink {
+.about-dialog-grid-pane .hyperlink {
 	-fx-padding: 8 15 8 -8;
 	-fx-border-color: transparent;
 	-fx-border-width: 0;
 }
 
-.about-dialog-pane .about-dialog-grid-pane .hyperlink-update {
+.about-dialog-grid-pane .hyperlink-update {
 	-fx-padding: 8 15 8 0;
 }
 
-.about-dialog-pane .about-dialog-grid-pane .hyperlink .label {
+.about-dialog-grid-pane .hyperlink .label {
 	-fx-padding: 0;
 }
 
-.about-dialog-pane .about-dialog-grid-pane .label-hint {
+.about-dialog-grid-pane .label-hint {
 	-fx-padding: 0 0 0 15;
+}
+
+.about-dialog-vbox {
+    -fx-spacing: 10;
+}
+
+.disclaimer-label {
+    -fx-wrap-text: true;
+    -fx-pref-width: 0;
+    -fx-max-width: infinity;
 }

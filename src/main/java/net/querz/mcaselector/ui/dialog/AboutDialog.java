@@ -3,16 +3,11 @@ package net.querz.mcaselector.ui.dialog;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.*;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.io.FileHelper;
@@ -82,7 +77,14 @@ public class AboutDialog extends Alert {
 		Hyperlink source = UIFactory.hyperlink("GitHub", "https://github.com/Querz/mcaselector", imgView);
 		grid.add(source, 1, 3);
 
-		getDialogPane().setContent(grid);
+		Label disclaimer = new Label("NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.");
+		disclaimer.getStyleClass().add("disclaimer-label");
+
+		VBox vbox = new VBox();
+		vbox.getStyleClass().add("about-dialog-vbox");
+		vbox.getChildren().addAll(grid, new Separator(), disclaimer);
+
+		getDialogPane().setContent(vbox);
 		getDialogPane().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
 	}
 
