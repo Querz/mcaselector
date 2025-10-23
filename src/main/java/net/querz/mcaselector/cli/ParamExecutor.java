@@ -24,7 +24,12 @@ import net.querz.mcaselector.util.range.RangeParser;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.selection.SelectionData;
 import net.querz.mcaselector.tile.OverlayPool;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.File;
@@ -46,11 +51,11 @@ public final class ParamExecutor {
 		options.addOption(Option.builder("h")
 			.longOpt("help")
 			.desc("Print all available command line options")
-			.build());
+			.get());
 		options.addOption(Option.builder("v")
 			.longOpt("version")
 			.desc("Shows the current version of MCA Selector")
-			.build());
+			.get());
 
 		options.addOption(Option.builder("m")
 			.longOpt("mode")
@@ -65,211 +70,211 @@ public final class ParamExecutor {
 				image     Generate a single image based on a selection
 				""")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder("o")
 			.longOpt("output")
 			.desc("Specify the output file or directory")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder("q")
 			.longOpt("query")
 			.desc("The query to run")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 				.longOpt("script")
 				.desc("The script to run")
 				.hasArg()
-				.build());
+				.get());
 		options.addOption(Option.builder("s")
 			.longOpt("selection")
 			.desc("The selection to be applied to the target world")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("source-selection")
 			.desc("The selection to be applied to the source world")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder("r")
 			.longOpt("radius")
 			.desc("The radius to be applied for a selection")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("x-offset")
 			.desc("The offset in x-direction for chunk import")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("y-offset")
 			.desc("The offset in y-direction for chunk import")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("z-offset")
 			.desc("The offset in z-direction for chunk import")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("overwrite")
 			.desc("Whether to overwrite existing chunks in the target world during chunk import")
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("force")
 			.desc("Whether to force NBT tags during NBT change")
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("sections")
 			.desc("One or a range of section indices to import into the target world during chunk import")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("render-height")
 			.desc("The highest Y level to render in image mode")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("render-caves")
 			.desc("Enabled cave rendering in image mode")
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("render-layer-only")
 			.desc("Only render the layer specified by --render-height in image mode")
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("render-shade")
 			.desc("Enable or disable shading of terrain and water in image mode")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("render-water-shade")
 			.desc("Enable or disable shading of water in image mode")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 				.longOpt("render-height-shade")
 				.desc("Enable or disable shading of terrain height in image mode")
 				.hasArg()
-				.build());
+				.get());
 		options.addOption(Option.builder()
 			.longOpt("overlay-type")
 			.desc("The type of overlay to be rendered in image mode")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("overlay-min-value")
 			.desc("The minimum value to be used for the overlay in image mode")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("overlay-max-value")
 			.desc("The maximum value to be used for the overlay in image mode")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("overlay-data")
 			.desc("Additional data to be used for the overlay in image mode")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("overlay-min-hue")
 			.desc("The minimum hue for the overlay gradient, ranging from 0.0 to 1.0")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("overlay-max-hue")
 			.desc("The maximum hue for the overlay gradient, ranging from 0.0 to 1.0; When smaller than overlay-min-hue the gradient is flipped")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("fields")
 			.desc("The fields to change")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("zoom-level")
 			.desc("The zoom level for the cache to be generated. When not specified, all zoom levels will be generated")
 			.hasArg()
-			.build());
+			.get());
 
 		// world
 		options.addOption(Option.builder("w")
 			.longOpt("world")
 			.desc("The target world of this operation")
 			.hasArgs()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("region")
 			.desc("The specific region folder to be uses for the target world, overwrites the region folder detected by --world")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("poi")
 			.desc("The specific poi folder to be uses for the target world, overwrites the poi folder detected by --world")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("entities")
 			.desc("The specific entities folder to be uses for the target world, overwrites the entities folder detected by --world")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("source-world")
 			.desc("The source world of this operation")
 			.hasArgs()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("source-region")
 			.desc("The specific region folder to be uses for the source world, overwrites the region folder detected by --source-world")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("source-poi")
 			.desc("The specific poi folder to be uses for the source world, overwrites the poi folder detected by --source-world")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("source-entities")
 			.desc("The specific entities folder to be uses for the source world, overwrites the entities folder detected by --source-world")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("output-world")
 			.desc("The output world folder of this operation")
 			.hasArgs()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("output-region")
 			.desc("The specific region folder to be uses for the output world, overwrites the region folder detected by --output-world")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("output-poi")
 			.desc("The specific poi folder to be uses for the output world, overwrites the poi folder detected by --output-world")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("output-entities")
 			.desc("The specific entities folder to be uses for the output world, overwrites the entities folder detected by --output-world")
 			.hasArg()
-			.build());
+			.get());
 
 		// config stuff
 		options.addOption(Option.builder("d")
 			.longOpt("debug")
 			.desc("Enable logging of debug level logs")
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("process-threads")
 			.desc("Set the number of threads to be used for processing")
 			.hasArg()
-			.build());
+			.get());
 		options.addOption(Option.builder()
 			.longOpt("write-threads")
 			.desc("Set the number threads to use for writing files")
 			.hasArg()
-			.build());
+			.get());
 
 		// all the above options should appear in --help
 		for (Option option : options.getOptions()) {
@@ -281,7 +286,7 @@ public final class ParamExecutor {
 			.longOpt("locale")
 			.desc("Set the locale for debugging the language files")
 			.hasArgs()
-			.build());
+			.get());
 	}
 
 	private final String[] args;
@@ -378,22 +383,12 @@ public final class ParamExecutor {
 	}
 
 	private void printHelp() {
-		String[] helpOrder = new String[]{
-			"help", "version", "mode", "output", "query", "script", "selection", "source-selection", "radius", "x-offset",
-			"y-offset", "z-offset", "overwrite", "force", "sections", "render-height", "render-caves", "render-layer-only",
-			"render-shade", "render-water-shade", "render-height-shade", "overlay-type", "overlay-min-value",
-			"overlay-max-value", "overlay-data", "overlay-min-hue", "overlay-max-hue", "fields", "zoom-level", "world",
-			"region", "poi", "entities", "source-world", "source-region", "source-poi", "source-entities", "output-world",
-			"output-region", "output-poi", "output-entities", "debug", "process-threads", "write-threads"
-		};
-		Map<String, Integer> helpOptionOrderLookup = new HashMap<>();
-		for (int i = 0; i < helpOrder.length; i++) {
-			helpOptionOrderLookup.put(helpOrder[i], i);
+		org.apache.commons.cli.help.HelpFormatter formatter = org.apache.commons.cli.help.HelpFormatter.builder().setShowSince(false).get();
+		try {
+			formatter.printHelp("java -jar mcaselector.jar <args>", "", helpOptions, "", false);
+		} catch (IOException e) {
+			System.out.println("error: failed to print help");
 		}
-		HelpFormatter formatter = new HelpFormatter();
-		formatter.setWidth(128);
-		formatter.setOptionComparator(Comparator.comparingInt(o -> helpOptionOrderLookup.get(o.getLongOpt())));
-		formatter.printHelp("java -jar mcaselector.jar <args>", helpOptions);
 	}
 
 	private void printVersion() {
