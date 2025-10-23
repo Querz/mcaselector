@@ -24,3 +24,4 @@ export/
 /test
 .DS_Store
 /tmp
+*.zip
