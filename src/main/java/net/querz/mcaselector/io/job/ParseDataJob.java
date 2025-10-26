@@ -125,7 +125,7 @@ public class ParseDataJob extends ProcessDataJob {
 
 		if (regionMCAFile == null && poiMCAFile == null && entitiesMCAFile == null) {
 			dataCallback.accept(null, world);
-			LOGGER.warn("no data to load and parse for region {}", getRegionDirectories().getLocation());
+			LOGGER.debug("no data to load and parse for region {}", getRegionDirectories().getLocation());
 			setLoading(tile, false);
 			return true;
 		}
