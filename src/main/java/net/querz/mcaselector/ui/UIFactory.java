@@ -27,13 +27,18 @@ public final class UIFactory {
 	public static Menu menu(Translation translation) {
 		Menu menu = new Menu();
 		menu.textProperty().bind(translation.getProperty());
+		if (!translation.isTranslated()) {
+			menu.setMnemonicParsing(false);
+		}
 		return menu;
 	}
 
 	public static MenuItem menuItem(Translation translation) {
 		MenuItem item = new MenuItem();
 		item.textProperty().bind(translation.getProperty());
-		item.setMnemonicParsing(false);
+		if (!translation.isTranslated()) {
+			item.setMnemonicParsing(false);
+		}
 		return item;
 	}
 
@@ -41,6 +46,9 @@ public final class UIFactory {
 		CheckMenuItem item = new CheckMenuItem();
 		item.textProperty().bind(translation.getProperty());
 		item.setSelected(selected);
+		if (!translation.isTranslated()) {
+			item.setMnemonicParsing(false);
+		}
 		return item;
 	}
 
