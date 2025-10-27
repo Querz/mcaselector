@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.github.Querz:NBT:6bc3de6961'
+	implementation 'com.github.Querz:NBT:13516d666a'
 	implementation 'com.google.code.gson:gson:2.12.1'
 	implementation 'it.unimi.dsi:fastutil:8.5.15'
 	implementation 'org.apache.logging.log4j:log4j-api:2.24.3'
@@ -51,7 +51,7 @@ dependencies {
 	implementation 'org.atteo.classindex:classindex:3.13'
 	implementation 'org.iq80.leveldb:leveldb:0.12'
   
-	shadow 'com.github.Querz:NBT:6bc3de6961'
+	shadow 'com.github.Querz:NBT:13516d666a'
 	shadow 'com.google.code.gson:gson:2.12.1'
 	shadow 'it.unimi.dsi:fastutil:8.5.15'
 	shadow 'org.apache.logging.log4j:log4j-api:2.24.3'
