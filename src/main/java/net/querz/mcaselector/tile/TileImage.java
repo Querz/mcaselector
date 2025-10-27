@@ -1,5 +1,6 @@
 package net.querz.mcaselector.tile;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
@@ -21,6 +22,7 @@ import net.querz.mcaselector.version.ChunkRenderer;
 import net.querz.mcaselector.version.ColorMapping;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.VersionHandler;
+import net.querz.mcaselector.version.mapping.registry.StructureRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -73,6 +75,25 @@ public final class TileImage {
 		} else if (selection.isInverted()) {
 			ctx.setFill(ConfigProvider.GLOBAL.getRegionSelectionColor().makeJavaFXColor());
 			ctx.fillRect(offset.getX(), offset.getY(), Tile.SIZE / scale, Tile.SIZE / scale);
+		}
+	}
+
+	public static void drawStructures(GraphicsContext ctx, Tile tile, float scale, Point2f offset) {
+		if (tile != null && tile.structures != null) {
+			for (Long2ObjectMap.Entry<String[]> e : tile.structures.long2ObjectEntrySet()) {
+				for (String structure : e.getValue()) {
+					Image icon = StructureRegistry.getIcon(structure, scale);
+					if (icon == null) {
+						continue;
+					}
+					Point2i absChunk = new Point2i(e.getLongKey());
+					Point2i relChunk = absChunk.asRelativeChunk().chunkToBlock().add(Tile.CHUNK_SIZE / 2);
+					ctx.drawImage(icon,
+							relChunk.getX() / scale + offset.getX() - icon.getWidth() / 2.0,
+							relChunk.getZ() / scale + offset.getY() - icon.getHeight() / 2.0);
+					break;
+				}
+			}
 		}
 	}
 

@@ -4,6 +4,7 @@ status.block;blok
 status.selected;zaznaczonych
 status.queue;kolejka
 status.total;łącznie
+status.structures;struktury
 status.overlay;nakładka
 menu.file;Plik
 menu.view;Widok
@@ -27,6 +28,8 @@ menu.view.reload;Przeładować
 menu.view.chunk_grid;Siatka chunków
 menu.view.region_grid;Siatka regionów
 menu.view.coordinates;Współrzędne
+menu.view.structure_icons;Struktury
+menu.view.select_structures;Wybierz Struktury
 menu.view.goto;Idź do...
 menu.view.reset_zoom;Resetuj powiększenie
 menu.view.save_screenshot;Zapisz zrzut ekranu
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;Podmioty
 dialog.settings.rendering.layers.render_height;Wysokość renderowania
 dialog.settings.rendering.layers.render_layer_only;Tylko renderuj warstwę
 dialog.settings.rendering.layers;Warstwy
+dialog.settings.rendering.structure_icons;Ikony struktur
+dialog.settings.rendering.structure_icon_size;Rozmiar ikony
+dialog.settings.rendering.structure_icon_border_size;Rozmiar obramowania
 dialog.settings.rendering.layers.render_caves;Renderuj jaskinie
 dialog.goto.title;Idź do miejsca
 dialog.confirmation.question;Jesteś pewien?

@@ -4,6 +4,7 @@ status.block;Bloco
 status.selected;Selecionado
 status.queue;Fila
 status.total;Região total
+status.structures;estruturas
 status.overlay;sobreposição
 menu.file;Ficheiro
 menu.view;Visão
@@ -27,6 +28,8 @@ menu.view.reload;Recarregar
 menu.view.chunk_grid;Grelha de chunks
 menu.view.region_grid;Grelha de regiões
 menu.view.coordinates;Coordenadas
+menu.view.structure_icons;Estruturas
+menu.view.select_structures;Selecionar Estruturas
 menu.view.goto;Ir para
 menu.view.reset_zoom;Redefinir zoom
 menu.view.save_screenshot;Salvar captura de tela
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;Entidades
 dialog.settings.rendering.layers.render_height;Altura de renderização
 dialog.settings.rendering.layers.render_layer_only;Camada de renderização apenas
 dialog.settings.rendering.layers;Camadas
+dialog.settings.rendering.structure_icons;Ícones de estruturas
+dialog.settings.rendering.structure_icon_size;Tamanho do ícone
+dialog.settings.rendering.structure_icon_border_size;Tamanho da borda
 dialog.settings.rendering.layers.render_caves;Renderizar cavernas
 dialog.goto.title;Ir para coordenadas
 dialog.confirmation.question;Tem a certeza?

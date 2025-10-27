@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io.mca;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.point.Point3i;
 import net.querz.mcaselector.util.range.Range;
@@ -9,8 +10,12 @@ import net.querz.mcaselector.version.ChunkRenderer;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.CompoundTag;
+import net.querz.nbt.IntTag;
+import net.querz.nbt.Tag;
+
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 public class RegionMCAFile extends MCAFile<RegionChunk> implements Cloneable {
 
@@ -97,6 +102,30 @@ public class RegionMCAFile extends MCAFile<RegionChunk> implements Cloneable {
 			}
 		}
 		return min;
+	}
+
+	public Long2ObjectOpenHashMap<String[]> getStructures() {
+		Long2ObjectOpenHashMap<String[]> map = new Long2ObjectOpenHashMap<>();
+		for (int index = 0; index < 1024; index++) {
+			RegionChunk chunk = getChunk(index);
+			if (chunk == null || chunk.data == null) {
+				continue;
+			}
+
+			try {
+				ChunkData data = new ChunkData(chunk, null, null, false);
+				String[] structureIDs = VersionHandler.getImpl(data, ChunkFilter.Structures.class).parseStructureStarts(chunk.data);
+				if (structureIDs == null) {
+					continue;
+				}
+
+				long chunkPos = new Point2i(index).add(location.regionToChunk()).asLong();
+				map.put(chunkPos, structureIDs);
+			} catch (Exception ex) {
+				/* ignore */
+			}
+		}
+		return map;
 	}
 
 	public RegionMCAFile clone() {

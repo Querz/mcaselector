@@ -1,57 +1,215 @@
 [
-  "Bastion_Remnant",
-  "Buried_Treasure",
-  "Desert_Pyramid",
-  "EndCity",
-  "Fortress",
-  "Igloo",
-  "Jungle_Pyramid",
-  "Mansion",
-  "Mineshaft",
-  "Monument",
-  "Nether_Fossil",
-  "Ocean_Ruin",
-  "Pillager_Outpost",
-  "Ruined_Portal",
-  "Shipwreck",
-  "Stronghold",
-  "Swamp_Hut",
-  "Village",
-  "ancient_city",
-  "bastion_remnant",
-  "buried_treasure",
-  "desert_pyramid",
-  "end_city",
-  "endcity",
-  "fortress",
-  "igloo",
-  "jungle_pyramid",
-  "mansion",
-  "mineshaft",
-  "mineshaft_mesa",
-  "monument",
-  "nether_fossil",
-  "ocean_ruin",
-  "ocean_ruin_cold",
-  "ocean_ruin_warm",
-  "pillager_outpost",
-  "ruined_portal",
-  "ruined_portal_desert",
-  "ruined_portal_jungle",
-  "ruined_portal_mountain",
-  "ruined_portal_nether",
-  "ruined_portal_ocean",
-  "ruined_portal_swamp",
-  "shipwreck",
-  "shipwreck_beached",
-  "stronghold",
-  "swamp_hut",
-  "trail_ruins",
-  "trial_chambers",
-  "village",
-  "village_desert",
-  "village_plains",
-  "village_savanna",
-  "village_snowy",
-  "village_taiga"
+  {
+    "name": "ancient_city",
+    "icon": "soul_lantern",
+    "display": "Ancient City"
+  },
+  {
+    "name": "bastion_remnant",
+    "alt": [
+      "Bastion_Remnant"
+    ],
+    "icon": "piglin_brute",
+    "display": "Bastion Remnant"
+  },
+  {
+    "name": "buried_treasure",
+    "alt": [
+      "Buried_Treasure"
+    ],
+    "max_scale": 5.5,
+    "icon": "chest",
+    "display": "Buried Treasure"
+  },
+  {
+    "name": "desert_pyramid",
+    "alt": [
+      "Desert_Pyramid"
+    ],
+    "icon": "pyramid",
+    "display": "Desert Pyramid"
+  },
+  {
+    "name": "end_city",
+    "alt": [
+      "EndCity",
+      "endcity"
+    ],
+    "icon": "shulker",
+    "display": "End City"
+  },
+  {
+    "name": "fortress",
+    "alt": [
+      "Fortress"
+    ],
+    "icon": "blaze",
+    "display": "Fortress"
+  },
+  {
+    "name": "igloo",
+    "alt": [
+      "Igloo"
+    ],
+    "icon": "snowball",
+    "display": "Igloo"
+  },
+  {
+    "name": "jungle_pyramid",
+    "alt": [
+      "Jungle_Pyramid"
+    ],
+    "icon": "jungle_temple",
+    "display": "Jungle Temple"
+  },
+  {
+    "name": "mansion",
+    "alt": [
+      "Mansion"
+    ],
+    "icon": "woodland_mansion",
+    "display": "Woodland Mansion"
+  },
+  {
+    "name": "mineshaft",
+    "alt": [
+      "Mineshaft",
+      "mineshaft_mesa"
+    ],
+    "max_scale": 3.0,
+    "icon": "chest_minecart",
+    "display": "Mineshaft"
+  },
+  {
+    "name": "monument",
+    "alt": [
+      "Monument"
+    ],
+    "icon": "ocean_monument",
+    "display": "Ocean Monument"
+  },
+  {
+    "name": "nether_fossil",
+    "alt": [
+      "Nether_Fossil"
+    ],
+    "max_scale": 1.2,
+    "icon": "skull",
+    "display": "Nether Fossil"
+  },
+  {
+    "name": "ocean_ruin_warm",
+    "alt": [
+      "ocean_ruin",
+      "Ocean_Ruin",
+      "ocean_ruin_cold"
+    ],
+    "max_scale": 12.0,
+    "icon": "drowned",
+    "display": "Ocean Ruin"
+  },
+  {
+    "name": "pillager_outpost",
+    "alt": [
+      "Pillager_Outpost"
+    ],
+    "icon": "pillager",
+    "display": "Pillager Outpost"
+  },
+  {
+    "name": "ruined_portal",
+    "alt": [
+      "Ruined_Portal",
+      "ruined_portal_desert",
+      "ruined_portal_jungle",
+      "ruined_portal_mountain",
+      "ruined_portal_nether",
+      "ruined_portal_ocean",
+      "ruined_portal_swamp"
+    ],
+    "max_scale": 10.0,
+    "icon": "nether_portal",
+    "display": "Nether Portal"
+  },
+  {
+    "name": "shipwreck",
+    "alt": [
+      "Shipwreck",
+      "shipwreck_beached"
+    ],
+    "max_scale": 10.8,
+    "icon": "boat",
+    "display": "Shipwreck"
+  },
+  {
+    "name": "stronghold",
+    "alt": [
+      "Stronghold"
+    ],
+    "icon": "ender_pearl",
+    "display": "Stronghold"
+  },
+  {
+    "name": "swamp_hut",
+    "alt": [
+      "Swamp_Hut"
+    ],
+    "icon": "swamp_hut",
+    "display": "Swamp Hut"
+  },
+  {
+    "name": "trail_ruins",
+    "icon": "brush",
+    "display": "Trail Ruins"
+  },
+  {
+    "name": "trial_chambers",
+    "icon": "trial_chambers",
+    "display": "Trial Chambers"
+  },
+  {
+    "name": "village_desert",
+    "alt": [
+      "village",
+      "Village"
+    ],
+    "icon": "desert_village",
+    "display": "Desert Village"
+  },
+  {
+    "name": "village_plains",
+    "alt": [
+      "village",
+      "Village"
+    ],
+    "icon": "plains_village",
+    "display": "Plains Village"
+  },
+  {
+    "name": "village_savanna",
+    "alt": [
+      "village",
+      "Village"
+    ],
+    "icon": "savanna_village",
+    "display": "Savanna Village"
+  },
+  {
+    "name": "village_snowy",
+    "alt": [
+      "village",
+      "Village"
+    ],
+    "icon": "snowy_village",
+    "display": "Snowy Village"
+  },
+  {
+    "name": "village_taiga",
+    "alt": [
+      "village",
+      "Village"
+    ],
+    "icon": "taiga_village",
+    "display": "Taiga Village"
+  }
 ]

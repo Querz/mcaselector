@@ -69,6 +69,7 @@ public final class ImagePool {
 		Image image;
 		if ((image = pool.get(zoomLevel).get(tile.location.asLong())) != null) {
 			tile.setImage(image);
+			fetchOrParseStructures(tile, zoomLevel);
 			tile.setLoaded(true);
 			return;
 		}
@@ -86,12 +87,14 @@ public final class ImagePool {
 					// image is larger than needed
 					// scale down and set image to tile
 					tile.setImage(ImageHelper.scaleDownFXImage(image, Tile.SIZE / zl));
+					fetchOrParseStructures(tile, zoomLevel);
 					tile.setLoaded(true);
 					push(zoomLevel, tile.location, tile.image);
 					return;
 				} else {
 					// image is lower res, but we set it anyway, so we can at least display something
 					tile.setImage(image);
+					fetchOrParseStructures(tile, zoomLevel);
 					tile.setLoaded(true);
 					// don't give up here, find image in disk cache!
 					break;
@@ -106,6 +109,7 @@ public final class ImagePool {
 			CachedImageLoadJob.load(tile, diskCacheImageFile, zoomLevel, zoomLevel, img -> {
 				CachedImageLoadJob.setLoading(tile, false);
 				push(zoomLevel, tile.location, img);
+				fetchOrParseStructures(tile, zoomLevel);
 				tileMap.draw();
 				if (isImageOutdated(tile.location)) {
 					discardCachedImage(tile.location);
@@ -129,6 +133,7 @@ public final class ImagePool {
 					CachedImageLoadJob.load(tile, diskCacheImageFile, zl, zoomLevel, img -> {
 						CachedImageLoadJob.setLoading(tile, false);
 						push(zoomLevel, tile.location, img);
+						fetchOrParseStructures(tile, zoomLevel);
 						tileMap.draw();
 						if (isImageOutdated(tile.location)) {
 							discardCachedImage(tile.location);
@@ -142,6 +147,7 @@ public final class ImagePool {
 					CachedImageLoadJob.setLoading(tile, true);
 					CachedImageLoadJob.load(tile, diskCacheImageFile, zl, zl, img -> {
 						CachedImageLoadJob.setLoading(tile, false);
+						fetchOrParseStructures(tile, zoomLevel);
 						tileMap.draw();
 						if (isImageOutdated(tile.location)) {
 							discardCachedImage(tile.location);
@@ -154,8 +160,9 @@ public final class ImagePool {
 		}
 
 		RegionImageGenerator.setLoading(tile, true);
-		RegionImageGenerator.generate(tile, (img, uuid) -> {
+		RegionImageGenerator.generate(tile, (img, structures, uuid) -> {
 			tile.setImage(img);
+			tile.structures = structures;
 			tile.loaded = true;
 			RegionImageGenerator.setLoading(tile, false);
 			push(zoomLevel, tile.location, img);
@@ -165,7 +172,24 @@ public final class ImagePool {
 			} catch (DBException e) {
 				LOGGER.error("failed to cache last modified date for {}", tile.location, e);
 			}
-		}, zoomLevel, null, true, () -> tileMap.getTilePriority(tile.getLocation()));
+		}, zoomLevel, null, true, false, () -> tileMap.getTilePriority(tile.getLocation()));
+	}
+
+	private void fetchOrParseStructures(Tile tile, int zoomLevel) {
+		try {
+			Long2ObjectOpenHashMap<String[]> poi = CacheHandler.getStructureData(tile.location);
+			if (poi != null) {
+				tile.setStructures(poi);
+				tileMap.draw();
+				return;
+			}
+			RegionImageGenerator.generate(tile, (img, structures, uuid) -> {
+				tile.setStructures(structures);
+				tileMap.draw();
+			}, zoomLevel, null, true, true, null);
+		} catch (DBException | IOException e) {
+			LOGGER.warn("failed to load structures for {} from cache", tile.location, e);
+		}
 	}
 
 	public boolean isImageOutdated(Point2i region) {

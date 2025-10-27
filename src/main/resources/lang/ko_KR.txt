@@ -4,6 +4,7 @@ status.block;블록
 status.selected;선택됨
 status.queue;대기열
 status.total;총합
+status.structures;구조물
 status.overlay;오버
 menu.file;파일
 menu.view;보기
@@ -27,6 +28,8 @@ menu.view.reload;리로드
 menu.view.chunk_grid;청크 그리드
 menu.view.region_grid;지역 그리드
 menu.view.coordinates;좌표
+menu.view.structure_icons;구조물
+menu.view.select_structures;구조물 선택
 menu.view.goto;이동
 menu.view.reset_zoom;줌 초기화
 menu.view.save_screenshot;스크린샷 저장
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;엔티티
 dialog.settings.rendering.layers.render_height;렌더링 거리
 dialog.settings.rendering.layers.render_layer_only;레이어만 렌더링하기
 dialog.settings.rendering.layers;레이어
+dialog.settings.rendering.structure_icons;구조물 아이콘
+dialog.settings.rendering.structure_icon_size;아이콘 크기
+dialog.settings.rendering.structure_icon_border_size;테두리 크기
 dialog.settings.rendering.layers.render_caves;동굴 렌더링
 dialog.goto.title;좌표로 이동하기
 dialog.confirmation.question;확실하신가요?

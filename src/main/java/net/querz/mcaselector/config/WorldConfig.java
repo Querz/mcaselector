@@ -34,6 +34,8 @@ public class WorldConfig extends Config {
 	public static final boolean DEFAULT_SMOOTH_OVERLAYS = true;
 	public static final String DEFAULT_TILEMAP_BACKGROUND = "BLACK";
 	public static final boolean DEFAULT_SHOW_NONEXISTENT_REGIONS = true;
+	public static final int DEFAULT_STRUCTURE_ICON_SIZE = 32;
+	public static final int DEFAULT_STRUCTURE_ICON_BORDER_SIZE = 1;
 
 	// transient values
 	private transient File regionDir = null;
@@ -55,6 +57,8 @@ public class WorldConfig extends Config {
 	private boolean smoothOverlays = DEFAULT_SMOOTH_OVERLAYS;
 	private String tileMapBackground = DEFAULT_TILEMAP_BACKGROUND;
 	private boolean showNonexistentRegions = DEFAULT_SHOW_NONEXISTENT_REGIONS;
+	private int structureIconSize = DEFAULT_STRUCTURE_ICON_SIZE;
+	private int structureIconBorderSize = DEFAULT_STRUCTURE_ICON_BORDER_SIZE;
 
 	private static final Logger LOGGER = LogManager.getLogger(WorldConfig.class);
 
@@ -168,6 +172,22 @@ public class WorldConfig extends Config {
 
 	public void setSmoothOverlays(boolean smoothOverlays) {
 		this.smoothOverlays = smoothOverlays;
+	}
+
+	public int getStructureIconSize() {
+		return structureIconSize;
+	}
+
+	public void setStructureIconSize(int structureIconSize) {
+		this.structureIconSize = structureIconSize;
+	}
+
+	public int getStructureIconBorderSize() {
+		return structureIconBorderSize;
+	}
+
+	public void setStructureIconBorderSize(int structureIconBorderSize) {
+		this.structureIconBorderSize = structureIconBorderSize;
 	}
 
 	public String getTileMapBackground() {

@@ -4,6 +4,7 @@ status.block;block
 status.selected;valda
 status.queue;kö
 status.total;totalt
+status.structures;strukturer
 status.overlay;överlägget
 menu.file;Fil
 menu.view;Visa
@@ -27,6 +28,8 @@ menu.view.reload;Ladda om
 menu.view.chunk_grid;Chunkrutnät
 menu.view.region_grid;Regionrutnät
 menu.view.coordinates;Koordinater
+menu.view.structure_icons;Strukturer
+menu.view.select_structures;Välj strukturer
 menu.view.goto;Gå till
 menu.view.reset_zoom;Återställ zoom
 menu.view.save_screenshot;Spara skärmdump
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;Enheter
 dialog.settings.rendering.layers.render_height;Renderingshöjd
 dialog.settings.rendering.layers.render_layer_only;Rendera endast lager
 dialog.settings.rendering.layers;Skikt
+dialog.settings.rendering.structure_icons;Strukturikoner
+dialog.settings.rendering.structure_icon_size;Ikonstorlek
+dialog.settings.rendering.structure_icon_border_size;Kantstorlek
 dialog.settings.rendering.layers.render_caves;Rendera grottor
 dialog.goto.title;Gå till plats
 dialog.confirmation.question;Är du säker?

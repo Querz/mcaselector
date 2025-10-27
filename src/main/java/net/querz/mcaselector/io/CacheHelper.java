@@ -39,7 +39,7 @@ public final class CacheHelper {
 			if (m.find()) {
 				int x = Integer.parseInt(m.group("regionX"));
 				int z = Integer.parseInt(m.group("regionZ"));
-				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), (i, u) -> {}, zoomLevel, progressChannel, false, null);
+				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), (i, s, u) -> {}, zoomLevel, progressChannel, false, false, null);
 			}
 		}
 	}

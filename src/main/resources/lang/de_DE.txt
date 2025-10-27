@@ -4,6 +4,7 @@ status.block;Block
 status.selected;Selektiert
 status.queue;Queue
 status.total;Alle
+status.structures;Bauwerke
 status.overlay;overlay
 menu.file;Datei
 menu.view;Ansicht
@@ -27,6 +28,8 @@ menu.view.reload;Neu laden
 menu.view.chunk_grid;Chunk Gitter
 menu.view.region_grid;Region Gitter
 menu.view.coordinates;Koordinaten
+menu.view.structure_icons;Bauwerke
+menu.view.select_structures;Bauwerke auswählen
 menu.view.goto;Gehe zu
 menu.view.reset_zoom;Zoom zurücksetzen
 menu.view.save_screenshot;Bildschirmfoto erstellen
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;Entities
 dialog.settings.rendering.layers.render_height;Renderhöhe
 dialog.settings.rendering.layers.render_layer_only;Nur Ebene rendern
 dialog.settings.rendering.layers;Ebenen
+dialog.settings.rendering.structure_icons;Bauwerk Symbole
+dialog.settings.rendering.structure_icon_size;Symbolgröße
+dialog.settings.rendering.structure_icon_border_size;Rahmengröße
 dialog.settings.rendering.layers.render_caves;Höhlen rendern
 dialog.goto.title;Gehe zu Koordinaten
 dialog.confirmation.question;Bist Du dir sicher?

@@ -615,6 +615,37 @@ public class ChunkFilter_15w32a {
 			CompoundTag structures = Helper.tagFromLevelFromRoot(Helper.getRegion(data), "Structures");
 			return Helper.tagFromCompound(structures, "Starts");
 		}
+
+		@Override
+		public String[] parseStructureStarts(CompoundTag data) {
+			if (data == null) {
+				return null;
+			}
+			CompoundTag structures = Helper.tagFromLevelFromRoot(data, "Structures");
+			CompoundTag starts = Helper.tagFromCompound(structures, "Starts");
+			if (starts == null) {
+				return null;
+			}
+			String[] result = null;
+			for (Map.Entry<String, Tag> start : starts.entrySet()) {
+				if (start.getValue().getType() != Tag.Type.COMPOUND || ((CompoundTag) start.getValue()).size() <= 1) {
+					continue;
+				}
+				String id = Helper.stringFromCompound(start.getValue(), "id");
+				if (id == null) {
+					continue;
+				}
+				if (result == null) {
+					result = new String[] { id };
+				} else if (!Arrays.asList(result).contains(id)) {
+					String[] n = new String[result.length + 1];
+					System.arraycopy(result, 0, n, 0, result.length);
+					n[result.length] = id;
+					result = n;
+				}
+			}
+			return result;
+		}
 	}
 
 	@MCVersionImplementation(100)

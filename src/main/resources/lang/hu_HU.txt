@@ -4,6 +4,7 @@ status.block;block
 status.selected;kijelölve
 status.queue;várólista
 status.total;összesen
+status.structures;struktúrák
 status.overlay;overlay
 menu.file;Fájl
 menu.view;Nézet
@@ -27,6 +28,8 @@ menu.view.reload;Újratöltés
 menu.view.chunk_grid;Chunk Rács
 menu.view.region_grid;Régió Rács
 menu.view.coordinates;Koordináták
+menu.view.structure_icons;Struktúrák
+menu.view.select_structures;Struktúrák kiválasztása
 menu.view.goto;Koordinátához lépés
 menu.view.reset_zoom;Alap nagyítás
 menu.view.save_screenshot;Képernyőkép mentése
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;Entities
 dialog.settings.rendering.layers.render_height;Renderelés magassága
 dialog.settings.rendering.layers.render_layer_only;Csak az adott réteg renderelése
 dialog.settings.rendering.layers;Rétegek
+dialog.settings.rendering.structure_icons;Struktúra ikonok
+dialog.settings.rendering.structure_icon_size;Ikon mérete
+dialog.settings.rendering.structure_icon_border_size;Szegély mérete
 dialog.settings.rendering.layers.render_caves;Barlangok renderelése
 dialog.goto.title;Koordinátához lépés
 dialog.confirmation.question;Biztos vagy benne?

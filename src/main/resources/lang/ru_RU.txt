@@ -4,6 +4,7 @@ status.block;блок
 status.selected;выбрано
 status.queue;очередь
 status.total;всего
+status.structures;структуры
 status.overlay;наложение
 menu.file;Файл
 menu.view;Вид
@@ -27,6 +28,8 @@ menu.view.reload;Перезагрузить
 menu.view.chunk_grid;Сетка чанков
 menu.view.region_grid;Сетка областей
 menu.view.coordinates;Координаты
+menu.view.structure_icons;Структуры
+menu.view.select_structures;Выбрать структуры
 menu.view.goto;Перейти по координатам
 menu.view.reset_zoom;Сбросить масштаб
 menu.view.save_screenshot;Сохранить снимок экрана
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;Сущности
 dialog.settings.rendering.layers.render_height;Высота рендеринга
 dialog.settings.rendering.layers.render_layer_only;Только слой рендеринга
 dialog.settings.rendering.layers;Слои
+dialog.settings.rendering.structure_icons;Значки структур
+dialog.settings.rendering.structure_icon_size;Размер значка
+dialog.settings.rendering.structure_icon_border_size;Размер границы
 dialog.settings.rendering.layers.render_caves;Рендеринг пещер
 dialog.goto.title;Перейти по координатам
 dialog.confirmation.question;Вы уверены?

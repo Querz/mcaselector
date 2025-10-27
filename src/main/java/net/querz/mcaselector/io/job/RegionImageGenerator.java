@@ -1,11 +1,13 @@
 package net.querz.mcaselector.io.job;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import net.querz.mcaselector.config.Config;
 import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.config.WorldConfig;
 import net.querz.mcaselector.io.*;
+import net.querz.mcaselector.io.db.CacheHandler;
 import net.querz.mcaselector.io.mca.RegionMCAFile;
 import net.querz.mcaselector.tile.Tile;
 import net.querz.mcaselector.tile.TileImage;
@@ -20,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -37,10 +38,10 @@ public final class RegionImageGenerator {
 
 	private RegionImageGenerator() {}
 
-	public static void generate(Tile tile, BiConsumer<Image, UniqueID> callback, Integer zoomLevel, Progress progressChannel, boolean canSkipSaving, Supplier<Integer> prioritySupplier) {
+	public static void generate(Tile tile, ImageGeneratorCallback callback, Integer zoomLevel, Progress progressChannel, boolean canSkipSaving, boolean structuresOnly, Supplier<Integer> prioritySupplier) {
 		LOGGER.debug("adding job {}, tile:{}, scale:{}, loading:{}, image:{}, loaded:{}",
 			MCAImageProcessJob.class.getSimpleName(), tile.getLocation(), zoomLevel, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
-		JobHandler.addJob(new MCAImageProcessJob(tile, new UniqueID(), callback, zoomLevel, progressChannel, canSkipSaving, prioritySupplier));
+		JobHandler.addJob(new MCAImageProcessJob(tile, new UniqueID(), callback, zoomLevel, progressChannel, canSkipSaving, structuresOnly, prioritySupplier));
 	}
 
 	public static RegionMCAFile getCachedRegionMCAFile(Point2i region) {
@@ -130,13 +131,14 @@ public final class RegionImageGenerator {
 
 		private final Tile tile;
 		private final UniqueID uniqueID;
-		private final BiConsumer<Image, UniqueID> callback;
+		private final ImageGeneratorCallback callback;
 		private final Integer zoomLevel;
 		private final Progress progressChannel;
 		private final boolean canSkipSaving;
+		private final boolean structuresOnly;
 		private final Supplier<Integer> prioritySupplier;
 
-		private MCAImageProcessJob(Tile tile, UniqueID uniqueID, BiConsumer<Image, UniqueID> callback, Integer zoomLevel, Progress progressChannel, boolean canSkipSaving, Supplier<Integer> prioritySupplier) {
+		private MCAImageProcessJob(Tile tile, UniqueID uniqueID, ImageGeneratorCallback callback, Integer zoomLevel, Progress progressChannel, boolean canSkipSaving, boolean structuresOnly, Supplier<Integer> prioritySupplier) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null), PRIORITY_LOW);
 			this.tile = tile;
 			this.uniqueID = uniqueID;
@@ -144,6 +146,7 @@ public final class RegionImageGenerator {
 			this.zoomLevel = zoomLevel;
 			this.progressChannel = progressChannel;
 			this.canSkipSaving = canSkipSaving;
+			this.structuresOnly = structuresOnly;
 			this.prioritySupplier = prioritySupplier;
 			if (progressChannel != null) {
 				errorHandler = t -> progressChannel.incrementProgress("error");
@@ -166,7 +169,7 @@ public final class RegionImageGenerator {
 					LOGGER.debug("took {} to read mca file {}", t, cachedRegion.getFile().getName());
 				} catch (IOException ex) {
 					LOGGER.warn("failed to load mca file {}", cachedRegion.getFile().getName());
-					callback.accept(null, uniqueID);
+					callback.accept(null, null, uniqueID);
 					if (progressChannel != null) {
 						progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 					}
@@ -182,27 +185,32 @@ public final class RegionImageGenerator {
 					Image image = TileImage.generateImage(cachedRegion, z);
 					LOGGER.debug("took {} to generate image for region {}", t, tile.getLocation());
 
-					callback.accept(image, uniqueID);
+					callback.accept(image, null, uniqueID);
 
 					// don't cache in memory, we only want the file cache
 
-					new MCAImageSaveCacheJob(image, tile, z, null, canSkipSaving).execute();
+					new MCAImageSaveCacheJob(image, null, tile, z, null, canSkipSaving).execute();
 				}
 				if (progressChannel != null) {
 					progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 				}
 				return true;
 			} else {
-				Timer t = new Timer();
-				Image image = TileImage.generateImage(cachedRegion, zoomLevel);
-				LOGGER.debug("took {} to generate image for region {}", t, tile.getLocation());
+				Image image = null;
+				if (!structuresOnly) {
+					Timer t = new Timer();
+					image = TileImage.generateImage(cachedRegion, zoomLevel);
+					LOGGER.debug("took {} to generate image for region {}", t, tile.getLocation());
+				}
 
-				callback.accept(image, uniqueID);
+				Long2ObjectOpenHashMap<String[]> structures = cachedRegion.getStructures();
+
+				callback.accept(image, structures, uniqueID);
 
 				cacheRegionMCAFile(cachedRegion, uniqueID);
 
-				if (image != null && !isCached) {
-					MCAImageSaveCacheJob job = new MCAImageSaveCacheJob(image, tile, zoomLevel, progressChannel, canSkipSaving);
+				if ((image != null || structuresOnly) && !isCached) {
+					MCAImageSaveCacheJob job = new MCAImageSaveCacheJob(image, structures, tile, zoomLevel, progressChannel, canSkipSaving);
 					job.errorHandler = errorHandler;
 					JobHandler.executeSaveData(job);
 					return false;
@@ -242,13 +250,15 @@ public final class RegionImageGenerator {
 
 	private static class MCAImageSaveCacheJob extends SaveDataJob<Image> {
 
+		private final Long2ObjectOpenHashMap<String[]> structures;
 		private final Tile tile;
 		private final int zoomLevel;
 		private final Progress progressChannel;
 		private final boolean canSkip;
 
-		private MCAImageSaveCacheJob(Image data, Tile tile, int zoomLevel, Progress progressChannel, boolean canSkip) {
+		private MCAImageSaveCacheJob(Image data, Long2ObjectOpenHashMap<String[]> structures, Tile tile, int zoomLevel, Progress progressChannel, boolean canSkip) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null), data);
+			this.structures = structures;
 			this.tile = tile;
 			this.zoomLevel = zoomLevel;
 			this.progressChannel = progressChannel;
@@ -260,23 +270,34 @@ public final class RegionImageGenerator {
 			Timer t = new Timer();
 
 			// save image to cache
-			try {
-				BufferedImage img = SwingFXUtils.fromFXImage(getData(), null);
-				File cacheFile = FileHelper.createPNGFilePath(ConfigProvider.WORLD.getCacheDir(zoomLevel), tile.getLocation());
-				if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
-					LOGGER.warn("failed to create cache directory for {}", cacheFile.getAbsolutePath());
+			if (getData() != null) {
+				try {
+					BufferedImage img = SwingFXUtils.fromFXImage(getData(), null);
+					File cacheFile = FileHelper.createPNGFilePath(ConfigProvider.WORLD.getCacheDir(zoomLevel), tile.getLocation());
+					if (!cacheFile.getParentFile().exists() && !cacheFile.getParentFile().mkdirs()) {
+						LOGGER.warn("failed to create cache directory for {}", cacheFile.getAbsolutePath());
+					}
+					LOGGER.debug("writing cache file {}", cacheFile.getAbsolutePath());
+					ImageIO.write(img, "png", cacheFile);
+				} catch (IOException ex) {
+					LOGGER.warn("failed to save images to cache for {}", tile.getLocation(), ex);
 				}
-				LOGGER.debug("writing cache file {}", cacheFile.getAbsolutePath());
-				ImageIO.write(img, "png", cacheFile);
-			} catch (IOException ex) {
-				LOGGER.warn("failed to save images to cache for {}", tile.getLocation(), ex);
+
+				LOGGER.debug("took {} to cache image of {} to {}", t, tile.getMCAFile().getName(), FileHelper.createPNGFileName(tile.getLocation()));
+			}
+
+			if (structures != null) {
+				try {
+					CacheHandler.setStructureData(tile.getLocation(), structures);
+				} catch (IOException e) {
+					LOGGER.warn("failed to cache structure data for {}", tile.getLocation(), e);
+				}
 			}
 
 			if (progressChannel != null) {
 				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 			}
 
-			LOGGER.debug("took {} to cache image of {} to {}", t, tile.getMCAFile().getName(), FileHelper.createPNGFileName(tile.getLocation()));
 
 			done();
 		}
@@ -292,5 +313,10 @@ public final class RegionImageGenerator {
 		public boolean canSkip() {
 			return canSkip;
 		}
+	}
+
+	@FunctionalInterface
+	public interface ImageGeneratorCallback {
+		void accept(Image image, Long2ObjectOpenHashMap<String[]> structures, UniqueID uniqueID);
 	}
 }

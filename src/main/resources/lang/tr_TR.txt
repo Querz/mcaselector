@@ -4,6 +4,7 @@ status.block;konum
 status.selected;seçildi
 status.queue;sıra
 status.total;toplam
+status.structures;yapılar
 status.overlay;kaplama
 menu.file;Dosya
 menu.view;Görüntü
@@ -27,6 +28,8 @@ menu.view.reload;Yeniden Yükle
 menu.view.chunk_grid;Chunk Izgarası
 menu.view.region_grid;Region Izgarası
 menu.view.coordinates;Koordinatlar
+menu.view.structure_icons;Yapılar
+menu.view.select_structures;Yapıları Seç
 menu.view.goto;Git
 menu.view.reset_zoom;Yakınlaştırmayı Sıfırla
 menu.view.save_screenshot;Ekran Görüntüsü Kaydet
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;Varlıklar
 dialog.settings.rendering.layers.render_height;Render Yüksekliği
 dialog.settings.rendering.layers.render_layer_only;Yalnızca Katmanı Renderla
 dialog.settings.rendering.layers;Katmanlar
+dialog.settings.rendering.structure_icons;Yapı simgeleri
+dialog.settings.rendering.structure_icon_size;Simge boyutu
+dialog.settings.rendering.structure_icon_border_size;Kenarlık boyutu
 dialog.settings.rendering.layers.render_caves;Mağaraları Renderla
 dialog.goto.title;Konuma Git
 dialog.confirmation.question;Emin Misin?

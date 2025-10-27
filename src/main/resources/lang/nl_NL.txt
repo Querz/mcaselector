@@ -4,6 +4,7 @@ status.block;blok
 status.selected;geselecteerd
 status.queue;queue
 status.total;totaal
+status.structures;structuren
 status.overlay;overlay
 menu.file;Bestand
 menu.view;Beeld
@@ -27,6 +28,8 @@ menu.view.reload;Herladen
 menu.view.chunk_grid;Chunk Raster
 menu.view.region_grid;Region Raster
 menu.view.coordinates;Coördinaten
+menu.view.structure_icons;Structuren
+menu.view.select_structures;Selecteer Structuren
 menu.view.goto;Ga naar
 menu.view.reset_zoom;Zoom resetten
 menu.view.save_screenshot;Bewaar screenshot
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;Entiteiten
 dialog.settings.rendering.layers.render_height;Render hoogte
 dialog.settings.rendering.layers.render_layer_only;Alleen laag renderen
 dialog.settings.rendering.layers;Lagen
+dialog.settings.rendering.structure_icons;Structuur-pictogrammen
+dialog.settings.rendering.structure_icon_size;Pictogramgrootte
+dialog.settings.rendering.structure_icon_border_size;Randgrootte
 dialog.settings.rendering.layers.render_caves;Grotten renderen
 dialog.goto.title;Ga naar locatie
 dialog.confirmation.question;Weet je het zeker?

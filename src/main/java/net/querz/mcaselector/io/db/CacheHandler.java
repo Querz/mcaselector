@@ -1,5 +1,6 @@
 package net.querz.mcaselector.io.db;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.querz.mcaselector.overlay.Overlay;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.validation.ShutdownHooks;
@@ -9,6 +10,7 @@ import org.iq80.leveldb.*;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.*;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
@@ -20,12 +22,17 @@ public final class CacheHandler {
 	private CacheHandler() {}
 
 	private static final UUID fileTimeUUID = UUID.nameUUIDFromBytes("file_times".getBytes());
+	private static final UUID structuresUUID = UUID.nameUUIDFromBytes("structures".getBytes());
 	private static final Options options = new Options();
 	private static ShutdownHooks.ShutdownJob closeShutdownHook;
 	private static String dbPath;
 
 	static {
 		options.createIfMissing(true);
+		// Tune LevelDB options for better throughput on overlay cache
+		options.writeBufferSize(16 * 1024 * 1024); // 16MB
+		options.blockSize(4 * 1024);               // 4KB blocks
+		options.compressionType(CompressionType.SNAPPY);
 	}
 
 	private static DB db;
@@ -85,6 +92,49 @@ public final class CacheHandler {
 		byte[] key = key(region.getX(), region.getZ(), id);
 		byte[] rawValue = cacheValue(data);
 		db.put(key, rawValue);
+	}
+
+	public static void setStructureData(Point2i region, Long2ObjectOpenHashMap<String[]> structures) throws DBException, IOException {
+		byte[] key = key(region.getX(), region.getZ(), structuresUUID);
+		ByteArrayOutputStream bos;
+		try (DataOutputStream dos = new DataOutputStream(bos = new ByteArrayOutputStream())) {
+			dos.writeInt(structures.size());
+			for (Map.Entry<Long, String[]> entry : structures.long2ObjectEntrySet()) {
+				dos.writeLong(entry.getKey());
+				int len = Math.min(entry.getValue().length, Byte.MAX_VALUE);
+				dos.writeByte(len);
+				for (int i = 0; i < len; i++) {
+					dos.writeUTF(entry.getValue()[i]);
+				}
+			}
+		}
+		byte[] rawValue = bos.toByteArray();
+		db.put(key, rawValue);
+	}
+
+	public static Long2ObjectOpenHashMap<String[]> getStructureData(Point2i region) throws DBException, IOException {
+		while (!isInitialized()) {
+			Thread.onSpinWait();
+		}
+		byte[] key = key(region.getX(), region.getZ(), structuresUUID);
+		byte[] rawValue = db.get(key);
+		if (rawValue == null) {
+			return null;
+		}
+		try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(rawValue))) {
+			int size = dis.readInt();
+			Long2ObjectOpenHashMap<String[]> map = new Long2ObjectOpenHashMap<>(size);
+			for (int i = 0; i < size; i++) {
+				long chunk = dis.readLong();
+				int len = dis.readUnsignedByte();
+				String[] structures = new String[len];
+				for (int j = 0; j < len; j++) {
+					structures[j] = dis.readUTF();
+				}
+				map.put(chunk, structures);
+			}
+			return map;
+		}
 	}
 
 	public static void deleteData(Overlay parser, Point2i region) throws DBException {
@@ -190,23 +240,16 @@ public final class CacheHandler {
 		return buf.array();
 	}
 
-	private static byte[] cacheValue(int[] data) throws IOException {
-		ByteArrayOutputStream baos;
-		try (DataOutputStream dos = new DataOutputStream(new DeflaterOutputStream(baos = new ByteArrayOutputStream()))) {
-			for (int i : data) {
-				dos.writeInt(i);
-			}
-		}
-		return baos.toByteArray();
+	private static byte[] cacheValue(int[] data) {
+		ByteBuffer buf = ByteBuffer.allocate(4096);
+		IntBuffer iBuf = buf.asIntBuffer();
+		iBuf.put(data);
+		return buf.array();
 	}
 
-	private static int[] readCacheValue(byte[] value) throws IOException {
+	private static int[] readCacheValue(byte[] value) {
 		int[] data = new int[1024];
-		try (DataInputStream dis = new DataInputStream(new InflaterInputStream(new ByteArrayInputStream(value)))) {
-			for (int i = 0; i < 1024; i++) {
-				data[i] = dis.readInt();
-			}
-		}
+		ByteBuffer.wrap(value).asIntBuffer().get(data);
 		return data;
 	}
 

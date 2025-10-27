@@ -2,6 +2,8 @@ package net.querz.mcaselector.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import it.unimi.dsi.fastutil.booleans.BooleanSet;
+import it.unimi.dsi.fastutil.objects.*;
 import net.querz.mcaselector.config.adapter.ColorAdapter;
 import net.querz.mcaselector.config.adapter.FileAdapter;
 import net.querz.mcaselector.config.adapter.LocaleAdapter;
@@ -10,6 +12,8 @@ import net.querz.mcaselector.logging.GsonNamingStrategy;
 import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.Color;
+import net.querz.mcaselector.version.mapping.registry.StructureRegistry;
+
 import java.io.File;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -56,6 +60,7 @@ public class GlobalConfig extends Config {
 	private TempScript filterScript = new TempScript(null, false, "");
 	private TempScript changeScript = new TempScript(null, false, "");
 	private TempScript overlayScript = new TempScript(null, false, "");
+	private Object2BooleanRBTreeMap<String> structureIcons = new Object2BooleanRBTreeMap<>(String::compareTo);
 
 	public Locale getLocale() {
 		return locale;
@@ -205,6 +210,14 @@ public class GlobalConfig extends Config {
 		this.overlayScript = overlayScript;
 	}
 
+	public Object2BooleanRBTreeMap<String> getStructureIcons() {
+		return structureIcons;
+	}
+
+	public void setStructureIcons(Object2BooleanRBTreeMap<String> structureIcons) {
+		this.structureIcons = structureIcons;
+	}
+
 	@Override
 	public void save() {
 		save(gsonInstance, BASE_CONFIG_FILE);
@@ -217,6 +230,7 @@ public class GlobalConfig extends Config {
 		}
 		GlobalConfig cfg = gsonInstance.fromJson(json, GlobalConfig.class);
 		cfg.setDebug(cfg.getDebug()); // trigger potential change in debug level
+		StructureRegistry.forEachDisplayName((d, i) -> cfg.structureIcons.putIfAbsent(i.id(), true));
 		return cfg;
 	}
 

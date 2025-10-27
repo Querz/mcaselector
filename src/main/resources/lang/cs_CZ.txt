@@ -4,6 +4,7 @@ status.block;blok
 status.selected;vybráno
 status.queue;fronta
 status.total;celkem regionů
+status.structures;struktury
 status.overlay;překrytí
 menu.file;Soubor
 menu.view;Pohled
@@ -27,6 +28,8 @@ menu.view.reload;Znovu načíst
 menu.view.chunk_grid;Mřížka chunků
 menu.view.region_grid;Mřížka regionů
 menu.view.coordinates;Souřadnice
+menu.view.structure_icons;Struktury
+menu.view.select_structures;Vybrat struktury
 menu.view.goto;Přejít
 menu.view.reset_zoom;Obnovit přiblížení
 menu.view.save_screenshot;Uložit snímek obrazovky
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;Subjekty
 dialog.settings.rendering.layers.render_height;Výška vykreslení
 dialog.settings.rendering.layers.render_layer_only;Pouze rendrovací vrstva
 dialog.settings.rendering.layers;Vrstvy
+dialog.settings.rendering.structure_icons;Ikony struktur
+dialog.settings.rendering.structure_icon_size;Velikost ikony
+dialog.settings.rendering.structure_icon_border_size;Velikost ohraničení
 dialog.settings.rendering.layers.render_caves;Render jeskyně
 dialog.goto.title;Přejít na pozici
 dialog.confirmation.question;Jste si jisti?

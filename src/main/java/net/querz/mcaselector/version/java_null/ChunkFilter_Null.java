@@ -174,6 +174,11 @@ public class ChunkFilter_Null {
 		public CompoundTag getStructureStarts(ChunkData data) {
 			return null;
 		}
+
+		@Override
+		public String[] parseStructureStarts(CompoundTag data) {
+			return null;
+		}
 	}
 
 	@MCVersionImplementation(0)

@@ -72,10 +72,12 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private int selectedChunks = 0;
 	private Point2i hoveredBlock = null;
+	private String[] hoveredStructures = null;
 
 	private boolean showChunkGrid = true;
 	private boolean showRegionGrid = true;
 	private boolean showCoordinates = false;
+	private boolean showStructureIcons = false;
 	private boolean showNonexistentRegions;
 
 	private final List<Consumer<TileMap>> updateListener = new ArrayList<>(1);
@@ -272,7 +274,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 				tilePriorities = newTilePriorities;
 
-				Platform.runLater(this::runUpdateListeners);
+				runUpdateListeners();
 
 				draw();
 
@@ -501,11 +503,18 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private void onMouseMoved(MouseEvent event) {
 		hoveredBlock = getMouseBlock(event.getX(), event.getY());
+		if (showStructureIcons) {
+			Tile tile = tiles.get(hoveredBlock.blockToRegion().asLong());
+			hoveredStructures = tile == null ? null : tile.getStructureAt(hoveredBlock.blockToChunk());
+		} else {
+			hoveredStructures = null;
+		}
 		runHoverListeners();
 	}
 
 	private void onMouseExited() {
 		hoveredBlock = null;
+		hoveredStructures = null;
 		runHoverListeners();
 	}
 
@@ -652,7 +661,11 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	private void runUpdateListeners() {
-		updateListener.forEach(c -> c.accept(this));
+		if (Platform.isFxApplicationThread()) {
+			updateListener.forEach(c -> c.accept(this));
+		} else {
+			Platform.runLater(() -> updateListener.forEach(c -> c.accept(this)));
+		}
 	}
 
 	private void runHoverListeners() {
@@ -686,6 +699,11 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		draw();
 	}
 
+	public void setShowStructureIcons(boolean showStructureIcons) {
+		this.showStructureIcons = showStructureIcons;
+		draw();
+	}
+
 	public void setShowNonexistentRegions(boolean showNonexistentRegions) {
 		this.showNonexistentRegions = showNonexistentRegions;
 		draw();
@@ -702,6 +720,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	public Point2i getHoveredBlock() {
 		return hoveredBlock;
+	}
+
+	public String[] getHoveredStructures() {
+		return hoveredStructures;
 	}
 
 	public ObjectOpenHashSet<Point2i> getVisibleRegions() {
@@ -964,14 +986,14 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			Point2f canvasOffset = region.regionToBlock().toPoint2f().sub(offset).div(scale);
 
 			TileImage.draw(ctx, tile, scale, canvasOffset, selection, overlayParser.get() != null, showNonexistentRegions);
-		}, new Point2f(), () -> scale, Integer.MAX_VALUE);
+		}, new Point2f(), () -> scale);
 
 		if (pastedChunks != null) {
 			runOnVisibleRegions(region -> {
 				Point2f regionOffset = region.regionToBlock().toPoint2f().sub(offset.getX(), offset.getY());
 				Point2f p = regionOffset.div(scale).add(pastedChunksOffset.mul(16).toPoint2f().div(scale));
 				drawPastedChunks(ctx, region, p);
-			}, pastedChunksOffset.mul(16).toPoint2f(), () -> scale, Integer.MAX_VALUE);
+			}, pastedChunksOffset.mul(16).toPoint2f(), () -> scale);
 		}
 
 		if (showRegionGrid) {
@@ -980,6 +1002,14 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 		if (showChunkGrid && scale <= CHUNK_GRID_SCALE) {
 			drawChunkGrid(ctx);
+		}
+
+		if (!disabled && showStructureIcons) {
+			runOnVisibleRegions(region -> {
+				Tile tile = tiles.get(region.asLong());
+				Point2f canvasOffset = region.regionToBlock().toPoint2f().sub(offset).div(scale);
+				TileImage.drawStructures(ctx, tile, scale, canvasOffset);
+			}, new Point2f(), () -> scale);
 		}
 
 		if (showCoordinates) {
@@ -1176,6 +1206,18 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				}
 			}
 			steps++;
+		}
+	}
+
+	// performs an action on all visible regions in lines from top left to bottom right for a consistent render order
+	public void runOnVisibleRegions(Consumer<Point2i> consumer, Point2f additionalOffset, Supplier<Float> scaleSupplier) {
+		float scale = scaleSupplier.get();
+		Point2i min = offset.sub(additionalOffset).toPoint2i().blockToRegion();
+		Point2i max = offset.sub(additionalOffset).add((float) getWidth() * scale, (float) getHeight() * scale).toPoint2i().blockToRegion();
+		for (int x = min.getX(); x <= max.getX(); x++) {
+			for (int y = min.getZ(); y <= max.getZ(); y++) {
+				consumer.accept(new Point2i(x, y));
+			}
 		}
 	}
 

@@ -4,6 +4,7 @@ status.block;блок
 status.selected;виділено
 status.queue;черга
 status.total;загалом
+status.structures;структури
 status.overlay;накладання
 menu.file;Файл
 menu.view;Перегляд
@@ -27,6 +28,8 @@ menu.view.reload;Перезавантажити
 menu.view.chunk_grid;Сітка чанків
 menu.view.region_grid;Сітка регіонів
 menu.view.coordinates;Координати
+menu.view.structure_icons;Структури
+menu.view.select_structures;Вибрати структури
 menu.view.goto;Переміститися
 menu.view.reset_zoom;Скинути наближення
 menu.view.save_screenshot;Зберегти знімок екрана
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;Сутності
 dialog.settings.rendering.layers.render_height;Висота відмальовки
 dialog.settings.rendering.layers.render_layer_only;Лише на вказаній висоті
 dialog.settings.rendering.layers;Шари
+dialog.settings.rendering.structure_icons;Значки структур
+dialog.settings.rendering.structure_icon_size;Розмір значка
+dialog.settings.rendering.structure_icon_border_size;Розмір рамки
 dialog.settings.rendering.layers.render_caves;Відмальовувати печери
 dialog.goto.title;Перейти до локації
 dialog.confirmation.question;Ви впевнені?

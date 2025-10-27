@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
@@ -24,6 +25,7 @@ import net.querz.mcaselector.io.CacheHelper;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.DialogHelper;
 import net.querz.mcaselector.ui.UIFactory;
+import net.querz.mcaselector.version.mapping.registry.StructureRegistry;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -35,17 +37,18 @@ import java.util.Optional;
 
 public class OptionBar extends BorderPane {
 	/*
-	* File				View				Selection					Tools				About
-	* - Open World		- Chunk Grid		- Clear         			- Import chunks
-	* - Open Region		- Region Grid		- Invert        			- Filter chunks
-	* - Settings		- Goto				- Copy chunks				- Change fields
-	* - Render Settings	- Reset Zoom    	- Paste chunks				- Edit chunk
-	* - Quit			- Save Screenshot	- Export selected chunks	- Swap chunks
-	*					- Clear cache   	- Delete selected chunks	- Edit overlays
-	*					- Clear all cache	- Import selection			- Next overlay
-	*										- Export selection          - Next overlay type
-	*                                       - Export as image			- Sum selection
-	* 										- Clear cache
+	* File                   View                   Selection                     Tools                About
+	* - Open World           - Reload               - Clear                       - Import chunks
+	* - Open Dimension    >  - Chunk Grid           - Invert                      - Filter chunks
+	* - Open Recent World >  - Region Grid          - Invert selected regions     - Change fields
+	* - Settings             - Coordinates          - Copy chunks                 - Edit chunk
+	* - Render Settings      - Structure            - Paste chunks                - Swap chunks
+	* - Quit                 - Select Structures >  - Export selected chunks      - Edit overlays
+	*                        - Goto                 - Delete selected chunks      - Next overlay
+	*                        - Reset Zoom           - Import selection from .csv  - Next overlay type
+	*                        - Save screenshot      - Export selection as .csv    - Sum selection
+	*                        - Clear cache          - Export as image
+	*                        - Clear all cache      - Clear cache
 	* */
 
 	private final MenuBar menuBar = new MenuBar();
@@ -67,6 +70,8 @@ public class OptionBar extends BorderPane {
 	private final CheckMenuItem chunkGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_CHUNK_GRID, true);
 	private final CheckMenuItem regionGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_REGION_GRID, true);
 	private final CheckMenuItem coordinates = UIFactory.checkMenuItem(Translation.MENU_VIEW_COORDINATES, false);
+	private final CheckMenuItem structureIcons = UIFactory.checkMenuItem(Translation.MENU_VIEW_STRUCTURE_ICONS, false);
+	private final Menu selectStructures = UIFactory.menu(Translation.MENU_VIEW_SELECT_STRUCTURES);
 	private final MenuItem goTo = UIFactory.menuItem(Translation.MENU_VIEW_GOTO);
 	private final MenuItem resetZoom = UIFactory.menuItem(Translation.MENU_VIEW_RESET_ZOOM);
 	private final MenuItem saveScreenshot = UIFactory.menuItem(Translation.MENU_VIEW_SAVE_SCREENSHOT);
@@ -114,7 +119,7 @@ public class OptionBar extends BorderPane {
 				quit);
 		view.getItems().addAll(
 				reload, UIFactory.separator(),
-				chunkGrid, regionGrid, coordinates, UIFactory.separator(),
+				chunkGrid, regionGrid, coordinates, structureIcons, selectStructures, UIFactory.separator(),
 				goTo, resetZoom, UIFactory.separator(),
 				saveScreenshot, UIFactory.separator(),
 				clearViewCache, clearAllCache);
@@ -167,6 +172,7 @@ public class OptionBar extends BorderPane {
 		chunkGrid.setOnAction(e -> tileMap.setShowChunkGrid(chunkGrid.isSelected()));
 		regionGrid.setOnAction(e -> tileMap.setShowRegionGrid(regionGrid.isSelected()));
 		coordinates.setOnAction(e -> tileMap.setShowCoordinates(coordinates.isSelected()));
+		structureIcons.setOnAction(e -> tileMap.setShowStructureIcons(structureIcons.isSelected()));
 		goTo.setOnAction(e -> DialogHelper.gotoCoordinate(tileMap, primaryStage));
 		resetZoom.setOnAction(e -> tileMap.setScale(1));
 		saveScreenshot.setOnAction(e -> DialogHelper.screenshot(tileMap, primaryStage));
@@ -202,6 +208,7 @@ public class OptionBar extends BorderPane {
 		chunkGrid.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCodeCombination.SHORTCUT_DOWN));
 		regionGrid.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCodeCombination.SHORTCUT_DOWN));
 		coordinates.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCodeCombination.SHORTCUT_DOWN));
+		structureIcons.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCodeCombination.SHORTCUT_DOWN));
 		goTo.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCodeCombination.SHORTCUT_DOWN));
 		resetZoom.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT0, KeyCodeCombination.SHORTCUT_DOWN));
 		saveScreenshot.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCodeCombination.SHORTCUT_DOWN));
@@ -296,6 +303,8 @@ public class OptionBar extends BorderPane {
 		sumSelection.setDisable(!enabled || tileMap.getOverlay() == null || tileMap.getSelectedChunks() == 0);
 		hSlider.setDisable(!enabled);
 		openDimension.getItems().clear();
+		structureIcons.setDisable(!enabled);
+		selectStructures.setDisable(!enabled);
 
 		if (enabled && ConfigProvider.WORLD.getDimensionDirectories() != null && ConfigProvider.WORLD.getDimensionDirectories().size() > 1) {
 			File currentWorldDir = ConfigProvider.WORLD.getRegionDir().getParentFile();
@@ -341,6 +350,21 @@ public class OptionBar extends BorderPane {
 		}
 
 		openRecent.setDisable(openRecent.getItems().size() <= 2); // "empty" means it either has no items or it only has the separator and the clear button
+
+		if (enabled) {
+			StructureRegistry.forEachDisplayName((displayName, id) -> {
+				CheckBox cb = new CheckBox(displayName);
+				cb.setGraphic(new ImageView(id.icon()));
+				cb.setMnemonicParsing(false);
+				cb.setSelected(ConfigProvider.GLOBAL.getStructureIcons().getBoolean(id.id()));
+				CustomMenuItem cmi = new CustomMenuItem(cb, false);
+				cb.selectedProperty().addListener((o, v, n) -> {
+					ConfigProvider.GLOBAL.getStructureIcons().put(id.id(), (boolean) n);
+					tileMap.draw();
+				});
+				selectStructures.getItems().add(cmi);
+			});
+		}
 	}
 
 	public void setEditOverlaysEnabled(boolean enabled) {

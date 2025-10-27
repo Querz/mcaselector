@@ -4,6 +4,7 @@ status.block;ブロック
 status.selected;選択済み
 status.queue;キュー
 status.total;ロード済み
+status.structures;構造物
 status.overlay;オーバーレイ
 menu.file;ファイル
 menu.view;表示
@@ -27,6 +28,8 @@ menu.view.reload;リロード
 menu.view.chunk_grid;チャンクの境界
 menu.view.region_grid;リージョンの境界
 menu.view.coordinates;コーディネート
+menu.view.structure_icons;構造物
+menu.view.select_structures;構造物を選択
 menu.view.goto;移動
 menu.view.reset_zoom;拡大率をリセット
 menu.view.save_screenshot;スクリーンショットを保存
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;エンティティ
 dialog.settings.rendering.layers.render_height;描画する高さ
 dialog.settings.rendering.layers.render_layer_only;この高さのみを描画する
 dialog.settings.rendering.layers;レイヤー
+dialog.settings.rendering.structure_icons;構造物アイコン
+dialog.settings.rendering.structure_icon_size;アイコンサイズ
+dialog.settings.rendering.structure_icon_border_size;枠線サイズ
 dialog.settings.rendering.layers.render_caves;洞窟を描画する
 dialog.goto.title;入力した座標に移動
 dialog.confirmation.question;よろしいですか？

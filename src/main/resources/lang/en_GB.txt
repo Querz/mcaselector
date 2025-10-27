@@ -4,6 +4,7 @@ status.block;block
 status.selected;selected
 status.queue;queue
 status.total;total
+status.structures;structures
 status.overlay;overlay
 menu.file;File
 menu.view;View
@@ -27,6 +28,8 @@ menu.view.reload;Reload
 menu.view.chunk_grid;Chunk Grid
 menu.view.region_grid;Region Grid
 menu.view.coordinates;Coordinates
+menu.view.structure_icons;Structures
+menu.view.select_structures;Select Structures
 menu.view.goto;Goto
 menu.view.reset_zoom;Reset zoom
 menu.view.save_screenshot;Save screenshot
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;Entities
 dialog.settings.rendering.layers.render_height;Render height
 dialog.settings.rendering.layers.render_layer_only;Render layer only
 dialog.settings.rendering.layers;Layers
+dialog.settings.rendering.structure_icons;Structure icons
+dialog.settings.rendering.structure_icon_size;Icon size
+dialog.settings.rendering.structure_icon_border_size;Border size
 dialog.settings.rendering.layers.render_caves;Render caves
 dialog.goto.title;Goto location
 dialog.confirmation.question;Are you sure?

@@ -4,6 +4,7 @@ status.block;方块
 status.selected;选择
 status.queue;队列
 status.total;区域总数
+status.structures;结构
 status.overlay;覆盖
 menu.file;文件
 menu.view;视图
@@ -27,6 +28,8 @@ menu.view.reload;重新加载
 menu.view.chunk_grid;区块网格
 menu.view.region_grid;区域网格
 menu.view.coordinates;坐标
+menu.view.structure_icons;结构
+menu.view.select_structures;选择结构
 menu.view.goto;转到
 menu.view.reset_zoom;重设缩放
 menu.view.save_screenshot;保存截图
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;实体
 dialog.settings.rendering.layers.render_height;渲染高度
 dialog.settings.rendering.layers.render_layer_only;仅渲染此层
 dialog.settings.rendering.layers;层
+dialog.settings.rendering.structure_icons;结构图标
+dialog.settings.rendering.structure_icon_size;图标大小
+dialog.settings.rendering.structure_icon_border_size;边框大小
 dialog.settings.rendering.layers.render_caves;渲染洞穴
 dialog.goto.title;跳转到位置
 dialog.confirmation.question;你确定吗?

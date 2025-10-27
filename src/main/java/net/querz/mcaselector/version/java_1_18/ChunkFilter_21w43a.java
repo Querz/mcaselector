@@ -1,5 +1,6 @@
 package net.querz.mcaselector.version.java_1_18;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.point.Point3i;
@@ -756,6 +757,33 @@ public class ChunkFilter_21w43a {
 		@Override
 		public CompoundTag getStructureStarts(ChunkData data) {
 			return Helper.tagFromCompound(Helper.tagFromCompound(Helper.getRegion(data), "structures"), "starts");
+		}
+
+		@Override
+		public String[] parseStructureStarts(CompoundTag data) {
+			if (data == null) {
+				return null;
+			}
+			CompoundTag starts = Helper.tagFromCompound(Helper.tagFromCompound(data, "structures"), "starts");
+			if (starts == null) {
+				return null;
+			}
+			String[] result = null;
+			for (Map.Entry<String, Tag> start : starts.entrySet()) {
+				if (start.getValue().getType() != Tag.Type.COMPOUND) {
+					continue;
+				}
+				String id = start.getKey();
+				if (result == null) {
+					result = new String[] { id };
+				} else if (!Arrays.asList(result).contains(id)) {
+					String[] n = new String[result.length + 1];
+					System.arraycopy(result, 0, n, 0, result.length);
+					n[result.length] = id;
+					result = n;
+				}
+			}
+			return result;
 		}
 	}
 

@@ -66,6 +66,7 @@ public interface ChunkFilter {
 	interface Structures {
 		CompoundTag getStructureStarts(ChunkData data);
 		CompoundTag getStructureReferences(ChunkData data);
+		String[] parseStructureStarts(CompoundTag data);
 	}
 
 	interface LightPopulated {

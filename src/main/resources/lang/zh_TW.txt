@@ -4,6 +4,7 @@ status.block;方塊
 status.selected;已選擇
 status.queue;隊列
 status.total;區域總數
+status.structures;結構
 status.overlay;覆蓋
 menu.file;檔案
 menu.view;檢視
@@ -27,6 +28,8 @@ menu.view.reload;重新載入
 menu.view.chunk_grid;區塊網格
 menu.view.region_grid;區域網格
 menu.view.coordinates;坐標
+menu.view.structure_icons;結構
+menu.view.select_structures;選擇結構
 menu.view.goto;轉到
 menu.view.reset_zoom;重設縮放
 menu.view.save_screenshot;儲存截圖
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;實體
 dialog.settings.rendering.layers.render_height;渲染高度
 dialog.settings.rendering.layers.render_layer_only;僅渲染層
 dialog.settings.rendering.layers;圖層
+dialog.settings.rendering.structure_icons;結構圖示
+dialog.settings.rendering.structure_icon_size;圖示大小
+dialog.settings.rendering.structure_icon_border_size;邊框大小
 dialog.settings.rendering.layers.render_caves;渲染洞穴
 dialog.goto.title;前往位置
 dialog.confirmation.question;您確定嗎？
