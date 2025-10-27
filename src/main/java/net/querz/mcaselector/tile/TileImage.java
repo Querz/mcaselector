@@ -183,10 +183,12 @@ public final class TileImage {
 			for (int cx = 0; cx < Tile.CHUNK_SIZE; cx += scale) {
 				for (int cz = 0; cz < Tile.CHUNK_SIZE; cz += scale) {
 					int srcIndex = cz * Tile.CHUNK_SIZE + cx;
-					int dstIndex = (z + cz / scale) * Tile.SIZE / scale + (x + cx / scale);
+					int dstIndex = (z + cz / scale) * (Tile.SIZE / scale) + (x + cx / scale);
 					pixelBuffer[dstIndex] = corruptedChunkOverlay[srcIndex];
 					terrainHeights[dstIndex] = 64;
-					waterHeights[dstIndex] = 64;
+					if (waterHeights != null) {
+						waterHeights[dstIndex] = 64;
+					}
 				}
 			}
 		}
