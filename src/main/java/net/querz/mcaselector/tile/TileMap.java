@@ -2,6 +2,7 @@ package net.querz.mcaselector.tile;
 
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import javafx.application.Platform;
@@ -67,7 +68,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private Point2f previousMouseLocation = null;
 	private Point2f firstMouseLocation = null;
 
-	private final Long2ObjectOpenHashMap<Tile> tiles = new Long2ObjectOpenHashMap<>();
+	private final Long2ObjectMap<Tile> tiles = Long2ObjectMaps.synchronize(new Long2ObjectOpenHashMap<>());
 	private Long2IntOpenHashMap tilePriorities = new Long2IntOpenHashMap();
 
 	private int selectedChunks = 0;
