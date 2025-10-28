@@ -80,25 +80,25 @@ public final class SelectionExporter {
 				// copy region
 				try {
 					Files.copy(getRegionDirectories().getRegion().toPath(), to.getRegion().toPath(), StandardCopyOption.REPLACE_EXISTING);
-					LOGGER.debug("copied file {}", getRegionDirectories().getRegion());
+					LOGGER.debug("copied region file {}", getRegionDirectories().getRegion());
 				} catch (Exception ex) {
-					LOGGER.warn("failed to copy file {}", getRegionDirectories().getRegion(), ex);
+					LOGGER.warn("failed to copy region file {}", getRegionDirectories().getRegion(), ex);
 				}
 
 				// copy poi
 				try {
 					Files.copy(getRegionDirectories().getPoi().toPath(), to.getPoi().toPath(), StandardCopyOption.REPLACE_EXISTING);
-					LOGGER.debug("copied file {}", getRegionDirectories().getPoi());
+					LOGGER.debug("copied poi file {}", getRegionDirectories().getPoi());
 				} catch (Exception ex) {
-					LOGGER.warn("failed to copy file {}", getRegionDirectories().getPoi(), ex);
+					LOGGER.warn("failed to copy poi file {}", getRegionDirectories().getPoi(), ex);
 				}
 
 				// copy entities
 				try {
 					Files.copy(getRegionDirectories().getEntities().toPath(), to.getEntities().toPath(), StandardCopyOption.REPLACE_EXISTING);
-					LOGGER.debug("copied file {}", getRegionDirectories().getEntities());
+					LOGGER.debug("copied entities file {}", getRegionDirectories().getEntities());
 				} catch (Exception ex) {
-					LOGGER.warn("failed to copy file {}", getRegionDirectories().getEntities(), ex);
+					LOGGER.warn("failed to copy entities file {}", getRegionDirectories().getEntities(), ex);
 				}
 
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());

@@ -6,8 +6,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -788,7 +786,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 				return;
 			}
 
-			// ignore if this item is inside a compound tag and we try to drop it into itself
+			// ignore if this item is inside a compound tag, and we try to drop it into itself
 			if (!getItem().isRoot() && !getItem().isContainerType()
 					&& getItem().parent.getType() == COMPOUND && getItem().parent == dragItem.getValue().parent) {
 				event.consume();

@@ -7,19 +7,14 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.util.github.VersionChecker;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.UIFactory;
-
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public class AboutDialog extends Alert {

@@ -78,7 +78,7 @@ public final class JobHandler {
 			job -> {
 				if (job.isDone()) {
 					int i = runningTasks.decrementAndGet();
-					LOGGER.debug("- active jobs: {} ({} queued)", i, processExecutor.getQueue().size());
+					LOGGER.debug("- active jobs: {} ({} queued) processPool", i, processExecutor.getQueue().size());
 
 					processExecutor.resume("freed up a task after processing");
 				}
@@ -93,7 +93,7 @@ public final class JobHandler {
 			new NamedThreadFactory("savePool"),
 			job -> {
 				int i = runningTasks.decrementAndGet();
-				LOGGER.debug("- active jobs: {} ({} queued)", i, processExecutor.getQueue().size());
+				LOGGER.debug("- active jobs: {} ({} queued) savePool", i, processExecutor.getQueue().size());
 				processExecutor.resume("freed up a task after saving");
 			},
 			job -> {});
@@ -132,7 +132,7 @@ public final class JobHandler {
 					LOGGER.debug("too many tasks: skipping save data");
 				}
 
-				LOGGER.debug("- active jobs: {} ({} queued)", i, processExecutor.getQueue().size());
+				LOGGER.debug("- active jobs: {} ({} queued) trim savePool", i, processExecutor.getQueue().size());
 			}
 		}
 	}
@@ -227,8 +227,8 @@ public final class JobHandler {
 
 	static class WrapperJob implements Runnable, Comparable<WrapperJob> {
 
-		Job job;
-		long jobID;
+		final Job job;
+		final long jobID;
 		boolean done = false;
 		final static Object lock = new Object();
 

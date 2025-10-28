@@ -27,7 +27,7 @@ public class ChunkFilter_19w36a {
 			CompoundTag level = Helper.levelFromRoot(Helper.getRegion(data));
 			if (level != null) {
 				int[] biomes = new int[1024];
-				Arrays.fill(biomes, (byte) biome.getID());
+				Arrays.fill(biomes, (byte) biome.id());
 				level.putIntArray("Biomes", biomes);
 			}
 		}

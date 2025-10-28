@@ -65,23 +65,23 @@ public final class SelectionDeleter {
 			if (selection == null) {
 				// delete region
 				if (getRegionDirectories().getRegion().delete()) {
-					LOGGER.debug("deleted file {}", getRegionDirectories().getRegion());
+					LOGGER.debug("deleted region file {}", getRegionDirectories().getRegion());
 				} else {
-					LOGGER.warn("failed to delete file {}", getRegionDirectories().getRegion());
+					LOGGER.warn("failed to delete region file {}", getRegionDirectories().getRegion());
 				}
 
 				// delete poi
 				if (getRegionDirectories().getPoi().delete()) {
-					LOGGER.debug("deleted file {}", getRegionDirectories().getPoi());
+					LOGGER.debug("deleted poi file {}", getRegionDirectories().getPoi());
 				} else {
-					LOGGER.warn("failed to delete file {}", getRegionDirectories().getPoi());
+					LOGGER.warn("failed to delete poi file {}", getRegionDirectories().getPoi());
 				}
 
 				// delete entities
 				if (getRegionDirectories().getEntities().delete()) {
-					LOGGER.debug("deleted file {}", getRegionDirectories().getEntities());
+					LOGGER.debug("deleted entities file {}", getRegionDirectories().getEntities());
 				} else {
-					LOGGER.warn("failed to delete file {}", getRegionDirectories().getEntities());
+					LOGGER.warn("failed to delete entities file {}", getRegionDirectories().getEntities());
 				}
 
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());

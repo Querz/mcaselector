@@ -169,15 +169,7 @@ public class CircleFilter extends TextFilter<List<CircleFilter.CircleFilterDefin
 		return true;
 	}
 
-	public static class CircleFilterDefinition implements Serializable {
-
-		Point2i center;
-		int radius;
-
-		public CircleFilterDefinition(Point2i center, int radius) {
-			this.center = center;
-			this.radius = radius;
-		}
+	public record CircleFilterDefinition(Point2i center, int radius) implements Serializable {
 
 		@Override
 		public String toString() {

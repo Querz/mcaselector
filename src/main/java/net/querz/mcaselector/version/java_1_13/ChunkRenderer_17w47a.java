@@ -298,7 +298,7 @@ public class ChunkRenderer_17w47a implements ChunkRenderer<CompoundTag, Integer>
 		int longIndex = (int) blockStatesIndex;
 		int startBit = (int) ((blockStatesIndex - Math.floor(blockStatesIndex)) * 64D);
 		if (startBit + bits > 64) {
-			// get msb from current long, no need to cleanup manually, just fill with 0
+			// get msb from current long, no need to clean up manually, just fill with 0
 			int previous = (int) (blockStates.get(longIndex) >>> startBit);
 
 			// cleanup pattern for bits from next long

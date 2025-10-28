@@ -105,6 +105,7 @@ public class WorldDirectories implements Serializable, Cloneable {
 		try {
 			return (WorldDirectories) super.clone();
 		} catch (CloneNotSupportedException e) {
+			//noinspection CallToPrintStackTrace
 			e.printStackTrace();
 		}
 		return null;

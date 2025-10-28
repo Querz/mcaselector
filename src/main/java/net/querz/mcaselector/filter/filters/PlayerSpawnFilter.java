@@ -5,10 +5,14 @@ import net.querz.mcaselector.filter.FilterType;
 import net.querz.mcaselector.filter.Operator;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.nbt.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.util.regex.Pattern;
 
 public class PlayerSpawnFilter extends PlayerLocationFilter {
+
+	private static final Logger LOGGER = LogManager.getLogger(PlayerSpawnFilter.class);
 
 	private static final Pattern playerFilePattern = Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.dat$");
 
@@ -26,7 +30,7 @@ public class PlayerSpawnFilter extends PlayerLocationFilter {
 		playerChunks.clear();
 		playerRegions.clear();
 
-		File[] playerFiles = value.directory.listFiles((d, f) -> playerFilePattern.matcher(f).matches());
+		File[] playerFiles = value.directory().listFiles((d, f) -> playerFilePattern.matcher(f).matches());
 		if (playerFiles == null || playerFiles.length == 0) {
 			return;
 		}
@@ -51,7 +55,7 @@ public class PlayerSpawnFilter extends PlayerLocationFilter {
 					dim = root.getString("SpawnDimension");
 				}
 
-				if (!value.dimension.equals(dim)) {
+				if (!value.dimension().equals(dim)) {
 					continue;
 				}
 
@@ -59,7 +63,7 @@ public class PlayerSpawnFilter extends PlayerLocationFilter {
 				playerChunks.add(playerLocation.blockToChunk().asLong());
 				playerRegions.add(playerLocation.blockToRegion().asLong());
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				LOGGER.warn(ex);
 			}
 		}
 		loaded.set(true);

@@ -12,6 +12,8 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.text.Translation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -19,7 +21,7 @@ import java.util.Objects;
 
 public class ErrorDialog extends Alert {
 
-	private final VBox content = new VBox();
+	private static final Logger LOGGER = LogManager.getLogger(ErrorDialog.class);
 
 	public ErrorDialog(Window owner, String errorMessage) {
 		super(AlertType.ERROR, null, ButtonType.CLOSE);
@@ -51,6 +53,7 @@ public class ErrorDialog extends Alert {
 			e.consume();
 		});
 
+		VBox content = new VBox();
 		content.getChildren().addAll(errorText, copiedToClipboard);
 		getDialogPane().setContent(content);
 		showAndWait();
@@ -82,7 +85,7 @@ public class ErrorDialog extends Alert {
 			try {
 				Thread.sleep(seconds * 1000L);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				LOGGER.error(e);
 			}
 			Platform.runLater(() -> {
 				label.setText(null);

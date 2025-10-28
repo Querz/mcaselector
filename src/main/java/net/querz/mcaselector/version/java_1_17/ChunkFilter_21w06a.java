@@ -32,7 +32,7 @@ public class ChunkFilter_21w06a {
 				return;
 			}
 			int[] biomes = new int[sectionRange.num() * 64];
-			Arrays.fill(biomes, (byte) biome.getID());
+			Arrays.fill(biomes, (byte) biome.id());
 			level.putIntArray("Biomes", biomes);
 		}
 	}

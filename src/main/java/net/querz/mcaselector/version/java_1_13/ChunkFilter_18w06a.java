@@ -65,7 +65,7 @@ public class ChunkFilter_18w06a {
 		public void changeBiome(ChunkData data, BiomeRegistry.BiomeIdentifier biome) {
 			IntArrayTag biomesTag = Helper.tagFromLevelFromRoot(Helper.getRegion(data), "Biomes");
 			if (biomesTag != null) {
-				Arrays.fill(biomesTag.getValue(), biome.getID());
+				Arrays.fill(biomesTag.getValue(), biome.id());
 			}
 		}
 
@@ -74,7 +74,7 @@ public class ChunkFilter_18w06a {
 			CompoundTag level = Helper.levelFromRoot(Helper.getRegion(data));
 			if (level != null) {
 				int[] biomes = new int[256];
-				Arrays.fill(biomes, (byte) biome.getID());
+				Arrays.fill(biomes, (byte) biome.id());
 				level.putIntArray("Biomes", biomes);
 			}
 		}

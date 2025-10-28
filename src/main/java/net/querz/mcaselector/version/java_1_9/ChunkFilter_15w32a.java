@@ -62,14 +62,7 @@ public class ChunkFilter_15w32a {
 		return map;
 	});
 
-	private static class BlockData {
-		int id;
-		Set<Byte> data;
-
-		BlockData(int id, Set<Byte> data) {
-			this.id = id;
-			this.data = data;
-		}
+	private record BlockData(int id, Set<Byte> data) {
 
 		@Override
 		public String toString() {
@@ -77,19 +70,7 @@ public class ChunkFilter_15w32a {
 		}
 	}
 
-	private static class Block {
-		int id;
-		byte data;
-
-		Block(int id, byte data) {
-			this.id = id;
-			this.data = data;
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(id, data);
-		}
+	private record Block(int id, byte data) {
 
 		@Override
 		public boolean equals(Object other) {
@@ -140,7 +121,7 @@ public class ChunkFilter_15w32a {
 		public void changeBiome(ChunkData data, BiomeRegistry.BiomeIdentifier biome) {
 			ByteArrayTag biomesTag = Helper.tagFromLevelFromRoot(Helper.getRegion(data), "Biomes");
 			if (biomesTag != null) {
-				Arrays.fill(biomesTag.getValue(), (byte) biome.getID());
+				Arrays.fill(biomesTag.getValue(), (byte) biome.id());
 			}
 		}
 
@@ -149,7 +130,7 @@ public class ChunkFilter_15w32a {
 			CompoundTag level = Helper.levelFromRoot(Helper.getRegion(data));
 			if (level != null) {
 				byte[] biomes = new byte[256];
-				Arrays.fill(biomes, (byte) biome.getID());
+				Arrays.fill(biomes, (byte) biome.id());
 				level.putByteArray("Biomes", biomes);
 			}
 		}
@@ -169,7 +150,7 @@ public class ChunkFilter_15w32a {
 			for (String name : names) {
 				BlockData[] bd = mapping.get(name);
 				if (bd == null) {
-					LOGGER.debug("no mapping found for {}", name);
+					LOGGER.debug("no mapping found for {} to match block names", name);
 					continue;
 				}
 				for (Tag t : sections) {
@@ -208,7 +189,7 @@ public class ChunkFilter_15w32a {
 			for (String name : names) {
 				BlockData[] bd = mapping.get(name);
 				if (bd == null) {
-					LOGGER.debug("no mapping found for {}", name);
+					LOGGER.debug("no mapping found for {} to match any block name", name);
 					continue;
 				}
 				for (CompoundTag t : sections.iterateType(CompoundTag.class)) {
@@ -427,7 +408,7 @@ public class ChunkFilter_15w32a {
 			for (String name : names) {
 				BlockData[] bd = mapping.get(name);
 				if (bd == null) {
-					LOGGER.debug("no mapping found for {}", name);
+					LOGGER.debug("no mapping found for {} to match palette", name);
 					continue;
 				}
 				blockData.addAll(Arrays.asList(bd));

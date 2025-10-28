@@ -10,7 +10,7 @@ import java.util.Objects;
 public class GroupFilterBox extends FilterBox {
 
 	// has a listview in the bottom part of the border pane
-	protected VBox filters = new VBox();
+	protected final VBox filters = new VBox();
 
 	private static final String stylesheet = Objects.requireNonNull(GroupFilterBox.class.getClassLoader().getResource("style/component/group-filter-box.css")).toExternalForm();
 

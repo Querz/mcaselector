@@ -8,9 +8,13 @@ import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.IntTag;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.File;
 
 public class SelectionFilter extends TextFilter<File> implements RegionMatcher {
+
+	private static final Logger LOGGER = LogManager.getLogger(SelectionFilter.class);
 
 	private Selection selection = new Selection();
 	private final Object lock;
@@ -119,7 +123,7 @@ public class SelectionFilter extends TextFilter<File> implements RegionMatcher {
 			Selection loaded = Selection.readFromFile(value);
 			selection.setSelection(loaded);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			LOGGER.error(ex);
 		}
 		loaded.set(true);
 	}

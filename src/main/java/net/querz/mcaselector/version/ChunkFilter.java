@@ -6,7 +6,6 @@ import net.querz.mcaselector.util.point.Point3i;
 import net.querz.mcaselector.util.range.Range;
 import net.querz.mcaselector.version.mapping.registry.BiomeRegistry;
 import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
-import net.querz.nbt.NBTUtil;
 import net.querz.nbt.*;
 import java.util.*;
 import java.util.function.Function;

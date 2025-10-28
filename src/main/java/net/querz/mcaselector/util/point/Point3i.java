@@ -200,6 +200,7 @@ public class Point3i implements Cloneable, Serializable {
 		try {
 			return (Point3i) super.clone();
 		} catch (CloneNotSupportedException e) {
+			//noinspection CallToPrintStackTrace
 			e.printStackTrace();
 		}
 		return null;

@@ -111,8 +111,6 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 			if ((children.get(i).getOperator() == Operator.AND || i == 0) && currentResult) {
 				if (children.get(i) instanceof RegionMatcher regionMatcher) {
 					currentResult = regionMatcher.matchesRegion(region);
-				} else {
-					currentResult = true;
 				}
 			} else if (children.get(i).getOperator() == Operator.OR) {
 				if (currentResult) {

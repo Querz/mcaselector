@@ -268,13 +268,19 @@ public class Region {
 
 	public void deleteFiles() {
 		if (directories.getRegion() != null && directories.getRegion().exists()) {
-			directories.getRegion().delete();
+			if (!directories.getRegion().delete()) {
+				LOGGER.warn("failed to delete region file {}", directories.getRegion());
+			}
 		}
 		if (directories.getPoi() != null && directories.getPoi().exists()) {
-			directories.getPoi().delete();
+			if (!directories.getPoi().delete()) {
+				LOGGER.warn("failed to delete poi file {}", directories.getPoi());
+			}
 		}
 		if (directories.getEntities() != null && directories.getEntities().exists()) {
-			directories.getEntities().delete();
+			if (!directories.getEntities().delete()) {
+				LOGGER.warn("failed to delete entities file {}", directories.getEntities());
+			}
 		}
 	}
 
@@ -334,7 +340,7 @@ public class Region {
 
 			ChunkData filterData = new ChunkData(region, poi, entities, selection != null && selection.isChunkSelected(location));
 
-			// keep chunk if filter AND selection applies
+			// keep chunk if filter AND selection applies.
 			// ignore selection if it's null
 			if (!filter.matches(filterData) || selection != null && !selection.isChunkSelected(location)) {
 				deleteChunkIndex(i);

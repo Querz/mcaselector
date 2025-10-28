@@ -173,6 +173,7 @@ public class Point2i implements Cloneable, Serializable {
 		try {
 			return (Point2i) super.clone();
 		} catch (CloneNotSupportedException e) {
+			//noinspection CallToPrintStackTrace
 			e.printStackTrace();
 		}
 		return null;

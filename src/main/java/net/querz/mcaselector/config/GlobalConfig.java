@@ -2,7 +2,6 @@ package net.querz.mcaselector.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import it.unimi.dsi.fastutil.booleans.BooleanSet;
 import it.unimi.dsi.fastutil.objects.*;
 import net.querz.mcaselector.config.adapter.ColorAdapter;
 import net.querz.mcaselector.config.adapter.FileAdapter;
@@ -13,7 +12,6 @@ import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.version.mapping.registry.StructureRegistry;
-
 import java.io.File;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -53,10 +51,10 @@ public class GlobalConfig extends Config {
 	private int maxLoadedFiles = DEFAULT_MAX_LOADED_FILES;
 	private String mcSavesDir = DEFAULT_MC_SAVES_DIR;
 	private boolean debug = DEFAULT_DEBUG;
-	private TreeMap<Long, RecentWorld> recentWorlds = new TreeMap<>();
-	private RecentFiles recentFilterScripts = new RecentFiles();
-	private RecentFiles recentChangeScripts = new RecentFiles();
-	private RecentFiles recentOverlayScripts = new RecentFiles();
+	private final TreeMap<Long, RecentWorld> recentWorlds = new TreeMap<>();
+	private final RecentFiles recentFilterScripts = new RecentFiles();
+	private final RecentFiles recentChangeScripts = new RecentFiles();
+	private final RecentFiles recentOverlayScripts = new RecentFiles();
 	private TempScript filterScript = new TempScript(null, false, "");
 	private TempScript changeScript = new TempScript(null, false, "");
 	private TempScript overlayScript = new TempScript(null, false, "");

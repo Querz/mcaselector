@@ -80,7 +80,7 @@ public final class CacheHelper {
 				File file = FileHelper.createPNGFilePath(cacheDir, region);
 				if (file.exists()) {
 					if (!file.delete()) {
-						LOGGER.warn("could not delete file {}", file);
+						LOGGER.warn("unable to delete file {} to clear view cache", file);
 					}
 				}
 				tileMap.clearTile(region.asLong());
@@ -100,7 +100,7 @@ public final class CacheHelper {
 				File file = FileHelper.createPNGFilePath(cacheDir, region);
 				if (file.exists()) {
 					if (!file.delete()) {
-						LOGGER.warn("could not delete file {}", file);
+						LOGGER.warn("unable to delete file {} to clear selection cache", file);
 					}
 				}
 			}

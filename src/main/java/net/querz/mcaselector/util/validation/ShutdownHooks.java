@@ -5,7 +5,7 @@ import java.util.PriorityQueue;
 /*
 * collects and handles shutdown hooks with priorities.
 * the lower the priority number, the later the task is executed,
-* e.g. priority 5 will be executed after priority 7 (like a count down)
+* e.g. priority 5 will be executed after priority 7 (like a countdown)
 * */
 public final class ShutdownHooks {
 

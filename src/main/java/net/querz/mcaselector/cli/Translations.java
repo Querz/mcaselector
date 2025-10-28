@@ -50,6 +50,7 @@ public class Translations {
 						first = false;
 					}
 				} catch (IOException ex) {
+					//noinspection CallToPrintStackTrace
 					ex.printStackTrace();
 				}
 			}
@@ -71,6 +72,7 @@ public class Translations {
 					osw.write(translation.getKey() + ";" + (translation.isTranslated() ? translation.toString().replace("\n", "\\n") : "") + "\n");
 				}
 			} catch (IOException ex) {
+				//noinspection CallToPrintStackTrace
 				ex.printStackTrace();
 			}
 		}

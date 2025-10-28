@@ -171,7 +171,8 @@ public class PathOverlay extends AmountOverlay {
 	private abstract static class Node {}
 
 	private static class Name extends Node {
-		String name;
+
+		final String name;
 
 		Name(String name) {
 			this.name = name;
@@ -184,7 +185,8 @@ public class PathOverlay extends AmountOverlay {
 	}
 
 	private static class Index extends Node {
-		int index;
+
+		final int index;
 
 		Index(int index) {
 			this.index = index;

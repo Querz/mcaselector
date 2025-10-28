@@ -35,12 +35,12 @@ public abstract class FilterBox extends BorderPane {
 	private Filter<?> filter;
 	private FilterBox parent;
 
-	protected Label delete = new Label("", new ImageView(deleteIcon));
-	protected Label add = new Label("", new ImageView(addIcon));
-	protected Label move = new Label("", new ImageView(burgerIcon));
-	protected ComboBox<FilterType> type = new ComboBox<>();
-	protected ComboBox<Operator> operator = new ComboBox<>();
-	protected GridPane filterOperators = new GridPane();
+	protected final Label delete = new Label("", new ImageView(deleteIcon));
+	protected final Label add = new Label("", new ImageView(addIcon));
+	protected final Label move = new Label("", new ImageView(burgerIcon));
+	protected final ComboBox<FilterType> type = new ComboBox<>();
+	protected final ComboBox<Operator> operator = new ComboBox<>();
+	protected final GridPane filterOperators = new GridPane();
 
 	private Consumer<FilterBox> updateListener;
 	private final boolean root;

@@ -183,7 +183,7 @@ public final class RegionImageGenerator {
 				for (int z = Config.MIN_ZOOM_LEVEL; z <= Config.MAX_ZOOM_LEVEL; z *= 2) {
 					Timer t = new Timer();
 					Image image = TileImage.generateImage(cachedRegion, z);
-					LOGGER.debug("took {} to generate image for region {}", t, tile.getLocation());
+					LOGGER.debug("took {} to generate image for region {} (zoom level {})", t, tile.getLocation(), z);
 
 					callback.accept(image, null, uniqueID);
 
@@ -194,7 +194,6 @@ public final class RegionImageGenerator {
 				if (progressChannel != null) {
 					progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 				}
-				return true;
 			} else {
 				Image image = null;
 				if (!structuresOnly) {
@@ -219,8 +218,8 @@ public final class RegionImageGenerator {
 						progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 					}
 				}
-				return true;
 			}
+			return true;
 		}
 
 		@Override

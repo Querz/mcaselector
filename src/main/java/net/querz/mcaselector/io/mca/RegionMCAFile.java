@@ -10,12 +10,8 @@ import net.querz.mcaselector.version.ChunkRenderer;
 import net.querz.mcaselector.version.Helper;
 import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.CompoundTag;
-import net.querz.nbt.IntTag;
-import net.querz.nbt.Tag;
-
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 public class RegionMCAFile extends MCAFile<RegionChunk> implements Cloneable {
 

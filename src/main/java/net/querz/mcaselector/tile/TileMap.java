@@ -197,14 +197,14 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				JobHandler.validateJobs(j -> {
 					if (j instanceof RegionImageGenerator.MCAImageProcessJob job) {
 						if (!job.getTile().isVisible(this)) {
-							LOGGER.debug("removing {} for tile {} from queue", job.getClass().getSimpleName(), job.getTile().getLocation());
+							LOGGER.debug("removing {} for tile {} from process queue", job.getClass().getSimpleName(), job.getTile().getLocation());
 							RegionImageGenerator.setLoading(job.getTile(), false);
 							return true;
 						}
 					} else if (j instanceof ParseDataJob job) {
 						if (!job.getTile().isVisible(this)) {
 							ParseDataJob.setLoading(job.getTile(), false);
-							LOGGER.debug("removing {} for tile {} from queue", job.getClass().getSimpleName(), job.getTile().getLocation());
+							LOGGER.debug("removing {} for tile {} from parser queue", job.getClass().getSimpleName(), job.getTile().getLocation());
 							return true;
 						}
 					}
@@ -732,12 +732,14 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	public ObjectOpenHashSet<Point2i> getVisibleRegions(float scale) {
 		ObjectOpenHashSet<Point2i> regions = new ObjectOpenHashSet<>();
-		runOnVisibleRegions(regions::add, new Point2f(), () -> scale, Integer.MAX_VALUE);
+		runOnVisibleRegions(regions::add, new Point2f(), () -> scale);
 		return regions;
 	}
 
 	public int getVisibleTiles() {
-		return 0;
+		Point2i min = offset.toPoint2i().blockToRegion();
+		Point2i max = offset.add((float) getWidth() * scale, (float) getHeight() * scale).toPoint2i().blockToRegion();
+		return (max.getX() - min.getX() + 1) * (max.getZ() - min.getZ() + 1);
 	}
 
 	public int getLoadedTiles() {

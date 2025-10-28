@@ -13,6 +13,8 @@ import java.util.TreeMap;
 
 public abstract class Config {
 
+	private static final Logger LOGGER = LogManager.getLogger(Config.class);
+
 	// defaults
 	public static final File BASE_DIR;
 	public static final File BASE_CACHE_DIR;
@@ -33,7 +35,7 @@ public abstract class Config {
 				path = jarFile.getParent();
 			}
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			LOGGER.error("error finding jar file location", ex);
 		}
 		BASE_DIR = new File(path);
 
@@ -56,13 +58,19 @@ public abstract class Config {
 		}
 
 		if (!BASE_CACHE_DIR.exists()) {
-			BASE_CACHE_DIR.mkdirs();
+			if (!BASE_CACHE_DIR.mkdirs()) {
+				LOGGER.error("failed to create BASE_CACHE_DIR");
+			}
 		}
 		if (!BASE_LOG_DIR.exists()) {
-			BASE_LOG_DIR.mkdirs();
+			if (!BASE_LOG_DIR.mkdirs()) {
+				LOGGER.error("failed to create BASE_LOG_DIR");
+			}
 		}
 		if (!BASE_OVERLAYS_FILE.getParentFile().exists()) {
-			BASE_OVERLAYS_FILE.getParentFile().mkdirs();
+			if (!BASE_OVERLAYS_FILE.getParentFile().mkdirs()) {
+				LOGGER.error("failed to create BASE_OVERLAYS_FILE dir");
+			}
 		}
 		Logging.setLogDir(BASE_LOG_DIR);
 	}
@@ -120,12 +128,11 @@ public abstract class Config {
 	// static values
 	public static final float MAX_SCALE = 15.9999f;
 	public static final float MIN_SCALE = 0.05f;
+	@SuppressWarnings("ConstantValue")
 	public static final int MIN_ZOOM_LEVEL = Bits.getMsb((int) MIN_SCALE);
 	public static final int MAX_ZOOM_LEVEL = Bits.getMsb((int) MAX_SCALE);
 	public static final double IMAGE_POOL_SIZE = 2.5;
 	public static final int MAX_RECENT_FILES = 16;
-
-	private static final Logger LOGGER = LogManager.getLogger(Config.class);
 
 	public abstract void save();
 
@@ -137,7 +144,7 @@ public abstract class Config {
 		try {
 			Files.writeString(file.toPath(), save(gson));
 		} catch (IOException ex) {
-			LOGGER.warn("error writing config file " + file, ex);
+			LOGGER.warn("error writing config file {}", file, ex);
 		}
 	}
 
@@ -145,7 +152,7 @@ public abstract class Config {
 		try {
 			return Files.readString(file.toPath());
 		} catch (IOException ex) {
-			LOGGER.warn("error reading config file " + file, ex);
+			LOGGER.warn("error reading config file {}", file, ex);
 		}
 		return null;
 	}

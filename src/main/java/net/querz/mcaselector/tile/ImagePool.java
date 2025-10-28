@@ -317,7 +317,9 @@ public final class ImagePool {
 		RegionImageGenerator.uncacheRegionMCAFile(region);
 		for (int i = 1; i <= Config.MAX_ZOOM_LEVEL; i *= 2) {
 			File png = FileHelper.createPNGFilePath(ConfigProvider.WORLD.getCacheDir(), i, region);
-			png.delete();
+			if (!png.delete()) {
+				LOGGER.warn("failed to delete cached image {}", png);
+			}
 		}
 	}
 }

@@ -199,7 +199,7 @@ public class DynamicPriorityBlockingQueue<E> extends AbstractQueue<E> implements
 			return null;
 		}
 
-		// get element with highest priority
+		// get element with the highest priority
 		Node<E> current = first;
 		Iterator<Node<E>> itr = new NodeIterator<>(first);
 		while (itr.hasNext()) {
@@ -214,7 +214,7 @@ public class DynamicPriorityBlockingQueue<E> extends AbstractQueue<E> implements
 
 	private class Node<V> implements Comparable<Node<V>> {
 
-		V element;
+		final V element;
 		Node<V> next;
 		Node<V> previous;
 

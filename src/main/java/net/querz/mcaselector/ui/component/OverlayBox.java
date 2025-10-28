@@ -39,7 +39,7 @@ public class OverlayBox extends BorderPane {
 	private static final PseudoClass invalid = PseudoClass.getPseudoClass("invalid");
 	private static final PseudoClass selected = PseudoClass.getPseudoClass("selected");
 
-	public DataProperty<Overlay> valueProperty;
+	public final DataProperty<Overlay> valueProperty;
 
 	private BiConsumer<Overlay, Overlay> onTypeChange;
 	private Consumer<Overlay> onValuesChange;

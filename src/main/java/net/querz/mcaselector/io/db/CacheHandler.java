@@ -12,8 +12,6 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.*;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.InflaterInputStream;
 
 public final class CacheHandler {
 

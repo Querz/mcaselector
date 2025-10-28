@@ -36,9 +36,9 @@ public class StatusBar extends StackPane {
 	private final Label structures = new Label(Translation.STATUS_STRUCTURES + ": -");
 	private final Label overlay = new Label(Translation.STATUS_OVERLAY + ": -");
 
-	ImageView loadIcon = new ImageView(FileHelper.getIconFromResources("img/load"));
-	BorderPane bp = new BorderPane();
-	RotateTransition rt;
+	private final ImageView loadIcon = new ImageView(FileHelper.getIconFromResources("img/load"));
+	private final BorderPane bp = new BorderPane();
+	private final RotateTransition rt;
 
 	public StatusBar(TileMap tileMap) {
 		getStyleClass().add("status-bar");

@@ -46,8 +46,8 @@ public final class BiomeRegistry {
 
 	public static class BiomeIdentifier implements Serializable {
 
-		Integer id;
-		String name;
+		final Integer id;
+		final String name;
 
 		public BiomeIdentifier(String name) {
 			this(name, toID(name));
@@ -62,11 +62,11 @@ public final class BiomeRegistry {
 			this.name = name;
 		}
 
-		public int getID() {
+		public int id() {
 			return id;
 		}
 
-		public String getName() {
+		public String name() {
 			return name;
 		}
 

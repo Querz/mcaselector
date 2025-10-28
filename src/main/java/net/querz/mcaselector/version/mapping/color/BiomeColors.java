@@ -9,16 +9,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class BiomeColors {
-
-	public final Map<String, BiomeTints> biomes;
+public record BiomeColors(Map<String, BiomeTints> biomes) {
 
 	public BiomeColors() {
-		biomes = new HashMap<>();
-	}
-
-	public BiomeColors(Map<String, BiomeTints> biomes) {
-		this.biomes = biomes;
+		this(new HashMap<>());
 	}
 
 	public void addTints(String id, BiomeTints tints) {
@@ -29,7 +23,8 @@ public class BiomeColors {
 		return biomes.get(id);
 	}
 
-	public record BiomeTints (int grassColor, int foliageColor, int waterColor, int dryFoliageColor) {}
+	public record BiomeTints(int grassColor, int foliageColor, int waterColor, int dryFoliageColor) {
+	}
 
 	public static class BiomeColorsTypeAdapter extends TypeAdapter<BiomeColors> {
 

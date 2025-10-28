@@ -1,6 +1,5 @@
 package net.querz.mcaselector.version.java_1_18;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.point.Point3i;
@@ -437,7 +436,7 @@ public class ChunkFilter_21w43a {
 				}
 
 				ListTag newBiomePalette = new ListTag();
-				newBiomePalette.addString(biome.getName());
+				newBiomePalette.addString(biome.name());
 				biomes.put("palette", newBiomePalette);
 				biomes.putLongArray("data", new long[1]);
 			}
@@ -453,7 +452,7 @@ public class ChunkFilter_21w43a {
 			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				CompoundTag biomes = new CompoundTag();
 				ListTag newBiomePalette = new ListTag();
-				newBiomePalette.addString(biome.getName());
+				newBiomePalette.addString(biome.name());
 				biomes.put("palette", newBiomePalette);
 				biomes.putLongArray("data", new long[1]);
 				section.put("biomes", biomes);

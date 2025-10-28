@@ -90,7 +90,7 @@ public class ColorMapping {
 
 	private void applyTints(String blockName, BitSet blockState, int base, BiomeColors tints, Function<BiomeColors.BiomeTints, Integer> colorProvider, TintCache cache) {
 		Map<String, StateColors> colored = cache.data.computeIfAbsent(blockName, k -> new HashMap<>());
-		for (Map.Entry<String, BiomeColors.BiomeTints> biomeTints : tints.biomes.entrySet()) {
+		for (Map.Entry<String, BiomeColors.BiomeTints> biomeTints : tints.biomes().entrySet()) {
 			int c = applyTint(base, colorProvider.apply(biomeTints.getValue()));
 			if (blockState == null) {
 				colored.put(biomeTints.getKey(), new SingleStateColors(new BlockColor(c)));
@@ -119,7 +119,7 @@ public class ColorMapping {
 
 	private void applyTintsLegacy(String blockName, int base, BiomeColors tints, Function<BiomeColors.BiomeTints, Integer> colorProvider, LegacyTintCache cache) {
 		int[] colored = cache.data.computeIfAbsent(blockName, k -> new int[256]);
-		for (Map.Entry<String, BiomeColors.BiomeTints> biomeTints : tints.biomes.entrySet()) {
+		for (Map.Entry<String, BiomeColors.BiomeTints> biomeTints : tints.biomes().entrySet()) {
 			int c = applyTint(base, colorProvider.apply(biomeTints.getValue()));
 			colored[Integer.parseInt(biomeTints.getKey())] = c;
 		}

@@ -60,7 +60,7 @@ public abstract class MCAFile<T extends Chunk> {
 		}
 	}
 
-	// file name must have well formed mca file format (r.<x>.<z>.mca)
+	// file name must have well-formed mca file format (r.<x>.<z>.mca)
 	public MCAFile(File file, Function<Point2i, T> chunkConstructor) {
 		Point2i location = FileHelper.parseMCAFileName(file);
 		if (location == null) {

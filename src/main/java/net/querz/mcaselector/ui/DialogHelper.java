@@ -135,7 +135,7 @@ public class DialogHelper {
 
 								WorldDirectories worldDirectories = FileHelper.createWorldDirectories(dir);
 								if (worldDirectories == null) {
-									LOGGER.warn("failed to create world directories");
+									LOGGER.warn("failed to create world directories to export filtered chunks");
 									new ErrorDialog(primaryStage, "failed to create world directories");
 									return;
 								}
@@ -257,7 +257,7 @@ public class DialogHelper {
 
 					WorldDirectories worldDirectories = FileHelper.createWorldDirectories(dir);
 					if (worldDirectories == null) {
-						LOGGER.warn("failed to create world directories");
+						LOGGER.warn("failed to create world directories to export selected chunks");
 						new ErrorDialog(primaryStage, "failed to create world directories");
 						return;
 					}
