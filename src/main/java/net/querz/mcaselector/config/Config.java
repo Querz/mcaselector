@@ -13,8 +13,6 @@ import java.util.TreeMap;
 
 public abstract class Config {
 
-	private static final Logger LOGGER = LogManager.getLogger(Config.class);
-
 	// defaults
 	public static final File BASE_DIR;
 	public static final File BASE_CACHE_DIR;
@@ -35,7 +33,8 @@ public abstract class Config {
 				path = jarFile.getParent();
 			}
 		} catch (Exception ex) {
-			LOGGER.error("error finding jar file location", ex);
+			//noinspection CallToPrintStackTrace
+			ex.printStackTrace();
 		}
 		BASE_DIR = new File(path);
 
@@ -58,22 +57,21 @@ public abstract class Config {
 		}
 
 		if (!BASE_CACHE_DIR.exists()) {
-			if (!BASE_CACHE_DIR.mkdirs()) {
-				LOGGER.error("failed to create BASE_CACHE_DIR");
-			}
+			//noinspection ResultOfMethodCallIgnored
+			BASE_CACHE_DIR.mkdirs();
 		}
 		if (!BASE_LOG_DIR.exists()) {
-			if (!BASE_LOG_DIR.mkdirs()) {
-				LOGGER.error("failed to create BASE_LOG_DIR");
-			}
+			//noinspection ResultOfMethodCallIgnored
+			BASE_LOG_DIR.mkdirs();
 		}
 		if (!BASE_OVERLAYS_FILE.getParentFile().exists()) {
-			if (!BASE_OVERLAYS_FILE.getParentFile().mkdirs()) {
-				LOGGER.error("failed to create BASE_OVERLAYS_FILE dir");
-			}
+			//noinspection ResultOfMethodCallIgnored
+			BASE_OVERLAYS_FILE.getParentFile().mkdirs();
 		}
 		Logging.setLogDir(BASE_LOG_DIR);
 	}
+
+	private static final Logger LOGGER = LogManager.getLogger(Config.class);
 
 	private static File getEnvFilesWithDefault(String def, String suffix, char divider, String... envs) {
 		File file;
