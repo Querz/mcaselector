@@ -9,6 +9,7 @@ import net.querz.nbt.io.NBTWriter;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.Properties;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 
 public final class DebugWorld {
@@ -77,15 +78,12 @@ public final class DebugWorld {
 
 		// start server and immediately stop, the spawn point + spawnChunkRadius set in level.dat
 		// will cause the entire r.0.0.mca to generate
-		if (System.getProperty("os.name").toLowerCase().contains("win")) {
-			Command.redirect(path,
-					"cmd", "/C", "echo", "stop", "|",
-					"java", "-jar", "server.jar", "--nogui");
-		} else {
-			Command.redirect(path,
-					"printf", "stop", "|",
-					"java", "-jar", "server.jar", "--nogui");
-		}
+		Pattern serverDoneLoadingPattern = Pattern.compile("\\[Server thread/INFO]: Done \\(.+\\)! For help, type \"help\"");
+		Command.exec(path, (line, process) -> {
+			if (serverDoneLoadingPattern.matcher(line).find()) {
+				Command.sendToProcess(process, "stop\n");
+			}
+		}, "java", "-jar", "server.jar", "--nogui");
 	}
 
 	private void generateLevelDat(MinecraftVersion mcVersion, int dataVersion) throws IOException {

@@ -3,6 +3,7 @@ package net.querz.mcaselector.version.mapping.minecraft;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+import net.querz.mcaselector.version.mapping.util.HexColorAdapter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,6 +17,7 @@ public class Biome {
 
 	public static final Gson GSON = new GsonBuilder()
 			.setPrettyPrinting()
+			.registerTypeAdapter(Integer.class, new HexColorAdapter())
 			.create();
 
 	public static Biome load(Path path) throws IOException {
