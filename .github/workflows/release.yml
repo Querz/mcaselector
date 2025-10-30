@@ -70,7 +70,7 @@ jobs:
           xcopy build\inno\Output\MCA_Selector_Setup.exe build\inno\Output\Signed\
           $bytes = [Convert]::FromBase64String("${{ secrets.WINDOWS_CERT_DATA }}")
           [IO.File]::WriteAllBytes("build/inno/Output/code_signing.pfx", $bytes)
-          $signtool = "${env:ProgramFiles(x86)}\Windows Kits\10\bin\x64\signtool.exe"
+          $signtool = "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.26100\x64\signtool.exe"
           $signtool2022 = "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.17763.0\x86\signtool.exe"
           If (Test-Path $signtool2022) {
             $signtool = "$signtool2022"
