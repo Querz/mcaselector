@@ -65,28 +65,33 @@ jobs:
           "%programfiles(x86)%/Inno Setup 6/iscc.exe" build/inno/inno.iss /q
         shell: cmd
 
-#      - name: Sign installer
-#        run: |
-#          xcopy build\inno\Output\MCA_Selector_Setup.exe build\inno\Output\Signed\
-#          $bytes = [Convert]::FromBase64String("${{ secrets.WINDOWS_CERT_DATA }}")
-#          [IO.File]::WriteAllBytes("build/inno/Output/code_signing.pfx", $bytes)
-#          $signtool = "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.26100\x64\signtool.exe"
-#          $signtool2022 = "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.17763.0\x86\signtool.exe"
-#          If (Test-Path $signtool2022) {
-#            $signtool = "$signtool2022"
-#          }
-#          & $signtool sign `
-#            /f "build/inno/Output/code_signing.pfx" `
-#            /p "${{ secrets.WINDOWS_CERT_PASSWORD }}" `
-#            /fd SHA256 /t "http://timestamp.digicert.com" `
-#            "build/inno/Output/Signed/MCA_Selector_Setup.exe"
-#        shell: powershell
+      - name: Find signtool
+        uses: KamaranL/add-signtool-action@v1
+        id: signtool
+
+      - name: Sign installer
+        run: |
+          xcopy build\inno\Output\MCA_Selector_Setup.exe build\inno\Output\Signed\
+          $bytes = [Convert]::FromBase64String("${{ secrets.WINDOWS_CERT_DATA }}")
+          [IO.File]::WriteAllBytes("build/inno/Output/code_signing.pfx", $bytes)
+          $signtool = "${{ steps.signtool.outputs.signtool-x64 }}"
+          $signtool2022 = "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.17763.0\x86\signtool.exe"
+          If (Test-Path $signtool2022) {
+            $signtool = "$signtool2022"
+          }
+          & $signtool sign `
+            /f "build/inno/Output/code_signing.pfx" `
+            /p "${{ secrets.WINDOWS_CERT_PASSWORD }}" `
+            /fd SHA256 /t "http://timestamp.digicert.com" `
+            "build/inno/Output/Signed/MCA_Selector_Setup.exe"
+        shell: powershell
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4.3.3
         with:
           name: Artifact
           path: |
+            build/inno/Output/MCA_Selector_Setup.exe
             build/inno/Output/Signed/MCA_Selector_Setup.exe
             build/libs/mcaselector-2.6.jar
 
