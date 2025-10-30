@@ -68,6 +68,8 @@ public abstract class MCAFile<T extends Chunk> {
 		}
 		this.location = location;
 		this.file = file;
+		this.offsets = new int[1024];
+		this.sectors = new byte[1024];
 		this.timestamps = new int[1024];
 		this.chunkConstructor = chunkConstructor;
 	}
@@ -228,7 +230,7 @@ public abstract class MCAFile<T extends Chunk> {
 
 	public void load(boolean raw) throws IOException {
 		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
-			if (fc.size() < 8196) {
+			if (fc.size() <= 8192) {
 				return;
 			}
 			Point2i origin = location.regionToChunk();
