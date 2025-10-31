@@ -110,6 +110,7 @@ jobs:
         shell: bash
 
       - name: Push Wiki
+        continue-on-error: true
         run: |
           cd mcaselector-wiki
           git config --global user.name 'Querz'
