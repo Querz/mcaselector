@@ -297,17 +297,16 @@ public class Region {
 	}
 
 	public boolean deleteChunks(Filter<?> filter, Selection selection) {
+		if (selection != null && !selection.isAnyChunkInRegionSelected(location)) {
+			return false;
+		}
 		boolean deleted = false;
 		for (int i = 0; i < 1024; i++) {
-			RegionChunk region = this.region.getChunk(i);
+			RegionChunk region = this.region == null ? null : this.region.getChunk(i);
 			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
 			PoiChunk poi = this.poi == null ? null : this.poi.getChunk(i);
 
-			if (region == null || region.isEmpty() || selection != null && !selection.isAnyChunkInRegionSelected(region.getAbsoluteLocation())) {
-				continue;
-			}
-
-			Point2i location = region.getAbsoluteLocation();
+			Point2i location = getAbsoluteChunkLocation(region, entities, poi);
 			if (location == null) {
 				continue;
 			}
@@ -322,18 +321,25 @@ public class Region {
 		return deleted;
 	}
 
+	private Point2i getAbsoluteChunkLocation(RegionChunk region, EntitiesChunk entities, PoiChunk poi) {
+		if (region != null && !region.isEmpty()) {
+			return region.getAbsoluteLocation();
+		} else if (poi != null && !poi.isEmpty()) {
+			return poi.getAbsoluteLocation();
+		} else if (entities != null && !entities.isEmpty()) {
+			return entities.getAbsoluteLocation();
+		}
+		return null;
+	}
+
 	public boolean keepChunks(Filter<?> filter, Selection selection) {
 		boolean deleted = false;
 		for (int i = 0; i < 1024; i++) {
-			RegionChunk region = this.region.getChunk(i);
+			RegionChunk region = this.region == null ? null : this.region.getChunk(i);
 			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
 			PoiChunk poi = this.poi == null ? null : this.poi.getChunk(i);
 
-			if (region == null || region.isEmpty()) {
-				continue;
-			}
-
-			Point2i location = region.getAbsoluteLocation();
+			Point2i location = getAbsoluteChunkLocation(region, entities, poi);
 			if (location == null) {
 				continue;
 			}
