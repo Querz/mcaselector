@@ -123,6 +123,7 @@ shadowJar {
 	dependencies {
 		exclude(dependency(':javafx.*:.*'))
 	}
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 	archiveFileName = "${project.name}-${project.version}.jar"
 	configurations = [project.configurations.shadow]
 	from 'LICENSE'
