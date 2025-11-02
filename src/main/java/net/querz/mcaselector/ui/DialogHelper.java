@@ -69,12 +69,10 @@ public class DialogHelper {
 							t,
 							false
 					));
-					if (r.requiresClearCache()) {
-						if (r.selectionOnly()) {
-							CacheHelper.clearSelectionCache(tileMap);
-						} else {
-							CacheHelper.clearAllCache(tileMap);
-						}
+					if (r.selectionOnly()) {
+						CacheHelper.clearSelectionCache(tileMap);
+					} else {
+						CacheHelper.clearAllCache(tileMap);
 					}
 					if (c.cancelled()) {
 						return;

@@ -308,8 +308,10 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			Tile tile = tiles.get(region.asLong());
 			if (tile != null) {
 				tile.loaded = false;
+				tile.overlayLoaded = false;
 			}
 		}, new Point2f(), () -> scale, Integer.MAX_VALUE);
+		update();
 	}
 
 	public int getTilePriority(Point2i region) {
