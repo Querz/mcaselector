@@ -140,11 +140,10 @@ public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.Player
 			}
 		}
 
-		return switch (getComparator()) {
-			case CONTAINS -> playerRegions.contains(region.asLong());
-			case CONTAINS_NOT -> !playerRegions.contains(region.asLong());
-			default -> false;
-		};
+		if (getComparator() == Comparator.CONTAINS) {
+			return playerRegions.contains(region.asLong());
+		}
+		return true;
 	}
 
 	/**
