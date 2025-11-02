@@ -153,7 +153,7 @@ public final class CacheHandler {
 		byte[] startKey = key(region.getX(), region.getZ(), null);
 		byte[] endKey = endKey(region.getX(), region.getZ());
 		try (DBIterator iterator = db.iterator()) {
-			for (iterator.seek(startKey); iterator.hasNext() && Arrays.compare(iterator.peekNext().getKey(), endKey) <= 0; iterator.next()) {
+			for (iterator.seek(startKey); iterator.hasNext() && Arrays.compareUnsigned(iterator.peekNext().getKey(), endKey) <= 0; iterator.next()) {
 				byte[] key = iterator.peekNext().getKey();
 				deleteKeys.add(key);
 			}
