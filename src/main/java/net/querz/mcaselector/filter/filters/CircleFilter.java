@@ -82,20 +82,12 @@ public class CircleFilter extends TextFilter<List<CircleFilter.CircleFilterDefin
 
 	@Override
 	public boolean contains(List<CircleFilterDefinition> value, ChunkData data) {
-		if (data.region() == null || data.region().getData() == null) {
+		if (data.location() == null) {
 			return false;
 		}
 
-		ChunkFilter.Pos pos = VersionHandler.getImpl(data, ChunkFilter.Pos.class);
-		IntTag xPos = pos.getXPos(data);
-		IntTag zPos = pos.getZPos(data);
-		if (xPos == null || zPos == null) {
-			return false;
-		}
-
-		Point2i chunk = new Point2i(xPos.asInt(), zPos.asInt());
 		for (CircleFilterDefinition circle : value) {
-			if (circle.matches(chunk)) {
+			if (circle.matches(data.location())) {
 				return true;
 			}
 		}
