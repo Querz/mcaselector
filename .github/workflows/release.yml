@@ -88,12 +88,12 @@ jobs:
           path: |
             build/inno/Output/MCA_Selector_Setup.exe
             build/inno/Output/Signed/MCA_Selector_Setup.exe
-            build/libs/mcaselector-2.6.jar
+            build/libs/mcaselector-2.6.1.jar
 
       - name: Upload assets
         uses: AButler/upload-release-assets@v3.0
         with:
-          files: build/inno/Output/Signed/MCA_Selector_Setup.exe;build/libs/mcaselector-2.6.jar
+          files: build/inno/Output/Signed/MCA_Selector_Setup.exe;build/libs/mcaselector-2.6.1.jar
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout Wiki
@@ -105,7 +105,7 @@ jobs:
       - name: Update Wiki
         run: |
           cd mcaselector-wiki
-          echo -n 2.6 > version.txt
+          echo -n 2.6.1 > version.txt
           ./update_version
         shell: bash
 
@@ -117,6 +117,6 @@ jobs:
           git config --global user.email 'wiki@querz.net'
           git config --unset-all http.https://github.com/.extraheader
           git remote set-url origin https://x-access-token:${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}@github.com/Querz/mcaselector-wiki
-          git commit -am "Automated version update to 2.6"
+          git commit -am "Automated version update to 2.6.1"
           git push
         shell: bash
