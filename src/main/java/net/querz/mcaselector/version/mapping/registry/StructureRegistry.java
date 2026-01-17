@@ -42,7 +42,7 @@ public final class StructureRegistry {
 		int borderSize = ConfigProvider.WORLD.getStructureIconBorderSize();
 
 		defaultIcon = ImageHelper.renderOutline(FileHelper.getIconFromResources("img/structure/red_x"), size, borderSize);
-		defaultStructureIcon = new StructureIcon(defaultIcon, null, Float.MAX_VALUE);
+		defaultStructureIcon = new StructureIcon(defaultIcon, Collections.emptySet(), Float.MAX_VALUE);
 		moreIcon = ImageHelper.renderOutline(FileHelper.getIconFromResources("img/structure/more"), size, borderSize);
 
 		FileHelper.loadFromResource("mapping/registry/structures.json", r -> {
