@@ -253,9 +253,30 @@ public class GlobalConfig extends Config {
 	public record RecentWorld(File recentWorld, List<File> dimensionDirectories) {
 
 		private static final Pattern dimensionFolderPattern = Pattern.compile("^DIM-?\\d+$");
+		private static final String[] parents = new String[]{"dimensions", "minecraft"};
 
 		@Override
 		public String toString() {
+			// check if parent directories match world folder structure
+			StringBuilder parentPath = new StringBuilder();
+			File check = recentWorld.getParentFile();
+			int i = parents.length - 1;
+			for (; i >= -1; i--) {
+				if (check == null) {
+					break;
+				}
+				parentPath.insert(0, check.getName() + File.separator);
+				if (i >= 0 && !check.getName().equals(parents[i])) {
+					break;
+				}
+				check = check.getParentFile();
+			}
+
+			// this is dimensions/minecraft folder structure
+			if (i < 0) {
+				return parentPath + recentWorld.getName();
+			}
+
 			String name = recentWorld.getName();
 			if (dimensionFolderPattern.matcher(name).matches()) {
 				File parent = recentWorld.getParentFile();

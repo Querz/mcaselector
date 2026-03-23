@@ -286,12 +286,32 @@ public final class FileHelper {
 	public static List<File> detectDimensionDirectories(File dir) {
 		List<File> result = new ArrayList<>();
 
-		// detect overworld
+		// since 26.1 Snapshot 6 the world folder structure changed
+		File overworld = new File(dir, "dimensions/minecraft/overworld");
+		if (isValidDimension(overworld)) {
+			result.add(overworld);
+		}
+		File theNether = new File(dir, "dimensions/minecraft/the_nether");
+		if (isValidDimension(theNether)) {
+			result.add(theNether);
+		}
+		File theEnd = new File(dir, "dimensions/minecraft/the_end");
+		if (isValidDimension(theEnd)) {
+			result.add(theEnd);
+		}
+
+		// detect more dimensions in "dimensions" folder
+		File dimensions = new File(dir, "dimensions");
+		List<File> datapackDimensions = new ArrayList<>();
+		detectDatapackDimensions(dimensions, 0, datapackDimensions);
+		result.addAll(datapackDimensions);
+
+		// detect old overworld in the root folder of the world
 		if (isValidDimension(dir)) {
 			result.add(dir);
 		}
 
-		// detect nether folder and end folder first to have them at the beginning of the list
+		// detect nether folder and end folder in the root folder of the world first to have them at the beginning of the list
 		File nether = new File(dir, "DIM-1");
 		if (isValidDimension(nether)) {
 			result.add(nether);
@@ -307,11 +327,6 @@ public final class FileHelper {
 			result.addAll(Arrays.asList(customDimensions));
 		}
 
-		// detect dimensions in "dimensions" folder
-		File dimensions = new File(dir, "dimensions");
-		List<File> datapackDimensions = new ArrayList<>();
-		detectDatapackDimensions(dimensions, 0, datapackDimensions);
-		result.addAll(datapackDimensions);
 		return result;
 	}
 
@@ -321,7 +336,12 @@ public final class FileHelper {
 		if (depth >= datapackDimensionsMaxDepth) {
 			return;
 		}
-		File[] subDirs = dir.listFiles((d, name) -> d.isDirectory());
+		File[] subDirs = dir.listFiles((d, name) -> {
+			if (d.isDirectory() && depth == 1 && (name.equals("overworld") || name.equals("the_nether") || name.equals("the_end"))) {
+				return false;
+			}
+			return d.isDirectory();
+		});
 		if (subDirs == null) {
 			return;
 		}
