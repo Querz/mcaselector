@@ -48,8 +48,32 @@ public final class DebugWorld {
 			dataVersion = serverVersion.worldVersion();
 		}
 
-		// generate minimal level.dat for debug world
-		generateLevelDat(mcVersion, dataVersion);
+		// copy mapping/generator/level.dat to world/level.dat
+		Path worldDir = path.resolve("world");
+		if (!Files.exists(worldDir)) {
+			Files.createDirectories(worldDir);
+		}
+		Path levelDat = worldDir.resolve("level.dat");
+		FileHelper.copyFromResource("mapping/generator/level.dat", levelDat);
+		Path levelDatOld = worldDir.resolve("level.dat_old");
+		FileHelper.copyFromResource("mapping/generator/level.dat", levelDatOld);
+
+		// copy mapping/generator/chunk_tickets.dat to world/dimensions/minecraft/overworld/data/minecraft/chunk_tickets.dat
+		Path overworldDataDir = worldDir.resolve("dimensions/minecraft/overworld/data/minecraft");
+		if (!Files.exists(overworldDataDir)) {
+			Files.createDirectories(overworldDataDir);
+		}
+		Path chunkTicketsDat = overworldDataDir.resolve("chunk_tickets.dat");
+		FileHelper.copyFromResource("mapping/generator/chunk_tickets.dat", chunkTicketsDat);
+
+		// copy mapping/generator/world_gen_settings.dat to world/data/minecraft/world_gen_settings.dat
+		Path worldDataDir = worldDir.resolve("data/minecraft");
+		if (!Files.exists(worldDataDir)) {
+			Files.createDirectories(worldDataDir);
+		}
+		Path worldGenSettingsDat = worldDataDir.resolve("world_gen_settings.dat");
+		FileHelper.copyFromResource("mapping/generator/world_gen_settings.dat", worldGenSettingsDat);
+
 
 		// start server once to generate eula.txt and server.properties if they don't exist yet, and set their values to what we need
 		Path eulaTxt = path.resolve("eula.txt");
@@ -68,14 +92,6 @@ public final class DebugWorld {
 			Files.writeString(eulaTxt, eula);
 		}
 
-		// copy chunk.dat to forceload debug world to world/data/chunk.dat
-		Path worldDataDir = path.resolve("world/data");
-		if (!Files.exists(worldDataDir)) {
-			Files.createDirectories(worldDataDir);
-		}
-		Path chunksDat = worldDataDir.resolve("chunks.dat");
-		FileHelper.copyFromResource("mapping/generator/chunks.dat", chunksDat);
-
 		// start server and immediately stop, the spawn point + spawnChunkRadius set in level.dat
 		// will cause the entire r.0.0.mca to generate
 		Pattern serverDoneLoadingPattern = Pattern.compile("\\[Server thread/INFO]: Done \\(.+\\)! For help, type \"help\"");
@@ -84,52 +100,5 @@ public final class DebugWorld {
 				Command.sendToProcess(process, "stop\n");
 			}
 		}, "java", "-jar", "server.jar", "--nogui");
-	}
-
-	private void generateLevelDat(MinecraftVersion mcVersion, int dataVersion) throws IOException {
-		Path levelDatPath = path.resolve("world/level.dat");
-		Path levelDatOld = path.resolve("world/level.dat_old");
-		if (Files.exists(levelDatPath) && Files.exists(levelDatOld)) {
-			return;
-		}
-
-		CompoundTag levelDat = new CompoundTag();
-		CompoundTag data = new CompoundTag();
-		CompoundTag worldGenSettings = new CompoundTag();
-		CompoundTag dimensions = new CompoundTag();
-		CompoundTag overworld = new CompoundTag();
-		CompoundTag generator = new CompoundTag();
-		CompoundTag version = new CompoundTag();
-		CompoundTag gameRules = new CompoundTag();
-		generator.putString("type", "minecraft:debug");
-		overworld.put("generator", generator);
-		overworld.putString("type", "minecraft:overworld");
-		dimensions.put("minecraft:overworld", overworld);
-		worldGenSettings.putLong("seed", 0);
-		worldGenSettings.put("dimensions", dimensions);
-		version.putByte("Snapshot", (byte) 0);
-		version.putString("Series", "main");
-		version.putInt("Id", dataVersion);
-		version.putString("Name", mcVersion.id());
-		gameRules.putString("spawnChunkRadius", "14");
-		data.put("WorldGenSettings", worldGenSettings);
-		data.put("Version", version);
-		data.put("GameRules", gameRules);
-		data.putInt("SpawnX", 240);
-		data.putInt("SpawnZ", 240);
-		data.putInt("SpawnY", 0);
-		data.putString("LevelName", "world");
-		data.putInt("DataVersion", dataVersion);
-		data.putInt("version", 19133);
-		levelDat.put("Data", data);
-
-		if (!Files.exists(levelDatPath.getParent())) {
-			Files.createDirectories(levelDatPath.getParent());
-		}
-		try (GZIPOutputStream go = new GZIPOutputStream(Files.newOutputStream(levelDatPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))) {
-			new NBTWriter().writeNamed(go, "", levelDat);
-			go.flush();
-		}
-		Files.copy(levelDatPath, levelDatOld, StandardCopyOption.REPLACE_EXISTING);
 	}
 }
