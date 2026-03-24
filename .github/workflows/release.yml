@@ -32,6 +32,7 @@ jobs:
           regex: true
           file: ".*\\.zip"
           target: .
+          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
       - name: Initialize resources for installer
         run: ./installer/init .
