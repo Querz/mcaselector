@@ -24,7 +24,7 @@ jobs:
         uses: robinraju/release-downloader@v1.12
         with:
           repository: Querz/build-tools
-          tag: 1.0
+          tag: '1.0'
           fileName: '*.zip'
           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
