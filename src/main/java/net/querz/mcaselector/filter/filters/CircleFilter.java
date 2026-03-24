@@ -105,7 +105,9 @@ public class CircleFilter extends TextFilter<List<CircleFilter.CircleFilterDefin
 	}
 
 	@Override
-	public boolean matchesRegion(Point2i region) {
+	public MatchType matchesRegion(Point2i region) {
+		// TODO: return proper MatchType
+
 		Point2i topLeft = region.regionToChunk();
 		Point2i bottomLeft = topLeft.add(0, 31);
 		Point2i bottomRight = topLeft.add(31, 31);
@@ -116,12 +118,12 @@ public class CircleFilter extends TextFilter<List<CircleFilter.CircleFilterDefin
 			for (CircleFilterDefinition circle : value) {
 				// check if center is actually in this region
 				if (circle.center.chunkToRegion().equals(region)) {
-					return true;
+					return MatchType.PARTIALLY;
 				}
 
 				// check distance of center to region corners
 				if (circle.matches(topLeft) || circle.matches(bottomLeft) || circle.matches(bottomRight) || circle.matches(topRight)) {
-					return true;
+					return MatchType.PARTIALLY;
 				}
 
 				// check if circle overlaps with region edges
@@ -131,21 +133,21 @@ public class CircleFilter extends TextFilter<List<CircleFilter.CircleFilterDefin
 				Point2i leftMost = circle.center.sub(circle.radius, 0);
 				if (circle.center.chunkToRegion().getX() == region.getX()) {
 					if (circle.center.getZ() > bottomLeft.getZ() && topMost.getZ() <= bottomLeft.getZ()) {
-						return true;
+						return MatchType.PARTIALLY;
 					}
 					if (circle.center.getZ() < topRight.getZ() && bottomMost.getZ() >= topRight.getZ()) {
-						return true;
+						return MatchType.PARTIALLY;
 					}
 				} else if (circle.center.chunkToRegion().getZ() == region.getZ()) {
 					if (circle.center.getX() < bottomLeft.getX() && rightMost.getX() >= bottomLeft.getX()) {
-						return true;
+						return MatchType.PARTIALLY;
 					}
 					if (circle.center.getX() > topRight.getX() && leftMost.getX() <= topRight.getX()) {
-						return true;
+						return MatchType.PARTIALLY;
 					}
 				}
 			}
-			return false;
+			return MatchType.NONE;
 		case CONTAINS_NOT:
 			// if any chunk in the region is not part of the circles, we return true
 			// if every chunk of the region is part of the circles, we return false
@@ -154,11 +156,11 @@ public class CircleFilter extends TextFilter<List<CircleFilter.CircleFilterDefin
 			for (CircleFilterDefinition circle : value) {
 				// if this circle overlaps with all 4 corners, this region is fully covered
 				if (circle.matches(topLeft) && circle.matches(bottomLeft) && circle.matches(bottomRight) && circle.matches(topRight)) {
-					return false;
+					return MatchType.NONE;
 				}
 			}
 		}
-		return true;
+		return MatchType.PARTIALLY;
 	}
 
 	public record CircleFilterDefinition(Point2i center, int radius) implements Serializable {

@@ -131,7 +131,7 @@ public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.Player
 	}
 
 	@Override
-	public boolean matchesRegion(Point2i region) {
+	public MatchType matchesRegion(Point2i region) {
 		if (!loaded.get()) {
 			synchronized (lock) {
 				if (playerRegions.isEmpty()) {
@@ -141,9 +141,9 @@ public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.Player
 		}
 
 		if (getComparator() == Comparator.CONTAINS) {
-			return playerRegions.contains(region.asLong());
+			return playerRegions.contains(region.asLong()) ? MatchType.PARTIALLY : MatchType.NONE;
 		}
-		return true;
+		return MatchType.PARTIALLY;
 	}
 
 	/**

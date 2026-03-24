@@ -110,7 +110,9 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 		for (int i = 0; i < children.size(); i++) {
 			if ((children.get(i).getOperator() == Operator.AND || i == 0) && currentResult) {
 				if (children.get(i) instanceof RegionMatcher regionMatcher) {
-					currentResult = regionMatcher.matchesRegion(region);
+					currentResult = matchTypeToResult(regionMatcher.matchesRegion(region));
+				} else {
+					currentResult = !negated;
 				}
 			} else if (children.get(i).getOperator() == Operator.OR) {
 				if (currentResult) {
@@ -118,13 +120,21 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 				}
 
 				if (children.get(i) instanceof RegionMatcher regionMatcher) {
-					currentResult = regionMatcher.matchesRegion(region);
+					currentResult = matchTypeToResult(regionMatcher.matchesRegion(region));
 				} else {
-					currentResult = true;
+					currentResult = !negated;
 				}
 			}
 		}
 		return negated != currentResult;
+	}
+
+	private boolean matchTypeToResult(RegionMatcher.MatchType matchType) {
+		return switch (matchType) {
+			case FULLY -> true;
+			case NONE -> false;
+			case PARTIALLY -> !negated;
+		};
 	}
 
 	@Override

@@ -96,7 +96,7 @@ public class SelectionFilter extends TextFilter<File> implements RegionMatcher {
 	}
 
 	@Override
-	public boolean matchesRegion(Point2i region) {
+	public MatchType matchesRegion(Point2i region) {
 		if (!loaded.get()) {
 			synchronized (lock) {
 				if (!loaded.get()) {
@@ -105,10 +105,12 @@ public class SelectionFilter extends TextFilter<File> implements RegionMatcher {
 			}
 		}
 
+		int selectedChunks = selection.getSelectedChunks(region).size();
+
 		return switch (getComparator()) {
-			case EQUAL -> selection.isAnyChunkInRegionSelected(region);
-			case NOT_EQUAL -> !selection.isAnyChunkInRegionSelected(region);
-			default -> false;
+			case EQUAL -> selectedChunks == 0 ? MatchType.NONE : selectedChunks == 1024 ? MatchType.FULLY : MatchType.PARTIALLY;
+			case NOT_EQUAL -> selectedChunks == 0 ? MatchType.FULLY : selectedChunks == 1024 ? MatchType.NONE : MatchType.PARTIALLY;
+			default -> MatchType.NONE;
 		};
 	}
 
