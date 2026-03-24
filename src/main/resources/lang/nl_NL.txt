@@ -121,6 +121,7 @@ dialog.import_selection.title;Selectie importeren uit .csv
 dialog.import_selection.header;Deze wereld heeft al een selectie.\nHoe moet de nieuwe selectie geïmporteerd worden?
 dialog.import_selection.overwrite;Overschrijven
 dialog.import_selection.merge;Optellen
+dialog.import_selection.subtract;Aftrekken
 dialog.filter_chunks.title;Chunks filteren
 dialog.filter_chunks.filter.add.tooltip;Voeg een nieuwe voorwaarde hieronder toe.
 dialog.filter_chunks.filter.delete.tooltip;Verwijder deze voorwaarde.
@@ -134,7 +135,8 @@ dialog.filter_chunks.export.tooltip;Exporteert alle aangepaste chunks in een nie
 dialog.filter_chunks.delete;Verwijderen
 dialog.filter_chunks.delete.tooltip;Verwijdert alle aangepaste chunks uit de huidige wereld.
 dialog.filter_chunks.selection_only;Alleen van toepassing op selectie
-dialog.filter_chunks.overwrite_selection;Selectie overschrijven
+dialog.filter_chunks.add_selection;Selectie toevoegen
+dialog.filter_chunks.subtract_selection;Selectie aftrekken
 dialog.filter_chunks.selection_radius;Selectie radius
 dialog.filter_chunks.tab_query;Vraag
 dialog.filter_chunks.tab_script;Script

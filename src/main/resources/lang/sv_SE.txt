@@ -121,6 +121,7 @@ dialog.import_selection.title;Importera urval från .csv
 dialog.import_selection.header;Den här världen har redan ett urval.\nHur ska det nya urvalet importeras?
 dialog.import_selection.overwrite;Skriva över
 dialog.import_selection.merge;Lägg till
+dialog.import_selection.subtract;Subtrahera
 dialog.filter_chunks.title;Filtrera chunks
 dialog.filter_chunks.filter.add.tooltip;Lägg till ett nytt villkor nedanför detta.
 dialog.filter_chunks.filter.delete.tooltip;Radera detta villkor.
@@ -134,7 +135,8 @@ dialog.filter_chunks.export.tooltip;Exporterar alla påverkade chunks till en ny
 dialog.filter_chunks.delete;Radera
 dialog.filter_chunks.delete.tooltip;Raderar alla påverkade chunks från världen.
 dialog.filter_chunks.selection_only;Tillämpa endast till markering
-dialog.filter_chunks.overwrite_selection;Skriv över urval
+dialog.filter_chunks.add_selection;Lägg till markering
+dialog.filter_chunks.subtract_selection;Ta bort markering
 dialog.filter_chunks.selection_radius;Urvalsradie
 dialog.filter_chunks.tab_query;Query
 dialog.filter_chunks.tab_script;Script

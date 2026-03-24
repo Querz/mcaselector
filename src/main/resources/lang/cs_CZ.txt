@@ -121,6 +121,7 @@ dialog.import_selection.title;Importovat výběr z .csv
 dialog.import_selection.header;Tento svět již má výběr.\nJak by měl být nový výběr importován?
 dialog.import_selection.overwrite;Přepsat
 dialog.import_selection.merge;Přidat
+dialog.import_selection.subtract;Odečíst
 dialog.filter_chunks.title;Filtrovat chunky
 dialog.filter_chunks.filter.add.tooltip;Přidá další podmínku pod stávající.
 dialog.filter_chunks.filter.delete.tooltip;Smaže tuto podmínku.
@@ -134,7 +135,8 @@ dialog.filter_chunks.export.tooltip;Exportuje všechny ovlivněné chunky do nov
 dialog.filter_chunks.delete;Smazat
 dialog.filter_chunks.delete.tooltip;Smaže všechny ovlivněné chunky z aktuálního světa.
 dialog.filter_chunks.selection_only;Aplikovat pouze na výběr
-dialog.filter_chunks.overwrite_selection;Přepsat výběr
+dialog.filter_chunks.add_selection;Přidat výběr
+dialog.filter_chunks.subtract_selection;Odebrat výběr
 dialog.filter_chunks.selection_radius;Poloměr výběru
 dialog.filter_chunks.tab_query;Dotaz
 dialog.filter_chunks.tab_script;Skript

@@ -86,6 +86,13 @@ public final class UIFactory {
 		return radio;
 	}
 
+	public static RadioButton radio(Translation translation, Object userData) {
+		RadioButton radio = new RadioButton();
+		radio.setUserData(userData);
+		radio.textProperty().bind(translation.getProperty());
+		return radio;
+	}
+
 	public static Tab tab(Translation translation) {
 		Tab tab = new Tab();
 		tab.setClosable(false);

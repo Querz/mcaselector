@@ -121,6 +121,7 @@ dialog.import_selection.title;Seçimi .csv'den İçe Aktar
 dialog.import_selection.header;Bu dünyada zaten bir seçim var.\nYeni seçim nasıl içe aktarılmalıdır?
 dialog.import_selection.overwrite;Üzerine yazmak
 dialog.import_selection.merge;Ekle
+dialog.import_selection.subtract;Çıkar
 dialog.filter_chunks.title;Chunkları Filtrele
 dialog.filter_chunks.filter.add.tooltip;Bunun altına yeni bir koşul ekleyin.
 dialog.filter_chunks.filter.delete.tooltip;Bu koşulu silin.
@@ -134,7 +135,8 @@ dialog.filter_chunks.export.tooltip;Etkilenen tüm chunkları yeni bir dizine ak
 dialog.filter_chunks.delete;Sil
 dialog.filter_chunks.delete.tooltip;Geçerli dünyadan etkilenen tüm chunkları siler.
 dialog.filter_chunks.selection_only;Yalnızca seçime uygula
-dialog.filter_chunks.overwrite_selection;Seçimin üzerine yaz
+dialog.filter_chunks.add_selection;Seçimi ekle
+dialog.filter_chunks.subtract_selection;Seçimi çıkar
 dialog.filter_chunks.selection_radius;Seçim yarıçapı
 dialog.filter_chunks.tab_query;Sorgu
 dialog.filter_chunks.tab_script;Senaryo

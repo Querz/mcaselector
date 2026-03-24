@@ -121,6 +121,7 @@ dialog.import_selection.title;Importuj zaznaczenie z .csv
 dialog.import_selection.header;Ten świat ma już wybór.\nJak należy zaimportować nowy wybór?
 dialog.import_selection.overwrite;Przepisać
 dialog.import_selection.merge;Dodać
+dialog.import_selection.subtract;Odejmij
 dialog.filter_chunks.title;Filtruj chunki
 dialog.filter_chunks.filter.add.tooltip;Dodaj nowy warunek poniżej
 dialog.filter_chunks.filter.delete.tooltip;Usuń ten warunek
@@ -134,7 +135,8 @@ dialog.filter_chunks.export.tooltip;Eksportuje wszystkie wybrane przez filtr chu
 dialog.filter_chunks.delete;Usuń
 dialog.filter_chunks.delete.tooltip;Usuwa ze świata chunki wybrane przez filtr.
 dialog.filter_chunks.selection_only;Zastosuj tylko do zaznaczenia
-dialog.filter_chunks.overwrite_selection;Zastąp zaznaczenie
+dialog.filter_chunks.add_selection;Dodaj zaznaczenie
+dialog.filter_chunks.subtract_selection;Odejmij zaznaczenie
 dialog.filter_chunks.selection_radius;Promień zaznaczenia
 dialog.filter_chunks.tab_query;Zapytanie
 dialog.filter_chunks.tab_script;Scenariusz

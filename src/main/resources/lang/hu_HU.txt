@@ -121,6 +121,7 @@ dialog.import_selection.title;Kijelölés importálása .csv fájlból
 dialog.import_selection.header;A világban már van egy kijelölés.\nHogyan szeretnéd importálni a kijelölést?
 dialog.import_selection.overwrite;Felülírás
 dialog.import_selection.merge;Egyesítés
+dialog.import_selection.subtract;Kivonás
 dialog.filter_chunks.title;Chunkok szűrése
 dialog.filter_chunks.filter.add.tooltip;Új feltétel hozzáadása ez alá.
 dialog.filter_chunks.filter.delete.tooltip;Feltétel törlése.
@@ -134,7 +135,8 @@ dialog.filter_chunks.export.tooltip;Exportálja a megfelelő chunkokat.
 dialog.filter_chunks.delete;Kitörlés
 dialog.filter_chunks.delete.tooltip;Kitörli a megfelelő chunkokat.
 dialog.filter_chunks.selection_only;Csak a kijelölt chunkokon
-dialog.filter_chunks.overwrite_selection;Kijelölés felülírása
+dialog.filter_chunks.add_selection;Kijelölés hozzáadása
+dialog.filter_chunks.subtract_selection;Kijelölés kivonása
 dialog.filter_chunks.selection_radius;Kijelölés sugara
 dialog.filter_chunks.tab_query;Query
 dialog.filter_chunks.tab_script;Script

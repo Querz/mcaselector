@@ -162,7 +162,7 @@ public class DialogHelper {
 				}
 				case SELECT -> {
 					Selection selection = tileMap.getSelection();
-					if (r.overwriteSelection()) {
+					if (r.applyType() == FilterChunksDialog.ApplyType.OVERWRITE) {
 						tileMap.clearSelection();
 					}
 					if (runBefore(r, primaryStage)) {
@@ -174,7 +174,11 @@ public class DialogHelper {
 						r.selectionOnly() ? (selection.isEmpty() ? null : selection) : null,
 						r.radius(),
 						s -> Platform.runLater(() -> {
-							tileMap.addSelection(s);
+							if (r.applyType() == FilterChunksDialog.ApplyType.SUBTRACT) {
+								tileMap.subtractSelection(s);
+							} else {
+								tileMap.addSelection(s);
+							}
 							tileMap.draw();
 						}), t, false));
 					r.filter().resetTempData();
@@ -667,6 +671,7 @@ public class DialogHelper {
 			switch (result) {
 				case OVERWRITE -> tileMap.setSelection(selection);
 				case MERGE -> tileMap.addSelection(selection);
+				case SUBTRACT -> tileMap.subtractSelection(selection);
 			}
 			tileMap.draw();
 		}

@@ -121,6 +121,7 @@ dialog.import_selection.title;Importar seleção de .csv
 dialog.import_selection.header;Este mundo já tem uma seleção.\nComo a nova seleção deve ser importada?
 dialog.import_selection.overwrite;Substituir
 dialog.import_selection.merge;Adicionar
+dialog.import_selection.subtract;Subtrair
 dialog.filter_chunks.title;Filtrar chunks
 dialog.filter_chunks.filter.add.tooltip;Adicionar nova condição sobre esta.
 dialog.filter_chunks.filter.delete.tooltip;Apagar esta condição.
@@ -134,7 +135,8 @@ dialog.filter_chunks.export.tooltip;Exporta todos os chunks afetados a una nova 
 dialog.filter_chunks.delete;Apagar
 dialog.filter_chunks.delete.tooltip;Apaga todos os chunks afetados do mundo atual.
 dialog.filter_chunks.selection_only;Aplicar somente na seleção.
-dialog.filter_chunks.overwrite_selection;Sobrescrever a seleção
+dialog.filter_chunks.add_selection;Adicionar seleção
+dialog.filter_chunks.subtract_selection;Subtrair seleção
 dialog.filter_chunks.selection_radius;Raio de seleção
 dialog.filter_chunks.tab_query;Consulta
 dialog.filter_chunks.tab_script;Roteiro

@@ -121,6 +121,7 @@ dialog.import_selection.title;Импортировать выделение из
 dialog.import_selection.header;В этом мире уже есть выбор.\nКак импортировать новый выбор?
 dialog.import_selection.overwrite;Перезаписывать
 dialog.import_selection.merge;Добавить
+dialog.import_selection.subtract;Вычесть
 dialog.filter_chunks.title;Фильтровать чанки
 dialog.filter_chunks.filter.add.tooltip;Добавьте новое условие ниже этого
 dialog.filter_chunks.filter.delete.tooltip;Удалить условие
@@ -134,7 +135,8 @@ dialog.filter_chunks.export.tooltip;Экспортирует все подвер
 dialog.filter_chunks.delete;Удалить
 dialog.filter_chunks.delete.tooltip;Удаляет все подверженные чанки из этого мира.
 dialog.filter_chunks.selection_only;Применить только к выбранным
-dialog.filter_chunks.overwrite_selection;Перезаписать выбор
+dialog.filter_chunks.add_selection;Добавить выделение
+dialog.filter_chunks.subtract_selection;Вычесть выделение
 dialog.filter_chunks.selection_radius;Радиус выбора
 dialog.filter_chunks.tab_query;Запрос
 dialog.filter_chunks.tab_script;Скрипт

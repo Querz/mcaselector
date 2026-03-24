@@ -121,6 +121,7 @@ dialog.import_selection.title;Імпортувати виділення з .csv 
 dialog.import_selection.header;Цей світ уже має виділення.\nЯк би ви хотіли імпортувати виділення?
 dialog.import_selection.overwrite;Перезаписати
 dialog.import_selection.merge;Об'єднати
+dialog.import_selection.subtract;Відняти
 dialog.filter_chunks.title;Відфільтрувати чанки
 dialog.filter_chunks.filter.add.tooltip;Додати нову умову під цією.
 dialog.filter_chunks.filter.delete.tooltip;Видалити цю умову.
@@ -134,7 +135,8 @@ dialog.filter_chunks.export.tooltip;Експортувати всі виділе
 dialog.filter_chunks.delete;Видалити
 dialog.filter_chunks.delete.tooltip;Виділити всі виділені чанки зі світу.
 dialog.filter_chunks.selection_only;Застосувати лише до виділених чанків
-dialog.filter_chunks.overwrite_selection;Перезаписати виділення
+dialog.filter_chunks.add_selection;Додати виділення
+dialog.filter_chunks.subtract_selection;Відняти виділення
 dialog.filter_chunks.selection_radius;Радіус виділення
 dialog.filter_chunks.tab_query;Запит
 dialog.filter_chunks.tab_script;Сценарій

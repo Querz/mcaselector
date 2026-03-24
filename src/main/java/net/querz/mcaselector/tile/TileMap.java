@@ -37,12 +37,7 @@ import org.apache.logging.log4j.Logger;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -831,6 +826,22 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	public void addSelection(Selection selection) {
 		int selectedBefore = selectedChunks;
 		this.selection.merge(selection);
+		selectedChunks = this.selection.count();
+		// reset selection image of tile
+		for (Long2ObjectMap.Entry<ChunkSet> e : selection) {
+			Tile tile = tiles.get(e.getLongKey());
+			if (tile != null) {
+				tile.clearMarkedChunksImage();
+			}
+		}
+		unsavedSelection = !selection.isEmpty() || selectedBefore == selectedChunks && unsavedSelection;
+		runUpdateListeners();
+		draw();
+	}
+
+	public void subtractSelection(Selection selection) {
+		int selectedBefore = selectedChunks;
+		this.selection.subtract(selection);
 		selectedChunks = this.selection.count();
 		// reset selection image of tile
 		for (Long2ObjectMap.Entry<ChunkSet> e : selection) {
