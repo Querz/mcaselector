@@ -24,16 +24,13 @@ jobs:
         run: gradlew build shadowJar --stacktrace --warning-mode all
         shell: cmd
 
-      - name: Download WinRun4J
-        uses: suisei-cn/actions-download-file@v1.6.0
+      - name: Download Build Tools
+        uses: dsaltares/fetch-gh-release-asset@1.1.2
         with:
-          url: https://github.com/poidasmith/winrun4j/files/1822558/winrun4J-0.4.5.zip
-          target: .
-
-      - name: Download ResourceHacker
-        uses: suisei-cn/actions-download-file@v1.6.0
-        with:
-          url: http://www.angusj.com/resourcehacker/resource_hacker.zip
+          repo: Querz/build-tools
+          version: tags/1.0
+          regex: true
+          file: ".*\\.zip"
           target: .
 
       - name: Initialize resources for installer
@@ -51,12 +48,6 @@ jobs:
           rh\ResourceHacker.exe -open "MCA Selector.exe" -save "MCA Selector.exe" -action add -resource resource.res
           move "MCA Selector.exe" build\inno
         shell: cmd
-
-      - name: Download 7za
-        uses: suisei-cn/actions-download-file@v1.6.0
-        with:
-          url: https://www.7-zip.org/a/7za920.zip
-          target: .
 
       - name: Build installer
         run: |
