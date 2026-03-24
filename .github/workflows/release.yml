@@ -20,19 +20,17 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: Download Build Tools
+        uses: robinraju/release-downloader@v1.12
+        with:
+          repository: Querz/build-tools
+          tag: 1.0
+          fileName: '*.zip'
+          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+
       - name: Build jar
         run: gradlew build shadowJar --stacktrace --warning-mode all
         shell: cmd
-
-      - name: Download Build Tools
-        uses: dsaltares/fetch-gh-release-asset@1.1.2
-        with:
-          repo: Querz/build-tools
-          version: tags/1.0
-          regex: true
-          file: ".*\\.zip"
-          target: .
-          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
       - name: Initialize resources for installer
         run: ./installer/init .
