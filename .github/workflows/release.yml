@@ -51,9 +51,10 @@ jobs:
       - name: Build installer
         run: |
           7z x 7za920.zip -o7z
-          7z x inno_6_languages_unofficial.zip -oinno_lang
+          7z x inno_6_languages_unofficial.zip -oinno_6_languages_unofficial
           move 7z\7za.exe build\inno
-          move inno_lang\Unofficial "%programfiles(x86)%/Inno Setup 6/Languages"
+          mkdir build\inno\Languages
+          move inno_6_languages_unofficial\Unofficial build\inno\Languages
           "%programfiles(x86)%/Inno Setup 6/iscc.exe" build/inno/inno.iss /q
         shell: cmd
 

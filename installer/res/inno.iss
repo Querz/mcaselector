@@ -41,8 +41,8 @@ Name: "tr_TR"; MessagesFile: "compiler:Languages\\Turkish.isl"
 Name: "ko_KR"; MessagesFile: "compiler:Languages\\Korean.isl"
 Name: "sv_SE"; MessagesFile: "compiler:Languages\\Swedish.isl"
 Name: "uk_UA"; MessagesFile: "compiler:Languages\\Ukrainian.isl"
-Name: "zh_CN"; MessagesFile: "compiler:Languages\\Unofficial\\ChineseSimplified.isl"
-Name: "zh_TW"; MessagesFile: "compiler:Languages\\Unofficial\\ChineseTraditional.isl"
+Name: "zh_CN"; MessagesFile: "Languages\\Unofficial\\ChineseSimplified.isl"
+Name: "zh_TW"; MessagesFile: "Languages\\Unofficial\\ChineseTraditional.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
