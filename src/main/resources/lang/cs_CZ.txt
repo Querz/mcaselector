@@ -33,8 +33,8 @@ menu.view.select_structures;Vybrat struktury
 menu.view.goto;Přejít
 menu.view.reset_zoom;Obnovit přiblížení
 menu.view.save_screenshot;Uložit snímek obrazovky
-menu.view.clear_cache;Smazat keš
-menu.view.clear_all_cache;Smazat všechny keše
+menu.view.clear_cache;Smazat cache
+menu.view.clear_all_cache;Smazat celou cache
 menu.selection.clear;Vyčistit
 menu.selection.invert;Invertovat
 menu.selection.invert_regions;Invertovat vybrané oblasti
