@@ -39,7 +39,7 @@ public final class CacheHelper {
 			if (m.find()) {
 				int x = Integer.parseInt(m.group("regionX"));
 				int z = Integer.parseInt(m.group("regionZ"));
-				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), (i, u) -> {}, zoomLevel, progressChannel, false, null);
+				RegionImageGenerator.generate(new Tile(new Point2i(x, z)), (i, s, u) -> {}, zoomLevel, progressChannel, false, false, null);
 			}
 		}
 	}
@@ -53,7 +53,7 @@ public final class CacheHelper {
 		updateVersionFile();
 		ConfigProvider.WORLD.save();
 		tileMap.clear();
-		tileMap.draw();
+		tileMap.update();
 	}
 
 	// asynchronously cancels all jobs and marks all Tiles as "not loaded"
@@ -68,7 +68,7 @@ public final class CacheHelper {
 			ConfigProvider.WORLD.save();
 
 			tileMap.markAllTilesAsObsolete();
-			tileMap.draw();
+			tileMap.update();
 			callback.run();
 		});
 		clear.start();
@@ -80,7 +80,7 @@ public final class CacheHelper {
 				File file = FileHelper.createPNGFilePath(cacheDir, region);
 				if (file.exists()) {
 					if (!file.delete()) {
-						LOGGER.warn("could not delete file {}", file);
+						LOGGER.warn("unable to delete file {} to clear view cache", file);
 					}
 				}
 				tileMap.clearTile(region.asLong());
@@ -88,7 +88,7 @@ public final class CacheHelper {
 			}
 		}
 		RegionImageGenerator.invalidateCachedMCAFiles();
-		tileMap.draw();
+		tileMap.update();
 	}
 
 	public static void clearSelectionCache(TileMap tileMap) {
@@ -100,7 +100,7 @@ public final class CacheHelper {
 				File file = FileHelper.createPNGFilePath(cacheDir, region);
 				if (file.exists()) {
 					if (!file.delete()) {
-						LOGGER.warn("could not delete file {}", file);
+						LOGGER.warn("unable to delete file {} to clear selection cache", file);
 					}
 				}
 			}
@@ -108,7 +108,7 @@ public final class CacheHelper {
 			tileMap.getOverlayPool().discardData(region);
 		}
 		RegionImageGenerator.invalidateCachedMCAFiles();
-		tileMap.draw();
+		tileMap.update();
 	}
 
 	public static void validateCacheVersion(TileMap tileMap) {

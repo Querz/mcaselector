@@ -111,6 +111,7 @@ public class Point2f implements Cloneable {
 		try {
 			return (Point2f) super.clone();
 		} catch (CloneNotSupportedException e) {
+			//noinspection CallToPrintStackTrace
 			e.printStackTrace();
 		}
 		return null;

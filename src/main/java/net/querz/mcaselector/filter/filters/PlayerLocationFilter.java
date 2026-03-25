@@ -13,10 +13,14 @@ import net.querz.nbt.ListTag;
 import net.querz.nbt.NBTUtil;
 import net.querz.nbt.StringTag;
 import net.querz.nbt.Tag;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.Serializable;
 
 public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.PlayerLocationFilterDefinition> implements RegionMatcher {
+
+	private static final Logger LOGGER = LogManager.getLogger(PlayerLocationFilter.class);
 
 	protected LongOpenHashSet playerChunks = new LongOpenHashSet();
 	protected LongOpenHashSet playerRegions = new LongOpenHashSet();
@@ -127,7 +131,7 @@ public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.Player
 	}
 
 	@Override
-	public boolean matchesRegion(Point2i region) {
+	public MatchType matchesRegion(Point2i region) {
 		if (!loaded.get()) {
 			synchronized (lock) {
 				if (playerRegions.isEmpty()) {
@@ -136,33 +140,27 @@ public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.Player
 			}
 		}
 
-		return switch (getComparator()) {
-			case CONTAINS -> playerRegions.contains(region.asLong());
-			case CONTAINS_NOT -> !playerRegions.contains(region.asLong());
-			default -> false;
-		};
+		if (getComparator() == Comparator.CONTAINS) {
+			return playerRegions.contains(region.asLong()) ? MatchType.PARTIALLY : MatchType.NONE;
+		}
+		return MatchType.PARTIALLY;
 	}
 
-	public static class PlayerLocationFilterDefinition implements Serializable {
-
-		File directory;
-		Object dimension; // can be Integer or String
-
-		public PlayerLocationFilterDefinition(File directory, Object dimension) {
-			this.directory = directory;
-			this.dimension = dimension;
-		}
+	/**
+	 * @param dimension can be Integer or String
+	 */
+	public record PlayerLocationFilterDefinition(File directory, Object dimension) implements Serializable {
 
 		@Override
-		public String toString() {
-			return directory + File.pathSeparator + dimension;
-		}
+			public String toString() {
+				return directory + File.pathSeparator + dimension;
+			}
 
-		@Override
-		public PlayerLocationFilterDefinition clone() {
-			return new PlayerLocationFilterDefinition(directory, dimension);
+			@Override
+			public PlayerLocationFilterDefinition clone() {
+				return new PlayerLocationFilterDefinition(directory, dimension);
+			}
 		}
-	}
 
 	protected void loadPlayerData(PlayerLocationFilterDefinition value) {
 		playerChunks.clear();
@@ -197,7 +195,7 @@ public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.Player
 				playerChunks.add(playerLocation.blockToChunk().asLong());
 				playerRegions.add(playerLocation.blockToRegion().asLong());
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				LOGGER.warn(ex);
 			}
 		}
 		loaded.set(true);

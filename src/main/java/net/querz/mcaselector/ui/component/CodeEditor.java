@@ -41,7 +41,7 @@ public class CodeEditor extends StackPane {
 	private Window owner;
 	private Config.RecentFiles recentFiles;
 
-	Label fileNameLabel = new Label("* " + newFileName);
+	private final Label fileNameLabel = new Label("* " + newFileName);
 
 	public CodeEditor(String initText) {
 		codeArea.setChangeListener(() -> {

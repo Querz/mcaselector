@@ -5,6 +5,8 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import net.querz.mcaselector.io.GroovyScriptEngine;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -23,6 +25,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GroovyCodeArea extends CodeArea implements Closeable {
+
+	private static final Logger LOGGER = LogManager.getLogger(GroovyCodeArea.class);
 
 	private final ExecutorService executor;
 	private final Subscription highlightSubscription;
@@ -86,13 +90,11 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 					if (t.isSuccess()) {
 						return Optional.of(t.get());
 					} else {
-						t.getFailure().printStackTrace();
+						LOGGER.info(t.getFailure());
 						return Optional.empty();
 					}
 				})
-				.subscribe(h -> {
-					setStyleSpans(0, h);
-				});
+				.subscribe(h -> setStyleSpans(0, h));
 
 		if (eval) {
 			engine = new GroovyScriptEngine();
@@ -108,7 +110,7 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 							}
 							return Optional.of(t.get());
 						} else {
-							t.getFailure().printStackTrace();
+							LOGGER.info(t.getFailure());
 							return Optional.empty();
 						}
 					})

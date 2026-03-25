@@ -471,12 +471,8 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 			}
 
 			// if something is marked in this selection, but not the other, we remove it so it's marked when inverted
-			for (Long2ObjectMap.Entry<ChunkSet> entry : selection.long2ObjectEntrySet()) {
-				long r = entry.getLongKey();
-				if (!other.selection.containsKey(r)) {
-					selection.remove(r);
-				}
-			}
+			selection.long2ObjectEntrySet().removeIf(e -> !other.selection.containsKey(e.getLongKey()));
+
 			// invert this selection at the end
 			inverted = true;
 		} else { // both are inverted
@@ -499,6 +495,87 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 					}
 				}
 			}
+		}
+	}
+
+	public void subtract(Selection other) {
+		if (!inverted && !other.inverted) {
+			for (Long2ObjectMap.Entry<ChunkSet> entry : other.selection.long2ObjectEntrySet()) {
+				long r = entry.getLongKey();
+				if (!selection.containsKey(r)) {
+					continue;
+				}
+				if (entry.getValue() == null) {
+					selection.remove(r);
+					continue;
+				}
+				ChunkSet result = selection.get(r);
+				if (result == null) {
+					selection.put(r, entry.getValue().flip());
+					continue;
+				}
+				result.andNot(entry.getValue());
+				if (result.isEmpty()) {
+					selection.remove(r);
+				}
+			}
+		} else if (inverted && !other.inverted) { // this selection is inverted but the other isn't
+			// add chunks to selection
+			for (Long2ObjectMap.Entry<ChunkSet> entry : other.selection.long2ObjectEntrySet()) {
+				long r = entry.getLongKey();
+				if (!selection.containsKey(r)) {
+					selection.put(r, entry.getValue());
+					continue;
+				}
+				ChunkSet result = selection.get(r);
+				if (result != null) {
+					result.or(entry.getValue());
+				}
+			}
+		} else if (!inverted) { // this selection is not inverted but the other is
+			for (Long2ObjectMap.Entry<ChunkSet> entry : other.selection.long2ObjectEntrySet()) {
+				long r = entry.getLongKey();
+				if (!selection.containsKey(r) || entry.getValue() == null) {
+					// do nothing if nothing is selected in this region or nothing is selected in the other region
+					continue;
+				}
+				ChunkSet result = selection.get(r);
+				if (result != null) {
+					result.and(entry.getValue());
+					if (result.isEmpty()) {
+						selection.remove(r);
+					}
+					continue;
+				}
+				selection.put(r, entry.getValue());
+			}
+
+			// if something is marked in this selection but not in the other, we remove it
+			selection.long2ObjectEntrySet().removeIf(e -> !other.selection.containsKey(e.getLongKey()));
+
+		} else { // "both are inverted" is the same as subtracting the initial selection from the other selection
+			Long2ObjectOpenHashMap<ChunkSet> clone = other.selection.clone();
+			inverted = false;
+			for (Long2ObjectMap.Entry<ChunkSet> entry : selection.long2ObjectEntrySet()) {
+				long r = entry.getLongKey();
+				if (!clone.containsKey(r)) {
+					continue;
+				}
+				if (entry.getValue() == null) {
+					clone.remove(r);
+					continue;
+				}
+				ChunkSet result = clone.get(r);
+				if (result == null) {
+					clone.put(r, entry.getValue().flip());
+					continue;
+				}
+				result.andNot(entry.getValue());
+				if (result.isEmpty()) {
+					clone.remove(r);
+				}
+			}
+			this.selection = clone;
 		}
 	}
 

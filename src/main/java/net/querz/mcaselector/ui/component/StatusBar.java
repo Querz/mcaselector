@@ -33,11 +33,12 @@ public class StatusBar extends StackPane {
 	private final Label hoveredBlock = new Label(Translation.STATUS_BLOCK + ": -, -");
 	private final Label totalRegions = new Label(Translation.STATUS_TOTAL + ": 0");
 	private final Label queuedJobs = new Label(Translation.STATUS_QUEUE + ": 0");
+	private final Label structures = new Label(Translation.STATUS_STRUCTURES + ": -");
 	private final Label overlay = new Label(Translation.STATUS_OVERLAY + ": -");
 
-	ImageView loadIcon = new ImageView(FileHelper.getIconFromResources("img/load"));
-	BorderPane bp = new BorderPane();
-	RotateTransition rt;
+	private final ImageView loadIcon = new ImageView(FileHelper.getIconFromResources("img/load"));
+	private final BorderPane bp = new BorderPane();
+	private final RotateTransition rt;
 
 	public StatusBar(TileMap tileMap) {
 		getStyleClass().add("status-bar");
@@ -46,12 +47,7 @@ public class StatusBar extends StackPane {
 
 		tileMap.setOnUpdate(this::update);
 		tileMap.setOnHover(this::update);
-		for (int i = 0; i < 6; i++) {
-			ColumnConstraints constraints = new ColumnConstraints();
-			constraints.setMinWidth(140);
-			constraints.setFillWidth(true);
-			grid.getColumnConstraints().add(constraints);
-		}
+
 		grid.add(hoveredBlock, 0, 0, 1, 1);
 		grid.add(hoveredChunk, 1, 0, 1, 1);
 		grid.add(hoveredRegion, 2, 0, 1 ,1);
@@ -59,6 +55,15 @@ public class StatusBar extends StackPane {
 		grid.add(totalRegions, 4, 0, 1, 1);
 		grid.add(queuedJobs, 5, 0, 1, 1);
 		grid.add(overlay, 6, 0, 1, 1);
+		grid.add(structures, 7, 0, 1, 1);
+
+		int lastColumnIndex = grid.getColumnCount() - 1;
+		for (int i = 0; i < lastColumnIndex; i++) {
+			ColumnConstraints constraints = new ColumnConstraints();
+			constraints.setMinWidth(140);
+			constraints.setFillWidth(true);
+			grid.getColumnConstraints().add(constraints);
+		}
 
 		StackPane.setAlignment(grid, Pos.CENTER_LEFT);
 		getChildren().add(grid);
@@ -114,6 +119,12 @@ public class StatusBar extends StackPane {
 			hoveredChunk.setText(Translation.STATUS_CHUNK + ": -, -");
 			hoveredRegion.setText(Translation.STATUS_REGION + ": -, -");
 			updateOverlay(tileMap, null);
+		}
+		String[] hoveredStructures = tileMap.getHoveredStructures();
+		if (hoveredStructures != null && hoveredStructures.length > 0) {
+			structures.setText(Translation.STATUS_STRUCTURES + ": " + hoveredStructures[0] + (hoveredStructures.length > 1 ? ", ..." : ""));
+		} else {
+			structures.setText(Translation.STATUS_STRUCTURES + ": -");
 		}
 	}
 

@@ -166,23 +166,7 @@ public class Region {
 		if (entities != null) {
 			entitiesChunk = entities.getChunkAt(location);
 		}
-		return new ChunkData(regionChunk, poiChunk, entitiesChunk, selected);
-	}
-
-	public ChunkData getChunkData(int index, boolean selected) {
-		RegionChunk regionChunk = null;
-		PoiChunk poiChunk = null;
-		EntitiesChunk entitiesChunk = null;
-		if (region != null) {
-			regionChunk = region.getChunk(index);
-		}
-		if (poi != null) {
-			poiChunk = poi.getChunk(index);
-		}
-		if (entities != null) {
-			entitiesChunk = entities.getChunk(index);
-		}
-		return new ChunkData(regionChunk, poiChunk, entitiesChunk, selected);
+		return new ChunkData(location, regionChunk, poiChunk, entitiesChunk, selected);
 	}
 
 	public void setChunkDataAt(ChunkData chunkData, Point2i location) {
@@ -268,13 +252,19 @@ public class Region {
 
 	public void deleteFiles() {
 		if (directories.getRegion() != null && directories.getRegion().exists()) {
-			directories.getRegion().delete();
+			if (!directories.getRegion().delete()) {
+				LOGGER.warn("failed to delete region file {}", directories.getRegion());
+			}
 		}
 		if (directories.getPoi() != null && directories.getPoi().exists()) {
-			directories.getPoi().delete();
+			if (!directories.getPoi().delete()) {
+				LOGGER.warn("failed to delete poi file {}", directories.getPoi());
+			}
 		}
 		if (directories.getEntities() != null && directories.getEntities().exists()) {
-			directories.getEntities().delete();
+			if (!directories.getEntities().delete()) {
+				LOGGER.warn("failed to delete entities file {}", directories.getEntities());
+			}
 		}
 	}
 
@@ -291,22 +281,20 @@ public class Region {
 	}
 
 	public boolean deleteChunks(Filter<?> filter, Selection selection) {
+		if (selection != null && !selection.isAnyChunkInRegionSelected(location)) {
+			return false;
+		}
 		boolean deleted = false;
 		for (int i = 0; i < 1024; i++) {
-			RegionChunk region = this.region.getChunk(i);
+			RegionChunk region = this.region == null ? null : this.region.getChunk(i);
 			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
 			PoiChunk poi = this.poi == null ? null : this.poi.getChunk(i);
-
-			if (region == null || region.isEmpty() || selection != null && !selection.isAnyChunkInRegionSelected(region.getAbsoluteLocation())) {
+			if (!hasData(region, entities, poi)) {
 				continue;
 			}
 
-			Point2i location = region.getAbsoluteLocation();
-			if (location == null) {
-				continue;
-			}
-
-			ChunkData filterData = new ChunkData(region, poi, entities, selection != null && selection.isChunkSelected(location));
+			Point2i chunkLocation = new Point2i(i).add(location.regionToChunk());
+			ChunkData filterData = new ChunkData(chunkLocation, region, poi, entities, selection != null && selection.isChunkSelected(location));
 
 			if ((selection == null || selection.isChunkSelected(location)) && filter.matches(filterData)) {
 				deleteChunkIndex(i);
@@ -316,25 +304,24 @@ public class Region {
 		return deleted;
 	}
 
+	private boolean hasData(RegionChunk region, EntitiesChunk entities, PoiChunk poi) {
+		return region != null && !region.isEmpty() || poi != null && !poi.isEmpty() || entities != null && !entities.isEmpty();
+	}
+
 	public boolean keepChunks(Filter<?> filter, Selection selection) {
 		boolean deleted = false;
 		for (int i = 0; i < 1024; i++) {
-			RegionChunk region = this.region.getChunk(i);
+			RegionChunk region = this.region == null ? null : this.region.getChunk(i);
 			EntitiesChunk entities = this.entities == null ? null : this.entities.getChunk(i);
 			PoiChunk poi = this.poi == null ? null : this.poi.getChunk(i);
-
-			if (region == null || region.isEmpty()) {
+			if (!hasData(region, entities, poi)) {
 				continue;
 			}
 
-			Point2i location = region.getAbsoluteLocation();
-			if (location == null) {
-				continue;
-			}
+			Point2i chunkLocation = new Point2i(i).add(location.regionToChunk());
+			ChunkData filterData = new ChunkData(chunkLocation, region, poi, entities, selection != null && selection.isChunkSelected(location));
 
-			ChunkData filterData = new ChunkData(region, poi, entities, selection != null && selection.isChunkSelected(location));
-
-			// keep chunk if filter AND selection applies
+			// keep chunk if filter AND selection applies.
 			// ignore selection if it's null
 			if (!filter.matches(filterData) || selection != null && !selection.isChunkSelected(location)) {
 				deleteChunkIndex(i);
@@ -365,8 +352,7 @@ public class Region {
 			PoiChunk poiChunk = this.poi == null ? null : this.poi.getChunk(i);
 
 			Point2i chunkLocation = location.regionToChunk().add(new Point2i(i));
-
-			ChunkData filterData = new ChunkData(regionChunk, poiChunk, entitiesChunk, selection != null && selection.isChunkSelected(chunkLocation));
+			ChunkData filterData = new ChunkData(chunkLocation, regionChunk, poiChunk, entitiesChunk, selection != null && selection.isChunkSelected(chunkLocation));
 
 			try {
 				if ((selection == null || selection.isChunkSelected(chunkLocation)) && filter.matches(filterData)) {

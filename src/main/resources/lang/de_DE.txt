@@ -4,6 +4,7 @@ status.block;Block
 status.selected;Selektiert
 status.queue;Queue
 status.total;Alle
+status.structures;Bauwerke
 status.overlay;overlay
 menu.file;Datei
 menu.view;Ansicht
@@ -27,6 +28,8 @@ menu.view.reload;Neu laden
 menu.view.chunk_grid;Chunk Gitter
 menu.view.region_grid;Region Gitter
 menu.view.coordinates;Koordinaten
+menu.view.structure_icons;Bauwerke
+menu.view.select_structures;Bauwerke auswählen
 menu.view.goto;Gehe zu
 menu.view.reset_zoom;Zoom zurücksetzen
 menu.view.save_screenshot;Bildschirmfoto erstellen
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;Entities
 dialog.settings.rendering.layers.render_height;Renderhöhe
 dialog.settings.rendering.layers.render_layer_only;Nur Ebene rendern
 dialog.settings.rendering.layers;Ebenen
+dialog.settings.rendering.structure_icons;Bauwerk Symbole
+dialog.settings.rendering.structure_icon_size;Symbolgröße
+dialog.settings.rendering.structure_icon_border_size;Rahmengröße
 dialog.settings.rendering.layers.render_caves;Höhlen rendern
 dialog.goto.title;Gehe zu Koordinaten
 dialog.confirmation.question;Bist Du dir sicher?
@@ -115,6 +121,7 @@ dialog.import_selection.title;Selektion von .csv importieren
 dialog.import_selection.header;Diese Welt hat bereits eine Selektion.\nWie soll die neue Selektion importiert werden?
 dialog.import_selection.overwrite;Überschreiben
 dialog.import_selection.merge;Hinzufügen
+dialog.import_selection.subtract;Subtrahieren
 dialog.filter_chunks.title;Chunks filtern
 dialog.filter_chunks.filter.add.tooltip;Fügt unter dieser Kondition eine neue hinzu.
 dialog.filter_chunks.filter.delete.tooltip;Löscht diese Kondition.
@@ -128,7 +135,8 @@ dialog.filter_chunks.export.tooltip;Exportiert alle betroffenen Chunks in ein ne
 dialog.filter_chunks.delete;Löschen
 dialog.filter_chunks.delete.tooltip;Löscht alle betroffenen Chunks aus dieser Welt.
 dialog.filter_chunks.selection_only;Nur auf Selektion anwenden
-dialog.filter_chunks.overwrite_selection;Selektion überschreiben
+dialog.filter_chunks.add_selection;Selektion addieren
+dialog.filter_chunks.subtract_selection;Selektion subtrahieren
 dialog.filter_chunks.selection_radius;Selektionsradius
 dialog.filter_chunks.tab_query;Query
 dialog.filter_chunks.tab_script;Script

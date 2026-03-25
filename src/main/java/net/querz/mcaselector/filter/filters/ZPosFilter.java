@@ -24,15 +24,17 @@ public class ZPosFilter extends IntFilter implements RegionMatcher {
 	}
 
 	@Override
-	public boolean matchesRegion(Point2i region) {
-		Point2i chunk = region.regionToChunk();
+	public MatchType matchesRegion(Point2i region) {
+		int z = region.regionToChunk().getZ();
+		int matchCount = 0;
 		for (int i = 0; i < 32; i++) {
-			Point2i p = chunk.add(i);
-			if (matches(getFilterNumber(), p.getZ(), getComparator())) {
-				return true;
+			if (matches(getFilterNumber(), z + i, getComparator())) {
+				matchCount++;
+			} else {
+				return matchCount == 0 ? MatchType.NONE : MatchType.PARTIALLY;
 			}
 		}
-		return false;
+		return MatchType.FULLY;
 	}
 
 	@Override

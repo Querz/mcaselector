@@ -33,6 +33,7 @@ public abstract class Config {
 				path = jarFile.getParent();
 			}
 		} catch (Exception ex) {
+			//noinspection CallToPrintStackTrace
 			ex.printStackTrace();
 		}
 		BASE_DIR = new File(path);
@@ -56,16 +57,21 @@ public abstract class Config {
 		}
 
 		if (!BASE_CACHE_DIR.exists()) {
+			//noinspection ResultOfMethodCallIgnored
 			BASE_CACHE_DIR.mkdirs();
 		}
 		if (!BASE_LOG_DIR.exists()) {
+			//noinspection ResultOfMethodCallIgnored
 			BASE_LOG_DIR.mkdirs();
 		}
 		if (!BASE_OVERLAYS_FILE.getParentFile().exists()) {
+			//noinspection ResultOfMethodCallIgnored
 			BASE_OVERLAYS_FILE.getParentFile().mkdirs();
 		}
 		Logging.setLogDir(BASE_LOG_DIR);
 	}
+
+	private static final Logger LOGGER = LogManager.getLogger(Config.class);
 
 	private static File getEnvFilesWithDefault(String def, String suffix, char divider, String... envs) {
 		File file;
@@ -120,12 +126,11 @@ public abstract class Config {
 	// static values
 	public static final float MAX_SCALE = 15.9999f;
 	public static final float MIN_SCALE = 0.05f;
+	@SuppressWarnings("ConstantValue")
 	public static final int MIN_ZOOM_LEVEL = Bits.getMsb((int) MIN_SCALE);
 	public static final int MAX_ZOOM_LEVEL = Bits.getMsb((int) MAX_SCALE);
 	public static final double IMAGE_POOL_SIZE = 2.5;
 	public static final int MAX_RECENT_FILES = 16;
-
-	private static final Logger LOGGER = LogManager.getLogger(Config.class);
 
 	public abstract void save();
 
@@ -137,7 +142,7 @@ public abstract class Config {
 		try {
 			Files.writeString(file.toPath(), save(gson));
 		} catch (IOException ex) {
-			LOGGER.warn("error writing config file " + file, ex);
+			LOGGER.warn("error writing config file {}", file, ex);
 		}
 	}
 
@@ -145,7 +150,7 @@ public abstract class Config {
 		try {
 			return Files.readString(file.toPath());
 		} catch (IOException ex) {
-			LOGGER.warn("error reading config file " + file, ex);
+			LOGGER.warn("error reading config file {}", file, ex);
 		}
 		return null;
 	}

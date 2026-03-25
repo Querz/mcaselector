@@ -132,8 +132,8 @@ public class FilterParser {
 
 	public static GroupFilter unwrap(GroupFilter filter) {
 		GroupFilter current = filter;
-		while (current.getFilterValue().size() == 1 && current.getFilterValue().get(0).getType().getFormat() == FilterType.Format.GROUP) {
-			current = (GroupFilter) current.getFilterValue().get(0);
+		while (current.getFilterValue().size() == 1 && current.getFilterValue().getFirst().getType().getFormat() == FilterType.Format.GROUP) {
+			current = (GroupFilter) current.getFilterValue().getFirst();
 		}
 
 		for (int i = 0; i < current.getFilterValue().size(); i++) {

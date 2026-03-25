@@ -40,11 +40,30 @@ public class ChunkSet implements IntIterable, Serializable, Cloneable {
 	}
 
 	public void or(ChunkSet other) {
-		for (short i = 0; i < 1024; i++) {
-			if (other.get(i)) {
-				set(i);
-			}
+		short setBits = 0;
+		for (int i = 0; i < 16; i++) {
+			words[i] |= other.words[i];
+			setBits += (short) Long.bitCount(words[i]);
 		}
+		this.setBits = setBits;
+	}
+
+	public void xnor(ChunkSet other) {
+		short setBits = 0;
+		for (int i = 0; i < 16; i++) {
+			words[i] = ~(words[i] ^ other.words[i]);
+			setBits += (short) Long.bitCount(words[i]);
+		}
+		this.setBits = setBits;
+	}
+
+	public void xor(ChunkSet other) {
+		short setBits = 0;
+		for (int i = 0; i < 16; i++) {
+			words[i] ^= other.words[i];
+			setBits += (short) Long.bitCount(words[i]);
+		}
+		this.setBits = setBits;
 	}
 
 	// turns all chunks to be selected if the chunk in this ChunkSet is selected and the one in the other ChunkSet is not.
@@ -54,6 +73,24 @@ public class ChunkSet implements IntIterable, Serializable, Cloneable {
 				clear(i);
 			}
 		}
+	}
+
+	public void and(ChunkSet other) {
+		short setBits = 0;
+		for (int i = 0; i < 16; i++) {
+			words[i] &= other.words[i];
+			setBits += (short) Long.bitCount(words[i]);
+		}
+		this.setBits = setBits;
+	}
+
+	public void andNot(ChunkSet other) {
+		short setBits = 0;
+		for (int i = 0; i < 16; i++) {
+			words[i] &= ~other.words[i];
+			setBits += (short) Long.bitCount(words[i]);
+		}
+		this.setBits = setBits;
 	}
 
 	public ChunkSet flip() {

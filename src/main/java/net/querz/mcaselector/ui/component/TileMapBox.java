@@ -111,9 +111,8 @@ public class TileMapBox extends HBox {
 	public TileMapBox(TileMap tileMap, Stage primaryStage) {
 		getStyleClass().add("tile-map-box");
 		getStylesheets().add(Objects.requireNonNull(TileMapBox.class.getClassLoader().getResource("style/component/tile-map-box.css")).toExternalForm());
-		ChangeListener<Number> sizeListener = (o, r, n) -> {
-			tileMap.resize(primaryStage.getWidth(), primaryStage.getHeight());
-		};
+		ChangeListener<Number> sizeListener = (o, r, n) ->
+				tileMap.resize(primaryStage.getWidth(), primaryStage.getHeight());
 		primaryStage.widthProperty().addListener(sizeListener);
 		primaryStage.heightProperty().addListener(sizeListener);
 		setAlignment(Pos.TOP_LEFT);

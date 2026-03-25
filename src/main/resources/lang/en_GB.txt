@@ -4,6 +4,7 @@ status.block;block
 status.selected;selected
 status.queue;queue
 status.total;total
+status.structures;structures
 status.overlay;overlay
 menu.file;File
 menu.view;View
@@ -27,6 +28,8 @@ menu.view.reload;Reload
 menu.view.chunk_grid;Chunk Grid
 menu.view.region_grid;Region Grid
 menu.view.coordinates;Coordinates
+menu.view.structure_icons;Structures
+menu.view.select_structures;Select Structures
 menu.view.goto;Goto
 menu.view.reset_zoom;Reset zoom
 menu.view.save_screenshot;Save screenshot
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;Entities
 dialog.settings.rendering.layers.render_height;Render height
 dialog.settings.rendering.layers.render_layer_only;Render layer only
 dialog.settings.rendering.layers;Layers
+dialog.settings.rendering.structure_icons;Structure icons
+dialog.settings.rendering.structure_icon_size;Icon size
+dialog.settings.rendering.structure_icon_border_size;Border size
 dialog.settings.rendering.layers.render_caves;Render caves
 dialog.goto.title;Goto location
 dialog.confirmation.question;Are you sure?
@@ -115,6 +121,7 @@ dialog.import_selection.title;Import selection from .csv
 dialog.import_selection.header;This world already has a selection.\nHow would you like to import the new selection?
 dialog.import_selection.overwrite;Overwrite
 dialog.import_selection.merge;Merge
+dialog.import_selection.subtract;Subtract
 dialog.filter_chunks.title;Filter chunks
 dialog.filter_chunks.filter.add.tooltip;Add a new condition below this one.
 dialog.filter_chunks.filter.delete.tooltip;Delete this condition.
@@ -128,7 +135,8 @@ dialog.filter_chunks.export.tooltip;Exports all affected chunks into a new direc
 dialog.filter_chunks.delete;Delete
 dialog.filter_chunks.delete.tooltip;Deletes all affected chunks from the current world.
 dialog.filter_chunks.selection_only;Apply to selection only
-dialog.filter_chunks.overwrite_selection;Overwrite selection
+dialog.filter_chunks.add_selection;Add selection
+dialog.filter_chunks.subtract_selection;Subtract selection
 dialog.filter_chunks.selection_radius;Selection radius
 dialog.filter_chunks.tab_query;Query
 dialog.filter_chunks.tab_script;Script

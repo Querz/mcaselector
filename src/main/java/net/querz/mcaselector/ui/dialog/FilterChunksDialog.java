@@ -63,17 +63,19 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> implem
 	private final RadioButton export = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_EXPORT);
 	private final RadioButton delete = UIFactory.radio(Translation.DIALOG_FILTER_CHUNKS_DELETE);
 	private final Label selectionOnlyLabel = UIFactory.label(Translation.DIALOG_FILTER_CHUNKS_SELECTION_ONLY);
-	private final Label overwriteSelectionLabel = UIFactory.label(Translation.DIALOG_FILTER_CHUNKS_OVERWRITE_SELECTION);
+	private final Label addSelectionLabel = UIFactory.label(Translation.DIALOG_FILTER_CHUNKS_ADD_SELECTION);
+	private final Label subtractSelectionLabel = UIFactory.label(Translation.DIALOG_FILTER_CHUNKS_SUBTRACT_SELECTION);
 	private final Label selectionRadiusLabel = UIFactory.label(Translation.DIALOG_FILTER_CHUNKS_SELECTION_RADIUS);
 	private final CheckBox selectionOnly = new CheckBox();
-	private final CheckBox overwriteSelection = new CheckBox();
+	private final CheckBox addSelection = new CheckBox();
+	private final CheckBox subtractSelection = new CheckBox();
 	private final TextField selectionRadius = new TextField();
 	private static final CodeEditor codeEditor = new CodeEditor(initScript);
 	private static int lastSelectedTab;
 
 	private static int radius;
 	private static boolean applyToSelectionOnly;
-	private static boolean applyOverwriteSelection = true;
+	private static ApplyType applyType = ApplyType.OVERWRITE;
 
 	public FilterChunksDialog(Stage primaryStage) {
 		titleProperty().bind(Translation.DIALOG_FILTER_CHUNKS_TITLE.getProperty());
@@ -97,7 +99,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> implem
 				scriptFilter.setFilterValue(codeEditor.getText());
 				filter.addFilter(scriptFilter);
 			}
-			return new Result(filter, getHandleType(), applyToSelectionOnly, applyOverwriteSelection, radius, scriptFilter);
+			return new Result(filter, getHandleType(), applyToSelectionOnly, applyType, radius, scriptFilter);
 		});
 
 		// apply same stylesheets to this dialog
@@ -122,12 +124,21 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> implem
 		selectionOnly.setSelected(applyToSelectionOnly);
 		selectionOnly.setOnAction(e -> applyToSelectionOnly = selectionOnly.isSelected());
 
-		overwriteSelection.setSelected(applyOverwriteSelection);
-		overwriteSelection.setOnAction(e -> applyOverwriteSelection = overwriteSelection.isSelected());
+		addSelection.setSelected(applyType == ApplyType.ADD);
+		addSelection.setOnAction(e -> {
+			subtractSelection.setSelected(false);
+			applyType = addSelection.isSelected() ? ApplyType.ADD : ApplyType.OVERWRITE;
+		});
+		subtractSelection.setSelected(applyType == ApplyType.SUBTRACT);
+		subtractSelection.setOnAction(e -> {
+			addSelection.setSelected(false);
+			applyType = subtractSelection.isSelected() ? ApplyType.SUBTRACT : ApplyType.OVERWRITE;
+		});
 
 		EventHandler<ActionEvent> selectEnable = e -> {
 			selectionRadius.setDisable(!select.isSelected());
-			overwriteSelection.setDisable(!select.isSelected());
+			addSelection.setDisable(!select.isSelected());
+			subtractSelection.setDisable(!select.isSelected());
 		};
 
 		select.setOnAction(selectEnable);
@@ -181,10 +192,12 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> implem
 		optionBox.getStyleClass().add("filter-dialog-option-box");
 		optionBox.add(selectionOnlyLabel, 0, 0, 1, 1);
 		optionBox.add(withStackPane(selectionOnly), 1, 0, 1, 1);
-		optionBox.add(overwriteSelectionLabel, 0, 1, 1, 1);
-		optionBox.add(withStackPane(overwriteSelection), 1, 1, 1, 1);
-		optionBox.add(selectionRadiusLabel, 0, 2, 1, 1);
-		optionBox.add(withStackPane(selectionRadius), 1, 2, 1, 1);
+		optionBox.add(addSelectionLabel, 0, 1, 1, 1);
+		optionBox.add(withStackPane(addSelection), 1, 1, 1, 1);
+		optionBox.add(subtractSelectionLabel, 0, 2, 1, 1);
+		optionBox.add(withStackPane(subtractSelection), 1, 2, 1, 1);
+		optionBox.add(selectionRadiusLabel, 2, 0, 1, 1);
+		optionBox.add(withStackPane(selectionRadius), 3, 0, 1, 1);
 
 		HBox selectionBox = new HBox();
 		selectionBox.getChildren().addAll(actionBox, optionBox);
@@ -245,7 +258,7 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> implem
 		return null;
 	}
 
-	public record Result(GroupFilter filter, HandleType type, boolean selectionOnly, boolean overwriteSelection, int radius, ScriptFilter script) implements BeforeAfterCallback {
+	public record Result(GroupFilter filter, HandleType type, boolean selectionOnly, ApplyType applyType, int radius, ScriptFilter script) implements BeforeAfterCallback {
 
 		@Override
 		public void before() {
@@ -261,6 +274,10 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> implem
 		public boolean valid() {
 			return script != null;
 		}
+	}
+
+	public enum ApplyType {
+		ADD, SUBTRACT, OVERWRITE
 	}
 
 	public enum HandleType {

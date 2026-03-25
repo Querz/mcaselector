@@ -321,6 +321,10 @@ public class ChunkRenderer_21w43a implements ChunkRenderer<CompoundTag, String> 
 		minData.put("DataVersion", root.get("DataVersion").copy());
 		minData.put("sections", root.get("sections").copy());
 		minData.put("Status", root.get("Status").copy());
+		CompoundTag structures = Helper.tagFromCompound(root, "structures");
+		if (structures != null) {
+			minData.put("structures", structures.copy());
+		}
 		return minData;
 	}
 

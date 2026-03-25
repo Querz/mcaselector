@@ -4,6 +4,7 @@ status.block;blok
 status.selected;geselecteerd
 status.queue;queue
 status.total;totaal
+status.structures;structuren
 status.overlay;overlay
 menu.file;Bestand
 menu.view;Beeld
@@ -27,6 +28,8 @@ menu.view.reload;Herladen
 menu.view.chunk_grid;Chunk Raster
 menu.view.region_grid;Region Raster
 menu.view.coordinates;Coördinaten
+menu.view.structure_icons;Structuren
+menu.view.select_structures;Selecteer Structuren
 menu.view.goto;Ga naar
 menu.view.reset_zoom;Zoom resetten
 menu.view.save_screenshot;Bewaar screenshot
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;Entiteiten
 dialog.settings.rendering.layers.render_height;Render hoogte
 dialog.settings.rendering.layers.render_layer_only;Alleen laag renderen
 dialog.settings.rendering.layers;Lagen
+dialog.settings.rendering.structure_icons;Structuur-pictogrammen
+dialog.settings.rendering.structure_icon_size;Pictogramgrootte
+dialog.settings.rendering.structure_icon_border_size;Randgrootte
 dialog.settings.rendering.layers.render_caves;Grotten renderen
 dialog.goto.title;Ga naar locatie
 dialog.confirmation.question;Weet je het zeker?
@@ -115,6 +121,7 @@ dialog.import_selection.title;Selectie importeren uit .csv
 dialog.import_selection.header;Deze wereld heeft al een selectie.\nHoe moet de nieuwe selectie geïmporteerd worden?
 dialog.import_selection.overwrite;Overschrijven
 dialog.import_selection.merge;Optellen
+dialog.import_selection.subtract;Aftrekken
 dialog.filter_chunks.title;Chunks filteren
 dialog.filter_chunks.filter.add.tooltip;Voeg een nieuwe voorwaarde hieronder toe.
 dialog.filter_chunks.filter.delete.tooltip;Verwijder deze voorwaarde.
@@ -128,7 +135,8 @@ dialog.filter_chunks.export.tooltip;Exporteert alle aangepaste chunks in een nie
 dialog.filter_chunks.delete;Verwijderen
 dialog.filter_chunks.delete.tooltip;Verwijdert alle aangepaste chunks uit de huidige wereld.
 dialog.filter_chunks.selection_only;Alleen van toepassing op selectie
-dialog.filter_chunks.overwrite_selection;Selectie overschrijven
+dialog.filter_chunks.add_selection;Selectie toevoegen
+dialog.filter_chunks.subtract_selection;Selectie aftrekken
 dialog.filter_chunks.selection_radius;Selectie radius
 dialog.filter_chunks.tab_query;Vraag
 dialog.filter_chunks.tab_script;Script

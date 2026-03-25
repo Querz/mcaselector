@@ -1,21 +1,17 @@
 package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.io.FileHelper;
+import net.querz.mcaselector.util.exception.ThrowingConsumer;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.point.Point3i;
 import net.querz.mcaselector.util.range.Range;
 import net.querz.mcaselector.selection.ChunkSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
@@ -41,7 +37,30 @@ public abstract class MCAFile<T extends Chunk> {
 
 	protected Function<Point2i, T> chunkConstructor;
 
-	// file name must have well formed mca file format (r.<x>.<z>.mca)
+
+	// initialize reflection for foreign API
+	private static Method arenaOfSharedMethod = null;
+	private static Method fileChannelMapMethod = null;
+	private static Method memorySegmentAsByteBufferMethod = null;
+	private static Method arenaCloseMethod = null;
+	private static boolean useForeignAPI = false;
+
+	static {
+		try {
+			Class<?> arenaClass = Class.forName("java.lang.foreign.Arena");
+			Class<?> memorySegmentClass = Class.forName("java.lang.foreign.MemorySegment");
+			arenaOfSharedMethod = arenaClass.getMethod("ofShared");
+			fileChannelMapMethod = FileChannel.class.getMethod("map", FileChannel.MapMode.class, long.class, long.class, arenaClass);
+			memorySegmentAsByteBufferMethod = memorySegmentClass.getMethod("asByteBuffer");
+			arenaCloseMethod = arenaClass.getMethod("close");
+			useForeignAPI = true;
+			LOGGER.info("successfully initialized foreign API");
+		} catch (ReflectiveOperationException e) {
+			LOGGER.info("failed to initialize foreign API, falling back to HeapByteBuffer");
+		}
+	}
+
+	// file name must have well-formed mca file format (r.<x>.<z>.mca)
 	public MCAFile(File file, Function<Point2i, T> chunkConstructor) {
 		Point2i location = FileHelper.parseMCAFileName(file);
 		if (location == null) {
@@ -49,6 +68,8 @@ public abstract class MCAFile<T extends Chunk> {
 		}
 		this.location = location;
 		this.file = file;
+		this.offsets = new int[1024];
+		this.sectors = new byte[1024];
 		this.timestamps = new int[1024];
 		this.chunkConstructor = chunkConstructor;
 	}
@@ -179,14 +200,12 @@ public abstract class MCAFile<T extends Chunk> {
 				// copy chunk data to tmp file
 				source.seek(offsets[i] * 4096L);
 				rafTmp.seek(globalOffset * 4096L);
-
-				DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(source.getFD()), sectors * 4096));
-				DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(rafTmp.getFD()), sectors * 4096));
-
 				byte[] data = new byte[sectors * 4096];
-				dis.read(data);
-				dos.write(data);
-				offsets[i] = globalOffset; // always keep MCAFile information up to date
+				source.readFully(data);
+				rafTmp.write(data);
+
+				// keep MCAFile information up to date
+				offsets[i] = globalOffset;
 				globalOffset += sectors;
 			}
 		}
@@ -211,58 +230,39 @@ public abstract class MCAFile<T extends Chunk> {
 
 	public void load(boolean raw) throws IOException {
 		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
-			if (fc.size() < 8196) {
+			if (fc.size() <= 8192) {
 				return;
 			}
-//			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-			ByteBuffer buf = ByteBuffer.allocate((int) fc.size());
-			fc.read(buf);
-			loadHeader(buf);
-
 			Point2i origin = location.regionToChunk();
 
-			for (short i = 0; i < 1024; i++) {
-				if (offsets[i] == 0) {
-					chunks[i] = null;
-					continue;
-				}
-				buf.position(offsets[i] * 4096);
+			loadBuffer(fc, (int) fc.size(), buf -> {
+				loadHeader(buf);
+				for (short i = 0; i < 1024; i++) {
+					if (offsets[i] == 0) {
+						chunks[i] = null;
+						continue;
+					}
+					buf.position(offsets[i] * 4096);
 
-				Point2i chunkLocation = origin.add(new Point2i(i));
+					Point2i chunkLocation = origin.add(new Point2i(i));
 
-				try {
-					chunks[i] = chunkConstructor.apply(chunkLocation);
-					chunks[i].setTimestamp(timestamps[i]);
-					chunks[i].load(buf, raw);
-				} catch (Exception ex) {
-					chunks[i] = null;
-					LOGGER.warn("failed to load chunk at {}", chunkLocation, ex);
+					try {
+						chunks[i] = chunkConstructor.apply(chunkLocation);
+						chunks[i].setTimestamp(timestamps[i]);
+						chunks[i].load(buf, raw);
+					} catch (Exception ex) {
+						chunks[i] = null;
+						LOGGER.warn("failed to load chunk at {}", chunkLocation, ex);
+					}
 				}
-			}
+
+			});
 		}
 	}
 
 	public void loadHeader() throws IOException {
-		// use HeapByteBuffer here because MappedByteBuffer may not immediately close when calling FileChannel#close(),
-		// causing it to keep a lock on the file, which can cause an exception later when we try to delete or overwrite it.
-		// TODO: once `foreign` is out of preview, swap it for the following code:
-		//
-		//		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ);
-		//				Arena arena = Arena.ofShared()) {
-		//
-		//			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, FileHelper.HEADER_SIZE, arena).asByteBuffer();
-		//
-		//			loadHeader(buf);
-		//		} catch (ArrayIndexOutOfBoundsException ex) {
-		//			throw new IOException(ex);
-		//		}
-
 		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
-			ByteBuffer buf = ByteBuffer.allocate(FileHelper.HEADER_SIZE);
-			fc.read(buf);
-			loadHeader(buf);
-		} catch (ArrayIndexOutOfBoundsException ex) {
-			throw new IOException(ex);
+			loadBuffer(fc, FileHelper.HEADER_SIZE, this::loadHeader);
 		}
 	}
 
@@ -295,43 +295,40 @@ public abstract class MCAFile<T extends Chunk> {
 			return null;
 		}
 
+		Point2i region = FileHelper.parseMCAFileName(file);
+		if (region == null) {
+			throw new IOException("invalid region file name " + file);
+		}
+
+		Point2i rel = chunk.mod(32);
+		rel.setX(rel.getX() < 0 ? 32 + rel.getX() : rel.getX());
+		rel.setZ(rel.getZ() < 0 ? 32 + rel.getZ() : rel.getZ());
+		int headerIndex = rel.getZ() * 32 + rel.getX();
+		int headerOffset = headerIndex * 4;
+
+		Point2i absoluteChunkLocation = region.regionToChunk().add(rel);
+		T chunkData = chunkConstructor.apply(absoluteChunkLocation);
+
 		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
-//			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-			ByteBuffer buf = ByteBuffer.allocate((int) fc.size());
-			fc.read(buf);
+			loadBuffer(fc, (int) fc.size(), buf -> {
+				// read offset and timestamp for specific chunk
+				buf.position(headerOffset);
+				int offset = (buf.get()) << 16;
+				offset |= (buf.get() & 0xFF) << 8;
+				offset = offset | buf.get() & 0xFF;
 
-			// read offset, sector count and timestamp for specific chunk
-			Point2i region = FileHelper.parseMCAFileName(file);
-			if (region == null) {
-				throw new IOException("invalid region file name " + file);
-			}
+				// read timestamp
+				buf.position(headerOffset + 4096);
+				int timestamp = buf.getInt();
 
-			Point2i rel = chunk.mod(32);
-			rel.setX(rel.getX() < 0 ? 32 + rel.getX() : rel.getX());
-			rel.setZ(rel.getZ() < 0 ? 32 + rel.getZ() : rel.getZ());
-			int headerIndex = rel.getZ() * 32 + rel.getX();
-			int headerOffset = headerIndex * 4;
+				// read chunk data
+				chunkData.setTimestamp(timestamp);
 
-			// read offset
-			buf.position(headerOffset);
-			int offset = (buf.get()) << 16;
-			offset |= (buf.get() & 0xFF) << 8;
-			offset = offset | buf.get() & 0xFF;
-
-			Point2i absoluteChunkLocation = region.regionToChunk().add(rel);
-
-			// read timestamp
-			buf.position(headerOffset + 4096);
-			int timestamp = buf.getInt();
-
-			// read chunk data
-			T chunkData = chunkConstructor.apply(absoluteChunkLocation);
-			chunkData.setTimestamp(timestamp);
-
-			if (offset > 0) {
-				buf.position(offset * 4096);
-				chunkData.load(buf, false);
-			}
+				if (offset > 0) {
+					buf.position(offset * 4096);
+					chunkData.load(buf, false);
+				}
+			});
 
 			return chunkData;
 		}
@@ -339,23 +336,21 @@ public abstract class MCAFile<T extends Chunk> {
 
 	public void loadBorderChunks() throws IOException {
 		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
-//			ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-			ByteBuffer buf = ByteBuffer.allocate((int) fc.size());
-			fc.read(buf);
+			loadBuffer(fc, (int) fc.size(), buf -> {
+				loadHeader(buf);
 
-			loadHeader(buf);
+				// top row / bottom row
+				for (int x = 0; x < 32; x++) {
+					loadChunk(buf, x);
+					loadChunk(buf, x + 992);
+				}
 
-			// top row / bottom row
-			for (int x = 0; x < 32; x++) {
-				loadChunk(buf, x);
-				loadChunk(buf, x + 992);
-			}
-
-			// left row / right row
-			for (int z = 1; z < 31; z++) {
-				loadChunk(buf, z * 32);
-				loadChunk(buf, 31 + z * 32);
-			}
+				// left row / right row
+				for (int z = 1; z < 31; z++) {
+					loadChunk(buf, z * 32);
+					loadChunk(buf, 31 + z * 32);
+				}
+			});
 		}
 	}
 
@@ -398,6 +393,33 @@ public abstract class MCAFile<T extends Chunk> {
 			setTimestamp(index, chunk.getTimestamp());
 		}
 		saveWithTempFile();
+	}
+
+	private void loadBuffer(FileChannel fc, int size, ThrowingConsumer<ByteBuffer, IOException> c) throws IOException {
+		if (useForeignAPI) {
+			Object arena = null;
+			try {
+				arena = arenaOfSharedMethod.invoke(null);
+				Object memorySegment = fileChannelMapMethod.invoke(fc, FileChannel.MapMode.READ_ONLY, 0L, size, arena);
+				ByteBuffer buf = (ByteBuffer) memorySegmentAsByteBufferMethod.invoke(memorySegment);
+				c.accept(buf);
+				return;
+			} catch (ReflectiveOperationException e) {
+				/* ignore */
+			} finally {
+				try {
+					if (arena != null) {
+						arenaCloseMethod.invoke(arena);
+					}
+				} catch (ReflectiveOperationException e) {
+					LOGGER.error("failed to close arena", e);
+				}
+			}
+		}
+		// if something went wrong trying to use foreign API or if foreign API failed to initialize, fall back to HeapByteBuffer
+		ByteBuffer buf = ByteBuffer.allocate(size);
+		fc.read(buf);
+		c.accept(buf);
 	}
 
 // END OF IO STUFF -----------------------------------------------------------------------------------------------------

@@ -25,6 +25,7 @@ import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.dialog.*;
 import net.querz.mcaselector.util.validation.BeforeAfterCallback;
+import net.querz.mcaselector.version.mapping.registry.StructureRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import javax.imageio.ImageIO;
@@ -68,12 +69,10 @@ public class DialogHelper {
 							t,
 							false
 					));
-					if (r.requiresClearCache()) {
-						if (r.selectionOnly()) {
-							CacheHelper.clearSelectionCache(tileMap);
-						} else {
-							CacheHelper.clearAllCache(tileMap);
-						}
+					if (r.selectionOnly()) {
+						CacheHelper.clearSelectionCache(tileMap);
+					} else {
+						CacheHelper.clearAllCache(tileMap);
 					}
 					if (c.cancelled()) {
 						return;
@@ -134,7 +133,7 @@ public class DialogHelper {
 
 								WorldDirectories worldDirectories = FileHelper.createWorldDirectories(dir);
 								if (worldDirectories == null) {
-									LOGGER.warn("failed to create world directories");
+									LOGGER.warn("failed to create world directories to export filtered chunks");
 									new ErrorDialog(primaryStage, "failed to create world directories");
 									return;
 								}
@@ -163,7 +162,7 @@ public class DialogHelper {
 				}
 				case SELECT -> {
 					Selection selection = tileMap.getSelection();
-					if (r.overwriteSelection()) {
+					if (r.applyType() == FilterChunksDialog.ApplyType.OVERWRITE) {
 						tileMap.clearSelection();
 					}
 					if (runBefore(r, primaryStage)) {
@@ -175,7 +174,11 @@ public class DialogHelper {
 						r.selectionOnly() ? (selection.isEmpty() ? null : selection) : null,
 						r.radius(),
 						s -> Platform.runLater(() -> {
-							tileMap.addSelection(s);
+							if (r.applyType() == FilterChunksDialog.ApplyType.SUBTRACT) {
+								tileMap.subtractSelection(s);
+							} else {
+								tileMap.addSelection(s);
+							}
 							tileMap.draw();
 						}), t, false));
 					r.filter().resetTempData();
@@ -242,7 +245,6 @@ public class DialogHelper {
 				CacheHelper.clearSelectionCache(tileMap);
 				tileMap.clear();
 				tileMap.clearSelection();
-				tileMap.draw();
 			}
 		});
 	}
@@ -257,7 +259,7 @@ public class DialogHelper {
 
 					WorldDirectories worldDirectories = FileHelper.createWorldDirectories(dir);
 					if (worldDirectories == null) {
-						LOGGER.warn("failed to create world directories");
+						LOGGER.warn("failed to create world directories to export selected chunks");
 						new ErrorDialog(primaryStage, "failed to create world directories");
 						return;
 					}
@@ -314,51 +316,58 @@ public class DialogHelper {
 
 		Optional<SettingsDialog.Result> result = new SettingsDialog(primaryStage, renderSettings).showAndWait();
 		result.ifPresent(r -> {
-			if (ConfigProvider.GLOBAL.getProcessThreads() != r.processThreads
-					|| ConfigProvider.GLOBAL.getWriteThreads() != r.writeThreads) {
-				ConfigProvider.GLOBAL.setProcessThreads(r.processThreads);
-				ConfigProvider.GLOBAL.setWriteThreads(r.writeThreads);
+			if (ConfigProvider.GLOBAL.getProcessThreads() != r.processThreads()
+					|| ConfigProvider.GLOBAL.getWriteThreads() != r.writeThreads()) {
+				ConfigProvider.GLOBAL.setProcessThreads(r.processThreads());
+				ConfigProvider.GLOBAL.setWriteThreads(r.writeThreads());
 				JobHandler.init();
 			}
-			ConfigProvider.GLOBAL.setMaxLoadedFiles(r.maxLoadedFiles);
+			ConfigProvider.GLOBAL.setMaxLoadedFiles(r.maxLoadedFiles());
 
-			if (!ConfigProvider.GLOBAL.getLocale().equals(r.locale)) {
-				ConfigProvider.GLOBAL.setLocale(r.locale);
+			if (!ConfigProvider.GLOBAL.getLocale().equals(r.locale())) {
+				ConfigProvider.GLOBAL.setLocale(r.locale());
 				Locale.setDefault(ConfigProvider.GLOBAL.getLocale());
 			}
-			ConfigProvider.GLOBAL.setRegionSelectionColor(new Color(r.regionColor));
-			ConfigProvider.GLOBAL.setChunkSelectionColor(new Color(r.chunkColor));
-			ConfigProvider.GLOBAL.setPasteChunksColor(new Color(r.pasteColor));
+			ConfigProvider.GLOBAL.setRegionSelectionColor(new Color(r.regionColor()));
+			ConfigProvider.GLOBAL.setChunkSelectionColor(new Color(r.chunkColor()));
+			ConfigProvider.GLOBAL.setPasteChunksColor(new Color(r.pasteColor()));
 			tileMap.redrawOverlays();
-			ConfigProvider.GLOBAL.setMcSavesDir(r.mcSavesDir + "");
-			ConfigProvider.GLOBAL.setDebug(r.debug);
+			ConfigProvider.GLOBAL.setMcSavesDir(r.mcSavesDir() + "");
+			ConfigProvider.GLOBAL.setDebug(r.debug());
 
 			if (!tileMap.getDisabled()) {
-				ConfigProvider.WORLD.setShowNonexistentRegions(r.showNonexistentRegions);
-				tileMap.setShowNonexistentRegions(r.showNonexistentRegions);
-				ConfigProvider.WORLD.setSmoothRendering(r.smoothRendering);
-				tileMap.setSmoothRendering(r.smoothRendering);
-				ConfigProvider.WORLD.setSmoothOverlays(r.smoothOverlays);
-				ConfigProvider.WORLD.setTileMapBackground(r.tileMapBackground.name());
-				tileMap.getWindow().getTileMapBox().setBackground(r.tileMapBackground.getBackground());
+				ConfigProvider.WORLD.setShowNonexistentRegions(r.showNonexistentRegions());
+				tileMap.setShowNonexistentRegions(r.showNonexistentRegions());
+				ConfigProvider.WORLD.setSmoothRendering(r.smoothRendering());
+				tileMap.setSmoothRendering(r.smoothRendering());
+				ConfigProvider.WORLD.setSmoothOverlays(r.smoothOverlays());
+				ConfigProvider.WORLD.setTileMapBackground(r.tileMapBackground().name());
+				tileMap.getWindow().getTileMapBox().setBackground(r.tileMapBackground().getBackground());
 
-				if (r.height != ConfigProvider.WORLD.getRenderHeight() || r.layerOnly != ConfigProvider.WORLD.getRenderLayerOnly()
-					|| r.shade != ConfigProvider.WORLD.getShade() || r.shadeWater != ConfigProvider.WORLD.getShadeWater()
-					|| r.shadeAltitude != ConfigProvider.WORLD.getShadeAltitude() || r.caves != ConfigProvider.WORLD.getRenderCaves()) {
-					ConfigProvider.WORLD.setRenderHeight(r.height);
-					ConfigProvider.WORLD.setRenderLayerOnly(r.layerOnly);
-					ConfigProvider.WORLD.setRenderCaves(r.caves);
-					tileMap.getWindow().getOptionBar().setRenderHeight(r.height);
-					ConfigProvider.WORLD.setShade(r.shade);
-					ConfigProvider.WORLD.setShadeWater(r.shadeWater);
-					ConfigProvider.WORLD.setShadeAltitude(r.shadeAltitude);
+				if (r.height() != ConfigProvider.WORLD.getRenderHeight() || r.layerOnly() != ConfigProvider.WORLD.getRenderLayerOnly()
+					|| r.shade() != ConfigProvider.WORLD.getShade() || r.shadeWater() != ConfigProvider.WORLD.getShadeWater()
+					|| r.shadeAltitude() != ConfigProvider.WORLD.getShadeAltitude() || r.caves() != ConfigProvider.WORLD.getRenderCaves()) {
+					ConfigProvider.WORLD.setRenderHeight(r.height());
+					ConfigProvider.WORLD.setRenderLayerOnly(r.layerOnly());
+					ConfigProvider.WORLD.setRenderCaves(r.caves());
+					tileMap.getWindow().getOptionBar().setRenderHeight(r.height());
+					ConfigProvider.WORLD.setShade(r.shade());
+					ConfigProvider.WORLD.setShadeWater(r.shadeWater());
+					ConfigProvider.WORLD.setShadeAltitude(r.shadeAltitude());
 					// only clear the cache if the actual image rendering changed
 					CacheHelper.clearAllCache(tileMap);
 				}
 
 				WorldDirectories worldDirectories = ConfigProvider.WORLD.getWorldDirs();
-				worldDirectories.setPoi(r.poi);
-				worldDirectories.setEntities(r.entities);
+				worldDirectories.setPoi(r.poi());
+				worldDirectories.setEntities(r.entities());
+
+				if (r.structureIconSize() != ConfigProvider.WORLD.getStructureIconSize()
+					|| r.structureIconBorderSize() != ConfigProvider.WORLD.getStructureIconBorderSize()) {
+					ConfigProvider.WORLD.setStructureIconSize(r.structureIconSize());
+					ConfigProvider.WORLD.setStructureIconBorderSize(r.structureIconBorderSize());
+					StructureRegistry.init();
+				}
 
 				ConfigProvider.WORLD.save();
 			}
@@ -572,13 +581,13 @@ public class DialogHelper {
 		if (tempFiles != null) {
 			for (RegionDirectories tempFile : tempFiles.values()) {
 				if (!tempFile.getRegion().delete()) {
-					LOGGER.warn("failed to delete temp file {}", tempFile.getRegion());
+					LOGGER.warn("failed to delete temp region file {}", tempFile.getRegion());
 				}
 				if (!tempFile.getPoi().delete()) {
-					LOGGER.warn("failed to delete temp file {}", tempFile.getPoi());
+					LOGGER.warn("failed to delete temp poi file {}", tempFile.getPoi());
 				}
 				if (!tempFile.getEntities().delete()) {
-					LOGGER.warn("failed to delete temp file {}", tempFile.getEntities());
+					LOGGER.warn("failed to delete temp entities file {}", tempFile.getEntities());
 				}
 			}
 		}
@@ -628,8 +637,8 @@ public class DialogHelper {
 			tileMap.clear(task, false);
 			tileMap.getOverlayPool().switchTo(new File(ConfigProvider.WORLD.getCacheDir(), "cache").toString());
 			tileMap.clearSelection();
-			tileMap.draw();
 			tileMap.disable(false);
+			tileMap.update();
 			tileMap.getWindow().getOptionBar().setWorldDependentMenuItemsEnabled(true, tileMap, primaryStage);
 			task.done(Translation.DIALOG_PROGRESS_DONE.toString());
 			Platform.runLater(() -> tileMap.getWindow().setTitleSuffix(worldDirectories.getRegion().getParent()));
@@ -662,6 +671,7 @@ public class DialogHelper {
 			switch (result) {
 				case OVERWRITE -> tileMap.setSelection(selection);
 				case MERGE -> tileMap.addSelection(selection);
+				case SUBTRACT -> tileMap.subtractSelection(selection);
 			}
 			tileMap.draw();
 		}

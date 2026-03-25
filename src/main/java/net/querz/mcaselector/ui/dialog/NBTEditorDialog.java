@@ -16,6 +16,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import net.querz.mcaselector.io.CacheHelper;
 import net.querz.mcaselector.io.mca.CompressionType;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.mca.Chunk;
@@ -97,6 +98,8 @@ public class NBTEditorDialog extends Dialog<NBTEditorDialog.Result> implements P
 			});
 
 			LOGGER.warn("took {} to save chunk {}", t, selectedChunk);
+
+			CacheHelper.clearSelectionCache(tileMap);
 
 			if (exception.get() != null) {
 				e.consume();

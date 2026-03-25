@@ -51,7 +51,7 @@ public class DeleteSectionsField extends Field<List<Range>> {
 
 	@Override
 	public String toString() {
-		if (getNewValue().size() == 1 && getNewValue().get(0).isMaxRange()) {
+		if (getNewValue().size() == 1 && getNewValue().getFirst().isMaxRange()) {
 			return getType().toString() + " = true";
 		}
 		StringJoiner sj = new StringJoiner(", ");
@@ -61,7 +61,7 @@ public class DeleteSectionsField extends Field<List<Range>> {
 
 	@Override
 	public String valueToString() {
-		if (getNewValue().size() == 1 && getNewValue().get(0).isMaxRange()) {
+		if (getNewValue().size() == 1 && getNewValue().getFirst().isMaxRange()) {
 			return "true";
 		}
 		StringJoiner sj = new StringJoiner(", ");

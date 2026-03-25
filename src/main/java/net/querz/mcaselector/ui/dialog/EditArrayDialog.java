@@ -82,15 +82,20 @@ public class EditArrayDialog extends Dialog<NBTTreeView.EditArrayResult> {
 					long min = 0, max = 0;
 					BitCount b = bits.getSelectionModel().getSelectedItem();
 					if (b == null || b == BitCount.NONE) {
-						if (handle instanceof byte[]) {
-							min = Byte.MIN_VALUE;
-							max = Byte.MAX_VALUE;
-						} else if (handle instanceof int[]) {
-							min = Integer.MIN_VALUE;
-							max = Integer.MAX_VALUE;
-						} else if (handle instanceof long[]) {
-							min = Long.MIN_VALUE;
-							max = Long.MAX_VALUE;
+						switch (handle) {
+							case byte[] ignored -> {
+								min = Byte.MIN_VALUE;
+								max = Byte.MAX_VALUE;
+							}
+							case int[] ignored -> {
+								min = Integer.MIN_VALUE;
+								max = Integer.MAX_VALUE;
+							}
+							case long[] ignored -> {
+								min = Long.MIN_VALUE;
+								max = Long.MAX_VALUE;
+							}
+							default -> {}
 						}
 					} else {
 						max = b.bits == 1 ? 1 : (long) Math.pow(2, b.bits);
@@ -310,7 +315,7 @@ public class EditArrayDialog extends Dialog<NBTTreeView.EditArrayResult> {
 
 	class Row {
 
-		int index;
+		final int index;
 		Number value;
 
 		Row(int index, Number value) {
