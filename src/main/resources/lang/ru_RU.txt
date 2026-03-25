@@ -28,9 +28,9 @@ menu.view.reload;Перезагрузить
 menu.view.chunk_grid;Сетка чанков
 menu.view.region_grid;Сетка регионов
 menu.view.coordinates;Координаты
-menu.view.goto;Перейти
 menu.view.structure_icons;Структуры
 menu.view.select_structures;Выбрать структуры
+menu.view.goto;Перейти
 menu.view.reset_zoom;Сбросить масштаб
 menu.view.save_screenshot;Сохранить снимок экрана
 menu.view.clear_cache;Очистить кэш
