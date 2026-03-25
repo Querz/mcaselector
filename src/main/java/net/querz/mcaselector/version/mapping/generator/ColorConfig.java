@@ -267,7 +267,11 @@ public class ColorConfig {
 				JsonObject pRoot = JsonParser.parseReader(reader).getAsJsonObject();
 				if (pRoot.has("textures")) {
 					for (Map.Entry<String, JsonElement> entry : pRoot.getAsJsonObject("textures").entrySet()) {
-						mapping.putIfAbsent(entry.getKey(), entry.getValue().getAsString());
+						if (entry.getValue().isJsonObject()) {
+							mapping.putIfAbsent(entry.getKey(), entry.getValue().getAsJsonObject().get("sprite").getAsString());
+						} else {
+							mapping.putIfAbsent(entry.getKey(), entry.getValue().getAsString());
+						}
 					}
 				}
 				if (!pRoot.has("parent")) {

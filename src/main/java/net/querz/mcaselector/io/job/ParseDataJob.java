@@ -93,7 +93,7 @@ public class ParseDataJob extends ProcessDataJob {
 			try {
 				regionMCAFile.load(false);
 			} catch (IOException ex) {
-				LOGGER.warn("failed to read mca file header from {}", getRegionDirectories().getRegion());
+				LOGGER.warn("failed to read region mca file header from {}", getRegionDirectories().getRegion());
 			}
 		}
 
@@ -106,7 +106,7 @@ public class ParseDataJob extends ProcessDataJob {
 			try {
 				entitiesMCAFile.load(false);
 			} catch (IOException ex) {
-				LOGGER.warn("failed to read mca file header from {}", getRegionDirectories().getEntities());
+				LOGGER.warn("failed to read entities mca file header from {}", getRegionDirectories().getEntities());
 			}
 		}
 
@@ -119,13 +119,13 @@ public class ParseDataJob extends ProcessDataJob {
 			try {
 				poiMCAFile.load(false);
 			} catch (IOException ex) {
-				LOGGER.warn("failed to read mca file header from {}", getRegionDirectories().getPoi());
+				LOGGER.warn("failed to read poi mca file header from {}", getRegionDirectories().getPoi());
 			}
 		}
 
 		if (regionMCAFile == null && poiMCAFile == null && entitiesMCAFile == null) {
 			dataCallback.accept(null, world);
-			LOGGER.warn("no data to load and parse for region {}", getRegionDirectories().getLocation());
+			LOGGER.debug("no data to load and parse for region {}", getRegionDirectories().getLocation());
 			setLoading(tile, false);
 			return true;
 		}

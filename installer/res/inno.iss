@@ -24,17 +24,25 @@ ExtraDiskSpaceRequired=223010816
 VersionInfoVersion=${applicationVersion}.0
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
-Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\\BrazilianPortuguese.isl"
-Name: "czech"; MessagesFile: "compiler:Languages\\Czech.isl"
-Name: "dutch"; MessagesFile: "compiler:Languages\\Dutch.isl"
-Name: "french"; MessagesFile: "compiler:Languages\\French.isl"
-Name: "german"; MessagesFile: "compiler:Languages\\German.isl"
-Name: "italian"; MessagesFile: "compiler:Languages\\Italian.isl"
-Name: "polish"; MessagesFile: "compiler:Languages\\Polish.isl"
-Name: "portuguese"; MessagesFile: "compiler:Languages\\Portuguese.isl"
-Name: "russian"; MessagesFile: "compiler:Languages\\Russian.isl"
-Name: "spanish"; MessagesFile: "compiler:Languages\\Spanish.isl"
+Name: "en_GB"; MessagesFile: "compiler:Default.isl"
+Name: "pt_BR"; MessagesFile: "compiler:Languages\\BrazilianPortuguese.isl"
+Name: "cs_CZ"; MessagesFile: "compiler:Languages\\Czech.isl"
+Name: "nl_NL"; MessagesFile: "compiler:Languages\\Dutch.isl"
+Name: "fr_FR"; MessagesFile: "compiler:Languages\\French.isl"
+Name: "de_DE"; MessagesFile: "compiler:Languages\\German.isl"
+Name: "it_IT"; MessagesFile: "compiler:Languages\\Italian.isl"
+Name: "pl_PL"; MessagesFile: "compiler:Languages\\Polish.isl"
+Name: "pt_PT"; MessagesFile: "compiler:Languages\\Portuguese.isl"
+Name: "ru_RU"; MessagesFile: "compiler:Languages\\Russian.isl"
+Name: "es_ES"; MessagesFile: "compiler:Languages\\Spanish.isl"
+Name: "hu_HU"; MessagesFile: "compiler:Languages\\Hungarian.isl"
+Name: "ja_JP"; MessagesFile: "compiler:Languages\\Japanese.isl"
+Name: "tr_TR"; MessagesFile: "compiler:Languages\\Turkish.isl"
+Name: "ko_KR"; MessagesFile: "compiler:Languages\\Korean.isl"
+Name: "sv_SE"; MessagesFile: "compiler:Languages\\Swedish.isl"
+Name: "uk_UA"; MessagesFile: "compiler:Languages\\Ukrainian.isl"
+Name: "zh_CN"; MessagesFile: "Languages\\Unofficial\\ChineseSimplified.isl"
+Name: "zh_TW"; MessagesFile: "Languages\\Unofficial\\ChineseTraditional.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked

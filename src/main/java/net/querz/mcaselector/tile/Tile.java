@@ -1,5 +1,6 @@
 package net.querz.mcaselector.tile;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import javafx.scene.image.Image;
 import net.querz.mcaselector.util.math.Bits;
 import net.querz.mcaselector.ui.Color;
@@ -33,6 +34,8 @@ public class Tile {
 	Image overlay;
 	boolean overlayLoaded = false;
 
+	Long2ObjectOpenHashMap<String[]> structures = null;
+
 	public Tile(Point2i location) {
 		this.location = location;
 		longLocation = location.asLong();
@@ -46,8 +49,7 @@ public class Tile {
 		return isVisible(tileMap, 0);
 	}
 
-	// returns whether this tile is visible on screen, adding a custom radius
-	// as a threshold
+	// returns whether this tile is visible on screen, adding a custom radius as a threshold.
 	// threshold is measured in tiles
 	public boolean isVisible(TileMap tileMap, int threshold) {
 		Point2i o = tileMap.getOffset().toPoint2i();
@@ -108,6 +110,7 @@ public class Tile {
 			image.cancel();
 			if (img) {
 				image = null;
+				structures = null;
 			}
 		}
 		if (markedChunksImage != null) {
@@ -131,5 +134,18 @@ public class Tile {
 
 	public void setImage(Image image) {
 		this.image = image;
+	}
+
+	public void setStructures(Long2ObjectOpenHashMap<String[]> structures) {
+		this.structures = structures;
+	}
+
+	public String[] getStructureAt(Point2i absChunk) {
+		return structures == null ? null : structures.get(absChunk.asLong());
+	}
+
+	@Override
+	public String toString() {
+		return String.format("Tile:{location=%s,image=%s,loaded=%s,poi=%s}", location, image != null, loaded, structures != null);
 	}
 }

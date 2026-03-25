@@ -276,6 +276,10 @@ public class ChunkRenderer_17w47a implements ChunkRenderer<CompoundTag, Integer>
 		level.put("Biomes", root.getCompound("Level").get("Biomes").copy());
 		level.put("Sections", root.getCompound("Level").get("Sections").copy());
 		level.put("Status", root.getCompound("Level").get("Status").copy());
+		CompoundTag structures = Helper.tagFromLevelFromRoot(root, "Structures");
+		if (structures != null) {
+			level.put("Structures", structures.copy());
+		}
 		return minData;
 	}
 
@@ -294,7 +298,7 @@ public class ChunkRenderer_17w47a implements ChunkRenderer<CompoundTag, Integer>
 		int longIndex = (int) blockStatesIndex;
 		int startBit = (int) ((blockStatesIndex - Math.floor(blockStatesIndex)) * 64D);
 		if (startBit + bits > 64) {
-			// get msb from current long, no need to cleanup manually, just fill with 0
+			// get msb from current long, no need to clean up manually, just fill with 0
 			int previous = (int) (blockStates.get(longIndex) >>> startBit);
 
 			// cleanup pattern for bits from next long

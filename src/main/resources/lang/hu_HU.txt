@@ -4,6 +4,7 @@ status.block;block
 status.selected;kijelölve
 status.queue;várólista
 status.total;összesen
+status.structures;struktúrák
 status.overlay;overlay
 menu.file;Fájl
 menu.view;Nézet
@@ -27,6 +28,8 @@ menu.view.reload;Újratöltés
 menu.view.chunk_grid;Chunk Rács
 menu.view.region_grid;Régió Rács
 menu.view.coordinates;Koordináták
+menu.view.structure_icons;Struktúrák
+menu.view.select_structures;Struktúrák kiválasztása
 menu.view.goto;Koordinátához lépés
 menu.view.reset_zoom;Alap nagyítás
 menu.view.save_screenshot;Képernyőkép mentése
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;Entities
 dialog.settings.rendering.layers.render_height;Renderelés magassága
 dialog.settings.rendering.layers.render_layer_only;Csak az adott réteg renderelése
 dialog.settings.rendering.layers;Rétegek
+dialog.settings.rendering.structure_icons;Struktúra ikonok
+dialog.settings.rendering.structure_icon_size;Ikon mérete
+dialog.settings.rendering.structure_icon_border_size;Szegély mérete
 dialog.settings.rendering.layers.render_caves;Barlangok renderelése
 dialog.goto.title;Koordinátához lépés
 dialog.confirmation.question;Biztos vagy benne?
@@ -115,6 +121,7 @@ dialog.import_selection.title;Kijelölés importálása .csv fájlból
 dialog.import_selection.header;A világban már van egy kijelölés.\nHogyan szeretnéd importálni a kijelölést?
 dialog.import_selection.overwrite;Felülírás
 dialog.import_selection.merge;Egyesítés
+dialog.import_selection.subtract;Kivonás
 dialog.filter_chunks.title;Chunkok szűrése
 dialog.filter_chunks.filter.add.tooltip;Új feltétel hozzáadása ez alá.
 dialog.filter_chunks.filter.delete.tooltip;Feltétel törlése.
@@ -128,7 +135,8 @@ dialog.filter_chunks.export.tooltip;Exportálja a megfelelő chunkokat.
 dialog.filter_chunks.delete;Kitörlés
 dialog.filter_chunks.delete.tooltip;Kitörli a megfelelő chunkokat.
 dialog.filter_chunks.selection_only;Csak a kijelölt chunkokon
-dialog.filter_chunks.overwrite_selection;Kijelölés felülírása
+dialog.filter_chunks.add_selection;Kijelölés hozzáadása
+dialog.filter_chunks.subtract_selection;Kijelölés kivonása
 dialog.filter_chunks.selection_radius;Kijelölés sugara
 dialog.filter_chunks.tab_query;Query
 dialog.filter_chunks.tab_script;Script

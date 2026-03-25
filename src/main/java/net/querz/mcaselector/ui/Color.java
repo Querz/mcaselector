@@ -7,9 +7,9 @@ public class Color {
 	public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
 	private javafx.scene.paint.Color handle;
-	private double r, g, b, a;
+	private final double r, g, b, a;
 
-	private int i;
+	private final int i;
 	private String web;
 
 	public Color(String web) {

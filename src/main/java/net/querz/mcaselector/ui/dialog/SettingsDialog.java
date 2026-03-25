@@ -54,6 +54,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private final CheckBox showNonexistentRegionsCheckBox = new CheckBox();
 	private final CheckBox smoothRendering = new CheckBox();
 	private final CheckBox smoothOverlays = new CheckBox();
+	private final Slider structureIconSize = createIconSizeSlider(ConfigProvider.WORLD.getStructureIconSize());
+	private final Slider structureIconBorderSize = createSlider(0, 5, 1, ConfigProvider.WORLD.getStructureIconBorderSize());
 	private final ComboBox<TileMapBox.TileMapBoxBackground> tileMapBackgrounds = new ComboBox<>();
 	private final FileTextField mcSavesDir = new FileTextField();
 	private final CheckBox debugCheckBox = new CheckBox();
@@ -91,6 +93,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			showNonexistentRegionsCheckBox.setSelected(WorldConfig.DEFAULT_SHOW_NONEXISTENT_REGIONS);
 			smoothRendering.setSelected(WorldConfig.DEFAULT_SMOOTH_RENDERING);
 			smoothOverlays.setSelected(WorldConfig.DEFAULT_SMOOTH_OVERLAYS);
+			structureIconSize.setValue(WorldConfig.DEFAULT_STRUCTURE_ICON_SIZE);
+			structureIconBorderSize.setValue(WorldConfig.DEFAULT_STRUCTURE_ICON_SIZE);
 			hSlider.valueProperty().set(hSlider.getValue());
 			caves.setSelected(WorldConfig.DEFAULT_RENDER_CAVES);
 			tileMapBackgrounds.setValue(TileMapBox.TileMapBoxBackground.valueOf(WorldConfig.DEFAULT_TILEMAP_BACKGROUND));
@@ -133,6 +137,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		showNonexistentRegionsCheckBox.setSelected(ConfigProvider.WORLD.getShowNonexistentRegions());
 		smoothRendering.setSelected(ConfigProvider.WORLD.getSmoothRendering());
 		smoothOverlays.setSelected(ConfigProvider.WORLD.getSmoothOverlays());
+		structureIconSize.setValue(ConfigProvider.WORLD.getStructureIconSize());
+		structureIconBorderSize.setValue(ConfigProvider.WORLD.getStructureIconBorderSize());
 		hSlider.valueProperty().set(ConfigProvider.WORLD.getRenderHeight());
 		layerOnly.setSelected(ConfigProvider.WORLD.getRenderLayerOnly());
 		caves.setSelected(ConfigProvider.WORLD.getRenderCaves());
@@ -305,12 +311,17 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		addPairToGrid(layerGrid, 2, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_LAYERS_RENDER_CAVES), caves);
 		BorderedTitledPane layers = new BorderedTitledPane(Translation.DIALOG_SETTINGS_RENDERING_LAYERS, layerGrid);
 
+		GridPane structureGrid = createGrid();
+		addPairToGrid(structureGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_STRUCTURE_ICON_SIZE), structureIconSize);
+		addPairToGrid(structureGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_STRUCTURE_ICON_BORDER_SIZE), structureIconBorderSize);
+		BorderedTitledPane structureIcons = new BorderedTitledPane(Translation.DIALOG_SETTINGS_RENDERING_STRUCTURE_ICONS, structureGrid);
+
 		GridPane backgroundGrid = createGrid();
 		addPairToGrid(backgroundGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_BACKGROUND_BACKGROUND_PATTERN), tileMapBackgrounds);
 		addPairToGrid(backgroundGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_BACKGROUND_SHOW_NONEXISTENT_REGIONS), showNonexistentRegionsCheckBox);
 		BorderedTitledPane background = new BorderedTitledPane(Translation.DIALOG_SETTINGS_RENDERING_BACKGROUND, backgroundGrid);
 
-		renderingBox.getChildren().addAll(shadingAndSmooth, layers, background);
+		renderingBox.getChildren().addAll(shadingAndSmooth, layers, structureIcons, background);
 		renderingTab.setContent(renderingBox);
 		ToggleButton renderingToggleButton = createToggleButton(renderingTab, Translation.DIALOG_SETTINGS_TAB_RENDERING);
 		rightTabs.getChildren().add(renderingToggleButton);
@@ -373,11 +384,13 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 					smoothRendering.isSelected(),
 					smoothOverlays.isSelected(),
 					tileMapBackgrounds.getSelectionModel().getSelectedItem(),
-					mcSavesDir.getFile(),
+					Objects.requireNonNullElseGet(mcSavesDir.getFile(), () -> new File(GlobalConfig.DEFAULT_MC_SAVES_DIR)),
 					debugCheckBox.isSelected(),
 					hSlider.getValue(),
 					layerOnly.isSelected(),
 					caves.isSelected(),
+					(int) structureIconSize.getValue(),
+					(int) structureIconBorderSize.getValue(),
 					poiField.getFile(),
 					entitiesField.getFile());
 			}
@@ -428,48 +441,18 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		return slider;
 	}
 
-	public static class Result {
-
-		public final int processThreads, writeThreads, maxLoadedFiles;
-		public final Color regionColor, chunkColor, pasteColor;
-		public final boolean shade, shadeWater, shadeAltitude;
-		public final boolean showNonexistentRegions;
-		public final boolean smoothRendering, smoothOverlays;
-		public final TileMapBox.TileMapBoxBackground tileMapBackground;
-		public final File mcSavesDir;
-		public final boolean debug;
-		public final Locale locale;
-		public final int height;
-		public final boolean layerOnly, caves;
-		public final File poi, entities;
-
-		public Result(Locale locale, int processThreads, int writeThreads, int maxLoadedFiles,
-		              Color regionColor, Color chunkColor, Color pasteColor, boolean shade, boolean shadeWater,
-		              boolean shadeAltitude, boolean showNonexistentRegions, boolean smoothRendering,
-					  boolean smoothOverlays, TileMapBox.TileMapBoxBackground tileMapBackground, File mcSavesDir,
-					  boolean debug, int height, boolean layerOnly, boolean caves, File poi, File entities) {
-
-			this.locale = locale;
-			this.processThreads = processThreads;
-			this.writeThreads = writeThreads;
-			this.maxLoadedFiles = maxLoadedFiles;
-			this.regionColor = regionColor;
-			this.chunkColor = chunkColor;
-			this.pasteColor = pasteColor;
-			this.shade = shade;
-			this.shadeWater = shadeWater;
-			this.shadeAltitude = shadeAltitude;
-			this.showNonexistentRegions = showNonexistentRegions;
-			this.smoothRendering = smoothRendering;
-			this.smoothOverlays = smoothOverlays;
-			this.tileMapBackground = tileMapBackground;
-			this.mcSavesDir = Objects.requireNonNullElseGet(mcSavesDir, () -> new File(GlobalConfig.DEFAULT_MC_SAVES_DIR));
-			this.debug = debug;
-			this.height = height;
-			this.layerOnly = layerOnly;
-			this.caves = caves;
-			this.poi = poi;
-			this.entities = entities;
-		}
+	private Slider createIconSizeSlider(int init) {
+		Slider slider = new Slider(16, 64, init);
+		slider.setMajorTickUnit(16);
+		slider.setMinorTickCount(0);
+		slider.setBlockIncrement(16);
+		return slider;
 	}
+
+	public record Result(Locale locale, int processThreads, int writeThreads, int maxLoadedFiles, Color regionColor,
+						 Color chunkColor, Color pasteColor, boolean shade, boolean shadeWater, boolean shadeAltitude,
+						 boolean showNonexistentRegions, boolean smoothRendering, boolean smoothOverlays,
+						 TileMapBox.TileMapBoxBackground tileMapBackground, File mcSavesDir, boolean debug, int height,
+						 boolean layerOnly, boolean caves, int structureIconSize, int structureIconBorderSize, File poi,
+						 File entities) {}
 }

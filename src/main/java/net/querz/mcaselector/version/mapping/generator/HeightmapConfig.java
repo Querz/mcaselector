@@ -68,7 +68,7 @@ public class HeightmapConfig {
 		debugWorld.generate(version);
 
 		// read r.0.0.mca
-		Path region_0_0 = tmp.resolve("world/region/r.0.0.mca");
+		Path region_0_0 = tmp.resolve("world/dimensions/minecraft/overworld/region/r.0.0.mca");
 		RegionMCAFile region = new RegionMCAFile(region_0_0.toFile());
 		region.load(false);
 		Set<String> mbnl = new HashSet<>();

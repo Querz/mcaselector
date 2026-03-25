@@ -436,7 +436,7 @@ public class ChunkFilter_21w43a {
 				}
 
 				ListTag newBiomePalette = new ListTag();
-				newBiomePalette.addString(biome.getName());
+				newBiomePalette.addString(biome.name());
 				biomes.put("palette", newBiomePalette);
 				biomes.putLongArray("data", new long[1]);
 			}
@@ -452,7 +452,7 @@ public class ChunkFilter_21w43a {
 			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				CompoundTag biomes = new CompoundTag();
 				ListTag newBiomePalette = new ListTag();
-				newBiomePalette.addString(biome.getName());
+				newBiomePalette.addString(biome.name());
 				biomes.put("palette", newBiomePalette);
 				biomes.putLongArray("data", new long[1]);
 				section.put("biomes", biomes);
@@ -756,6 +756,33 @@ public class ChunkFilter_21w43a {
 		@Override
 		public CompoundTag getStructureStarts(ChunkData data) {
 			return Helper.tagFromCompound(Helper.tagFromCompound(Helper.getRegion(data), "structures"), "starts");
+		}
+
+		@Override
+		public String[] parseStructureStarts(CompoundTag data) {
+			if (data == null) {
+				return null;
+			}
+			CompoundTag starts = Helper.tagFromCompound(Helper.tagFromCompound(data, "structures"), "starts");
+			if (starts == null) {
+				return null;
+			}
+			String[] result = null;
+			for (Map.Entry<String, Tag> start : starts.entrySet()) {
+				if (start.getValue().getType() != Tag.Type.COMPOUND) {
+					continue;
+				}
+				String id = start.getKey();
+				if (result == null) {
+					result = new String[] { id };
+				} else if (!Arrays.asList(result).contains(id)) {
+					String[] n = new String[result.length + 1];
+					System.arraycopy(result, 0, n, 0, result.length);
+					n[result.length] = id;
+					result = n;
+				}
+			}
+			return result;
 		}
 	}
 

@@ -2,6 +2,7 @@ package net.querz.mcaselector.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import it.unimi.dsi.fastutil.objects.*;
 import net.querz.mcaselector.config.adapter.ColorAdapter;
 import net.querz.mcaselector.config.adapter.FileAdapter;
 import net.querz.mcaselector.config.adapter.LocaleAdapter;
@@ -10,6 +11,7 @@ import net.querz.mcaselector.logging.GsonNamingStrategy;
 import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.Color;
+import net.querz.mcaselector.version.mapping.registry.StructureRegistry;
 import java.io.File;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -49,13 +51,14 @@ public class GlobalConfig extends Config {
 	private int maxLoadedFiles = DEFAULT_MAX_LOADED_FILES;
 	private String mcSavesDir = DEFAULT_MC_SAVES_DIR;
 	private boolean debug = DEFAULT_DEBUG;
-	private TreeMap<Long, RecentWorld> recentWorlds = new TreeMap<>();
-	private RecentFiles recentFilterScripts = new RecentFiles();
-	private RecentFiles recentChangeScripts = new RecentFiles();
-	private RecentFiles recentOverlayScripts = new RecentFiles();
+	private final TreeMap<Long, RecentWorld> recentWorlds = new TreeMap<>();
+	private final RecentFiles recentFilterScripts = new RecentFiles();
+	private final RecentFiles recentChangeScripts = new RecentFiles();
+	private final RecentFiles recentOverlayScripts = new RecentFiles();
 	private TempScript filterScript = new TempScript(null, false, "");
 	private TempScript changeScript = new TempScript(null, false, "");
 	private TempScript overlayScript = new TempScript(null, false, "");
+	private Object2BooleanRBTreeMap<String> structureIcons = new Object2BooleanRBTreeMap<>(String::compareTo);
 
 	public Locale getLocale() {
 		return locale;
@@ -205,6 +208,14 @@ public class GlobalConfig extends Config {
 		this.overlayScript = overlayScript;
 	}
 
+	public Object2BooleanRBTreeMap<String> getStructureIcons() {
+		return structureIcons;
+	}
+
+	public void setStructureIcons(Object2BooleanRBTreeMap<String> structureIcons) {
+		this.structureIcons = structureIcons;
+	}
+
 	@Override
 	public void save() {
 		save(gsonInstance, BASE_CONFIG_FILE);
@@ -217,6 +228,7 @@ public class GlobalConfig extends Config {
 		}
 		GlobalConfig cfg = gsonInstance.fromJson(json, GlobalConfig.class);
 		cfg.setDebug(cfg.getDebug()); // trigger potential change in debug level
+		StructureRegistry.forEachDisplayName((d, i) -> cfg.structureIcons.putIfAbsent(i.id(), true));
 		return cfg;
 	}
 
@@ -241,9 +253,30 @@ public class GlobalConfig extends Config {
 	public record RecentWorld(File recentWorld, List<File> dimensionDirectories) {
 
 		private static final Pattern dimensionFolderPattern = Pattern.compile("^DIM-?\\d+$");
+		private static final String[] parents = new String[]{"dimensions", "minecraft"};
 
 		@Override
 		public String toString() {
+			// check if parent directories match world folder structure
+			StringBuilder parentPath = new StringBuilder();
+			File check = recentWorld.getParentFile();
+			int i = parents.length - 1;
+			for (; i >= -1; i--) {
+				if (check == null) {
+					break;
+				}
+				parentPath.insert(0, check.getName() + File.separator);
+				if (i >= 0 && !check.getName().equals(parents[i])) {
+					break;
+				}
+				check = check.getParentFile();
+			}
+
+			// this is dimensions/minecraft folder structure
+			if (i < 0) {
+				return parentPath + recentWorld.getName();
+			}
+
 			String name = recentWorld.getName();
 			if (dimensionFolderPattern.matcher(name).matches()) {
 				File parent = recentWorld.getParentFile();

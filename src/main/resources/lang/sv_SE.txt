@@ -4,6 +4,7 @@ status.block;block
 status.selected;valda
 status.queue;kö
 status.total;totalt
+status.structures;strukturer
 status.overlay;överlägget
 menu.file;Fil
 menu.view;Visa
@@ -27,6 +28,8 @@ menu.view.reload;Ladda om
 menu.view.chunk_grid;Chunkrutnät
 menu.view.region_grid;Regionrutnät
 menu.view.coordinates;Koordinater
+menu.view.structure_icons;Strukturer
+menu.view.select_structures;Välj strukturer
 menu.view.goto;Gå till
 menu.view.reset_zoom;Återställ zoom
 menu.view.save_screenshot;Spara skärmdump
@@ -90,6 +93,9 @@ dialog.settings.world.paths.entities;Enheter
 dialog.settings.rendering.layers.render_height;Renderingshöjd
 dialog.settings.rendering.layers.render_layer_only;Rendera endast lager
 dialog.settings.rendering.layers;Skikt
+dialog.settings.rendering.structure_icons;Strukturikoner
+dialog.settings.rendering.structure_icon_size;Ikonstorlek
+dialog.settings.rendering.structure_icon_border_size;Kantstorlek
 dialog.settings.rendering.layers.render_caves;Rendera grottor
 dialog.goto.title;Gå till plats
 dialog.confirmation.question;Är du säker?
@@ -115,6 +121,7 @@ dialog.import_selection.title;Importera urval från .csv
 dialog.import_selection.header;Den här världen har redan ett urval.\nHur ska det nya urvalet importeras?
 dialog.import_selection.overwrite;Skriva över
 dialog.import_selection.merge;Lägg till
+dialog.import_selection.subtract;Subtrahera
 dialog.filter_chunks.title;Filtrera chunks
 dialog.filter_chunks.filter.add.tooltip;Lägg till ett nytt villkor nedanför detta.
 dialog.filter_chunks.filter.delete.tooltip;Radera detta villkor.
@@ -128,7 +135,8 @@ dialog.filter_chunks.export.tooltip;Exporterar alla påverkade chunks till en ny
 dialog.filter_chunks.delete;Radera
 dialog.filter_chunks.delete.tooltip;Raderar alla påverkade chunks från världen.
 dialog.filter_chunks.selection_only;Tillämpa endast till markering
-dialog.filter_chunks.overwrite_selection;Skriv över urval
+dialog.filter_chunks.add_selection;Lägg till markering
+dialog.filter_chunks.subtract_selection;Ta bort markering
 dialog.filter_chunks.selection_radius;Urvalsradie
 dialog.filter_chunks.tab_query;Query
 dialog.filter_chunks.tab_script;Script

@@ -122,7 +122,7 @@ public class SelectionSummer {
 
 				int chunkValue;
 				try {
-					chunkValue = new ChunkData(regionChunk, poiChunk, entitiesChunk, true).parseData(parser);
+					chunkValue = new ChunkData(chunk, regionChunk, poiChunk, entitiesChunk, true).parseData(parser);
 				} catch (Exception e) {
 					LOGGER.warn(e);
 					chunkValue = 0;

@@ -86,7 +86,7 @@ public final class ChunkFilterDeleter {
 				}
 			} catch (Exception ex) {
 				progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-				LOGGER.warn("error deleting chunk indices in {}", getRegionDirectories().getLocationAsFileName());
+				LOGGER.warn("error deleting chunk indices in {}", getRegionDirectories().getLocationAsFileName(), ex);
 			}
 			return true;
 		}

@@ -8,9 +8,13 @@ import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionHandler;
 import net.querz.nbt.IntTag;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.File;
 
 public class SelectionFilter extends TextFilter<File> implements RegionMatcher {
+
+	private static final Logger LOGGER = LogManager.getLogger(SelectionFilter.class);
 
 	private Selection selection = new Selection();
 	private final Object lock;
@@ -92,7 +96,7 @@ public class SelectionFilter extends TextFilter<File> implements RegionMatcher {
 	}
 
 	@Override
-	public boolean matchesRegion(Point2i region) {
+	public MatchType matchesRegion(Point2i region) {
 		if (!loaded.get()) {
 			synchronized (lock) {
 				if (!loaded.get()) {
@@ -101,10 +105,12 @@ public class SelectionFilter extends TextFilter<File> implements RegionMatcher {
 			}
 		}
 
+		int selectedChunks = selection.getSelectedChunks(region).size();
+
 		return switch (getComparator()) {
-			case EQUAL -> selection.isAnyChunkInRegionSelected(region);
-			case NOT_EQUAL -> !selection.isAnyChunkInRegionSelected(region);
-			default -> false;
+			case EQUAL -> selectedChunks == 0 ? MatchType.NONE : selectedChunks == 1024 ? MatchType.FULLY : MatchType.PARTIALLY;
+			case NOT_EQUAL -> selectedChunks == 0 ? MatchType.FULLY : selectedChunks == 1024 ? MatchType.NONE : MatchType.PARTIALLY;
+			default -> MatchType.NONE;
 		};
 	}
 
@@ -119,7 +125,7 @@ public class SelectionFilter extends TextFilter<File> implements RegionMatcher {
 			Selection loaded = Selection.readFromFile(value);
 			selection.setSelection(loaded);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			LOGGER.error(ex);
 		}
 		loaded.set(true);
 	}

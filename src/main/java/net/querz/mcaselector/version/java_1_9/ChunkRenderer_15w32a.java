@@ -254,6 +254,10 @@ public class ChunkRenderer_15w32a implements ChunkRenderer<Integer, Integer> {
 		level.put("Biomes", root.getCompound("Level").get("Biomes").copy());
 		level.put("Sections", root.getCompound("Level").get("Sections").copy());
 		level.put("Status", root.getCompound("Level").get("Status").copy());
+		CompoundTag structures = Helper.tagFromLevelFromRoot(root, "Structures");
+		if (structures != null) {
+			level.put("Structures", structures.copy());
+		}
 		return minData;
 	}
 

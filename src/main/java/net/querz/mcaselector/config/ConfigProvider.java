@@ -12,7 +12,7 @@ public final class ConfigProvider {
 	public static WorldConfig WORLD = new WorldConfig();
 	public static OverlayConfig OVERLAY = new OverlayConfig();
 
-	private static final Logger LOGGER = LogManager.getLogger(Config.class);
+	private static final Logger LOGGER = LogManager.getLogger(ConfigProvider.class);
 
 	private ConfigProvider() {}
 

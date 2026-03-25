@@ -480,7 +480,7 @@ public class ChunkFilter_21w37a {
 				}
 
 				ListTag newBiomePalette = new ListTag();
-				newBiomePalette.addString(biome.getName());
+				newBiomePalette.addString(biome.name());
 				biomes.put("palette", newBiomePalette);
 				biomes.putLongArray("data", new long[1]);
 			}
@@ -496,7 +496,7 @@ public class ChunkFilter_21w37a {
 			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				CompoundTag biomes = new CompoundTag();
 				ListTag newBiomePalette = new ListTag();
-				newBiomePalette.addString(biome.getName());
+				newBiomePalette.addString(biome.name());
 				biomes.put("palette", newBiomePalette);
 				biomes.putLongArray("data", new long[1]);
 				section.put("biomes", biomes);

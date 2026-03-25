@@ -39,7 +39,7 @@ public class ScriptField extends Field<String> {
 		try {
 			engine.run("apply", data);
 		} catch (ScriptException | NoSuchMethodException e) {
-			LOGGER.warn("failed to invoke apply function in custom script");
+			LOGGER.warn("failed to invoke apply function in custom script", e);
 		}
 	}
 
