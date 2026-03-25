@@ -54,11 +54,11 @@ menu.tools.swap_chunks;Trocar chunks
 menu.tools.edit_overlays;Editar sobreposições
 menu.tools.next_overlay;Próxima sobreposição
 menu.tools.next_overlay_type;Tipo de sobreposição
-menu.tools.sum_selection;Suma de selección
+menu.tools.sum_selection;Soma de seleção
 dialog.select_world.title;Selecione uma dimensão
 dialog.settings.title;Configuração
-dialog.settings.global.language;Língua
-dialog.settings.global.language.language;Língua
+dialog.settings.global.language;Idioma
+dialog.settings.global.language.language;Idioma
 dialog.settings.processing.process.process_threads;Threads de processo
 dialog.settings.processing.process;Processo
 dialog.settings.processing.process.write_threads;Escreva tópicos
@@ -75,7 +75,7 @@ dialog.settings.rendering.smooth.smooth_rendering;Renderização suave
 dialog.settings.rendering.smooth.smooth_overlays;Sobreposições suaves
 dialog.settings.rendering.background.background_pattern;Padrão de fundo
 dialog.settings.rendering.background;Fundo
-dialog.settings.global.misc.mc_saves_dir;MC salva dir
+dialog.settings.global.misc.mc_saves_dir;MC salvar dir
 dialog.settings.global.misc.print_debug;Imprimir mensagens de depuração
 dialog.settings.global.misc.show_log_file;Mostrar arquivo de log
 dialog.settings.reset;Resetar
@@ -167,8 +167,8 @@ dialog.about.title;Sobre
 dialog.about.header;Sobre o MCA Selector
 dialog.about.version;Versão:
 dialog.about.version.unknown;Desconhecido
-dialog.about.version.check;Analizar
-dialog.about.version.checking;Analizando...
+dialog.about.version.check;Checar
+dialog.about.version.checking;Checando...
 dialog.about.version.up_to_date;Atualizar
 dialog.about.version.error;Erro
 dialog.about.license;Licença:
@@ -191,9 +191,9 @@ dialog.progress.title.exporting_filtered_chunks;Exportando chunks filtrados...
 dialog.progress.title.selecting_filtered_chunks;Selecionando chunks filtrados...
 dialog.progress.title.changing_nbt_data;Alterando dados do NBT...
 dialog.progress.title.saving_chunk;Salvando chunk no arquivo...
-dialog.progress.title.running_before;Ejecutar "before()"...
-dialog.progress.title.running_after;Ejecutar "after()"...
-dialog.progress.title.summing;Cuenta la cantidad...
+dialog.progress.title.running_before;Executar "before()"...
+dialog.progress.title.running_after;Executar "after()"...
+dialog.progress.title.summing;Conte a quantidade...
 dialog.error.button.copy_to_clipboard;Copiar para área de transferência
 dialog.error.title;Erro
 dialog.error.header;Um erro ocorreu
