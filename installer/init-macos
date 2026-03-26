@@ -1,0 +1,125 @@
+#!/bin/bash
+
+# macOS installer initialization script
+# Usage: installer/init-macos <project root directory>
+
+set -e
+
+gradlePropertiesFile="$1/gradle.properties"
+
+ReadGradleProperty() {
+  local value=$(cat "$gradlePropertiesFile" | grep "^$1=" | cut -d'=' -f2)
+  echo "$value"
+}
+
+projectName='mcaselector'
+applicationName=$(ReadGradleProperty 'application.name')
+applicationVersion=$(ReadGradleProperty 'version')
+applicationCopyright=$(ReadGradleProperty 'application.copyright')
+
+echo "Building macOS installer for $applicationName v$applicationVersion"
+
+# Create output directory
+macosDir="$1/build/macos"
+mkdir -p "$macosDir"
+
+# Detect architecture
+ARCH=$(uname -m)
+if [ "$ARCH" = "arm64" ]; then
+  JAVAFX_ARCH="aarch64"
+else
+  JAVAFX_ARCH="x64"
+fi
+
+# Download JavaFX jmods if not present (needed for jlink to create runtime with natives)
+JAVAFX_VERSION="21.0.5"
+JAVAFX_JMODS_DIR="$macosDir/javafx-jmods"
+if [ ! -d "$JAVAFX_JMODS_DIR" ]; then
+  echo "Downloading JavaFX jmods $JAVAFX_VERSION for osx-$JAVAFX_ARCH..."
+  JAVAFX_URL="https://download2.gluonhq.com/openjfx/${JAVAFX_VERSION}/openjfx-${JAVAFX_VERSION}_osx-${JAVAFX_ARCH}_bin-jmods.zip"
+  curl -L -o "$macosDir/javafx-jmods.zip" "$JAVAFX_URL"
+  unzip -q "$macosDir/javafx-jmods.zip" -d "$macosDir"
+  mv "$macosDir/javafx-jmods-$JAVAFX_VERSION" "$JAVAFX_JMODS_DIR"
+  rm "$macosDir/javafx-jmods.zip"
+  echo "JavaFX jmods downloaded to $JAVAFX_JMODS_DIR"
+fi
+
+# Create .icns from PNG icon
+echo "Creating macOS icon..."
+iconsetDir="$macosDir/icon.iconset"
+mkdir -p "$iconsetDir"
+
+sourceIcon="$1/src/main/resources/img/icon.png"
+
+# Generate all required icon sizes
+sips -z 16 16     "$sourceIcon" --out "$iconsetDir/icon_16x16.png" >/dev/null
+sips -z 32 32     "$sourceIcon" --out "$iconsetDir/icon_16x16@2x.png" >/dev/null
+sips -z 32 32     "$sourceIcon" --out "$iconsetDir/icon_32x32.png" >/dev/null
+sips -z 64 64     "$sourceIcon" --out "$iconsetDir/icon_32x32@2x.png" >/dev/null
+sips -z 128 128   "$sourceIcon" --out "$iconsetDir/icon_128x128.png" >/dev/null
+sips -z 256 256   "$sourceIcon" --out "$iconsetDir/icon_128x128@2x.png" >/dev/null
+sips -z 256 256   "$sourceIcon" --out "$iconsetDir/icon_256x256.png" >/dev/null
+sips -z 512 512   "$sourceIcon" --out "$iconsetDir/icon_256x256@2x.png" >/dev/null
+sips -z 512 512   "$sourceIcon" --out "$iconsetDir/icon_512x512.png" >/dev/null
+sips -z 1024 1024 "$sourceIcon" --out "$iconsetDir/icon_512x512@2x.png" >/dev/null
+
+iconutil -c icns "$iconsetDir" -o "$macosDir/icon.icns"
+rm -rf "$iconsetDir"
+echo "Icon created: $macosDir/icon.icns"
+
+# Prepare combined license file
+echo "Preparing license file..."
+finalLicense=$(<"$1/LICENSE")
+finalLicense="$finalLicense
+
+
+############################################################
+############################################################
+##
+##                   3RD PARTY LICENSES
+##
+############################################################
+############################################################"
+
+# Add dependency licenses
+if [ -d "$1/build/resources/main/licenses" ]; then
+  for f in "$1/build/resources/main/licenses/"*; do
+    if [ -f "$f" ]; then
+      baseName=$(basename "$f" .txt)
+      licenseName=$(echo "$baseName" | tr '[:lower:]' '[:upper:]')
+      content=$(<"$f")
+      finalLicense="$finalLicense
+
+
+############################################################
+#  License for $licenseName
+############################################################
+
+$content"
+    fi
+  done
+fi
+
+# Add font licenses
+for fontLicense in "$1/build/resources/main/font/license/"*.txt; do
+  if [ -f "$fontLicense" ]; then
+    baseName=$(basename "$fontLicense" .txt)
+    licenseName=$(echo "$baseName" | tr '[:lower:]' '[:upper:]')
+    content=$(<"$fontLicense")
+    finalLicense="$finalLicense
+
+
+############################################################
+#  License for $licenseName
+############################################################
+
+$content"
+  fi
+done
+
+echo "$finalLicense" > "$macosDir/LICENSE"
+
+# Copy the shadow JAR
+cp "$1/build/libs/$projectName-$applicationVersion.jar" "$macosDir/$projectName.jar"
+
+echo "macOS installer files prepared in $macosDir"
