@@ -47,7 +47,7 @@ Name: "zh_TW"; MessagesFile: "Languages\\Unofficial\\ChineseTraditional.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "${applicationName}\\*"; DestDir: "{app}"; Flags: ignoreversion
+Source: "${applicationName}\\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 
 [Icons]
 Name: "{autoprograms}\\${applicationName}"; Filename: "{app}\\${applicationName}.exe"
