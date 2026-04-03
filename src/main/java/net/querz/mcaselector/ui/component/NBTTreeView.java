@@ -13,6 +13,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import net.querz.mcaselector.util.validation.OSHelper;
 import net.querz.nbt.*;
 import java.io.*;
 import java.util.*;
@@ -492,7 +493,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		private TextField value;
 		private Button edit; // for array types, show edit button instead of value text field that opens array editor
 
-		private static final boolean noDragviewOffset = System.getProperty("os.name").toLowerCase().contains("win");
+		private static final boolean noDragviewOffset = OSHelper.OS_TYPE == OSHelper.OSType.WINDOWS;
 		private static final String nameFieldCssClass = "name-text-field";
 		private static final String valueFieldCssClass = "value-text-field";
 		private static final String editButtonCssClass = "edit-button";

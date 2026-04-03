@@ -310,6 +310,10 @@ public enum Translation {
 		return availableLanguages;
 	}
 
+	public static boolean isLanguageAvailable(Locale locale) {
+		return locale != null && availableLanguages.contains(locale);
+	}
+
 	private static void setTranslation(String key, String translation) {
 		for (Translation t : Translation.values()) {
 			if (t.translationProperty.getKey().equals(key)) {

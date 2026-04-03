@@ -29,30 +29,16 @@ jobs:
           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
       - name: Build jar
-        run: gradlew build shadowJar --stacktrace --warning-mode all
+        run: gradlew build shadowJar jpackage --stacktrace --warning-mode all
         shell: cmd
 
       - name: Initialize resources for installer
         run: ./installer/init .
         shell: bash
 
-      - name: Build exe
-        run: |
-          7z x winrun4J-0.4.5.zip -owr4j
-          7z x resource_hacker.zip -orh
-          rh\ResourceHacker.exe -open wr4j\winrun4j\bin\WinRun4J64.exe -save "MCA Selector.exe" -action delete -mask ,,
-          wr4j\winrun4j\bin\RCEDIT64.exe /I "MCA Selector.exe" installer\img\icon.ico
-          wr4j\winrun4j\bin\RCEDIT64.exe /N "MCA Selector.exe" installer\res\winrun4j.ini
-          rh\ResourceHacker.exe -open installer\res\resource.rc -save resource.res -action compile
-          rh\ResourceHacker.exe -open "MCA Selector.exe" -save "MCA Selector.exe" -action add -resource resource.res
-          move "MCA Selector.exe" build\inno
-        shell: cmd
-
       - name: Build installer
         run: |
-          7z x 7za920.zip -o7z
           7z x inno_6_languages_unofficial.zip -oinno_6_languages_unofficial
-          move 7z\7za.exe build\inno
           mkdir build\inno\Languages
           move inno_6_languages_unofficial\Unofficial build\inno\Languages
           "%programfiles(x86)%/Inno Setup 6/iscc.exe" build/inno/inno.iss /q
@@ -79,14 +65,14 @@ jobs:
         with:
           name: Artifact
           path: |
-            build/inno/Output/MCA_Selector_Setup.exe
             build/inno/Output/Signed/MCA_Selector_Setup.exe
             build/libs/mcaselector-2.7.jar
+            build/libs/mcaselector-2.7-all.jar
 
       - name: Upload assets
         uses: AButler/upload-release-assets@v3.0
         with:
-          files: build/inno/Output/Signed/MCA_Selector_Setup.exe;build/libs/mcaselector-2.7.jar
+          files: build/inno/Output/Signed/MCA_Selector_Setup.exe;build/libs/all/mcaselector-2.7.jar
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout Wiki

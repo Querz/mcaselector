@@ -66,8 +66,6 @@ Installer() {
     finalLicense=$(AppendLicense "$f" "$finalLicense")
   done
 
-  # add winrun4j license
-  finalLicense=$(AppendLicense "$1/installer/license/winrun4j.txt" "$finalLicense")
   # add notosans licenses
   finalLicense=$(AppendLicense "$1/build/resources/main/font/license/notosans.txt" "$finalLicense")
   finalLicense=$(AppendLicense "$1/build/resources/main/font/license/notosansmono.txt" "$finalLicense")
@@ -79,15 +77,17 @@ Installer() {
   cp "$1/installer/img/icon.ico" "$innoSetupDir"
   cp "$1/installer/img/small.bmp" "$innoSetupDir"
   cp "$1/installer/img/large.bmp" "$innoSetupDir"
-  cp "$1/build/libs/$projectName-$applicationVersion-min.jar" "$innoSetupDir/$projectName.jar"
-  cp -r "$1/build/libs/lib" "$innoSetupDir"
-  cp "$1/installer/res/inno.iss" "$innoSetupDir"
+  cp -r "$1/build/jpackage/$applicationName" "$innoSetupDir"
+  cp "$1/installer/inno.iss" "$innoSetupDir"
   sed -i "s/\${applicationName}/$applicationName/g" "$innoSetupDir/inno.iss"
   sed -i "s/\${applicationUrl}/${applicationURL////\\/}/g" "$innoSetupDir/inno.iss"
   sed -i "s/\${applicationAuthor}/$applicationAuthor/g" "$innoSetupDir/inno.iss"
   sed -i "s/\${applicationCopyright}/$applicationCopyright/g" "$innoSetupDir/inno.iss"
   sed -i "s/\${applicationVersion}/$applicationVersion/g" "$innoSetupDir/inno.iss"
-  sed -i "s/\${applicationJar}/$projectName.jar/g" "$innoSetupDir/inno.iss"
 }
 
 Installer $1
+
+# copy and rename the fat jar
+mkdir "$1/build/libs/all"
+cp "$1/build/libs/$projectName-$applicationVersion-all.jar" "$1/build/libs/all/$projectName-$applicationVersion.jar"

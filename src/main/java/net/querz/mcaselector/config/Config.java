@@ -3,6 +3,7 @@ package net.querz.mcaselector.config;
 import com.google.gson.Gson;
 import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.util.math.Bits;
+import net.querz.mcaselector.util.validation.OSHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.File;
@@ -38,22 +39,24 @@ public abstract class Config {
 		}
 		BASE_DIR = new File(path);
 
-		String osName = System.getProperty("os.name").toLowerCase();
-		if (osName.contains("mac")) {
-			BASE_CACHE_DIR = new File(System.getProperty("user.home"), "Library/Caches/mcaselector");
-			BASE_LOG_DIR = new File(System.getProperty("user.home"), "Library/Logs/mcaselector");
-			BASE_CONFIG_FILE = new File(System.getProperty("user.home"), "Library/Application Support/mcaselector/settings.json");
-			BASE_OVERLAYS_FILE = new File(System.getProperty("user.home"), "Library/Application Support/mcaselector/overlays.json");
-		} else if (osName.contains("windows")) {
-			BASE_CACHE_DIR = getEnvFilesWithDefault(BASE_DIR.getAbsolutePath(), "mcaselector/cache", ';', "LOCALAPPDATA");
-			BASE_LOG_DIR = getEnvFilesWithDefault(BASE_DIR.getAbsolutePath(), "mcaselector/log", ';', "LOCALAPPDATA");
-			BASE_CONFIG_FILE = getEnvFilesWithDefault(BASE_DIR.getAbsolutePath(), "mcaselector/settings.json", ';', "LOCALAPPDATA");
-			BASE_OVERLAYS_FILE = getEnvFilesWithDefault(BASE_DIR.getAbsolutePath(), "mcaselector/overlays.json", ';', "LOCALAPPDATA");
-		} else {
-			BASE_CACHE_DIR = getEnvFilesWithDefault("~/.cache", "mcaselector", ':', "XDG_CACHE_HOME", "XDG_CACHE_DIRS");
-			BASE_LOG_DIR = getEnvFilesWithDefault("~/.local/share", "mcaselector/log", ':', "XDG_DATA_HOME", "XDG_DATA_DIRS");
-			BASE_CONFIG_FILE = getEnvFilesWithDefault("~/.mcaselector", "mcaselector/settings.json", ':', "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
-			BASE_OVERLAYS_FILE = getEnvFilesWithDefault("~/.mcaselector", "mcaselector/overlays.json", ':', "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
+		switch (OSHelper.OS_TYPE) {
+			case MAC:
+				BASE_CACHE_DIR = new File(System.getProperty("user.home"), "Library/Caches/mcaselector");
+				BASE_LOG_DIR = new File(System.getProperty("user.home"), "Library/Logs/mcaselector");
+				BASE_CONFIG_FILE = new File(System.getProperty("user.home"), "Library/Application Support/mcaselector/settings.json");
+				BASE_OVERLAYS_FILE = new File(System.getProperty("user.home"), "Library/Application Support/mcaselector/overlays.json");
+				break;
+			case WINDOWS:
+				BASE_CACHE_DIR = getEnvFilesWithDefault(BASE_DIR.getAbsolutePath(), "mcaselector/cache", ';', "LOCALAPPDATA");
+				BASE_LOG_DIR = getEnvFilesWithDefault(BASE_DIR.getAbsolutePath(), "mcaselector/log", ';', "LOCALAPPDATA");
+				BASE_CONFIG_FILE = getEnvFilesWithDefault(BASE_DIR.getAbsolutePath(), "mcaselector/settings.json", ';', "LOCALAPPDATA");
+				BASE_OVERLAYS_FILE = getEnvFilesWithDefault(BASE_DIR.getAbsolutePath(), "mcaselector/overlays.json", ';', "LOCALAPPDATA");
+				break;
+			default:
+				BASE_CACHE_DIR = getEnvFilesWithDefault("~/.cache", "mcaselector", ':', "XDG_CACHE_HOME", "XDG_CACHE_DIRS");
+				BASE_LOG_DIR = getEnvFilesWithDefault("~/.local/share", "mcaselector/log", ':', "XDG_DATA_HOME", "XDG_DATA_DIRS");
+				BASE_CONFIG_FILE = getEnvFilesWithDefault("~/.mcaselector", "mcaselector/settings.json", ':', "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
+				BASE_OVERLAYS_FILE = getEnvFilesWithDefault("~/.mcaselector", "mcaselector/overlays.json", ':', "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
 		}
 
 		if (!BASE_CACHE_DIR.exists()) {

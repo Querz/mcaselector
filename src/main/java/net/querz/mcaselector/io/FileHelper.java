@@ -8,6 +8,7 @@ import net.querz.mcaselector.util.exception.ThrowingFunction;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.ui.dialog.SelectWorldDialog;
+import net.querz.mcaselector.util.validation.OSHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.*;
@@ -48,9 +49,8 @@ public final class FileHelper {
 	}
 
 	private static String getMCDir() {
-		String os = System.getProperty("os.name").toLowerCase();
 		String appdataDir = null;
-		if (os.contains("win")) {
+		if (OSHelper.OS_TYPE == OSHelper.OSType.WINDOWS) {
 			String env = System.getenv("AppData");
 			File file = new File(env == null ? "" : env, ".minecraft");
 			if (file.exists()) {

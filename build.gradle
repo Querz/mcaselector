@@ -6,15 +6,14 @@ plugins {
 	id 'org.openjfx.javafxplugin' version '0.1.0'
 	id 'com.gradleup.shadow' version '9.2.2'
 	id 'com.github.ben-manes.versions' version '0.52.0'
+	id 'org.beryx.runtime' version '2.0.1'
 }
 
 group = 'net.querz'
 compileJava.options.encoding = 'UTF-8'
 application.mainClass = 'net.querz.mcaselector.Main'
-
-java {
-	sourceCompatibility = JavaVersion.VERSION_21
-}
+java.sourceCompatibility = JavaVersion.VERSION_21
+var copyright = project.findProperty('application.copyright').toString()
 
 javafx {
 	version = "$java.sourceCompatibility"
@@ -50,47 +49,30 @@ dependencies {
 	implementation 'org.lz4:lz4-java:1.8.0'
 	implementation 'org.atteo.classindex:classindex:3.13'
 	implementation 'org.iq80.leveldb:leveldb:0.12'
-  
-	shadow 'com.github.Querz:NBT:13516d666a'
-	shadow 'com.google.code.gson:gson:2.12.1'
-	shadow 'it.unimi.dsi:fastutil:8.5.15'
-	shadow 'org.apache.logging.log4j:log4j-api:2.24.3'
-	shadow 'org.apache.logging.log4j:log4j-core:2.24.3'
-	shadow 'org.slf4j:slf4j-simple:2.0.16'
-	shadow 'commons-cli:commons-cli:1.10.0'
-	shadow 'me.tongfei:progressbar:0.10.1'
-	shadow 'org.apache.groovy:groovy-jsr223:4.0.26'
-	shadow 'org.fxmisc.richtext:richtextfx:0.11.7'
-	shadow 'org.lz4:lz4-java:1.8.0'
-	shadow 'org.atteo.classindex:classindex:3.13'
-    shadow 'org.iq80.leveldb:leveldb:0.12'
 
 	annotationProcessor('org.atteo.classindex:classindex:3.13')
 	annotationProcessor('org.apache.logging.log4j:log4j-core:2.24.3')
 
-	testImplementation 'junit:junit:4.13.2'
+	testImplementation(platform('org.junit:junit-bom:6.0.1'))
+	testImplementation('org.junit.jupiter:junit-jupiter')
+	testImplementation('org.reflections:reflections:0.10.2')
 	testImplementation 'commons-io:commons-io:2.18.0'
+	testRuntimeOnly('org.junit.platform:junit-platform-launcher')
 }
 
 compileJava {
 	options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
 }
 
-tasks.register('copyRuntimeLibs', Copy) {
-	from configurations.shadow
-	into layout.buildDirectory.dir('libs/lib')
-	exclude { it.file.name.startsWith('javafx') }
-}
-
 tasks.register('minifyCss') {
-	doLast {
-		var styleDir = java.nio.file.Path.of("${sourceSets.main.resources.srcDirs[0]}", "style")
-		Files.find(styleDir, Integer.MAX_VALUE, (filePath, fileAttr) -> fileAttr.isRegularFile())
-				.forEach(p -> {
-					minCss(p, java.nio.file.Path.of("${sourceSets.main.output.resourcesDir}", "style", styleDir.relativize(p).toString()))
-				})
-	}
 	dependsOn processResources
+	doLast {
+		var styleDir = Path.of("${sourceSets.main.resources.srcDirs[0]}", "style")
+		Files.find(styleDir, Integer.MAX_VALUE, (filePath, fileAttr) -> fileAttr.isRegularFile())
+			.forEach(p -> {
+				minCss(p, Path.of("${sourceSets.main.output.resourcesDir}", "style", styleDir.relativize(p).toString()))
+			})
+	}
 }
 
 tasks.register('generator', JavaExec) {
@@ -99,7 +81,8 @@ tasks.register('generator', JavaExec) {
 }
 
 jar {
-	archiveFileName = "${project.name}-${project.version}-min.jar"
+	dependsOn minifyCss
+	archiveFileName = "${project.name}-${project.version}.jar"
 	manifest.attributes (
 		'Main-Class': application.mainClass,
 		'Application-Version': project.version,
@@ -109,9 +92,6 @@ jar {
 	)
 	exclude 'licenses/'
 	from 'LICENSE'
-	dependsOn minifyCss
-	dependsOn copyRuntimeLibs
-	finalizedBy shadowJar
 }
 
 shadowJar {
@@ -123,13 +103,46 @@ shadowJar {
 	dependencies {
 		exclude(dependency(':javafx.*:.*'))
 	}
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-	archiveFileName = "${project.name}-${project.version}.jar"
-	configurations = [project.configurations.shadow]
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
+	manifest.attributes (
+		'Main-Class': application.mainClass,
+		'Application-Version': project.version,
+		'Copyright': copyright
+	)
 	from 'LICENSE'
 }
 
-assemble.dependsOn shadowJar
+runtime {
+	options = ['--strip-debug', '--compress', 'zip-6', '--no-header-files', '--no-man-pages']
+	modules = [
+		'java.base',
+		'java.desktop',
+		'java.management',
+		'java.naming',
+		'java.scripting',
+		'jdk.unsupported',
+		'javafx.controls',
+		'javafx.swing',
+	]
+
+	jpackage {
+		imageName = project.findProperty('application.name')
+		skipInstaller = true
+		imageOptions = ['--icon', 'installer/img/icon.ico', '--copyright', copyright]
+		jvmArgs = ['-Xmx4096m']
+	}
+}
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+	systemProperties = [
+		'junit.jupiter.tempdir.cleanup.mode.default': 'NEVER',
+		'net.querz.test.temp.dir': 'test_output' // if set, use this dir as temp dir
+	]
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -140,7 +153,7 @@ assemble.dependsOn shadowJar
  * @param o The output css file
  * @throws IOException If something goes wrong during reading or writing
  */
-import java.nio.file.Files
+import java.nio.file.*
 
 static minCss(i, o) throws IOException {
 	String s = Files.readString(i)

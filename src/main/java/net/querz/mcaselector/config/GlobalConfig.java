@@ -11,6 +11,7 @@ import net.querz.mcaselector.logging.GsonNamingStrategy;
 import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.Color;
+import net.querz.mcaselector.util.property.MSWindowsRegistry;
 import net.querz.mcaselector.version.mapping.registry.StructureRegistry;
 import java.io.File;
 import java.lang.reflect.Modifier;
@@ -224,7 +225,13 @@ public class GlobalConfig extends Config {
 	public static GlobalConfig load() {
 		String json = loadString(BASE_CONFIG_FILE);
 		if (json == null) {
-			return new GlobalConfig();
+			GlobalConfig newGlobalConfig = new GlobalConfig();
+			String lang = MSWindowsRegistry.getValue("Language");
+			Locale locale = LocaleAdapter.parse(lang);
+			if (Translation.isLanguageAvailable(locale)) {
+				newGlobalConfig.setLocale(locale);
+			}
+			return newGlobalConfig;
 		}
 		GlobalConfig cfg = gsonInstance.fromJson(json, GlobalConfig.class);
 		cfg.setDebug(cfg.getDebug()); // trigger potential change in debug level

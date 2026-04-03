@@ -19,7 +19,17 @@ public class LocaleAdapter extends TypeAdapter<Locale> {
 		if (in.peek() == JsonToken.NULL) {
 			return null;
 		}
-		String[] split = in.nextString().split("_");
+		return parse(in.nextString());
+	}
+
+	public static Locale parse(String localeString) {
+		if (localeString == null) {
+			return null;
+		}
+		String[] split = localeString.split("_");
+		if (split.length != 2) {
+			return null;
+		}
 		return Locale.of(split[0], split[1]);
 	}
 }

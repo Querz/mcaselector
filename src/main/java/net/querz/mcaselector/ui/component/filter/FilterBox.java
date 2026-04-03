@@ -21,6 +21,8 @@ import net.querz.mcaselector.filter.TextFilter;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.UIFactory;
+import net.querz.mcaselector.util.validation.OSHelper;
+
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -53,12 +55,7 @@ public abstract class FilterBox extends BorderPane {
 	private static FilterBox currentDragDropTarget;
 	private static int currentDragDropTargetDirection;
 
-	private static final boolean USE_DRAGVIEW_OFFSET;
-
-	static {
-		String osName = System.getProperty("os.name").toLowerCase();
-		USE_DRAGVIEW_OFFSET = osName.contains("windows");
-	}
+	private static final boolean USE_DRAGVIEW_OFFSET = OSHelper.OS_TYPE == OSHelper.OSType.WINDOWS;
 
 	private static final String stylesheet = Objects.requireNonNull(FilterBox.class.getClassLoader().getResource("style/component/filter-box.css")).toExternalForm();
 
