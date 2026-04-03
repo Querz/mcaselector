@@ -113,7 +113,8 @@ shadowJar {
 }
 
 runtime {
-	options = ['--strip-debug', '--compress', 'zip-6', '--no-header-files', '--no-man-pages']
+	options = ['--strip-debug', '--compress', 'zip-6', '--no-header-files', '--no-man-pages',
+			   '--module-path', configurations.runtimeClasspath.files.findAll { it.name.contains('javafx') }.join(File.pathSeparator)]
 	modules = [
 		'java.base',
 		'java.desktop',
