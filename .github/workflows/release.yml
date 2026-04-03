@@ -17,8 +17,9 @@ jobs:
       - name: Set up JDK 21
         uses: actions/setup-java@v4.2.1
         with:
-          distribution: temurin
+          distribution: zulu
           java-version: 21
+          java-package: jdk+fx
 
       - name: Download Build Tools
         uses: robinraju/release-downloader@v1.12
