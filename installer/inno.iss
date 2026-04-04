@@ -49,6 +49,15 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "${applicationName}\\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 
+[InstallDelete]
+Type: filesandordirs; Name: "{app}\\jre"
+Type: filesandordirs; Name: "{app}\\lib"
+Type: filesandordirs; Name: "{app}\\runtime"
+Type: files; Name: "{app}\\*.jar"
+
+[UninstallDelete]
+Type: dirifempty; Name: "{app}"
+
 [Icons]
 Name: "{autoprograms}\\${applicationName}"; Filename: "{app}\\${applicationName}.exe"
 Name: "{autodesktop}\\${applicationName}"; Filename: "{app}\\${applicationName}.exe"; Tasks: desktopicon
