@@ -493,7 +493,7 @@ public class NBTTreeView extends TreeView<NBTTreeView.NamedTag> {
 		private TextField value;
 		private Button edit; // for array types, show edit button instead of value text field that opens array editor
 
-		private static final boolean noDragviewOffset = OSHelper.OS_TYPE == OSHelper.OSType.WINDOWS;
+		private static final boolean noDragviewOffset = OSHelper.isWindows();
 		private static final String nameFieldCssClass = "name-text-field";
 		private static final String valueFieldCssClass = "value-text-field";
 		private static final String editButtonCssClass = "edit-button";

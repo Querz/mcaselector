@@ -50,7 +50,7 @@ public final class FileHelper {
 
 	private static String getMCDir() {
 		String appdataDir = null;
-		if (OSHelper.OS_TYPE == OSHelper.OSType.WINDOWS) {
+		if (OSHelper.isWindows()) {
 			String env = System.getenv("AppData");
 			File file = new File(env == null ? "" : env, ".minecraft");
 			if (file.exists()) {

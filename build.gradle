@@ -1,3 +1,6 @@
+import org.gradle.internal.os.OperatingSystem
+import java.nio.file.*
+
 plugins {
 	id 'java'
 	id 'application'
@@ -14,6 +17,10 @@ compileJava.options.encoding = 'UTF-8'
 application.mainClass = 'net.querz.mcaselector.Main'
 java.sourceCompatibility = JavaVersion.VERSION_21
 var copyright = project.findProperty('application.copyright').toString()
+var applicationName = project.findProperty('application.name').toString()
+var matrixType = project.findProperty("matrixType").toString()
+var projectName = project.name
+var projectVersion = project.version
 
 javafx {
 	version = "$java.sourceCompatibility"
@@ -27,12 +34,8 @@ idea {
 
 repositories {
 	mavenCentral()
-	maven {
-		url = 'https://jitpack.io/'
-	}
-	maven {
-		url = 'https://plugins.gradle.org/m2/'
-	}
+	maven { url = 'https://jitpack.io/' }
+	maven { url = 'https://plugins.gradle.org/m2/' }
 }
 
 dependencies {
@@ -82,11 +85,11 @@ tasks.register('generator', JavaExec) {
 
 jar {
 	dependsOn minifyCss
-	archiveFileName = "${project.name}-${project.version}.jar"
+	archiveFileName = "${projectName}-${projectVersion}.jar"
 	manifest.attributes (
 		'Main-Class': application.mainClass,
-		'Application-Version': project.version,
-		'Copyright': project.findProperty('application.copyright'),
+		'Application-Version': projectVersion,
+		'Copyright': copyright,
 		'Class-Path': configurations.shadow.files.stream()
 				.filter($it -> !$it.name.startsWith('javafx')).collect{"lib/$it.name"}.join(' ')
 	)
@@ -106,7 +109,7 @@ shadowJar {
 	duplicatesStrategy = DuplicatesStrategy.INCLUDE
 	manifest.attributes (
 		'Main-Class': application.mainClass,
-		'Application-Version': project.version,
+		'Application-Version': projectVersion,
 		'Copyright': copyright
 	)
 	from 'LICENSE'
@@ -123,13 +126,45 @@ runtime {
 		'jdk.unsupported',
 		'javafx.controls',
 		'javafx.swing',
+		'jdk.crypto.ec'
 	]
 
 	jpackage {
-		imageName = project.findProperty('application.name')
-		skipInstaller = true
-		imageOptions = ['--icon', 'installer/img/icon.ico', '--copyright', copyright]
 		jvmArgs = ['-Xmx4096m']
+		if (OperatingSystem.current().isWindows()) {
+			imageName = applicationName
+			skipInstaller = true
+			imageOptions = [
+				'--icon', 'installer/windows/icon.ico',
+				'--copyright', copyright
+			]
+		} else if (OperatingSystem.current().isMacOsX()) {
+			installerType = "dmg"
+			imageName = applicationName
+			installerName = applicationName
+			imageOptions = [
+				'--icon', 'installer/macos/icon.icns',
+				'--copyright', copyright
+			]
+			installerOptions = [
+				'--icon', 'installer/macos/icon.icns',
+				'--copyright', copyright,
+				'--license-file', 'build/licenses/LICENSE'
+			]
+		} else if (OperatingSystem.current().isLinux()) {
+			installerType = matrixType ?: "deb"
+			imageOptions = [
+				'--icon', 'installer/linux/icon.png',
+				'--copyright', copyright,
+			]
+			installerOptions = [
+				'--linux-shortcut',
+				'--icon', 'installer/linux/icon.png',
+				'--copyright', copyright,
+				'--resource-dir', 'installer/linux',
+				'--license-file', 'build/licenses/LICENSE'
+			]
+		}
 	}
 }
 
@@ -153,8 +188,6 @@ test {
  * @param o The output css file
  * @throws IOException If something goes wrong during reading or writing
  */
-import java.nio.file.*
-
 static minCss(i, o) throws IOException {
 	String s = Files.readString(i)
 	s = s.replace("\t", "").replace("\r\n", " ").replace("\n", " ").replaceAll("/\\*.*?\\*/", "").replaceAll(" {2,}", " ").trim()

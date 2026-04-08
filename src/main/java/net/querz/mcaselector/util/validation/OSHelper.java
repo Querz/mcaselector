@@ -17,6 +17,18 @@ public final class OSHelper {
 
 	private OSHelper() {}
 
+	public static boolean isWindows() {
+		return OS_TYPE == OSType.WINDOWS;
+	}
+
+	public static boolean isMac() {
+		return OS_TYPE == OSType.MAC;
+	}
+
+	public static boolean isOther() {
+		return OS_TYPE == OSType.OTHER;
+	}
+
 	public enum OSType {
 		MAC,
 		WINDOWS,

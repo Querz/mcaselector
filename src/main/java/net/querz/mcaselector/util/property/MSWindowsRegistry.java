@@ -12,7 +12,7 @@ public final class MSWindowsRegistry {
 	private MSWindowsRegistry() {}
 
 	public static String getValue(String identifier) {
-		if (OSHelper.OS_TYPE != OSHelper.OSType.WINDOWS) {
+		if (!OSHelper.isWindows()) {
 			return null;
 		}
 

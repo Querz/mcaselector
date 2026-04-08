@@ -7,6 +7,7 @@ import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.ui.Window;
 import net.querz.mcaselector.text.Translation;
+import net.querz.mcaselector.util.validation.OSHelper;
 import net.querz.mcaselector.util.validation.ShutdownHooks;
 import net.querz.mcaselector.version.VersionHandler;
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +20,10 @@ import java.util.concurrent.Future;
 public class Main {
 
 	public static void main(String[] args) throws ExecutionException, InterruptedException {
+		if (OSHelper.isMac()) {
+			System.setProperty("apple.awt.application.name", "MCA Selector");
+		}
+
 		Logging.setLogDir(Config.BASE_LOG_DIR);
 		Logging.updateThreadContext();
 		Logger LOGGER = LogManager.getLogger(Main.class);

@@ -8,18 +8,22 @@ on:
     types: [published]
 
 jobs:
-  publish:
+  publish-windows:
     runs-on: windows-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.1.3
+        uses: actions/checkout@v6.0.2
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4.2.1
+        uses: actions/setup-java@v5.2.0
         with:
           distribution: zulu
           java-version: 21
           java-package: jdk+fx
+          architecture: x64
+
+      - name: Build
+        run: ./gradlew build shadowJar jpackage --stacktrace --warning-mode all
 
       - name: Download Build Tools
         uses: robinraju/release-downloader@v1.12
@@ -29,12 +33,8 @@ jobs:
           fileName: '*.zip'
           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
-      - name: Build jar
-        run: gradlew build shadowJar jpackage --stacktrace --warning-mode all
-        shell: cmd
-
       - name: Initialize resources for installer
-        run: ./installer/init .
+        run: ./installer/windows/init .
         shell: bash
 
       - name: Build installer
@@ -51,38 +51,50 @@ jobs:
 
       - name: Sign installer
         run: |
-          xcopy build\inno\Output\MCA_Selector_Setup.exe build\inno\Output\Signed\
+          xcopy build\inno\Output\mcaselector-2.7-setup.exe build\inno\Output\Signed\
           $bytes = [Convert]::FromBase64String("${{ secrets.WINDOWS_CERT_DATA }}")
           [IO.File]::WriteAllBytes("build/inno/Output/code_signing.pfx", $bytes)
           signtool sign `
             /f "build/inno/Output/code_signing.pfx" `
             /p "${{ secrets.WINDOWS_CERT_PASSWORD }}" `
             /fd SHA256 /t "http://timestamp.digicert.com" `
-            "build/inno/Output/Signed/MCA_Selector_Setup.exe"
+            "build/inno/Output/Signed/mcaselector-2.7-setup.exe"
         shell: powershell
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4.3.3
+      - name: Upload artifact (exe)
+        uses: actions/upload-artifact@v7
         with:
-          name: Artifact
-          path: |
-            build/inno/Output/Signed/MCA_Selector_Setup.exe
-            build/libs/mcaselector-2.7.jar
-            build/libs/mcaselector-2.7-all.jar
+          archive: false
+          path: build/inno/Output/Signed/mcaselector-2.7-setup.exe
 
-      - name: Upload assets
+      - name: Upload artifact (min jar)
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: build/libs/mcaselector-2.7.jar
+
+      - name: Upload artifact (fat jar)
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: build/libs/mcaselector-2.7-all.jar
+
+      - name: Upload release assets
+        if: github.event_name == 'release'
         uses: AButler/upload-release-assets@v3.0
         with:
-          files: build/inno/Output/Signed/MCA_Selector_Setup.exe;build/libs/all/mcaselector-2.7.jar
+          files: build/inno/Output/Signed/mcaselector-2.7-setup.exe;build/libs/all/mcaselector-2.7.jar
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout Wiki
+        if: github.event_name == 'release'
         uses: actions/checkout@v4.1.3
         with:
           repository: Querz/mcaselector-wiki
           path: mcaselector-wiki
 
       - name: Update Wiki
+        if: github.event_name == 'release'
         run: |
           cd mcaselector-wiki
           echo -n 2.7 > version.txt
@@ -90,6 +102,7 @@ jobs:
         shell: bash
 
       - name: Push Wiki
+        if: github.event_name == 'release'
         continue-on-error: true
         run: |
           cd mcaselector-wiki
@@ -100,3 +113,85 @@ jobs:
           git commit -am "Automated version update to 2.7"
           git push
         shell: bash
+
+  publish-unix:
+    runs-on: ${{ matrix.os }}
+    container:
+      image: ${{ matrix.container_image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # --- MACOS ---
+          - os: macos-latest
+            arch: aarch64
+            type: dmg
+          - os: macos-26-intel
+            arch: x64
+            type: dmg
+
+          # --- LINUX DEB ---
+          - os: ubuntu-22.04
+            arch: x64
+            type: deb
+            container_image: debian:bookworm
+          - os: ubuntu-22.04-arm
+            arch: aarch64
+            type: deb
+            container_image: debian:bookworm
+
+          # --- LINUX RPM ---
+          - os: ubuntu-22.04
+            arch: x64
+            type: rpm
+            container_image: fedora:latest
+          - os: ubuntu-22.04-arm
+            arch: aarch64
+            type: rpm
+            container_image: fedora:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6.0.2
+
+      - name: Install Dependencies (DEB)
+        if: matrix.type == 'deb'
+        run: |
+          apt-get update -qq
+          apt-get install -qq -y ca-certificates findutils binutils fakeroot debhelper
+
+      - name: Install Dependencies (RPM)
+        if: matrix.type == 'rpm'
+        run: |
+          dnf install -y findutils tar gzip binutils rpm-build
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5.2.0
+        with:
+          java-version: 21
+          distribution: zulu
+          java-package: jdk+fx
+          architecture: ${{ matrix.arch }}
+
+      - name: Build
+        run: |
+          echo "Current shell version: $BASH_VERSION"
+          chmod +x ./gradlew
+          chmod +x ./installer/init
+          ./gradlew build shadowJar --stacktrace --warning-mode all
+          mkdir -p build/licenses
+          ./installer/init . build/licenses/LICENSE
+          ./gradlew jpackage -PmatrixType=${{ matrix.type }} --stacktrace --warning-mode all
+          mv build/jpackage/*.${{ matrix.type }} build/jpackage/mcaselector-2.7-${{ matrix.arch }}.${{ matrix.type }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: build/jpackage/*.${{ matrix.type }}
+
+      - name: Upload release asset
+        if: github.event_name == 'release'
+        uses: AButler/upload-release-assets@v3.0
+        with:
+          files: build/jpackage/*.${{ matrix.type }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

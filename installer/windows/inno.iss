@@ -13,7 +13,7 @@ DisableProgramGroupPage=yes
 LicenseFile=LICENSE
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
-OutputBaseFilename=MCA_Selector_Setup
+OutputBaseFilename=mcaselector-${applicationVersion}-setup
 SetupIconFile=icon.ico
 Compression=lzma
 SolidCompression=yes
@@ -52,7 +52,6 @@ Source: "${applicationName}\\*"; DestDir: "{app}"; Flags: ignoreversion recurses
 [InstallDelete]
 Type: filesandordirs; Name: "{app}\\jre"
 Type: filesandordirs; Name: "{app}\\lib"
-Type: filesandordirs; Name: "{app}\\runtime"
 Type: files; Name: "{app}\\*.jar"
 
 [UninstallDelete]

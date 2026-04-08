@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=MCA Selector
+Comment=Select, edit, and export chunks of your Minecraft world
+Exec=/opt/mcaselector/bin/mcaselector
+Terminal=false
+Type=Application
+Icon=/opt/mcaselector/lib/mcaselector.png
+Categories=Game;GameTool;Java;
+StartupWMClass=net.querz.mcaselector.ui.Window
+Version=2.7

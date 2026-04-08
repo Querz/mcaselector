@@ -55,7 +55,7 @@ public abstract class FilterBox extends BorderPane {
 	private static FilterBox currentDragDropTarget;
 	private static int currentDragDropTargetDirection;
 
-	private static final boolean USE_DRAGVIEW_OFFSET = OSHelper.OS_TYPE == OSHelper.OSType.WINDOWS;
+	private static final boolean USE_DRAGVIEW_OFFSET = OSHelper.isWindows();
 
 	private static final String stylesheet = Objects.requireNonNull(FilterBox.class.getClassLoader().getResource("style/component/filter-box.css")).toExternalForm();
 

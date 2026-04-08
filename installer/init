@@ -1,26 +1,13 @@
-#!/bin/bash
-
-# installer <project root directory>
-
-gradlePropertiesFile="$1/gradle.properties"
-
-ReadGradleProperty() {
-  local value=`cat $gradlePropertiesFile | grep "$1" | cut -d'=' -f2`
-  echo "$value"
-}
-
-projectName='mcaselector'
-applicationName=$(ReadGradleProperty 'application.name')
-applicationURL=$(ReadGradleProperty 'application.url')
-applicationAuthor=$(ReadGradleProperty 'application.author')
-applicationCopyright=$(ReadGradleProperty 'application.copyright')
-applicationVersion=$(ReadGradleProperty 'version')
+#!/usr/bin/env bash
 
 # pads a string up to the given length
 # Pad <string> <char> <length>
 Pad() {
   local result=''
-  for (( i = $(expr length "$1"); i < $3; i+=2 )); do
+  local start_len=${#1}
+  local target_len=${3:-0}
+  for (( i = start_len; i < target_len; i+=2 ));
+  do
     result="$result$2"
   done
   echo "$result$1"
@@ -32,7 +19,7 @@ AppendLicense() {
   local content=$(<$1)
   # remove .license.txt from file name
   local baseName=$(basename $1 .txt)
-  local licenseName=${baseName^^}
+  local licenseName=$(echo "$baseName" | tr '[:lower:]' '[:upper:]')
   echo "$2
 
 
@@ -43,10 +30,8 @@ AppendLicense() {
 $content"
 }
 
-# Installer <project root> <version>
-Installer() {
-  mkdir "$1/build/inno"
-
+# BuildLicense <project root> <output file>
+BuildLicense() {
   local finalLicense=$(<"$1/LICENSE")
   finalLicense="$finalLicense
 
@@ -70,24 +55,7 @@ Installer() {
   finalLicense=$(AppendLicense "$1/build/resources/main/font/license/notosans.txt" "$finalLicense")
   finalLicense=$(AppendLicense "$1/build/resources/main/font/license/notosansmono.txt" "$finalLicense")
 
-  echo "$finalLicense" > "$1/build/inno/LICENSE"
-
-  # copy files
-  local innoSetupDir="$1/build/inno"
-  cp "$1/installer/img/icon.ico" "$innoSetupDir"
-  cp "$1/installer/img/small.bmp" "$innoSetupDir"
-  cp "$1/installer/img/large.bmp" "$innoSetupDir"
-  cp -r "$1/build/jpackage/$applicationName" "$innoSetupDir"
-  cp "$1/installer/inno.iss" "$innoSetupDir"
-  sed -i "s/\${applicationName}/$applicationName/g" "$innoSetupDir/inno.iss"
-  sed -i "s/\${applicationUrl}/${applicationURL////\\/}/g" "$innoSetupDir/inno.iss"
-  sed -i "s/\${applicationAuthor}/$applicationAuthor/g" "$innoSetupDir/inno.iss"
-  sed -i "s/\${applicationCopyright}/$applicationCopyright/g" "$innoSetupDir/inno.iss"
-  sed -i "s/\${applicationVersion}/$applicationVersion/g" "$innoSetupDir/inno.iss"
+  echo "$finalLicense" > "$2"
 }
 
-Installer $1
-
-# copy and rename the fat jar
-mkdir "$1/build/libs/all"
-cp "$1/build/libs/$projectName-$applicationVersion-all.jar" "$1/build/libs/all/$projectName-$applicationVersion.jar"
+BuildLicense $1 $2
