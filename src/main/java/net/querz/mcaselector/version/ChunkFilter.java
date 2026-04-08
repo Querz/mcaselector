@@ -106,6 +106,42 @@ public interface ChunkFilter {
 
 		CompoundTag newEmptyChunk(Point2i absoluteLocation, int dataVersion);
 
+		// Biomes-only merge for modern Minecraft (1.18+)
+		default void mergeBiomesOnly(CompoundTag source, CompoundTag destination) {
+			// In Minecraft 1.18+, biomes are stored in sections
+			if (source.containsKey("sections") && destination.containsKey("sections")) {
+				ListTag sourceSections = source.getListTag("sections");
+				ListTag destSections = destination.getListTag("sections");
+
+				if (sourceSections != null && destSections != null) {
+					// Create map of Y -> Section for fast lookup
+					java.util.Map<Integer, CompoundTag> destSectionMap = new java.util.HashMap<>();
+					for (Tag tag : destSections) {
+						if (tag instanceof CompoundTag section) {
+							int y = section.getInt("Y");
+							destSectionMap.put(y, section);
+						}
+					}
+
+					// Copy biomes from source sections
+					for (Tag tag : sourceSections) {
+						if (tag instanceof CompoundTag sourceSection) {
+							int y = sourceSection.getInt("Y");
+							CompoundTag destSection = destSectionMap.get(y);
+
+							if (destSection != null && sourceSection.containsKey("biomes")) {
+								// Copy biome palette
+								Tag biomeData = sourceSection.get("biomes");
+								if (biomeData != null) {
+									destSection.put("biomes", biomeData.copy());
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 		default ListTag mergeLists(ListTag source, ListTag destination, List<Range> ranges, Function<Tag, Integer> ySupplier, int yOffset) {
 			ListTag result = new ListTag();
 			for (Tag dest : destination) {

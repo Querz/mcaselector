@@ -130,6 +130,10 @@ public final class ParamExecutor {
 			.hasArg()
 			.get());
 		options.addOption(Option.builder()
+			.longOpt("biomes")
+			.desc("Import only biome data, not blocks or entities")
+			.get());
+		options.addOption(Option.builder()
 			.longOpt("render-height")
 			.desc("The highest Y level to render in image mode")
 			.hasArg()
@@ -685,6 +689,11 @@ public final class ParamExecutor {
 	}
 
 	private List<Range> parseSections(boolean mandatory) throws ParseException {
+		// If --biomes is set, return empty list (special flag for biomes-only import)
+		if (line.hasOption("biomes")) {
+			return new ArrayList<>();
+		}
+
 		if (!line.hasOption("sections")) {
 			if (mandatory) {
 				throw new ParseException("missing mandatory sections parameter");
