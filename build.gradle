@@ -10,7 +10,7 @@ plugins {
 	id 'com.gradleup.shadow' version '9.2.2'
 	id 'com.github.ben-manes.versions' version '0.52.0'
 	id 'org.beryx.runtime' version '2.0.1'
-	id "io.github.jwharm.flatpak-gradle-generator" version "1.5.0"
+	id "io.github.jwharm.flatpak-gradle-generator" version "1.6.0"
 }
 
 group = 'net.querz'
