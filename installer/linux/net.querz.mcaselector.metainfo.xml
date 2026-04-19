@@ -68,6 +68,15 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="2.7" date="2026-03-24">
+      <url>https://github.com/Querz/mcaselector/releases/tag/2.6.1</url>
+    </release>
+    <release version="2.6.1" date="2025-11-06">
+      <url>https://github.com/Querz/mcaselector/releases/tag/2.6.1</url>
+    </release>
+    <release version="2.6" date="2025-10-31">
+      <url>https://github.com/Querz/mcaselector/releases/tag/2.6</url>
+    </release>
     <release version="2.5.3" date="2025-06-18">
       <url>https://github.com/Querz/mcaselector/releases/tag/2.5.3</url>
     </release>
