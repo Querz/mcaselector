@@ -13,6 +13,13 @@ applicationVersion=$(ReadGradleProperty 'version')
 # update README.md
 sed -i -E "s/<!--vs-->[0-9]+\.[0-9]+(\.[0-9]+)?<!--ve-->/<!--vs-->$applicationVersion<!--ve-->/g" 'README.md'
 sed -i -E "s/download\/[0-9]+\.[0-9]+(\.[0-9]+)?/download\/$applicationVersion/g" 'README.md'
+sed -i -E "s/mcaselector-[0-9]+\.[0-9]+(\.[0-9]+)?-setup\.exe/mcaselector-$applicationVersion-setup.exe/g" 'README.md'
+sed -i -E "s/mcaselector-[0-9]+\.[0-9]+(\.[0-9]+)?-x64\.dmg/mcaselector-$applicationVersion-x64.dmg/g" 'README.md'
+sed -i -E "s/mcaselector-[0-9]+\.[0-9]+(\.[0-9]+)?-aarch64\.dmg/mcaselector-$applicationVersion-aarch64.dmg/g" 'README.md'
+sed -i -E "s/mcaselector-[0-9]+\.[0-9]+(\.[0-9]+)?-x64\.deb/mcaselector-$applicationVersion-x64.deb/g" 'README.md'
+sed -i -E "s/mcaselector-[0-9]+\.[0-9]+(\.[0-9]+)?-aarch64\.deb/mcaselector-$applicationVersion-aarch64.deb/g" 'README.md'
+sed -i -E "s/mcaselector-[0-9]+\.[0-9]+(\.[0-9]+)?-x64\.rpm/mcaselector-$applicationVersion-x64.rpm/g" 'README.md'
+sed -i -E "s/mcaselector-[0-9]+\.[0-9]+(\.[0-9]+)?-aarch64\.rpm/mcaselector-$applicationVersion-aarch64.rpm/g" 'README.md'
 sed -i -E "s/mcaselector-[0-9]+\.[0-9]+(\.[0-9]+)?\.jar/mcaselector-$applicationVersion.jar/g" 'README.md'
 
 # update GitHub workflows

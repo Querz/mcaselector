@@ -13,9 +13,21 @@
 
 **MCA Selector modifies and deletes chunks in your Minecraft world. Please make backups of your world before using.**
 
-[**Download Version <!--vs-->2.7<!--ve--> (Windows Installer)**](https://github.com/Querz/mcaselector/releases/download/2.7/MCA_Selector_Setup.exe)
+[**Download Version <!--vs-->2.8<!--ve--> (Windows Installer)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8-setup.exe)
 
-[**Download Version <!--vs-->2.7<!--ve--> (Universal)**](https://github.com/Querz/mcaselector/releases/download/2.7/mcaselector-2.7.jar)
+[**Download Version <!--vs-->2.8<!--ve--> (macOS arm64)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8-aarch64.dmg)
+
+[**Download Version <!--vs-->2.8<!--ve--> (macOS x64)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8-x64.dmg)
+
+[**Download Version <!--vs-->2.8<!--ve--> (DEB arm64)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8-aarch64.deb)
+
+[**Download Version <!--vs-->2.8<!--ve--> (DEB x64)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8-x64.deb)
+
+[**Download Version <!--vs-->2.8<!--ve--> (RPM arm64)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8-aarch64.rpm)
+
+[**Download Version <!--vs-->2.8<!--ve--> (RPM x64)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8-x64.rpm)
+
+[**Download Version <!--vs-->2.8<!--ve--> (Universal jar)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8.jar)
 
 ---
 
@@ -47,7 +59,8 @@ MCA Selector currently supports the following Minecraft versions:
 | 1.18 - 1.18.2     | 2825 - 2975  |
 | 1.19 - 1.19.4     | 3105 - 3337  |
 | 1.20 - 1.20.6     | 3463 - 3839  |
-| 1.21 - 1.21.5+    | 3953 - 4125+ |
+| 1.21 - 1.21.11    | 3953 - 4671  |
+| 26.1 - 26.2+      | 4764 - 4902+ |
 
 There is no guarantee for worlds generated in a Snapshot version to work, even if it is specified in the table above.
 This only represents the current development status towards the next Minecraft release. Old Snapshots of past 

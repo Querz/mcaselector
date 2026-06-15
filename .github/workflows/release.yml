@@ -51,39 +51,39 @@ jobs:
 
       - name: Sign installer
         run: |
-          xcopy build\inno\Output\mcaselector-2.7-setup.exe build\inno\Output\Signed\
+          xcopy build\inno\Output\mcaselector-2.8-setup.exe build\inno\Output\Signed\
           $bytes = [Convert]::FromBase64String("${{ secrets.WINDOWS_CERT_DATA }}")
           [IO.File]::WriteAllBytes("build/inno/Output/code_signing.pfx", $bytes)
           signtool sign `
             /f "build/inno/Output/code_signing.pfx" `
             /p "${{ secrets.WINDOWS_CERT_PASSWORD }}" `
             /fd SHA256 /t "http://timestamp.digicert.com" `
-            "build/inno/Output/Signed/mcaselector-2.7-setup.exe"
+            "build/inno/Output/Signed/mcaselector-2.8-setup.exe"
         shell: powershell
 
       - name: Upload artifact (exe)
         uses: actions/upload-artifact@v7
         with:
           archive: false
-          path: build/inno/Output/Signed/mcaselector-2.7-setup.exe
+          path: build/inno/Output/Signed/mcaselector-2.8-setup.exe
 
       - name: Upload artifact (min jar)
         uses: actions/upload-artifact@v7
         with:
           archive: false
-          path: build/libs/mcaselector-2.7.jar
+          path: build/libs/mcaselector-2.8.jar
 
       - name: Upload artifact (fat jar)
         uses: actions/upload-artifact@v7
         with:
           archive: false
-          path: build/libs/mcaselector-2.7-all.jar
+          path: build/libs/mcaselector-2.8-all.jar
 
       - name: Upload release assets
         if: github.event_name == 'release'
         uses: AButler/upload-release-assets@v3.0
         with:
-          files: build/inno/Output/Signed/mcaselector-2.7-setup.exe;build/libs/all/mcaselector-2.7.jar
+          files: build/inno/Output/Signed/mcaselector-2.8-setup.exe;build/libs/all/mcaselector-2.8.jar
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout Wiki
@@ -97,7 +97,7 @@ jobs:
         if: github.event_name == 'release'
         run: |
           cd mcaselector-wiki
-          echo -n 2.7 > version.txt
+          echo -n 2.8 > version.txt
           ./update_version
         shell: bash
 
@@ -110,7 +110,7 @@ jobs:
           git config --global user.email 'wiki@querz.net'
           git config --unset-all http.https://github.com/.extraheader
           git remote set-url origin https://x-access-token:${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}@github.com/Querz/mcaselector-wiki
-          git commit -am "Automated version update to 2.7"
+          git commit -am "Automated version update to 2.8"
           git push
         shell: bash
 
@@ -181,7 +181,7 @@ jobs:
           mkdir -p build/licenses
           ./installer/init . build/licenses/LICENSE
           ./gradlew jpackage -PmatrixType=${{ matrix.type }} --stacktrace --warning-mode all
-          mv build/jpackage/*.${{ matrix.type }} build/jpackage/mcaselector-2.7-${{ matrix.arch }}.${{ matrix.type }}
+          mv build/jpackage/*.${{ matrix.type }} build/jpackage/mcaselector-2.8-${{ matrix.arch }}.${{ matrix.type }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
