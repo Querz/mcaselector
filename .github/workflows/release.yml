@@ -9,7 +9,15 @@ on:
 
 jobs:
   publish-windows:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            arch: x64
+          - os: windows-11-arm
+            arch: aarch64
     steps:
       - name: Checkout code
         uses: actions/checkout@v6.0.2
@@ -20,7 +28,7 @@ jobs:
           distribution: zulu
           java-version: 21
           java-package: jdk+fx
-          architecture: x64
+          architecture: ${{ matrix.arch }}
 
       - name: Build
         run: ./gradlew build shadowJar jpackage --stacktrace --warning-mode all
@@ -51,21 +59,21 @@ jobs:
 
       - name: Sign installer
         run: |
-          xcopy build\inno\Output\mcaselector-2.7-setup.exe build\inno\Output\Signed\
+          xcopy build\inno\Output\mcaselector-2.7-setup.exe build\inno\Output\Signed\mcaselector-2.7-${{ matrix.arch }}.exe
           $bytes = [Convert]::FromBase64String("${{ secrets.WINDOWS_CERT_DATA }}")
           [IO.File]::WriteAllBytes("build/inno/Output/code_signing.pfx", $bytes)
           signtool sign `
             /f "build/inno/Output/code_signing.pfx" `
             /p "${{ secrets.WINDOWS_CERT_PASSWORD }}" `
             /fd SHA256 /t "http://timestamp.digicert.com" `
-            "build/inno/Output/Signed/mcaselector-2.7-setup.exe"
+            "build/inno/Output/Signed/mcaselector-2.7-${{ matrix.arch }}.exe"
         shell: powershell
 
       - name: Upload artifact (exe)
         uses: actions/upload-artifact@v7
         with:
           archive: false
-          path: build/inno/Output/Signed/mcaselector-2.7-setup.exe
+          path: build/inno/Output/Signed/mcaselector-2.7-${{ matrix.arch }}.exe
 
       - name: Upload artifact (min jar)
         uses: actions/upload-artifact@v7
@@ -79,22 +87,29 @@ jobs:
           archive: false
           path: build/libs/mcaselector-2.7-all.jar
 
-      - name: Upload release assets
+      - name: Upload release asset (exe)
         if: github.event_name == 'release'
         uses: AButler/upload-release-assets@v3.0
         with:
-          files: build/inno/Output/Signed/mcaselector-2.7-setup.exe;build/libs/all/mcaselector-2.7.jar
+          files: build/inno/Output/Signed/mcaselector-2.7-${{ matrix.arch }}.exe
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload release asset (jar)
+        if: github.event_name == 'release' && matrix.arch == 'x64'
+        uses: AButler/upload-release-assets@v3.0
+        with:
+          files: build/libs/all/mcaselector-2.7.jar
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout Wiki
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' && matrix.arch == 'x64'
         uses: actions/checkout@v4.1.3
         with:
           repository: Querz/mcaselector-wiki
           path: mcaselector-wiki
 
       - name: Update Wiki
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' && matrix.arch == 'x64'
         run: |
           cd mcaselector-wiki
           echo -n 2.7 > version.txt
@@ -102,7 +117,7 @@ jobs:
         shell: bash
 
       - name: Push Wiki
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' && matrix.arch == 'x64'
         continue-on-error: true
         run: |
           cd mcaselector-wiki
