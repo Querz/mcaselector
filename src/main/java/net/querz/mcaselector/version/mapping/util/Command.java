@@ -14,20 +14,18 @@ public final class Command {
 
 	public static void exec(Path workingDirectory, ThrowingBiConsumer<String, Process, IOException> outputConsumer, String... cmd) throws InterruptedException, IOException {
 		ProcessBuilder pb = new ProcessBuilder(cmd);
+		pb.redirectErrorStream(true);
 		System.out.println(pb.command());
 		pb.directory(workingDirectory.toFile());
 		Process pr = pb.start();
-		BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-		String line;
-		while ((line = buf.readLine()) != null) {
-			System.out.println(line);
-			if (outputConsumer != null) {
-				outputConsumer.accept(line, pr);
+		try (BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()))) {
+			String line;
+			while ((line = buf.readLine()) != null) {
+				System.out.println(line);
+				if (outputConsumer != null) {
+					outputConsumer.accept(line, pr);
+				}
 			}
-		}
-		BufferedReader errBuf = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
-		while ((line = errBuf.readLine()) != null) {
-			System.out.println(line);
 		}
 		pr.waitFor();
 	}
