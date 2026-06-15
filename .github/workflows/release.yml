@@ -26,7 +26,7 @@ jobs:
         run: ./gradlew build shadowJar jpackage --stacktrace --warning-mode all
 
       - name: Download Build Tools
-        uses: robinraju/release-downloader@v1.12
+        uses: robinraju/release-downloader@v1.13
         with:
           repository: Querz/build-tools
           tag: '1.0'
