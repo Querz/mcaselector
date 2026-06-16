@@ -1,0 +1,11 @@
+[Desktop Entry]
+Categories=Game;Utility;GameTool;Java;
+Comment=Tool to select chunks from Minecraft worlds for deletion or export
+Exec=@binary@
+Icon=net.querz.mcaselector
+Name=MCA Selector
+StartupNotify=true
+StartupWMClass=net.querz.mcaselector.ui.Window
+Terminal=false
+Type=Application
+Version=1.0
