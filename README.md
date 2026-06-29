@@ -11,6 +11,10 @@
 
 ---
 
+**⚠️ The only official and safe place to download MCA Selector is directly from the official GitHub repository https://github.com/Querz/mcaselector**
+
+---
+
 **MCA Selector modifies and deletes chunks in your Minecraft world. Please make backups of your world before using.**
 
 [**Download Version <!--vs-->2.8<!--ve--> (Windows Installer)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8-setup.exe)
