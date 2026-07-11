@@ -19,7 +19,7 @@ public class CompressionField extends Field<CompressionType> {
     @Override
     public boolean parseNewValue(String s) {
         for (CompressionType t : CompressionType.values()) {
-            if (t.toString().equalsIgnoreCase(s)) {
+            if (t.toString().equalsIgnoreCase(s) || ("" + t.getByte()).equals(s)) {
                 this.setNewValue(t);
                 return true;
             }

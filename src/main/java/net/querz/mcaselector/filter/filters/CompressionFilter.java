@@ -64,7 +64,7 @@ public class CompressionFilter extends TextFilter<CompressionType> {
 	@Override
 	public void setFilterValue(String raw) {
 		for (CompressionType t : CompressionType.values()) {
-			if (t.toString().equalsIgnoreCase(raw)) {
+			if (t.toString().equalsIgnoreCase(raw) || ("" + t.getByte()).equals(raw)) {
 				setValue(t);
 				setRawValue(raw);
 				setValid(true);
