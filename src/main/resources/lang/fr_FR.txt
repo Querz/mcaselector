@@ -75,6 +75,9 @@ dialog.settings.rendering.smooth.smooth_rendering;Rendu fluide
 dialog.settings.rendering.smooth.smooth_overlays;Superpositions lisses
 dialog.settings.rendering.background.background_pattern;Motif de fond
 dialog.settings.rendering.background;Fond
+dialog.settings.rendering.zoom_level.low_detail_zoom_level;Niveau de zoom faible détail
+dialog.settings.rendering.zoom_level.low_detail_color;Couleur faible détail
+dialog.settings.rendering.zoom_level;Niveau de zoom
 dialog.settings.global.misc.mc_saves_dir;MC enregistre le répertoire
 dialog.settings.global.misc.print_debug;Imprimer les messages de débogage
 dialog.settings.global.misc.show_log_file;Afficher le fichier journal

@@ -75,6 +75,9 @@ dialog.settings.rendering.smooth.smooth_rendering;Glatt rendern
 dialog.settings.rendering.smooth.smooth_overlays;Glatte Overlays
 dialog.settings.rendering.background.background_pattern;Hintergrundmuster
 dialog.settings.rendering.background;Hintergrund
+dialog.settings.rendering.zoom_level.low_detail_zoom_level;Zoom-Stufe für geringe Details
+dialog.settings.rendering.zoom_level.low_detail_color;Farbe für geringe Details
+dialog.settings.rendering.zoom_level;Zoom-Stufe
 dialog.settings.global.misc.mc_saves_dir;MC Speicherort
 dialog.settings.global.misc.print_debug;Debug
 dialog.settings.global.misc.show_log_file;Logdatei anzeigen

@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.util.StringConverter;
 
 public class HeightSlider extends HBox {
@@ -25,6 +26,7 @@ public class HeightSlider extends HBox {
 	* */
 
 	public HeightSlider(int init, boolean showCustomlabels) {
+		getStyleClass().add("height-slider-box");
 		valueProperty.set(init);
 		heightField.getStyleClass().add("slider-value-field");
 		slider.setSnapToTicks(true);
@@ -32,9 +34,9 @@ public class HeightSlider extends HBox {
 		slider.setShowTickMarks(!showCustomlabels);
 		slider.setMajorTickUnit(32);
 		slider.setMinorTickCount(384);
-		slider.setPrefWidth(300);
 		slider.setBlockIncrement(1);
 		slider.setValue(init);
+		HBox.setHgrow(slider, Priority.ALWAYS);
 
 		heightField.valueProperty().set(init);
 

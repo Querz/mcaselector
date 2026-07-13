@@ -75,6 +75,9 @@ dialog.settings.rendering.smooth.smooth_rendering;Plynulé vykreslování
 dialog.settings.rendering.smooth.smooth_overlays;Hladké překrytí
 dialog.settings.rendering.background.background_pattern;Vzor pozadí
 dialog.settings.rendering.background;Pozadí
+dialog.settings.rendering.zoom_level.low_detail_zoom_level;Úroveň přiblížení s nízkými detaily
+dialog.settings.rendering.zoom_level.low_detail_color;Barva nízkých detailů
+dialog.settings.rendering.zoom_level;Úroveň přiblížení
 dialog.settings.global.misc.mc_saves_dir;Umístění MC světů
 dialog.settings.global.misc.print_debug;Tisk zpráv o ladění
 dialog.settings.global.misc.show_log_file;Zobrazit soubor protokolu

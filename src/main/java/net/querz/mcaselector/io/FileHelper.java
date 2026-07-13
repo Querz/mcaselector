@@ -35,6 +35,7 @@ public final class FileHelper {
 	private static final Logger LOGGER = LogManager.getLogger(FileHelper.class);
 
 	public static final int HEADER_SIZE = 8192;
+	public static final int HEADER_OFFSETS_SIZE = 4096;
 	public static final Pattern MCA_FILE_PATTERN = Pattern.compile("^r\\.-?\\d+\\.-?\\d+\\.mca$");
 	public static final Pattern REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca$");
 	public static final Pattern DAT_REGION_GROUP_PATTERN = Pattern.compile("^r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.dat$");

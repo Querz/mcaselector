@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import net.querz.mcaselector.config.Config;
 import net.querz.mcaselector.config.ConfigProvider;
@@ -11,7 +12,9 @@ import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.io.db.CacheHandler;
 import net.querz.mcaselector.io.job.CachedImageLoadJob;
+import net.querz.mcaselector.io.job.RegionHeaderImageGenerator;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
+import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.text.Translation;
 import net.querz.mcaselector.ui.ProgressTask;
@@ -19,6 +22,7 @@ import net.querz.mcaselector.ui.dialog.ErrorDialog;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iq80.leveldb.DBException;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -58,6 +62,27 @@ public final class ImagePool {
 		if (!regions.contains(tile.location.asLong())) {
 			tile.setLoaded(true);
 			return;
+		}
+
+		// if we are at a zoom level where we only display the region's header, we try to fetch it from cache
+		if (zoomLevel >= ConfigProvider.WORLD.getRenderHeaderOnlyZoomLevel()) {
+			try {
+				ChunkSet chunks = CacheHandler.getChunks(tile.location);
+				if (chunks != null) {
+					tile.setImage(TileImage.generateImageFromChunkSet(chunks));
+					tile.setLoaded(true);
+					return;
+				}
+				RegionHeaderImageGenerator.generate(tile, (cs, uuid) -> {
+					tile.setImage(cs);
+					tile.setLoaded(true);
+					push(zoomLevel, tile.location, cs);
+					tileMap.draw();
+				}, () -> tileMap.getTilePriority(tile.getLocation()));
+				return;
+			} catch (DBException e) {
+
+			}
 		}
 
 		// if the image is already loading, we ignore it
@@ -102,21 +127,39 @@ public final class ImagePool {
 			}
 		}
 
-		// image in disk cache?
-		File diskCacheImageFile = FileHelper.createPNGFilePath(ConfigProvider.WORLD.getCacheDir(), zoomLevel, tile.location);
-		if (diskCacheImageFile.exists()) {
-			CachedImageLoadJob.setLoading(tile, true);
-			CachedImageLoadJob.load(tile, diskCacheImageFile, zoomLevel, zoomLevel, img -> {
-				CachedImageLoadJob.setLoading(tile, false);
+		File diskCacheImageFile;
+
+		// image in db cache if we need a zoom level >= 32?
+		if (zoomLevel >= 32) {
+			BufferedImage bImage = CacheHandler.getImage(tile.location);
+			if (bImage != null) {
+				Image img = SwingFXUtils.toFXImage(bImage, null);
 				push(zoomLevel, tile.location, img);
-				fetchOrParseStructures(tile, zoomLevel);
 				tileMap.draw();
 				if (isImageOutdated(tile.location)) {
 					discardCachedImage(tile.location);
 					tile.setLoaded(false);
 				}
-			});
-			return;
+				return;
+			}
+		} else {
+
+			// image in disk cache?
+			diskCacheImageFile = FileHelper.createPNGFilePath(ConfigProvider.WORLD.getCacheDir(), zoomLevel, tile.location);
+			if (diskCacheImageFile.exists()) {
+				CachedImageLoadJob.setLoading(tile, true);
+				CachedImageLoadJob.load(tile, diskCacheImageFile, zoomLevel, zoomLevel, img -> {
+					CachedImageLoadJob.setLoading(tile, false);
+					push(zoomLevel, tile.location, img);
+					fetchOrParseStructures(tile, zoomLevel);
+					tileMap.draw();
+					if (isImageOutdated(tile.location)) {
+						discardCachedImage(tile.location);
+						tile.setLoaded(false);
+					}
+				});
+				return;
+			}
 		}
 
 		for (int zl = 1; zl <= Config.MAX_ZOOM_LEVEL; zl *= 2) {
@@ -166,7 +209,7 @@ public final class ImagePool {
 			tile.loaded = true;
 			RegionImageGenerator.setLoading(tile, false);
 			push(zoomLevel, tile.location, img);
-			tileMap.draw();
+			tileMap.update();
 			try {
 				CacheHandler.setFileTime(tile.location, readLastModifiedDate(tile.location));
 			} catch (DBException e) {

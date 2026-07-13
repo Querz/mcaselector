@@ -1,10 +1,9 @@
 .slider-grid-pane .slider {
-    -fx-pref-width: 240;
     -fx-padding: 0 10 0 0;
 }
 
 .slider-grid-pane .color-preview-button, .slider-grid-pane .file-text-field, .slider-grid-pane .combo-box {
-    -fx-pref-width: 280;
+    -fx-max-width: infinity;
 }
 
 .slider-grid-pane .label {
@@ -14,6 +13,11 @@
 
 .slider-grid-pane .debug-box {
     -fx-padding: 4 0 -3 0;
+}
+
+.settings-dialog-pane {
+    -fx-pref-height: 600;
+    -fx-pref-width: 600;
 }
 
 .settings-dialog-pane .file-text-field {

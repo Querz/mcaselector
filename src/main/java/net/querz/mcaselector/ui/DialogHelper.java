@@ -344,6 +344,15 @@ public class DialogHelper {
 				ConfigProvider.WORLD.setTileMapBackground(r.tileMapBackground().name());
 				tileMap.getWindow().getTileMapBox().setBackground(r.tileMapBackground().getBackground());
 
+				Runnable clearFunction = () -> {};
+
+				if (r.zoomLevelLOD() != ConfigProvider.WORLD.getRenderHeaderOnlyZoomLevel()
+					|| !new Color(r.zoomLevelLODColor()).equals(ConfigProvider.WORLD.getZoomLevelLODColor())) {
+					ConfigProvider.WORLD.setRenderHeaderOnlyZoomLevel(r.zoomLevelLOD());
+					ConfigProvider.WORLD.setZoomLevelLODColor(new Color(r.zoomLevelLODColor()));
+					clearFunction = tileMap::markAllTilesAsObsolete;
+				}
+
 				if (r.height() != ConfigProvider.WORLD.getRenderHeight() || r.layerOnly() != ConfigProvider.WORLD.getRenderLayerOnly()
 					|| r.shade() != ConfigProvider.WORLD.getShade() || r.shadeWater() != ConfigProvider.WORLD.getShadeWater()
 					|| r.shadeAltitude() != ConfigProvider.WORLD.getShadeAltitude() || r.caves() != ConfigProvider.WORLD.getRenderCaves()) {
@@ -355,8 +364,10 @@ public class DialogHelper {
 					ConfigProvider.WORLD.setShadeWater(r.shadeWater());
 					ConfigProvider.WORLD.setShadeAltitude(r.shadeAltitude());
 					// only clear the cache if the actual image rendering changed
-					CacheHelper.clearAllCache(tileMap);
+					clearFunction = () -> CacheHelper.clearAllCache(tileMap);
 				}
+
+				clearFunction.run();
 
 				WorldDirectories worldDirectories = ConfigProvider.WORLD.getWorldDirs();
 				worldDirectories.setPoi(r.poi());

@@ -3,7 +3,7 @@
 }
 
 .option-bar-slider-box {
-    -fx-padding: 0 5 -5 0;
+    -fx-padding: 0 5 -5 20;
 }
 
 .option-bar-slider-box .slider {

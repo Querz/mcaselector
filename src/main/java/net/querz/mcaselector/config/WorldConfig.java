@@ -1,10 +1,12 @@
 package net.querz.mcaselector.config;
 
 import com.google.gson.*;
+import net.querz.mcaselector.config.adapter.ColorAdapter;
 import net.querz.mcaselector.config.adapter.FileAdapter;
 import net.querz.mcaselector.config.adapter.WorldDirectoriesAdapter;
 import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.logging.GsonNamingStrategy;
+import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.util.math.Bits;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +21,7 @@ public class WorldConfig extends Config {
 
 	static {
 		GsonBuilder builder = new GsonBuilder();
+		builder.registerTypeAdapter(Color.class, new ColorAdapter());
 		builder.setPrettyPrinting();
 		gsonInstance = builder.create();
 	}
@@ -36,6 +39,8 @@ public class WorldConfig extends Config {
 	public static final boolean DEFAULT_SHOW_NONEXISTENT_REGIONS = true;
 	public static final int DEFAULT_STRUCTURE_ICON_SIZE = 32;
 	public static final int DEFAULT_STRUCTURE_ICON_BORDER_SIZE = 1;
+	public static final int DEFAULT_RENDER_HEADER_ONLY_ZOOM_LEVEL = 16;
+	public static final Color DEFAULT_ZOOM_LEVEL_LOD_COLOR = new Color(0, 0.64, 0, 1);
 
 	// transient values
 	private transient File regionDir = null;
@@ -59,6 +64,8 @@ public class WorldConfig extends Config {
 	private boolean showNonexistentRegions = DEFAULT_SHOW_NONEXISTENT_REGIONS;
 	private int structureIconSize = DEFAULT_STRUCTURE_ICON_SIZE;
 	private int structureIconBorderSize = DEFAULT_STRUCTURE_ICON_BORDER_SIZE;
+	private int renderHeaderOnlyZoomLevel = DEFAULT_RENDER_HEADER_ONLY_ZOOM_LEVEL;
+	private Color zoomLevelLODColor = DEFAULT_ZOOM_LEVEL_LOD_COLOR;
 
 	private static final Logger LOGGER = LogManager.getLogger(WorldConfig.class);
 
@@ -190,6 +197,22 @@ public class WorldConfig extends Config {
 		this.structureIconBorderSize = structureIconBorderSize;
 	}
 
+	public int getRenderHeaderOnlyZoomLevel() {
+		return renderHeaderOnlyZoomLevel;
+	}
+
+	public void setRenderHeaderOnlyZoomLevel(int renderHeaderOnlyZoomLevel) {
+		this.renderHeaderOnlyZoomLevel = renderHeaderOnlyZoomLevel;
+	}
+
+	public Color getZoomLevelLODColor() {
+		return zoomLevelLODColor;
+	}
+
+	public void setZoomLevelLODColor(Color zoomLevelLODColor) {
+		this.zoomLevelLODColor = zoomLevelLODColor;
+	}
+
 	public String getTileMapBackground() {
 		return tileMapBackground;
 	}
@@ -243,6 +266,7 @@ public class WorldConfig extends Config {
 	static {
 		GsonBuilder builder = new GsonBuilder();
 		builder.excludeFieldsWithModifiers(Modifier.STATIC);
+		builder.registerTypeAdapter(Color.class, new ColorAdapter());
 		builder.serializeNulls();
 		builder.setFieldNamingStrategy(new GsonNamingStrategy());
 		builder.registerTypeAdapter(File.class, new FileAdapter(BASE_DIR.getAbsolutePath()));

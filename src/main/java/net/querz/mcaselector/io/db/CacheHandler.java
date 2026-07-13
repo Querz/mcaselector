@@ -2,16 +2,23 @@ package net.querz.mcaselector.io.db;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.querz.mcaselector.overlay.Overlay;
+import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.validation.ShutdownHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iq80.leveldb.*;
 import org.iq80.leveldb.impl.Iq80DBFactory;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public final class CacheHandler {
 
@@ -21,6 +28,8 @@ public final class CacheHandler {
 
 	private static final UUID fileTimeUUID = UUID.nameUUIDFromBytes("file_times".getBytes());
 	private static final UUID structuresUUID = UUID.nameUUIDFromBytes("structures".getBytes());
+	private static final UUID chunksUUID = UUID.nameUUIDFromBytes("chunks".getBytes());
+	private static final UUID imageUUID = UUID.nameUUIDFromBytes("image".getBytes());
 	private static final Options options = new Options();
 	private static ShutdownHooks.ShutdownJob closeShutdownHook;
 	private static String dbPath;
@@ -85,11 +94,56 @@ public final class CacheHandler {
 		return readCacheValue(rawValue);
 	}
 
-	public static void setData(Overlay parser, Point2i region, int[] data) throws DBException, IOException {
+	public static void setData(Overlay parser, Point2i region, int[] data) throws DBException {
 		UUID id = UUID.nameUUIDFromBytes((parser.name() + parser.getMultiValuesID()).getBytes());
 		byte[] key = key(region.getX(), region.getZ(), id);
 		byte[] rawValue = cacheValue(data);
 		db.put(key, rawValue);
+	}
+
+	public static ChunkSet getChunks(Point2i region) throws DBException {
+		while (!isInitialized()) {
+			Thread.onSpinWait();
+		}
+		byte[] key = key(region.getX(), region.getZ(), chunksUUID);
+		byte[] value = db.get(key);
+		if (value == null) {
+			return null;
+		}
+		return ChunkSet.fromBytes(value);
+	}
+
+	public static void setChunks(Point2i region, ChunkSet chunks) throws DBException {
+		byte[] key = key(region.getX(), region.getZ(), chunksUUID);
+		byte[] rawValue = chunks.toBytes();
+		db.put(key, rawValue);
+	}
+
+	public static BufferedImage getImage(Point2i region) throws DBException {
+		while (!isInitialized()) {
+			Thread.onSpinWait();
+		}
+		byte[] key = key(region.getX(), region.getZ(), imageUUID);
+		byte[] rawValue = db.get(key);
+		if (rawValue == null) {
+			return null;
+		}
+		try (ByteArrayInputStream bais = new ByteArrayInputStream(rawValue)) {
+			return ImageIO.read(bais);
+		} catch (IOException e) {
+			throw new DBException(e);
+		}
+	}
+
+	public static void setImage(Point2i region, BufferedImage image) throws DBException {
+		byte[] key = key(region.getX(), region.getZ(), imageUUID);
+		try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+			ImageIO.write(image, "png", out);
+			byte[] rawValue = out.toByteArray();
+			db.put(key, rawValue);
+		} catch (IOException e) {
+			throw new DBException(e);
+		}
 	}
 
 	public static void setStructureData(Point2i region, Long2ObjectOpenHashMap<String[]> structures) throws DBException, IOException {

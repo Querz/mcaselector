@@ -75,6 +75,9 @@ dialog.settings.rendering.smooth.smooth_rendering;부드러운 렌더링
 dialog.settings.rendering.smooth.smooth_overlays;부드러운 오버레이
 dialog.settings.rendering.background.background_pattern;배경 패턴
 dialog.settings.rendering.background;배경
+dialog.settings.rendering.zoom_level.low_detail_zoom_level;낮은 세부 정보 확대 수준
+dialog.settings.rendering.zoom_level.low_detail_color;낮은 세부 정보 색상
+dialog.settings.rendering.zoom_level;확대 수준
 dialog.settings.global.misc.mc_saves_dir;저장 할 경로
 dialog.settings.global.misc.print_debug;디버그 텍스트 출력
 dialog.settings.global.misc.show_log_file;로그 파일 열기

@@ -2,7 +2,6 @@ package net.querz.mcaselector.tile;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import javafx.scene.image.Image;
-import net.querz.mcaselector.util.math.Bits;
 import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.util.point.Point2i;
@@ -42,7 +41,7 @@ public class Tile {
 	}
 
 	public static int getZoomLevel(float scale) {
-		return Bits.getMsb((int) scale);
+		return Integer.highestOneBit((int) scale);
 	}
 
 	public boolean isVisible(TileMap tileMap) {

@@ -52,7 +52,7 @@ public final class CacheHelper {
 		RegionImageGenerator.invalidateCachedMCAFiles();
 		updateVersionFile();
 		ConfigProvider.WORLD.save();
-		tileMap.clear();
+		tileMap.clear(null, true);
 		tileMap.update();
 	}
 

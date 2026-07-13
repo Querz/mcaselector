@@ -75,6 +75,9 @@ dialog.settings.rendering.smooth.smooth_rendering;平滑渲染
 dialog.settings.rendering.smooth.smooth_overlays;平滑叠加
 dialog.settings.rendering.background.background_pattern;背景图案
 dialog.settings.rendering.background;背景
+dialog.settings.rendering.zoom_level.low_detail_zoom_level;低细节缩放级别
+dialog.settings.rendering.zoom_level.low_detail_color;低细节颜色
+dialog.settings.rendering.zoom_level;缩放级别
 dialog.settings.global.misc.mc_saves_dir;Minecraft 存档目录
 dialog.settings.global.misc.print_debug;打印调试信息
 dialog.settings.global.misc.show_log_file;显示日志文件

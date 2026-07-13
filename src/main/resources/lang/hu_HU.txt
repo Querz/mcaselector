@@ -75,6 +75,9 @@ dialog.settings.rendering.smooth.smooth_rendering;Simított renderelés
 dialog.settings.rendering.smooth.smooth_overlays;Simított overlay
 dialog.settings.rendering.background.background_pattern;Háttér mintája
 dialog.settings.rendering.background;Háttér
+dialog.settings.rendering.zoom_level.low_detail_zoom_level;Alacsony részletességű nagyítási szint
+dialog.settings.rendering.zoom_level.low_detail_color;Alacsony részletesség színe
+dialog.settings.rendering.zoom_level;Nagyítási szint
 dialog.settings.global.misc.mc_saves_dir;MC mentések mappája
 dialog.settings.global.misc.print_debug;Debug üzenetek kiírása
 dialog.settings.global.misc.show_log_file;Log file mutatása

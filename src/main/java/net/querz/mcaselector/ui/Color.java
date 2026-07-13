@@ -63,6 +63,11 @@ public class Color {
 		return handle;
 	}
 
+	public Color setAlphaPercent(double percent) {
+		double a = Math.clamp(percent, 0, 1);
+		return new Color(r, g, b, a);
+	}
+
 	public int toInt() {
 		return i;
 	}
@@ -111,6 +116,11 @@ public class Color {
 		int b = (int) (aB * iRatio + bB * ratio);
 
 		return a << 24 | r << 16 | g << 8 | b;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof Color c && i == c.i;
 	}
 
 	@Override

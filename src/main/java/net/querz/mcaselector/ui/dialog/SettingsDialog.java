@@ -16,12 +16,9 @@ import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.config.GlobalConfig;
 import net.querz.mcaselector.config.WorldConfig;
 import net.querz.mcaselector.io.WorldDirectories;
+import net.querz.mcaselector.ui.component.*;
 import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.text.Translation;
-import net.querz.mcaselector.ui.component.BorderedTitledPane;
-import net.querz.mcaselector.ui.component.FileTextField;
-import net.querz.mcaselector.ui.component.HeightSlider;
-import net.querz.mcaselector.ui.component.TileMapBox;
 import net.querz.mcaselector.ui.UIFactory;
 import java.io.File;
 import java.util.*;
@@ -52,6 +49,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private final CheckBox shadeWaterCheckBox = new CheckBox();
 	private final CheckBox shadeAltitudeCheckBox = new CheckBox();
 	private final CheckBox showNonexistentRegionsCheckBox = new CheckBox();
+	private final ZoomLevelSlider zoomLevelSlider = new ZoomLevelSlider(ConfigProvider.WORLD.getRenderHeaderOnlyZoomLevel());
+	private final Button zoomLevelLODColorPreview = new Button();
 	private final CheckBox smoothRendering = new CheckBox();
 	private final CheckBox smoothOverlays = new CheckBox();
 	private final Slider structureIconSize = createIconSizeSlider(ConfigProvider.WORLD.getStructureIconSize());
@@ -65,6 +64,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private Color regionSelectionColor = ConfigProvider.GLOBAL.getRegionSelectionColor().makeJavaFXColor();
 	private Color chunkSelectionColor = ConfigProvider.GLOBAL.getChunkSelectionColor().makeJavaFXColor();
 	private Color pasteChunksColor = ConfigProvider.GLOBAL.getPasteChunksColor().makeJavaFXColor();
+
+	private Color zoomLevelLODColor = ConfigProvider.WORLD.getZoomLevelLODColor().makeJavaFXColor();
 
 	private final ButtonType reset = new ButtonType(Translation.DIALOG_SETTINGS_RESET.toString(), ButtonBar.ButtonData.LEFT);
 
@@ -87,6 +88,9 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			chunkSelectionColorPreview.setBackground(new Background(new BackgroundFill(GlobalConfig.DEFAULT_CHUNK_SELECTION_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
 			pasteChunksColor = GlobalConfig.DEFAULT_PASTE_CHUNKS_COLOR.makeJavaFXColor();
 			pasteChunksColorPreview.setBackground(new Background(new BackgroundFill(GlobalConfig.DEFAULT_PASTE_CHUNKS_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
+			zoomLevelLODColor = WorldConfig.DEFAULT_ZOOM_LEVEL_LOD_COLOR.makeJavaFXColor();
+			zoomLevelLODColorPreview.setBackground(new Background(new BackgroundFill(WorldConfig.DEFAULT_ZOOM_LEVEL_LOD_COLOR.makeJavaFXColor(), CornerRadii.EMPTY, Insets.EMPTY)));
+			zoomLevelSlider.setValue(WorldConfig.DEFAULT_RENDER_HEADER_ONLY_ZOOM_LEVEL);
 			shadeCheckBox.setSelected(WorldConfig.DEFAULT_SHADE);
 			shadeWaterCheckBox.setSelected(WorldConfig.DEFAULT_SHADE_WATER);
 			shadeAltitudeCheckBox.setSelected(WorldConfig.DEFAULT_SHADE_ALTITUDE);
@@ -125,12 +129,15 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		regionSelectionColorPreview.getStyleClass().clear();
 		chunkSelectionColorPreview.getStyleClass().clear();
 		pasteChunksColorPreview.getStyleClass().clear();
+		zoomLevelLODColorPreview.getStyleClass().clear();
 		regionSelectionColorPreview.getStyleClass().add("color-preview-button");
 		chunkSelectionColorPreview.getStyleClass().add("color-preview-button");
 		pasteChunksColorPreview.getStyleClass().add("color-preview-button");
+		zoomLevelLODColorPreview.getStyleClass().add("color-preview-button");
 		regionSelectionColorPreview.setBackground(new Background(new BackgroundFill(regionSelectionColor, CornerRadii.EMPTY, Insets.EMPTY)));
 		chunkSelectionColorPreview.setBackground(new Background(new BackgroundFill(chunkSelectionColor, CornerRadii.EMPTY, Insets.EMPTY)));
 		pasteChunksColorPreview.setBackground(new Background(new BackgroundFill(pasteChunksColor, CornerRadii.EMPTY, Insets.EMPTY)));
+		zoomLevelLODColorPreview.setBackground(new Background(new BackgroundFill(zoomLevelLODColor, CornerRadii.EMPTY, Insets.EMPTY)));
 		shadeCheckBox.setSelected(ConfigProvider.WORLD.getShade());
 		shadeWaterCheckBox.setSelected(ConfigProvider.WORLD.getShadeWater());
 		shadeAltitudeCheckBox.setSelected(ConfigProvider.WORLD.getShadeAltitude());
@@ -286,6 +293,12 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 
 		// RENDERING
 		Tab renderingTab = UIFactory.tab(Translation.DIALOG_SETTINGS_TAB_RENDERING);
+		ScrollPane renderingScrollPane = new ScrollPane();
+		renderingScrollPane.getStyleClass().clear();
+		renderingScrollPane.getStyleClass().add("rendering-scroll-pane");
+		renderingScrollPane.setFitToWidth(true);
+		renderingScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+		renderingScrollPane.setMinWidth(ScrollPane.USE_PREF_SIZE);
 		VBox renderingBox = new VBox();
 
 		HBox shadingAndSmooth = new HBox();
@@ -321,8 +334,22 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		addPairToGrid(backgroundGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_BACKGROUND_SHOW_NONEXISTENT_REGIONS), showNonexistentRegionsCheckBox);
 		BorderedTitledPane background = new BorderedTitledPane(Translation.DIALOG_SETTINGS_RENDERING_BACKGROUND, backgroundGrid);
 
-		renderingBox.getChildren().addAll(shadingAndSmooth, layers, structureIcons, background);
-		renderingTab.setContent(renderingBox);
+		GridPane zoomLevelGrid = createGrid();
+		addPairToGrid(zoomLevelGrid, 0, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_ZOOM_LEVEL_LOD), zoomLevelSlider);
+		addPairToGrid(zoomLevelGrid, 1, UIFactory.label(Translation.DIALOG_SETTINGS_RENDERING_ZOOM_LEVEL_COLOR), zoomLevelLODColorPreview);
+		BorderedTitledPane zoomLevel = new BorderedTitledPane(Translation.DIALOG_SETTINGS_RENDERING_ZOOM_LEVEL, zoomLevelGrid);
+
+		zoomLevelLODColorPreview.setOnMousePressed(e -> {
+			Optional<Color> result = new ColorPicker(getDialogPane().getScene().getWindow(), zoomLevelLODColor).showColorPicker();
+			result.ifPresent(c -> {
+				zoomLevelLODColor = c;
+				zoomLevelLODColorPreview.setBackground(new Background(new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY)));
+			});
+		});
+
+		renderingBox.getChildren().addAll(shadingAndSmooth, layers, structureIcons, background, zoomLevel);
+		renderingScrollPane.setContent(renderingBox);
+		renderingTab.setContent(renderingScrollPane);
 		ToggleButton renderingToggleButton = createToggleButton(renderingTab, Translation.DIALOG_SETTINGS_TAB_RENDERING);
 		rightTabs.getChildren().add(renderingToggleButton);
 
@@ -384,6 +411,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 					smoothRendering.isSelected(),
 					smoothOverlays.isSelected(),
 					tileMapBackgrounds.getSelectionModel().getSelectedItem(),
+					zoomLevelSlider.getZoomLevelValue(),
+					zoomLevelLODColor,
 					Objects.requireNonNullElseGet(mcSavesDir.getFile(), () -> new File(GlobalConfig.DEFAULT_MC_SAVES_DIR)),
 					debugCheckBox.isSelected(),
 					hSlider.getValue(),
@@ -396,6 +425,8 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 			}
 			return null;
 		});
+
+		setResizable(true);
 
 		getDialogPane().getStylesheets().add(Objects.requireNonNull(SettingsDialog.class.getClassLoader().getResource("style/component/settings-dialog.css")).toExternalForm());
 	}
@@ -416,6 +447,10 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	private GridPane createGrid() {
 		GridPane grid = new GridPane();
 		grid.getStyleClass().add("slider-grid-pane");
+		ColumnConstraints column1 = new ColumnConstraints();
+		ColumnConstraints column2 = new ColumnConstraints();
+		column2.setHgrow(Priority.ALWAYS);
+		grid.getColumnConstraints().addAll(column1, column2);
 		return grid;
 	}
 
@@ -452,7 +487,7 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 	public record Result(Locale locale, int processThreads, int writeThreads, int maxLoadedFiles, Color regionColor,
 						 Color chunkColor, Color pasteColor, boolean shade, boolean shadeWater, boolean shadeAltitude,
 						 boolean showNonexistentRegions, boolean smoothRendering, boolean smoothOverlays,
-						 TileMapBox.TileMapBoxBackground tileMapBackground, File mcSavesDir, boolean debug, int height,
-						 boolean layerOnly, boolean caves, int structureIconSize, int structureIconBorderSize, File poi,
-						 File entities) {}
+						 TileMapBox.TileMapBoxBackground tileMapBackground, int zoomLevelLOD, Color zoomLevelLODColor,
+						 File mcSavesDir, boolean debug, int height, boolean layerOnly, boolean caves,
+						 int structureIconSize, int structureIconBorderSize, File poi, File entities) {}
 }

@@ -75,6 +75,9 @@ dialog.settings.rendering.smooth.smooth_rendering;Pürüzsüz işleme
 dialog.settings.rendering.smooth.smooth_overlays;Pürüzsüz kaplama
 dialog.settings.rendering.background.background_pattern;Arka plan deseni
 dialog.settings.rendering.background;Arka plan
+dialog.settings.rendering.zoom_level.low_detail_zoom_level;Düşük detay Yakınlaştırma Seviyesi
+dialog.settings.rendering.zoom_level.low_detail_color;Düşük detay Rengi
+dialog.settings.rendering.zoom_level;Yakınlaştırma Seviyesi
 dialog.settings.global.misc.mc_saves_dir;Varsayılan Dünya Konumu
 dialog.settings.global.misc.print_debug;Hata ayıklama mesajlarını göster
 dialog.settings.global.misc.show_log_file;Log dosyalarını göster

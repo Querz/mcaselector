@@ -21,6 +21,7 @@ import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
+import net.querz.mcaselector.text.TextHelper;
 import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
@@ -243,10 +244,13 @@ public class TileMap extends Canvas implements ClipboardOwner {
 					// load image
 					if (tile.image != null) {
 						if (tile.loaded) {
-							// scale is right
+							// scale doesn't match image size
 							if (tile.getImageZoomLevel() != zoomLevel) {
-								// image is larger than needed
-								if (tile.getImageZoomLevel() < zoomLevel) {
+								// if we switched to header only zoom level
+								if (zoomLevel >= ConfigProvider.WORLD.getRenderHeaderOnlyZoomLevel() && tile.getImageZoomLevel() < ConfigProvider.WORLD.getRenderHeaderOnlyZoomLevel()) {
+									imgPool.requestImage(tile, zoomLevel);
+								} else if (tile.getImageZoomLevel() < zoomLevel) {
+									// image is larger than needed
 									// scale down immediately
 									tile.setImage(ImageHelper.scaleDownFXImage(tile.image, Tile.SIZE / zoomLevel));
 									// DONE
@@ -1040,17 +1044,42 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private void drawRegionCoordinates(GraphicsContext ctx) {
 		ctx.setFill(Tile.COORDINATES_COLOR.makeJavaFXColor());
 
+		// the width on the left for the x-coordinates to face out
+		int xSpacing = 85;
+		float onePercent = 100f / xSpacing / 100f;
+
 		Point2f p = getRegionGridMin(offset, scale);
+		float step = Tile.SIZE / scale;
+		float halfStep = Tile.SIZE / (scale * 2);
 
 		int multiplier = 1;
-		if (scale > 7) {
-			multiplier = 4;
+		if (scale > 30) {
+			multiplier = getZoomLevel() / 4;
+			int mul = multiplier * Tile.SIZE;
+			for (float y = p.getY(); y <= getHeight(); y += step) {
+				Point2i region = getMouseRegion(0, y + halfStep).regionToBlock();
+				if (region.getZ() % mul == 0) {
+					ctx.fillText(TextHelper.abbreviateCoordinate(region.getZ()), 2, y + 16);
+				}
+			}
+			for (float x = p.getX(); x <= getWidth(); x += step) {
+				Point2i region = getMouseRegion(x + halfStep, 0).regionToBlock();
+				if (region.getX() % mul == 0) {
+					ctx.save();
+					ctx.translate(x + 2, 2);
+					ctx.rotate(90);
+					ctx.setFill(Tile.COORDINATES_COLOR.setAlphaPercent(onePercent * x).makeJavaFXColor());
+					ctx.fillText(TextHelper.abbreviateCoordinate(region.getX()), 0, 0);
+					ctx.restore();
+				}
+			}
+			return;
+		} if (scale > 7) {
+			multiplier = getZoomLevel() / 2;
 		} else if (scale > 4) {
 			multiplier = 2;
 		}
 
-		float step = Tile.SIZE / scale;
-		float halfStep = Tile.SIZE / (scale * 2);
 		int mul = multiplier * Tile.SIZE;
 		boolean oldStep = true;
 		Point2f first = p;
@@ -1059,7 +1088,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			for (float y = first.getY(); y <= getHeight(); y += step) {
 				Point2i region = getMouseRegion(x + halfStep, y + halfStep).regionToBlock();
 				if (!oldStep || region.getX() % mul == 0 && region.getZ() % mul == 0) {
-					ctx.fillText(region.getX() + "," + region.getZ(), x + 2, y + 16);
+					ctx.fillText(TextHelper.abbreviateCoordinate(region.getX()) + ",\n" +
+						TextHelper.abbreviateCoordinate(region.getZ()), x + 2, y + 16);
 					if (oldStep) {
 						step *= multiplier;
 						oldStep = false;
@@ -1071,7 +1101,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 		for (float y = first.getY(); y <= getHeight(); y += step) {
 			Point2i region = getMouseRegion(first.getX() - step + halfStep, y + halfStep).regionToBlock();
-			ctx.fillText(region.getX() + "," + region.getZ(), first.getX() - step + 2, y + 16);
+			ctx.fillText(TextHelper.abbreviateCoordinate(region.getX()) + ",\n" +
+				TextHelper.abbreviateCoordinate(region.getZ()), first.getX() - step + 2, y + 16);
 		}
 	}
 
@@ -1102,7 +1133,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 				Point2i chunk = getMouseChunk(x + halfStep, y + halfStep).chunkToBlock();
 
 				if (!oldStep || chunk.getX() % mul == 0 && chunk.getZ() % mul == 0) {
-					ctx.fillText(chunk.getX() + "," + chunk.getZ(), x + 2, y + 16);
+					ctx.fillText(TextHelper.abbreviateCoordinate(chunk.getX()) + ",\n" +
+						TextHelper.abbreviateCoordinate(chunk.getZ()), x + 2, y + 16);
 					if (oldStep) {
 						step *= multiplier;
 						oldStep = false;

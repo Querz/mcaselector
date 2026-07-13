@@ -115,6 +115,21 @@ public final class TileImage {
 		tile.markedChunksImage = wImage;
 	}
 
+    public static Image generateImageFromChunkSet(ChunkSet chunkSet) {
+        int[] pixels = new int[1024];
+		int color = ConfigProvider.WORLD.getZoomLevelLODColor().toInt();
+        for (int i = 0; i < 1024; i++) {
+            if (chunkSet.get(i)) {
+                pixels[i] = color;
+            }
+        }
+
+        WritableImage finalImage = new WritableImage(Tile.SIZE_IN_CHUNKS, Tile.SIZE_IN_CHUNKS);
+        PixelWriter writer = finalImage.getPixelWriter();
+        writer.setPixels(0, 0, Tile.SIZE_IN_CHUNKS, Tile.SIZE_IN_CHUNKS, PixelFormat.getIntArgbPreInstance(), pixels,  0, Tile.SIZE_IN_CHUNKS);
+        return finalImage;
+    }
+
 	public static Image generateImage(RegionMCAFile mcaFile, int scale) {
 
 		int size = Tile.SIZE / scale;

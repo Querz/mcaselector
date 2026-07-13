@@ -235,7 +235,7 @@ public class OptionBar extends BorderPane {
 		Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> paste.setDisable(!hasValidClipboardContent(tileMap) || tileMap.getDisabled()));
 
 		setLeft(menuBar);
-		setRight(hSlider);
+		setCenter(hSlider);
 
 		checkForUpdateAsync();
 	}

@@ -168,4 +168,28 @@ public final class TextHelper {
 		}
 		return result.toArray(new String[0]);
 	}
+
+	public static String abbreviateCoordinate(int number) {
+		long abs = Math.abs((long) number);
+
+		if (abs < 100_000) {
+			return String.valueOf(number);
+		}
+
+		double value = number;
+		String suffix = "";
+
+		if (abs >= 1_000_000_000) {
+			value /= 1_000_000_000.0;
+			suffix = "B";
+		} else if (abs >= 1_000_000) {
+			value /= 1_000_000.0;
+			suffix = "M";
+		} else {
+			value /= 1_000.0;
+			suffix = "K";
+		}
+
+		return String.format("%.1f%s", value, suffix);
+	}
 }

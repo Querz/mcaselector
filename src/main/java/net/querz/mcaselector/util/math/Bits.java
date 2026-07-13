@@ -12,45 +12,15 @@ public final class Bits {
 		return (value << waste) >>> (waste + from);
 	}
 
-	// a shortened way to find the number of leading zeroes of an int that uses max 8 of its LSBs
-	public static int fastNumberOfLeadingZeroes(int i) {
-		int n = 25;
-		i <<= 24;
-		if (i >>> 28 == 0) {
-			n += 4;
-			i <<= 4;
-		}
-		if (i >>> 30 == 0) {
-			n += 2;
-			i <<= 2;
-		}
-		n -= i >>> 31;
-		return n;
-	}
-
-	// returns only the msb of i
-	public static int getMsb(int i) {
-		i |= i >> 1;
-		i |= i >> 2;
-		i |= i >> 4;
-		i |= i >> 8;
-		i |= i >> 16;
-		i = (i >> 1) + 1;
-		return i;
-	}
-
-	private static final byte[] multiplyDeBruijnBitPositionLSB = new byte[]{0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9};
-
 	// returns the position of the least significant 1 bit; 0 when 'i' is 0.
 	public static int lsbPosition(int i) {
-		return multiplyDeBruijnBitPositionLSB[((i & -i) * 0x077CB531) >> 27];
+		if (i == 0) {
+			return 0;
+		}
+		return Integer.numberOfTrailingZeros(i);
 	}
 
 	public static int msbPosition(int i) {
-		int r = 0;
-		while ((i >>= 1) > 0) {
-			r++;
-		}
-		return r;
+		return 31 - Integer.numberOfLeadingZeros(i);
 	}
 }

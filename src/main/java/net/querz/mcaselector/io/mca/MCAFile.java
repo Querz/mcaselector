@@ -266,6 +266,27 @@ public abstract class MCAFile<T extends Chunk> {
 		}
 	}
 
+	public void loadOffsets() throws IOException {
+		try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
+			loadBuffer(fc, FileHelper.HEADER_OFFSETS_SIZE, this::loadOffsets);
+		}
+	}
+
+	private void loadOffsets(ByteBuffer buf) throws IOException {
+		offsets = new int[1024];
+		sectors = null;
+		timestamps = null;
+
+		try {
+			buf.position(0);
+			for (int i = 0; i < offsets.length; i++) {
+				offsets[i] = buf.getInt() >>> 8;
+			}
+		} catch (ArrayIndexOutOfBoundsException ex) {
+			throw new IOException(ex);
+		}
+	}
+
 	private void loadHeader(ByteBuffer buf) throws IOException {
 		offsets = new int[1024];
 		sectors = new byte[1024];
@@ -547,6 +568,20 @@ public abstract class MCAFile<T extends Chunk> {
 
 	public boolean hasChunkIndex(Point2i location) {
 		return offsets[getChunkIndex(location)] != 0;
+	}
+
+    public boolean hasChunkIndex(int index) {
+        return offsets[index] != 0;
+    }
+
+	public ChunkSet offsetsToChunkSet() {
+		ChunkSet res = new ChunkSet();
+		for (int i = 0; i < 1024; i++) {
+			if (offsets[i] > 0) {
+				res.set(i);
+			}
+		}
+		return res;
 	}
 
 	public void setChunkAt(Point2i location, T chunk) {

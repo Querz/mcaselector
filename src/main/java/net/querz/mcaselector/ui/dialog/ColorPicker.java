@@ -48,6 +48,9 @@ public class ColorPicker extends TransparentStage {
 		blue.valueProperty().addListener((l, o, n) -> onValueChange());
 		opacity.valueProperty().addListener((l, o, n) -> onValueChange());
 
+		// force setting the preview color
+		onValueChange();
+
 		preview.getStyleClass().add("color-picker-preview");
 
 		GridPane grid = new GridPane();

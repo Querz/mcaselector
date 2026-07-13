@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.shorts.ShortPredicate;
 import net.querz.mcaselector.util.point.Point2i;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 
 public class ChunkSet implements IntIterable, Serializable, Cloneable {
 
@@ -13,6 +14,24 @@ public class ChunkSet implements IntIterable, Serializable, Cloneable {
 	short setBits = 0;
 
 	public static final ChunkSet EMPTY_SET = new ChunkSet().immutable();
+
+	public byte[] toBytes() {
+		ByteBuffer buffer = ByteBuffer.allocate(16 * Long.BYTES);
+		buffer.asLongBuffer().put(words);
+		return buffer.array();
+	}
+
+	public static ChunkSet fromBytes(byte[] bytes) {
+		if (bytes.length != 16 * Long.BYTES) {
+			throw new IllegalArgumentException();
+		}
+		long[] words = new long[16];
+		ByteBuffer.wrap(bytes).asLongBuffer().get(words);
+		ChunkSet res = new ChunkSet();
+		res.words = words;
+		res.recountSetBits();
+		return res;
+	}
 
 	public void set(int index) {
 		if (!get(index)) {
@@ -244,6 +263,14 @@ public class ChunkSet implements IntIterable, Serializable, Cloneable {
 			}
 			l += 64;
 		}
+	}
+
+	private void recountSetBits() {
+		int count = 0;
+		for (int i = 0; i < 16; i++) {
+			count += Long.bitCount(words[i]);
+		}
+		this.setBits = (short) count;
 	}
 
 	private class ChunkIterator implements IntIterator {

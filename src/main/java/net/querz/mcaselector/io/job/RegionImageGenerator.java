@@ -209,6 +209,14 @@ public final class RegionImageGenerator {
 				cacheRegionMCAFile(cachedRegion, uniqueID);
 
 				if ((image != null || structuresOnly) && !isCached) {
+					if (image != null && zoomLevel >= 32) {
+						// save to db cache
+						CacheHandler.setImage(tile.getLocation(), SwingFXUtils.fromFXImage(image, null));
+						if (progressChannel != null) {
+							progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
+						}
+						return true;
+					}
 					MCAImageSaveCacheJob job = new MCAImageSaveCacheJob(image, structures, tile, zoomLevel, progressChannel, canSkipSaving);
 					job.errorHandler = errorHandler;
 					JobHandler.executeSaveData(job);

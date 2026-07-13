@@ -75,6 +75,9 @@ dialog.settings.rendering.smooth.smooth_rendering;Jämn återgivning
 dialog.settings.rendering.smooth.smooth_overlays;Jämna överlägg
 dialog.settings.rendering.background.background_pattern;Bakgrundsmönster
 dialog.settings.rendering.background;Bakgrund
+dialog.settings.rendering.zoom_level.low_detail_zoom_level;Zoomnivå för låg detaljrikedom
+dialog.settings.rendering.zoom_level.low_detail_color;Färg för låg detaljrikedom
+dialog.settings.rendering.zoom_level;Zoomnivå
 dialog.settings.global.misc.mc_saves_dir;Minecraft-sparmapp
 dialog.settings.global.misc.print_debug;Skriv ut felsökningsmeddelanden
 dialog.settings.global.misc.show_log_file;Visa loggfil

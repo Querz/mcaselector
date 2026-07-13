@@ -127,11 +127,11 @@ public abstract class Config {
 	}
 
 	// static values
-	public static final float MAX_SCALE = 15.9999f;
+	public static final float MAX_SCALE = 63.9999f;
 	public static final float MIN_SCALE = 0.05f;
 	@SuppressWarnings("ConstantValue")
-	public static final int MIN_ZOOM_LEVEL = Bits.getMsb((int) MIN_SCALE);
-	public static final int MAX_ZOOM_LEVEL = Bits.getMsb((int) MAX_SCALE);
+	public static final int MIN_ZOOM_LEVEL = Integer.highestOneBit((int) MIN_SCALE);
+	public static final int MAX_ZOOM_LEVEL = Integer.highestOneBit((int) MAX_SCALE);
 	public static final double IMAGE_POOL_SIZE = 2.5;
 	public static final int MAX_RECENT_FILES = 16;
 
