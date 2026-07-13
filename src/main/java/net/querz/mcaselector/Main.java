@@ -28,9 +28,6 @@ public class Main {
 		Logging.updateThreadContext();
 		Logger LOGGER = LogManager.getLogger(Main.class);
 
-		LOGGER.debug("java version {}", System.getProperty("java.version"));
-		LOGGER.debug("jvm max memory {}", Runtime.getRuntime().maxMemory());
-
 		VersionHandler.init();
 		ParamExecutor ex = new ParamExecutor(args);
 		Future<Boolean> future = ex.run();
@@ -44,6 +41,10 @@ public class Main {
 		}
 
 		ConfigProvider.loadGlobalConfig();
+
+		LOGGER.debug("java version {}", System.getProperty("java.version"));
+		LOGGER.debug("jvm max memory {}", Runtime.getRuntime().maxMemory());
+
 		ConfigProvider.loadOverlayConfig();
 		ShutdownHooks.addShutdownHook(ConfigProvider::saveAll);
 		Translation.load(ConfigProvider.GLOBAL.getLocale());

@@ -309,7 +309,6 @@ public final class ParamExecutor {
 	}
 
 	public Future<Boolean> run() {
-		LOGGER.debug("raw args: {}", Arrays.toString(args));
 		if (args.length == 0) {
 			return null;
 		}
@@ -325,7 +324,6 @@ public final class ParamExecutor {
 			return future;
 		}
 
-		LOGGER.debug("parsed args: {}", parsedArgsToString());
 
 		if (line.hasOption("help")) {
 			printHelp();
@@ -347,6 +345,9 @@ public final class ParamExecutor {
 
 		try {
 			parseConfig();
+
+			LOGGER.debug("raw args: {}", Arrays.toString(args));
+			LOGGER.debug("parsed args: {}", parsedArgsToString());
 
 			JobHandler.setTrimSaveData(false);
 
