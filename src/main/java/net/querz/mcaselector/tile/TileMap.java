@@ -1024,7 +1024,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			drawChunkGrid(ctx);
 		}
 
-		if (!disabled && showStructureIcons) {
+		if (!disabled && showStructureIcons && scale <= ConfigProvider.WORLD.getRenderHeaderOnlyZoomLevel()) {
 			runOnVisibleRegions(region -> {
 				Tile tile = tiles.get(region.asLong());
 				Point2f canvasOffset = region.regionToBlock().toPoint2f().sub(offset).div(scale);
