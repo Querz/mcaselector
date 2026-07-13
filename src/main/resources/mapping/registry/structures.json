@@ -211,5 +211,30 @@
     ],
     "icon": "piglin_brute",
     "display": "Bastion Remnant"
+  },
+  {
+    "name": "abandoned_camp_forest",
+    "alt": [
+      "abandoned_camp_pale_garden",
+      "abandoned_camp_bamboo_jungle",
+      "abandoned_camp_old_growth_pine_taiga",
+      "abandoned_camp_sparse_jungle",
+      "abandoned_camp_cherry_grove",
+      "abandoned_camp_swamp",
+      "abandoned_camp_dappled_forest",
+      "abandoned_camp_snowy_taiga",
+      "abandoned_camp_birch_forest",
+      "abandoned_camp_savanna",
+      "abandoned_camp_meadow",
+      "abandoned_camp_taiga",
+      "abandoned_camp_windswept_forest",
+      "abandoned_camp_old_growth_birch_forest",
+      "abandoned_camp_wooded_badlands",
+      "abandoned_camp_old_growth_spruce_taiga",
+      "abandoned_camp_flower_forest"
+    ],
+    "max_scale": 3.0,
+    "icon": "abandoned_camp",
+    "display": "Abandoned Camp"
   }
 ]
