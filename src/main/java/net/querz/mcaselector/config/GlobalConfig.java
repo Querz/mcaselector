@@ -41,6 +41,10 @@ public class GlobalConfig extends Config {
 	public static final int DEFAULT_MAX_LOADED_FILES = 1;
 	public static final boolean DEFAULT_DEBUG = false;
 	public static final String DEFAULT_MC_SAVES_DIR = FileHelper.getMCSavesDir();
+	public static final boolean DEFAULT_SHOW_CHUNK_GRID = true;
+	public static final boolean DEFAULT_SHOW_REGION_GRID = true;
+	public static final boolean DEFAULT_SHOW_COORDINATES = false;
+	public static final String DEFAULT_COORDINATE_STYLE = "DYNAMIC";
 
 	// attributes
 	private Locale locale = DEFAULT_LOCALE;
@@ -51,6 +55,10 @@ public class GlobalConfig extends Config {
 	private int writeThreads = DEFAULT_WRITE_THREADS;
 	private int maxLoadedFiles = DEFAULT_MAX_LOADED_FILES;
 	private String mcSavesDir = DEFAULT_MC_SAVES_DIR;
+	private boolean showChunkGrid = DEFAULT_SHOW_CHUNK_GRID;
+	private boolean showRegionGrid = DEFAULT_SHOW_REGION_GRID;
+	private boolean showCoordinates = DEFAULT_SHOW_COORDINATES;
+	private String coordinateStyle = DEFAULT_COORDINATE_STYLE;
 	private boolean debug = DEFAULT_DEBUG;
 	private final TreeMap<Long, RecentWorld> recentWorlds = new TreeMap<>();
 	private final RecentFiles recentFilterScripts = new RecentFiles();
@@ -124,6 +132,38 @@ public class GlobalConfig extends Config {
 
 	public void setMcSavesDir(String mcSavesDir) {
 		this.mcSavesDir = mcSavesDir;
+	}
+
+	public boolean showChunkGrid() {
+		return showChunkGrid;
+	}
+
+	public void setShowChunkGrid(boolean showChunkGrid) {
+		this.showChunkGrid = showChunkGrid;
+	}
+
+	public boolean showRegionGrid() {
+		return showRegionGrid;
+	}
+
+	public void setShowRegionGrid(boolean showRegionGrid) {
+		this.showRegionGrid = showRegionGrid;
+	}
+
+	public boolean showCoordinates() {
+		return showCoordinates;
+	}
+
+	public void setShowCoordinates(boolean showCoordinates) {
+		this.showCoordinates = showCoordinates;
+	}
+
+	public String getCoordinateStyle() {
+		return coordinateStyle;
+	}
+
+	public void setCoordinateStyle(String coordinateStyle) {
+		this.coordinateStyle = coordinateStyle;
 	}
 
 	public boolean getDebug() {

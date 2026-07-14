@@ -28,6 +28,10 @@ menu.view.reload;Reload
 menu.view.chunk_grid;Chunk Grid
 menu.view.region_grid;Region Grid
 menu.view.coordinates;Coordinates
+menu.view.coordinate_style;Coordinate Style
+menu.view.coordinate_style.dynamic;Dynamic
+menu.view.coordinate_style.edge;Edge
+menu.view.coordinate_style.grid;Grid
 menu.view.structure_icons;Structures
 menu.view.select_structures;Select Structures
 menu.view.goto;Goto

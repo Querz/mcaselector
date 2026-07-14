@@ -28,6 +28,10 @@ menu.view.reload;Ricarica
 menu.view.chunk_grid;Griglia dei chunk
 menu.view.region_grid;Griglia della regione
 menu.view.coordinates;Coordinate
+menu.view.coordinate_style;Stile coordinate
+menu.view.coordinate_style.dynamic;Dinamico
+menu.view.coordinate_style.edge;Bordo
+menu.view.coordinate_style.grid;Griglia
 menu.view.structure_icons;Strutture
 menu.view.select_structures;Seleziona Strutture
 menu.view.goto;Vai a

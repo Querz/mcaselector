@@ -28,6 +28,10 @@ menu.view.reload;Recargar
 menu.view.chunk_grid;Cuadrícula de Chunks
 menu.view.region_grid;Cuadrícula de Regiones
 menu.view.coordinates;Coordenadas
+menu.view.coordinate_style;Estilo de coordenadas
+menu.view.coordinate_style.dynamic;Dinámico
+menu.view.coordinate_style.edge;Borde
+menu.view.coordinate_style.grid;Cuadrícula
 menu.view.structure_icons;Estructuras
 menu.view.select_structures;Seleccionar estructuras
 menu.view.goto;Ir a

@@ -28,6 +28,10 @@ menu.view.reload;Herladen
 menu.view.chunk_grid;Chunk Raster
 menu.view.region_grid;Region Raster
 menu.view.coordinates;Coördinaten
+menu.view.coordinate_style;Coördinatenstijl
+menu.view.coordinate_style.dynamic;Dynamisch
+menu.view.coordinate_style.edge;Rand
+menu.view.coordinate_style.grid;Raster
 menu.view.structure_icons;Structuren
 menu.view.select_structures;Selecteer Structuren
 menu.view.goto;Ga naar

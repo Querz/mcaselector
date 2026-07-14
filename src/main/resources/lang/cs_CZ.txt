@@ -28,6 +28,10 @@ menu.view.reload;Znovu načíst
 menu.view.chunk_grid;Mřížka chunků
 menu.view.region_grid;Mřížka regionů
 menu.view.coordinates;Souřadnice
+menu.view.coordinate_style;Styl souřadnic
+menu.view.coordinate_style.dynamic;Dynamický
+menu.view.coordinate_style.edge;Okraj
+menu.view.coordinate_style.grid;Mřížka
 menu.view.structure_icons;Struktury
 menu.view.select_structures;Vybrat struktury
 menu.view.goto;Přejít

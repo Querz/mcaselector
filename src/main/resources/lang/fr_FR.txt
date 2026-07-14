@@ -28,6 +28,10 @@ menu.view.reload;Recharger
 menu.view.chunk_grid;Grille des chunks
 menu.view.region_grid;Grille des régions
 menu.view.coordinates;Coordonnées
+menu.view.coordinate_style;Style de coordonnées
+menu.view.coordinate_style.dynamic;Dynamique
+menu.view.coordinate_style.edge;Bord
+menu.view.coordinate_style.grid;Grille
 menu.view.structure_icons;Structures
 menu.view.select_structures;Sélectionner les structures
 menu.view.goto;Aller à

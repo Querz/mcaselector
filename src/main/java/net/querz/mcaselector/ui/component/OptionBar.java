@@ -12,6 +12,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import net.querz.mcaselector.config.ConfigProvider;
+import net.querz.mcaselector.tile.CoordinateStyle;
 import net.querz.mcaselector.ui.dialog.ConfirmationDialog;
 import net.querz.mcaselector.util.github.VersionChecker;
 import net.querz.mcaselector.io.FileHelper;
@@ -38,13 +39,14 @@ public class OptionBar extends BorderPane {
 	* - Open Dimension    >  - Chunk Grid           - Invert                      - Filter chunks
 	* - Open Recent World >  - Region Grid          - Invert selected regions     - Change fields
 	* - Settings             - Coordinates          - Copy chunks                 - Edit chunk
-	* - Render Settings      - Structure            - Paste chunks                - Swap chunks
-	* - Quit                 - Select Structures >  - Export selected chunks      - Edit overlays
-	*                        - Goto                 - Delete selected chunks      - Next overlay
-	*                        - Reset Zoom           - Import selection from .csv  - Next overlay type
-	*                        - Save screenshot      - Export selection as .csv    - Sum selection
-	*                        - Clear cache          - Export as image
-	*                        - Clear all cache      - Clear cache
+	* - Render Settings      - Coordinate Style  >  - Paste chunks                - Swap chunks
+	* - Quit                 - Structure            - Export selected chunks      - Edit overlays
+	*                        - Select Structures >  - Delete selected chunks      - Next overlay
+	*                        - Goto                 - Import selection from .csv  - Next overlay type
+	*                        - Reset Zoom           - Export selection as .csv    - Sum selection
+	*                        - Save screenshot      - Export as image
+	*                        - Clear cache          - Clear cache
+	*                        - Clear all cache
 	* */
 
 	private final MenuBar menuBar = new MenuBar();
@@ -66,6 +68,7 @@ public class OptionBar extends BorderPane {
 	private final CheckMenuItem chunkGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_CHUNK_GRID, true);
 	private final CheckMenuItem regionGrid = UIFactory.checkMenuItem(Translation.MENU_VIEW_REGION_GRID, true);
 	private final CheckMenuItem coordinates = UIFactory.checkMenuItem(Translation.MENU_VIEW_COORDINATES, false);
+	private final Menu coordinateStyle = UIFactory.menu(Translation.MENU_VIEW_COORDINATE_STYLE);
 	private final CheckMenuItem structureIcons = UIFactory.checkMenuItem(Translation.MENU_VIEW_STRUCTURE_ICONS, false);
 	private final Menu selectStructures = UIFactory.menu(Translation.MENU_VIEW_SELECT_STRUCTURES);
 	private final MenuItem goTo = UIFactory.menuItem(Translation.MENU_VIEW_GOTO);
@@ -115,7 +118,7 @@ public class OptionBar extends BorderPane {
 				quit);
 		view.getItems().addAll(
 				reload, UIFactory.separator(),
-				chunkGrid, regionGrid, coordinates, structureIcons, selectStructures, UIFactory.separator(),
+				chunkGrid, regionGrid, coordinates, coordinateStyle, structureIcons, selectStructures, UIFactory.separator(),
 				goTo, resetZoom, UIFactory.separator(),
 				saveScreenshot, UIFactory.separator(),
 				clearViewCache, clearAllCache);
@@ -133,6 +136,38 @@ public class OptionBar extends BorderPane {
 		about.setOnMouseClicked(e -> DialogHelper.showAboutDialog(primaryStage));
 		Menu aboutMenu = new Menu();
 		aboutMenu.setGraphic(about);
+
+		chunkGrid.setSelected(ConfigProvider.GLOBAL.showChunkGrid());
+		chunkGrid.selectedProperty().addListener((o, v, n) -> {
+			ConfigProvider.GLOBAL.setShowChunkGrid(n);
+			tileMap.setShowChunkGrid(n);
+		});
+
+		regionGrid.setSelected(ConfigProvider.GLOBAL.showRegionGrid());
+		regionGrid.selectedProperty().addListener((o, v, n) -> {
+			ConfigProvider.GLOBAL.setShowRegionGrid(n);
+			tileMap.setShowRegionGrid(n);
+		});
+
+		ToggleGroup coordinateStyleGroup = new ToggleGroup();
+		for (CoordinateStyle style : CoordinateStyle.values()) {
+			RadioButton rb = UIFactory.radio(style.getTranslation());
+			rb.setMnemonicParsing(false);
+			coordinateStyleGroup.getToggles().add(rb);
+			rb.setSelected(ConfigProvider.GLOBAL.getCoordinateStyle().equals(style.name()));
+			CustomMenuItem cmi = new CustomMenuItem(rb, true);
+			rb.selectedProperty().addListener((o, v, n) -> {
+				ConfigProvider.GLOBAL.setCoordinateStyle(style.name());
+				tileMap.setCoordinateStyle(style);
+			});
+			coordinateStyle.getItems().add(cmi);
+		}
+
+		coordinates.setSelected(ConfigProvider.GLOBAL.showCoordinates());
+		coordinates.selectedProperty().addListener((o, v, n) -> {
+			ConfigProvider.GLOBAL.setShowCoordinates(n);
+			tileMap.setShowCoordinates(n);
+		});
 
 		hSlider.getStyleClass().add("option-bar-slider-box");
 

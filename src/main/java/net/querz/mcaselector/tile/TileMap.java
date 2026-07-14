@@ -21,7 +21,9 @@ import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.job.ParseDataJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
+import net.querz.mcaselector.text.CoordinateRenderer;
 import net.querz.mcaselector.text.TextHelper;
+import net.querz.mcaselector.ui.Color;
 import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
@@ -77,6 +79,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	private boolean showStructureIcons = false;
 	private boolean showNonexistentRegions;
 
+	private CoordinateStyle coordinateStyle = CoordinateStyle.DYNAMIC;
+
 	private final List<Consumer<TileMap>> updateListener = new ArrayList<>(1);
 	private final List<Consumer<TileMap>> hoverListener = new ArrayList<>(1);
 
@@ -111,12 +115,20 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	private boolean unsavedSelection = false;
 
+	private final CoordinateRenderer coordinateRenderer;
+
 	public TileMap(Window window, int width, int height) {
 		super(width, height);
 		this.window = window;
 		context = getGraphicsContext2D();
 		context.setImageSmoothing(ConfigProvider.WORLD.getSmoothRendering());
-		context.setFont(Font.font("Monospaced", FontWeight.BOLD, null, 16));
+		coordinateRenderer = new CoordinateRenderer(
+			Font.font("Monospaced", FontWeight.BOLD, null, 16),
+			Tile.COORDINATES_COLOR.makeJavaFXColor(), Color.BLACK.makeJavaFXColor());
+		showChunkGrid = ConfigProvider.GLOBAL.showChunkGrid();
+		showRegionGrid = ConfigProvider.GLOBAL.showRegionGrid();
+		showCoordinates = ConfigProvider.GLOBAL.showCoordinates();
+		coordinateStyle = CoordinateStyle.valueOf(ConfigProvider.GLOBAL.getCoordinateStyle());
 		setFocusTraversable(true);
 		this.setOnMousePressed(this::onMousePressed);
 		this.setOnMouseReleased(e -> onMouseReleased());
@@ -711,6 +723,15 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		draw();
 	}
 
+	public void setCoordinateStyle(CoordinateStyle coordinateStyle) {
+		this.coordinateStyle = coordinateStyle;
+		draw();
+	}
+
+	public CoordinateStyle getCoordinateStyle() {
+		return coordinateStyle;
+	}
+
 	public void goTo(int x, int z) {
 		offset = new Point2f(x - getWidth() * scale / 2, z - getHeight() * scale / 2);
 		update();
@@ -1042,43 +1063,35 @@ public class TileMap extends Canvas implements ClipboardOwner {
 	}
 
 	private void drawRegionCoordinates(GraphicsContext ctx) {
-		ctx.setFill(Tile.COORDINATES_COLOR.makeJavaFXColor());
-
-		// the width on the left for the x-coordinates to face out
-		int xSpacing = 85;
-		float onePercent = 100f / xSpacing / 100f;
+		// fade out for the first 100 pixels on the left in EDGE mode
+		float onePercent = 0.01f;
 
 		Point2f p = getRegionGridMin(offset, scale);
 		float step = Tile.SIZE / scale;
 		float halfStep = Tile.SIZE / (scale * 2);
 
 		int multiplier = 1;
-		if (scale > 30) {
+		if (scale > 30 && coordinateStyle == CoordinateStyle.DYNAMIC || coordinateStyle == CoordinateStyle.EDGE) {
 			multiplier = getZoomLevel() / 4;
-			int mul = multiplier * Tile.SIZE;
-			for (float y = p.getY(); y <= getHeight(); y += step) {
-				Point2i region = getMouseRegion(0, y + halfStep).regionToBlock();
-				if (region.getZ() % mul == 0) {
-					ctx.fillText(TextHelper.abbreviateCoordinate(region.getZ()), 2, y + 16);
-				}
-			}
+			int mul = Math.max(multiplier * Tile.SIZE, 1);
 			for (float x = p.getX(); x <= getWidth(); x += step) {
 				Point2i region = getMouseRegion(x + halfStep, 0).regionToBlock();
 				if (region.getX() % mul == 0) {
-					ctx.save();
-					ctx.translate(x + 2, 2);
-					ctx.rotate(90);
-					ctx.setFill(Tile.COORDINATES_COLOR.setAlphaPercent(onePercent * x).makeJavaFXColor());
-					ctx.fillText(TextHelper.abbreviateCoordinate(region.getX()), 0, 0);
-					ctx.restore();
+					coordinateRenderer.drawRotated90(ctx, TextHelper.abbreviateCoordinate(region.getX()), onePercent * x, x, 0);
+				}
+			}
+			for (float y = p.getY(); y <= getHeight(); y += step) {
+				Point2i region = getMouseRegion(0, y + halfStep).regionToBlock();
+				if (region.getZ() % mul == 0) {
+					coordinateRenderer.draw(ctx, TextHelper.abbreviateCoordinate(region.getZ()), 0, y);
 				}
 			}
 			return;
-		} if (scale > 7) {
+		} if (scale > 7 || coordinateStyle == CoordinateStyle.GRID) {
 			multiplier = getZoomLevel() / 2;
-		} else if (scale > 4) {
-			multiplier = 2;
 		}
+
+		multiplier = Math.max(multiplier, 1);
 
 		int mul = multiplier * Tile.SIZE;
 		boolean oldStep = true;
@@ -1088,8 +1101,8 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			for (float y = first.getY(); y <= getHeight(); y += step) {
 				Point2i region = getMouseRegion(x + halfStep, y + halfStep).regionToBlock();
 				if (!oldStep || region.getX() % mul == 0 && region.getZ() % mul == 0) {
-					ctx.fillText(TextHelper.abbreviateCoordinate(region.getX()) + ",\n" +
-						TextHelper.abbreviateCoordinate(region.getZ()), x + 2, y + 16);
+					coordinateRenderer.draw(ctx, TextHelper.abbreviateCoordinate(region.getX()) + ",\n" +
+						TextHelper.abbreviateCoordinate(region.getZ()), x, y);
 					if (oldStep) {
 						step *= multiplier;
 						oldStep = false;
@@ -1099,15 +1112,25 @@ public class TileMap extends Canvas implements ClipboardOwner {
 			}
 		}
 
+		// make sure that the coordinates don't pop out of view
+		// when they reach the top and left edge when zoomed out really far
+		// because the text occupies more than one region in height / width
+		for (float x = first.getX() - step; x <= getWidth(); x += step) {
+			Point2i region = getMouseRegion(x + halfStep, first.getY() - step + halfStep).regionToBlock();
+			coordinateRenderer.draw(ctx, TextHelper.abbreviateCoordinate(region.getX()) + ",\n" +
+				TextHelper.abbreviateCoordinate(region.getZ()), x, first.getY() - step);
+		}
 		for (float y = first.getY(); y <= getHeight(); y += step) {
 			Point2i region = getMouseRegion(first.getX() - step + halfStep, y + halfStep).regionToBlock();
-			ctx.fillText(TextHelper.abbreviateCoordinate(region.getX()) + ",\n" +
-				TextHelper.abbreviateCoordinate(region.getZ()), first.getX() - step + 2, y + 16);
+			coordinateRenderer.draw(ctx, TextHelper.abbreviateCoordinate(region.getX()) + ",\n" +
+				TextHelper.abbreviateCoordinate(region.getZ()), first.getX() - step, y);
 		}
 	}
 
 	private void drawChunkCoordinates(GraphicsContext ctx) {
 		ctx.setFill(Tile.COORDINATES_COLOR.makeJavaFXColor());
+		ctx.setStroke(Color.BLACK.makeJavaFXColor());
+		ctx.setLineWidth(3);
 
 		Point2f p = getRegionGridMin(offset, scale);
 
@@ -1124,6 +1147,25 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 		float step = Tile.CHUNK_SIZE / scale;
 		float halfStep = Tile.CHUNK_SIZE / (scale * 2);
+		float onePercent = 0.01f;
+
+		if (coordinateStyle == CoordinateStyle.EDGE) {
+			int mul = Math.max(multiplier * Tile.CHUNK_SIZE, 1);
+			for (float x = p.getX(); x <= getWidth(); x += step) {
+				Point2i chunk = getMouseChunk(x + halfStep, 0).chunkToBlock();
+				if (chunk.getX() % mul == 0) {
+					coordinateRenderer.drawRotated90(ctx, TextHelper.abbreviateCoordinate(chunk.getX()), onePercent * x, x, 0);
+				}
+			}
+			for (float y = p.getY(); y <= getHeight(); y += step) {
+				Point2i chunk = getMouseChunk(0, y + halfStep).chunkToBlock();
+				if (chunk.getZ() % mul == 0) {
+					coordinateRenderer.draw(ctx, TextHelper.abbreviateCoordinate(chunk.getZ()), 0, y);
+				}
+			}
+			return;
+		}
+
 		int mul = multiplier * Tile.CHUNK_SIZE;
 		boolean oldStep = true;
 		Point2f first = p;
@@ -1131,10 +1173,9 @@ public class TileMap extends Canvas implements ClipboardOwner {
 		for (float x = first.getX(); x <= getWidth(); x += step) {
 			for (float y = first.getY(); y <= getHeight(); y += step) {
 				Point2i chunk = getMouseChunk(x + halfStep, y + halfStep).chunkToBlock();
-
 				if (!oldStep || chunk.getX() % mul == 0 && chunk.getZ() % mul == 0) {
-					ctx.fillText(TextHelper.abbreviateCoordinate(chunk.getX()) + ",\n" +
-						TextHelper.abbreviateCoordinate(chunk.getZ()), x + 2, y + 16);
+					coordinateRenderer.draw(ctx, TextHelper.abbreviateCoordinate(chunk.getX()) + ",\n" +
+						TextHelper.abbreviateCoordinate(chunk.getZ()), x, y);
 					if (oldStep) {
 						step *= multiplier;
 						oldStep = false;

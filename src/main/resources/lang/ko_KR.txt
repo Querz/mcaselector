@@ -28,6 +28,10 @@ menu.view.reload;리로드
 menu.view.chunk_grid;청크 그리드
 menu.view.region_grid;지역 그리드
 menu.view.coordinates;좌표
+menu.view.coordinate_style;좌표 스타일
+menu.view.coordinate_style.dynamic;동적
+menu.view.coordinate_style.edge;가장자리
+menu.view.coordinate_style.grid;그리드
 menu.view.structure_icons;구조물
 menu.view.select_structures;구조물 선택
 menu.view.goto;이동

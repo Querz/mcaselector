@@ -28,6 +28,10 @@ menu.view.reload;重新加载
 menu.view.chunk_grid;区块网格
 menu.view.region_grid;区域网格
 menu.view.coordinates;坐标
+menu.view.coordinate_style;坐标样式
+menu.view.coordinate_style.dynamic;动态
+menu.view.coordinate_style.edge;边缘
+menu.view.coordinate_style.grid;网格
 menu.view.structure_icons;结构
 menu.view.select_structures;选择结构
 menu.view.goto;转到

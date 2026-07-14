@@ -28,6 +28,10 @@ menu.view.reload;Újratöltés
 menu.view.chunk_grid;Chunk Rács
 menu.view.region_grid;Régió Rács
 menu.view.coordinates;Koordináták
+menu.view.coordinate_style;Koordináta stílus
+menu.view.coordinate_style.dynamic;Dinamikus
+menu.view.coordinate_style.edge;Szélén
+menu.view.coordinate_style.grid;Rács
 menu.view.structure_icons;Struktúrák
 menu.view.select_structures;Struktúrák kiválasztása
 menu.view.goto;Koordinátához lépés

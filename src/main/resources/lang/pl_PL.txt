@@ -28,6 +28,10 @@ menu.view.reload;Przeładować
 menu.view.chunk_grid;Siatka chunków
 menu.view.region_grid;Siatka regionów
 menu.view.coordinates;Współrzędne
+menu.view.coordinate_style;Styl współrzędnych
+menu.view.coordinate_style.dynamic;Dynamiczny
+menu.view.coordinate_style.edge;Krawędź
+menu.view.coordinate_style.grid;Siatka
 menu.view.structure_icons;Struktury
 menu.view.select_structures;Wybierz Struktury
 menu.view.goto;Idź do...

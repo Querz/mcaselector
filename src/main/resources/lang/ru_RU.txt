@@ -28,6 +28,10 @@ menu.view.reload;Перезагрузить
 menu.view.chunk_grid;Сетка чанков
 menu.view.region_grid;Сетка регионов
 menu.view.coordinates;Координаты
+menu.view.coordinate_style;Стиль координат
+menu.view.coordinate_style.dynamic;Динамический
+menu.view.coordinate_style.edge;По краям
+menu.view.coordinate_style.grid;Сетка
 menu.view.structure_icons;Структуры
 menu.view.select_structures;Выбрать структуры
 menu.view.goto;Перейти

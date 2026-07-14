@@ -28,6 +28,10 @@ menu.view.reload;Yeniden Yükle
 menu.view.chunk_grid;Chunk Izgarası
 menu.view.region_grid;Region Izgarası
 menu.view.coordinates;Koordinatlar
+menu.view.coordinate_style;Koordinat Stili
+menu.view.coordinate_style.dynamic;Dinamik
+menu.view.coordinate_style.edge;Kenar
+menu.view.coordinate_style.grid;Izgara
 menu.view.structure_icons;Yapılar
 menu.view.select_structures;Yapıları Seç
 menu.view.goto;Git

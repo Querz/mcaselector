@@ -28,6 +28,10 @@ menu.view.reload;リロード
 menu.view.chunk_grid;チャンクの境界
 menu.view.region_grid;リージョンの境界
 menu.view.coordinates;コーディネート
+menu.view.coordinate_style;座標の表示スタイル
+menu.view.coordinate_style.dynamic;ダイナミック
+menu.view.coordinate_style.edge;エッジ
+menu.view.coordinate_style.grid;グリッド
 menu.view.structure_icons;構造物
 menu.view.select_structures;構造物を選択
 menu.view.goto;移動

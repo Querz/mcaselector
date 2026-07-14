@@ -28,6 +28,10 @@ menu.view.reload;Neu laden
 menu.view.chunk_grid;Chunk Gitter
 menu.view.region_grid;Region Gitter
 menu.view.coordinates;Koordinaten
+menu.view.coordinate_style;Koordinatenstil
+menu.view.coordinate_style.dynamic;Dynamisch
+menu.view.coordinate_style.edge;Rand
+menu.view.coordinate_style.grid;Gitter
 menu.view.structure_icons;Bauwerke
 menu.view.select_structures;Bauwerke auswählen
 menu.view.goto;Gehe zu

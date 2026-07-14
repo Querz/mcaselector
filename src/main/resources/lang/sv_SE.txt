@@ -28,6 +28,10 @@ menu.view.reload;Ladda om
 menu.view.chunk_grid;Chunkrutnät
 menu.view.region_grid;Regionrutnät
 menu.view.coordinates;Koordinater
+menu.view.coordinate_style;Koordinatstil
+menu.view.coordinate_style.dynamic;Dynamisk
+menu.view.coordinate_style.edge;Kant
+menu.view.coordinate_style.grid;Rutnät
 menu.view.structure_icons;Strukturer
 menu.view.select_structures;Välj strukturer
 menu.view.goto;Gå till
