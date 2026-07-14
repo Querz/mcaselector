@@ -13,7 +13,12 @@ import net.querz.mcaselector.version.java_1_16.ChunkFilter_20w13a;
 import net.querz.mcaselector.version.java_1_16.ChunkFilter_20w17a;
 import net.querz.mcaselector.version.mapping.generator.HeightmapConfig;
 import net.querz.nbt.*;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+
 import static net.querz.mcaselector.util.validation.ValidationHelper.*;
 
 public class ChunkFilter_20w45a {
@@ -84,6 +89,58 @@ public class ChunkFilter_20w45a {
 	@MCVersionImplementation(2681)
 	public static class RelocateEntities implements ChunkFilter.RelocateEntities {
 
+		protected Map<String, BiConsumer<CompoundTag, Point3i>> functions = new HashMap<>();
+
+		public RelocateEntities() {
+			functions.put("minecraft:dolphin", (e, o) -> Helper.applyIntOffsetIfRootPresent(e, "TreasurePosX", "TreasurePosY", "TreasurePosZ", o));
+			functions.put("minecraft:phantom", (e, o) -> Helper.applyIntOffsetIfRootPresent(e, "AX", "AY", "AZ", o));
+			functions.put("minecraft:shulker", (e, o) -> Helper.applyIntOffsetIfRootPresent(e, "APX", "APY", "APZ", o));
+			functions.put("minecraft:turtle", (e, o) -> {
+				Helper.applyIntOffsetIfRootPresent(e, "HomePosX", "HomePosY", "HomePosZ", o);
+				Helper.applyIntOffsetIfRootPresent(e, "TravelPosX", "TravelPosY", "TravelPosZ", o);
+			});
+			functions.put("minecraft:vex", (e, o) -> Helper.applyIntOffsetIfRootPresent(e, "BoundX", "BoundY", "BoundZ", o));
+			functions.put("minecraft:wandering_trader", (e, o) -> {
+				CompoundTag wanderTarget = Helper.tagFromCompound(e, "WanderTarget");
+				Helper.applyIntOffsetIfRootPresent(wanderTarget, "X", "Y", "Z", o);
+			});
+			functions.put("minecraft:shulker_bullet", (e, o) -> {
+				CompoundTag owner = Helper.tagFromCompound(e, "Owner");
+				Helper.applyIntOffsetIfRootPresent(owner, "X", "Y", "Z", o);
+				CompoundTag target = Helper.tagFromCompound(e, "Target");
+				Helper.applyIntOffsetIfRootPresent(target, "X", "Y", "Z", o);
+			});
+			functions.put("minecraft:end_crystal", (e, o) -> {
+				CompoundTag beamTarget = Helper.tagFromCompound(e, "BeamTarget");
+				Helper.applyIntOffsetIfRootPresent(beamTarget, "X", "Y", "Z", o);
+			});
+			BiConsumer<CompoundTag, Point3i> framed = (e, o) -> Helper.applyIntOffsetIfRootPresent(e, "TileX", "TileY", "TileZ", o);
+			functions.put("minecraft:item_frame", framed);
+			functions.put("minecraft:painting", framed);
+			functions.put("minecraft:villager", (e, o) -> {
+				CompoundTag memories = Helper.tagFromCompound(Helper.tagFromCompound(e, "Brain"), "memories");
+				if (memories != null && !memories.isEmpty()) {
+					Relocate.instance.applyOffsetToVillagerMemory(Helper.tagFromCompound(memories, "minecraft:meeting_point"), o);
+					Relocate.instance.applyOffsetToVillagerMemory(Helper.tagFromCompound(memories, "minecraft:home"), o);
+					Relocate.instance.applyOffsetToVillagerMemory(Helper.tagFromCompound(memories, "minecraft:job_site"), o);
+				}
+			});
+			BiConsumer<CompoundTag, Point3i> pillagers = (e, o) -> {
+				CompoundTag patrolTarget = Helper.tagFromCompound(e, "PatrolTarget");
+				Helper.applyIntOffsetIfRootPresent(patrolTarget, "X", "Y", "Z", o);
+			};
+			functions.put("minecraft:pillager", pillagers);
+			functions.put("minecraft:witch", pillagers);
+			functions.put("minecraft:vindicator", pillagers);
+			functions.put("minecraft:ravager", pillagers);
+			functions.put("minecraft:illusioner", pillagers);
+			functions.put("minecraft:evoker", pillagers);
+			functions.put("minecraft:falling_block", (e, o) -> {
+				CompoundTag tileEntityData = Helper.tagFromCompound(e, "TileEntityData");
+				Relocate.instance.applyOffsetToTileEntity(tileEntityData, o);
+			});
+		}
+
 		@Override
 		public boolean relocate(CompoundTag root, Point3i offset) {
 			int[] position = Helper.intArrayFromCompound(root, "Position");
@@ -129,61 +186,10 @@ public class ChunkFilter_20w45a {
 
 			// positions for specific entity types
 			String id = Helper.stringFromCompound(entity, "id", "");
-			switch (id) {
-			case "minecraft:dolphin":
-				Helper.applyIntOffsetIfRootPresent(entity, "TreasurePosX", "TreasurePosY", "TreasurePosZ", offset);
-				break;
-			case "minecraft:phantom":
-				Helper.applyIntOffsetIfRootPresent(entity, "AX", "AY", "AZ", offset);
-				break;
-			case "minecraft:shulker":
-				Helper.applyIntOffsetIfRootPresent(entity, "APX", "APY", "APZ", offset);
-				break;
-			case "minecraft:turtle":
-				Helper.applyIntOffsetIfRootPresent(entity, "HomePosX", "HomePosY", "HomePosZ", offset);
-				Helper.applyIntOffsetIfRootPresent(entity, "TravelPosX", "TravelPosY", "TravelPosZ", offset);
-				break;
-			case "minecraft:vex":
-				Helper.applyIntOffsetIfRootPresent(entity, "BoundX", "BoundY", "BoundZ", offset);
-				break;
-			case "minecraft:wandering_trader":
-				CompoundTag wanderTarget = Helper.tagFromCompound(entity, "WanderTarget");
-				Helper.applyIntOffsetIfRootPresent(wanderTarget, "X", "Y", "Z", offset);
-				break;
-			case "minecraft:shulker_bullet":
-				CompoundTag owner = Helper.tagFromCompound(entity, "Owner");
-				Helper.applyIntOffsetIfRootPresent(owner, "X", "Y", "Z", offset);
-				CompoundTag target = Helper.tagFromCompound(entity, "Target");
-				Helper.applyIntOffsetIfRootPresent(target, "X", "Y", "Z", offset);
-				break;
-			case "minecraft:end_crystal":
-				CompoundTag beamTarget = Helper.tagFromCompound(entity, "BeamTarget");
-				Helper.applyIntOffsetIfRootPresent(beamTarget, "X", "Y", "Z", offset);
-				break;
-			case "minecraft:item_frame":
-			case "minecraft:painting":
-				Helper.applyIntOffsetIfRootPresent(entity, "TileX", "TileY", "TileZ", offset);
-				break;
-			case "minecraft:villager":
-				CompoundTag memories = Helper.tagFromCompound(Helper.tagFromCompound(entity, "Brain"), "memories");
-				if (memories != null && !memories.isEmpty()) {
-					Relocate.instance.applyOffsetToVillagerMemory(Helper.tagFromCompound(memories, "minecraft:meeting_point"), offset);
-					Relocate.instance.applyOffsetToVillagerMemory(Helper.tagFromCompound(memories, "minecraft:home"), offset);
-					Relocate.instance.applyOffsetToVillagerMemory(Helper.tagFromCompound(memories, "minecraft:job_site"), offset);
-				}
-				break;
-			case "minecraft:pillager":
-			case "minecraft:witch":
-			case "minecraft:vindicator":
-			case "minecraft:ravager":
-			case "minecraft:illusioner":
-			case "minecraft:evoker":
-				CompoundTag patrolTarget = Helper.tagFromCompound(entity, "PatrolTarget");
-				Helper.applyIntOffsetIfRootPresent(patrolTarget, "X", "Y", "Z", offset);
-				break;
-			case "minecraft:falling_block":
-				CompoundTag tileEntityData = Helper.tagFromCompound(entity, "TileEntityData");
-				Relocate.instance.applyOffsetToTileEntity(tileEntityData, offset);
+
+			BiConsumer<CompoundTag, Point3i> entityFunction = functions.get(id);
+			if (entityFunction != null) {
+				entityFunction.accept(entity, offset);
 			}
 
 			// recursively update passengers
