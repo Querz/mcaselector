@@ -46,7 +46,9 @@ public class OverlayConfig extends Config {
 		}
 		Overlay[] overlays = gsonInstance.fromJson(json, Overlay[].class);
 		OverlayConfig cfg = new OverlayConfig();
-		cfg.overlays = Arrays.asList(overlays);
+		if (overlays != null) {
+			cfg.overlays = Arrays.asList(overlays);
+		}
 		return cfg;
 	}
 

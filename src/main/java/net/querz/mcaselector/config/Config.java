@@ -150,6 +150,10 @@ public abstract class Config {
 	}
 
 	protected static String loadString(File file) {
+		if (!file.exists()) {
+			LOGGER.info("config file does not exist {}", file);
+			return null;
+		}
 		try {
 			return Files.readString(file.toPath());
 		} catch (IOException ex) {

@@ -41,7 +41,7 @@ public class Tile {
 	}
 
 	public static int getZoomLevel(float scale) {
-		return Integer.highestOneBit((int) scale);
+		return Math.max(Integer.highestOneBit((int) scale), 1);
 	}
 
 	public boolean isVisible(TileMap tileMap) {
