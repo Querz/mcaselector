@@ -11,6 +11,8 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.querz.mcaselector.config.ConfigProvider;
+import net.querz.mcaselector.config.GlobalConfig;
+import net.querz.mcaselector.config.WorldConfig;
 import net.querz.mcaselector.io.*;
 import net.querz.mcaselector.io.job.*;
 import net.querz.mcaselector.io.mca.ChunkData;
@@ -20,6 +22,7 @@ import net.querz.mcaselector.selection.ClipboardSelection;
 import net.querz.mcaselector.selection.Selection;
 import net.querz.mcaselector.selection.SelectionData;
 import net.querz.mcaselector.tile.TileMap;
+import net.querz.mcaselector.ui.component.TileMapBox;
 import net.querz.mcaselector.util.property.DataProperty;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.text.Translation;
@@ -316,53 +319,55 @@ public class DialogHelper {
 
 		Optional<SettingsDialog.Result> result = new SettingsDialog(primaryStage, renderSettings).showAndWait();
 		result.ifPresent(r -> {
-			if (ConfigProvider.GLOBAL.getProcessThreads() != r.processThreads()
-					|| ConfigProvider.GLOBAL.getWriteThreads() != r.writeThreads()) {
-				ConfigProvider.GLOBAL.setProcessThreads(r.processThreads());
-				ConfigProvider.GLOBAL.setWriteThreads(r.writeThreads());
+			GlobalConfig g = r.tmpGlobalConfig();
+			if (ConfigProvider.GLOBAL.getProcessThreads() != g.getProcessThreads()
+					|| ConfigProvider.GLOBAL.getWriteThreads() != g.getWriteThreads()) {
+				ConfigProvider.GLOBAL.setProcessThreads(g.getProcessThreads());
+				ConfigProvider.GLOBAL.setWriteThreads(g.getWriteThreads());
 				JobHandler.init();
 			}
-			ConfigProvider.GLOBAL.setMaxLoadedFiles(r.maxLoadedFiles());
+			ConfigProvider.GLOBAL.setMaxLoadedFiles(g.getMaxLoadedFiles());
 
-			if (!ConfigProvider.GLOBAL.getLocale().equals(r.locale())) {
-				ConfigProvider.GLOBAL.setLocale(r.locale());
+			if (!ConfigProvider.GLOBAL.getLocale().equals(g.getLocale())) {
+				ConfigProvider.GLOBAL.setLocale(g.getLocale());
 				Locale.setDefault(ConfigProvider.GLOBAL.getLocale());
 			}
-			ConfigProvider.GLOBAL.setRegionSelectionColor(new Color(r.regionColor()));
-			ConfigProvider.GLOBAL.setChunkSelectionColor(new Color(r.chunkColor()));
-			ConfigProvider.GLOBAL.setPasteChunksColor(new Color(r.pasteColor()));
+			ConfigProvider.GLOBAL.setRegionSelectionColor(g.getRegionSelectionColor());
+			ConfigProvider.GLOBAL.setChunkSelectionColor(g.getChunkSelectionColor());
+			ConfigProvider.GLOBAL.setPasteChunksColor(g.getPasteChunksColor());
 			tileMap.redrawOverlays();
-			ConfigProvider.GLOBAL.setMcSavesDir(r.mcSavesDir() + "");
-			ConfigProvider.GLOBAL.setDebug(r.debug());
+			ConfigProvider.GLOBAL.setMcSavesDir(g.getMcSavesDir());
+			ConfigProvider.GLOBAL.setDebug(g.getDebug());
 
 			if (!tileMap.getDisabled()) {
-				ConfigProvider.WORLD.setShowNonexistentRegions(r.showNonexistentRegions());
-				tileMap.setShowNonexistentRegions(r.showNonexistentRegions());
-				ConfigProvider.WORLD.setSmoothRendering(r.smoothRendering());
-				tileMap.setSmoothRendering(r.smoothRendering());
-				ConfigProvider.WORLD.setSmoothOverlays(r.smoothOverlays());
-				ConfigProvider.WORLD.setTileMapBackground(r.tileMapBackground().name());
-				tileMap.getWindow().getTileMapBox().setBackground(r.tileMapBackground().getBackground());
+				WorldConfig w = r.tmpWorldConfig();
+				ConfigProvider.WORLD.setShowNonexistentRegions(w.getShowNonexistentRegions());
+				tileMap.setShowNonexistentRegions(w.getShowNonexistentRegions());
+				ConfigProvider.WORLD.setSmoothRendering(w.getSmoothRendering());
+				tileMap.setSmoothRendering(w.getSmoothRendering());
+				ConfigProvider.WORLD.setSmoothOverlays(w.getSmoothOverlays());
+				ConfigProvider.WORLD.setTileMapBackground(w.getTileMapBackground());
+				tileMap.getWindow().getTileMapBox().setBackground(TileMapBox.TileMapBoxBackground.valueOf(w.getTileMapBackground()).getBackground());
 
 				Runnable clearFunction = () -> {};
 
-				if (r.zoomLevelLOD() != ConfigProvider.WORLD.getRenderHeaderOnlyZoomLevel()
-					|| !new Color(r.zoomLevelLODColor()).equals(ConfigProvider.WORLD.getZoomLevelLODColor())) {
-					ConfigProvider.WORLD.setRenderHeaderOnlyZoomLevel(r.zoomLevelLOD());
-					ConfigProvider.WORLD.setZoomLevelLODColor(new Color(r.zoomLevelLODColor()));
+				if (w.getRenderHeaderOnlyZoomLevel() != ConfigProvider.WORLD.getRenderHeaderOnlyZoomLevel()
+					|| !w.getZoomLevelLODColor().equals(ConfigProvider.WORLD.getZoomLevelLODColor())) {
+					ConfigProvider.WORLD.setRenderHeaderOnlyZoomLevel(w.getRenderHeaderOnlyZoomLevel());
+					ConfigProvider.WORLD.setZoomLevelLODColor(w.getZoomLevelLODColor());
 					clearFunction = tileMap::markAllTilesAsObsolete;
 				}
 
-				if (r.height() != ConfigProvider.WORLD.getRenderHeight() || r.layerOnly() != ConfigProvider.WORLD.getRenderLayerOnly()
-					|| r.shade() != ConfigProvider.WORLD.getShade() || r.shadeWater() != ConfigProvider.WORLD.getShadeWater()
-					|| r.shadeAltitude() != ConfigProvider.WORLD.getShadeAltitude() || r.caves() != ConfigProvider.WORLD.getRenderCaves()) {
-					ConfigProvider.WORLD.setRenderHeight(r.height());
-					ConfigProvider.WORLD.setRenderLayerOnly(r.layerOnly());
-					ConfigProvider.WORLD.setRenderCaves(r.caves());
-					tileMap.getWindow().getOptionBar().setRenderHeight(r.height());
-					ConfigProvider.WORLD.setShade(r.shade());
-					ConfigProvider.WORLD.setShadeWater(r.shadeWater());
-					ConfigProvider.WORLD.setShadeAltitude(r.shadeAltitude());
+				if (w.getRenderHeight() != ConfigProvider.WORLD.getRenderHeight() || w.getRenderLayerOnly() != ConfigProvider.WORLD.getRenderLayerOnly()
+					|| w.getShade() != ConfigProvider.WORLD.getShade() || w.getShadeWater() != ConfigProvider.WORLD.getShadeWater()
+					|| w.getShadeAltitude() != ConfigProvider.WORLD.getShadeAltitude() || w.getRenderCaves() != ConfigProvider.WORLD.getRenderCaves()) {
+					ConfigProvider.WORLD.setRenderHeight(w.getRenderHeight());
+					tileMap.getWindow().getOptionBar().setRenderHeight(w.getRenderHeight());
+					ConfigProvider.WORLD.setRenderLayerOnly(w.getRenderLayerOnly());
+					ConfigProvider.WORLD.setRenderCaves(w.getRenderCaves());
+					ConfigProvider.WORLD.setShade(w.getShade());
+					ConfigProvider.WORLD.setShadeWater(w.getShadeWater());
+					ConfigProvider.WORLD.setShadeAltitude(w.getShadeAltitude());
 					// only clear the cache if the actual image rendering changed
 					clearFunction = () -> CacheHelper.clearAllCache(tileMap);
 				}
@@ -370,13 +375,13 @@ public class DialogHelper {
 				clearFunction.run();
 
 				WorldDirectories worldDirectories = ConfigProvider.WORLD.getWorldDirs();
-				worldDirectories.setPoi(r.poi());
-				worldDirectories.setEntities(r.entities());
+				worldDirectories.setPoi(w.getWorldDirs().getPoi());
+				worldDirectories.setEntities(w.getWorldDirs().getEntities());
 
-				if (r.structureIconSize() != ConfigProvider.WORLD.getStructureIconSize()
-					|| r.structureIconBorderSize() != ConfigProvider.WORLD.getStructureIconBorderSize()) {
-					ConfigProvider.WORLD.setStructureIconSize(r.structureIconSize());
-					ConfigProvider.WORLD.setStructureIconBorderSize(r.structureIconBorderSize());
+				if (w.getStructureIconSize() != ConfigProvider.WORLD.getStructureIconSize()
+					|| w.getStructureIconBorderSize() != ConfigProvider.WORLD.getStructureIconBorderSize()) {
+					ConfigProvider.WORLD.setStructureIconSize(w.getStructureIconSize());
+					ConfigProvider.WORLD.setStructureIconBorderSize(w.getStructureIconBorderSize());
 					StructureRegistry.init();
 				}
 

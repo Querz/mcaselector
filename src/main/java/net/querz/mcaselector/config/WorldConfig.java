@@ -69,6 +69,27 @@ public class WorldConfig extends Config {
 
 	private static final Logger LOGGER = LogManager.getLogger(WorldConfig.class);
 
+	public WorldConfig() {}
+
+	private WorldConfig(WorldConfig cfg) {
+		if (cfg != null) {
+			this.renderHeight = cfg.renderHeight;
+			this.renderLayerOnly = cfg.renderLayerOnly;
+			this.renderCaves = cfg.renderCaves;
+			this.shade = cfg.shade;
+			this.shadeWater = cfg.shadeWater;
+			this.shadeAltitude = cfg.shadeAltitude;
+			this.smoothRendering = cfg.smoothRendering;
+			this.smoothOverlays = cfg.smoothOverlays;
+			this.tileMapBackground = cfg.tileMapBackground;
+			this.showNonexistentRegions = cfg.showNonexistentRegions;
+			this.structureIconSize = cfg.structureIconSize;
+			this.structureIconBorderSize = cfg.structureIconBorderSize;
+			this.renderHeaderOnlyZoomLevel = cfg.renderHeaderOnlyZoomLevel;
+			this.zoomLevelLODColor = cfg.zoomLevelLODColor;
+		}
+	}
+
 	public File getRegionDir() {
 		return regionDir;
 	}
@@ -229,9 +250,24 @@ public class WorldConfig extends Config {
 		this.showNonexistentRegions = showNonexistentRegions;
 	}
 
+	public void saveDefault() {
+		save(gsonInstance, BASE_DEFAULT_WORLD_CONFIG_FILE);
+	}
+
 	@Override
 	public void save() {
 		save(gsonInstance, new File(cacheDir, "world_settings.json"));
+	}
+
+	public static WorldConfig loadDefault() {
+		if (!BASE_DEFAULT_WORLD_CONFIG_FILE.exists() || !BASE_DEFAULT_WORLD_CONFIG_FILE.isFile()) {
+			return null;
+		}
+		String json = loadString(BASE_DEFAULT_WORLD_CONFIG_FILE);
+		if (json == null) {
+			return null;
+		}
+		return gsonInstance.fromJson(json, WorldConfig.class);
 	}
 
 	public static WorldConfig load(WorldDirectories worldDirectories, List<File> dimensionDirectories) {
@@ -243,7 +279,7 @@ public class WorldConfig extends Config {
 		String json = loadString(new File(cacheDir, "world_settings.json"));
 		WorldConfig cfg;
 		if (json == null) {
-			cfg = new WorldConfig();
+			cfg = new WorldConfig(ConfigProvider.DEFAULT_WORLD);
 		} else {
 			cfg = gsonInstance.fromJson(json, WorldConfig.class);
 		}
@@ -277,5 +313,9 @@ public class WorldConfig extends Config {
 	@Override
 	public String toString() {
 		return toStringGsonInstance.toJson(this);
+	}
+
+	public WorldConfig copyForSettings() {
+		return new WorldConfig(this);
 	}
 }

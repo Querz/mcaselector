@@ -86,6 +86,7 @@ dialog.settings.global.misc.mc_saves_dir;Umístění MC světů
 dialog.settings.global.misc.print_debug;Tisk zpráv o ladění
 dialog.settings.global.misc.show_log_file;Zobrazit soubor protokolu
 dialog.settings.reset;Obnovit
+dialog.settings.set_default;Nastavit jako výchozí
 dialog.settings.tab_global;Globální
 dialog.settings.tab_processing;zpracovává se
 dialog.settings.tab_rendering;Vykreslování

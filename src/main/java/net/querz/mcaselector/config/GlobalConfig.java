@@ -69,6 +69,24 @@ public class GlobalConfig extends Config {
 	private TempScript overlayScript = new TempScript(null, false, "");
 	private Object2BooleanRBTreeMap<String> structureIcons = new Object2BooleanRBTreeMap<>(String::compareTo);
 
+	public GlobalConfig() {}
+
+	private GlobalConfig(GlobalConfig globalConfig) {
+		this.locale = globalConfig.locale;
+		this.regionSelectionColor = globalConfig.regionSelectionColor;
+		this.chunkSelectionColor = globalConfig.chunkSelectionColor;
+		this.pasteChunksColor = globalConfig.pasteChunksColor;
+		this.processThreads = globalConfig.processThreads;
+		this.writeThreads = globalConfig.writeThreads;
+		this.maxLoadedFiles = globalConfig.maxLoadedFiles;
+		this.mcSavesDir = globalConfig.mcSavesDir;
+		this.showChunkGrid = globalConfig.showChunkGrid;
+		this.showRegionGrid = globalConfig.showRegionGrid;
+		this.showCoordinates = globalConfig.showCoordinates;
+		this.coordinateStyle = globalConfig.coordinateStyle;
+		this.debug = globalConfig.debug;
+	}
+
 	public Locale getLocale() {
 		return locale;
 	}
@@ -334,6 +352,10 @@ public class GlobalConfig extends Config {
 			}
 			return name;
 		}
+	}
+
+	public GlobalConfig copyForSettings() {
+		return new GlobalConfig(this);
 	}
 
 	public record TempScript(File file, boolean saved, String text) {}

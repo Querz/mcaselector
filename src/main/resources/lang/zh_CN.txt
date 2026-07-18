@@ -86,6 +86,7 @@ dialog.settings.global.misc.mc_saves_dir;Minecraft 存档目录
 dialog.settings.global.misc.print_debug;打印调试信息
 dialog.settings.global.misc.show_log_file;显示日志文件
 dialog.settings.reset;重置
+dialog.settings.set_default;设为默认
 dialog.settings.tab_global;全局
 dialog.settings.tab_processing;处理
 dialog.settings.tab_rendering;渲染

@@ -45,6 +45,7 @@ public class Main {
 		LOGGER.debug("java version {}", System.getProperty("java.version"));
 		LOGGER.debug("jvm max memory {}", Runtime.getRuntime().maxMemory());
 
+		ConfigProvider.loadDefaultWorldConfig();
 		ConfigProvider.loadOverlayConfig();
 		ShutdownHooks.addShutdownHook(ConfigProvider::saveAll);
 		Translation.load(ConfigProvider.GLOBAL.getLocale());

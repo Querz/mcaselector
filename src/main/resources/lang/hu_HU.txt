@@ -86,6 +86,7 @@ dialog.settings.global.misc.mc_saves_dir;MC mentések mappája
 dialog.settings.global.misc.print_debug;Debug üzenetek kiírása
 dialog.settings.global.misc.show_log_file;Log file mutatása
 dialog.settings.reset;Alapértelmezett beállítások
+dialog.settings.set_default;Alapértelmezetté tétel
 dialog.settings.tab_global;Általános
 dialog.settings.tab_processing;Folyamatok
 dialog.settings.tab_rendering;Renderelés

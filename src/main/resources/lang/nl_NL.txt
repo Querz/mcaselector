@@ -86,6 +86,7 @@ dialog.settings.global.misc.mc_saves_dir;MC slaat map op
 dialog.settings.global.misc.print_debug;Foutopsporingsberichten afdrukken
 dialog.settings.global.misc.show_log_file;Toon logbestand
 dialog.settings.reset;Reset
+dialog.settings.set_default;Als standaard instellen
 dialog.settings.tab_global;Globaal
 dialog.settings.tab_processing;Verwerken
 dialog.settings.tab_rendering;weergave

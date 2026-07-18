@@ -10,6 +10,7 @@ public final class ConfigProvider {
 
 	public static GlobalConfig GLOBAL = new GlobalConfig();
 	public static WorldConfig WORLD = new WorldConfig();
+	public static WorldConfig DEFAULT_WORLD = null;
 	public static OverlayConfig OVERLAY = new OverlayConfig();
 
 	private static final Logger LOGGER = LogManager.getLogger(ConfigProvider.class);
@@ -22,6 +23,15 @@ public final class ConfigProvider {
 			LOGGER.debug("loaded global config: {}", GLOBAL);
 		} catch (Exception ex) {
 			LOGGER.warn("failed to load global config", ex);
+		}
+	}
+
+	public static void loadDefaultWorldConfig() {
+		try {
+			DEFAULT_WORLD = WorldConfig.loadDefault();
+			LOGGER.debug("loaded default world config: {}", DEFAULT_WORLD);
+		} catch (Exception ex) {
+			LOGGER.warn("failed to load default world config", ex);
 		}
 	}
 
@@ -49,6 +59,9 @@ public final class ConfigProvider {
 		}
 		if (OVERLAY != null) {
 			OVERLAY.save();
+		}
+		if (DEFAULT_WORLD != null) {
+			DEFAULT_WORLD.saveDefault();
 		}
 		if (WORLD != null && WORLD.getWorldUUID() != null) {
 			WORLD.save();

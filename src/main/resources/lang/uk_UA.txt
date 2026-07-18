@@ -86,6 +86,7 @@ dialog.settings.global.misc.mc_saves_dir;Папка збережень
 dialog.settings.global.misc.print_debug;Відображати повідомлення налагодження
 dialog.settings.global.misc.show_log_file;Відображати логи
 dialog.settings.reset;Скинути налаштування
+dialog.settings.set_default;Встановити як за замовчуванням
 dialog.settings.tab_global;Загальні
 dialog.settings.tab_processing;Обробка
 dialog.settings.tab_rendering;Відмальовка

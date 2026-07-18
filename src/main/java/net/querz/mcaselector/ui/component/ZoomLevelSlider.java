@@ -9,17 +9,17 @@ import net.querz.mcaselector.util.math.Bits;
 
 public class ZoomLevelSlider extends Slider {
 
-    private static final int[] values = new int[Bits.msbPosition(Config.MAX_ZOOM_LEVEL) + 3]; // include 0 and the max zoom level
+    private static final int[] values = new int[Bits.msbPosition(Config.MAX_ZOOM_LEVEL) + 2]; // include 1 and the max zoom level
     static {
-        for (int i = 0; i < values.length - 1; i++) {
-            values[i + 1] = (int) Math.pow(2, i);
+        for (int i = 0; i < values.length; i++) {
+            values[i] = 1 << i;
         }
     }
 
 	private final SimpleIntegerProperty zoomLevelValue = new SimpleIntegerProperty();
 
     public ZoomLevelSlider(int init) {
-        super(0, values.length - 1, Bits.msbPosition(init) + 1);
+        super(0, values.length - 1, Bits.msbPosition(init));
 		zoomLevelValue.set(init);
 
         setMajorTickUnit(1);
@@ -44,7 +44,7 @@ public class ZoomLevelSlider extends Slider {
     }
 
 	public void setZoomLevelValue(int zoomLevelValue) {
-		this.zoomLevelValue.set(zoomLevelValue);
+		setValue(Bits.msbPosition(zoomLevelValue));
 	}
 
 	public int getZoomLevelValue() {

@@ -86,6 +86,7 @@ dialog.settings.global.misc.mc_saves_dir;セーブフォルダ
 dialog.settings.global.misc.print_debug;デバッグ情報を出力
 dialog.settings.global.misc.show_log_file;ログを表示
 dialog.settings.reset;リセット
+dialog.settings.set_default;デフォルトに設定
 dialog.settings.tab_global;一般
 dialog.settings.tab_processing;処理
 dialog.settings.tab_rendering;描画

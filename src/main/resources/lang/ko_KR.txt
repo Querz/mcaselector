@@ -86,6 +86,7 @@ dialog.settings.global.misc.mc_saves_dir;저장 할 경로
 dialog.settings.global.misc.print_debug;디버그 텍스트 출력
 dialog.settings.global.misc.show_log_file;로그 파일 열기
 dialog.settings.reset;초기화
+dialog.settings.set_default;기본값으로 설정
 dialog.settings.tab_global;글로벌
 dialog.settings.tab_processing;프로세스
 dialog.settings.tab_rendering;렌더링

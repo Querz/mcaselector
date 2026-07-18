@@ -105,6 +105,7 @@ public enum Translation {
 	DIALOG_SETTINGS_GLOBAL_MISC_PRINT_DEBUG("dialog.settings.global.misc.print_debug"),
 	DIALOG_SETTINGS_GLOBAL_MISC_SHOW_LOG_FILE("dialog.settings.global.misc.show_log_file"),
 	DIALOG_SETTINGS_RESET("dialog.settings.reset"),
+	DIALOG_SETTINGS_SET_DEFAULT("dialog.settings.set_default"),
 	DIALOG_SETTINGS_TAB_GLOBAL("dialog.settings.tab_global"),
 	DIALOG_SETTINGS_TAB_PROCESSING("dialog.settings.tab_processing"),
 	DIALOG_SETTINGS_TAB_RENDERING("dialog.settings.tab_rendering"),

@@ -86,6 +86,7 @@ dialog.settings.global.misc.mc_saves_dir;Каталог миров MC
 dialog.settings.global.misc.print_debug;Выводить отладочные сообщения
 dialog.settings.global.misc.show_log_file;Показать файл журнала
 dialog.settings.reset;Сбросить
+dialog.settings.set_default;Установить по умолчанию
 dialog.settings.tab_global;Общие
 dialog.settings.tab_processing;Обработка
 dialog.settings.tab_rendering;Отрисовка

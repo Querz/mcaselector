@@ -86,6 +86,7 @@ dialog.settings.global.misc.mc_saves_dir;MC salvar dir
 dialog.settings.global.misc.print_debug;Imprimir mensagens de depuração
 dialog.settings.global.misc.show_log_file;Mostrar arquivo de log
 dialog.settings.reset;Resetar
+dialog.settings.set_default;Definir como padrão
 dialog.settings.tab_global;Global
 dialog.settings.tab_processing;Em processamento
 dialog.settings.tab_rendering;Renderização

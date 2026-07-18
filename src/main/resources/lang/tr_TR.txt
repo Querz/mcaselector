@@ -86,6 +86,7 @@ dialog.settings.global.misc.mc_saves_dir;Varsayılan Dünya Konumu
 dialog.settings.global.misc.print_debug;Hata ayıklama mesajlarını göster
 dialog.settings.global.misc.show_log_file;Log dosyalarını göster
 dialog.settings.reset;Sıfırla
+dialog.settings.set_default;Varsayılan olarak ayarla
 dialog.settings.tab_global;Küresel
 dialog.settings.tab_processing;İşlem
 dialog.settings.tab_rendering;Render

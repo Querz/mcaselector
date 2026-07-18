@@ -2,7 +2,6 @@ package net.querz.mcaselector.config;
 
 import com.google.gson.Gson;
 import net.querz.mcaselector.logging.Logging;
-import net.querz.mcaselector.util.math.Bits;
 import net.querz.mcaselector.util.validation.OSHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +18,7 @@ public abstract class Config {
 	public static final File BASE_CACHE_DIR;
 	public static final File BASE_LOG_DIR;
 	public static final File BASE_CONFIG_FILE;
+	public static final File BASE_DEFAULT_WORLD_CONFIG_FILE;
 	public static final File BASE_OVERLAYS_FILE;
 
 	static {
@@ -45,18 +45,21 @@ public abstract class Config {
 				BASE_LOG_DIR = new File(System.getProperty("user.home"), "Library/Logs/mcaselector");
 				BASE_CONFIG_FILE = new File(System.getProperty("user.home"), "Library/Application Support/mcaselector/settings.json");
 				BASE_OVERLAYS_FILE = new File(System.getProperty("user.home"), "Library/Application Support/mcaselector/overlays.json");
+				BASE_DEFAULT_WORLD_CONFIG_FILE = new File(System.getProperty("user.home"), "Library/Application Support/mcaselector/default_world_config.json");
 				break;
 			case WINDOWS:
 				BASE_CACHE_DIR = getEnvFilesWithDefault(BASE_DIR.getAbsolutePath(), "mcaselector/cache", ';', "LOCALAPPDATA");
 				BASE_LOG_DIR = getEnvFilesWithDefault(BASE_DIR.getAbsolutePath(), "mcaselector/log", ';', "LOCALAPPDATA");
 				BASE_CONFIG_FILE = getEnvFilesWithDefault(BASE_DIR.getAbsolutePath(), "mcaselector/settings.json", ';', "LOCALAPPDATA");
 				BASE_OVERLAYS_FILE = getEnvFilesWithDefault(BASE_DIR.getAbsolutePath(), "mcaselector/overlays.json", ';', "LOCALAPPDATA");
+				BASE_DEFAULT_WORLD_CONFIG_FILE = getEnvFilesWithDefault(BASE_DIR.getAbsolutePath(), "mcaselector/default_world_config.json", ';', "LOCALAPPDATA");
 				break;
 			default:
 				BASE_CACHE_DIR = getEnvFilesWithDefault("~/.cache", "mcaselector", ':', "XDG_CACHE_HOME", "XDG_CACHE_DIRS");
 				BASE_LOG_DIR = getEnvFilesWithDefault("~/.local/share", "mcaselector/log", ':', "XDG_DATA_HOME", "XDG_DATA_DIRS");
 				BASE_CONFIG_FILE = getEnvFilesWithDefault("~/.mcaselector", "mcaselector/settings.json", ':', "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
 				BASE_OVERLAYS_FILE = getEnvFilesWithDefault("~/.mcaselector", "mcaselector/overlays.json", ':', "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
+				BASE_DEFAULT_WORLD_CONFIG_FILE = getEnvFilesWithDefault("~/.mcaselector", "mcaselector/default_world_config.json", ':', "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS");
 		}
 
 		if (!BASE_CACHE_DIR.exists()) {
@@ -67,9 +70,9 @@ public abstract class Config {
 			//noinspection ResultOfMethodCallIgnored
 			BASE_LOG_DIR.mkdirs();
 		}
-		if (!BASE_OVERLAYS_FILE.getParentFile().exists()) {
+		if (!BASE_CONFIG_FILE.getParentFile().exists()) {
 			//noinspection ResultOfMethodCallIgnored
-			BASE_OVERLAYS_FILE.getParentFile().mkdirs();
+			BASE_CONFIG_FILE.getParentFile().mkdirs();
 		}
 		Logging.setLogDir(BASE_LOG_DIR);
 	}
@@ -130,7 +133,7 @@ public abstract class Config {
 	public static final float MAX_SCALE = 63.9999f;
 	public static final float MIN_SCALE = 0.05f;
 	@SuppressWarnings("ConstantValue")
-	public static final int MIN_ZOOM_LEVEL = Integer.highestOneBit((int) MIN_SCALE);
+	public static final int MIN_ZOOM_LEVEL = Math.max(Integer.highestOneBit((int) MIN_SCALE), 1);
 	public static final int MAX_ZOOM_LEVEL = Integer.highestOneBit((int) MAX_SCALE);
 	public static final double IMAGE_POOL_SIZE = 2.5;
 	public static final int MAX_RECENT_FILES = 16;

@@ -86,6 +86,7 @@ dialog.settings.global.misc.mc_saves_dir;MC 儲存目錄
 dialog.settings.global.misc.print_debug;打印調試信息
 dialog.settings.global.misc.show_log_file;顯示日誌檔案
 dialog.settings.reset;重置
+dialog.settings.set_default;設為預設
 dialog.settings.tab_global;全域
 dialog.settings.tab_processing;處理
 dialog.settings.tab_rendering;渲染

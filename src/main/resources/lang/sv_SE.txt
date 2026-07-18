@@ -86,6 +86,7 @@ dialog.settings.global.misc.mc_saves_dir;Minecraft-sparmapp
 dialog.settings.global.misc.print_debug;Skriv ut felsökningsmeddelanden
 dialog.settings.global.misc.show_log_file;Visa loggfil
 dialog.settings.reset;Återställ
+dialog.settings.set_default;Ange som standard
 dialog.settings.tab_global;Global
 dialog.settings.tab_processing;Processering
 dialog.settings.tab_rendering;Rendering

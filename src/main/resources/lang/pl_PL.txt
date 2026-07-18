@@ -86,6 +86,7 @@ dialog.settings.global.misc.mc_saves_dir;MC zapisuje reż
 dialog.settings.global.misc.print_debug;Wydrukuj komunikaty debugowania
 dialog.settings.global.misc.show_log_file;Pokaż plik dziennika
 dialog.settings.reset;Resetuj
+dialog.settings.set_default;Ustaw jako domyślne
 dialog.settings.tab_global;Światowy
 dialog.settings.tab_processing;Przetwarzanie
 dialog.settings.tab_rendering;Wykonanie
