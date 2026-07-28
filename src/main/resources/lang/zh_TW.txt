@@ -214,3 +214,109 @@ dialog.request_number.title.array_length;數組的長度
 dialog.request_number.title.enter_number;價值
 button.cancel;取消
 button.ok;確定
+dialog.replace_blocks.builder.button;建構器
+dialog.replace_blocks.builder.title;ReplaceBlocks 建構器
+dialog.replace_blocks.builder.from;來源方塊
+dialog.replace_blocks.builder.to;目標方塊
+dialog.replace_blocks.builder.add_rule;新增規則
+dialog.replace_blocks.builder.delete_rule;刪除規則
+dialog.replace_blocks.builder.rules;規則
+dialog.replace_blocks.builder.rules.empty;尚未新增規則。填寫來源方塊和目標方塊，然後按一下「新增規則」。
+dialog.replace_blocks.builder.result;產生的 ReplaceBlocks 表達式
+dialog.replace_blocks.builder.invalid;方塊 ID 或產生的規則無效。
+dialog.replace_blocks.builder.duplicate;此規則已存在。
+dialog.replace_blocks.builder.empty;請至少新增一條規則。
+dialog.replace_blocks.builder.advanced;來源方塊與目標方塊可輸入包含 Name 的完整方塊狀態 SNBT。其他複雜規則可直接編輯 ReplaceBlocks 表達式。
+dialog.replace_blocks.builder.tile_source.any;附加 NBT：不限
+dialog.replace_blocks.builder.tile_source.require;附加 NBT：有
+dialog.replace_blocks.builder.tile_source.exclude;附加 NBT：無
+dialog.replace_blocks.builder.y_min;最低 Y
+dialog.replace_blocks.builder.y_max;最高 Y
+dialog.replace_blocks.builder.biome;生物群系
+dialog.replace_blocks.builder.biome.prompt;minecraft:plains;minecraft:forest
+dialog.replace_blocks.builder.source_constraints;來源限制（可選）
+dialog.replace_blocks.builder.catalog;方塊目錄
+dialog.replace_blocks.builder.catalog_switch.title;Switch block catalogue
+dialog.replace_blocks.builder.catalog_switch.message;從 %s 切換到 %s 將捨棄建構器中的所有規則、草稿和選取項目。要繼續嗎？
+dialog.replace_blocks.builder.catalog.note;只控制方塊候選和屬性，不會轉換 ID；建構器有內容時，切換前會確認，確認後清空內容。
+dialog.replace_blocks.builder.catalog.source_unknown;來源「%s」不在 Java %s 目錄中；仍會接受並按原樣儲存。
+dialog.replace_blocks.builder.catalog.target_unknown;目標「%s」不在 Java %s 目錄中；仍會接受，但請確認目標世界版本支援該 ID。
+dialog.replace_blocks.builder.preset.persist_failed;無法寫入設定，預設變更已復原。
+dialog.replace_blocks.builder.preset;預設
+dialog.replace_blocks.builder.preset.prompt;選擇預設
+dialog.replace_blocks.builder.preset.apply;填入預設
+dialog.replace_blocks.builder.preset.save;存為預設
+dialog.replace_blocks.builder.preset.delete;刪除預設
+dialog.replace_blocks.builder.preset.title;ReplaceBlocks 預設
+dialog.replace_blocks.builder.preset.save.title;儲存 ReplaceBlocks 預設
+dialog.replace_blocks.builder.preset.save.header;將目前生成的規則儲存為可重複使用的建構器預設。
+dialog.replace_blocks.builder.preset.save.name;預設名稱
+dialog.replace_blocks.builder.preset.name_empty;請輸入預設名稱。
+dialog.replace_blocks.builder.preset.builtin_locked;不能覆蓋內建預設名稱。
+dialog.replace_blocks.builder.preset.overwrite_confirm;已存在名為「%s」的預設。要覆蓋嗎？
+dialog.replace_blocks.builder.preset.delete_confirm;刪除預設「%s」？
+dialog.replace_blocks.builder.preset.replace_confirm;載入這個預設會取代目前建構器規則和正在編輯的輸入。
+dialog.replace_blocks.builder.preset.saved;預設「%s」已儲存。
+dialog.replace_blocks.builder.preset.already_filled;此預設已加入規則清單。
+dialog.replace_blocks.builder.discard.title;捨棄建構器變更？
+dialog.replace_blocks.builder.discard.header;要捨棄本次建構器變更嗎？ReplaceBlocks 輸入框將保留開啟建構器前的內容。
+dialog.replace_blocks.builder.discard.action;捨棄變更
+dialog.replace_blocks.builder.continue_editing.action;繼續編輯
+dialog.replace_blocks.builder.preset.air_to_stone;空氣 -> 石頭
+dialog.replace_blocks.builder.preset.fluids_to_air;流體 -> 空氣
+dialog.replace_blocks.builder.preset.logs_leaves_to_air;原木／樹葉 -> 空氣
+dialog.replace_blocks.builder.preset.ores_to_stone;礦石 -> 石頭
+dialog.replace_blocks.builder.preset.containers_to_air;帶附加 NBT 的容器 -> 空氣
+dialog.replace_blocks.builder.preset.warning_air;替換空氣可能建立缺失或稀疏區段。請先在小範圍複製世界中預覽。
+dialog.replace_blocks.builder.preset.warning_containers;容器預設只匹配存在附加 NBT 的位置，但替換仍可能移除箱子等內部內容。請先在複製世界中預覽。
+dialog.replace_blocks.builder.edit_rule;載入編輯
+dialog.replace_blocks.builder.property.all;全部
+dialog.replace_blocks.builder.help.button;說明
+dialog.replace_blocks.builder.help.title;ReplaceBlocks 建構器說明
+dialog.replace_blocks.builder.help.nbt.title;附加 NBT 條件
+dialog.replace_blocks.builder.help.nbt.intro;附加 NBT 是儲存在方塊位置上的額外資料，例如告示牌文字、箱子物品、熔爐進度或命令方塊指令。這些選項只判斷來源位置是否有這類資料，不會檢查資料內容。
+dialog.replace_blocks.builder.help.nbt.any;附加 NBT：不限 — 只依方塊名稱與屬性匹配，有無附加資料都可以。適合一般方塊，或你確定替換時可以捨棄原有附加資料的情況。
+dialog.replace_blocks.builder.help.nbt.present;附加 NBT：有：只匹配已帶有附加資料的位置。適合專門處理箱子、木桶、告示牌、熔爐、刷怪籠等資料方塊；產生 tile(...)。
+dialog.replace_blocks.builder.help.nbt.absent;附加 NBT：無：只匹配沒有附加資料的位置。適合避開容器內容、告示牌文字等資料，或清理異常的同名無實體方塊；產生 no_tile(...)。
+dialog.replace_blocks.builder.help.nbt.note;這項設定只過濾來源方塊。若目標方塊需要寫入方塊實體 SNBT，目前仍須使用進階文字輸入。
+dialog.replace_blocks.builder.help.biome.title;生物群系條件
+dialog.replace_blocks.builder.help.biome.intro;生物群系過濾會檢查每個候選方塊位置所屬的生物群系。在現代 1.18+ 區塊中，一個生物群系值覆蓋 4x4x4 方塊區域，因此同一單元內的相鄰方塊會使用相同的生物群系判斷。
+dialog.replace_blocks.builder.help.biome.syntax;建構器的生物群系輸入框留空表示不限制。可輸入一個或多個生物群系 ID，多個 ID 以分號分隔；產生的規則會使用 biome(..., source)。
+dialog.replace_blocks.validation.source_empty;請輸入來源方塊 ID。
+dialog.replace_blocks.validation.target_empty;請輸入目標方塊 ID。
+dialog.replace_blocks.validation.source_unknown;未知的來源方塊「%s」。
+dialog.replace_blocks.validation.target_unknown;未知的目標方塊「%s」。
+dialog.replace_blocks.validation.source_format;來源方塊 ID 應類似 minecraft:stone 或 modid:block_name。
+dialog.replace_blocks.validation.target_format;目標方塊 ID 應類似 minecraft:dirt 或 modid:block_name。
+dialog.replace_blocks.validation.missing_equals;每條 ReplaceBlocks 規則都需要 from=to。
+dialog.replace_blocks.validation.state_snbt;方塊狀態 SNBT 必須是合法的 compound，例如 {Name:"minecraft:stone"}。
+dialog.replace_blocks.validation.tile_empty;; 後缺少方塊實體 SNBT。
+dialog.replace_blocks.validation.tile_snbt;方塊實體 SNBT 必須是合法的 compound。
+dialog.replace_blocks.validation.trailing;規則後有意外文字。多條規則請以逗號分隔。
+dialog.replace_blocks.validation.target_quote;加引號的目標方塊缺少結尾引號。
+dialog.replace_blocks.validation.quoted_target_ambiguous;加引號的目標方塊接續多條規則或 tile SNBT 時較容易產生歧義。請改用 {Name:"modid:block"}。
+dialog.replace_blocks.validation.source_regex;來源「%s」在匹配方塊時會被視為 Java 正則表達式。
+dialog.replace_blocks.validation.source_mode_wrapper;來源模式包裝器必須是 literal(...)、regex(...)、props(...)、tile(...) 或 no_tile(...)。
+dialog.replace_blocks.validation.source_literal;literal(...) 來源必須包含有效方塊 ID。無效來源：「%s」。
+dialog.replace_blocks.validation.source_regex_syntax;regex(...) 來源必須包含有效的 Java 正則。
+dialog.replace_blocks.validation.source_props;props(...) 來源必須包含帶 Name 且至少選擇一個屬性的方塊狀態 SNBT。
+dialog.replace_blocks.validation.source_y_range;y(...) 來源必須使用 min..max，並且至少填寫一個整數邊界，例如 y(-64..64, literal(minecraft:stone))。
+dialog.replace_blocks.validation.source_biome;biome(...) 來源必須使用有效的生物群系 ID，多個 ID 以分號分隔，並在逗號後接來源表達式，例如 biome(minecraft:plains, literal(minecraft:stone))。
+dialog.change_nbt.query_invalid;變更查詢無效：%s
+dialog.change_nbt.replace_blocks_query_quote;在進階查詢欄位中，ReplaceBlocks 的值需要用英文雙引號包住，例如 ReplaceBlocks = "minecraft:stone=minecraft:dirt"。
+dialog.replace_blocks.preview.button;預覽
+dialog.replace_blocks.preview.title;ReplaceBlocks 預覽
+dialog.replace_blocks.preview.no_field;請先輸入有效的 ReplaceBlocks 值，再執行預覽。
+dialog.replace_blocks.preview.result;試執行完成。\n掃描區域：%d\n掃描區塊：%d\n受影響區塊：%d\n受影響區段：%d\n匹配方塊數：%d\n將新增方塊實體：%d\n將移除方塊實體：%d\n將更新方塊實體：%d
+dialog.replace_blocks.preview.rules;規則命中：
+dialog.replace_blocks.preview.rule;#%d [%s] %s -> %s：%d
+dialog.replace_blocks.preview.warning_air;替換空氣可能會先補全缺失區段。預覽已計入 %d 個缺失或不完整的空氣區段。
+dialog.replace_blocks.preview.warning_overlap;%d 個方塊位置同時命中多條規則。逐規則計數會分別計入每條命中規則，因此總和可能高於匹配方塊數。
+dialog.replace_blocks.preview.warning_tile;方塊實體替換可能新增、移除或更新方塊實體。正式套用前請先在複製世界中測試。
+dialog.replace_blocks.preview.warning_light;實際執行會移除 %d 個受影響區段的光照陣列。
+dialog.replace_blocks.preview.warning_adjacent_relight;實際執行可能會在選取範圍外最多 %d 個相鄰區塊中更新重新光照標記；這些區塊中的方塊不會被替換。
+dialog.replace_blocks.preview.warning_heightmaps;實際執行會重新計算 %d 個受影響區塊的高度圖。
+dialog.replace_blocks.preview.warning_unsupported;有 %d 個已掃描區塊屬於較舊或暫不支援的版本，未進行預覽。
+dialog.replace_blocks.preview.warning_errors;預覽因錯誤略過了 %d 個區塊和 %d 個區域：
+dialog.progress.title.preview_replace_blocks;預覽 ReplaceBlocks
+dialog.replace_blocks.validation.source_state_snbt;來源方塊狀態 SNBT 必須是包含 Name 的合法 compound。

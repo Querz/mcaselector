@@ -1,6 +1,9 @@
 * {
     -color-field-valid-shadow: #00ff40;
     -color-field-valid-background: #489d5e;
+    -color-field-invalid-shadow: #ff4000;
+    -color-field-invalid-background: #9e494a;
+    -color-field-warning-text: #f0c36a;
 }
 
 .change-nbt-dialog-pane .text-field {
@@ -23,7 +26,7 @@
     -fx-background-color: -color-field-cell-odd;
 }
 
-.change-nbt-dialog-pane .field-view .field-cell .label {
+.change-nbt-dialog-pane .field-view .field-cell .field-cell-input > .label {
     -fx-text-fill: -color-text-light;
     -fx-pref-width: 150;
     -fx-min-width: 150;
@@ -34,8 +37,246 @@
     -fx-effect: dropshadow(gaussian, -color-field-valid-shadow, 4, 0, 0, 0);
 }
 
+.change-nbt-dialog-pane .field-view .field-cell-text:invalid {
+    -fx-background-color: -color-field-invalid-background;
+    -fx-effect: dropshadow(gaussian, -color-field-invalid-shadow, 4, 0, 0, 0);
+}
+
 .change-nbt-dialog-pane .field-view .field-cell-text {
     -fx-min-width: 130;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell-validation {
+    -fx-padding: 2 5 3 155;
+    -fx-wrap-text: true;
+    -fx-text-fill: -color-error-text;
+}
+
+.change-nbt-dialog-pane .field-view .field-cell-validation:warning {
+    -fx-text-fill: -color-field-warning-text;
+}
+
+.change-nbt-dialog-pane .change-query-validation {
+    -fx-padding: 3 5 0 5;
+    -fx-wrap-text: true;
+    -fx-text-fill: -color-error-text;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-validation {
+    -fx-wrap-text: true;
+    -fx-text-fill: -color-error-text;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-validation:warning {
+    -fx-text-fill: -color-field-warning-text;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-validation:success {
+    -fx-text-fill: #8fd694;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-toolbar {
+    -fx-padding: 0 0 2 0;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-source-constraints {
+    -fx-padding: 2 0 0 0;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-source-constraints-title {
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-light;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-empty-placeholder {
+    -fx-padding: 12;
+    -fx-text-fill: -color-button-text;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-preset-action:disabled {
+    -fx-opacity: 0.55;
+    -fx-text-fill: -color-button-disabled-text;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-catalog-note {
+    -fx-opacity: 0.75;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-block {
+    -fx-min-width: 300;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-input {
+    -fx-padding: 0 0 2 0;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-add-actions {
+    -fx-spacing: 4;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-presets .label {
+    -fx-text-fill: -color-text-light;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-preset-combo {
+    -fx-min-width: 260;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-rule-actions {
+    -fx-spacing: 6;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-properties .label {
+    -fx-text-fill: -color-text-light;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-y-range .label {
+    -fx-text-fill: -color-text-light;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-biome .label {
+    -fx-text-fill: -color-text-light;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-rules-table {
+    -fx-background-color: -color-field-cell-even;
+    -fx-control-inner-background: -color-field-cell-even;
+    -fx-table-cell-border-color: -color-scroll-pane-border;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-rules-table .column-header,
+.replace-blocks-builder-pane .replace-blocks-builder-rules-table .column-header .filler,
+.replace-blocks-builder-pane .replace-blocks-builder-rules-table .column-header-background .filler {
+    -fx-background-color: -color-dialog-header-background;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: -color-scroll-pane-border;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-rules-table .column-header .label {
+    -fx-text-fill: -color-text-light;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-rules-table .placeholder {
+    -fx-background-color: -color-field-cell-even;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-rules-table .virtual-flow,
+.replace-blocks-builder-pane .replace-blocks-builder-rules-table .virtual-flow .clipped-container,
+.replace-blocks-builder-pane .replace-blocks-builder-rules-table .virtual-flow .sheet {
+    -fx-background-color: -color-field-cell-even;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-rules-table .table-cell {
+    -fx-text-fill: -color-text-light;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-result {
+    -fx-text-fill: -color-text-light;
+    -fx-control-inner-background: -color-field-cell-even;
+    -fx-background-color: -color-field-cell-even;
+    -fx-font-family: monospace;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-rules-table .table-row-cell:even {
+    -fx-background-color: -color-field-cell-even;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-rules-table .table-row-cell:odd {
+    -fx-background-color: -color-field-cell-odd;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-rules-table .table-row-cell:selected {
+    -fx-background-color: -color-button-hover-background;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-rules-table .table-row-cell:empty {
+    -fx-background-color: -color-field-cell-even;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-rules-table .table-row-cell:empty .table-cell {
+    -fx-border-color: transparent;
+}
+
+.replace-blocks-builder-pane .replace-blocks-builder-rule-marquee {
+    -fx-fill: rgba(74, 163, 255, 0.12);
+    -fx-stroke: #4aa3ff;
+    -fx-stroke-width: 1;
+}
+
+.combo-box-popup .list-view .list-cell:filled {
+    -fx-text-fill: -color-text-light;
+}
+
+.combo-box-popup .list-view .list-cell:filled .text {
+    -fx-fill: -color-text-light;
+}
+
+.combo-box-popup .list-view .list-cell:filled:hover,
+.combo-box-popup .list-view .list-cell:filled:focused,
+.combo-box-popup .list-view .list-cell:filled:selected {
+    -fx-background-color: -color-menu-hover-background;
+}
+
+.combo-box-popup .list-view .list-cell:filled:hover,
+.combo-box-popup .list-view .list-cell:filled:focused,
+.combo-box-popup .list-view .list-cell:filled:selected,
+.combo-box-popup .list-view .list-cell:filled:hover .text,
+.combo-box-popup .list-view .list-cell:filled:focused .text,
+.combo-box-popup .list-view .list-cell:filled:selected .text {
+    -fx-text-fill: -color-text-light;
+    -fx-fill: -color-text-light;
+}
+
+.replace-blocks-builder-suggestion-normal {
+    -fx-fill: -color-text-light;
+}
+
+.replace-blocks-builder-suggestion-highlight {
+    -fx-fill: #4aa3ff;
+    -fx-font-weight: bold;
+}
+
+.combo-box-popup .replace-blocks-builder-dropdown {
+    -fx-border-width: 0;
+}
+
+.combo-box-popup .replace-blocks-builder-dropdown .list-cell:filled:hover {
+    -fx-background-color: rgba(74, 163, 255, 0.32);
+    -fx-background-insets: 0;
+}
+
+.combo-box-popup .replace-blocks-builder-dropdown .list-cell:filled:focused,
+.combo-box-popup .replace-blocks-builder-dropdown .list-cell:filled:selected,
+.combo-box-popup .replace-blocks-builder-dropdown .list-cell:filled:autocomplete-highlighted {
+    -fx-background-color: #3188dc, #4aa3ff;
+    -fx-background-insets: 0, 1;
+    -fx-text-fill: white;
+}
+
+.combo-box-popup .replace-blocks-builder-dropdown .list-cell:filled:hover .text,
+.combo-box-popup .replace-blocks-builder-dropdown .list-cell:filled:focused .text,
+.combo-box-popup .replace-blocks-builder-dropdown .list-cell:filled:selected .text,
+.combo-box-popup .replace-blocks-builder-dropdown .list-cell:filled:autocomplete-highlighted .text {
+    -fx-fill: white;
+}
+
+.combo-box-popup .replace-blocks-builder-dropdown .list-cell:filled:focused .replace-blocks-builder-suggestion-highlight,
+.combo-box-popup .replace-blocks-builder-dropdown .list-cell:filled:selected .replace-blocks-builder-suggestion-highlight,
+.combo-box-popup .replace-blocks-builder-dropdown .list-cell:filled:autocomplete-highlighted .replace-blocks-builder-suggestion-highlight {
+    -fx-fill: white;
+}
+
+.replace-blocks-builder-help-pane .replace-blocks-builder-help {
+    -fx-background-color: -color-dialog-background;
+}
+
+.replace-blocks-builder-help-pane .replace-blocks-builder-help-heading {
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-light;
+}
+
+.replace-blocks-builder-help-pane .replace-blocks-builder-help-text {
+    -fx-text-fill: -color-text-light;
 }
 
 .change-nbt-dialog-pane .scroll-pane {

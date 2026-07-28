@@ -26,6 +26,7 @@ public class Main {
 
 		Logging.setLogDir(Config.BASE_LOG_DIR);
 		Logging.updateThreadContext();
+		Logging.installUncaughtExceptionHandler();
 		Logger LOGGER = LogManager.getLogger(Main.class);
 
 		VersionHandler.init();

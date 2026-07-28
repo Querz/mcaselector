@@ -214,3 +214,109 @@ dialog.request_number.title.array_length;Длина массива
 dialog.request_number.title.enter_number;Введите число
 button.cancel;Отмена
 button.ok;ОК
+dialog.replace_blocks.builder.button;Конструктор
+dialog.replace_blocks.builder.title;Конструктор ReplaceBlocks
+dialog.replace_blocks.builder.from;Исходный блок
+dialog.replace_blocks.builder.to;Целевой блок
+dialog.replace_blocks.builder.add_rule;Добавить правило
+dialog.replace_blocks.builder.delete_rule;Удалить правило
+dialog.replace_blocks.builder.rules;Правила
+dialog.replace_blocks.builder.rules.empty;Правила ещё не добавлены. Заполните исходный и целевой блоки, затем нажмите «Добавить правило».
+dialog.replace_blocks.builder.result;Сгенерированное выражение ReplaceBlocks
+dialog.replace_blocks.builder.invalid;Неверный ID блока или сгенерированное правило.
+dialog.replace_blocks.builder.duplicate;Это правило уже существует.
+dialog.replace_blocks.builder.empty;Добавьте хотя бы одно правило.
+dialog.replace_blocks.builder.advanced;Исходный и целевой блоки принимают полный SNBT состояния блока, содержащий Name. Другие сложные правила можно редактировать непосредственно в выражении ReplaceBlocks.
+dialog.replace_blocks.builder.tile_source.any;Доп. NBT: любой
+dialog.replace_blocks.builder.tile_source.require;Доп. NBT: есть
+dialog.replace_blocks.builder.tile_source.exclude;Доп. NBT: нет
+dialog.replace_blocks.builder.y_min;Мин. Y
+dialog.replace_blocks.builder.y_max;Макс. Y
+dialog.replace_blocks.builder.biome;Биом
+dialog.replace_blocks.builder.biome.prompt;minecraft:plains;minecraft:forest
+dialog.replace_blocks.builder.source_constraints;Ограничения источника (необязательно)
+dialog.replace_blocks.builder.catalog;Block catalogue
+dialog.replace_blocks.builder.catalog_switch.title;Switch block catalogue
+dialog.replace_blocks.builder.catalog_switch.message;При переключении с %s на %s все правила, черновики и выбранные элементы конструктора будут удалены. Продолжить?
+dialog.replace_blocks.builder.catalog.note;Управляет только подсказками блоков и свойствами; идентификаторы не преобразуются. Если конструктор содержит данные, перед переключением запрашивается подтверждение, после чего содержимое очищается.
+dialog.replace_blocks.builder.catalog.source_unknown;Source "%s" is not in the Java %s catalogue; it will still be accepted as entered.
+dialog.replace_blocks.builder.catalog.target_unknown;Target "%s" is not in the Java %s catalogue; it will still be accepted, but verify that the target world supports this ID.
+dialog.replace_blocks.builder.preset.persist_failed;Could not write the configuration; the preset change was rolled back.
+dialog.replace_blocks.builder.preset;Предустановка
+dialog.replace_blocks.builder.preset.prompt;Выбрать предустановку
+dialog.replace_blocks.builder.preset.apply;Применить предустановку
+dialog.replace_blocks.builder.preset.save;Сохранить предустановку
+dialog.replace_blocks.builder.preset.delete;Удалить предустановку
+dialog.replace_blocks.builder.preset.title;Предустановки ReplaceBlocks
+dialog.replace_blocks.builder.preset.save.title;Сохранить предустановку ReplaceBlocks
+dialog.replace_blocks.builder.preset.save.header;Сохранить сгенерированные правила как многоразовую предустановку конструктора.
+dialog.replace_blocks.builder.preset.save.name;Название предустановки
+dialog.replace_blocks.builder.preset.name_empty;Введите название предустановки.
+dialog.replace_blocks.builder.preset.builtin_locked;Встроенные предустановки нельзя перезаписать.
+dialog.replace_blocks.builder.preset.overwrite_confirm;Предустановка с именем «%s» уже существует. Перезаписать?
+dialog.replace_blocks.builder.preset.delete_confirm;Удалить предустановку «%s»?
+dialog.replace_blocks.builder.preset.replace_confirm;Загрузка этой предустановки заменит текущие правила конструктора и вводимые данные.
+dialog.replace_blocks.builder.preset.saved;Предустановка «%s» сохранена.
+dialog.replace_blocks.builder.preset.already_filled;Эта предустановка уже присутствует в списке правил.
+dialog.replace_blocks.builder.discard.title;Отменить изменения конструктора?
+dialog.replace_blocks.builder.discard.header;Отменить изменения в этом конструкторе? В поле ReplaceBlocks останется значение, которое было до его открытия.
+dialog.replace_blocks.builder.discard.action;Отменить изменения
+dialog.replace_blocks.builder.continue_editing.action;Продолжить редактирование
+dialog.replace_blocks.builder.preset.air_to_stone;Воздух -> камень
+dialog.replace_blocks.builder.preset.fluids_to_air;Жидкости -> воздух
+dialog.replace_blocks.builder.preset.logs_leaves_to_air;Брёвна/листва -> воздух
+dialog.replace_blocks.builder.preset.ores_to_stone;Руды -> камень
+dialog.replace_blocks.builder.preset.containers_to_air;Контейнеры с доп. NBT -> воздух
+dialog.replace_blocks.builder.preset.warning_air;Замена воздуха может создать отсутствующие или разреженные секции. Сначала выполните предпросмотр на небольшой скопированной области.
+dialog.replace_blocks.builder.preset.warning_containers;Предустановка контейнеров совпадает только с позициями, где есть доп. NBT, но замена может удалить хранимое содержимое, например сундуки и бочки. Сначала выполните предпросмотр на скопированном мире.
+dialog.replace_blocks.builder.edit_rule;Загрузить правило
+dialog.replace_blocks.builder.property.all;все
+dialog.replace_blocks.builder.help.button;Справка
+dialog.replace_blocks.builder.help.title;Справка конструктора ReplaceBlocks
+dialog.replace_blocks.builder.help.nbt.title;Условие доп. NBT
+dialog.replace_blocks.builder.help.nbt.intro;Дополнительный NBT — это данные блоков-сущностей, хранящиеся в позиции блока, такие как текст табличек, содержимое контейнеров, прогресс печи или команды командных блоков. Эта опция только проверяет, есть ли такие данные в исходной позиции; она не проверяет их содержимое.
+dialog.replace_blocks.builder.help.nbt.any;Доп. NBT: любой – совпадение по имени блока и свойствам независимо от данных блоков-сущностей. Для обычных блоков или когда отбрасывание существующих дополнительных данных допустимо.
+dialog.replace_blocks.builder.help.nbt.present;Доп. NBT: есть – совпадение только с позициями, где уже есть данные блоков-сущностей. Используйте для целенаправленной обработки сундуков, бочек, табличек, печей, спаунеров и подобных блоков с данными; генерирует tile(...).
+dialog.replace_blocks.builder.help.nbt.absent;Доп. NBT: нет – совпадение только с позициями без данных блоков-сущностей. Используйте, чтобы избежать содержимого контейнеров, текста табличек и подобных данных, или для очистки необычных одноимённых блоков без сущностей; генерирует no_tile(...).
+dialog.replace_blocks.builder.help.nbt.note;Этот параметр фильтрует только исходную сторону. Если целевой стороне нужен SNBT блока-сущности, продолжайте использовать расширенный текстовый ввод.
+dialog.replace_blocks.builder.help.biome.title;Условие биома
+dialog.replace_blocks.builder.help.biome.intro;Фильтрация по биому проверяет биом в каждой позиции блока-кандидата. В современных чанках 1.18+ одно значение биома охватывает область 4×4×4 блока, поэтому соседние блоки в этой ячейке имеют одинаковое условие биома.
+dialog.replace_blocks.builder.help.biome.syntax;Оставьте поле биома конструктора пустым, чтобы не применять ограничение по биому. Введите один ID биома или несколько ID, разделённых точкой с запятой; сгенерированные правила используют biome(..., source).
+dialog.replace_blocks.validation.source_empty;Введите ID исходного блока.
+dialog.replace_blocks.validation.target_empty;Введите ID целевого блока.
+dialog.replace_blocks.validation.source_unknown;Неизвестный исходный блок «%s».
+dialog.replace_blocks.validation.target_unknown;Неизвестный целевой блок «%s».
+dialog.replace_blocks.validation.source_format;ID исходного блока должен иметь вид minecraft:stone или modid:block_name.
+dialog.replace_blocks.validation.target_format;ID целевого блока должен иметь вид minecraft:dirt или modid:block_name.
+dialog.replace_blocks.validation.missing_equals;Каждому правилу ReplaceBlocks требуется from=to.
+dialog.replace_blocks.validation.state_snbt;SNBT состояния блока должен быть корректным compound, например {Name:"minecraft:stone"}.
+dialog.replace_blocks.validation.tile_empty;После ; отсутствует SNBT блока-сущности.
+dialog.replace_blocks.validation.tile_snbt;SNBT блока-сущности должен быть корректным compound.
+dialog.replace_blocks.validation.trailing;После этого правила обнаружен неожиданный текст. Разделяйте правила запятыми.
+dialog.replace_blocks.validation.target_quote;У целевого блока в кавычках отсутствует закрывающая кавычка.
+dialog.replace_blocks.validation.quoted_target_ambiguous;Целевые блоки в кавычках ненадёжны перед другим правилом или SNBT блока-сущности. Используйте вместо этого {Name:"modid:block"}.
+dialog.replace_blocks.validation.source_regex;Источник «%s» при сопоставлении блоков обрабатывается как регулярное выражение Java.
+dialog.replace_blocks.validation.source_mode_wrapper;Обёртки режима источника должны быть literal(...), regex(...), props(...), tile(...) или no_tile(...).
+dialog.replace_blocks.validation.source_literal;Источник literal(...) должен содержать корректный ID блока. Некорректный источник: «%s».
+dialog.replace_blocks.validation.source_regex_syntax;Источник regex(...) должен содержать корректное регулярное выражение Java.
+dialog.replace_blocks.validation.source_props;Источник props(...) должен содержать SNBT состояния блока с Name и хотя бы одним выбранным свойством.
+dialog.replace_blocks.validation.source_y_range;Источник y(...) должен использовать min..max хотя бы с одной целой границей, например y(-64..64, literal(minecraft:stone)).
+dialog.replace_blocks.validation.source_biome;Источник biome(...) должен использовать корректные ID биомов, разделённые точкой с запятой, после которых следует выражение источника, например biome(minecraft:plains, literal(minecraft:stone)).
+dialog.change_nbt.query_invalid;Invalid change query: %s
+dialog.change_nbt.replace_blocks_query_quote;In the advanced query field, wrap ReplaceBlocks values in double quotes, for example ReplaceBlocks = "minecraft:stone=minecraft:dirt".
+dialog.replace_blocks.preview.button;Предпросмотр
+dialog.replace_blocks.preview.title;Предпросмотр ReplaceBlocks
+dialog.replace_blocks.preview.no_field;Перед запуском предпросмотра введите корректное значение ReplaceBlocks.
+dialog.replace_blocks.preview.result;Пробный запуск завершён.\nПросканировано регионов: %d\nПросканировано чанков: %d\nЗатронуто чанков: %d\nЗатронуто секций: %d\nСовпавших блоков: %d\nБлоков-сущностей для добавления: %d\nБлоков-сущностей для удаления: %d\nБлоков-сущностей для обновления: %d
+dialog.replace_blocks.preview.rules;Совпадения правил:
+dialog.replace_blocks.preview.rule;#%d [%s] %s -> %s: %d
+dialog.replace_blocks.preview.warning_air;Замена воздуха может дополнить отсутствующие секции до замены. Предпросмотр насчитал %d отсутствующих или неполных секций воздуха.
+dialog.replace_blocks.preview.warning_overlap;%d позиций блоков соответствуют более чем одному правилу. Счётчики правил включают каждое совпадение, поэтому их сумма может быть больше числа совпавших блоков.
+dialog.replace_blocks.preview.warning_tile;Замена блоков-сущностей может добавлять, удалять или обновлять блоки-сущности. Перед применением протестируйте на скопированных мирах.
+dialog.replace_blocks.preview.warning_light;Текущая реализация ReplaceBlocks может удалить массивы освещения из %d обработанных секций.
+dialog.replace_blocks.preview.warning_adjacent_relight;При фактическом изменении флаги пересчёта освещения могут обновиться максимум в %d соседних чанках за пределами выделения; блоки в них не заменяются.
+dialog.replace_blocks.preview.warning_heightmaps;При фактическом изменении карты высот пересчитываются для %d затронутых чанков.
+dialog.replace_blocks.preview.warning_unsupported;Предпросмотр не реализован для %d просканированных чанков старых или неподдерживаемых версий.
+dialog.replace_blocks.preview.warning_errors;Из-за ошибок предпросмотр пропустил %d чанков и %d регионов:
+dialog.progress.title.preview_replace_blocks;Предпросмотр ReplaceBlocks
+dialog.replace_blocks.validation.source_state_snbt;SNBT состояния исходного блока должен быть корректным compound со значением Name.

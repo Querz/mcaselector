@@ -39,6 +39,8 @@
 
 The wiki can be found [here](https://github.com/Querz/mcaselector/wiki).
 
+Fork documentation: [ReplaceBlocks Builder, syntax, compatibility, and safety](docs/REPLACE_BLOCKS.md).
+
 ## Video Tutorials
 For people who prefer watching a video to understand how the MCA Selector works, there some very good tutorials on 
 YouTube explaining the basics:

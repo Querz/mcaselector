@@ -23,7 +23,7 @@ public class ChunkFilter_19w02a {
 		public void setLightPopulated(ChunkData data, byte lightPopulated) {
 			CompoundTag level = Helper.levelFromRoot(Helper.getRegion(data));
 			if (level != null) {
-				level.putLong("isLightOn", lightPopulated);
+				level.putByte("isLightOn", lightPopulated);
 			}
 		}
 	}

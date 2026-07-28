@@ -62,4 +62,13 @@ public abstract class Field<T> {
 	public abstract void change(ChunkData root);
 
 	public abstract void force(ChunkData root);
+
+	public boolean applyWithResult(ChunkData root, boolean force) {
+		if (force) {
+			force(root);
+		} else {
+			change(root);
+		}
+		return true;
+	}
 }

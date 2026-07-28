@@ -2,6 +2,7 @@ package net.querz.mcaselector.version.mapping.minecraft;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import net.querz.mcaselector.version.mapping.color.BlockStates;
 import java.io.BufferedReader;
@@ -77,10 +78,16 @@ public class Blocks {
 		public static class State {
 
 			public int id;
+			@SerializedName("default")
+			private boolean defaultState;
 			private Map<String, String> properties;
 
 			public Map<String, String> properties() {
 				return properties == null ? Collections.emptyMap() : properties;
+			}
+
+			public boolean defaultState() {
+				return defaultState;
 			}
 		}
 	}

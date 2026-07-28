@@ -145,10 +145,16 @@ public abstract class Config {
 	}
 
 	protected void save(Gson gson, File file) {
+		saveWithResult(gson, file);
+	}
+
+	protected boolean saveWithResult(Gson gson, File file) {
 		try {
 			Files.writeString(file.toPath(), save(gson));
-		} catch (IOException ex) {
+			return true;
+		} catch (IOException | RuntimeException ex) {
 			LOGGER.warn("error writing config file {}", file, ex);
+			return false;
 		}
 	}
 

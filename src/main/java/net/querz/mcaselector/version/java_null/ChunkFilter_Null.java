@@ -47,7 +47,9 @@ public class ChunkFilter_Null {
 		}
 
 		@Override
-		public void replaceBlocks(ChunkData data, Map<String, ChunkFilter.BlockReplaceData> replace) {}
+		public boolean replaceBlocks(ChunkData data, Map<ChunkFilter.BlockReplaceSource, ChunkFilter.BlockReplaceData> replace) {
+			return false;
+		}
 
 		@Override
 		public int getBlockAmount(ChunkData data, String[] blocks) {

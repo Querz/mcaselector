@@ -1,6 +1,7 @@
 package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.changer.Field;
+import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.util.point.Point3i;
 import net.querz.mcaselector.overlay.Overlay;
@@ -53,14 +54,23 @@ public final class ChunkData {
 	}
 
 	public void applyFieldChanges(List<Field<?>> fields, boolean force) {
+		applyFieldChangesTracked(fields, force);
+	}
+
+	public FieldChangeResult applyFieldChangesTracked(List<Field<?>> fields, boolean force) {
+		boolean changed = false;
+		boolean replaceBlocksChanged = false;
 		for (Field<?> field : fields) {
-			if (force) {
-				field.force(this);
-			} else {
-				field.change(this);
+			boolean fieldChanged = field.applyWithResult(this, force);
+			changed |= fieldChanged;
+			if (field.getType() == FieldType.REPLACE_BLOCKS) {
+				replaceBlocksChanged |= fieldChanged;
 			}
 		}
+		return new FieldChangeResult(changed, replaceBlocksChanged);
 	}
+
+	public record FieldChangeResult(boolean changed, boolean replaceBlocksChanged) {}
 
 	public int parseData(Overlay parser) {
 		return parser.parseValue(this);

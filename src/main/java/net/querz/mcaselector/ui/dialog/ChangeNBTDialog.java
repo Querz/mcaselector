@@ -1,14 +1,17 @@
 package net.querz.mcaselector.ui.dialog;
 
 import javafx.application.Platform;
+import javafx.animation.PauseTransition;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 import net.querz.mcaselector.changer.ChangeParser;
 import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
@@ -27,6 +30,7 @@ import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.ui.UIFactory;
 import net.querz.mcaselector.ui.component.PersistentDialogProperties;
 import net.querz.mcaselector.util.validation.BeforeAfterCallback;
+import net.querz.mcaselector.version.mapping.blockstate.BlockStateCatalog;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.File;
@@ -39,6 +43,7 @@ import java.util.Objects;
 public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements PersistentDialogProperties {
 
 	private static final Logger LOGGER = LogManager.getLogger(ChangeNBTDialog.class);
+	private static final Duration REPLACE_BLOCKS_VALIDATION_DELAY = Duration.millis(500);
 
 	private static final String initScript = """
 			import net.querz.mcaselector.io.mca.ChunkData;
@@ -59,13 +64,19 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 	private final List<Field<?>> fields = new ArrayList<>();
 	private final TabPane tabs = new TabPane();
 	private final TextField changeQuery = new TextField();
+	private final Label changeQueryValidation = new Label();
 	private final RadioButton change = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_CHANGE);
 	private final RadioButton force = UIFactory.radio(Translation.DIALOG_CHANGE_NBT_FORCE);
 	private final CheckBox selectionOnly = UIFactory.checkbox(Translation.DIALOG_CHANGE_NBT_SELECTION_ONLY);
+	private final Stage primaryStage;
+	private final TileMap tileMap;
 	private static final CodeEditor codeEditor = new CodeEditor(initScript);
 	private static int lastSelectedTab;
 
 	public ChangeNBTDialog(TileMap tileMap, Stage primaryStage) {
+		this.primaryStage = primaryStage;
+		this.tileMap = tileMap;
+		BlockCatalogPreloader.preload();
 		titleProperty().bind(Translation.DIALOG_CHANGE_NBT_TITLE.getProperty());
 
 		initStyle(StageStyle.UTILITY);
@@ -73,6 +84,7 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 		setResizable(true);
 
 		getDialogPane().getStyleClass().add("change-nbt-dialog-pane");
+		getDialogPane().setPrefSize(760, 520);
 
 		setResultConverter(p -> {
 			ConfigProvider.GLOBAL.setChangeScript(codeEditor.getSource());
@@ -128,7 +140,8 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setContent(fieldView);
-		fieldView.prefWidthProperty().bind(scrollPane.widthProperty());
+		scrollPane.setFitToWidth(true);
+		scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
 		VBox actionBox = new VBox();
 		change.setTooltip(UIFactory.tooltip(Translation.DIALOG_CHANGE_NBT_CHANGE_TOOLTIP));
@@ -147,19 +160,23 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 			try {
 				List<Field<?>> f = cp.parse();
 				fieldView.updateFields(f);
+				clearChangeQueryValidation();
 			} catch (Exception ex) {
 				LOGGER.warn("failed to parse change query from: {}, error: {}", changeQuery.getText(), ex.getMessage());
 				fieldView.updateFields(Collections.emptyList());
+				showChangeQueryValidation(describeChangeQueryError(text, ex));
 			}
 			changeQuery.setText(text);
 			changeQuery.positionCaret(caret);
 		});
+		changeQueryValidation.getStyleClass().add("change-query-validation");
+		clearChangeQueryValidation();
 
 		HBox selectionBox = new HBox();
 		selectionBox.getChildren().addAll(actionBox, optionBox);
 
 		VBox mainBox = new VBox();
-		mainBox.getChildren().addAll(scrollPane, new Separator(), changeQuery);
+		mainBox.getChildren().addAll(scrollPane, new Separator(), changeQuery, changeQueryValidation);
 
 		Tab mainTab = UIFactory.tab(Translation.DIALOG_CHANGE_NBT_TAB_QUERY);
 		mainTab.setContent(mainBox);
@@ -179,6 +196,38 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 
 		initPersistentLocationOnOpen(this);
 		Platform.runLater(() -> tabs.getSelectionModel().select(lastSelectedTab));
+	}
+
+	static final class BlockCatalogPreloader {
+
+		private BlockCatalogPreloader() {}
+
+		static Thread preload() {
+			Thread loader = new Thread(BlockStateCatalog::available, "replace-blocks-catalog-preload");
+			loader.setDaemon(true);
+			loader.start();
+			return loader;
+		}
+	}
+
+	private void showChangeQueryValidation(String message) {
+		changeQueryValidation.setText(message);
+		changeQueryValidation.setManaged(true);
+		changeQueryValidation.setVisible(true);
+	}
+
+	private void clearChangeQueryValidation() {
+		changeQueryValidation.setText("");
+		changeQueryValidation.setManaged(false);
+		changeQueryValidation.setVisible(false);
+	}
+
+	private String describeChangeQueryError(String text, Exception ex) {
+		if (ReplaceBlocksDiagnostics.needsQueryQuoteHint(text)) {
+			return Translation.DIALOG_CHANGE_NBT_REPLACE_BLOCKS_QUERY_QUOTE.toString();
+		}
+		String message = ex.getMessage() == null ? "" : ex.getMessage();
+		return Translation.DIALOG_CHANGE_NBT_QUERY_INVALID.format(message);
 	}
 
 	private void readSingleChunkAsync(TileMap tileMap, FieldView fieldView) {
@@ -241,12 +290,17 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 		}
 	}
 
-	private class FieldCell extends HBox {
+	private class FieldCell extends VBox {
 
 		private final Field<?> value;
 		private final TextField textField;
+		private final Label validation = new Label();
+		private final PauseTransition replaceBlocksValidationDelay;
 
 		private static final PseudoClass valid = PseudoClass.getPseudoClass("valid");
+		private static final PseudoClass invalid = PseudoClass.getPseudoClass("invalid");
+		private static final PseudoClass error = PseudoClass.getPseudoClass("error");
+		private static final PseudoClass warning = PseudoClass.getPseudoClass("warning");
 		private static final PseudoClass even = PseudoClass.getPseudoClass("even");
 		private static final PseudoClass odd = PseudoClass.getPseudoClass("odd");
 
@@ -260,15 +314,34 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 			this.value = value;
 			textField = new TextField();
 			textField.getStyleClass().add("field-cell-text");
-			getChildren().addAll(new Label(value.getType().toString()), textField);
+			HBox input = new HBox();
+			input.getStyleClass().add("field-cell-input");
+			input.getChildren().addAll(new Label(value.getType().toString()), textField);
+			if (value.getType() == FieldType.REPLACE_BLOCKS) {
+				Button builder = UIFactory.button(Translation.DIALOG_REPLACE_BLOCKS_BUILDER_BUTTON);
+				builder.setOnAction(e -> new ReplaceBlocksRuleBuilderDialog(primaryStage, tileMap, selectionOnly.isSelected(), textField.getText()).showAndWait().ifPresent(textField::setText));
+				input.getChildren().add(builder);
+			}
+			validation.getStyleClass().add("field-cell-validation");
+			clearFieldValidation();
+			getChildren().addAll(input, validation);
+			replaceBlocksValidationDelay = value.getType() == FieldType.REPLACE_BLOCKS
+					? new PauseTransition(REPLACE_BLOCKS_VALIDATION_DELAY)
+					: null;
 			textField.textProperty().addListener((a, o, n) -> onInput(n));
 			textField.setAlignment(Pos.CENTER);
-			textField.prefWidthProperty().bind(prefWidthProperty());
+			textField.setMaxWidth(Double.MAX_VALUE);
+			HBox.setHgrow(textField, Priority.ALWAYS);
 		}
 
 		private void onInput(String newValue) {
-			boolean result = value.parseNewValue(newValue);
-			textField.pseudoClassStateChanged(valid, result);
+			boolean result = parseNewValue(newValue);
+			if (value.getType() == FieldType.REPLACE_BLOCKS) {
+				scheduleReplaceBlocksValidation(newValue, result);
+			} else {
+				clearFieldValidation();
+				showFieldInputState(newValue, result);
+			}
 
 			StringBuilder sb = new StringBuilder();
 			boolean first = true;
@@ -286,6 +359,68 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 			} else {
 				changeQuery.setText(null);
 			}
+			clearChangeQueryValidation();
+		}
+
+		private void scheduleReplaceBlocksValidation(String newValue, boolean result) {
+			clearFieldInputState();
+			clearFieldValidation();
+			if (replaceBlocksValidationDelay == null) {
+				return;
+			}
+			replaceBlocksValidationDelay.stop();
+			if (newValue == null || newValue.isBlank()) {
+				return;
+			}
+			replaceBlocksValidationDelay.setOnFinished(e -> {
+				if (!Objects.equals(textField.getText(), newValue)) {
+					return;
+				}
+				showFieldInputState(newValue, result);
+				showFieldDiagnostic(ReplaceBlocksDiagnostics.diagnoseValue(newValue, result));
+			});
+			replaceBlocksValidationDelay.playFromStart();
+		}
+
+		private void showFieldInputState(String newValue, boolean result) {
+			textField.pseudoClassStateChanged(valid, result && newValue != null && !newValue.isBlank());
+			textField.pseudoClassStateChanged(invalid, !result && newValue != null && !newValue.isBlank());
+		}
+
+		private void clearFieldInputState() {
+			textField.pseudoClassStateChanged(valid, false);
+			textField.pseudoClassStateChanged(invalid, false);
+		}
+
+		private boolean parseNewValue(String newValue) {
+			try {
+				return value.parseNewValue(newValue);
+			} catch (Exception ex) {
+				LOGGER.warn("failed to parse {} value from: {}, error: {}", value.getType(), newValue, ex.getMessage());
+				value.setNewValueRaw(null);
+				return false;
+			}
+		}
+
+		private void showFieldDiagnostic(ReplaceBlocksDiagnostics.Diagnostic diagnostic) {
+			validation.pseudoClassStateChanged(error, false);
+			validation.pseudoClassStateChanged(warning, false);
+			if (diagnostic.isNone()) {
+				clearFieldValidation();
+				return;
+			}
+			validation.setText(diagnostic.message());
+			validation.setManaged(true);
+			validation.setVisible(true);
+			validation.pseudoClassStateChanged(diagnostic.isError() ? error : warning, true);
+		}
+
+		private void clearFieldValidation() {
+			validation.setText("");
+			validation.setManaged(false);
+			validation.setVisible(false);
+			validation.pseudoClassStateChanged(error, false);
+			validation.pseudoClassStateChanged(warning, false);
 		}
 	}
 

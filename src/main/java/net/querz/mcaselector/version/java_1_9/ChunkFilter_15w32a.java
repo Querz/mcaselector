@@ -219,16 +219,18 @@ public class ChunkFilter_15w32a {
 		}
 
 		@Override
-		public void replaceBlocks(ChunkData data, Map<String, ChunkFilter.BlockReplaceData> replace) {
+		public boolean replaceBlocks(ChunkData data, Map<ChunkFilter.BlockReplaceSource, ChunkFilter.BlockReplaceData> replace) {
 			ListTag sections = Helper.tagFromLevelFromRoot(Helper.getRegion(data), "Sections");
 			if (sections == null) {
-				return;
+				return false;
 			}
+			boolean changed = false;
 
 			// handle the special case when someone wants to replace air with something else
-			if (replace.containsKey("minecraft:air")) {
+			if (replace.entrySet().stream().filter(this::isExecutableReplacement).map(Map.Entry::getKey).anyMatch(ChunkFilter.BlockReplaceSource::matchesAir)) {
 				Map<Integer, CompoundTag> sectionMap = new HashMap<>();
 				List<Integer> heights = new ArrayList<>(18);
+				boolean completedSections = false;
 				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 					sectionMap.put(section.getInt("Y"), section);
 					heights.add(section.getInt("Y"));
@@ -238,32 +240,37 @@ public class ChunkFilter_15w32a {
 					if (!sectionMap.containsKey(y)) {
 						sectionMap.put(y, createEmptySection(y));
 						heights.add(y);
+						completedSections = true;
 					} else {
 						CompoundTag section = sectionMap.get(y);
 						if (!section.containsKey("Blocks") || !section.containsKey("Data")) {
 							sectionMap.put(y, createEmptySection(y));
+							completedSections = true;
 						}
 					}
 				}
 
-				heights.sort(Integer::compareTo);
-				sections.clear();
+				if (completedSections) {
+					heights.sort(Integer::compareTo);
+					sections.clear();
 
-				for (int height : heights) {
-					sections.add(sectionMap.get(height));
+					for (int height : heights) {
+						sections.add(sectionMap.get(height));
+					}
 				}
 			}
 
 			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
-				for (Map.Entry<String, ChunkFilter.BlockReplaceData> entry : replace.entrySet()) {
-					BlockData[] bd = mapping.get(entry.getKey());
+				boolean sectionChanged = false;
+				for (Map.Entry<ChunkFilter.BlockReplaceSource, ChunkFilter.BlockReplaceData> entry : replace.entrySet()) {
+					if (!isExecutableReplacement(entry)) {
+						continue;
+					}
+					BlockData[] bd = mapping.get(entry.getKey().getName());
 					BlockData bdr = mapping.get(entry.getValue().getName())[0];
 
 					byte[] blocks = section.getByteArray("Blocks");
 					byte[] blockData = section.getByteArray("Data");
-
-					section.remove("BlockLight");
-					section.remove("SkyLight");
 
 					blockLoop:
 					for (int i = 0; i < blocks.length; i++) {
@@ -271,6 +278,12 @@ public class ChunkFilter_15w32a {
 						byte dataBits = (byte) (i % 2 == 0 ? dataByte & 0x0F : (dataByte >> 4) & 0x0F);
 						for (BlockData d : bd) {
 							if (d.id == (blocks[i] & 0xFF) && d.data.contains(dataBits)) {
+								if (!sectionChanged) {
+									section.remove("BlockLight");
+									section.remove("SkyLight");
+									sectionChanged = true;
+									changed = true;
+								}
 								blocks[i] = (byte) bdr.id;
 								byte newDataBits = bdr.data.iterator().next();
 								blockData[i / 2] = (byte) (i % 2 == 0 ? (dataByte & 0xF0) + newDataBits : (dataByte & 0x0F) + (newDataBits << 4));
@@ -283,16 +296,29 @@ public class ChunkFilter_15w32a {
 
 			// delete tile entities with that name
 			ListTag tileEntities = Helper.tagFromLevelFromRoot(Helper.getRegion(data), "TileEntities");
-			if (tileEntities != null) {
+			if (changed && tileEntities != null) {
 				for (int i = 0; i < tileEntities.size(); i++) {
 					CompoundTag tileEntity = tileEntities.getCompound(i);
 					String id = Helper.stringFromCompound(tileEntity, "id");
-					if (id != null && replace.containsKey(id)) {
+					if (id != null && replace.entrySet().stream()
+							.filter(entry -> isExecutableReplacement(entry))
+							.map(Map.Entry::getKey)
+							.anyMatch(s -> Objects.equals(s.getName(), id))) {
 						tileEntities.remove(i);
 						i--;
 					}
 				}
 			}
+			return changed;
+		}
+
+		private boolean isExecutableReplacement(Map.Entry<ChunkFilter.BlockReplaceSource, ChunkFilter.BlockReplaceData> entry) {
+			ChunkFilter.BlockReplaceSource source = entry.getKey();
+			return !source.requiresLocationContext()
+					&& (source.getType() == ChunkFilter.BlockReplaceSourceType.LEGACY_REGEX_NAME
+							|| source.getType() == ChunkFilter.BlockReplaceSourceType.LITERAL_NAME)
+					&& mapping.containsKey(source.getName())
+					&& mapping.containsKey(entry.getValue().getName());
 		}
 
 		private CompoundTag createEmptySection(int y) {
@@ -577,7 +603,7 @@ public class ChunkFilter_15w32a {
 		public void setLightPopulated(ChunkData data, byte lightPopulated) {
 			CompoundTag level = Helper.levelFromRoot(Helper.getRegion(data));
 			if (level != null) {
-				level.putLong("LightPopulated", lightPopulated);
+				level.putByte("LightPopulated", lightPopulated);
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package net.querz.mcaselector.io.mca;
 
 import net.querz.mcaselector.changer.Field;
+import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.filter.Filter;
 import net.querz.mcaselector.io.RegionDirectories;
 import net.querz.mcaselector.util.point.Point2i;
@@ -9,11 +10,16 @@ import net.querz.mcaselector.util.progress.Timer;
 import net.querz.mcaselector.util.range.Range;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.selection.Selection;
+import net.querz.mcaselector.version.ChunkFilter;
+import net.querz.mcaselector.version.VersionHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.BooleanSupplier;
 
 // holds data for chunks, poi and entities
 public class Region {
@@ -38,6 +44,16 @@ public class Region {
 		}
 		if (dirs.getEntities() != null) {
 			r.loadEntities(dirs.getEntities());
+		}
+		r.location = dirs.getLocation();
+		r.directories = dirs;
+		return r;
+	}
+
+	public static Region loadRegionFile(RegionDirectories dirs) throws IOException {
+		Region r = new Region();
+		if (dirs.getRegion() != null) {
+			r.loadRegion(dirs.getRegion());
 		}
 		r.location = dirs.getLocation();
 		r.directories = dirs;
@@ -226,6 +242,22 @@ public class Region {
 		}
 	}
 
+	public boolean saveRegionWithTempFile() throws IOException {
+		return region != null && region.saveWithTempFile();
+	}
+
+	public void savePoiWithTempFile() throws IOException {
+		if (poi != null) {
+			poi.saveWithTempFile();
+		}
+	}
+
+	public void saveEntitiesWithTempFile() throws IOException {
+		if (entities != null) {
+			entities.saveWithTempFile();
+		}
+	}
+
 	public void deFragment() throws IOException {
 		if (region != null) {
 			region.deFragment();
@@ -366,23 +398,91 @@ public class Region {
 	}
 
 	public void applyFieldChanges(List<Field<?>> fields, boolean force, Selection selection) {
+		applyFieldChangesTracked(fields, force, selection, () -> false);
+	}
+
+	public FieldChangeResult applyFieldChangesTracked(List<Field<?>> fields, boolean force, Selection selection,
+			BooleanSupplier cancelled) {
 		Timer t = new Timer();
 		boolean selected = false;
+		boolean dirty = false;
+		boolean preserveLegacySave = fields.stream().anyMatch(field -> field.getType() != FieldType.REPLACE_BLOCKS);
+		Set<Point2i> replaceBlocksChangedChunks = new HashSet<>();
 		for (int x = 0; x < 32; x++) {
 			for (int z = 0; z < 32; z++) {
+				if (cancelled.getAsBoolean()) {
+					return new FieldChangeResult(dirty, Set.copyOf(replaceBlocksChangedChunks), true);
+				}
 				Point2i absoluteLocation = location.regionToChunk().add(x, z);
 				if (selection == null || (selected = selection.isChunkSelected(absoluteLocation))) {
+					dirty |= preserveLegacySave;
 					ChunkData chunkData = getChunkDataAt(absoluteLocation, selected);
 					try {
-						chunkData.applyFieldChanges(fields, force);
+						ChunkData.FieldChangeResult result = chunkData.applyFieldChangesTracked(fields, force);
+						dirty |= result.changed();
+						if (result.replaceBlocksChanged()) {
+							replaceBlocksChangedChunks.add(absoluteLocation);
+						}
 					} catch (Exception ex) {
+						if (!preserveLegacySave) {
+							throw new FieldChangeException(absoluteLocation, ex);
+						}
 						LOGGER.warn("failed to apply field changes to chunk {}: {}", absoluteLocation, ex.getMessage());
 					}
 				}
 			}
 		}
 		LOGGER.debug("took {} to apply field changes to region {}", t, location);
+		return new FieldChangeResult(dirty, Set.copyOf(replaceBlocksChangedChunks), false);
 	}
+
+	public RelightResult relightChunks(Set<Point2i> chunks, BooleanSupplier cancelled) {
+		boolean dirty = false;
+		if (region == null) {
+			return new RelightResult(false, false);
+		}
+		for (Point2i chunkLocation : chunks) {
+			if (cancelled.getAsBoolean()) {
+				return new RelightResult(dirty, true);
+			}
+			if (!chunkLocation.chunkToRegion().equals(location)) {
+				continue;
+			}
+			RegionChunk regionChunk = region.getChunkAt(chunkLocation);
+			if (regionChunk == null || regionChunk.isEmpty()) {
+				continue;
+			}
+			ChunkData chunkData = new ChunkData(chunkLocation, regionChunk, null, null, false);
+			try {
+				ChunkFilter.LightPopulated light = VersionHandler.getImpl(chunkData, ChunkFilter.LightPopulated.class);
+				var lightPopulated = light.getLightPopulated(chunkData);
+				if (lightPopulated != null && lightPopulated.asByte() != 0) {
+					light.setLightPopulated(chunkData, (byte) 0);
+					dirty = true;
+				}
+			} catch (Exception ex) {
+				LOGGER.warn("failed to mark chunk {} for relighting: {}", chunkLocation, ex.getMessage());
+			}
+		}
+		return new RelightResult(dirty, false);
+	}
+
+	public record FieldChangeResult(boolean dirty, Set<Point2i> replaceBlocksChangedChunks, boolean cancelled) {}
+
+	public static final class FieldChangeException extends RuntimeException {
+		private final Point2i chunk;
+
+		private FieldChangeException(Point2i chunk, Throwable cause) {
+			super("failed to apply ReplaceBlocks changes to chunk " + chunk, cause);
+			this.chunk = chunk;
+		}
+
+		public Point2i chunk() {
+			return chunk;
+		}
+	}
+
+	public record RelightResult(boolean dirty, boolean cancelled) {}
 
 	public void mergeInto(Region region, Point3i offset, boolean overwrite, ChunkSet sourceChunks, ChunkSet targetChunks, List<Range> ranges) {
 		if (this.region != null) {

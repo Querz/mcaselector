@@ -214,3 +214,109 @@ dialog.request_number.title.array_length;Lunghezza della matrice
 dialog.request_number.title.enter_number;Valore
 button.cancel;Annulla
 button.ok;Va bene
+dialog.replace_blocks.builder.button;Editor
+dialog.replace_blocks.builder.title;Editor ReplaceBlocks
+dialog.replace_blocks.builder.from;Blocco origine
+dialog.replace_blocks.builder.to;Blocco destinazione
+dialog.replace_blocks.builder.add_rule;Aggiungi regola
+dialog.replace_blocks.builder.delete_rule;Elimina regola
+dialog.replace_blocks.builder.rules;Regole
+dialog.replace_blocks.builder.rules.empty;Non ci sono ancora regole. Compila i blocchi di origine e destinazione, poi fai clic su «Aggiungi regola».
+dialog.replace_blocks.builder.result;Espressione ReplaceBlocks generata
+dialog.replace_blocks.builder.invalid;ID blocco o regola generata non valido.
+dialog.replace_blocks.builder.duplicate;Questa regola esiste già.
+dialog.replace_blocks.builder.empty;Aggiungi almeno una regola.
+dialog.replace_blocks.builder.advanced;I blocchi di origine e destinazione accettano uno SNBT completo dello stato del blocco contenente Name. Per altre regole complesse, modifica direttamente l'espressione ReplaceBlocks.
+dialog.replace_blocks.builder.tile_source.any;NBT extra: qualsiasi
+dialog.replace_blocks.builder.tile_source.require;NBT extra: presente
+dialog.replace_blocks.builder.tile_source.exclude;NBT extra: assente
+dialog.replace_blocks.builder.y_min;Y min
+dialog.replace_blocks.builder.y_max;Y max
+dialog.replace_blocks.builder.biome;Bioma
+dialog.replace_blocks.builder.biome.prompt;minecraft:plains;minecraft:forest
+dialog.replace_blocks.builder.source_constraints;Vincoli della sorgente (facoltativi)
+dialog.replace_blocks.builder.catalog;Block catalogue
+dialog.replace_blocks.builder.catalog_switch.title;Switch block catalogue
+dialog.replace_blocks.builder.catalog_switch.message;Il passaggio da %s a %s eliminerà tutte le regole, le bozze e le selezioni dell'editor. Continuare?
+dialog.replace_blocks.builder.catalog.note;Controlla solo suggerimenti e proprietà; gli ID non vengono convertiti. Se l'editor contiene dati, il cambio chiede conferma e poi cancella il contenuto.
+dialog.replace_blocks.builder.catalog.source_unknown;Source "%s" is not in the Java %s catalogue; it will still be accepted as entered.
+dialog.replace_blocks.builder.catalog.target_unknown;Target "%s" is not in the Java %s catalogue; it will still be accepted, but verify that the target world supports this ID.
+dialog.replace_blocks.builder.preset.persist_failed;Could not write the configuration; the preset change was rolled back.
+dialog.replace_blocks.builder.preset;Predefinito
+dialog.replace_blocks.builder.preset.prompt;Scegli predefinito
+dialog.replace_blocks.builder.preset.apply;Applica predefinito
+dialog.replace_blocks.builder.preset.save;Salva predefinito
+dialog.replace_blocks.builder.preset.delete;Elimina predefinito
+dialog.replace_blocks.builder.preset.title;Predefiniti ReplaceBlocks
+dialog.replace_blocks.builder.preset.save.title;Salva predefinito ReplaceBlocks
+dialog.replace_blocks.builder.preset.save.header;Salva le regole generate come predefinito riutilizzabile dell'editor.
+dialog.replace_blocks.builder.preset.save.name;Nome predefinito
+dialog.replace_blocks.builder.preset.name_empty;Inserisci un nome per il predefinito.
+dialog.replace_blocks.builder.preset.builtin_locked;I nomi dei predefiniti integrati non possono essere sovrascritti.
+dialog.replace_blocks.builder.preset.overwrite_confirm;Un predefinito chiamato "%s" esiste già. Sovrascriverlo?
+dialog.replace_blocks.builder.preset.delete_confirm;Eliminare il predefinito "%s"?
+dialog.replace_blocks.builder.preset.replace_confirm;Caricare questo predefinito sostituirà le regole e l'input in corso dell'editor.
+dialog.replace_blocks.builder.preset.saved;Predefinito "%s" salvato.
+dialog.replace_blocks.builder.preset.already_filled;Questo predefinito è già presente nell'elenco delle regole.
+dialog.replace_blocks.builder.discard.title;Scartare le modifiche dell'editor?
+dialog.replace_blocks.builder.discard.header;Scartare le modifiche effettuate in questo editor? Il campo ReplaceBlocks manterrà il valore precedente all'apertura.
+dialog.replace_blocks.builder.discard.action;Scarta modifiche
+dialog.replace_blocks.builder.continue_editing.action;Continua a modificare
+dialog.replace_blocks.builder.preset.air_to_stone;Aria -> pietra
+dialog.replace_blocks.builder.preset.fluids_to_air;Fluidi -> aria
+dialog.replace_blocks.builder.preset.logs_leaves_to_air;Tronchi/foglie -> aria
+dialog.replace_blocks.builder.preset.ores_to_stone;Minerali -> pietra
+dialog.replace_blocks.builder.preset.containers_to_air;Contenitori con NBT extra -> aria
+dialog.replace_blocks.builder.preset.warning_air;La sostituzione dell'aria può creare sezioni mancanti o rade. Prima visualizza l'anteprima su una piccola selezione copiata.
+dialog.replace_blocks.builder.preset.warning_containers;Il predefinito contenitori corrisponde solo alle posizioni con NBT extra presente, ma la sostituzione può rimuovere i contenuti salvati come bauli e barili. Prima visualizza l'anteprima su un mondo copiato.
+dialog.replace_blocks.builder.edit_rule;Carica regola
+dialog.replace_blocks.builder.property.all;tutto
+dialog.replace_blocks.builder.help.button;Aiuto
+dialog.replace_blocks.builder.help.title;Guida dell'editor ReplaceBlocks
+dialog.replace_blocks.builder.help.nbt.title;Condizione NBT extra
+dialog.replace_blocks.builder.help.nbt.intro;I NBT extra sono dati di entità blocco memorizzati in una posizione, come testo dei cartelli, oggetti nei contenitori, progresso della fornace o comandi dei blocchi comandi. Questa opzione verifica solo se la posizione origine ha tali dati; non ne ispeziona il contenuto.
+dialog.replace_blocks.builder.help.nbt.any;NBT extra: qualsiasi – corrisponde per nome blocco e proprietà, indipendentemente dai dati di entità blocco. Per blocchi normali, o quando scartare i dati extra esistenti è accettabile.
+dialog.replace_blocks.builder.help.nbt.present;NBT extra: presente – corrisponde solo alle posizioni che hanno già dati di entità blocco. Usalo per prendere di mira intenzionalmente bauli, barili, cartelli, fornaci, spawner o blocchi dati simili; genera tile(...).
+dialog.replace_blocks.builder.help.nbt.absent;NBT extra: assente – corrisponde solo alle posizioni senza dati di entità blocco. Usalo per evitare il contenuto dei contenitori, il testo dei cartelli e dati simili, o per ripulire blocchi anomali con lo stesso nome ma senza entità; genera no_tile(...).
+dialog.replace_blocks.builder.help.nbt.note;Questa impostazione filtra solo il lato origine. Se la destinazione ha bisogno di SNBT di entità blocco, continua a usare l'input di testo avanzato.
+dialog.replace_blocks.builder.help.biome.title;Condizione bioma
+dialog.replace_blocks.builder.help.biome.intro;Il filtro bioma controlla il bioma in ogni posizione di blocco candidata. Nei chunk moderni 1.18+, un valore di bioma copre un'area di 4×4×4 blocchi, quindi i blocchi vicini in quella cella condividono la stessa condizione di bioma.
+dialog.replace_blocks.builder.help.biome.syntax;Lascia vuoto il campo Bioma dell'editor per non applicare restrizioni di bioma. Inserisci un ID bioma o più ID separati da punto e virgola; le regole generate usano biome(..., source).
+dialog.replace_blocks.validation.source_empty;Inserisci un ID del blocco di origine.
+dialog.replace_blocks.validation.target_empty;Inserisci un ID del blocco di destinazione.
+dialog.replace_blocks.validation.source_unknown;Blocco di origine sconosciuto "%s".
+dialog.replace_blocks.validation.target_unknown;Blocco di destinazione sconosciuto "%s".
+dialog.replace_blocks.validation.source_format;L'ID del blocco di origine deve avere la forma minecraft:stone o modid:block_name.
+dialog.replace_blocks.validation.target_format;L'ID del blocco di destinazione deve avere la forma minecraft:dirt o modid:block_name.
+dialog.replace_blocks.validation.missing_equals;Ogni regola ReplaceBlocks richiede from=to.
+dialog.replace_blocks.validation.state_snbt;Lo SNBT dello stato del blocco deve essere un compound valido, ad esempio {Name:"minecraft:stone"}.
+dialog.replace_blocks.validation.tile_empty;Dopo ; manca lo SNBT dell'entità blocco.
+dialog.replace_blocks.validation.tile_snbt;Lo SNBT dell'entità blocco deve essere un compound valido.
+dialog.replace_blocks.validation.trailing;Testo imprevisto dopo questa regola. Separa le regole con virgole.
+dialog.replace_blocks.validation.target_quote;Al blocco di destinazione tra virgolette manca la virgoletta di chiusura.
+dialog.replace_blocks.validation.quoted_target_ambiguous;I blocchi di destinazione tra virgolette sono fragili prima di un'altra regola o di uno SNBT dell'entità blocco. Usa invece {Name:"modid:block"}.
+dialog.replace_blocks.validation.source_regex;L'origine "%s" viene trattata come espressione regolare Java durante la ricerca dei blocchi.
+dialog.replace_blocks.validation.source_mode_wrapper;I wrapper della modalità origine devono essere literal(...), regex(...), props(...), tile(...) o no_tile(...).
+dialog.replace_blocks.validation.source_literal;L'origine literal(...) deve contenere un ID blocco valido. Origine non valida: "%s".
+dialog.replace_blocks.validation.source_regex_syntax;L'origine regex(...) deve contenere un'espressione regolare Java valida.
+dialog.replace_blocks.validation.source_props;L'origine props(...) deve contenere SNBT dello stato del blocco con Name e almeno una proprietà selezionata.
+dialog.replace_blocks.validation.source_y_range;L'origine y(...) deve usare min..max con almeno un limite intero, ad esempio y(-64..64, literal(minecraft:stone)).
+dialog.replace_blocks.validation.source_biome;L'origine biome(...) deve usare ID bioma validi separati da punto e virgola, seguiti da un'espressione di origine, ad esempio biome(minecraft:plains, literal(minecraft:stone)).
+dialog.change_nbt.query_invalid;Invalid change query: %s
+dialog.change_nbt.replace_blocks_query_quote;In the advanced query field, wrap ReplaceBlocks values in double quotes, for example ReplaceBlocks = "minecraft:stone=minecraft:dirt".
+dialog.replace_blocks.preview.button;Anteprima
+dialog.replace_blocks.preview.title;Anteprima ReplaceBlocks
+dialog.replace_blocks.preview.no_field;Inserisci un valore ReplaceBlocks valido prima di eseguire l'anteprima.
+dialog.replace_blocks.preview.result;Simulazione completata.\nRegioni analizzate: %d\nChunk analizzati: %d\nChunk interessati: %d\nSezioni interessate: %d\nBlocchi corrispondenti: %d\nEntità blocco da aggiungere: %d\nEntità blocco da rimuovere: %d\nEntità blocco da aggiornare: %d
+dialog.replace_blocks.preview.rules;Corrispondenze delle regole:
+dialog.replace_blocks.preview.rule;#%d [%s] %s -> %s: %d
+dialog.replace_blocks.preview.warning_air;La sostituzione dell'aria può completare sezioni mancanti prima della sostituzione. L'anteprima ha contato %d sezioni d'aria mancanti o incomplete.
+dialog.replace_blocks.preview.warning_overlap;%d posizioni di blocchi hanno corrisposto a più di una regola. I conteggi per regola includono ogni corrispondenza, quindi la loro somma può superare i blocchi corrispondenti.
+dialog.replace_blocks.preview.warning_tile;La sostituzione di entità blocco può aggiungere, rimuovere o aggiornare entità blocco. Prova su mondi copiati prima di applicarla.
+dialog.replace_blocks.preview.warning_light;L'attuale implementazione ReplaceBlocks può rimuovere gli array di luce da %d sezioni elaborate.
+dialog.replace_blocks.preview.warning_adjacent_relight;La modifica reale può aggiornare i flag di ricalcolo della luce in un massimo di %d chunk adiacenti fuori dalla selezione; in tali chunk non viene sostituito alcun blocco.
+dialog.replace_blocks.preview.warning_heightmaps;Durante la modifica reale, le mappe di altezza vengono ricalcolate per %d chunk interessati.
+dialog.replace_blocks.preview.warning_unsupported;L'anteprima non è implementata per %d chunk analizzati di versioni vecchie o non supportate.
+dialog.replace_blocks.preview.warning_errors;L'anteprima ha saltato %d chunk e %d regioni a causa di errori:
+dialog.progress.title.preview_replace_blocks;Anteprima ReplaceBlocks
+dialog.replace_blocks.validation.source_state_snbt;Lo SNBT dello stato del blocco di origine deve essere un compound valido con un valore Name.

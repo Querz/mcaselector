@@ -109,7 +109,7 @@ dialog.goto.title;入力した座標に移動
 dialog.confirmation.question;よろしいですか？
 dialog.delete_chunks_confirmation.title;チャンクを削除
 dialog.delete_chunks_confirmation.header_short;不明な数のチャンクを削除しようとしています
-dialog.delete_chunks_confirmation.header_verbose;％d個のチャンクを削除しようとしています
+dialog.delete_chunks_confirmation.header_verbose;%d個のチャンクを削除しようとしています
 dialog.image_export_confirmation.title;画像としてエクスポート
 dialog.image_export_confirmation.header_short;比率が不明な画像を作成しようとしています
 dialog.image_export_confirmation.header_verbose;サイズが%dx%dの画像を作成しようとしています
@@ -214,3 +214,109 @@ dialog.request_number.title.array_length;配列の長さ
 dialog.request_number.title.enter_number;価値
 button.cancel;キャンセル
 button.ok;OK
+dialog.replace_blocks.builder.button;ビルダー
+dialog.replace_blocks.builder.title;ReplaceBlocks ビルダー
+dialog.replace_blocks.builder.from;置換元ブロック
+dialog.replace_blocks.builder.to;置換先ブロック
+dialog.replace_blocks.builder.add_rule;ルールを追加
+dialog.replace_blocks.builder.delete_rule;ルールを削除
+dialog.replace_blocks.builder.rules;ルール
+dialog.replace_blocks.builder.rules.empty;まだルールがありません。元ブロックと対象ブロックを入力して「ルールを追加」をクリックしてください。
+dialog.replace_blocks.builder.result;生成された ReplaceBlocks 式
+dialog.replace_blocks.builder.invalid;ブロックIDまたは生成されたルールが無効です。
+dialog.replace_blocks.builder.duplicate;このルールは既に存在します。
+dialog.replace_blocks.builder.empty;少なくとも1つのルールを追加してください。
+dialog.replace_blocks.builder.advanced;置換元と置換先には、Name を含む完全なブロック状態 SNBT を入力できます。その他の複雑なルールは ReplaceBlocks 式を直接編集してください。
+dialog.replace_blocks.builder.tile_source.any;追加 NBT: 任意
+dialog.replace_blocks.builder.tile_source.require;追加 NBT: あり
+dialog.replace_blocks.builder.tile_source.exclude;追加 NBT: なし
+dialog.replace_blocks.builder.y_min;最小 Y
+dialog.replace_blocks.builder.y_max;最大 Y
+dialog.replace_blocks.builder.biome;バイオーム
+dialog.replace_blocks.builder.biome.prompt;minecraft:plains;minecraft:forest
+dialog.replace_blocks.builder.source_constraints;ソース制限（任意）
+dialog.replace_blocks.builder.catalog;Block catalogue
+dialog.replace_blocks.builder.catalog_switch.title;Switch block catalogue
+dialog.replace_blocks.builder.catalog_switch.message;%s から %s に切り替えると、ビルダー内のすべてのルール、編集中の入力、選択内容が破棄されます。続行しますか？
+dialog.replace_blocks.builder.catalog.note;ブロック候補とプロパティだけを制御し、IDは変換しません。ビルダーに内容がある場合、切り替え前に確認し、確認後に内容を消去します。
+dialog.replace_blocks.builder.catalog.source_unknown;Source "%s" is not in the Java %s catalogue; it will still be accepted as entered.
+dialog.replace_blocks.builder.catalog.target_unknown;Target "%s" is not in the Java %s catalogue; it will still be accepted, but verify that the target world supports this ID.
+dialog.replace_blocks.builder.preset.persist_failed;Could not write the configuration; the preset change was rolled back.
+dialog.replace_blocks.builder.preset;プリセット
+dialog.replace_blocks.builder.preset.prompt;プリセットを選択
+dialog.replace_blocks.builder.preset.apply;プリセットを反映
+dialog.replace_blocks.builder.preset.save;プリセットを保存
+dialog.replace_blocks.builder.preset.delete;プリセットを削除
+dialog.replace_blocks.builder.preset.title;ReplaceBlocks プリセット
+dialog.replace_blocks.builder.preset.save.title;ReplaceBlocks プリセットの保存
+dialog.replace_blocks.builder.preset.save.header;生成されたルールを再利用可能なビルダープリセットとして保存します。
+dialog.replace_blocks.builder.preset.save.name;プリセット名
+dialog.replace_blocks.builder.preset.name_empty;プリセット名を入力してください。
+dialog.replace_blocks.builder.preset.builtin_locked;組み込みプリセット名は上書きできません。
+dialog.replace_blocks.builder.preset.overwrite_confirm;「%s」という名前のプリセットが既に存在します。上書きしますか？
+dialog.replace_blocks.builder.preset.delete_confirm;プリセット「%s」を削除しますか？
+dialog.replace_blocks.builder.preset.replace_confirm;このプリセットを読み込むと、現在のビルダーのルールと編集中の入力が置き換えられます。
+dialog.replace_blocks.builder.preset.saved;プリセット「%s」を保存しました。
+dialog.replace_blocks.builder.preset.already_filled;このプリセットは既にルールリストに含まれています。
+dialog.replace_blocks.builder.discard.title;ビルダーの変更を破棄しますか？
+dialog.replace_blocks.builder.discard.header;このビルダーでの変更を破棄しますか？ReplaceBlocks 欄はビルダーを開く前の値を保持します。
+dialog.replace_blocks.builder.discard.action;変更を破棄
+dialog.replace_blocks.builder.continue_editing.action;編集を続ける
+dialog.replace_blocks.builder.preset.air_to_stone;空気 -> 石
+dialog.replace_blocks.builder.preset.fluids_to_air;液体 -> 空気
+dialog.replace_blocks.builder.preset.logs_leaves_to_air;原木/葉 -> 空気
+dialog.replace_blocks.builder.preset.ores_to_stone;鉱石 -> 石
+dialog.replace_blocks.builder.preset.containers_to_air;追加 NBT 付きコンテナ -> 空気
+dialog.replace_blocks.builder.preset.warning_air;空気の置換は欠落セクションや疎なセクションを作成する可能性があります。最初に小さなコピー選択範囲でプレビューしてください。
+dialog.replace_blocks.builder.preset.warning_containers;コンテナプリセットは追加 NBT が存在する位置のみを対象としますが、置換によりチェストや樽などの中身が削除される可能性があります。最初にコピーワールドでプレビューしてください。
+dialog.replace_blocks.builder.edit_rule;ルールを読み込み
+dialog.replace_blocks.builder.property.all;すべて
+dialog.replace_blocks.builder.help.button;ヘルプ
+dialog.replace_blocks.builder.help.title;ReplaceBlocks ビルダー ヘルプ
+dialog.replace_blocks.builder.help.nbt.title;追加 NBT の条件
+dialog.replace_blocks.builder.help.nbt.intro;追加 NBT とは、看板の文字、チェストの中身、かまどの進捗、コマンドブロックのコマンドなど、ブロックの位置に保存されるブロックエンティティデータです。このオプションは置換元の位置にそのようなデータがあるかどうかのみを判定し、内容の検査は行いません。
+dialog.replace_blocks.builder.help.nbt.any;追加 NBT: 任意 - ブロックエンティティデータの有無にかかわらず、ブロック名とプロパティで照合します。通常のブロックや、既存の追加データを破棄しても問題ない場合に使用します。
+dialog.replace_blocks.builder.help.nbt.present;追加 NBT: あり - 既にブロックエンティティデータを持つ位置のみに照合します。チェスト、樽、看板、かまど、スポナーなどのデータブロックを意図的に対象とする場合に使用します。tile(...) を生成します。
+dialog.replace_blocks.builder.help.nbt.absent;追加 NBT: なし - ブロックエンティティデータを持たない位置のみに照合します。チェストの中身や看板の文字などのデータを避ける場合、またはエンティティのない同名の異常なブロックを除去する場合に使用します。no_tile(...) を生成します。
+dialog.replace_blocks.builder.help.nbt.note;この設定は置換元側のみをフィルタリングします。置換先にブロックエンティティ SNBT が必要な場合は、高度なテキスト入力をお使いください。
+dialog.replace_blocks.builder.help.biome.title;バイオーム条件
+dialog.replace_blocks.builder.help.biome.intro;バイオームフィルタリングは、各候補ブロック位置のバイオームをチェックします。1.18 以降のチャンクでは、1つのバイオーム値が 4x4x4 ブロック領域をカバーするため、そのセル内の近接ブロックは同じバイオーム条件を共有します。
+dialog.replace_blocks.builder.help.biome.syntax;バイオーム制限をしない場合は、ビルダーのバイオームフィールドを空のままにしてください。1つのバイオーム ID、またはセミコロン区切りで複数の ID を入力します。生成されるルールは biome(..., source) を使用します。
+dialog.replace_blocks.validation.source_empty;置換元ブロック ID を入力してください。
+dialog.replace_blocks.validation.target_empty;置換先ブロック ID を入力してください。
+dialog.replace_blocks.validation.source_unknown;不明な置換元ブロック「%s」です。
+dialog.replace_blocks.validation.target_unknown;不明な置換先ブロック「%s」です。
+dialog.replace_blocks.validation.source_format;置換元ブロック ID は minecraft:stone または modid:block_name の形式にしてください。
+dialog.replace_blocks.validation.target_format;置換先ブロック ID は minecraft:dirt または modid:block_name の形式にしてください。
+dialog.replace_blocks.validation.missing_equals;各 ReplaceBlocks ルールには from=to が必要です。
+dialog.replace_blocks.validation.state_snbt;ブロック状態 SNBT は {Name:"minecraft:stone"} のような有効な compound である必要があります。
+dialog.replace_blocks.validation.tile_empty;; の後にブロックエンティティ SNBT がありません。
+dialog.replace_blocks.validation.tile_snbt;ブロックエンティティ SNBT は有効な compound である必要があります。
+dialog.replace_blocks.validation.trailing;このルールの後に予期しないテキストがあります。ルールはカンマで区切ってください。
+dialog.replace_blocks.validation.target_quote;引用符で囲んだ置換先ブロックに閉じ引用符がありません。
+dialog.replace_blocks.validation.quoted_target_ambiguous;引用符で囲んだ置換先ブロックは、次のルールやブロックエンティティ SNBT の前では不安定です。代わりに {Name:"modid:block"} を使用してください。
+dialog.replace_blocks.validation.source_regex;ブロック照合時、置換元「%s」は Java 正規表現として扱われます。
+dialog.replace_blocks.validation.source_mode_wrapper;置換元モードのラッパーは literal(...)、regex(...)、props(...)、tile(...)、no_tile(...) のいずれかである必要があります。
+dialog.replace_blocks.validation.source_literal;literal(...) の置換元には有効なブロック ID が必要です。無効な置換元: 「%s」。
+dialog.replace_blocks.validation.source_regex_syntax;regex(...) の置換元には有効な Java 正規表現が必要です。
+dialog.replace_blocks.validation.source_props;props(...) の置換元には Name と少なくとも1つの選択済みプロパティを含むブロック状態 SNBT が必要です。
+dialog.replace_blocks.validation.source_y_range;y(...) の置換元は、少なくとも片方が整数の min..max を使用する必要があります。例: y(-64..64, literal(minecraft:stone))。
+dialog.replace_blocks.validation.source_biome;biome(...) の置換元には、セミコロン区切りの有効なバイオーム ID と、その後に置換元式が必要です。例: biome(minecraft:plains, literal(minecraft:stone))。
+dialog.change_nbt.query_invalid;Invalid change query: %s
+dialog.change_nbt.replace_blocks_query_quote;In the advanced query field, wrap ReplaceBlocks values in double quotes, for example ReplaceBlocks = "minecraft:stone=minecraft:dirt".
+dialog.replace_blocks.preview.button;プレビュー
+dialog.replace_blocks.preview.title;ReplaceBlocks プレビュー
+dialog.replace_blocks.preview.no_field;プレビューを実行する前に有効な ReplaceBlocks 値を入力してください。
+dialog.replace_blocks.preview.result;試行実行が完了しました。\n走査したリージョン: %d\n走査したチャンク: %d\n影響を受けるチャンク: %d\n影響を受けるセクション: %d\n一致したブロック: %d\n追加されるブロックエンティティ: %d\n削除されるブロックエンティティ: %d\n更新されるブロックエンティティ: %d
+dialog.replace_blocks.preview.rules;ルールの一致:
+dialog.replace_blocks.preview.rule;#%d [%s] %s -> %s: %d
+dialog.replace_blocks.preview.warning_air;空気の置換により、置換前に欠落セクションが補完される場合があります。プレビューでは欠落または不完全な空気セクションを %d 個数えました。
+dialog.replace_blocks.preview.warning_overlap;%d 個のブロック位置が複数のルールに一致しました。ルールごとの数には各一致が含まれるため、合計が一致ブロック数より多くなる場合があります。
+dialog.replace_blocks.preview.warning_tile;ブロックエンティティの置換は、ブロックエンティティを追加、削除、更新することがあります。適用前にコピーしたワールドでテストしてください。
+dialog.replace_blocks.preview.warning_light;現在の ReplaceBlocks 実装では、処理した %d 個のセクションから光源配列が削除される可能性があります。
+dialog.replace_blocks.preview.warning_adjacent_relight;実際の変更では、選択範囲外にある最大 %d 個の隣接チャンクの再照明フラグが更新される場合があります。そこではブロックは置換されません。
+dialog.replace_blocks.preview.warning_heightmaps;実際の変更では、影響を受ける %d 個のチャンクの高さマップが再計算されます。
+dialog.replace_blocks.preview.warning_unsupported;古い、または未対応のバージョンに属する走査済みチャンク %d 個では、プレビューは実装されていません。
+dialog.replace_blocks.preview.warning_errors;エラーにより、プレビューは %d 個のチャンクと %d 個のリージョンをスキップしました:
+dialog.progress.title.preview_replace_blocks;ReplaceBlocks プレビュー
+dialog.replace_blocks.validation.source_state_snbt;置換元ブロック状態 SNBT は Name 値を含む有効な compound である必要があります。

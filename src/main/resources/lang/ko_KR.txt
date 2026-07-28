@@ -214,3 +214,109 @@ dialog.request_number.title.array_length;배열의 길이
 dialog.request_number.title.enter_number;값
 button.cancel;취소
 button.ok;확인
+dialog.replace_blocks.builder.button;빌더
+dialog.replace_blocks.builder.title;ReplaceBlocks 빌더
+dialog.replace_blocks.builder.from;원본 블록
+dialog.replace_blocks.builder.to;대상 블록
+dialog.replace_blocks.builder.add_rule;규칙 추가
+dialog.replace_blocks.builder.delete_rule;규칙 삭제
+dialog.replace_blocks.builder.rules;규칙
+dialog.replace_blocks.builder.rules.empty;아직 추가된 규칙이 없습니다. 원본 및 대상 블록을 입력한 다음 규칙 추가를 클릭하세요.
+dialog.replace_blocks.builder.result;생성된 ReplaceBlocks 표현식
+dialog.replace_blocks.builder.invalid;블록 ID 또는 생성된 규칙이 유효하지 않습니다.
+dialog.replace_blocks.builder.duplicate;이 규칙은 이미 존재합니다.
+dialog.replace_blocks.builder.empty;하나 이상의 규칙을 추가하세요.
+dialog.replace_blocks.builder.advanced;원본 및 대상 블록에는 Name이 포함된 전체 블록 상태 SNBT를 입력할 수 있습니다. 그 밖의 복잡한 규칙은 ReplaceBlocks 표현식을 직접 편집하세요.
+dialog.replace_blocks.builder.tile_source.any;추가 NBT: 상관없음
+dialog.replace_blocks.builder.tile_source.require;추가 NBT: 있음
+dialog.replace_blocks.builder.tile_source.exclude;추가 NBT: 없음
+dialog.replace_blocks.builder.y_min;최소 Y
+dialog.replace_blocks.builder.y_max;최대 Y
+dialog.replace_blocks.builder.biome;생물 군계
+dialog.replace_blocks.builder.biome.prompt;minecraft:plains;minecraft:forest
+dialog.replace_blocks.builder.source_constraints;소스 제한(선택 사항)
+dialog.replace_blocks.builder.catalog;Block catalogue
+dialog.replace_blocks.builder.catalog_switch.title;Switch block catalogue
+dialog.replace_blocks.builder.catalog_switch.message;%s에서 %s(으)로 전환하면 빌더의 모든 규칙, 작성 중인 입력 및 선택 항목이 삭제됩니다. 계속하시겠습니까?
+dialog.replace_blocks.builder.catalog.note;블록 제안과 속성만 제어하며 ID는 변환하지 않습니다. 빌더에 내용이 있으면 전환 전에 확인하고, 확인 후 내용을 지웁니다.
+dialog.replace_blocks.builder.catalog.source_unknown;Source "%s" is not in the Java %s catalogue; it will still be accepted as entered.
+dialog.replace_blocks.builder.catalog.target_unknown;Target "%s" is not in the Java %s catalogue; it will still be accepted, but verify that the target world supports this ID.
+dialog.replace_blocks.builder.preset.persist_failed;Could not write the configuration; the preset change was rolled back.
+dialog.replace_blocks.builder.preset;프리셋
+dialog.replace_blocks.builder.preset.prompt;프리셋 선택
+dialog.replace_blocks.builder.preset.apply;프리셋 적용
+dialog.replace_blocks.builder.preset.save;프리셋 저장
+dialog.replace_blocks.builder.preset.delete;프리셋 삭제
+dialog.replace_blocks.builder.preset.title;ReplaceBlocks 프리셋
+dialog.replace_blocks.builder.preset.save.title;ReplaceBlocks 프리셋 저장
+dialog.replace_blocks.builder.preset.save.header;생성된 규칙을 재사용 가능한 빌더 프리셋으로 저장합니다.
+dialog.replace_blocks.builder.preset.save.name;프리셋 이름
+dialog.replace_blocks.builder.preset.name_empty;프리셋 이름을 입력하세요.
+dialog.replace_blocks.builder.preset.builtin_locked;내장 프리셋 이름은 덮어쓸 수 없습니다.
+dialog.replace_blocks.builder.preset.overwrite_confirm;이미 "%s" 이름의 프리셋이 존재합니다. 덮어쓰시겠습니까?
+dialog.replace_blocks.builder.preset.delete_confirm;프리셋 "%s"을(를) 삭제하시겠습니까?
+dialog.replace_blocks.builder.preset.replace_confirm;이 프리셋을 불러오면 현재 빌더의 규칙과 작성 중인 입력이 대체됩니다.
+dialog.replace_blocks.builder.preset.saved;프리셋 "%s"이(가) 저장되었습니다.
+dialog.replace_blocks.builder.preset.already_filled;이 프리셋은 이미 규칙 목록에 있습니다.
+dialog.replace_blocks.builder.discard.title;빌더 변경 사항을 취소하시겠습니까?
+dialog.replace_blocks.builder.discard.header;이 빌더에서 변경한 내용을 버리시겠습니까? ReplaceBlocks 입력란은 빌더를 열기 전 값을 유지합니다.
+dialog.replace_blocks.builder.discard.action;변경 사항 버리기
+dialog.replace_blocks.builder.continue_editing.action;계속 편집
+dialog.replace_blocks.builder.preset.air_to_stone;공기 -> 돌
+dialog.replace_blocks.builder.preset.fluids_to_air;액체 -> 공기
+dialog.replace_blocks.builder.preset.logs_leaves_to_air;원목/잎 -> 공기
+dialog.replace_blocks.builder.preset.ores_to_stone;광석 -> 돌
+dialog.replace_blocks.builder.preset.containers_to_air;추가 NBT가 있는 컨테이너 -> 공기
+dialog.replace_blocks.builder.preset.warning_air;공기 치환은 누락되거나 희소한 섹션을 만들 수 있습니다. 먼저 작은 복사 선택 영역에서 미리 보기하세요.
+dialog.replace_blocks.builder.preset.warning_containers;컨테이너 프리셋은 추가 NBT가 있는 위치만 일치시키지만, 치환 시 상자나 통 등의 저장 내용이 제거될 수 있습니다. 먼저 복사된 세계에서 미리 보기하세요.
+dialog.replace_blocks.builder.edit_rule;규칙 불러오기
+dialog.replace_blocks.builder.property.all;전체
+dialog.replace_blocks.builder.help.button;도움말
+dialog.replace_blocks.builder.help.title;ReplaceBlocks 빌더 도움말
+dialog.replace_blocks.builder.help.nbt.title;추가 NBT 조건
+dialog.replace_blocks.builder.help.nbt.intro;추가 NBT는 표지판 문자, 상자 아이템, 화로 진행도, 명령 블록 명령 등 블록 위치에 저장된 블록 개체 데이터입니다. 이 옵션은 원본 위치에 그러한 데이터가 있는지만 확인하며, 내용은 검사하지 않습니다.
+dialog.replace_blocks.builder.help.nbt.any;추가 NBT: 상관없음 - 블록 개체 데이터 유무와 관계없이 블록 이름과 속성으로 일치시킵니다. 일반 블록이나 기존 추가 데이터를 폐기해도 문제없을 때 사용합니다.
+dialog.replace_blocks.builder.help.nbt.present;추가 NBT: 있음 - 이미 블록 개체 데이터가 있는 위치만 일치시킵니다. 상자, 통, 표지판, 화로, 스포너 등의 데이터 블록을 의도적으로 대상으로 할 때 사용합니다. tile(...)을 생성합니다.
+dialog.replace_blocks.builder.help.nbt.absent;추가 NBT: 없음 - 블록 개체 데이터가 없는 위치만 일치시킵니다. 상자 내용물이나 표지판 문자 등의 데이터를 피하거나, 개체 없는 동명 비정상 블록을 정리할 때 사용합니다. no_tile(...)을 생성합니다.
+dialog.replace_blocks.builder.help.nbt.note;이 설정은 원본 측만 필터링합니다. 대상 측에 블록 개체 SNBT가 필요한 경우 고급 텍스트 입력을 계속 사용하세요.
+dialog.replace_blocks.builder.help.biome.title;생물 군계 조건
+dialog.replace_blocks.builder.help.biome.intro;생물 군계 필터링은 각 후보 블록 위치의 생물 군계를 확인합니다. 1.18 이상 청크에서는 하나의 생물 군계 값이 4x4x4 블록 영역을 담당하므로, 해당 셀 내의 인접 블록들은 같은 생물 군계 조건을 공유합니다.
+dialog.replace_blocks.builder.help.biome.syntax;생물 군계 제한을 하지 않으려면 빌더의 생물 군계 필드를 비워 두세요. 하나의 생물 군계 ID 또는 세미콜론으로 구분된 여러 ID를 입력합니다. 생성된 규칙은 biome(..., source)를 사용합니다.
+dialog.replace_blocks.validation.source_empty;원본 블록 ID를 입력하세요.
+dialog.replace_blocks.validation.target_empty;대상 블록 ID를 입력하세요.
+dialog.replace_blocks.validation.source_unknown;알 수 없는 원본 블록 "%s"입니다.
+dialog.replace_blocks.validation.target_unknown;알 수 없는 대상 블록 "%s"입니다.
+dialog.replace_blocks.validation.source_format;원본 블록 ID는 minecraft:stone 또는 modid:block_name 형식이어야 합니다.
+dialog.replace_blocks.validation.target_format;대상 블록 ID는 minecraft:dirt 또는 modid:block_name 형식이어야 합니다.
+dialog.replace_blocks.validation.missing_equals;각 ReplaceBlocks 규칙에는 from=to가 필요합니다.
+dialog.replace_blocks.validation.state_snbt;블록 상태 SNBT는 {Name:"minecraft:stone"}과 같은 유효한 compound여야 합니다.
+dialog.replace_blocks.validation.tile_empty;; 뒤에 블록 개체 SNBT가 없습니다.
+dialog.replace_blocks.validation.tile_snbt;블록 개체 SNBT는 유효한 compound여야 합니다.
+dialog.replace_blocks.validation.trailing;이 규칙 뒤에 예기치 않은 텍스트가 있습니다. 규칙은 쉼표로 구분하세요.
+dialog.replace_blocks.validation.target_quote;따옴표로 묶인 대상 블록에 닫는 따옴표가 없습니다.
+dialog.replace_blocks.validation.quoted_target_ambiguous;따옴표로 묶인 대상 블록은 다른 규칙이나 블록 개체 SNBT 앞에서 취약할 수 있습니다. 대신 {Name:"modid:block"}을 사용하세요.
+dialog.replace_blocks.validation.source_regex;블록을 일치시킬 때 원본 "%s"은(는) Java 정규식으로 처리됩니다.
+dialog.replace_blocks.validation.source_mode_wrapper;원본 모드 래퍼는 literal(...), regex(...), props(...), tile(...) 또는 no_tile(...)이어야 합니다.
+dialog.replace_blocks.validation.source_literal;literal(...) 원본에는 유효한 블록 ID가 있어야 합니다. 잘못된 원본: "%s".
+dialog.replace_blocks.validation.source_regex_syntax;regex(...) 원본에는 유효한 Java 정규식이 있어야 합니다.
+dialog.replace_blocks.validation.source_props;props(...) 원본에는 Name과 하나 이상의 선택된 속성이 있는 블록 상태 SNBT가 있어야 합니다.
+dialog.replace_blocks.validation.source_y_range;y(...) 원본은 적어도 하나의 정수 경계를 포함한 min..max를 사용해야 합니다. 예: y(-64..64, literal(minecraft:stone)).
+dialog.replace_blocks.validation.source_biome;biome(...) 원본은 세미콜론으로 구분된 유효한 생물 군계 ID와 그 뒤의 원본 표현식을 사용해야 합니다. 예: biome(minecraft:plains, literal(minecraft:stone)).
+dialog.change_nbt.query_invalid;Invalid change query: %s
+dialog.change_nbt.replace_blocks_query_quote;In the advanced query field, wrap ReplaceBlocks values in double quotes, for example ReplaceBlocks = "minecraft:stone=minecraft:dirt".
+dialog.replace_blocks.preview.button;미리 보기
+dialog.replace_blocks.preview.title;ReplaceBlocks 미리 보기
+dialog.replace_blocks.preview.no_field;미리 보기를 실행하기 전에 유효한 ReplaceBlocks 값을 입력하세요.
+dialog.replace_blocks.preview.result;시험 실행을 완료했습니다.\n스캔한 지역: %d\n스캔한 청크: %d\n영향받는 청크: %d\n영향받는 섹션: %d\n일치한 블록: %d\n추가할 블록 개체: %d\n제거할 블록 개체: %d\n업데이트할 블록 개체: %d
+dialog.replace_blocks.preview.rules;규칙 일치:
+dialog.replace_blocks.preview.rule;#%d [%s] %s -> %s: %d
+dialog.replace_blocks.preview.warning_air;공기 치환으로 인해 치환 전에 누락된 섹션이 완성될 수 있습니다. 미리 보기에서 누락되거나 불완전한 공기 섹션을 %d개 확인했습니다.
+dialog.replace_blocks.preview.warning_overlap;%d개의 블록 위치가 둘 이상의 규칙과 일치했습니다. 규칙별 수에는 각 일치가 포함되므로 합계가 일치한 블록 수보다 많을 수 있습니다.
+dialog.replace_blocks.preview.warning_tile;블록 개체 치환은 블록 개체를 추가, 제거 또는 업데이트할 수 있습니다. 적용하기 전에 복사된 세계에서 테스트하세요.
+dialog.replace_blocks.preview.warning_light;현재 ReplaceBlocks 구현은 처리한 %d개 섹션에서 광원 배열을 제거할 수 있습니다.
+dialog.replace_blocks.preview.warning_adjacent_relight;실제 변경 시 선택 영역 밖의 인접 청크 최대 %d개에서 재조명 플래그를 업데이트할 수 있으며, 해당 청크의 블록은 교체되지 않습니다.
+dialog.replace_blocks.preview.warning_heightmaps;실제 변경 시 영향을 받는 청크 %d개의 높이 맵을 다시 계산합니다.
+dialog.replace_blocks.preview.warning_unsupported;이전 버전이나 지원되지 않는 버전의 스캔한 청크 %d개에는 미리 보기가 구현되어 있지 않습니다.
+dialog.replace_blocks.preview.warning_errors;오류로 인해 미리 보기에서 청크 %d개와 지역 %d개를 건너뛰었습니다:
+dialog.progress.title.preview_replace_blocks;ReplaceBlocks 미리 보기
+dialog.replace_blocks.validation.source_state_snbt;원본 블록 상태 SNBT는 Name 값을 가진 유효한 compound여야 합니다.

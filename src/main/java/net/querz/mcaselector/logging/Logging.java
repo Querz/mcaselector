@@ -7,6 +7,8 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import java.io.File;
+import java.io.PrintStream;
+import java.util.function.BiConsumer;
 
 public final class Logging {
 
@@ -42,6 +44,27 @@ public final class Logging {
 
 	public static void setLogDir(File dir) {
 		System.setProperty("logDir", dir.getAbsolutePath());
+	}
+
+	public static void installUncaughtExceptionHandler() {
+		org.apache.logging.log4j.Logger logger = LogManager.getLogger(Logging.class);
+		Thread.setDefaultUncaughtExceptionHandler(createUncaughtExceptionHandler(
+			(threadName, throwable) -> logger.fatal("uncaught exception in thread {}", threadName, throwable),
+			System.err
+		));
+	}
+
+	static Thread.UncaughtExceptionHandler createUncaughtExceptionHandler(
+		BiConsumer<String, Throwable> log,
+		PrintStream standardError
+	) {
+		return (thread, throwable) -> {
+			try {
+				log.accept(thread.getName(), throwable);
+			} finally {
+				throwable.printStackTrace(standardError);
+			}
+		};
 	}
 
 	private static Level fromString(String level) {

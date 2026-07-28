@@ -64,6 +64,7 @@ public class GlobalConfig extends Config {
 	private final RecentFiles recentFilterScripts = new RecentFiles();
 	private final RecentFiles recentChangeScripts = new RecentFiles();
 	private final RecentFiles recentOverlayScripts = new RecentFiles();
+	private final List<ReplaceBlocksUserPreset> replaceBlocksUserPresets = new ArrayList<>();
 	private TempScript filterScript = new TempScript(null, false, "");
 	private TempScript changeScript = new TempScript(null, false, "");
 	private TempScript overlayScript = new TempScript(null, false, "");
@@ -239,6 +240,10 @@ public class GlobalConfig extends Config {
 		return recentOverlayScripts;
 	}
 
+	public List<ReplaceBlocksUserPreset> getReplaceBlocksUserPresets() {
+		return replaceBlocksUserPresets;
+	}
+
 	public void addRecentOverlayScript(File file) {
 		recentOverlayScripts.addRecentFile(file);
 	}
@@ -277,7 +282,11 @@ public class GlobalConfig extends Config {
 
 	@Override
 	public void save() {
-		save(gsonInstance, BASE_CONFIG_FILE);
+		saveWithResult();
+	}
+
+	public boolean saveWithResult() {
+		return saveWithResult(gsonInstance, BASE_CONFIG_FILE);
 	}
 
 	public static GlobalConfig load() {
@@ -359,4 +368,6 @@ public class GlobalConfig extends Config {
 	}
 
 	public record TempScript(File file, boolean saved, String text) {}
+
+	public record ReplaceBlocksUserPreset(String name, String value) {}
 }

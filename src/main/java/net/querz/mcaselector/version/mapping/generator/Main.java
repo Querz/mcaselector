@@ -104,6 +104,8 @@ public class Main {
 		Path b = configs.resolve("blocks.json");
 		blockConfig.save(b);
 
+		BlockStateCatalogConfig.generate(mcVersion, tmp);
+
 		// ------------------------------------------------
 
 		BiomeConfig biomeConfig = new BiomeConfig();
