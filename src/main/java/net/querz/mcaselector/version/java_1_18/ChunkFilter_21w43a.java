@@ -633,6 +633,12 @@ public class ChunkFilter_21w43a {
 
 		@Override
 		public void mergeChunks(CompoundTag source, CompoundTag destination, List<Range> ranges, int yOffset) {
+			// Empty ranges list = biomes-only mode
+			if (ranges != null && ranges.isEmpty()) {
+				mergeBiomesOnly(source, destination);
+				return;
+			}
+
 			mergeCompoundTagLists(source, destination, ranges, yOffset, "sections", c -> ((CompoundTag) c).getInt("Y"));
 			mergeCompoundTagLists(source, destination, ranges, yOffset, "block_entities", c -> ((CompoundTag) c).getInt("y") >> 4);
 			mergeCompoundTagLists(source, destination, ranges, yOffset, "block_ticks", c -> ((CompoundTag) c).getInt("y") >> 4);
