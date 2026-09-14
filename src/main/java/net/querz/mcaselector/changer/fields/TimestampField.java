@@ -27,6 +27,11 @@ public class TimestampField extends Field<Integer> {
 
 	@Override
 	public void change(ChunkData data) {
+		force(data);
+	}
+
+	@Override
+	public void force(ChunkData data) {
 		if (data.region() != null) {
 			data.region().setTimestamp(getNewValue());
 		}
@@ -36,10 +41,5 @@ public class TimestampField extends Field<Integer> {
 		if (data.entities() != null) {
 			data.entities().setTimestamp(getNewValue());
 		}
-	}
-
-	@Override
-	public void force(ChunkData data) {
-		change(data);
 	}
 }

@@ -135,9 +135,6 @@ public class ChunkFilter_17w47a {
 					continue;
 				}
 
-				section.remove("BlockLight");
-				section.remove("SkyLight");
-
 				for (int i = 0; i < 4096; i++) {
 					CompoundTag blockState = getBlockAt(i, blockStates, palette);
 

@@ -14,7 +14,7 @@ import java.util.StringJoiner;
 public class DeleteStructureField extends Field<List<String>> {
 
 	public DeleteStructureField() {
-		super(FieldType.DELETE_STRUCTURE);
+		super(FieldType.DELETE_STRUCTURE_REFERENCE);
 	}
 
 	@Override
@@ -52,6 +52,11 @@ public class DeleteStructureField extends Field<List<String>> {
 
 	@Override
 	public void change(ChunkData data) {
+		force(data);
+	}
+
+	@Override
+	public void force(ChunkData data) {
 		ChunkFilter.Structures structures = VersionHandler.getImpl(data, ChunkFilter.Structures.class);
 		CompoundTag references = structures.getStructureReferences(data);
 		CompoundTag starts = structures.getStructureStarts(data);
@@ -65,11 +70,6 @@ public class DeleteStructureField extends Field<List<String>> {
 				}
 			}
 		}
-	}
-
-	@Override
-	public void force(ChunkData data) {
-		change(data);
 	}
 
 	@Override

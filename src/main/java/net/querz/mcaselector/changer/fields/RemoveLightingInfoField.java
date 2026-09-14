@@ -5,10 +5,10 @@ import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionHandler;
 
-public class DeleteEntitiesField extends BooleanField {
+public class RemoveLightingInfoField extends BooleanField {
 
-	public DeleteEntitiesField() {
-		super(FieldType.DELETE_ENTITIES);
+	public RemoveLightingInfoField() {
+		super(FieldType.REMOVE_LIGHTING_INFO);
 	}
 
 	@Override
@@ -18,6 +18,6 @@ public class DeleteEntitiesField extends BooleanField {
 
 	@Override
 	public void force(ChunkData data) {
-		VersionHandler.getImpl(data, ChunkFilter.Entities.class).deleteEntities(data, null);
+		VersionHandler.getImpl(data, ChunkFilter.Light.class).removeLightingInfo(data);
 	}
 }

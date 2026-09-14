@@ -31,7 +31,7 @@ public class LightPopulatedFilter extends ByteFilter {
 
 	@Override
 	protected Byte getNumber(ChunkData data) {
-		ByteTag tag = VersionHandler.getImpl(data, ChunkFilter.LightPopulated.class).getLightPopulated(data);
+		ByteTag tag = VersionHandler.getImpl(data, ChunkFilter.Light.class).getLightPopulated(data);
 		return tag == null ? 0 : tag.asByte();
 	}
 

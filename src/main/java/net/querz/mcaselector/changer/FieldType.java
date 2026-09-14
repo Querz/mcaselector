@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 
 public enum FieldType {
 
-	LIGHT_POPULATED("LightPopulated", LightPopulatedField::new, false, false),
 	DATA_VERSION("DataVersion", DataVersionField::new, false, false),
 	INHABITED_TIME("InhabitedTime", InhabitedTimeField::new, false, false),
 	TIMESTAMP("Timestamp", TimestampField::new, false, false),
@@ -20,11 +19,13 @@ public enum FieldType {
 	DELETE_SECTIONS("DeleteSections", DeleteSectionsField::new, false, true),
 	FIX_STATUS("FixStatus", FixStatusField::new, false, true),
 	FIX_HEIGHTMAPS("FixHeightmaps", FixHeightmapsField::new, false, false),
-	DELETE_STRUCTURE("DeleteStructureReference", DeleteStructureField::new, false, false),
-	STRUCTURE_REFERENCE("FixStructureReferences", ReferenceField::new, true, false),
+	DELETE_STRUCTURE_REFERENCE("DeleteStructureReference", DeleteStructureField::new, false, false),
 	PREVENT_RETROGEN("PreventRetrogen", PreventRetrogenField::new, false, false),
 	FORCE_BLEND("ForceBlend", ForceBlendField::new, false, false),
+	REMOVE_LIGHTING_INFO("RemoveLightingInfo", RemoveLightingInfoField::new, false, false),
+	LIGHT_POPULATED("LightPopulated", LightPopulatedField::new, false, false),
 	CUSTOM("Custom", CustomField::new, false, false),
+	STRUCTURE_REFERENCE("FixStructureReferences", ReferenceField::new, true, false),
 	SCRIPT("Script", ScriptField::new, true, false);
 
 	private final String name;

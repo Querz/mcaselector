@@ -157,17 +157,18 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 
 	@Override
 	public void change(ChunkData data) {
+		force(data);
+	}
+
+	@Override
+	public void force(ChunkData data) {
 		VersionHandler.getImpl(data, ChunkFilter.Blocks.class).replaceBlocks(data, getNewValue());
 		ChunkFilter.Heightmap heightmap = VersionHandler.getImpl(data, ChunkFilter.Heightmap.class);
 		heightmap.worldSurface(data);
 		heightmap.oceanFloor(data);
 		heightmap.motionBlocking(data);
 		heightmap.motionBlockingNoLeaves(data);
-	}
-
-	@Override
-	public void force(ChunkData data) {
-		change(data);
+		VersionHandler.getImpl(data, ChunkFilter.Light.class).removeLightingInfo(data);
 	}
 
 	@Override

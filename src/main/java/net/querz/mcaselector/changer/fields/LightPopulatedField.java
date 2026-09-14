@@ -15,7 +15,7 @@ public class LightPopulatedField extends Field<Byte> {
 
 	@Override
 	public Byte getOldValue(ChunkData data) {
-		ChunkFilter.LightPopulated filter = VersionHandler.getImpl(data, ChunkFilter.LightPopulated.class);
+		ChunkFilter.Light filter = VersionHandler.getImpl(data, ChunkFilter.Light.class);
 		ByteTag lightPopulated = filter.getLightPopulated(data);
 		return lightPopulated == null ? null : lightPopulated.asByte();
 	}
@@ -35,7 +35,7 @@ public class LightPopulatedField extends Field<Byte> {
 
 	@Override
 	public void change(ChunkData data) {
-		ChunkFilter.LightPopulated filter = VersionHandler.getImpl(data, ChunkFilter.LightPopulated.class);
+		ChunkFilter.Light filter = VersionHandler.getImpl(data, ChunkFilter.Light.class);
 		ByteTag tag = filter.getLightPopulated(data);
 		if (tag != null) {
 			filter.setLightPopulated(data, getNewValue());
@@ -44,6 +44,6 @@ public class LightPopulatedField extends Field<Byte> {
 
 	@Override
 	public void force(ChunkData data) {
-		VersionHandler.getImpl(data, ChunkFilter.LightPopulated.class).setLightPopulated(data, getNewValue());
+		VersionHandler.getImpl(data, ChunkFilter.Light.class).setLightPopulated(data, getNewValue());
 	}
 }

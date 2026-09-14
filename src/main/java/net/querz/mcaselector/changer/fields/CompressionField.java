@@ -28,20 +28,20 @@ public class CompressionField extends Field<CompressionType> {
     }
 
     @Override
-    public void change(ChunkData root) {
-        if (root.region() != null) {
-            root.region().setCompressionType(getNewValue());
-        }
-        if (root.poi() != null) {
-            root.poi().setCompressionType(getNewValue());
-        }
-        if (root.entities() != null) {
-            root.entities().setCompressionType(getNewValue());
-        }
+    public void change(ChunkData data) {
+		force(data);
     }
 
     @Override
-    public void force(ChunkData root) {
-        change(root);
+    public void force(ChunkData data) {
+		if (data.region() != null) {
+			data.region().setCompressionType(getNewValue());
+		}
+		if (data.poi() != null) {
+			data.poi().setCompressionType(getNewValue());
+		}
+		if (data.entities() != null) {
+			data.entities().setCompressionType(getNewValue());
+		}
     }
 }

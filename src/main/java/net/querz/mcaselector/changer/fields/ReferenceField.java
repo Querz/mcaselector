@@ -1,6 +1,5 @@
 package net.querz.mcaselector.changer.fields;
 
-import net.querz.mcaselector.changer.Field;
 import net.querz.mcaselector.changer.FieldType;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.version.ChunkFilter;
@@ -11,7 +10,7 @@ import net.querz.nbt.LongArrayTag;
 import net.querz.nbt.Tag;
 import java.util.Map;
 
-public class ReferenceField extends Field<Boolean> {
+public class ReferenceField extends BooleanField {
 
 	// compoundtag: structure_name --> long_array
 	// where each long is an x/z coordinate
@@ -21,18 +20,12 @@ public class ReferenceField extends Field<Boolean> {
 	}
 
 	@Override
-	public boolean parseNewValue(String s) {
-		setNewValue(Boolean.parseBoolean(s));
-		return true;
-	}
-
-	@Override
-	public Boolean getOldValue(ChunkData data) {
-		return null;
-	}
-
-	@Override
 	public void change(ChunkData data) {
+		force(data);
+	}
+
+	@Override
+	public void force(ChunkData data) {
 		if (!getNewValue()) {
 			return;
 		}
@@ -63,10 +56,5 @@ public class ReferenceField extends Field<Boolean> {
 				}
 			}
 		}
-	}
-
-	@Override
-	public void force(ChunkData data) {
-		change(data);
 	}
 }

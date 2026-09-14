@@ -35,6 +35,11 @@ public class DeleteSectionsField extends Field<List<Range>> {
 
 	@Override
 	public void change(ChunkData data) {
+		force(data);
+	}
+
+	@Override
+	public void force(ChunkData data) {
 		VersionHandler.getImpl(data, ChunkFilter.Sections.class).deleteSections(data, getNewValue());
 		VersionHandler.getImpl(data, ChunkFilter.Entities.class).deleteEntities(data, getNewValue());
 		ChunkFilter.Heightmap heightmap = VersionHandler.getImpl(data, ChunkFilter.Heightmap.class);
@@ -42,11 +47,6 @@ public class DeleteSectionsField extends Field<List<Range>> {
 		heightmap.oceanFloor(data);
 		heightmap.motionBlocking(data);
 		heightmap.motionBlockingNoLeaves(data);
-	}
-
-	@Override
-	public void force(ChunkData data) {
-		change(data);
 	}
 
 	@Override

@@ -151,7 +151,7 @@ public class ChunkFilter_Null {
 	}
 
 	@MCVersionImplementation(0)
-	public static class LightPopulated implements ChunkFilter.LightPopulated {
+	public static class Light implements ChunkFilter.Light {
 
 		@Override
 		public ByteTag getLightPopulated(ChunkData data) {
@@ -160,6 +160,9 @@ public class ChunkFilter_Null {
 
 		@Override
 		public void setLightPopulated(ChunkData data, byte lightPopulated) {}
+
+		@Override
+		public void removeLightingInfo(ChunkData data) {}
 	}
 
 	@MCVersionImplementation(0)

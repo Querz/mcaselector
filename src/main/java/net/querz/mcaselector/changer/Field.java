@@ -8,11 +8,6 @@ public abstract class Field<T> {
 	private T newValue;
 
 	public Field(FieldType type) {
-		this(type, null);
-	}
-
-	public Field(FieldType type, T newValue) {
-		this.newValue = newValue;
 		this.type = type;
 	}
 
@@ -59,7 +54,7 @@ public abstract class Field<T> {
 		return false;
 	}
 
-	public abstract void change(ChunkData root);
+	public abstract void change(ChunkData data);
 
-	public abstract void force(ChunkData root);
+	public abstract void force(ChunkData data);
 }

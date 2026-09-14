@@ -262,9 +262,6 @@ public class ChunkFilter_15w32a {
 					byte[] blocks = section.getByteArray("Blocks");
 					byte[] blockData = section.getByteArray("Data");
 
-					section.remove("BlockLight");
-					section.remove("SkyLight");
-
 					blockLoop:
 					for (int i = 0; i < blocks.length; i++) {
 						byte dataByte = blockData[i / 2];
@@ -566,7 +563,7 @@ public class ChunkFilter_15w32a {
 	}
 
 	@MCVersionImplementation(100)
-	public static class LightPopulated implements ChunkFilter.LightPopulated {
+	public static class Light implements ChunkFilter.Light {
 
 		@Override
 		public ByteTag getLightPopulated(ChunkData data) {
@@ -578,6 +575,21 @@ public class ChunkFilter_15w32a {
 			CompoundTag level = Helper.levelFromRoot(Helper.getRegion(data));
 			if (level != null) {
 				level.putLong("LightPopulated", lightPopulated);
+			}
+		}
+
+		@Override
+		public void removeLightingInfo(ChunkData data) {
+			CompoundTag level = Helper.levelFromRoot(Helper.getRegion(data));
+			if (level != null) {
+				level.remove("LightPopulated");
+			}
+			ListTag sections = Helper.tagFromLevelFromRoot(Helper.getRegion(data), "Sections");
+			if (sections != null) {
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+					section.remove("BlockLight");
+					section.remove("SkyLight");
+				}
 			}
 		}
 	}

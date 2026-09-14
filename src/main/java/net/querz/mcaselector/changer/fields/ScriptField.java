@@ -36,11 +36,7 @@ public class ScriptField extends Field<String> {
 
 	@Override
 	public void change(ChunkData data) {
-		try {
-			engine.run("apply", data);
-		} catch (ScriptException | NoSuchMethodException e) {
-			LOGGER.warn("failed to invoke apply function in custom script", e);
-		}
+		force(data);
 	}
 
 	public void before() {
@@ -61,6 +57,10 @@ public class ScriptField extends Field<String> {
 
 	@Override
 	public void force(ChunkData data) {
-		change(data);
+		try {
+			engine.run("apply", data);
+		} catch (ScriptException | NoSuchMethodException e) {
+			LOGGER.warn("failed to invoke apply function in custom script", e);
+		}
 	}
 }

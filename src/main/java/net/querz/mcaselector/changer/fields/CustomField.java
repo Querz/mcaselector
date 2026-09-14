@@ -50,6 +50,11 @@ public class CustomField extends Field<String> {
 
 	@Override
 	public void change(ChunkData data) {
+		force(data);
+	}
+
+	@Override
+	public void force(ChunkData data) {
 		// this needs to be thread safe because all threads use the same ScriptEngine
 		synchronized (lock) {
 			engine.put("region", data.region() != null && data.region().getData() != null ? data.region().getData() : null);
@@ -62,10 +67,5 @@ public class CustomField extends Field<String> {
 				LOGGER.warn("failed to invoke custom script", ex);
 			}
 		}
-	}
-
-	@Override
-	public void force(ChunkData data) {
-		change(data);
 	}
 }

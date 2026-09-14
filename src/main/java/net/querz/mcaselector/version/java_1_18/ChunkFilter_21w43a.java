@@ -139,9 +139,6 @@ public class ChunkFilter_21w43a {
 					continue;
 				}
 
-				section.remove("BlockLight");
-				section.remove("SkyLight");
-
 				for (int i = 0; i < 4096; i++) {
 					CompoundTag blockState = getBlockAt(i, blockStates, palette);
 
@@ -847,7 +844,7 @@ public class ChunkFilter_21w43a {
 	}
 
 	@MCVersionImplementation(2844)
-	public static class LightPopulated implements ChunkFilter.LightPopulated {
+	public static class Light implements ChunkFilter.Light {
 
 		@Override
 		public ByteTag getLightPopulated(ChunkData data) {
@@ -858,6 +855,21 @@ public class ChunkFilter_21w43a {
 		public void setLightPopulated(ChunkData data, byte lightPopulated) {
 			if (Helper.getRegion(data) != null) {
 				Helper.getRegion(data).putByte("isLightOn", lightPopulated);
+			}
+		}
+
+		@Override
+		public void removeLightingInfo(ChunkData data) {
+			CompoundTag level = Helper.levelFromRoot(Helper.getRegion(data));
+			if (level != null) {
+				level.remove("isLightOn");
+			}
+			ListTag sections = Helper.tagFromCompound(Helper.getRegion(data), "sections");
+			if (sections != null) {
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+					section.remove("BlockLight");
+					section.remove("SkyLight");
+				}
 			}
 		}
 	}

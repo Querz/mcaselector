@@ -81,7 +81,7 @@ public class ChunkFilter_18w06a {
 	}
 
 	@MCVersionImplementation(1466)
-	public static class LightPopulated implements ChunkFilter.LightPopulated {
+	public static class Light implements ChunkFilter.Light {
 
 		@Override
 		public ByteTag getLightPopulated(ChunkData data) {
@@ -92,6 +92,17 @@ public class ChunkFilter_18w06a {
 		@Override
 		public void setLightPopulated(ChunkData data, byte lightPopulated) {
 			// removed in 18w06a
+		}
+
+		@Override
+		public void removeLightingInfo(ChunkData data) {
+			ListTag sections = Helper.tagFromLevelFromRoot(Helper.getRegion(data), "Sections");
+			if (sections != null) {
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+					section.remove("BlockLight");
+					section.remove("SkyLight");
+				}
+			}
 		}
 	}
 

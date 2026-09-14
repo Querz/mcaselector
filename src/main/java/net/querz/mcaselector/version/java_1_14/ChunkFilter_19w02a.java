@@ -8,11 +8,12 @@ import net.querz.mcaselector.version.MCVersionImplementation;
 import net.querz.mcaselector.version.java_1_13.ChunkFilter_18w16a;
 import net.querz.nbt.ByteTag;
 import net.querz.nbt.CompoundTag;
+import net.querz.nbt.ListTag;
 
 public class ChunkFilter_19w02a {
 
 	@MCVersionImplementation(1921)
-	public static class LightPopulated implements ChunkFilter.LightPopulated {
+	public static class Light implements ChunkFilter.Light {
 
 		@Override
 		public ByteTag getLightPopulated(ChunkData data) {
@@ -24,6 +25,21 @@ public class ChunkFilter_19w02a {
 			CompoundTag level = Helper.levelFromRoot(Helper.getRegion(data));
 			if (level != null) {
 				level.putLong("isLightOn", lightPopulated);
+			}
+		}
+
+		@Override
+		public void removeLightingInfo(ChunkData data) {
+			CompoundTag level = Helper.levelFromRoot(Helper.getRegion(data));
+			if (level != null) {
+				level.remove("isLightOn");
+			}
+			ListTag sections = Helper.tagFromLevelFromRoot(Helper.getRegion(data), "Sections");
+			if (sections != null) {
+				for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
+					section.remove("BlockLight");
+					section.remove("SkyLight");
+				}
 			}
 		}
 	}

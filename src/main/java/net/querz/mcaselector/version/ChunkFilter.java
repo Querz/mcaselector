@@ -68,9 +68,10 @@ public interface ChunkFilter {
 		String[] parseStructureStarts(CompoundTag data);
 	}
 
-	interface LightPopulated {
+	interface Light {
 		ByteTag getLightPopulated(ChunkData data);
 		void setLightPopulated(ChunkData data, byte lightPopulated);
+		void removeLightingInfo(ChunkData data);
 	}
 
 	interface Blending {
