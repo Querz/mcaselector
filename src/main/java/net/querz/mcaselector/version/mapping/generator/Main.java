@@ -12,6 +12,20 @@ public class Main {
 
 	private static final Path tmpDir = Path.of("tmp");
 
+	/**
+	 * This generator creates updated versions of the following files, appending to the already existing files:
+	 * - biomes.json
+	 * - blocks.json
+	 * - entities.json
+	 * - structures.json
+	 * It also generates new versions of the following files based on the supplied Minecraft Version:
+	 * - colors.json
+	 * - heightmaps.json
+	 * This generator is NOT backwards compatible.
+	 * It is intended to ONLY work with the most recent Minecraft Version.
+	 *
+	 * @param args the Minecraft Version as defined in the version_manifest.json.
+	 */
 	public static void main(String[] args) throws IOException, InterruptedException {
 		if (args.length != 1) {
 			System.err.println("invalid program parameter, expected Minecraft version");
