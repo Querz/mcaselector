@@ -17,21 +17,21 @@
 
 **MCA Selector modifies and deletes chunks in your Minecraft world. Please make backups of your world before using.**
 
-[**Download Version <!--vs-->2.8<!--ve--> (Windows Installer)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8-setup.exe)
+[**Download Version <!--vs-->2.9<!--ve--> (Windows Installer)**](https://github.com/Querz/mcaselector/releases/download/2.9/mcaselector-2.9-setup.exe)
 
-[**Download Version <!--vs-->2.8<!--ve--> (macOS arm64)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8-aarch64.dmg)
+[**Download Version <!--vs-->2.9<!--ve--> (macOS arm64)**](https://github.com/Querz/mcaselector/releases/download/2.9/mcaselector-2.9-aarch64.dmg)
 
-[**Download Version <!--vs-->2.8<!--ve--> (macOS x64)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8-x64.dmg)
+[**Download Version <!--vs-->2.9<!--ve--> (macOS x64)**](https://github.com/Querz/mcaselector/releases/download/2.9/mcaselector-2.9-x64.dmg)
 
-[**Download Version <!--vs-->2.8<!--ve--> (DEB arm64)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8-aarch64.deb)
+[**Download Version <!--vs-->2.9<!--ve--> (DEB arm64)**](https://github.com/Querz/mcaselector/releases/download/2.9/mcaselector-2.9-aarch64.deb)
 
-[**Download Version <!--vs-->2.8<!--ve--> (DEB x64)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8-x64.deb)
+[**Download Version <!--vs-->2.9<!--ve--> (DEB x64)**](https://github.com/Querz/mcaselector/releases/download/2.9/mcaselector-2.9-x64.deb)
 
-[**Download Version <!--vs-->2.8<!--ve--> (RPM arm64)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8-aarch64.rpm)
+[**Download Version <!--vs-->2.9<!--ve--> (RPM arm64)**](https://github.com/Querz/mcaselector/releases/download/2.9/mcaselector-2.9-aarch64.rpm)
 
-[**Download Version <!--vs-->2.8<!--ve--> (RPM x64)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8-x64.rpm)
+[**Download Version <!--vs-->2.9<!--ve--> (RPM x64)**](https://github.com/Querz/mcaselector/releases/download/2.9/mcaselector-2.9-x64.rpm)
 
-[**Download Version <!--vs-->2.8<!--ve--> (Universal jar)**](https://github.com/Querz/mcaselector/releases/download/2.8/mcaselector-2.8.jar)
+[**Download Version <!--vs-->2.9<!--ve--> (Universal jar)**](https://github.com/Querz/mcaselector/releases/download/2.9/mcaselector-2.9.jar)
 
 ---
 
@@ -52,7 +52,7 @@ YouTube explaining the basics:
 ## Supported Versions
 MCA Selector currently supports the following Minecraft versions:
 
-| Minecraft Version | DataVersion  |
+| Minecraft Version | Data Version |
 |-------------------|--------------|
 | 1.2.1 - 1.12.2    | None - 1343  |
 | 1.13 - 1.13.2     | 1444 - 1631  |
@@ -64,7 +64,7 @@ MCA Selector currently supports the following Minecraft versions:
 | 1.19 - 1.19.4     | 3105 - 3337  |
 | 1.20 - 1.20.6     | 3463 - 3839  |
 | 1.21 - 1.21.11    | 3953 - 4671  |
-| 26.1 - 26.2+      | 4764 - 4902+ |
+| 26.1 - 26.3+      | 4764 - 5023+ |
 
 There is no guarantee for worlds generated in a Snapshot version to work, even if it is specified in the table above.
 This only represents the current development status towards the next Minecraft release. Old Snapshots of past 

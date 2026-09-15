@@ -7,4 +7,4 @@ Type=Application
 Icon=/opt/mcaselector/lib/mcaselector.png
 Categories=Game;GameTool;Java;
 StartupWMClass=net.querz.mcaselector.ui.Window
-Version=2.8
+Version=2.9
