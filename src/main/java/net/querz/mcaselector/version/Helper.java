@@ -42,6 +42,21 @@ public final class Helper {
 		return (T) tag;
 	}
 
+	// getting the block id from a palette element since 26.3-snapshot-7
+	public static String getBlockID(Tag tag, String def) {
+		if (tag instanceof StringTag s) {
+			return s.getValue();
+		}
+		if (tag instanceof CompoundTag c) {
+			StringTag id = c.getStringTag("");
+			if (id == null) {
+				id = c.getStringTag("id");
+			}
+			return id == null ? def : id.getValue();
+		}
+		return def;
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <T extends Tag> T getSectionsFromCompound(Tag compound, String name) {
 		Tag section = tagFromCompound(compound, name, null);

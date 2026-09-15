@@ -168,7 +168,9 @@ public class ReplaceBlocksField extends Field<Map<String, ChunkFilter.BlockRepla
 		heightmap.oceanFloor(data);
 		heightmap.motionBlocking(data);
 		heightmap.motionBlockingNoLeaves(data);
-		VersionHandler.getImpl(data, ChunkFilter.Light.class).removeLightingInfo(data);
+		ChunkFilter.Light lightFilter = VersionHandler.getImpl(data, ChunkFilter.Light.class);
+		lightFilter.removeLightingInfo(data);
+		lightFilter.setLightPopulated(data, (byte) 0);
 	}
 
 	@Override

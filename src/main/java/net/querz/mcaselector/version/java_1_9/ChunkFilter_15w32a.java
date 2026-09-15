@@ -224,6 +224,7 @@ public class ChunkFilter_15w32a {
 			if (sections == null) {
 				return;
 			}
+			int dataVersion = Helper.getDataVersion(Helper.getRegion(data));
 
 			// handle the special case when someone wants to replace air with something else
 			if (replace.containsKey("minecraft:air")) {
@@ -257,7 +258,7 @@ public class ChunkFilter_15w32a {
 			for (CompoundTag section : sections.iterateType(CompoundTag.class)) {
 				for (Map.Entry<String, ChunkFilter.BlockReplaceData> entry : replace.entrySet()) {
 					BlockData[] bd = mapping.get(entry.getKey());
-					BlockData bdr = mapping.get(entry.getValue().getName())[0];
+					BlockData bdr = mapping.get(entry.getValue().getName(dataVersion))[0];
 
 					byte[] blocks = section.getByteArray("Blocks");
 					byte[] blockData = section.getByteArray("Data");

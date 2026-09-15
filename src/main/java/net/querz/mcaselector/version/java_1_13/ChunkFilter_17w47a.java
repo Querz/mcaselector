@@ -85,6 +85,8 @@ public class ChunkFilter_17w47a {
 			}
 			pos = pos.chunkToBlock();
 
+			int dataVersion = Helper.getDataVersion(Helper.getRegion(data));
+
 			// handle the special case when someone wants to replace air with something else
 			if (replace.containsKey("minecraft:air")) {
 				Map<Integer, CompoundTag> sectionMap = new HashMap<>();
@@ -145,7 +147,7 @@ public class ChunkFilter_17w47a {
 						ChunkFilter.BlockReplaceData replacement = entry.getValue();
 
 						try {
-							blockStates = setBlockAt(i, replacement.getState(), blockStates, palette);
+							blockStates = setBlockAt(i, replacement.getState(dataVersion), blockStates, palette);
 						} catch (Exception ex) {
 							throw new RuntimeException("failed to set block in section " + y, ex);
 						}

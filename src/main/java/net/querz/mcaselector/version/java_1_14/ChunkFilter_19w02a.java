@@ -32,7 +32,7 @@ public class ChunkFilter_19w02a {
 		public void removeLightingInfo(ChunkData data) {
 			CompoundTag level = Helper.levelFromRoot(Helper.getRegion(data));
 			if (level != null) {
-				level.remove("isLightOn");
+				level.putBoolean("isLightOn", false);
 			}
 			ListTag sections = Helper.tagFromLevelFromRoot(Helper.getRegion(data), "Sections");
 			if (sections != null) {

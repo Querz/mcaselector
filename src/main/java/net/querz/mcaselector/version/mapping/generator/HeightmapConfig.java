@@ -12,6 +12,8 @@ import net.querz.mcaselector.version.mapping.util.CollectionAdapter;
 import net.querz.nbt.CompoundTag;
 import net.querz.nbt.ListTag;
 import net.querz.nbt.NBTUtil;
+import net.querz.nbt.Tag;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -100,7 +102,7 @@ public class HeightmapConfig {
 
 			for (int x = 1; x < 16; x += 2) {
 				for (int z = 1; z < 16; z += 2) {
-					CompoundTag block = getBlockAt(section, x, 6, z);
+					Tag block = getBlockAt(section, x, 6, z);
 					if (block == null) {
 						continue loop;
 					}
@@ -109,7 +111,7 @@ public class HeightmapConfig {
 						int oceanFloor = getHeightmapDataAt(chunk.getData(), x, z, OCEAN_FLOOR);
 						int motionBlocking = getHeightmapDataAt(chunk.getData(), x, z, MOTION_BLOCKING);
 						int motionBlockingNoLeaves = getHeightmapDataAt(chunk.getData(), x, z, MOTION_BLOCKING_NO_LEAVES);
-						String name = block.getString("Name");
+						String name = Helper.getBlockID(block, null);
 						if (worldSurface > height) {
 							this.worldSurface.add(name);
 						}
@@ -151,7 +153,7 @@ public class HeightmapConfig {
 		return (int) ((data[dataIndex] >> startBit) & 0x1FF);
 	}
 
-	private CompoundTag getBlockAt(CompoundTag section, int x, int y, int z) {
+	private Tag getBlockAt(CompoundTag section, int x, int y, int z) {
 		ListTag palette = Helper.tagFromCompound(Helper.tagFromCompound(section, "block_states"), "palette");
 		if (palette == null) {
 			return null;
@@ -161,7 +163,7 @@ public class HeightmapConfig {
 			return null;
 		}
 		int paletteIndex = getPaletteIndex(x & 0xF, y & 0xF, z & 0xF, data);
-		return palette.getCompound(paletteIndex);
+		return palette.get(paletteIndex);
 	}
 
 	private int getPaletteIndex(int x, int y, int z, long[] data) {

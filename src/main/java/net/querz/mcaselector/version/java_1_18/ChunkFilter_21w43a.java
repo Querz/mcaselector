@@ -84,6 +84,8 @@ public class ChunkFilter_21w43a {
 			}
 			pos = pos.chunkToBlock();
 
+			int dataVersion = Helper.getDataVersion(Helper.getRegion(data));
+
 			Range sectionRange = Helper.findSectionRange(Helper.getRegion(data), sections);
 
 			// handle the special case when someone wants to replace air with something else
@@ -149,7 +151,7 @@ public class ChunkFilter_21w43a {
 						ChunkFilter.BlockReplaceData replacement = entry.getValue();
 
 						try {
-							blockStates = setBlockAt(i, replacement.getState(), blockStates, palette);
+							blockStates = setBlockAt(i, replacement.getState(dataVersion), blockStates, palette);
 						} catch (Exception ex) {
 							throw new RuntimeException("failed to set block in section " + y, ex);
 						}
@@ -860,9 +862,9 @@ public class ChunkFilter_21w43a {
 
 		@Override
 		public void removeLightingInfo(ChunkData data) {
-			CompoundTag level = Helper.levelFromRoot(Helper.getRegion(data));
-			if (level != null) {
-				level.remove("isLightOn");
+			CompoundTag region = Helper.getRegion(data);
+			if (region != null) {
+				region.putBoolean("isLightOn", false);
 			}
 			ListTag sections = Helper.tagFromCompound(Helper.getRegion(data), "sections");
 			if (sections != null) {

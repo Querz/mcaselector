@@ -222,7 +222,6 @@ public interface ChunkFilter {
 			type = BlockReplaceType.NAME;
 			this.name = name;
 			state = new CompoundTag();
-			state.putString("Name", name);
 		}
 
 		public BlockReplaceData(String name, CompoundTag tile) {
@@ -230,20 +229,17 @@ public interface ChunkFilter {
 			this.name = name;
 			this.tile = tile;
 			state = new CompoundTag();
-			state.putString("Name", name);
 		}
 
 		public BlockReplaceData(CompoundTag state) {
 			type = BlockReplaceType.STATE;
 			this.state = state;
-			name = state.getString("Name");
 		}
 
 		public BlockReplaceData(CompoundTag state, CompoundTag tile) {
 			type = BlockReplaceType.STATE_TILE;
 			this.state = state;
 			this.tile = tile;
-			name = state.getString("Name");
 		}
 
 		public BlockReplaceType getType() {
@@ -254,16 +250,36 @@ public interface ChunkFilter {
 			this.name = name;
 		}
 
-		public String getName() {
-			return name;
+		public String getName(int dataVersion) {
+			return switch (type) {
+				case STATE, STATE_TILE -> {
+					if (dataVersion >= 5009) {
+						yield Helper.getBlockID(state, "");
+					}
+					yield state.getString("Name");
+				}
+				default -> name;
+			};
 		}
 
 		public void setState(CompoundTag state) {
 			this.state = state;
 		}
 
-		public CompoundTag getState() {
-			return state;
+		public CompoundTag getState(int dataVersion) {
+			return switch (type) {
+				case STATE, STATE_TILE -> state;
+				default -> {
+					if (dataVersion >= 5009) {
+						CompoundTag s = state.copy();
+						s.putString("id", name);
+						yield s;
+					}
+					CompoundTag s = state.copy();
+					s.putString("Name", name);
+					yield s;
+				}
+			};
 		}
 
 		public void setTile(CompoundTag tile) {

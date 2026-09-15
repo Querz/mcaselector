@@ -295,6 +295,8 @@ public class ChunkFilter_21w06a {
 			}
 			pos = pos.chunkToBlock();
 
+			int dataVersion = Helper.getDataVersion(Helper.getRegion(data));
+
 			Range sectionRange = Helper.findSectionRange(level, sections);
 
 			// handle the special case when someone wants to replace air with something else
@@ -357,7 +359,7 @@ public class ChunkFilter_21w06a {
 						ChunkFilter.BlockReplaceData replacement = entry.getValue();
 
 						try {
-							blockStates = setBlockAt(i, replacement.getState(), blockStates, palette);
+							blockStates = setBlockAt(i, replacement.getState(dataVersion), blockStates, palette);
 						} catch (Exception ex) {
 							throw new RuntimeException("failed to set block in section " + y, ex);
 						}
