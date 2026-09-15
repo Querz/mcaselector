@@ -703,7 +703,7 @@
         "AAAAAAAAAAAC": "7f9039",
         "AAAAAAAAAAAE": "8b8d3e"
       },
-      "default": "8b8d3e"
+      "default": "7f9039"
     },
     "minecraft:bamboo_button": "c1ad50",
     "minecraft:bamboo_door": "bfab51",
@@ -738,7 +738,7 @@
         "CAAAAAAAAAAg": "86643a",
         "CAAAAAAAAAAQ": "5c4322"
       },
-      "default": "5c4322"
+      "default": "86643a"
     },
     "minecraft:barrier": {
       "color": "d40000",
@@ -756,7 +756,7 @@
         "AAAAAAAAAAAAAAAAAAQ=": "458227",
         "AAAAAAAAAAAAAAAAAAg=": "5d5b1e"
       },
-      "default": "428a29"
+      "default": "418929"
     },
     "minecraft:bell": "bc942a",
     "minecraft:big_dripleaf": "6f8d33",
@@ -794,7 +794,7 @@
         "CAAAAAAAAAAAAAAAAACA": "212126",
         "CAAAAAAAAAAAAAAAAABA": "78797c"
       },
-      "default": "78797c"
+      "default": "212126"
     },
     "minecraft:black_candle": {
       "states": {
@@ -849,7 +849,7 @@
         "CAAAAAAAAAAAAAAAAACA": "415ab9",
         "CAAAAAAAAAAAAAAAAABA": "8793bc"
       },
-      "default": "8793bc"
+      "default": "415ab9"
     },
     "minecraft:blue_candle": {
       "states": {
@@ -912,7 +912,7 @@
         "CAAAAAAAAAAAAAAAAACA": "8a5833",
         "CAAAAAAAAAAAAAAAAABA": "a49181"
       },
-      "default": "a49181"
+      "default": "8a5833"
     },
     "minecraft:brown_candle": {
       "states": {
@@ -1014,14 +1014,14 @@
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA=": "5a6d28",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=": "697029"
       },
-      "default": "697029"
+      "default": "5a6d28"
     },
     "minecraft:cave_vines_plant": {
       "states": {
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA=": "586526",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=": "696b28"
       },
-      "default": "696b28"
+      "default": "586526"
     },
     "minecraft:chain_command_block": {
       "states": {
@@ -1055,7 +1055,7 @@
         "AAAAAAAAAAAC": "36212c",
         "AAAAAAAAAAAE": "b98d89"
       },
-      "default": "b98d89"
+      "default": "36212c"
     },
     "minecraft:cherry_planks": "e2b2ac",
     "minecraft:cherry_pressure_plate": "e2b2ac",
@@ -1171,7 +1171,7 @@
         "CCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgA==": "a6a19f",
         "CBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgA==": "afa09d"
       },
-      "default": "afa09d"
+      "default": "a6a19f"
     },
     "minecraft:composter": "986233",
     "minecraft:conduit": "9f8b71",
@@ -1217,23 +1217,23 @@
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA==": "706263",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA==": "726263",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA==": "706263",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA==": "726263",
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA==": "726263",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA==": "706263",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA==": "726263",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA==": "726263",
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA==": "726263",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA==": "706263",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA==": "706263",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA==": "706263",
@@ -1253,7 +1253,7 @@
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "8b6464"
       },
-      "default": "726263"
+      "default": "706263"
     },
     "minecraft:crafting_table": "77492a",
     "minecraft:creaking_heart": {
@@ -1268,7 +1268,7 @@
         "AAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg==": "65402c",
         "AAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ==": "493b36"
       },
-      "default": "65402c"
+      "default": "99542c"
     },
     "minecraft:creeper_head": "513e32",
     "minecraft:creeper_wall_head": "513e32",
@@ -1311,7 +1311,7 @@
         "CAAAAAAAAAAAAAAAAACA": "129b9a",
         "CAAAAAAAAAAAAAAAAABA": "74abaa"
       },
-      "default": "74abaa"
+      "default": "129b9a"
     },
     "minecraft:cyan_candle": {
       "states": {
@@ -1380,7 +1380,7 @@
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA=": "6a6d70",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA=": "82745e"
       },
-      "default": "6a6d70"
+      "default": "82745e"
     },
     "minecraft:dead_brain_coral": "857d78",
     "minecraft:dead_brain_coral_block": "7c7572",
@@ -1467,7 +1467,7 @@
         "BA==": "6e6d6d",
         "CA==": "6e6d6d"
       },
-      "default": "6e6d6d"
+      "default": "626161"
     },
     "minecraft:dragon_egg": "0c090f",
     "minecraft:dragon_head": "513e32",
@@ -1520,7 +1520,7 @@
         "BA==": "6e6d6d",
         "CA==": "6e6d6d"
       },
-      "default": "6e6d6d"
+      "default": "616060"
     },
     "minecraft:emerald_block": "2acb57",
     "minecraft:emerald_ore": "6c8873",
@@ -1545,7 +1545,7 @@
         "ACAAAAAAAABA": "c29164",
         "ABAAAAAAAABA": "c39063"
       },
-      "default": "886a59"
+      "default": "876b59"
     },
     "minecraft:exposed_copper_chain": "7e6553",
     "minecraft:exposed_copper_chest": "a17d67",
@@ -1624,7 +1624,7 @@
         "AAAAAAAAAAAAAAAAAAQ=": "8ab3fc",
         "AAAAAAAAAAAAAAAAAAg=": "87b2fc"
       },
-      "default": "8bb4fc"
+      "default": "8cb5fc"
     },
     "minecraft:furnace": "6e6d6d",
     "minecraft:gilded_blackstone": "372a26",
@@ -1656,7 +1656,7 @@
         "CAAAAAAAAAAAAAAAAACA": "5f6e72",
         "CAAAAAAAAAAAAAAAAABA": "949d9e"
       },
-      "default": "949d9e"
+      "default": "5f6e72"
     },
     "minecraft:gray_candle": {
       "states": {
@@ -1706,7 +1706,7 @@
         "CAAAAAAAAAAAAAAAAACA": "5c7b15",
         "CAAAAAAAAAAAAAAAAABA": "909d77"
       },
-      "default": "909d77"
+      "default": "5c7b15"
     },
     "minecraft:green_candle": {
       "states": {
@@ -1813,7 +1813,7 @@
         }
       },
       "default": {
-        "color": "7d7d7d",
+        "color": "838383",
         "properties": 2
       }
     },
@@ -1973,7 +1973,7 @@
         "CAAAAAAAAAAAAAAAAACA": "299dd5",
         "CAAAAAAAAAAAAAAAAABA": "7db3d1"
       },
-      "default": "7db3d1"
+      "default": "299dd5"
     },
     "minecraft:light_blue_candle": {
       "states": {
@@ -2023,7 +2023,7 @@
         "CAAAAAAAAAAAAAAAAACA": "909188",
         "CAAAAAAAAAAAAAAAAABA": "a7aaa5"
       },
-      "default": "a7aaa5"
+      "default": "909188"
     },
     "minecraft:light_gray_candle": {
       "states": {
@@ -2096,7 +2096,7 @@
         "AAg=": "897c7e",
         "AAQ=": "9a7d93"
       },
-      "default": "9a7d93"
+      "default": "897c7e"
     },
     "minecraft:lily_of_the_valley": "7bae5f",
     "minecraft:lily_pad": {
@@ -2115,7 +2115,7 @@
         "CAAAAAAAAAAAAAAAAACA": "78c21a",
         "CAAAAAAAAAAAAAAAAABA": "9dc379"
       },
-      "default": "9dc379"
+      "default": "78c21a"
     },
     "minecraft:lime_candle": {
       "states": {
@@ -2167,7 +2167,7 @@
         "CAAAAAAAAAAAAAAAAACA": "b93aaf",
         "CAAAAAAAAAAAAAAAAABA": "bc84ba"
       },
-      "default": "bc84ba"
+      "default": "b93aaf"
     },
     "minecraft:magenta_candle": {
       "states": {
@@ -2281,7 +2281,7 @@
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA": "939393",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ==": "6f6265"
       },
-      "default": "939393"
+      "default": "6f6265"
     },
     "minecraft:nether_brick_fence": "2c151a",
     "minecraft:nether_brick_slab": "2c151a",
@@ -2299,7 +2299,7 @@
         "AAAAAAAAAAAAAAAAAAQ=": "731112",
         "AAAAAAAAAAAAAAAAAAg=": "6f1213"
       },
-      "default": "731112"
+      "default": "751215"
     },
     "minecraft:nether_wart_block": "720202",
     "minecraft:netherite_block": "423d3f",
@@ -2342,7 +2342,7 @@
         "CAAAAAAAAAAAAAAAAACA": "f97e16",
         "CAAAAAAAAAAAAAAAAABA": "dba172"
       },
-      "default": "dba172"
+      "default": "f97e16"
     },
     "minecraft:orange_candle": {
       "states": {
@@ -2393,7 +2393,7 @@
         "ACAAAAAAAABA": "869a68",
         "ABAAAAAAAABA": "889866"
       },
-      "default": "48826c"
+      "default": "46846d"
     },
     "minecraft:oxidized_copper_chain": "3d7663",
     "minecraft:oxidized_copper_chest": "52a284",
@@ -2441,7 +2441,7 @@
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "626761",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA==": "676c65"
       },
-      "default": "676c65"
+      "default": "626761"
     },
     "minecraft:pale_moss_block": "6a7068",
     "minecraft:pale_moss_carpet": "6a7068",
@@ -2472,7 +2472,7 @@
         "AAg=": "56655d",
         "AAQ=": "817e8b"
       },
-      "default": "817e8b"
+      "default": "56655d"
     },
     "minecraft:petrified_oak_slab": "a2824e",
     "minecraft:piglin_head": "513e32",
@@ -2489,7 +2489,7 @@
         "CAAAAAAAAAAAAAAAAACA": "f183a6",
         "CAAAAAAAAAAAAAAAAABA": "d49fb3"
       },
-      "default": "d49fb3"
+      "default": "f183a6"
     },
     "minecraft:pink_candle": {
       "states": {
@@ -2557,7 +2557,7 @@
         "CIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA": "997f55",
         "CIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA": "997f55"
       },
-      "default": "7a955b"
+      "default": "997f55"
     },
     "minecraft:pitcher_crop": "c1a567",
     "minecraft:pitcher_plant": {
@@ -2565,7 +2565,7 @@
         "AAg=": "687e5d",
         "AAQ=": "7a90bd"
       },
-      "default": "7a90bd"
+      "default": "687e5d"
     },
     "minecraft:player_head": "513e32",
     "minecraft:player_wall_head": "513e32",
@@ -2574,7 +2574,7 @@
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA": "939393",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ==": "5b3f18"
       },
-      "default": "939393"
+      "default": "5b3f18"
     },
     "minecraft:pointed_dripstone": {
       "states": {
@@ -2763,7 +2763,7 @@
         "CAAAAAAAAAAAAAAAAACA": "7f2ab1",
         "CAAAAAAAAAAAAAAAAABA": "a07ebc"
       },
-      "default": "a07ebc"
+      "default": "7f2ab1"
     },
     "minecraft:purple_candle": {
       "states": {
@@ -2850,7 +2850,7 @@
         "CAAAAAAAAAAAAAAAAACA": "b22f28",
         "CAAAAAAAAAAAAAAAAABA": "b8807e"
       },
-      "default": "b8807e"
+      "default": "b22f28"
     },
     "minecraft:red_candle": {
       "states": {
@@ -2908,7 +2908,7 @@
         "AAAAAAAAAACA": "5f361e",
         "AAAAAAAAAABA": "8e653c"
       },
-      "default": "8e653c"
+      "default": "5f361e"
     },
     "minecraft:redstone_ore": "8c6d6d",
     "minecraft:redstone_torch": {
@@ -2916,7 +2916,7 @@
         "AAAAAAAAAACA": "65452b",
         "AAAAAAAAAABA": "b63b2c"
       },
-      "default": "b63b2c"
+      "default": "65452b"
     },
     "minecraft:redstone_wall_torch": {
       "states": {
@@ -2929,7 +2929,7 @@
         "CAAAAAAAAACA": "65452b",
         "CAAAAAAAAABA": "b63b2c"
       },
-      "default": "b63b2c"
+      "default": "65452b"
     },
     "minecraft:redstone_wire": {
       "color": "af1805",
@@ -3003,7 +3003,7 @@
         "ICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAACA": "a09d9c",
         "IBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAACA": "a99d9c"
       },
-      "default": "a99d9c"
+      "default": "a09d9c"
     },
     "minecraft:repeating_command_block": {
       "states": {
@@ -3036,7 +3036,7 @@
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=": "4c1796",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ=": "4c1796"
       },
-      "default": "4c1796"
+      "default": "211534"
     },
     "minecraft:rooted_dirt": "90674c",
     "minecraft:rose_bush": {
@@ -3044,7 +3044,7 @@
         "AAg=": "615325",
         "AAQ=": "834225"
       },
-      "default": "834225"
+      "default": "615325"
     },
     "minecraft:sand": "dbcfa3",
     "minecraft:sandstone": "dfd6aa",
@@ -3058,7 +3058,7 @@
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA=": "0f1f26",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA=": "102d32"
       },
-      "default": "102d32"
+      "default": "0f1f26"
     },
     "minecraft:sculk_sensor": "074654",
     "minecraft:sculk_shrieker": "c6cda9",
@@ -3119,7 +3119,7 @@
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg": "876943",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA": "81613e"
       },
-      "default": "81613e"
+      "default": "876943"
     },
     "minecraft:snow": "f9fefe",
     "minecraft:snow_block": "f9fefe",
@@ -3174,7 +3174,7 @@
         "AAAAAAAAAAAC": "c1ad50",
         "AAAAAAAAAAAE": "b29e48"
       },
-      "default": "b29e48"
+      "default": "c1ad50"
     },
     "minecraft:stripped_birch_log": "bfab74",
     "minecraft:stripped_birch_wood": "c4b076",
@@ -3184,7 +3184,7 @@
         "AAAAAAAAAAAC": "d79194",
         "AAAAAAAAAAAE": "dda49d"
       },
-      "default": "dda49d"
+      "default": "d79194"
     },
     "minecraft:stripped_cherry_wood": "d79194",
     "minecraft:stripped_crimson_hyphae": "89395a",
@@ -3212,7 +3212,7 @@
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA==": "453946",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE=": "564757"
       },
-      "default": "4f4150"
+      "default": "443945"
     },
     "minecraft:structure_void": {
       "color": "18565d",
@@ -3257,7 +3257,7 @@
         "AAg=": "38871e",
         "AAQ=": "f6c436"
       },
-      "default": "f6c436"
+      "default": "38871e"
     },
     "minecraft:suspicious_gravel": {
       "states": {
@@ -3266,7 +3266,7 @@
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE=": "7e7878",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=": "7c7776"
       },
-      "default": "807b7a"
+      "default": "817d7c"
     },
     "minecraft:suspicious_sand": {
       "states": {
@@ -3275,7 +3275,7 @@
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE=": "d6c697",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=": "d2c191"
       },
-      "default": "d8ca9c"
+      "default": "d9cc9f"
     },
     "minecraft:sweet_berry_bush": {
       "states": {
@@ -3284,7 +3284,7 @@
         "AAAAAAAAAAAAAAAAAAQ=": "3b5838",
         "AAAAAAAAAAAAAAAAAAg=": "444d32"
       },
-      "default": "2f5e39"
+      "default": "2a5938"
     },
     "minecraft:tall_dry_grass": "c4ab7a",
     "minecraft:tall_grass": {
@@ -3299,7 +3299,7 @@
         }
       },
       "default": {
-        "color": "979597",
+        "color": "808080",
         "properties": 2
       }
     },
@@ -3308,7 +3308,7 @@
         "AAg=": "2d7504",
         "AAQ=": "3b8b0e"
       },
-      "default": "3b8b0e"
+      "default": "2d7504"
     },
     "minecraft:target": "e2aa9d",
     "minecraft:terracotta": "985e43",
@@ -3319,7 +3319,7 @@
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=": "be9e78",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg==": "7d70aa"
       },
-      "default": "7d70aa"
+      "default": "83bf75"
     },
     "minecraft:test_instance_block": "7f7877",
     "minecraft:tinted_glass": "2b262c",
@@ -3331,7 +3331,7 @@
         "AAAAAAAAAAAAAAAAAAE=": "1c6143",
         "AAAAAAAAAAAAAAAAAAI=": "406d4c"
       },
-      "default": "406d4c"
+      "default": "1c6143"
     },
     "minecraft:trapped_chest": "a2824e",
     "minecraft:trial_spawner": {
@@ -3349,7 +3349,7 @@
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAg": "2e343d",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAg": "213745"
       },
-      "default": "385262"
+      "default": "3e505c"
     },
     "minecraft:tripwire": "818181",
     "minecraft:tripwire_hook": "a2824e",
@@ -3380,7 +3380,7 @@
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAEA=": "e4e2bf",
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAIA=": "cfcba5"
       },
-      "default": "dad6b1"
+      "default": "e4e2bf"
     },
     "minecraft:twisting_vines": "148f7c",
     "minecraft:twisting_vines_plant": "14877a",
@@ -3419,7 +3419,7 @@
         "IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAC": "2a2f36",
         "IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAC": "2d2f33"
       },
-      "default": "2a2f36"
+      "default": "36454f"
     },
     "minecraft:verdant_froglight": "e5f4e4",
     "minecraft:vine": {
@@ -3484,7 +3484,7 @@
         "ACAAAAAAAABA": "c29164",
         "ABAAAAAAAABA": "c39063"
       },
-      "default": "886a59"
+      "default": "876b59"
     },
     "minecraft:waxed_exposed_copper_chain": "7e6553",
     "minecraft:waxed_exposed_copper_chest": "a17d67",
@@ -3564,7 +3564,7 @@
         "ACAAAAAAAABA": "869a68",
         "ABAAAAAAAABA": "889866"
       },
-      "default": "48826c"
+      "default": "46846d"
     },
     "minecraft:waxed_oxidized_copper_chain": "3d7663",
     "minecraft:waxed_oxidized_copper_chest": "52a284",
@@ -3615,7 +3615,7 @@
         "ACAAAAAAAABA": "9c9d62",
         "ABAAAAAAAABA": "9d9b61"
       },
-      "default": "5e7d62"
+      "default": "5c7e63"
     },
     "minecraft:waxed_weathered_copper_chain": "486c5b",
     "minecraft:waxed_weathered_copper_chest": "6c996e",
@@ -3666,7 +3666,7 @@
         "ACAAAAAAAABA": "9c9d62",
         "ABAAAAAAAABA": "9d9b61"
       },
-      "default": "5e7d62"
+      "default": "5c7e63"
     },
     "minecraft:weathered_copper_chain": "486c5b",
     "minecraft:weathered_copper_chest": "6c996e",
@@ -3721,7 +3721,7 @@
         "AAAAAAAAAAAAAAAAAEA=": "8d8525",
         "AAAAAAAAAAAAAAAAAIA=": "a69749"
       },
-      "default": "057f07"
+      "default": "087f0f"
     },
     "minecraft:white_banner": "a2824e",
     "minecraft:white_bed": {
@@ -3735,7 +3735,7 @@
         "CAAAAAAAAAAAAAAAAACA": "f4f4f4",
         "CAAAAAAAAAAAAAAAAABA": "d9ddde"
       },
-      "default": "d9ddde"
+      "default": "f4f4f4"
     },
     "minecraft:white_candle": {
       "states": {
@@ -3790,7 +3790,7 @@
         "CAAAAAAAAAAAAAAAAACA": "feca25",
         "CAAAAAAAAAAAAAAAAABA": "e3c779"
       },
-      "default": "e3c779"
+      "default": "feca25"
     },
     "minecraft:yellow_candle": {
       "states": {

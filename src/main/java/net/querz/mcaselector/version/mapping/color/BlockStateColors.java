@@ -20,6 +20,7 @@ public class BlockStateColors implements StateColors {
 	public BlockStateColors(BitSet state, BlockColor color) {
 		this.blockStateColors = new HashMap<>();
 		this.blockStateColors.put(state, color);
+		defaultColor = color;
 	}
 
 	public BlockStateColors() {
