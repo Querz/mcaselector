@@ -51,7 +51,10 @@
     "minecraft:mangrove_leaves",
     "minecraft:oak_leaves",
     "minecraft:pale_oak_leaves",
-    "minecraft:spruce_leaves"
+    "minecraft:spruce_leaves",
+    "minecraft:orange_poplar_leaves",
+    "minecraft:red_poplar_leaves",
+    "minecraft:yellow_poplar_leaves"
   ],
   "static_tint": {
     "minecraft:birch_leaves": "80a755",
