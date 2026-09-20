@@ -31,6 +31,7 @@ public class Window extends Application {
 	private String title = "";
 	private OptionBar optionBar;
 	private TileMapBox tileMapBox;
+	private double restoreX, restoreY, restoreWidth, restoreHeight;
 
 	private final List<Dialog<?>> trackedDialogs = new ArrayList<>();
 
@@ -105,22 +106,50 @@ public class Window extends Application {
 			}
 		});
 
+		primaryStage.xProperty().addListener((v, o, n) -> {
+			if (!primaryStage.isMaximized()) {
+				restoreX = o.doubleValue();
+			}
+		});
+
+		primaryStage.yProperty().addListener((v, o, n) -> {
+			if (!primaryStage.isMaximized()) {
+				restoreY = o.doubleValue();
+			}
+		});
+
+		primaryStage.widthProperty().addListener((v, o, n) -> {
+			if (!primaryStage.isMaximized() && !Double.isNaN(o.doubleValue())) {
+				restoreWidth = n.doubleValue();
+			}
+		});
+
+		primaryStage.heightProperty().addListener((v, o, n) -> {
+			if (!primaryStage.isMaximized() && !Double.isNaN(o.doubleValue())) {
+				restoreHeight = n.doubleValue();
+			}
+		});
+
 		GlobalConfig.WindowState windowState = ConfigProvider.GLOBAL.getWindowState();
 		if (windowState != null) {
 			primaryStage.setMaximized(windowState.maximized());
-			primaryStage.setWidth(windowState.state().width());
-			primaryStage.setHeight(windowState.state().height());
-			primaryStage.setX(windowState.state().x());
-			primaryStage.setY(windowState.state().y());
+			primaryStage.setWidth(restoreWidth = windowState.state().width());
+			primaryStage.setHeight(restoreHeight = windowState.state().height());
+			primaryStage.setX(restoreX = windowState.state().x());
+			primaryStage.setY(restoreY = windowState.state().y());
 			tileMap.goTo(0, 0);
 		}
 
-		ShutdownHooks.addShutdownHook(() -> ConfigProvider.GLOBAL.setWindowState(new GlobalConfig.WindowState(
-			new GlobalConfig.DialogState(
-				primaryStage.getX(), primaryStage.getY(), primaryStage.getWidth(), primaryStage.getHeight()
-			),
-			primaryStage.isMaximized()
-		)), 1000);
+		ShutdownHooks.addShutdownHook(() -> ConfigProvider.GLOBAL.setWindowState(
+			new GlobalConfig.WindowState(
+				primaryStage.isMaximized() ? new GlobalConfig.DialogState(
+					restoreX, restoreY, restoreWidth, restoreHeight
+				) : new GlobalConfig.DialogState(
+					primaryStage.getX(), primaryStage.getY(), primaryStage.getWidth(), primaryStage.getHeight()
+				),
+				primaryStage.isMaximized()
+			)
+		), 1000);
 
 		Logging.updateThreadContext();
 		primaryStage.show();
