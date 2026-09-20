@@ -57,7 +57,7 @@ public class CodeEditor extends StackPane {
 		getStylesheets().add(Objects.requireNonNull(CodeEditor.class.getClassLoader().getResource("style/component/code-editor.css")).toExternalForm());
 
 		getStyleClass().add("code-editor-script-box");
-		StackPane scriptPane = new StackPane(new VirtualizedScrollPane<>(codeArea));
+		VirtualizedScrollPane<GroovyCodeArea> scriptPane = new VirtualizedScrollPane<>(codeArea);
 		scriptPane.getStyleClass().add("script-pane");
 		Label errorLabel = new Label();
 		errorLabel.getStyleClass().add("script-error-label");

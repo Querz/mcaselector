@@ -263,8 +263,6 @@ public class SettingsDialog extends Dialog<SettingsDialog.Result> {
 		renderingScrollPane.getStyleClass().clear();
 		renderingScrollPane.getStyleClass().add("rendering-scroll-pane");
 		renderingScrollPane.setFitToWidth(true);
-		renderingScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-		renderingScrollPane.setMinWidth(ScrollPane.USE_PREF_SIZE);
 		VBox renderingBox = new VBox();
 
 		HBox shadingAndSmooth = new HBox();

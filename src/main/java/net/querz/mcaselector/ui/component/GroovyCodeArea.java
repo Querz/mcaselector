@@ -81,6 +81,7 @@ public class GroovyCodeArea extends CodeArea implements Closeable {
 	public GroovyCodeArea(boolean eval) {
 		executor = Executors.newSingleThreadExecutor();
 		setParagraphGraphicFactory(LineNumberFactory.get(this));
+		setWrapText(false);
 		highlightSubscription = multiPlainChanges()
 				.successionEnds(Duration.ofMillis(500))
 				.retainLatestUntilLater(executor)
