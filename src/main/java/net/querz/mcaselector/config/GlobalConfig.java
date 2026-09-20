@@ -68,6 +68,8 @@ public class GlobalConfig extends Config {
 	private TempScript changeScript = new TempScript(null, false, "");
 	private TempScript overlayScript = new TempScript(null, false, "");
 	private Object2BooleanRBTreeMap<String> structureIcons = new Object2BooleanRBTreeMap<>(String::compareTo);
+	private final Map<String, DialogState> dialogStates = new HashMap<>();
+	private WindowState windowState = null;
 
 	public GlobalConfig() {}
 
@@ -275,6 +277,22 @@ public class GlobalConfig extends Config {
 		this.structureIcons = structureIcons;
 	}
 
+	public DialogState getDialogState(Class<?> dialogClass) {
+		return dialogStates.get(dialogClass.getName());
+	}
+
+	public void setDialogState(Class<?> dialogClass, DialogState state) {
+		dialogStates.put(dialogClass.getName(), state);
+	}
+
+	public WindowState getWindowState() {
+		return windowState;
+	}
+
+	public void setWindowState(WindowState windowState) {
+		this.windowState = windowState;
+	}
+
 	@Override
 	public void save() {
 		save(gsonInstance, BASE_CONFIG_FILE);
@@ -359,4 +377,8 @@ public class GlobalConfig extends Config {
 	}
 
 	public record TempScript(File file, boolean saved, String text) {}
+
+	public record DialogState(double x, double y, double width, double height) {}
+
+	public record WindowState(DialogState state, boolean maximized) {}
 }

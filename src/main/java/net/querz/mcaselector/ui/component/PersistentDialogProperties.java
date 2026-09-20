@@ -2,6 +2,8 @@ package net.querz.mcaselector.ui.component;
 
 import javafx.application.Platform;
 import javafx.scene.control.Dialog;
+import net.querz.mcaselector.config.ConfigProvider;
+import net.querz.mcaselector.config.GlobalConfig;
 import net.querz.mcaselector.util.point.Point2i;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,20 +21,20 @@ public interface PersistentDialogProperties {
 	double getY();
 
 	default void initPersistentLocationOnClose(Dialog<?> dialog) {
-		lastWindowSize.put(dialog.getClass(), new Point2i((int) getWidth(), (int) getHeight()));
-		lastWindowLocation.put(dialog.getClass(), new Point2i((int) getX(), (int) getY()));
+		ConfigProvider.GLOBAL.setDialogState(
+			dialog.getClass(),
+			new GlobalConfig.DialogState(getX(), getY(), getWidth(), getHeight())
+		);
 	}
 
 	default void initPersistentLocationOnOpen(Dialog<?> dialog) {
-		Point2i lastSize = lastWindowSize.get(dialog.getClass());
-		Point2i lastLocation = lastWindowLocation.get(dialog.getClass());
-
-		if (lastSize != null && lastLocation != null && lastSize.getX() != 0 && lastSize.getZ() != 0) {
+		GlobalConfig.DialogState state = ConfigProvider.GLOBAL.getDialogState(dialog.getClass());
+		if (state != null) {
 			Platform.runLater(() -> {
-				dialog.setWidth(lastSize.getX());
-				dialog.setHeight(lastSize.getZ());
-				dialog.setX(lastLocation.getX());
-				dialog.setY(lastLocation.getZ());
+				dialog.setWidth(state.width());
+				dialog.setHeight(state.height());
+				dialog.setX(state.x());
+				dialog.setY(state.y());
 			});
 		}
 	}

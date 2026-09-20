@@ -47,7 +47,7 @@ public class Main {
 
 		ConfigProvider.loadDefaultWorldConfig();
 		ConfigProvider.loadOverlayConfig();
-		ShutdownHooks.addShutdownHook(ConfigProvider::saveAll);
+		ShutdownHooks.addShutdownHook(ConfigProvider::saveAll, 999);
 		Translation.load(ConfigProvider.GLOBAL.getLocale());
 		Locale.setDefault(ConfigProvider.GLOBAL.getLocale());
 

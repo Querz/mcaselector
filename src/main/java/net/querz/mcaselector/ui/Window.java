@@ -7,6 +7,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import net.querz.mcaselector.config.ConfigProvider;
+import net.querz.mcaselector.config.GlobalConfig;
 import net.querz.mcaselector.logging.Logging;
 import net.querz.mcaselector.tile.TileMap;
 import net.querz.mcaselector.io.FileHelper;
@@ -14,6 +16,7 @@ import net.querz.mcaselector.ui.component.OptionBar;
 import net.querz.mcaselector.ui.component.StatusBar;
 import net.querz.mcaselector.ui.component.TileMapBox;
 import net.querz.mcaselector.ui.dialog.PreviewDisclaimerDialog;
+import net.querz.mcaselector.util.validation.ShutdownHooks;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -101,6 +104,23 @@ public class Window extends Application {
 				});
 			}
 		});
+
+		GlobalConfig.WindowState windowState = ConfigProvider.GLOBAL.getWindowState();
+		if (windowState != null) {
+			primaryStage.setMaximized(windowState.maximized());
+			primaryStage.setWidth(windowState.state().width());
+			primaryStage.setHeight(windowState.state().height());
+			primaryStage.setX(windowState.state().x());
+			primaryStage.setY(windowState.state().y());
+			tileMap.goTo(0, 0);
+		}
+
+		ShutdownHooks.addShutdownHook(() -> ConfigProvider.GLOBAL.setWindowState(new GlobalConfig.WindowState(
+			new GlobalConfig.DialogState(
+				primaryStage.getX(), primaryStage.getY(), primaryStage.getWidth(), primaryStage.getHeight()
+			),
+			primaryStage.isMaximized()
+		)), 1000);
 
 		Logging.updateThreadContext();
 		primaryStage.show();

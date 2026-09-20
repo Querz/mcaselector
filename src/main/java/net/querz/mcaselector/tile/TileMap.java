@@ -1316,8 +1316,6 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 	@Override
 	public void resize(double width, double height) {
-		setWidth(width);
-		setHeight(height);
 		update();
 	}
 
