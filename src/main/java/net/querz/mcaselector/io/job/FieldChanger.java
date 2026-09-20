@@ -1,6 +1,8 @@
 package net.querz.mcaselector.io.job;
 
 import net.querz.mcaselector.changer.Field;
+import net.querz.mcaselector.changer.FieldType;
+import net.querz.mcaselector.changer.fields.ScriptField;
 import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.JobHandler;
 import net.querz.mcaselector.io.RegionDirectories;
@@ -65,6 +67,13 @@ public final class FieldChanger {
 
 		@Override
 		public boolean execute() {
+			if (fields.size() == 1 && fields.getFirst() instanceof ScriptField sf) {
+				if (!sf.matchesRegion(getRegionDirectories().getLocation())) {
+					progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
+					return true;
+				}
+			}
+
 			if (selection != null) {
 				Point2i location = getRegionDirectories().getLocation();
 				if (!selection.isAnyChunkInRegionSelected(location)) {

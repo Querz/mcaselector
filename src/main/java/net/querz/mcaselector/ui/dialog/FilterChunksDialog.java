@@ -42,18 +42,14 @@ public class FilterChunksDialog extends Dialog<FilterChunksDialog.Result> implem
 	private static final String initScript = """
 			import net.querz.mcaselector.io.mca.ChunkData;
 			import net.querz.nbt.*;
-
-			void before() {
-			\t
-			}
 			
+			/**
+			 * For more information, refer to https://github.com/Querz/mcaselector/wiki/Chunk-Filter
+			 */
 			boolean filter(ChunkData data) {
-			\t
+			\treturn true;
 			}
-			
-			void after() {
-			\t
-			}""";
+			""";
 
 	private GroupFilter value = gf;
 	private final TabPane tabs = new TabPane();

@@ -4,9 +4,7 @@ import net.querz.mcaselector.filter.*;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.util.point.Point2i;
 import net.querz.mcaselector.text.TextHelper;
-import net.querz.mcaselector.version.ChunkFilter;
-import net.querz.mcaselector.version.VersionHandler;
-import net.querz.nbt.IntTag;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -118,12 +116,12 @@ public class CircleFilter extends TextFilter<List<CircleFilter.CircleFilterDefin
 			for (CircleFilterDefinition circle : value) {
 				// check if center is actually in this region
 				if (circle.center.chunkToRegion().equals(region)) {
-					return MatchType.PARTIALLY;
+					return MatchType.PARTIAL;
 				}
 
 				// check distance of center to region corners
 				if (circle.matches(topLeft) || circle.matches(bottomLeft) || circle.matches(bottomRight) || circle.matches(topRight)) {
-					return MatchType.PARTIALLY;
+					return MatchType.PARTIAL;
 				}
 
 				// check if circle overlaps with region edges
@@ -133,17 +131,17 @@ public class CircleFilter extends TextFilter<List<CircleFilter.CircleFilterDefin
 				Point2i leftMost = circle.center.sub(circle.radius, 0);
 				if (circle.center.chunkToRegion().getX() == region.getX()) {
 					if (circle.center.getZ() > bottomLeft.getZ() && topMost.getZ() <= bottomLeft.getZ()) {
-						return MatchType.PARTIALLY;
+						return MatchType.PARTIAL;
 					}
 					if (circle.center.getZ() < topRight.getZ() && bottomMost.getZ() >= topRight.getZ()) {
-						return MatchType.PARTIALLY;
+						return MatchType.PARTIAL;
 					}
 				} else if (circle.center.chunkToRegion().getZ() == region.getZ()) {
 					if (circle.center.getX() < bottomLeft.getX() && rightMost.getX() >= bottomLeft.getX()) {
-						return MatchType.PARTIALLY;
+						return MatchType.PARTIAL;
 					}
 					if (circle.center.getX() > topRight.getX() && leftMost.getX() <= topRight.getX()) {
-						return MatchType.PARTIALLY;
+						return MatchType.PARTIAL;
 					}
 				}
 			}
@@ -160,7 +158,7 @@ public class CircleFilter extends TextFilter<List<CircleFilter.CircleFilterDefin
 				}
 			}
 		}
-		return MatchType.PARTIALLY;
+		return MatchType.PARTIAL;
 	}
 
 	public record CircleFilterDefinition(Point2i center, int radius) implements Serializable {

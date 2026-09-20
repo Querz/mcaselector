@@ -14,7 +14,7 @@ public class GroovyScriptEngine {
 	}
 
 	public void init() {
-		engine = new ScriptEngineManager().getEngineByName("Groovy");
+		engine = new ScriptEngineManager(this.getClass().getClassLoader()).getEngineByName("Groovy");
 	}
 
 	public void eval(String script) throws ScriptException {

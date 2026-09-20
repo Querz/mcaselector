@@ -131,9 +131,9 @@ public class GroupFilter extends Filter<List<Filter<?>>> {
 
 	private boolean matchTypeToResult(RegionMatcher.MatchType matchType) {
 		return switch (matchType) {
-			case FULLY -> true;
+			case FULL -> true;
 			case NONE -> false;
-			case PARTIALLY -> !negated;
+			case PARTIAL -> !negated;
 		};
 	}
 

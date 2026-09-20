@@ -141,9 +141,9 @@ public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.Player
 		}
 
 		if (getComparator() == Comparator.CONTAINS) {
-			return playerRegions.contains(region.asLong()) ? MatchType.PARTIALLY : MatchType.NONE;
+			return playerRegions.contains(region.asLong()) ? MatchType.PARTIAL : MatchType.NONE;
 		}
-		return MatchType.PARTIALLY;
+		return MatchType.PARTIAL;
 	}
 
 	/**

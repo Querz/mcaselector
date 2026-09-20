@@ -108,8 +108,8 @@ public class SelectionFilter extends TextFilter<File> implements RegionMatcher {
 		int selectedChunks = selection.getSelectedChunks(region).size();
 
 		return switch (getComparator()) {
-			case EQUAL -> selectedChunks == 0 ? MatchType.NONE : selectedChunks == 1024 ? MatchType.FULLY : MatchType.PARTIALLY;
-			case NOT_EQUAL -> selectedChunks == 0 ? MatchType.FULLY : selectedChunks == 1024 ? MatchType.NONE : MatchType.PARTIALLY;
+			case EQUAL -> selectedChunks == 0 ? MatchType.NONE : selectedChunks == 1024 ? MatchType.FULL : MatchType.PARTIAL;
+			case NOT_EQUAL -> selectedChunks == 0 ? MatchType.FULL : selectedChunks == 1024 ? MatchType.NONE : MatchType.PARTIAL;
 			default -> MatchType.NONE;
 		};
 	}

@@ -7,8 +7,8 @@ public interface RegionMatcher {
 	MatchType matchesRegion(Point2i region);
 
 	enum MatchType {
-		FULLY,
-		PARTIALLY,
+		FULL,
+		PARTIAL,
 		NONE
 	}
 }

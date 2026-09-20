@@ -43,18 +43,14 @@ public class ChangeNBTDialog extends Dialog<ChangeNBTDialog.Result> implements P
 	private static final String initScript = """
 			import net.querz.mcaselector.io.mca.ChunkData;
 			import net.querz.nbt.*;
-
-			void before() {
-			\t
-			}
 			
+			/**
+			 * For more information, refer to https://github.com/Querz/mcaselector/wiki/NBT-Changer
+			 */
 			void apply(ChunkData data) {
 			\t
 			}
-			
-			void after() {
-			\t
-			}""";
+			""";
 
 	private final List<Field<?>> fields = new ArrayList<>();
 	private final TabPane tabs = new TabPane();

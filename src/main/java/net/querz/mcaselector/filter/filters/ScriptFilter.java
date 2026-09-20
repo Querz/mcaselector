@@ -3,11 +3,12 @@ package net.querz.mcaselector.filter.filters;
 import net.querz.mcaselector.filter.*;
 import net.querz.mcaselector.io.GroovyScriptEngine;
 import net.querz.mcaselector.io.mca.ChunkData;
+import net.querz.mcaselector.util.point.Point2i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import javax.script.*;
 
-public class ScriptFilter extends TextFilter<String> {
+public class ScriptFilter extends TextFilter<String> implements RegionMatcher {
 
 	private static final Logger LOGGER = LogManager.getLogger(ScriptFilter.class);
 
@@ -63,19 +64,37 @@ public class ScriptFilter extends TextFilter<String> {
 		return false;
 	}
 
+	@Override
+	public MatchType matchesRegion(Point2i region) {
+		try {
+			boolean result = engine.test("matchesRegion", region.getX(), region.getZ());
+			return result ? MatchType.FULL : MatchType.NONE;
+		} catch (ScriptException ex) {
+			LOGGER.warn("failed to invoke matchesRegion function in custom filter script", ex);
+		} catch (NoSuchMethodException ex) {
+			System.out.println(ex.getMessage());
+			// ignore, this function is not mandatory
+		}
+		return MatchType.NONE;
+	}
+
 	public void before() {
 		try {
 			engine.run("before");
-		} catch (ScriptException | NoSuchMethodException ex) {
+		} catch (ScriptException ex) {
 			LOGGER.warn("failed to invoke before function in custom script", ex);
+		} catch (NoSuchMethodException ex) {
+			// ignore, this function is not mandatory
 		}
 	}
 
 	public void after() {
 		try {
 			engine.run("after");
-		} catch (ScriptException | NoSuchMethodException ex) {
+		} catch (ScriptException ex) {
 			LOGGER.warn("failed to invoke after function in custom script", ex);
+		} catch (NoSuchMethodException ex) {
+			// ignore, this function is not mandatory
 		}
 	}
 

@@ -31,10 +31,10 @@ public class XPosFilter extends IntFilter implements RegionMatcher {
 			if (matches(getFilterNumber(), x + i, getComparator())) {
 				matchCount++;
 			} else {
-				return matchCount == 0 ? MatchType.NONE : MatchType.PARTIALLY;
+				return matchCount == 0 ? MatchType.NONE : MatchType.PARTIAL;
 			}
 		}
-		return MatchType.FULLY;
+		return MatchType.FULL;
 	}
 
 	@Override
