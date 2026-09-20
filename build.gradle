@@ -42,29 +42,34 @@ dependencies {
 	implementation 'com.github.Querz:NBT:13516d666a'
 	implementation 'com.google.code.gson:gson:2.12.1'
 	implementation 'it.unimi.dsi:fastutil:8.5.15'
-	implementation 'org.apache.logging.log4j:log4j-api:2.24.3'
-	implementation 'org.apache.logging.log4j:log4j-core:2.24.3'
-	implementation 'org.slf4j:slf4j-simple:2.0.16'
+	implementation 'org.apache.logging.log4j:log4j-api:2.26.1'
+	implementation 'org.apache.logging.log4j:log4j-core:2.26.1'
+	implementation 'org.slf4j:slf4j-simple:2.0.19'
 	implementation 'commons-cli:commons-cli:1.10.0'
 	implementation 'me.tongfei:progressbar:0.10.1'
-	implementation 'org.apache.groovy:groovy-jsr223:4.0.26'
+	implementation 'org.apache.groovy:groovy-jsr223:5.1.2'
 	implementation 'org.fxmisc.richtext:richtextfx:0.11.7'
-	implementation 'org.lz4:lz4-java:1.8.0'
+	implementation 'at.yawk.lz4:lz4-java:1.9.0'
 	implementation 'org.atteo.classindex:classindex:3.13'
-	implementation 'org.iq80.leveldb:leveldb:0.12'
+	implementation 'io.github.pcmind:leveldb:1.2'
 
 	annotationProcessor('org.atteo.classindex:classindex:3.13')
-	annotationProcessor('org.apache.logging.log4j:log4j-core:2.24.3')
+	annotationProcessor('org.apache.logging.log4j:log4j-core:2.26.1')
 
 	testImplementation(platform('org.junit:junit-bom:6.0.1'))
 	testImplementation('org.junit.jupiter:junit-jupiter')
 	testImplementation('org.reflections:reflections:0.10.2')
-	testImplementation 'commons-io:commons-io:2.18.0'
+	testImplementation('commons-io:commons-io:2.18.0')
 	testRuntimeOnly('org.junit.platform:junit-platform-launcher')
 }
 
 compileJava {
-	options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
+	options.compilerArgs += [
+		'-Xlint:deprecation',
+		'-Xlint:unchecked',
+		"-Alog4j.graalvm.groupId=${project.group}",
+		"-Alog4j.graalvm.artifactId=${project.name}"
+	]
 }
 
 tasks.register('minifyCss') {
