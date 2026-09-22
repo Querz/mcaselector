@@ -25,16 +25,17 @@ public class XPosFilter extends IntFilter implements RegionMatcher {
 
 	@Override
 	public MatchType matchesRegion(Point2i region) {
+		if (region.equals(new Point2i(19, 2))) {
+			System.out.println("test");
+		}
 		int x = region.regionToChunk().getX();
 		int matchCount = 0;
 		for (int i = 0; i < 32; i++) {
 			if (matches(getFilterNumber(), x + i, getComparator())) {
 				matchCount++;
-			} else {
-				return matchCount == 0 ? MatchType.NONE : MatchType.PARTIAL;
 			}
 		}
-		return MatchType.FULL;
+		return matchCount == 0 ? MatchType.NONE : matchCount == 32 ? MatchType.FULL : MatchType.PARTIAL;
 	}
 
 	@Override

@@ -30,11 +30,9 @@ public class ZPosFilter extends IntFilter implements RegionMatcher {
 		for (int i = 0; i < 32; i++) {
 			if (matches(getFilterNumber(), z + i, getComparator())) {
 				matchCount++;
-			} else {
-				return matchCount == 0 ? MatchType.NONE : MatchType.PARTIAL;
 			}
 		}
-		return MatchType.FULL;
+		return matchCount == 0 ? MatchType.NONE : matchCount == 32 ? MatchType.FULL : MatchType.PARTIAL;
 	}
 
 	@Override
