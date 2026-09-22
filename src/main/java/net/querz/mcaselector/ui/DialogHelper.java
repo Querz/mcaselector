@@ -252,6 +252,18 @@ public class DialogHelper {
 		});
 	}
 
+	public static void defragmentSelectedRegions(TileMap tileMap, Stage primaryStage) {
+		Optional<ButtonType> result = new DefragmentConfirmationDialog(tileMap, primaryStage).showAndWait();
+		result.ifPresent(r -> {
+			if (r == ButtonType.OK) {
+				new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DEFRAGMENTING_REGIONS, primaryStage)
+						.showProgressBar(t -> SelectionDefragmenter.defragmentSelection(tileMap.getSelection(), t, false));
+				CacheHelper.clearSelectionCache(tileMap);
+				tileMap.clear();
+			}
+		});
+	}
+
 	public static void exportSelectedChunks(TileMap tileMap, Stage primaryStage) {
 		File dir = createDirectoryChooser(FileHelper.getLastOpenedDirectory("chunk_import_export", null)).showDialog(primaryStage);
 		if (dir != null) {

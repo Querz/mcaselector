@@ -46,6 +46,7 @@ menu.selection.copy_chunks;チャンクをコピー
 menu.selection.paste_chunks;チャンクをペースト
 menu.selection.export_chunks;チャンクのエクスポート
 menu.selection.delete_chunks;チャンクの削除
+menu.selection.defragment_regions;選択したリージョンをデフラグする
 menu.selection.import_selection;.csvから選択をインポートします
 menu.selection.export_selection;選択範囲を.csvとしてエクスポート
 menu.selection.export_image;画像としてエクスポート
@@ -107,6 +108,9 @@ dialog.settings.rendering.structure_icon_border_size;枠線サイズ
 dialog.settings.rendering.layers.render_caves;洞窟を描画する
 dialog.goto.title;入力した座標に移動
 dialog.confirmation.question;よろしいですか？
+dialog.defragment_regions_confirmation.title;リージョンのデフラグ
+dialog.defragment_regions_confirmation.header_short;不明な数のリージョンをデフラグしようとしています。
+dialog.defragment_regions_confirmation.header_verbose;%d個のリージョンをデフラグしようとしています。
 dialog.delete_chunks_confirmation.title;チャンクを削除
 dialog.delete_chunks_confirmation.header_short;不明な数のチャンクを削除しようとしています
 dialog.delete_chunks_confirmation.header_verbose;％d個のチャンクを削除しようとしています
@@ -189,6 +193,7 @@ dialog.progress.collecting_data;データを読み込んでいます...
 dialog.progress.done;完了
 dialog.progress.scanning_files;ファイルをスキャンしています...
 dialog.progress.title.loading_world;世界を読み込んでいます...
+dialog.progress.title.defragmenting_regions;リージョンをデフラグ中...
 dialog.progress.title.deleting_selection;選択範囲を削除しています...
 dialog.progress.title.creating_image;画像を作成中...
 dialog.progress.title.saving_image;画像を保存中...

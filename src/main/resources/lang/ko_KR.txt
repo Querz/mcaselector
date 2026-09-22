@@ -46,6 +46,7 @@ menu.selection.copy_chunks;청크 복사
 menu.selection.paste_chunks;청크 붙여넣기
 menu.selection.export_chunks;선택한 청크 내보내기
 menu.selection.delete_chunks;선택한 청크 삭제하기
+menu.selection.defragment_regions;선택한 리전 조각 모음
 menu.selection.import_selection;.csv 에서 선택 항목 가져오기
 menu.selection.export_selection;선택 항목을 .csv 로 내보내기
 menu.selection.export_image;사진으로 내보내기
@@ -107,6 +108,9 @@ dialog.settings.rendering.structure_icon_border_size;테두리 크기
 dialog.settings.rendering.layers.render_caves;동굴 렌더링
 dialog.goto.title;좌표로 이동하기
 dialog.confirmation.question;확실하신가요?
+dialog.defragment_regions_confirmation.title;리전 조각 모음
+dialog.defragment_regions_confirmation.header_short;알 수 없는 수의 리전에 대해 조각 모음을 수행하려고 합니다.
+dialog.defragment_regions_confirmation.header_verbose;%d개의 리전에 대해 조각 모음을 수행하려고 합니다.
 dialog.delete_chunks_confirmation.title;청크 제거하기
 dialog.delete_chunks_confirmation.header_short;이 월드에서 알 수 없는 수 만큼의 청크를 제거할려고 합니다.
 dialog.delete_chunks_confirmation.header_verbose;이 월드에서 %d개 만큼의 청크를 제거할려고 합니다.
@@ -189,6 +193,7 @@ dialog.progress.collecting_data;데이터를 불러오는 중...
 dialog.progress.done;완료
 dialog.progress.scanning_files;파일 스캔 중...
 dialog.progress.title.loading_world;세계 로드 중...
+dialog.progress.title.defragmenting_regions;리전 조각 모음 중...
 dialog.progress.title.deleting_selection;선택한 영역을 삭제 중...
 dialog.progress.title.creating_image;이미지 생성 중...
 dialog.progress.title.saving_image;이미지 저장 중...

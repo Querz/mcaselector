@@ -211,7 +211,7 @@ public abstract class MCAFile<T extends Chunk> {
 		}
 
 		if (skippedChunks == 1024) {
-			LOGGER.debug("all chunks in {} deleted, removing entire file", file.getAbsolutePath());
+			LOGGER.debug("no chunks in {}, deleting file", file.getAbsolutePath());
 			if (tmpFile.exists() && !tmpFile.delete()) {
 				LOGGER.warn("failed to delete tmpFile {} after all chunks were deleted", tmpFile.getAbsolutePath());
 			}

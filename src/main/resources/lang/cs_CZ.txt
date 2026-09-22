@@ -46,6 +46,7 @@ menu.selection.copy_chunks;Kopírovat chunky
 menu.selection.paste_chunks;Vložit chunky
 menu.selection.export_chunks;Exportovat vybrané chunky
 menu.selection.delete_chunks;Smazat vybrané chunky
+menu.selection.defragment_regions;Defragmentovat vybrané regiony
 menu.selection.import_selection;Importovat výběr z .csv
 menu.selection.export_selection;Exportovat výběr jako .csv
 menu.selection.export_image;Exportovat jako obrázek
@@ -107,6 +108,9 @@ dialog.settings.rendering.structure_icon_border_size;Velikost ohraničení
 dialog.settings.rendering.layers.render_caves;Render jeskyně
 dialog.goto.title;Přejít na pozici
 dialog.confirmation.question;Jste si jisti?
+dialog.defragment_regions_confirmation.title;Defragmentovat regiony
+dialog.defragment_regions_confirmation.header_short;Chystáte se defragmentovat neznámý počet regionů.
+dialog.defragment_regions_confirmation.header_verbose;Chystáte se defragmentovat %d regionů.
 dialog.delete_chunks_confirmation.title;Smazat chunky
 dialog.delete_chunks_confirmation.header_short;Chcete smazat neznámý počet chunků vybraného světa.
 dialog.delete_chunks_confirmation.header_verbose;Chcete smazat  %d chunků vybraného světa.
@@ -189,6 +193,7 @@ dialog.progress.collecting_data;sběr dat...
 dialog.progress.done;hotovo.
 dialog.progress.scanning_files;Skenování souborů...
 dialog.progress.title.loading_world;Načítání světa...
+dialog.progress.title.defragmenting_regions;Defragmentace regionů...
 dialog.progress.title.deleting_selection;Mazání výběru...
 dialog.progress.title.creating_image;Vytváření obrázku...
 dialog.progress.title.saving_image;Ukládání obrázku...

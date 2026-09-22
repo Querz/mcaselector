@@ -46,6 +46,7 @@ menu.selection.copy_chunks;复制区块
 menu.selection.paste_chunks;粘贴区块
 menu.selection.export_chunks;导出选定的区块
 menu.selection.delete_chunks;删除选定的区块
+menu.selection.defragment_regions;碎片整理选中的区域
 menu.selection.import_selection;从 .csv 导入选区
 menu.selection.export_selection;将选区导出为 .csv
 menu.selection.export_image;导出为图片
@@ -107,6 +108,9 @@ dialog.settings.rendering.structure_icon_border_size;边框大小
 dialog.settings.rendering.layers.render_caves;渲染洞穴
 dialog.goto.title;转到位置
 dialog.confirmation.question;你确定吗？
+dialog.defragment_regions_confirmation.title;碎片整理区域
+dialog.defragment_regions_confirmation.header_short;您即将对未知数量的区域进行碎片整理。
+dialog.defragment_regions_confirmation.header_verbose;您即将对 %d 个区域进行碎片整理。
 dialog.delete_chunks_confirmation.title;删除区块
 dialog.delete_chunks_confirmation.header_short;你将要从这个世界中删除未知数量的区块。
 dialog.delete_chunks_confirmation.header_verbose;你将要从这个世界中删除 %d 个区块。
@@ -189,6 +193,7 @@ dialog.progress.collecting_data;正在收集数据…
 dialog.progress.done;完成。
 dialog.progress.scanning_files;正在扫描文件…
 dialog.progress.title.loading_world;正在加载世界…
+dialog.progress.title.defragmenting_regions;正在对区域进行碎片整理...
 dialog.progress.title.deleting_selection;正在删除选区…
 dialog.progress.title.creating_image;正在创建图片…
 dialog.progress.title.saving_image;正在保存图片…

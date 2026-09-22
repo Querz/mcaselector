@@ -46,6 +46,7 @@ menu.selection.copy_chunks;Kopiera chunks
 menu.selection.paste_chunks;Klistra in chunks
 menu.selection.export_chunks;Exportera valda chunks
 menu.selection.delete_chunks;Radera valda chunks
+menu.selection.defragment_regions;Defragmentera markerade regioner
 menu.selection.import_selection;Importera urval från .csv
 menu.selection.export_selection;Exportera urval som .csv
 menu.selection.export_image;Exportera som bild
@@ -107,6 +108,9 @@ dialog.settings.rendering.structure_icon_border_size;Kantstorlek
 dialog.settings.rendering.layers.render_caves;Rendera grottor
 dialog.goto.title;Gå till plats
 dialog.confirmation.question;Är du säker?
+dialog.defragment_regions_confirmation.title;Defragmentera regioner
+dialog.defragment_regions_confirmation.header_short;Du är på väg att defragmentera ett okänt antal regioner.
+dialog.defragment_regions_confirmation.header_verbose;Du är på väg att defragmentera %d regioner.
 dialog.delete_chunks_confirmation.title;Radera chunks
 dialog.delete_chunks_confirmation.header_short;Du är på väg att radera ett okänt antal chunks från denna värld.
 dialog.delete_chunks_confirmation.header_verbose;Du är på väg att radera %d chunks från denna värld.
@@ -189,6 +193,7 @@ dialog.progress.collecting_data;samlar in data...
 dialog.progress.done;klar.
 dialog.progress.scanning_files;Skannar filer...
 dialog.progress.title.loading_world;Laddar världen...
+dialog.progress.title.defragmenting_regions;Defragmenterar regioner...
 dialog.progress.title.deleting_selection;Raderar markering...
 dialog.progress.title.creating_image;Skapar bild...
 dialog.progress.title.saving_image;Sparar bild...

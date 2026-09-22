@@ -202,6 +202,18 @@ public class Region {
 		}
 	}
 
+	public void defragment() throws IOException {
+		if (region != null) {
+			region.deFragment();
+		}
+		if (poi != null) {
+			poi.deFragment();
+		}
+		if (entities != null) {
+			entities.deFragment();
+		}
+	}
+
 	public void saveWithTempFiles() throws IOException {
 		if (region != null) {
 			region.saveWithTempFile();

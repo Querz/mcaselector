@@ -46,6 +46,7 @@ menu.selection.copy_chunks;Kopiëer chunks
 menu.selection.paste_chunks;Plak chunks
 menu.selection.export_chunks;Geselecteerde chunks exporteren
 menu.selection.delete_chunks;Geselcteerde chunks verwijderen
+menu.selection.defragment_regions;Geselecteerde regio's defragmenteren
 menu.selection.import_selection;Selectie importeren uit .csv
 menu.selection.export_selection;Selectie exporteren als .csv
 menu.selection.export_image;Exporteer als afbeelding
@@ -107,6 +108,9 @@ dialog.settings.rendering.structure_icon_border_size;Randgrootte
 dialog.settings.rendering.layers.render_caves;Grotten renderen
 dialog.goto.title;Ga naar locatie
 dialog.confirmation.question;Weet je het zeker?
+dialog.defragment_regions_confirmation.title;Regio's defragmenteren
+dialog.defragment_regions_confirmation.header_short;Je staat op het punt een onbekend aantal regio's te defragmenteren.
+dialog.defragment_regions_confirmation.header_verbose;Je staat op het punt %d regio's te defragmenteren.
 dialog.delete_chunks_confirmation.title;Chunks verwijderen
 dialog.delete_chunks_confirmation.header_short;Je staat op het punt een onbekend aantal chunks uit deze wereld te verwijderen.
 dialog.delete_chunks_confirmation.header_verbose;Je staat op het punt %d chunks uit deze wereld te verwijderen.
@@ -189,6 +193,7 @@ dialog.progress.collecting_data;gegevens verzamelen...
 dialog.progress.done;klaar.
 dialog.progress.scanning_files;Bestanden scannen...
 dialog.progress.title.loading_world;Wereld wordt geladen...
+dialog.progress.title.defragmenting_regions;Regio's defragmenteren...
 dialog.progress.title.deleting_selection;Selectie verwijderen...
 dialog.progress.title.creating_image;Afbeelding maken...
 dialog.progress.title.saving_image;Afbeelding opslaan...

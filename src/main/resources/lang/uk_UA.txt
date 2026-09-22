@@ -46,6 +46,7 @@ menu.selection.copy_chunks;Копіювати чанки
 menu.selection.paste_chunks;Вставити чанки
 menu.selection.export_chunks;Експортувати виділені чанки
 menu.selection.delete_chunks;Видалити виділені чанки
+menu.selection.defragment_regions;Дефрагментувати вибрані регіони
 menu.selection.import_selection;Імпортувати виділення з .csv файлу
 menu.selection.export_selection;Зберегти виділення як .csv файл
 menu.selection.export_image;Зберегти як зображення
@@ -107,6 +108,9 @@ dialog.settings.rendering.structure_icon_border_size;Розмір рамки
 dialog.settings.rendering.layers.render_caves;Відмальовувати печери
 dialog.goto.title;Перейти до локації
 dialog.confirmation.question;Ви впевнені?
+dialog.defragment_regions_confirmation.title;Дефрагментація регіонів
+dialog.defragment_regions_confirmation.header_short;Ви збираєтесь дефрагментувати невідому кількість регіонів.
+dialog.defragment_regions_confirmation.header_verbose;Ви збираєтесь дефрагментувати %d регіонів.
 dialog.delete_chunks_confirmation.title;Видалити чанк
 dialog.delete_chunks_confirmation.header_short;Ви збираєтеся видалити невідому кількість чанків з цього світу.
 dialog.delete_chunks_confirmation.header_verbose;Ви збираєтеся видалити %d чанків з цього світу.
@@ -189,6 +193,7 @@ dialog.progress.collecting_data;збір інформації...
 dialog.progress.done;готово.
 dialog.progress.scanning_files;Сканування файлів...
 dialog.progress.title.loading_world;завантаження світу...
+dialog.progress.title.defragmenting_regions;Дефрагментація регіонів...
 dialog.progress.title.deleting_selection;Видалення вибірки...
 dialog.progress.title.creating_image;Створення зображення...
 dialog.progress.title.saving_image;Збереження зображення...

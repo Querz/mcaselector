@@ -61,13 +61,14 @@ public final class ParamExecutor {
 			.longOpt("mode")
 			.desc("""
 				The mode to run. Available modes are:
-				select    Create a selection from a filter query and save it as a CSV file
-				export    Export chunks based on a filter query and/or a selection
-				import    Import chunks with an optional offset
-				delete    Delete chunks based on a filter query and/or a selection
-				change    Change NBT values in an entire world or only in chunks based on a selection
-				cache     Generate the cache images for an entire world
-				image     Generate a single image based on a selection
+				select     Create a selection from a filter query and save it as a CSV file
+				export     Export chunks based on a filter query and/or a selection
+				import     Import chunks with an optional offset
+				defragment Defragments all regions or regions based on a selection
+				delete     Delete chunks based on a filter query and/or a selection
+				change     Change NBT values in an entire world or only in chunks based on a selection
+				cache      Generate the cache images for an entire world
+				image      Generate a single image based on a selection
 				""")
 			.hasArg()
 			.get());
@@ -845,6 +846,21 @@ public final class ParamExecutor {
 				}
 			}
 		}
+	}
+
+	private void defragment(FutureTask<Boolean> future) throws ParseException {
+		ConfigProvider.WORLD = new WorldConfig();
+		ConfigProvider.WORLD.setWorldDirs(parseWorldDirectories(""));
+		Selection selection = loadSelection(false, false);
+		if (selection == null) {
+			selection = new Selection();
+			selection.setInverted(true);
+		}
+
+		CLIProgress progress = new CLIProgress("defragmenting regions");
+		progress.onDone(future);
+
+		SelectionDefragmenter.defragmentSelection(selection, progress, true);
 	}
 
 	private void delete(FutureTask<Boolean> future) throws ParseException {

@@ -46,6 +46,7 @@ menu.selection.copy_chunks;Chunks kopieren
 menu.selection.paste_chunks;Chunks einfügen
 menu.selection.export_chunks;Selektierte Chunks exportieren
 menu.selection.delete_chunks;Selektierte Chunks löschen
+menu.selection.defragment_regions;Selektierte Regionen defragmentieren
 menu.selection.import_selection;Selektion von .csv importieren
 menu.selection.export_selection;Selektion als .csv exportieren
 menu.selection.export_image;Als Bild exportieren
@@ -107,6 +108,9 @@ dialog.settings.rendering.structure_icon_border_size;Rahmengröße
 dialog.settings.rendering.layers.render_caves;Höhlen rendern
 dialog.goto.title;Gehe zu Koordinaten
 dialog.confirmation.question;Bist Du dir sicher?
+dialog.defragment_regions_confirmation.title;Regionen defragmentieren
+dialog.defragment_regions_confirmation.header_short;Diese Aktion defragmentiert eine unbekannt Anzahl von Regionen.
+dialog.defragment_regions_confirmation.header_verbose;Diese Aktion defragmentiert %d Regionen.
 dialog.delete_chunks_confirmation.title;Chunks löschen
 dialog.delete_chunks_confirmation.header_short;Diese Aktion löscht eine unbekannte Anzahl von Chunks aus dieser Welt.
 dialog.delete_chunks_confirmation.header_verbose;Diese Aktion löscht %d Chunks aus dieser Welt.
@@ -189,6 +193,7 @@ dialog.progress.collecting_data;Sammelt Daten...
 dialog.progress.done;Fertig.
 dialog.progress.scanning_files;Scanne Dateien...
 dialog.progress.title.loading_world;Welt wird geladen...
+dialog.progress.title.defragmenting_regions;Defragmentiere Regionen...
 dialog.progress.title.deleting_selection;Lösche Selektion
 dialog.progress.title.creating_image;Erstelle Bild...
 dialog.progress.title.saving_image;Speichere Bild...

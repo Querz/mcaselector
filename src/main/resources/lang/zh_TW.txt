@@ -46,6 +46,7 @@ menu.selection.copy_chunks;複製區塊
 menu.selection.paste_chunks;貼上區塊
 menu.selection.export_chunks;匯出已選擇的區塊
 menu.selection.delete_chunks;刪除已選擇的區塊
+menu.selection.defragment_regions;重組選取的區域
 menu.selection.import_selection;從 .csv 導入選擇
 menu.selection.export_selection;將選擇導出為 .csv
 menu.selection.export_image;導出為圖像
@@ -107,6 +108,9 @@ dialog.settings.rendering.structure_icon_border_size;邊框大小
 dialog.settings.rendering.layers.render_caves;渲染洞穴
 dialog.goto.title;前往位置
 dialog.confirmation.question;您確定嗎？
+dialog.defragment_regions_confirmation.title;重組區域
+dialog.defragment_regions_confirmation.header_short;您即將重組未知數量的區域。
+dialog.defragment_regions_confirmation.header_verbose;您即將重組 %d 個區域。
 dialog.delete_chunks_confirmation.title;刪除區塊
 dialog.delete_chunks_confirmation.header_short;您將要從這個世界中刪除未知數量的區塊。
 dialog.delete_chunks_confirmation.header_verbose;您將要從這個世界中刪除 %d 個區塊。
@@ -189,6 +193,7 @@ dialog.progress.collecting_data;正在收集資料…
 dialog.progress.done;完成。
 dialog.progress.scanning_files;正在掃描檔案...
 dialog.progress.title.loading_world;正在載入世界...
+dialog.progress.title.defragmenting_regions;正在重組區域...
 dialog.progress.title.deleting_selection;正在刪除所選項目…
 dialog.progress.title.creating_image;正在建立圖片…
 dialog.progress.title.saving_image;正在儲存圖片…

@@ -46,6 +46,7 @@ menu.selection.copy_chunks;Kopyala
 menu.selection.paste_chunks;Yapıştır
 menu.selection.export_chunks;Dışa Aktar
 menu.selection.delete_chunks;Seçilen Chunkları Sil
+menu.selection.defragment_regions;Seçili bölgeleri birleştir
 menu.selection.import_selection;Seçimi .csv'den İçe Aktar
 menu.selection.export_selection;Seçimi .csv olarak Dışa Aktar
 menu.selection.export_image;Resim olarak dışa aktar
@@ -107,6 +108,9 @@ dialog.settings.rendering.structure_icon_border_size;Kenarlık boyutu
 dialog.settings.rendering.layers.render_caves;Mağaraları Renderla
 dialog.goto.title;Konuma Git
 dialog.confirmation.question;Emin Misin?
+dialog.defragment_regions_confirmation.title;Bölgeleri birleştir
+dialog.defragment_regions_confirmation.header_short;Bilinmeyen sayıda bölgeyi birleştirmek üzeresiniz.
+dialog.defragment_regions_confirmation.header_verbose;%d bölgeyi birleştirmek üzeresiniz.
 dialog.delete_chunks_confirmation.title;Sil
 dialog.delete_chunks_confirmation.header_short;Bu dünyadan bilinmeyen sayıda chunk'ı silmek üzeresiniz.
 dialog.delete_chunks_confirmation.header_verbose;Bu dünyadan %d chunk silmek üzeresiniz.
@@ -189,6 +193,7 @@ dialog.progress.collecting_data;veri toplanıyor...
 dialog.progress.done;tamamlandı.
 dialog.progress.scanning_files;Dosyalar taranıyor...
 dialog.progress.title.loading_world;Dünya yükleniyor...
+dialog.progress.title.defragmenting_regions;Bölgeler birleştiriliyor...
 dialog.progress.title.deleting_selection;Seçim siliniyor...
 dialog.progress.title.creating_image;Görüntü oluşturuluyor...
 dialog.progress.title.saving_image;Resim kaydediliyor...

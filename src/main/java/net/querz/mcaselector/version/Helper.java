@@ -88,7 +88,7 @@ public final class Helper {
 	}
 
 	public static Byte byteFromCompound(Tag compound, String key) {
-		ByteTag tag = tagFromCompound(compound, key, null);
+		NumberTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asByte();
 		}
@@ -96,7 +96,7 @@ public final class Helper {
 	}
 
 	public static Short shortFromCompound(Tag compound, String key) {
-		ShortTag tag = tagFromCompound(compound, key, null);
+		NumberTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asShort();
 		}
@@ -104,7 +104,7 @@ public final class Helper {
 	}
 
 	public static Integer intFromCompound(Tag compound, String key) {
-		IntTag tag = tagFromCompound(compound, key, null);
+		NumberTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asInt();
 		}
@@ -112,7 +112,7 @@ public final class Helper {
 	}
 
 	public static int intFromCompound(Tag compound, String key, int def) {
-		IntTag tag = tagFromCompound(compound, key, null);
+		NumberTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asInt();
 		}
@@ -120,7 +120,7 @@ public final class Helper {
 	}
 
 	public static Long longFromCompound(Tag compound, String key) {
-		LongTag tag = tagFromCompound(compound, key, null);
+		NumberTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asLong();
 		}
@@ -128,7 +128,7 @@ public final class Helper {
 	}
 
 	public static Double doubleFromCompound(Tag compound, String key) {
-		DoubleTag tag = tagFromCompound(compound, key, null);
+		NumberTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asDouble();
 		}
@@ -136,7 +136,7 @@ public final class Helper {
 	}
 
 	public static Float floatFromCompound(Tag compound, String key) {
-		FloatTag tag = tagFromCompound(compound, key, null);
+		NumberTag tag = tagFromCompound(compound, key, null);
 		if (tag != null) {
 			return tag.asFloat();
 		}

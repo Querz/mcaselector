@@ -84,6 +84,7 @@ public class OptionBar extends BorderPane {
 	private final MenuItem exportChunks = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_CHUNKS);
 	private final MenuItem importChunks = UIFactory.menuItem(Translation.MENU_TOOLS_IMPORT_CHUNKS);
 	private final MenuItem delete = UIFactory.menuItem(Translation.MENU_SELECTION_DELETE_CHUNKS);
+	private final MenuItem defragment = UIFactory.menuItem(Translation.MENU_SELECTION_DEFRAGMENT_REGIONS);
 	private final MenuItem importSelection = UIFactory.menuItem(Translation.MENU_SELECTION_IMPORT_SELECTION);
 	private final MenuItem exportSelection = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_SELECTION);
 	private final MenuItem exportImage = UIFactory.menuItem(Translation.MENU_SELECTION_EXPORT_IMAGE);
@@ -125,7 +126,7 @@ public class OptionBar extends BorderPane {
 		selection.getItems().addAll(
 				clear, invert, invertRegions, UIFactory.separator(),
 				copy, paste, UIFactory.separator(),
-				exportChunks, delete, UIFactory.separator(),
+				defragment, exportChunks, delete, UIFactory.separator(),
 				importSelection, exportSelection, UIFactory.separator(),
 				exportImage, UIFactory.separator(),
 				clearSelectionCache);
@@ -214,6 +215,7 @@ public class OptionBar extends BorderPane {
 		invertRegions.setOnAction(e -> tileMap.invertRegionsWithSelection());
 		copy.setOnAction(e -> DialogHelper.copySelectedChunks(tileMap));
 		paste.setOnAction(e -> DialogHelper.pasteSelectedChunks(tileMap, primaryStage));
+		defragment.setOnAction(e -> DialogHelper.defragmentSelectedRegions(tileMap, primaryStage));
 		exportChunks.setOnAction(e -> DialogHelper.exportSelectedChunks(tileMap, primaryStage));
 		importChunks.setOnAction(e -> DialogHelper.importChunks(tileMap, primaryStage));
 		delete.setOnAction(e -> DialogHelper.deleteSelection(tileMap, primaryStage));
@@ -407,6 +409,7 @@ public class OptionBar extends BorderPane {
 		exportChunks.setDisable(selected == 0 && !inverted);
 		exportSelection.setDisable(selected == 0 && !inverted);
 		exportImage.setDisable(selected == 0 && !inverted);
+		defragment.setDisable(selected == 0 && !inverted);
 		delete.setDisable(selected == 0 && !inverted);
 		clearSelectionCache.setDisable(selected == 0 && !inverted);
 		editNBT.setDisable(selected != 1 || inverted);

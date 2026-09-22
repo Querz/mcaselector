@@ -46,6 +46,7 @@ menu.selection.copy_chunks;Chunkok másolása
 menu.selection.paste_chunks;Chunkok beillesztése
 menu.selection.export_chunks;Kijelölt chunkok exportálása
 menu.selection.delete_chunks;Kijelölt chunkok törlése
+menu.selection.defragment_regions;Kijelölt régiók töredezettségmentesítése
 menu.selection.import_selection;Kijelölés importálása .csv fájlból
 menu.selection.export_selection;Kijelölés exportálása .csv fájlba
 menu.selection.export_image;Exportálás Képként
@@ -107,6 +108,9 @@ dialog.settings.rendering.structure_icon_border_size;Szegély mérete
 dialog.settings.rendering.layers.render_caves;Barlangok renderelése
 dialog.goto.title;Koordinátához lépés
 dialog.confirmation.question;Biztos vagy benne?
+dialog.defragment_regions_confirmation.title;Régiók töredezettségmentesítése
+dialog.defragment_regions_confirmation.header_short;Ismeretlen számú régió töredezettségmentesítésére készülsz.
+dialog.defragment_regions_confirmation.header_verbose;%d régió töredezettségmentesítésére készülsz.
 dialog.delete_chunks_confirmation.title;Chunkok törlése
 dialog.delete_chunks_confirmation.header_short;Ezzel kitörölsz ismeretlen mennyiségű chunkot a világból.
 dialog.delete_chunks_confirmation.header_verbose;Ezzel kitörölsz %d chunkot a világból.
@@ -189,6 +193,7 @@ dialog.progress.collecting_data;adatok begyűjtése...
 dialog.progress.done;kész.
 dialog.progress.scanning_files;Fájlok keresése...
 dialog.progress.title.loading_world;Világ betöltése...
+dialog.progress.title.defragmenting_regions;Régiók töredezettségmentesítése...
 dialog.progress.title.deleting_selection;Kijelölés törlése...
 dialog.progress.title.creating_image;Kép készítése...
 dialog.progress.title.saving_image;Kép mentése...

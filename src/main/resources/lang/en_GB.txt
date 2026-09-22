@@ -46,6 +46,7 @@ menu.selection.copy_chunks;Copy chunks
 menu.selection.paste_chunks;Paste chunks
 menu.selection.export_chunks;Export selected chunks
 menu.selection.delete_chunks;Delete selected chunks
+menu.selection.defragment_regions;Defragment selected regions
 menu.selection.import_selection;Import selection from .csv
 menu.selection.export_selection;Export selection as .csv
 menu.selection.export_image;Export as image
@@ -107,6 +108,9 @@ dialog.settings.rendering.structure_icon_border_size;Border size
 dialog.settings.rendering.layers.render_caves;Render caves
 dialog.goto.title;Goto location
 dialog.confirmation.question;Are you sure?
+dialog.defragment_regions_confirmation.title;Defragment regions
+dialog.defragment_regions_confirmation.header_short;You are about to defragment an unknown number of regions.
+dialog.defragment_regions_confirmation.header_verbose;You are about to defragment %d regions.
 dialog.delete_chunks_confirmation.title;Delete chunks
 dialog.delete_chunks_confirmation.header_short;You are about to delete an unknown number of chunks from this world.
 dialog.delete_chunks_confirmation.header_verbose;You are about to delete %d chunks from this world.
@@ -189,6 +193,7 @@ dialog.progress.collecting_data;collecting data...
 dialog.progress.done;done.
 dialog.progress.scanning_files;Scanning files...
 dialog.progress.title.loading_world;Loading world...
+dialog.progress.title.defragmenting_regions;Defragmenting regions...
 dialog.progress.title.deleting_selection;Deleting selection...
 dialog.progress.title.creating_image;Creating image...
 dialog.progress.title.saving_image;Saving image...
