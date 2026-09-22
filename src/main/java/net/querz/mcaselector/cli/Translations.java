@@ -7,8 +7,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
-import java.util.Set;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.concurrent.FutureTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,16 +44,7 @@ public class Translations {
 			Set<Locale> locales = Translation.getAvailableLanguages();
 			for (Locale locale : locales) {
 				Translation.load(locale);
-				try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("src/main/resources/lang/" + locale + ".txt"), StandardCharsets.UTF_8)) {
-					boolean first = true;
-					for (Translation translation : Translation.values()) {
-						osw.write((first ? "" : "\n") + translation.getKey() + ";" + (translation.isTranslated() ? translation.toString().replace("\n", "\\n") : ""));
-						first = false;
-					}
-				} catch (IOException ex) {
-					//noinspection CallToPrintStackTrace
-					ex.printStackTrace();
-				}
+				saveTranslationResource(locale);
 			}
 		} else {
 			Pattern languageFilePattern = Pattern.compile("^(?<locale>-?(?<language>-?[a-z]{2})_(?<country>-?[A-Z]{2}))$");
@@ -84,5 +76,54 @@ public class Translations {
 			System.out.println(translation.getKey() + ";");
 		}
 		future.run();
+	}
+
+	static void importTranslations(CommandLine line, FutureTask<Boolean> future) throws ParseException, IOException {
+		String f = line.getOptionValue("import-file");
+		Path file = Path.of(f);
+		if (!Files.isRegularFile(file)) {
+			throw new ParseException("no import file");
+		}
+
+		List<String> lines = Files.readAllLines(file);
+
+		Locale currentLanguage = null;
+		for (String importLine : lines) {
+			String l = importLine.trim();
+			if (l.isEmpty()) {
+				continue;
+			}
+			if (l.matches("^[a-z]{2}_[A-Z]{2}$")) {
+				String[] ll = l.split("_");
+				saveTranslationResource(currentLanguage);
+				currentLanguage = Locale.of(ll[0], ll[1]);
+				if (currentLanguage == null) {
+					throw new ParseException("invalid locale " + l);
+				}
+				Translation.load(currentLanguage);
+				continue;
+			}
+			String[] t = l.split(";", 2);
+			System.out.println(l);
+			Translation.setTranslation(t[0], t[1]);
+		}
+		saveTranslationResource(currentLanguage);
+		future.run();
+	}
+
+	private static void saveTranslationResource(Locale locale) {
+		if (locale == null) {
+			return;
+		}
+		try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("src/main/resources/lang/" + locale + ".txt"), StandardCharsets.UTF_8)) {
+			boolean first = true;
+			for (Translation translation : Translation.values()) {
+				osw.write((first ? "" : "\n") + translation.getKey() + ";" + (translation.isTranslated() ? translation.toString().replace("\n", "\\n") : ""));
+				first = false;
+			}
+		} catch (IOException ex) {
+			//noinspection CallToPrintStackTrace
+			ex.printStackTrace();
+		}
 	}
 }

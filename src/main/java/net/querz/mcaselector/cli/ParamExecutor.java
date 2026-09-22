@@ -288,6 +288,11 @@ public final class ParamExecutor {
 			.desc("Set the locale for debugging the language files")
 			.hasArgs()
 			.get());
+		options.addOption(Option.builder()
+			.longOpt("import-file")
+			.desc("Set the import file to import translations")
+			.hasArgs()
+			.get());
 	}
 
 	private final String[] args;
@@ -357,6 +362,7 @@ public final class ParamExecutor {
 				case "select" -> select(future);
 				case "export" -> export(future);
 				case "import" -> imp(future);
+				case "defragment" -> defragment(future);
 				case "delete" -> delete(future);
 				case "change" -> change(future);
 				case "cache" -> cache(future);
@@ -366,6 +372,7 @@ public final class ParamExecutor {
 				case "printMissingTranslations" -> Translations.printMissingTranslations(future);
 				case "printTranslation" -> Translations.printTranslation(line, future);
 				case "printTranslationKeys" -> Translations.printTranslationKeys(future);
+				case "importTranslations" -> Translations.importTranslations(line, future);
 
 				default -> {
 					printError("invalid mode %s", mode);

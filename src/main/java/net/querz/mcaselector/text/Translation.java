@@ -295,7 +295,7 @@ public enum Translation {
 		}
 
 		public boolean isTranslated() {
-			return super.getValue() != null;
+			return super.getValue() != null && !super.getValue().isEmpty();
 		}
 
 		public String format(Object... values) {
@@ -331,7 +331,7 @@ public enum Translation {
 		return locale != null && availableLanguages.contains(locale);
 	}
 
-	private static void setTranslation(String key, String translation) {
+	public static void setTranslation(String key, String translation) {
 		for (Translation t : Translation.values()) {
 			if (t.translationProperty.getKey().equals(key)) {
 				t.translationProperty.setValue(translation);
