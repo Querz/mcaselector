@@ -385,6 +385,7 @@ public class OptionBar extends BorderPane {
 		openRecent.setDisable(openRecent.getItems().size() <= 2); // "empty" means it either has no items or it only has the separator and the clear button
 
 		if (enabled) {
+			selectStructures.getItems().clear();
 			StructureRegistry.forEachDisplayName((displayName, id) -> {
 				CheckBox cb = new CheckBox(displayName);
 				cb.setGraphic(new ImageView(id.icon()));
