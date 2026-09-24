@@ -204,7 +204,7 @@ public class TileMap extends Canvas implements ClipboardOwner {
 
 				// clean up all queues based on visible tiles
 				JobHandler.validateJobs(j -> {
-					if (j instanceof RegionImageGenerator.MCAImageProcessJob job) {
+					if (j instanceof RegionImageGenerator.RegionImageGeneratorProcessJob job) {
 						if (!job.getTile().isVisible(this)) {
 							LOGGER.debug("removing {} for tile {} from process queue", job.getClass().getSimpleName(), job.getTile().getLocation());
 							RegionImageGenerator.setLoading(job.getTile(), false);

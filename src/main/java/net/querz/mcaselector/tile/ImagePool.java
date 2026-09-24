@@ -11,8 +11,8 @@ import net.querz.mcaselector.config.ConfigProvider;
 import net.querz.mcaselector.io.FileHelper;
 import net.querz.mcaselector.io.ImageHelper;
 import net.querz.mcaselector.io.db.CacheHandler;
-import net.querz.mcaselector.io.job.CachedImageLoadJob;
-import net.querz.mcaselector.io.job.RegionHeaderImageGenerator;
+import net.querz.mcaselector.io.job.LoadCachedImageJob;
+import net.querz.mcaselector.io.job.RegionHeaderImageGeneratorJob;
 import net.querz.mcaselector.io.job.RegionImageGenerator;
 import net.querz.mcaselector.selection.ChunkSet;
 import net.querz.mcaselector.util.point.Point2i;
@@ -73,20 +73,22 @@ public final class ImagePool {
 					tile.setLoaded(true);
 					return;
 				}
-				RegionHeaderImageGenerator.generate(tile, (cs, uuid) -> {
-					tile.setImage(cs);
-					tile.setLoaded(true);
-					push(zoomLevel, tile.location, cs);
-					tileMap.draw();
-				}, () -> tileMap.getTilePriority(tile.getLocation()));
-				return;
-			} catch (DBException e) {
-
+			} catch (DBException ex) {
+				LOGGER.warn("failed to fetch ChunkSet from cache db", ex);
 			}
+
+			RegionHeaderImageGeneratorJob.generate(tile, (cs, uuid) -> {
+				tile.setImage(cs);
+				tile.setLoaded(true);
+				push(zoomLevel, tile.location, cs);
+				tileMap.draw();
+			}, () -> tileMap.getTilePriority(tile.getLocation()));
+			return;
+
 		}
 
 		// if the image is already loading, we ignore it
-		if (RegionImageGenerator.isLoading(tile) || CachedImageLoadJob.isLoading(tile)) {
+		if (RegionImageGenerator.isLoading(tile) || LoadCachedImageJob.isLoading(tile)) {
 			return;
 		}
 
@@ -147,9 +149,9 @@ public final class ImagePool {
 			// image in disk cache?
 			diskCacheImageFile = FileHelper.createPNGFilePath(ConfigProvider.WORLD.getCacheDir(), zoomLevel, tile.location);
 			if (diskCacheImageFile.exists()) {
-				CachedImageLoadJob.setLoading(tile, true);
-				CachedImageLoadJob.load(tile, diskCacheImageFile, zoomLevel, zoomLevel, img -> {
-					CachedImageLoadJob.setLoading(tile, false);
+				LoadCachedImageJob.setLoading(tile, true);
+				LoadCachedImageJob.load(tile, diskCacheImageFile, zoomLevel, zoomLevel, img -> {
+					LoadCachedImageJob.setLoading(tile, false);
 					push(zoomLevel, tile.location, img);
 					fetchOrParseStructures(tile, zoomLevel);
 					tileMap.draw();
@@ -172,9 +174,9 @@ public final class ImagePool {
 				if (zl < zoomLevel) {
 					// image is larger than needed
 					// load and scale down
-					CachedImageLoadJob.setLoading(tile, true);
-					CachedImageLoadJob.load(tile, diskCacheImageFile, zl, zoomLevel, img -> {
-						CachedImageLoadJob.setLoading(tile, false);
+					LoadCachedImageJob.setLoading(tile, true);
+					LoadCachedImageJob.load(tile, diskCacheImageFile, zl, zoomLevel, img -> {
+						LoadCachedImageJob.setLoading(tile, false);
 						push(zoomLevel, tile.location, img);
 						fetchOrParseStructures(tile, zoomLevel);
 						tileMap.draw();
@@ -187,9 +189,9 @@ public final class ImagePool {
 				} else {
 					// image is lower res, but we load and set it anyway, so we can at least display something
 					// load and set
-					CachedImageLoadJob.setLoading(tile, true);
-					CachedImageLoadJob.load(tile, diskCacheImageFile, zl, zl, img -> {
-						CachedImageLoadJob.setLoading(tile, false);
+					LoadCachedImageJob.setLoading(tile, true);
+					LoadCachedImageJob.load(tile, diskCacheImageFile, zl, zl, img -> {
+						LoadCachedImageJob.setLoading(tile, false);
 						fetchOrParseStructures(tile, zoomLevel);
 						tileMap.draw();
 						if (isImageOutdated(tile.location)) {
@@ -215,7 +217,7 @@ public final class ImagePool {
 			} catch (DBException e) {
 				LOGGER.error("failed to cache last modified date for {}", tile.location, e);
 			}
-		}, zoomLevel, null, true, false, () -> tileMap.getTilePriority(tile.getLocation()));
+		}, zoomLevel, null, false, () -> tileMap.getTilePriority(tile.getLocation()));
 	}
 
 	private void fetchOrParseStructures(Tile tile, int zoomLevel) {
@@ -229,7 +231,7 @@ public final class ImagePool {
 			RegionImageGenerator.generate(tile, (img, structures, uuid) -> {
 				tile.setStructures(structures);
 				tileMap.draw();
-			}, zoomLevel, null, true, true, null);
+			}, zoomLevel, null, true, null);
 		} catch (DBException | IOException e) {
 			LOGGER.warn("failed to load structures for {} from cache", tile.location, e);
 		}

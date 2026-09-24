@@ -65,7 +65,7 @@ public class DialogHelper {
 						return;
 					}
 					CancellableProgressDialog c = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_CHANGING_NBT_DATA, primaryStage);
-					c.showProgressBar(t -> FieldChanger.changeNBTFields(
+					c.showProgressBar(t -> ChangeFieldsJob.changeNBTFields(
 							r.fields(),
 							r.force(),
 							r.selectionOnly() ? tileMap.getSelection() : null,
@@ -104,7 +104,7 @@ public class DialogHelper {
 								return;
 							}
 							CancellableProgressDialog c = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_FILTERED_CHUNKS, primaryStage);
-							c.showProgressBar(t -> ChunkFilterDeleter.deleteFilter(
+							c.showProgressBar(t -> DeleteFilterJob.deleteFilter(
 								r.filter(),
 								r.selectionOnly() ? tileMap.getSelection() : null,
 								t,
@@ -145,7 +145,7 @@ public class DialogHelper {
 									return;
 								}
 								CancellableProgressDialog c = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_FILTERED_CHUNKS, primaryStage);
-								c.showProgressBar(t -> ChunkFilterExporter.exportFilter(
+								c.showProgressBar(t -> ExportFilterJob.exportFilter(
 									r.filter(),
 									r.selectionOnly() ? tileMap.getSelection() : null,
 									worldDirectories,
@@ -172,7 +172,7 @@ public class DialogHelper {
 						break;
 					}
 					CancellableProgressDialog c = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SELECTING_FILTERED_CHUNKS, primaryStage);
-					c.showProgressBar(t -> ChunkFilterSelector.selectFilter(
+					c.showProgressBar(t -> SelectFilterJob.selectFilter(
 						r.filter(),
 						r.selectionOnly() ? (selection.isEmpty() ? null : selection) : null,
 						r.radius(),
@@ -244,7 +244,7 @@ public class DialogHelper {
 		result.ifPresent(r -> {
 			if (r == ButtonType.OK) {
 				new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DELETING_SELECTION, primaryStage)
-						.showProgressBar(t -> SelectionDeleter.deleteSelection(tileMap.getSelection(), t));
+						.showProgressBar(t -> DeleteSelectionJob.deleteSelection(tileMap.getSelection(), t));
 				CacheHelper.clearSelectionCache(tileMap);
 				tileMap.clear();
 				tileMap.clearSelection();
@@ -257,7 +257,7 @@ public class DialogHelper {
 		result.ifPresent(r -> {
 			if (r == ButtonType.OK) {
 				new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_DEFRAGMENTING_REGIONS, primaryStage)
-						.showProgressBar(t -> SelectionDefragmenter.defragmentSelection(tileMap.getSelection(), t, false));
+						.showProgressBar(t -> DefragmentSelectionJob.defragmentSelection(tileMap.getSelection(), t, false));
 				CacheHelper.clearSelectionCache(tileMap);
 				tileMap.clear();
 			}
@@ -280,7 +280,7 @@ public class DialogHelper {
 					}
 
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_EXPORTING_SELECTION, primaryStage)
-							.showProgressBar(t -> SelectionExporter.exportSelection(tileMap.getSelection(), worldDirectories, t));
+							.showProgressBar(t -> ExportSelectionJob.exportSelection(tileMap.getSelection(), worldDirectories, t));
 				}
 			});
 		}
@@ -303,7 +303,7 @@ public class DialogHelper {
 					}
 
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
-							.showProgressBar(t -> ChunkImporter.importChunks(
+							.showProgressBar(t -> ImportJob.importChunks(
 									wd,
 									t, false, dataProperty.get().overwrite(),
 									null,
@@ -451,7 +451,7 @@ public class DialogHelper {
 			if (b == ButtonType.OK) {
 				DataProperty<int[]> pixels = new DataProperty<>();
 				CancellableProgressDialog cpd = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_CREATING_IMAGE, primaryStage);
-				cpd.showProgressBar(t -> pixels.set(SelectionImageExporter.exportSelectionImage(data, tileMap.getOverlayPool(), t)));
+				cpd.showProgressBar(t -> pixels.set(ExportImageSelectionJob.exportSelectionImage(data, tileMap.getOverlayPool(), t)));
 				if (!cpd.cancelled() && pixels.get() != null) {
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SAVING_IMAGE, primaryStage)
 					.showProgressBar(t -> {
@@ -573,7 +573,7 @@ public class DialogHelper {
 				if (r == ButtonType.OK) {
 					DataProperty<Map<Point2i, RegionDirectories>> tempFiles = new DataProperty<>();
 					new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_IMPORTING_CHUNKS, primaryStage)
-							.showProgressBar(t -> ChunkImporter.importChunks(
+							.showProgressBar(t -> ImportJob.importChunks(
 									tileMap.getPastedWorld(), t, false, dataProperty.get().overwrite(),
 									tileMap.getPastedChunks(),
 									dataProperty.get().selectionOnly() ? tileMap.getSelection() : null,
@@ -731,7 +731,7 @@ public class DialogHelper {
 		}
 		DataProperty<AtomicLong> sum = new DataProperty<>();
 		CancellableProgressDialog cpd = new CancellableProgressDialog(Translation.DIALOG_PROGRESS_TITLE_SUMMING, primaryStage);
-		cpd.showProgressBar(t -> sum.set(SelectionSummer.sumSelection(tileMap.getSelection(), tileMap.getOverlay(), t)));
+		cpd.showProgressBar(t -> sum.set(SumSelectionJob.sumSelection(tileMap.getSelection(), tileMap.getOverlay(), t)));
 		if (!cpd.cancelled()) {
 			String s = tileMap.getOverlay().getShortMultiValues();
 			String title = tileMap.getOverlay().getType() + (s == null ? "" : "(" + s + ")");

@@ -12,11 +12,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.function.Consumer;
 
-public final class SelectionDefragmenter {
+public final class DefragmentSelectionJob extends ProcessDataJob {
 
-	private static final Logger LOGGER = LogManager.getLogger(SelectionDefragmenter.class);
-
-	private SelectionDefragmenter() {}
+	private static final Logger LOGGER = LogManager.getLogger(DefragmentSelectionJob.class);
 
 	public static void defragmentSelection(Selection selection, Progress progressChannel, boolean headless) {
 		WorldDirectories wd = ConfigProvider.WORLD.getWorldDirs();
@@ -38,31 +36,28 @@ public final class SelectionDefragmenter {
 		Consumer<Throwable> errorHandler = t -> progressChannel.incrementProgress("error");
 
 		for (RegionDirectories r : rd) {
-			MCADefragmentingProcessJob job = new MCADefragmentingProcessJob(r, progressChannel);
+			DefragmentSelectionJob job = new DefragmentSelectionJob(r, progressChannel);
 			job.errorHandler = errorHandler;
 			JobHandler.addJob(job);
 		}
 	}
 
-	public static class MCADefragmentingProcessJob extends ProcessDataJob {
+	private final Progress progressChannel;
 
-		private final Progress progressChannel;
+	private DefragmentSelectionJob(RegionDirectories dirs, Progress progressChannel) {
+		super(dirs, PRIORITY_LOW);
+		this.progressChannel = progressChannel;
+	}
 
-		private MCADefragmentingProcessJob(RegionDirectories dirs, Progress progressChannel) {
-			super(dirs, PRIORITY_LOW);
-			this.progressChannel = progressChannel;
+	@Override
+	public boolean execute() {
+		try {
+			Region region = Region.loadRegionHeaders(getRegionDirectories());
+			region.defragment();
+		} catch (Exception ex) {
+			LOGGER.warn("error defragmenting region file {}", getRegionDirectories().getLocationAsFileName(), ex);
 		}
-
-		@Override
-		public boolean execute() {
-			try {
-				Region region = Region.loadRegionHeaders(getRegionDirectories());
-				region.defragment();
-			} catch (Exception ex) {
-				LOGGER.warn("error defragmenting region file {}", getRegionDirectories().getLocationAsFileName(), ex);
-			}
-			progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
-			return true;
-		}
+		progressChannel.incrementProgress(getRegionDirectories().getLocationAsFileName());
+		return true;
 	}
 }

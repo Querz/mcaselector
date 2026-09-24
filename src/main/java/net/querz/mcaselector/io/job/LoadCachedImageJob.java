@@ -13,14 +13,14 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-public class CachedImageLoadJob extends ProcessDataJob {
+public class LoadCachedImageJob extends ProcessDataJob {
 
-	private static final Logger LOGGER = LogManager.getLogger(CachedImageLoadJob.class);
+	private static final Logger LOGGER = LogManager.getLogger(LoadCachedImageJob.class);
 
 	private static final Set<Point2i> loading = ConcurrentHashMap.newKeySet();
 
 	public static void load(Tile tile, File cachedImageFile, int loadZoomLevel, int targetZoomLevel, Consumer<Image> callback) {
-		JobHandler.addJob(new CachedImageLoadJob(tile, cachedImageFile, loadZoomLevel, targetZoomLevel, callback));
+		JobHandler.addJob(new LoadCachedImageJob(tile, cachedImageFile, loadZoomLevel, targetZoomLevel, callback));
 	}
 
 	public static boolean isLoading(Tile tile) {
@@ -32,9 +32,9 @@ public class CachedImageLoadJob extends ProcessDataJob {
 			tile.getLocation(), loading, tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
 
 		if (loading) {
-			CachedImageLoadJob.loading.add(tile.getLocation());
+			LoadCachedImageJob.loading.add(tile.getLocation());
 		} else {
-			CachedImageLoadJob.loading.remove(tile.getLocation());
+			LoadCachedImageJob.loading.remove(tile.getLocation());
 		}
 	}
 
@@ -43,7 +43,7 @@ public class CachedImageLoadJob extends ProcessDataJob {
 	private final int loadZoomLevel, targetZoomLevel;
 	private final Consumer<Image> callback;
 
-	public CachedImageLoadJob(Tile tile, File cachedImageFile, int loadZoomLevel, int targetZoomLevel, Consumer<Image> callback) {
+	public LoadCachedImageJob(Tile tile, File cachedImageFile, int loadZoomLevel, int targetZoomLevel, Consumer<Image> callback) {
 		super(new RegionDirectories(tile.getLocation(), null, null, null), PRIORITY_MEDIUM);
 		this.tile = tile;
 		this.cachedImageFile = cachedImageFile;
@@ -65,7 +65,7 @@ public class CachedImageLoadJob extends ProcessDataJob {
 
 	@Override
 	public void cancel() {
-		CachedImageLoadJob.setLoading(tile, false);
+		LoadCachedImageJob.setLoading(tile, false);
 	}
 
 	private Image loadImageFromDiskCache(File cachedImgFile) {

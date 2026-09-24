@@ -38,10 +38,10 @@ public final class RegionImageGenerator {
 
 	private RegionImageGenerator() {}
 
-	public static void generate(Tile tile, ImageGeneratorCallback callback, Integer zoomLevel, Progress progressChannel, boolean canSkipSaving, boolean structuresOnly, Supplier<Integer> prioritySupplier) {
+	public static void generate(Tile tile, ImageGeneratorCallback callback, Integer zoomLevel, Progress progressChannel, boolean structuresOnly, Supplier<Integer> prioritySupplier) {
 		LOGGER.debug("adding job {}, tile:{}, scale:{}, loading:{}, image:{}, loaded:{}",
-			MCAImageProcessJob.class.getSimpleName(), tile.getLocation(), zoomLevel, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
-		JobHandler.addJob(new MCAImageProcessJob(tile, new UniqueID(), callback, zoomLevel, progressChannel, canSkipSaving, structuresOnly, prioritySupplier));
+			RegionImageGeneratorProcessJob.class.getSimpleName(), tile.getLocation(), zoomLevel, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
+		JobHandler.addJob(new RegionImageGeneratorProcessJob(tile, new UniqueID(), callback, zoomLevel, progressChannel, structuresOnly, prioritySupplier));
 	}
 
 	public static RegionMCAFile getCachedRegionMCAFile(Point2i region) {
@@ -127,25 +127,23 @@ public final class RegionImageGenerator {
 		}
 	}
 
-	public static class MCAImageProcessJob extends ProcessDataJob {
+	public static class RegionImageGeneratorProcessJob extends ProcessDataJob {
 
 		private final Tile tile;
 		private final UniqueID uniqueID;
 		private final ImageGeneratorCallback callback;
 		private final Integer zoomLevel;
 		private final Progress progressChannel;
-		private final boolean canSkipSaving;
 		private final boolean structuresOnly;
 		private final Supplier<Integer> prioritySupplier;
 
-		private MCAImageProcessJob(Tile tile, UniqueID uniqueID, ImageGeneratorCallback callback, Integer zoomLevel, Progress progressChannel, boolean canSkipSaving, boolean structuresOnly, Supplier<Integer> prioritySupplier) {
+		private RegionImageGeneratorProcessJob(Tile tile, UniqueID uniqueID, ImageGeneratorCallback callback, Integer zoomLevel, Progress progressChannel, boolean structuresOnly, Supplier<Integer> prioritySupplier) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null), PRIORITY_LOW);
 			this.tile = tile;
 			this.uniqueID = uniqueID;
 			this.callback = callback;
 			this.zoomLevel = zoomLevel;
 			this.progressChannel = progressChannel;
-			this.canSkipSaving = canSkipSaving;
 			this.structuresOnly = structuresOnly;
 			this.prioritySupplier = prioritySupplier;
 			if (progressChannel != null) {
@@ -189,7 +187,7 @@ public final class RegionImageGenerator {
 
 					// don't cache in memory, we only want the file cache
 
-					new MCAImageSaveCacheJob(image, null, tile, z, null, canSkipSaving).execute();
+					new RegionImageGeneratorSaveJob(image, null, tile, z, null).execute();
 				}
 				if (progressChannel != null) {
 					progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
@@ -217,7 +215,7 @@ public final class RegionImageGenerator {
 						}
 						return true;
 					}
-					MCAImageSaveCacheJob job = new MCAImageSaveCacheJob(image, structures, tile, zoomLevel, progressChannel, canSkipSaving);
+					RegionImageGeneratorSaveJob job = new RegionImageGeneratorSaveJob(image, structures, tile, zoomLevel, progressChannel);
 					job.errorHandler = errorHandler;
 					JobHandler.executeSaveData(job);
 					return false;
@@ -233,7 +231,7 @@ public final class RegionImageGenerator {
 		@Override
 		public void cancel() {
 			LOGGER.debug("cancelling job {}, tile:{}, scale:{}, loading:{}, image:{}, loaded:{}",
-				MCAImageProcessJob.class.getSimpleName(), tile.getLocation(), zoomLevel, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
+				RegionImageGeneratorProcessJob.class.getSimpleName(), tile.getLocation(), zoomLevel, isLoading(tile), tile.getImage() == null ? "null" : tile.getImage().getHeight() + "x" + tile.getImage().getWidth(), tile.isLoaded());
 
 			setLoading(tile, false);
 
@@ -255,21 +253,19 @@ public final class RegionImageGenerator {
 		}
 	}
 
-	private static class MCAImageSaveCacheJob extends SaveDataJob<Image> {
+	private static class RegionImageGeneratorSaveJob extends SaveDataJob<Image> {
 
 		private final Long2ObjectOpenHashMap<String[]> structures;
 		private final Tile tile;
 		private final int zoomLevel;
 		private final Progress progressChannel;
-		private final boolean canSkip;
 
-		private MCAImageSaveCacheJob(Image data, Long2ObjectOpenHashMap<String[]> structures, Tile tile, int zoomLevel, Progress progressChannel, boolean canSkip) {
+		private RegionImageGeneratorSaveJob(Image data, Long2ObjectOpenHashMap<String[]> structures, Tile tile, int zoomLevel, Progress progressChannel) {
 			super(new RegionDirectories(tile.getLocation(), null, null, null), data);
 			this.structures = structures;
 			this.tile = tile;
 			this.zoomLevel = zoomLevel;
 			this.progressChannel = progressChannel;
-			this.canSkip = canSkip;
 		}
 
 		@Override
@@ -305,7 +301,6 @@ public final class RegionImageGenerator {
 				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 			}
 
-
 			done();
 		}
 
@@ -314,11 +309,6 @@ public final class RegionImageGenerator {
 			if (progressChannel != null) {
 				progressChannel.incrementProgress(FileHelper.createMCAFileName(tile.getLocation()));
 			}
-		}
-
-		@Override
-		public boolean canSkip() {
-			return canSkip;
 		}
 	}
 

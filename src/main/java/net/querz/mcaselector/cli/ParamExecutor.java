@@ -797,7 +797,7 @@ public final class ParamExecutor {
 			future.run();
 		});
 		runBefore(query);
-		ChunkFilterSelector.selectFilter(query, selectionData, radius, selection::merge, progress, true);
+		SelectFilterJob.selectFilter(query, selectionData, radius, selection::merge, progress, true);
 	}
 
 	private void export(FutureTask<Boolean> future) throws ParseException {
@@ -814,9 +814,9 @@ public final class ParamExecutor {
 		});
 		if (query != null) {
 			runBefore(query);
-			ChunkFilterExporter.exportFilter(query, selection, output, progress, true);
+			ExportFilterJob.exportFilter(query, selection, output, progress, true);
 		} else if (selection != null) {
-			SelectionExporter.exportSelection(selection, output, progress);
+			ExportSelectionJob.exportSelection(selection, output, progress);
 		} else {
 			throw new ParseException("missing --query, --script and/or --selection parameter");
 		}
@@ -839,7 +839,7 @@ public final class ParamExecutor {
 		progress.onDone(future);
 
 		DataProperty<Map<Point2i, RegionDirectories>> tempFiles = new DataProperty<>();
-		ChunkImporter.importChunks(source, progress, true, overwrite, sourceSelection, targetSelection, sections, offset, tempFiles);
+		ImportJob.importChunks(source, progress, true, overwrite, sourceSelection, targetSelection, sections, offset, tempFiles);
 		if (tempFiles.get() != null) {
 			for (RegionDirectories tempFile : tempFiles.get().values()) {
 				if (!tempFile.getRegion().delete()) {
@@ -867,7 +867,7 @@ public final class ParamExecutor {
 		CLIProgress progress = new CLIProgress("defragmenting regions");
 		progress.onDone(future);
 
-		SelectionDefragmenter.defragmentSelection(selection, progress, true);
+		DefragmentSelectionJob.defragmentSelection(selection, progress, true);
 	}
 
 	private void delete(FutureTask<Boolean> future) throws ParseException {
@@ -884,9 +884,9 @@ public final class ParamExecutor {
 
 		if (query != null) {
 			runBefore(query);
-			ChunkFilterDeleter.deleteFilter(query, selection, progress, true);
+			DeleteFilterJob.deleteFilter(query, selection, progress, true);
 		} else if (selection != null) {
-			SelectionDeleter.deleteSelection(selection, progress);
+			DeleteSelectionJob.deleteSelection(selection, progress);
 		} else {
 			throw new ParseException("missing --query and/or --selection parameter");
 		}
@@ -906,7 +906,7 @@ public final class ParamExecutor {
 		});
 
 		runBefore(fields);
-		FieldChanger.changeNBTFields(fields, force, selection, progress, true);
+		ChangeFieldsJob.changeNBTFields(fields, force, selection, progress, true);
 	}
 
 	private void cache(FutureTask<Boolean> future) throws ParseException, ExecutionException, InterruptedException {
@@ -1003,7 +1003,7 @@ public final class ParamExecutor {
 			}
 		}
 
-		pixels.set(SelectionImageExporter.exportSelectionImage(data, overlayPool, generateProgress));
+		pixels.set(ExportImageSelectionJob.exportSelectionImage(data, overlayPool, generateProgress));
 	}
 
 	private String parsedArgsToString() {

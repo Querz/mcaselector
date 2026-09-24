@@ -8,6 +8,8 @@ import net.querz.mcaselector.io.WorldDirectories;
 import net.querz.mcaselector.util.point.Point2i;
 import java.io.*;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 
 public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<ChunkSet>> {
 
@@ -95,37 +97,10 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 		}
 	}
 
-	public String saveToString() {
-		StringBuilder sb = new StringBuilder();
-		if (inverted) {
-			sb.append("inverted\n");
-		}
-		for (Long2ObjectMap.Entry<ChunkSet> entry : selection.long2ObjectEntrySet()) {
-			Point2i region = new Point2i(entry.getLongKey());
-			if (entry.getValue() == null) {
-				sb.append(writePoint(region));
-				sb.append('\n');
-				continue;
-			}
-			for (int i : entry.getValue()) {
-				sb.append(writePoint(region));
-				sb.append(';');
-				Point2i c = new Point2i(i).add(region.regionToChunk());
-				sb.append(writePoint(c));
-				sb.append('\n');
-			}
-		}
-		return sb.toString();
-	}
-
 	private static void writePoint(BufferedWriter bw, Point2i p) throws IOException {
 		bw.write(Integer.toString(p.getX()));
 		bw.write(';');
 		bw.write(Integer.toString(p.getZ()));
-	}
-
-	private static String writePoint(Point2i p) {
-		return p.getX() + ";" + p.getZ();
 	}
 
 	private static IOException ioException(String msg, Object... format) {
@@ -712,6 +687,50 @@ public class Selection implements Serializable, Iterable<Long2ObjectMap.Entry<Ch
 	@Override
 	public Iterator<Long2ObjectMap.Entry<ChunkSet>> iterator() {
 		return selection.long2ObjectEntrySet().iterator();
+	}
+
+	// Creates a custom Iterator that iterates over all selected chunks in the provided ChunkSet.
+	// If the ChunkSet is null, it iterates over all 1024 chunks of the region.
+	public static Iterator<Point2i> regionIterator(ChunkSet chunks, Point2i region) {
+		return new RegionIterator(chunks, region);
+	}
+
+	private static class RegionIterator implements Iterator<Point2i> {
+
+		private int index = 0;
+		private final ChunkSet chunks;
+		private final Point2i region;
+		private static final ChunkSet fullChunkSet;
+
+		static {
+			ChunkSet full = new ChunkSet();
+			full.fill();
+			fullChunkSet = full.immutable();
+		}
+
+		private RegionIterator(ChunkSet chunks, Point2i region) {
+			this.chunks = chunks == null ? fullChunkSet : chunks;
+			this.region = region.regionToChunk();
+		}
+
+		@Override
+		public boolean hasNext() {
+			while (index < 1024) {
+				if (chunks.get(index)) {
+					return true;
+				}
+				index++;
+			}
+			return false;
+		}
+
+		@Override
+		public Point2i next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException();
+			}
+			return new Point2i(index++).add(region);
+		}
 	}
 
 	public Stats getStats() {

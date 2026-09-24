@@ -273,32 +273,24 @@ public class ChunkSet implements IntIterable, Serializable, Cloneable {
 		this.setBits = (short) count;
 	}
 
-	private class ChunkIterator implements IntIterator {
+	class ChunkIterator implements IntIterator {
 
-		short index = 0;
-
-		@Override
-		public int nextInt() {
-			return index - 1;
-		}
+		int index = 0;
 
 		@Override
 		public boolean hasNext() {
 			while (index < 1024) {
-				if (get(index++)) {
+				if (get(index)) {
 					return true;
 				}
+				index++;
 			}
 			return false;
 		}
 
 		@Override
-		public void forEachRemaining(IntConsumer action) {
-			for (; index < 1024; index++) {
-				if (get(index)) {
-					action.accept(index);
-				}
-			}
+		public int nextInt() {
+			return index++;
 		}
 	}
 
