@@ -9,6 +9,7 @@ import net.querz.mcaselector.version.ChunkFilter;
 import net.querz.mcaselector.version.VersionHandler;
 import net.querz.mcaselector.version.mapping.registry.StatusRegistry;
 import net.querz.nbt.StringTag;
+import java.util.List;
 
 public class StatusFilter extends TextFilter<StatusRegistry.StatusIdentifier> {
 
@@ -24,6 +25,11 @@ public class StatusFilter extends TextFilter<StatusRegistry.StatusIdentifier> {
 	private StatusFilter(Operator operator, Comparator comparator, String rawValue, StatusRegistry.StatusIdentifier value) {
 		super(FilterType.STATUS, operator, comparator, value);
 		setRawValue(rawValue);
+	}
+
+	@Override
+	public List<String> getKnownValues() {
+		return StatusRegistry.getKnownNames();
 	}
 
 	@Override

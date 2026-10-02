@@ -2,6 +2,7 @@ package net.querz.mcaselector.filter;
 
 import net.querz.mcaselector.io.mca.ChunkData;
 import java.io.Serializable;
+import java.util.List;
 
 public abstract class Filter<T> implements Serializable {
 
@@ -60,6 +61,10 @@ public abstract class Filter<T> implements Serializable {
 
 	public boolean selectionOnly() {
 		return false;
+	}
+
+	public List<String> getKnownValues() {
+		return null;
 	}
 
 	public abstract T getFilterValue();

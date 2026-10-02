@@ -31,6 +31,11 @@ public class BiomeFilter extends TextFilter<List<BiomeRegistry.BiomeIdentifier>>
 	}
 
 	@Override
+	public List<String> getKnownValues() {
+		return BiomeRegistry.getKnownNames();
+	}
+
+	@Override
 	public String getFormatText() {
 		return "<biome>[,<biome>,...]";
 	}

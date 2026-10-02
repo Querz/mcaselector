@@ -7,3 +7,11 @@
     -fx-background-color: -color-filter-box-invalid-background;
     -fx-effect: dropshadow(gaussian, -color-filter-box-invalid-shadow, 4, 0, 0, 0);
 }
+
+.filter-known-value-combo-box .arrow-button {
+    -fx-background-color: -color-combo-box-background;
+}
+
+.filter-value-suggestions:keyboard-navigation .list-cell:focused {
+    -fx-background-color: -color-text-field-focused-shadow;
+}

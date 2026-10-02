@@ -32,6 +32,11 @@ public class PaletteFilter extends TextFilter<List<String>> {
 	}
 
 	@Override
+	public List<String> getKnownValues() {
+		return BlockRegistry.getKnownNames();
+	}
+
+	@Override
 	public Comparator[] getComparators() {
 		return comparators;
 	}

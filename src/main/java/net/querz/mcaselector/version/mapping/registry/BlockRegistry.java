@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
 
 public final class BlockRegistry {
 
@@ -29,6 +30,13 @@ public final class BlockRegistry {
 
 	public static boolean isValidName(String name) {
 		return valid.containsKey(name) || name != null && name.startsWith("'") && name.endsWith("'");
+	}
+
+	public static List<String> getKnownNames() {
+		return valid.keySet().stream()
+				.filter(name -> name.startsWith("minecraft:"))
+				.sorted(Comparator.naturalOrder())
+				.toList();
 	}
 
 	public static String[] parseBlockNames(String raw) {

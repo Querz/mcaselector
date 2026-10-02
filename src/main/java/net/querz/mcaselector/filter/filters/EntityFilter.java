@@ -31,6 +31,11 @@ public class EntityFilter extends TextFilter<List<String>> {
 	}
 
 	@Override
+	public List<String> getKnownValues() {
+		return EntityRegistry.getKnownNames();
+	}
+
+	@Override
 	public boolean contains(List<String> value, ChunkData data) {
 		ListTag entities = VersionHandler.getImpl(data, ChunkFilter.Entities.class).getEntities(data);
 		if (entities == null || entities.getType() == Tag.Type.LONG_ARRAY) {

@@ -23,6 +23,13 @@ public class StructureFilter extends TextFilter<List<String>> {
 	}
 
 	@Override
+	public List<String> getKnownValues() {
+		List<String> names = new ArrayList<>();
+		StructureRegistry.forEachDisplayName((displayName, structure) -> names.add(structure.id()));
+		return names;
+	}
+
+	@Override
 	public boolean contains(List<String> value, ChunkData data) {
 		if (data.region() == null || data.region().getData() == null) {
 			return false;

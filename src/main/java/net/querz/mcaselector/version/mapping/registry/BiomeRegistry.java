@@ -6,8 +6,10 @@ import com.google.gson.reflect.TypeToken;
 import net.querz.mcaselector.io.FileHelper;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 public final class BiomeRegistry {
 
@@ -42,6 +44,10 @@ public final class BiomeRegistry {
 
 	public static Integer toID(String name) {
 		return nameMapping.getOrDefault(name, null);
+	}
+
+	public static List<String> getKnownNames() {
+		return List.copyOf(new TreeSet<>(mapping));
 	}
 
 	public static class BiomeIdentifier implements Serializable {

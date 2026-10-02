@@ -3,6 +3,8 @@ package net.querz.mcaselector.filter.filters;
 import net.querz.mcaselector.filter.*;
 import net.querz.mcaselector.io.mca.ChunkData;
 import net.querz.mcaselector.io.mca.CompressionType;
+import java.util.Arrays;
+import java.util.List;
 
 public class CompressionFilter extends TextFilter<CompressionType> {
 
@@ -18,6 +20,11 @@ public class CompressionFilter extends TextFilter<CompressionType> {
 	private CompressionFilter(Operator operator, Comparator comparator, String rawValue, CompressionType value) {
 		super(FilterType.COMPRESSION, operator, comparator, value);
 		setRawValue(rawValue);
+	}
+
+	@Override
+	public List<String> getKnownValues() {
+		return Arrays.stream(CompressionType.values()).map(CompressionType::toString).toList();
 	}
 
 	@Override
