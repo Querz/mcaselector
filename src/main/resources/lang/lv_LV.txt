@@ -1,0 +1,216 @@
+status.region;reģions
+status.chunk;čanks
+status.block;bloks
+status.selected;atlasīts
+status.queue;rinda
+status.total;kopā
+status.structures;struktūras
+status.overlay;pārklājums
+menu.file;Fails
+menu.view;Skats
+menu.selection;Atlase
+menu.tools;Rīki
+menu.about;Par programmu
+menu.file.new;Jauns
+menu.file.open;Atvērt
+menu.file.open_recent;Atvērt nesenos
+menu.file.open_recent.clear;Notīrīt
+menu.file.save;Saglabāt
+menu.file.save_as;Saglabāt kā...
+menu.file.open_world;Atvērt pasauli
+menu.file.open_dimension;Atvērt dimensiju
+menu.file.open_recent_world;Atvērt neseno pasauli
+menu.file.open_recent_world.clear;Notīrīt
+menu.file.settings;Iestatījumi
+menu.file.render_settings;Attēlošanas iestatījumi
+menu.file.quit;Iziet
+menu.view.reload;Ielādēt no jauna
+menu.view.chunk_grid;Čanku režģis
+menu.view.region_grid;Reģionu režģis
+menu.view.coordinates;Koordinātas
+menu.view.coordinate_style;Koordinātu attēlojums
+menu.view.coordinate_style.dynamic;Dinamisks
+menu.view.coordinate_style.edge;Malā
+menu.view.coordinate_style.grid;Režģī
+menu.view.structure_icons;Struktūras
+menu.view.select_structures;Atlasīt struktūras
+menu.view.goto;Doties uz
+menu.view.reset_zoom;Atiestatīt tālummaiņu
+menu.view.save_screenshot;Saglabāt ekrānuzņēmumu
+menu.view.clear_cache;Notīrīt kešatmiņu
+menu.view.clear_all_cache;Notīrīt visu kešatmiņu
+menu.selection.clear;Notīrīt
+menu.selection.invert;Apgriezt atlasi
+menu.selection.invert_regions;Apgriezt atlasītos reģionus
+menu.selection.copy_chunks;Kopēt čankus
+menu.selection.paste_chunks;Ielīmēt čankus
+menu.selection.export_chunks;Eksportēt atlasītos čankus
+menu.selection.delete_chunks;Dzēst atlasītos čankus
+menu.selection.import_selection;Importēt atlasi no .csv
+menu.selection.export_selection;Eksportēt atlasi kā .csv
+menu.selection.export_image;Eksportēt kā attēlu
+menu.selection.clear_cache;Notīrīt kešatmiņu
+menu.tools.import_chunks;Importēt čankus
+menu.tools.filter_chunks;Filtrēt čankus
+menu.tools.change_fields;Mainīt laukus
+menu.tools.edit_nbt;Rediģēt čanku
+menu.tools.swap_chunks;Apmainīt čankus
+menu.tools.edit_overlays;Rediģēt pārklājumus
+menu.tools.next_overlay;Nākamais pārklājums
+menu.tools.next_overlay_type;Nākamais pārklājuma veids
+menu.tools.sum_selection;Summēt atlasi
+dialog.select_world.title;Izvēlēties dimensiju
+dialog.settings.title;Iestatījumi
+dialog.settings.global.language;Valoda
+dialog.settings.global.language.language;Valoda
+dialog.settings.processing.process.process_threads;Apstrādes pavedieni
+dialog.settings.processing.process;Apstrāde
+dialog.settings.processing.process.write_threads;Rakstīšanas pavedieni
+dialog.settings.processing.files.max_files;Maksimālais failu skaits
+dialog.settings.global.selection.region_color;Reģionu krāsa
+dialog.settings.global.selection.chunk_color;Čanku krāsa
+dialog.settings.global.selection.pasted_chunks_color;Ielīmēto čanku krāsa
+dialog.settings.rendering.shade.shade;Ēnojums
+dialog.settings.rendering.shade;Ēnojums
+dialog.settings.rendering.shade.shade_water;Ūdens ēnojums
+dialog.settings.rendering.shade.shade_altitude;Augstuma ēnojums
+dialog.settings.rendering.background.show_nonexistent_regions;Rādīt neeksistējošus reģionus
+dialog.settings.rendering.smooth.smooth_rendering;Izlīdzināta attēlošana
+dialog.settings.rendering.smooth.smooth_overlays;Izlīdzināti pārklājumi
+dialog.settings.rendering.background.background_pattern;Fona raksts
+dialog.settings.rendering.background;Fons
+dialog.settings.rendering.zoom_level.low_detail_zoom_level;Zemas detalizācijas tālummaiņas līmenis
+dialog.settings.rendering.zoom_level.low_detail_color;Zemas detalizācijas krāsa
+dialog.settings.rendering.zoom_level;Tālummaiņas līmenis
+dialog.settings.global.misc.mc_saves_dir;Minecraft saglabāto pasauļu mape
+dialog.settings.global.misc.print_debug;Rādīt atkļūdošanas ziņojumus
+dialog.settings.global.misc.show_log_file;Rādīt žurnālfailu
+dialog.settings.reset;Atiestatīt
+dialog.settings.set_default;Iestatīt kā noklusējumu
+dialog.settings.tab_global;Vispārīgi
+dialog.settings.tab_processing;Apstrāde
+dialog.settings.tab_rendering;Attēlošana
+dialog.settings.tab_world;Pasaule
+dialog.settings.global.misc;Citi
+dialog.settings.processing.files;Faili
+dialog.settings.rendering.smooth;Izlīdzināšana
+dialog.settings.global.selection;Atlase
+dialog.settings.world.paths;Ceļi
+dialog.settings.world.paths.poi;Interešu punkti (POI)
+dialog.settings.world.paths.entities;Entītijas
+dialog.settings.rendering.layers.render_height;Attēlošanas augstums
+dialog.settings.rendering.layers.render_layer_only;Attēlot tikai slāni
+dialog.settings.rendering.layers;Slāņi
+dialog.settings.rendering.structure_icons;Struktūru ikonas
+dialog.settings.rendering.structure_icon_size;Ikonu izmērs
+dialog.settings.rendering.structure_icon_border_size;Apmales izmērs
+dialog.settings.rendering.layers.render_caves;Attēlot alas
+dialog.goto.title;Doties uz vietu
+dialog.confirmation.question;Vai tiešām vēlies turpināt?
+dialog.delete_chunks_confirmation.title;Dzēst čankus
+dialog.delete_chunks_confirmation.header_short;Tu grasies dzēst nezināmu skaitu čanku no šīs pasaules.
+dialog.delete_chunks_confirmation.header_verbose;Tu grasies dzēst %d čankus no šīs pasaules.
+dialog.image_export_confirmation.title;Eksportēt attēlu
+dialog.image_export_confirmation.header_short;Tu grasies izveidot attēlu ar nezināmiem izmēriem.
+dialog.image_export_confirmation.header_verbose;Tu grasies izveidot attēlu ar izmēriem %dx%d.
+dialog.import_chunks_confirmation.title;Importēt čankus
+dialog.import_chunks_confirmation.header;Tu grasies importēt nezināmu skaitu čanku šajā pasaulē.
+dialog.import_chunks_confirmation.options;Opcijas
+dialog.import_chunks_confirmation.options.offset;Nobīde
+dialog.import_chunks_confirmation.options.overwrite;Pārrakstīt esošos čankus
+dialog.import_chunks_confirmation.options.selection_only;Lietot tikai atlasei
+dialog.import_chunks_confirmation.options.y_offset;Y ass nobīde
+dialog.import_chunks_confirmation.options.sections;Sekcijas
+dialog.import_chunks_confirmation.warning;Brīdinājums: importējot čankus ar nobīdi, komandu bloku saturs netiks atjaunināts.
+dialog.export_chunks_confirmation.title;Eksportēt čankus
+dialog.export_chunks_confirmation.header_short;Tu grasies eksportēt nezināmu skaitu čanku no šīs pasaules.
+dialog.export_chunks_confirmation.header_verbose;Tu grasies eksportēt %d čankus no šīs pasaules.
+dialog.import_selection.title;Importēt atlasi no .csv
+dialog.import_selection.header;Šajā pasaulē jau ir atlase.\nKā vēlies importēt jauno atlasi?
+dialog.import_selection.overwrite;Pārrakstīt
+dialog.import_selection.merge;Apvienot
+dialog.import_selection.subtract;Atņemt
+dialog.filter_chunks.title;Filtrēt čankus
+dialog.filter_chunks.filter.add.tooltip;Pievienot jaunu nosacījumu zem šī.
+dialog.filter_chunks.filter.delete.tooltip;Dzēst šo nosacījumu.
+dialog.filter_chunks.filter.type.tooltip;Šī nosacījuma veids.
+dialog.filter_chunks.filter.operator.tooltip;Operators vairāku nosacījumu sasaistīšanai.
+dialog.filter_chunks.filter.comparator.tooltip;Salīdzināšanas operators.
+dialog.filter_chunks.select;Atlasīt
+dialog.filter_chunks.select.tooltip;Izveido attiecīgo čanku atlasi.
+dialog.filter_chunks.export;Eksportēt
+dialog.filter_chunks.export.tooltip;Eksportē visus atbilstošos čankus jaunā mapē.
+dialog.filter_chunks.delete;Dzēst
+dialog.filter_chunks.delete.tooltip;Dzēš visus atbilstošos čankus no pašreizējās pasaules.
+dialog.filter_chunks.selection_only;Lietot tikai atlasei
+dialog.filter_chunks.add_selection;Pievienot atlasei
+dialog.filter_chunks.subtract_selection;Noņemt no atlases
+dialog.filter_chunks.selection_radius;Atlases rādiuss
+dialog.filter_chunks.tab_query;Vaicājums
+dialog.filter_chunks.tab_script;Skripts
+dialog.edit_overlays.title;Rediģēt pārklājumus
+dialog.edit_overlays.overlay_active.tooltip;Aktīvs
+dialog.edit_overlays.delete.tooltip;Dzēst
+dialog.edit_overlays.tab_presets;Pārklājumi
+dialog.edit_overlays.tab_script;Skripts
+dialog.edit_overlays.create_overlay;Izveidot pārklājumu
+dialog.change_nbt.title;Mainīt NBT
+dialog.change_nbt.change;Mainīt
+dialog.change_nbt.change.tooltip;Maina vērtību tikai tad, ja tās atslēga jau pastāv.
+dialog.change_nbt.force;Piespiedu izmaiņa
+dialog.change_nbt.force.tooltip;Izveido tagu, ja tas vēl nepastāv.
+dialog.change_nbt.selection_only;Lietot tikai atlasei
+dialog.change_nbt.selection_only.tooltip;Vai šo filtru piemērot tikai pašreizējai atlasei.
+dialog.change_nbt_confirmation.title;Mainīt NBT
+dialog.change_nbt_confirmation.header_short;Tu grasies mainīt datus nezināmā skaitā šīs pasaules čanku.
+dialog.change_nbt.tab_query;Vaicājums
+dialog.change_nbt.tab_script;Skripts
+dialog.edit_nbt.title;Rediģēt čanku
+dialog.edit_nbt.placeholder.loading;ielādē...
+dialog.edit_nbt.placeholder.no_chunk_data;čanka dati nav atrasti
+dialog.edit_nbt.placeholder.no_region_file;reģiona fails neeksistē
+dialog.edit_array.index;Indekss
+dialog.edit_array.value;Vērtība
+dialog.about.title;Par programmu
+dialog.about.header;Par MCA Selector
+dialog.about.version;Versija:
+dialog.about.version.unknown;nav zināma
+dialog.about.version.check;pārbaudīt
+dialog.about.version.checking;pārbauda...
+dialog.about.version.up_to_date;Jaunākā versija
+dialog.about.version.error;Kļūda
+dialog.about.license;Licence:
+dialog.about.copyright;Autortiesības:
+dialog.about.source;Avots:
+dialog.progress.no_files;nav failu
+dialog.progress.running;notiek izpilde...
+dialog.progress.cancelling;atceļ...
+dialog.progress.collecting_data;vāc datus...
+dialog.progress.done;pabeigts.
+dialog.progress.scanning_files;skenē failus...
+dialog.progress.title.loading_world;Ielādē pasauli...
+dialog.progress.title.deleting_selection;Dzēš atlasi...
+dialog.progress.title.creating_image;Veido attēlu...
+dialog.progress.title.saving_image;Saglabā attēlu...
+dialog.progress.title.exporting_selection;Eksportē atlasi...
+dialog.progress.title.importing_chunks;Importē čankus...
+dialog.progress.title.deleting_filtered_chunks;Dzēš filtrētos čankus...
+dialog.progress.title.exporting_filtered_chunks;Eksportē filtrētos čankus...
+dialog.progress.title.selecting_filtered_chunks;Atlasa filtrētos čankus...
+dialog.progress.title.changing_nbt_data;Maina NBT datus...
+dialog.progress.title.saving_chunk;Saglabā čanku...
+dialog.progress.title.running_before;Izpilda before()
+dialog.progress.title.running_after;Izpilda after()
+dialog.progress.title.summing;Summē...
+dialog.error.button.copy_to_clipboard;Kopēt starpliktuvē
+dialog.error.title;Kļūda
+dialog.error.header;Radās kļūda
+dialog.error.copied_to_clipboard;Nokopēts starpliktuvē!
+dialog.unsaved_selection.title;Nesaglabāta atlase
+dialog.unsaved_selection.header;Ir nesaglabāta atlase.
+dialog.unsaved_script.title;Nesaglabāts skripts
+dialog.unsaved_script.header;Ir nesaglabāts skripts.
+dialog.request_number.title.array_length;Masīva garums
+dialog.request_number.title.enter_number;Ievadi skaitli
+button.cancel;Atcelt
+button.ok;Labi
