@@ -67,6 +67,11 @@ public class EntityFilter extends TextFilter<List<String>> {
 	}
 
 	@Override
+	public boolean intersectsNot(List<String> value, ChunkData data) {
+		return !intersects(value, data);
+	}
+
+	@Override
 	public boolean containsNot(List<String> value, ChunkData data) {
 		return !contains(value, data);
 	}

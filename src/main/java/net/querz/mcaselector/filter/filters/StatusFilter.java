@@ -66,6 +66,11 @@ public class StatusFilter extends TextFilter<StatusRegistry.StatusIdentifier> {
 	}
 
 	@Override
+	public boolean intersectsNot(StatusRegistry.StatusIdentifier value, ChunkData data) {
+		throw new UnsupportedOperationException("\"!intersects\" not allowed in StatusFilter");
+	}
+
+	@Override
 	public void setFilterValue(String raw) {
 		if (StatusRegistry.isValidName(raw)) {
 			setValue(new StatusRegistry.StatusIdentifier(raw));

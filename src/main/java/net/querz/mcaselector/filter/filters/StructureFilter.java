@@ -71,6 +71,11 @@ public class StructureFilter extends TextFilter<List<String>> {
 	}
 
 	@Override
+	public boolean intersectsNot(List<String> value, ChunkData data) {
+		return !intersects(value, data);
+	}
+
+	@Override
 	public void setFilterValue(String raw) {
 		// allow minecraft:name
 		// allow name (if it's a valid name)

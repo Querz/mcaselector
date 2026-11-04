@@ -61,8 +61,6 @@ public abstract class NumberFilter<T extends Number> extends Filter<T> {
 		return getType() + " " + comparator.getQueryString() + " " + getFilterValue();
 	}
 
-	public abstract String getFormatText();
-
 	protected abstract T getFilterNumber();
 
 	protected abstract void setFilterNumber(T value);

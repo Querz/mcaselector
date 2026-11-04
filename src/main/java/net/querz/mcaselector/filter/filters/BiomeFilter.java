@@ -51,6 +51,11 @@ public class BiomeFilter extends TextFilter<List<BiomeRegistry.BiomeIdentifier>>
 	}
 
 	@Override
+	public boolean intersectsNot(List<BiomeRegistry.BiomeIdentifier> value, ChunkData data) {
+		return !intersects(value, data);
+	}
+
+	@Override
 	public void setFilterValue(String raw) {
 		String[] rawBiomeNames = raw.replace(" ", "").split(",");
 		if (raw.isEmpty() || rawBiomeNames.length == 0) {

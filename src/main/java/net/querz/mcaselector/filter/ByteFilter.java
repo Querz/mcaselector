@@ -69,6 +69,6 @@ public abstract class ByteFilter extends NumberFilter<Byte> {
 
 	@Override
 	public String getFormatText() {
-		return "+/-byte";
+		return "\u00B1byte";
 	}
 }

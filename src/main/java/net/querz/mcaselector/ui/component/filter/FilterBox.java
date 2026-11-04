@@ -1,15 +1,19 @@
 package net.querz.mcaselector.ui.component.filter;
 
+import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
+import javafx.util.Callback;
 import net.querz.mcaselector.filter.Comparator;
 import net.querz.mcaselector.filter.filters.DataVersionFilter;
 import net.querz.mcaselector.filter.Filter;
@@ -26,7 +30,7 @@ import net.querz.mcaselector.util.validation.OSHelper;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public abstract class FilterBox extends BorderPane {
+public class FilterBox extends BorderPane {
 
 	private static final Image deleteIcon = FileHelper.getIconFromResources("img/delete");
 	private static final Image addIcon = FileHelper.getIconFromResources("img/add");
@@ -42,7 +46,9 @@ public abstract class FilterBox extends BorderPane {
 	protected final Label move = new Label("", new ImageView(burgerIcon));
 	protected final ComboBox<FilterType> type = new ComboBox<>();
 	protected final ComboBox<Operator> operator = new ComboBox<>();
+	protected final ComboBox<Comparator> comparator = new ComboBox<>();
 	protected final GridPane filterOperators = new GridPane();
+	protected final TextField input = new TextField();
 
 	private Consumer<FilterBox> updateListener;
 	private final boolean root;
@@ -57,6 +63,7 @@ public abstract class FilterBox extends BorderPane {
 
 	private static final boolean USE_DRAGVIEW_OFFSET = OSHelper.isWindows();
 
+	private static final PseudoClass invalid = PseudoClass.getPseudoClass("invalid");
 	private static final String stylesheet = Objects.requireNonNull(FilterBox.class.getClassLoader().getResource("style/component/filter-box.css")).toExternalForm();
 
 	public FilterBox(FilterBox parent, Filter<?> filter, boolean root) {
@@ -111,9 +118,73 @@ public abstract class FilterBox extends BorderPane {
 		add.setOnMouseReleased(e -> onAdd(this.filter));
 		delete.setOnMouseReleased(e -> onDelete(this.filter));
 
+		input.setPromptText(filter.getFormatText());
+		input.textProperty().addListener((a, b, c) -> onTextInput(filter, c));
+		input.setAlignment(Pos.CENTER);
+		setCenter(input);
+		setText(filter.getRawValue());
+		onTextInput(filter, filter.getRawValue());
+
+		Callback<ListView<Comparator>, ListCell<Comparator>> cellFactory = lv -> new ListCell<>() {
+			@Override
+			protected void updateItem(Comparator item, boolean empty) {
+				super.updateItem(item, empty);
+				if (empty || item == null) {
+					setText(null);
+					setGraphic(null);
+					return;
+				}
+
+				String str = item.toString();
+				// Use default rendering for single characters
+				if (str.length() <= 1) {
+					setText(str);
+					setGraphic(null);
+					return;
+				}
+
+				// Stack multiple characters on top of each other
+				setText(null);
+				StackPane stack = new StackPane();
+				stack.setAlignment(Pos.CENTER);
+
+				for (int i = 0; i < str.length(); i++) {
+					Text textNode = new Text(String.valueOf(str.charAt(i)));
+					textNode.fontProperty().bind(fontProperty());
+					textNode.getStyleClass().add("stacked-text");
+					stack.getChildren().add(textNode);
+				}
+
+				HBox container = new HBox(stack);
+				container.setAlignment(Pos.CENTER_LEFT);
+				setGraphic(container);
+			}
+		};
+
+		comparator.setCellFactory(cellFactory);
+		comparator.setButtonCell(cellFactory.call(null));
+		comparator.setTooltip(UIFactory.tooltip(Translation.DIALOG_FILTER_CHUNKS_FILTER_COMPARATOR_TOOLTIP));
+		comparator.getItems().addAll(filter.getComparators());
+		comparator.getSelectionModel().select(filter.getComparator());
+		comparator.setOnAction(e -> onComparator(filter));
+
+		comparator.getStyleClass().add("filter-comparator-combo-box");
+
+		filterOperators.add(comparator, 2, 0, 1, 1);
+
 		setFilter(filter);
 
 		getStylesheets().add(stylesheet);
+	}
+
+	public void setText(String text) {
+		input.setText(text);
+	}
+
+	protected void onTextInput(Filter<?> filter, String newValue) {
+		filter.setFilterValue(newValue);
+		pseudoClassStateChanged(invalid, !filter.isValid());
+		callUpdateEvent();
 	}
 
 	private void onDragDetected(MouseEvent e) {
@@ -301,12 +372,12 @@ public abstract class FilterBox extends BorderPane {
 			index = ((GroupFilter) filter.getParent()).addFilterAfter(f, filter);
 		}
 		if (this instanceof GroupFilterBox) {
-			((GroupFilterBox) this).filters.getChildren().add(index, new NumberFilterBox(this, f, false));
+			((GroupFilterBox) this).filters.getChildren().add(index, new FilterBox(this, f, false));
 			type.getItems().clear();
 			type.getItems().addAll(FilterType.GROUP, FilterType.NOT_GROUP);
 			type.getSelectionModel().select(filter.getType());
 		} else if (parent instanceof GroupFilterBox) {
-			((GroupFilterBox) parent).filters.getChildren().add(index, new NumberFilterBox(this.parent, f, this.root));
+			((GroupFilterBox) parent).filters.getChildren().add(index, new FilterBox(this.parent, f, this.root));
 		}
 
 		callUpdateEvent();
@@ -361,10 +432,8 @@ public abstract class FilterBox extends BorderPane {
 			FilterBox newBox;
 			switch (type.getFormat()) {
 				case GROUP -> newBox = new GroupFilterBox(this.parent, (GroupFilter) f, false);
-				case TEXT -> newBox = new TextFilterBox(this.parent, (TextFilter<?>) f, false);
-				case NUMBER -> newBox = new NumberFilterBox(this.parent, (NumberFilter<?>) f, false);
 				case FILE -> newBox = new FileFilterBox(this.parent, (TextFilter<?>) f, false);
-				default -> throw new RuntimeException("unknown FilterType format: " + type.getFormat());
+				default -> newBox = new FilterBox(this.parent, f, false);
 			}
 
 			if (this.parent != null) {
@@ -387,6 +456,11 @@ public abstract class FilterBox extends BorderPane {
 
 	private void onOperator(Filter<?> filter) {
 		filter.setOperator(operator.getSelectionModel().getSelectedItem());
+		callUpdateEvent();
+	}
+
+	private void onComparator(Filter<?> filter) {
+		filter.setComparator(comparator.getSelectionModel().getSelectedItem());
 		callUpdateEvent();
 	}
 

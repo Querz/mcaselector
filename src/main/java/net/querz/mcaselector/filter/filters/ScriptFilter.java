@@ -112,4 +112,9 @@ public class ScriptFilter extends TextFilter<String> implements RegionMatcher {
 	public boolean intersects(String value, ChunkData data) {
 		throw new UnsupportedOperationException("\"intersects\" not allowed in ScriptFilter");
 	}
+
+	@Override
+	public boolean intersectsNot(String value, ChunkData data) {
+		throw new UnsupportedOperationException("\"!intersects\" not allowed in ScriptFilter");
+	}
 }

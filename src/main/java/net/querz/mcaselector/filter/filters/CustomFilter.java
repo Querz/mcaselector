@@ -112,4 +112,9 @@ public class CustomFilter extends TextFilter<String> {
 	public boolean intersects(String value, ChunkData data) {
 		throw new UnsupportedOperationException("\"intersects\" not allowed in CustomFilter");
 	}
+
+	@Override
+	public boolean intersectsNot(String value, ChunkData data) {
+		throw new UnsupportedOperationException("\"!intersects\" not allowed in CustomFilter");
+	}
 }

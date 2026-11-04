@@ -6,7 +6,7 @@ import javafx.scene.input.TransferMode;
 import net.querz.mcaselector.filter.TextFilter;
 import java.io.File;
 
-public class FileFilterBox extends TextFilterBox {
+public class FileFilterBox extends FilterBox {
 
 	public FileFilterBox(FilterBox parent, TextFilter<?> filter, boolean root) {
 		super(parent, filter, root);

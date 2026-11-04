@@ -96,6 +96,11 @@ public class SelectionFilter extends TextFilter<File> implements RegionMatcher {
 	}
 
 	@Override
+	public boolean intersectsNot(File value, ChunkData data) {
+		throw new UnsupportedOperationException("\"!intersects\" not allowed in selection filter");
+	}
+
+	@Override
 	public MatchType matchesRegion(Point2i region) {
 		if (!loaded.get()) {
 			synchronized (lock) {

@@ -32,6 +32,9 @@ public class GroupFilterBox extends FilterBox {
 		delete.setVisible(!root);
 		move.setVisible(!root);
 
+		input.setVisible(false);
+		comparator.setVisible(false);
+
 		if (root) {
 			getStyleClass().add("group-filter-box-root");
 		} else {
@@ -46,11 +49,9 @@ public class GroupFilterBox extends FilterBox {
 
 		for (Filter<?> f : filter.getFilterValue()) {
 			switch (f.getType().getFormat()) {
-				case NUMBER -> filters.getChildren().add(new NumberFilterBox(this, (NumberFilter<?>) f, root));
-				case TEXT -> filters.getChildren().add(new TextFilterBox(this, (TextFilter<?>) f, root));
 				case FILE -> filters.getChildren().add(new FileFilterBox(this, (TextFilter<?>) f, root));
 				case GROUP -> filters.getChildren().add(new GroupFilterBox(this, (GroupFilter) f, false));
-				default -> throw new RuntimeException("failed to display filter " + f.getClass().getSimpleName());
+				default -> filters.getChildren().add(new FilterBox(this, f, root));
 			}
 		}
 		setBottom(filters);

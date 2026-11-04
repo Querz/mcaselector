@@ -10,7 +10,8 @@ public enum Comparator {
 	SMALLER_EQUAL("\u2264", "<="),
 	CONTAINS("\u2283", "contains"),
 	CONTAINS_NOT("\u2285", "!contains"),
-	INTERSECTS("\u2229", "intersects");
+	INTERSECTS("\u2229", "intersects"),
+	INTERSECTS_NOT("\u2229\u0338", "!intersects");
 
 	private final String string;
 	private final String query;
@@ -61,8 +62,10 @@ public enum Comparator {
 			case LARGER -> SMALLER_EQUAL;
 			case SMALLER_EQUAL -> LARGER;
 			case LARGER_EQUAL -> SMALLER;
-			case CONTAINS, INTERSECTS -> CONTAINS_NOT;
+			case CONTAINS -> CONTAINS_NOT;
 			case CONTAINS_NOT -> CONTAINS;
+			case INTERSECTS -> INTERSECTS_NOT;
+			case INTERSECTS_NOT -> INTERSECTS;
 		};
 	}
 }

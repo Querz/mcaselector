@@ -131,6 +131,11 @@ public class PlayerLocationFilter extends TextFilter<PlayerLocationFilter.Player
 	}
 
 	@Override
+	public boolean intersectsNot(PlayerLocationFilterDefinition value, ChunkData data) {
+		throw new UnsupportedOperationException("\"!intersects\" not allowed in player filter");
+	}
+
+	@Override
 	public MatchType matchesRegion(Point2i region) {
 		if (!loaded.get()) {
 			synchronized (lock) {

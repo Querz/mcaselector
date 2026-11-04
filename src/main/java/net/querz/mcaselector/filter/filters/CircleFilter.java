@@ -103,6 +103,11 @@ public class CircleFilter extends TextFilter<List<CircleFilter.CircleFilterDefin
 	}
 
 	@Override
+	public boolean intersectsNot(List<CircleFilterDefinition> value, ChunkData data) {
+		throw new UnsupportedOperationException("\"!intersects\" not allowed in circle filter");
+	}
+
+	@Override
 	public MatchType matchesRegion(Point2i region) {
 		// TODO: return proper MatchType
 

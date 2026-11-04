@@ -62,6 +62,11 @@ public class CompressionFilter extends TextFilter<CompressionType> {
 	}
 
 	@Override
+	public boolean intersectsNot(CompressionType value, ChunkData data) {
+		throw new UnsupportedOperationException("\"!intersects\" not allowed in CompressionFilter");
+	}
+
+	@Override
 	public void setFilterValue(String raw) {
 		for (CompressionType t : CompressionType.values()) {
 			if (t.toString().equalsIgnoreCase(raw) || ("" + t.getByte()).equals(raw)) {

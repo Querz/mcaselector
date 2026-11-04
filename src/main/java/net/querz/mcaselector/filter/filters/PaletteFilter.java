@@ -18,6 +18,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 		Comparator.CONTAINS,
 		Comparator.CONTAINS_NOT,
 		Comparator.INTERSECTS,
+		Comparator.INTERSECTS_NOT,
 		Comparator.EQUAL,
 		Comparator.NOT_EQUAL
 	};
@@ -42,6 +43,7 @@ public class PaletteFilter extends TextFilter<List<String>> {
 			case CONTAINS -> contains(value, data);
 			case CONTAINS_NOT -> containsNot(value, data);
 			case INTERSECTS -> intersects(value, data);
+			case INTERSECTS_NOT -> intersectsNot(value, data);
 			case EQUAL -> equals(value, data);
 			case NOT_EQUAL -> notEquals(value, data);
 			default -> false;
@@ -61,6 +63,11 @@ public class PaletteFilter extends TextFilter<List<String>> {
 	@Override
 	public boolean intersects(List<String> value, ChunkData data) {
 		return VersionHandler.getImpl(data, ChunkFilter.Blocks.class).matchAnyBlockName(data, value);
+	}
+
+	@Override
+	public boolean intersectsNot(List<String> value, ChunkData data) {
+		return !intersects(value, data);
 	}
 
 	public boolean equals(List<String> value, ChunkData data) {

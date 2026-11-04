@@ -62,6 +62,10 @@ public abstract class Filter<T> implements Serializable {
 		return false;
 	}
 
+	public String getFormatText() {
+		return "";
+	}
+
 	public abstract T getFilterValue();
 
 	public abstract void setFilterValue(String raw);

@@ -40,6 +40,7 @@ public abstract class TextFilter<T> extends Filter<T> {
 			case CONTAINS -> contains(value, data);
 			case CONTAINS_NOT -> containsNot(value, data);
 			case INTERSECTS -> intersects(value, data);
+			case INTERSECTS_NOT -> intersectsNot(value, data);
 			default -> false;
 		};
 	}
@@ -53,11 +54,11 @@ public abstract class TextFilter<T> extends Filter<T> {
 		this.value = value;
 	}
 
-	public abstract String getFormatText();
-
 	public abstract boolean contains(T value, ChunkData data);
 
 	public abstract boolean containsNot(T value, ChunkData data);
 
 	public abstract boolean intersects(T value, ChunkData data);
+
+	public abstract boolean intersectsNot(T value, ChunkData data);
 }
